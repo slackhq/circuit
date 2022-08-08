@@ -17,7 +17,11 @@
 <manifest package="com.slack.circuit.sample"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application android:label="Circuit">
+    <application
+        android:label="Circuit"
+        android:name=".CircuitApp"
+        android:theme="@style/Theme.Material3.DayNight"
+        >
         <activity
             android:name=".MainActivity"
             android:exported="true">

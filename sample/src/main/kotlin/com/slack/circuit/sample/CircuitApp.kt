@@ -11,4 +11,6 @@ class CircuitApp : Application() {
     super.onCreate()
     appComponent = AppComponent.create()
   }
+
+  fun appComponent() = appComponent
 }

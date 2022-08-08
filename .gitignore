@@ -1,0 +1,22 @@
+.gradle
+local.properties
+.idea
+!/.idea/codeStyles
+!/.idea/inspectionProfiles
+!/.idea/icon.png
+*.iml
+*.so
+.DS_Store
+build
+captures
+version.properties
+env
+node_modules
+reports
+.cxx
+
+# IDE-generated dir
+out/
+
+# We have one gitignore but project generation often generates extra ones. Ignore those
+*/**/.gitignore

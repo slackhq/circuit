@@ -27,6 +27,10 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
   }
 
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+
   // TODO single-variant
 }
 

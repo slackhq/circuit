@@ -27,6 +27,10 @@ android {
     isCoreLibraryDesugaringEnabled = true
   }
 
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+
   buildTypes {
     debug {
       matchingFallbacks += listOf("release")

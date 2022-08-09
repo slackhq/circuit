@@ -68,8 +68,7 @@ allprojects {
       ktfmt(ktfmtVersion).googleStyle()
       trimTrailingWhitespace()
       endWithNewline()
-      licenseHeaderFile(rootProject.file("spotless/spotless.kt"))
-      targetExclude("**/spotless.kt", "**/Aliases.kt")
+      targetExclude("**/spotless.kt")
     }
     kotlinGradle {
       target("src/**/*.kts")
@@ -80,6 +79,13 @@ allprojects {
         rootProject.file("spotless/spotless.kt"),
         "(import|plugins|buildscript|dependencies|pluginManagement)"
       )
+    }
+    // Apply license formatting separately for kotlin files so we can prevent it from overwriting
+    // copied files
+    format("license") {
+      licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "package ")
+      target("src/**/*.kt")
+      targetExclude("**/circuit/backstack/**/*.kt")
     }
   }
 }

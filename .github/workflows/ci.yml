@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  # Only run push on main
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*.md'
+  # Always run on PRs
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: JDK ${{ matrix.ci_java_version }} / Kotlin ${{ matrix.ci_kotlin_version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ci_java_version: ['17']
+        ci_kotlin_version: ['1.7.10']
+    env:
+      DEP_OVERRIDES: 'true'
+      DEP_OVERRIDE_KOTLIN: '${{ matrix.ci_kotlin_version }}'
+      DEP_OVERRIDE_AGP: '${{ matrix.ci_agp_version }}'
+      DEP_OVERRIDE_JAVA: '${{ matrix.ci_java_version }}'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Generate cache key
+        run: ./.github/checksum.sh checksum.txt
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ matrix.job }}-${{ hashFiles('checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-${{ matrix.job }}-
+
+      - name: Install JDK ${{ matrix.ci_java_version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.ci_java_version }}
+
+      - name: Build and run tests
+        id: gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+
+      # TODO eventually also run instrumentation/UI tests?
+
+      - name: Print build scan url
+        if: always()
+        run: echo ${{ steps.gradle.outputs.build-scan-url }}
+
+      - name: (Fail-only) Bundle the build report
+        if: failure()
+        run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+
+      - name: (Fail-only) Upload the build report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-report
+          path: build-reports.zip

@@ -26,7 +26,6 @@ jobs:
     env:
       DEP_OVERRIDES: 'true'
       DEP_OVERRIDE_KOTLIN: '${{ matrix.ci_kotlin_version }}'
-      DEP_OVERRIDE_AGP: '${{ matrix.ci_agp_version }}'
       DEP_OVERRIDE_JAVA: '${{ matrix.ci_java_version }}'
     steps:
       - name: Checkout
@@ -55,13 +54,9 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check --stacktrace
+          arguments: check
 
       # TODO eventually also run instrumentation/UI tests?
-
-      - name: Print build scan url
-        if: always()
-        run: echo ${{ steps.gradle.outputs.build-scan-url }}
 
       - name: (Fail-only) Bundle the build report
         if: failure()

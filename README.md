@@ -1,7 +1,9 @@
 Circuit
 =======
 
-🚧 WIP 🚧
+🚧 **Under construction** 🚧
+
+This project is very much a work in progress and far from finished!
 
 License
 --------

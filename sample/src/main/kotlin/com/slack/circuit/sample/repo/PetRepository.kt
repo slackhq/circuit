@@ -42,4 +42,12 @@ class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) 
     animals.tryEmit(response.animals)
     fetched = true
   }
+
+  fun getAnimal(id: Long): Animal {
+    val animalList = animalsStateFlow.value
+    check(animalList.isNotEmpty()) {
+      "Animal List is empty"
+    }
+    return animalList.find { it.id == id } ?: error("Cannot find animal $id in the list ")
+  }
 }

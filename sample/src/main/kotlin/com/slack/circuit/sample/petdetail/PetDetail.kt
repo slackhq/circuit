@@ -34,6 +34,7 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.StateRenderer
+import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import dagger.Binds
 import dagger.Module
@@ -66,13 +67,16 @@ constructor(private val petDetailPresenterFactory: PetDetailPresenter.Factory) :
 
 class PetDetailPresenter
 @AssistedInject
-constructor(@Assisted private val screen: PetDetailScreen) :
+constructor(
+  @Assisted private val screen: PetDetailScreen,
+  private val petRepository: PetRepository) :
   Presenter<PetDetailScreen.State, Unit> {
   @Composable
   override fun present(render: StateRenderer<PetDetailScreen.State, Unit>) {
+    val animal = petRepository.getAnimal(screen.petId)
     val state by rememberSaveable {
       mutableStateOf(
-        PetDetailScreen.State(url = "url", photoUrl = "photo", name = "foo", description = "bar")
+        PetDetailScreen.State(url = animal.url, photoUrl = animal.photos.first().large, name = animal.name, description = animal.description)
       )
     }
 
@@ -106,7 +110,7 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> render
 private fun renderImpl(state: PetDetailScreen.State) {
   Scaffold { padding ->
     LazyColumn(modifier = Modifier.padding(padding)) {
-      item { AsyncImage(model = "https://i.imgur.com/9YtCznH.jpg", contentDescription = null) }
+      item { AsyncImage(model = state.photoUrl, contentDescription = null) }
       item { Text(text = state.name) }
       item { Text(text = state.description) }
     }

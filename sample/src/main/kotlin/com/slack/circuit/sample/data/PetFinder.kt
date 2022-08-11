@@ -58,7 +58,7 @@ interface PetfinderApi {
     @Query("organization") organization: String = "NY835"
   ): AnimalsResponse
 
-  @GET("animals/{id}") suspend fun animal(@Path("id") id: String): Animal
+  @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): Animal
 }
 
 @JsonClass(generateAdapter = true)

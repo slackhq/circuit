@@ -29,8 +29,6 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.StateRenderer
-import com.slack.circuit.sample.petlist.PetListScreenFactory
-import com.slack.circuit.sample.petlist.PetListScreenPresenterFactory
 import com.slack.circuit.ui
 import dagger.Binds
 import dagger.Module
@@ -68,7 +66,9 @@ constructor(@Assisted private val screen: PetDetailScreen) :
   @Composable
   override fun present(render: StateRenderer<PetDetailScreen.State, Unit>) {
     val state by rememberSaveable {
-      mutableStateOf(PetDetailScreen.State(url = "url", photoUrl = "photo", name = "foo", description = "bar"))
+      mutableStateOf(
+        PetDetailScreen.State(url = "url", photoUrl = "photo", name = "foo", description = "bar")
+      )
     }
 
     render(state) { /* nothing to do yet! */}
@@ -82,23 +82,23 @@ constructor(@Assisted private val screen: PetDetailScreen) :
 
 @Module
 interface PetDetailModule {
-    @Binds @IntoSet fun PetDetailScreenFactory.bindPetDetailScreenFactory(): ScreenViewFactory
-    @Binds
-    @IntoSet
-    fun PetDetailScreenPresenterFactory.bindPetDetailScreenPresenterFactory(): PresenterFactory
+  @Binds @IntoSet fun PetDetailScreenFactory.bindPetDetailScreenFactory(): ScreenViewFactory
+  @Binds
+  @IntoSet
+  fun PetDetailScreenPresenterFactory.bindPetDetailScreenPresenterFactory(): PresenterFactory
 }
 
 class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
-    override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
-        if (screen is PetDetailScreen) return ScreenView(container, petDetailUi())
-        return null
-    }
+  override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
+    if (screen is PetDetailScreen) return ScreenView(container, petDetailUi())
+    return null
+  }
 }
 
 private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> renderImpl(state) }
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {
-    Text(text = state.name)
-    Text(text = state.description)
+  Text(text = state.name)
+  Text(text = state.description)
 }

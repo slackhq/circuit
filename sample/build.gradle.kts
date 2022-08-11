@@ -3,6 +3,7 @@ plugins {
   kotlin("android")
   kotlin("kapt")
   kotlin("plugin.parcelize")
+  alias(libs.plugins.moshiGradlePlugin)
 }
 
 android {

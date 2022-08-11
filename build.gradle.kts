@@ -38,6 +38,7 @@ plugins {
   //  alias(libs.plugins.ksp) apply false
   alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyAnalysis)
+  alias(libs.plugins.moshiGradlePlugin) apply false
 }
 
 configure<DetektExtension> {

@@ -21,10 +21,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.slack.circuit.ContentContainer
@@ -35,6 +35,9 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.StateRenderer
+import com.slack.circuit.sample.data.Animal
+import com.slack.circuit.sample.petdetail.PetDetailScreen
+import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import dagger.Binds
 import dagger.Module
@@ -47,8 +50,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PetListAnimal(
-  val id: String,
+  val id: Long,
   val name: String,
+  val description: String,
 ) : Parcelable
 
 @Parcelize
@@ -59,7 +63,7 @@ object PetListScreen : Screen {
   }
 
   sealed interface Event {
-    data class ClickAnimal(val id: String) : Event
+    data class ClickAnimal(val petId: Long) : Event
   }
 }
 
@@ -72,25 +76,39 @@ constructor(private val petListPresenterFactory: PetListPresenter.Factory) : Pre
   }
 }
 
-class PetListPresenter @AssistedInject constructor(@Assisted private val navigator: Navigator) :
-  Presenter<PetListScreen.State, PetListScreen.Event> {
+class PetListPresenter
+@AssistedInject
+constructor(
+  @Assisted private val navigator: Navigator,
+  private val petRepo: PetRepository,
+) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(render: StateRenderer<PetListScreen.State, PetListScreen.Event>) {
-    var state by rememberSaveable {
-      mutableStateOf(PetListScreen.State.Success(listOf(PetListAnimal("id", "Moose"))))
-      // mutableStateOf(PetListScreen.State.Loading )
+    val repoState by petRepo.animalsStateFlow.collectAsState()
+    // TODO revisit why we can't use rememberSavable here
+    val state by remember {
+      derivedStateOf {
+        if (repoState.isEmpty()) {
+          PetListScreen.State.Loading
+        } else {
+          repoState.map { it.toPetListAnimal() }.let { PetListScreen.State.Success(it) }
+        }
+      }
     }
 
     val context = LocalContext.current
     render(state) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
-          // TODO!!!!
-          // navigator.goTo(PetDetailScreen(event.id))
-          Toast.makeText(context, "Going to ${event.id}", Toast.LENGTH_SHORT).show()
+          navigator.goTo(PetDetailScreen(event.petId))
+          Toast.makeText(context, "Going to ${event.petId}", Toast.LENGTH_SHORT).show()
         }
       }
     }
+  }
+
+  private fun Animal.toPetListAnimal(): PetListAnimal {
+    return PetListAnimal(id = id, name = name, description = description)
   }
 
   @AssistedFactory

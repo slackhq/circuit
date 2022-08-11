@@ -17,6 +17,8 @@
 <manifest package="com.slack.circuit.sample"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="Circuit"
         android:name=".CircuitApp"

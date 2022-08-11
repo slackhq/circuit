@@ -3,6 +3,7 @@ plugins {
   kotlin("android")
   kotlin("kapt")
   kotlin("plugin.parcelize")
+  alias(libs.plugins.moshiGradlePlugin)
 }
 
 android {
@@ -51,6 +52,8 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)
   implementation(libs.bundles.androidx.activity)
+  implementation(libs.coil)
+  implementation(libs.coil.compose)
   implementation(libs.okhttp)
   implementation(libs.okio)
   implementation(libs.retrofit)

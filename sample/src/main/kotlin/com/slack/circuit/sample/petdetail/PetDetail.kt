@@ -16,11 +16,16 @@
 package com.slack.circuit.sample.petdetail
 
 import android.os.Parcelable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import coil.compose.AsyncImage
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -99,6 +104,11 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> render
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {
-  Text(text = state.name)
-  Text(text = state.description)
+  Scaffold { padding ->
+    LazyColumn(modifier = Modifier.padding(padding)) {
+      item { AsyncImage(model = "https://i.imgur.com/9YtCznH.jpg", contentDescription = null) }
+      item { Text(text = state.name) }
+      item { Text(text = state.description) }
+    }
+  }
 }

@@ -35,6 +35,7 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.StateRenderer
+import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.ui
 import dagger.Binds
 import dagger.Module
@@ -47,7 +48,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PetListAnimal(
-  val id: String,
+  val id: Long,
   val name: String,
 ) : Parcelable
 
@@ -59,7 +60,7 @@ object PetListScreen : Screen {
   }
 
   sealed interface Event {
-    data class ClickAnimal(val id: String) : Event
+    data class ClickAnimal(val id: Long) : Event
   }
 }
 
@@ -77,7 +78,7 @@ class PetListPresenter @AssistedInject constructor(@Assisted private val navigat
   @Composable
   override fun present(render: StateRenderer<PetListScreen.State, PetListScreen.Event>) {
     var state by rememberSaveable {
-      mutableStateOf(PetListScreen.State.Success(listOf(PetListAnimal("id", "Moose"))))
+      mutableStateOf(PetListScreen.State.Success(listOf(PetListAnimal(123L, "Moose"))))
       // mutableStateOf(PetListScreen.State.Loading )
     }
 
@@ -85,8 +86,8 @@ class PetListPresenter @AssistedInject constructor(@Assisted private val navigat
     render(state) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
-          // TODO!!!!
-          // navigator.goTo(PetDetailScreen(event.id))
+          // TODO finish this!
+          navigator.goTo(PetDetailScreen(123L))
           Toast.makeText(context, "Going to ${event.id}", Toast.LENGTH_SHORT).show()
         }
       }

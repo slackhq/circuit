@@ -69,14 +69,19 @@ class PetDetailPresenter
 @AssistedInject
 constructor(
   @Assisted private val screen: PetDetailScreen,
-  private val petRepository: PetRepository) :
-  Presenter<PetDetailScreen.State, Unit> {
+  private val petRepository: PetRepository
+) : Presenter<PetDetailScreen.State, Unit> {
   @Composable
   override fun present(render: StateRenderer<PetDetailScreen.State, Unit>) {
     val animal = petRepository.getAnimal(screen.petId)
     val state by rememberSaveable {
       mutableStateOf(
-        PetDetailScreen.State(url = animal.url, photoUrl = animal.photos.first().large, name = animal.name, description = animal.description)
+        PetDetailScreen.State(
+          url = animal.url,
+          photoUrl = animal.photos.first().large,
+          name = animal.name,
+          description = animal.description
+        )
       )
     }
 

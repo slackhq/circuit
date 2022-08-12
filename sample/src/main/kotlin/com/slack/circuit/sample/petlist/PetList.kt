@@ -16,10 +16,14 @@
 package com.slack.circuit.sample.petlist
 
 import android.os.Parcelable
-import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -96,12 +100,10 @@ constructor(
       }
     }
 
-    val context = LocalContext.current
     render(state) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
           navigator.goTo(PetDetailScreen(event.petId))
-          Toast.makeText(context, "Going to ${event.petId}", Toast.LENGTH_SHORT).show()
         }
       }
     }
@@ -139,19 +141,31 @@ private fun petListUi() =
 
 @Composable
 private fun renderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
-  when (state) {
-    PetListScreen.State.Loading -> {
-      // TODO loading view
-    }
-    is PetListScreen.State.Success -> {
-      PetList(animals = state.animals, events = events)
+  Scaffold(topBar = {
+    SmallTopAppBar(title = { Text("Adoptables") })
+  }) { paddingValues ->
+    when (state) {
+      PetListScreen.State.Loading -> {
+        CircularProgressIndicator()
+      }
+      is PetListScreen.State.Success -> {
+        PetList(
+          modifier = Modifier.padding(paddingValues),
+          animals = state.animals,
+          events = events
+        )
+      }
     }
   }
 }
 
 @Composable
-private fun PetList(animals: List<PetListAnimal>, events: (PetListScreen.Event) -> Unit) {
-  LazyColumn {
+private fun PetList(
+  modifier: Modifier = Modifier,
+  animals: List<PetListAnimal>,
+  events: (PetListScreen.Event) -> Unit
+) {
+  LazyColumn(modifier) {
     animals.forEach { animal ->
       item { PetListItem(animal) { events(PetListScreen.Event.ClickAnimal(animal.id)) } }
     }

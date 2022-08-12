@@ -68,6 +68,7 @@ androidx-compose-integration-viewModel = { module = "androidx.lifecycle:lifecycl
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "compose" }
 androidx-compose-material-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-compose-material-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+androidx-compose-material-material3 = { module = "androidx.compose.material3:material3", version = "1.0.0-alpha16" }
 # Runtime artifact, must be manually applied.
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose" }

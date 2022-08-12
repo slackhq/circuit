@@ -50,6 +50,7 @@ dependencies {
   kapt(libs.dagger.compiler)
   implementation(projects.circuit)
   implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.compose.material.material3)
   implementation(libs.androidx.appCompat)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)

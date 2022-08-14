@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
@@ -121,9 +120,7 @@ private fun renderImpl(state: PetDetailScreen.State) {
         SubcomposeAsyncImage(
           model = state.photoUrl,
           contentDescription = state.name,
-          loading = {
-            CircularProgressIndicator()
-          }
+          loading = { CircularProgressIndicator() }
         )
       }
       item { Text(text = state.name) }

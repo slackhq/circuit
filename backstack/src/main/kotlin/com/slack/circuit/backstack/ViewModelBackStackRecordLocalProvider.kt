@@ -28,7 +28,6 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import javax.inject.Inject
 
 private fun Context.findActivity(): Activity? {
   var context = this
@@ -82,9 +81,7 @@ object ViewModelBackStackRecordLocalProvider : BackStackRecordLocalProvider<Back
   }
 }
 
-// @ContributesMultibinding(AppScope::class)
-// @ViewModelKey(BackStackRecordLocalProviderViewModel::class)
-class BackStackRecordLocalProviderViewModel @Inject constructor() : ViewModel() {
+class BackStackRecordLocalProviderViewModel : ViewModel() {
   private val owners = mutableMapOf<String, ViewModelStore>()
 
   fun viewModelStoreForKey(key: String): ViewModelStore = owners.getOrPut(key) { ViewModelStore() }

@@ -35,9 +35,7 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.backstack.push
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.backstack.screen
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

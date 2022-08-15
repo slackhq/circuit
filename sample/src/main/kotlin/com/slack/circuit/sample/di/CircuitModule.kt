@@ -23,6 +23,7 @@ import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.multibindings.IntoMap
 import dagger.multibindings.Multibinds
 
@@ -38,4 +39,11 @@ interface CircuitModule {
   @IntoMap
   @Binds
   fun BackStackRecordLocalProviderViewModel.bindBackStackRecordLocalProviderViewModel(): ViewModel
+
+  companion object {
+    @Provides
+    fun provideBackStackRecordLocalProviderViewModel(): BackStackRecordLocalProviderViewModel {
+      return BackStackRecordLocalProviderViewModel()
+    }
+  }
 }

@@ -18,7 +18,6 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension

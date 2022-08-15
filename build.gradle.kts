@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -104,7 +111,7 @@ subprojects {
     tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
   }
 
-  pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+  plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompile>().configureEach {
       kotlinOptions {
         allWarningsAsErrors = true
@@ -172,6 +179,55 @@ subprojects {
         }
       }
     }
+  }
+
+  // Common android config
+  val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
+    compileSdk = 33
+
+    buildFeatures { compose = true }
+    composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
+
+    compileOptions {
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
+    }
+  }
+
+  // Android library config
+  pluginManager.withPlugin("com.android.library") {
+    with(extensions.getByType<LibraryExtension>()) {
+      commonAndroidConfig()
+      defaultConfig { minSdk = 21 }
+    }
+
+    // Single-variant libraries
+    extensions.configure<LibraryAndroidComponentsExtension> {
+      beforeVariants { builder ->
+        if (builder.buildType == "debug") {
+          builder.enable = false
+        }
+      }
+    }
+  }
+
+  // Android app config
+  pluginManager.withPlugin("com.android.application") {
+    with(extensions.getByType<ApplicationExtension>()) {
+      commonAndroidConfig()
+      buildTypes {
+        maybeCreate("debug").apply { matchingFallbacks += listOf("release") }
+        maybeCreate("release").apply {
+          isMinifyEnabled = true
+          signingConfig = signingConfigs.getByName("debug")
+          matchingFallbacks += listOf("release")
+        }
+      }
+      compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+      }
+    }
+    dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
   }
 }
 

@@ -15,23 +15,6 @@ anvil {
 
 android {
   namespace = "com.slack.circuit.core"
-  compileSdk = 33
-
-  defaultConfig { minSdk = 21 }
-
-  buildFeatures { compose = true }
-  composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-  }
-
-  kotlinOptions {
-    jvmTarget = "11"
-  }
-
-  // TODO single-variant
 }
 
 dependencies {

@@ -147,7 +147,7 @@ subprojects {
             "-Xjspecify-annotations=strict",
             // Skip compose version check
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
           )
       }
     }

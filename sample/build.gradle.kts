@@ -8,7 +8,6 @@ plugins {
 
 android {
   namespace = "com.slack.circuit.sample"
-  compileSdk = 33
 
   defaultConfig {
     minSdk = 24
@@ -18,35 +17,9 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.sample.androidTest"
   }
-
-  buildFeatures { compose = true }
-  composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-    isCoreLibraryDesugaringEnabled = true
-  }
-
-  kotlinOptions {
-    jvmTarget = "11"
-  }
-
-  buildTypes {
-    debug {
-      matchingFallbacks += listOf("release")
-    }
-    release {
-      isMinifyEnabled = true
-//      signingConfig = signingConfigs.debug
-//      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.pro'
-      matchingFallbacks += listOf("release")
-    }
-  }
 }
 
 dependencies {
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.6")
   kapt(libs.dagger.compiler)
   implementation(projects.circuit)
   implementation(libs.androidx.compose.integration.activity)

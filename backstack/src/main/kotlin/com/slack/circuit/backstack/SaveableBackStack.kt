@@ -19,25 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import com.slack.circuit.Screen
 import java.util.UUID
 
 @Composable
 fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
   rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack().apply(init) }
-
-fun SaveableBackStack.push(screen: Screen) {
-  push(
-    SaveableBackStack.Record(
-      route = screen.javaClass.simpleName,
-      args = mapOf("screen" to screen),
-      key = screen.hashCode().toString()
-    )
-  )
-}
-
-val SaveableBackStack.Record.screen: Screen
-  get() = args.getValue("screen") as Screen
 
 fun SaveableBackStack.push(route: String, args: Map<String, Any?> = emptyMap()) {
   push(SaveableBackStack.Record(route, args))

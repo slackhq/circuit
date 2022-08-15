@@ -141,6 +141,7 @@ pluginManagement {
 rootProject.name = "circuit-root"
 
 // Please keep these in alphabetical order!
+include(":backstack")
 include(":circuit")
 include(":sample")
 

@@ -72,11 +72,11 @@ class SaveableBackStack : BackStack<SaveableBackStack.Record> {
           },
           restore = { list ->
             @Suppress("UNCHECKED_CAST")
-            (Record(
+            Record(
               route = list[0] as String,
               args = list[1] as Map<String, Any?>,
               key = list[2] as String
-            ))
+            )
           }
         )
     }

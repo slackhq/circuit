@@ -18,7 +18,7 @@ package com.slack.circuit.sample
 import android.app.Application
 import com.slack.circuit.sample.di.AppComponent
 
-class CircuitApp : Application() {
+class StarApp : Application() {
 
   private lateinit var appComponent: AppComponent
 

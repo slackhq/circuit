@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("com.android.application")
   kotlin("android")
@@ -19,10 +21,20 @@ android {
   }
 }
 
+tasks.withType<KotlinCompile>().configureEach {
+  kotlinOptions {
+    @Suppress("SuspiciousCollectionReassignment")
+    freeCompilerArgs += listOf(
+      "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+    )
+  }
+}
+
 dependencies {
   kapt(libs.dagger.compiler)
   implementation(projects.circuit)
   implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.compose.material.material3)
   implementation(libs.androidx.appCompat)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)

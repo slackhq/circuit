@@ -20,12 +20,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -115,7 +116,13 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> render
 private fun renderImpl(state: PetDetailScreen.State) {
   Scaffold { padding ->
     LazyColumn(modifier = Modifier.padding(padding)) {
-      item { AsyncImage(model = state.photoUrl, contentDescription = null) }
+      item {
+        SubcomposeAsyncImage(
+          model = state.photoUrl,
+          contentDescription = state.name,
+          loading = { CircularProgressIndicator() }
+        )
+      }
       item { Text(text = state.name) }
       item { Text(text = state.description) }
     }

@@ -16,17 +16,28 @@
 package com.slack.circuit.sample.petlist
 
 import android.os.Parcelable
-import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -96,12 +107,10 @@ constructor(
       }
     }
 
-    val context = LocalContext.current
     render(state) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
           navigator.goTo(PetDetailScreen(event.petId))
-          Toast.makeText(context, "Going to ${event.petId}", Toast.LENGTH_SHORT).show()
         }
       }
     }
@@ -135,23 +144,48 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, events -> renderImpl(state, events) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, events -> RenderImpl(state, events) }
 
 @Composable
-private fun renderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
-  when (state) {
-    PetListScreen.State.Loading -> {
-      // TODO loading view
-    }
-    is PetListScreen.State.Success -> {
-      PetList(animals = state.animals, events = events)
+private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
+  Scaffold(
+    modifier = Modifier.systemBarsPadding().systemGesturesPadding().fillMaxWidth(),
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        },
+        colors =
+          TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+          )
+      )
+    },
+  ) { paddingValues ->
+    when (state) {
+      PetListScreen.State.Loading -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
+      }
+      is PetListScreen.State.Success -> {
+        PetList(
+          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          animals = state.animals,
+          events = events
+        )
+      }
     }
   }
 }
 
 @Composable
-private fun PetList(animals: List<PetListAnimal>, events: (PetListScreen.Event) -> Unit) {
-  LazyColumn {
+private fun PetList(
+  modifier: Modifier = Modifier,
+  animals: List<PetListAnimal>,
+  events: (PetListScreen.Event) -> Unit
+) {
+  LazyColumn(modifier) {
     animals.forEach { animal ->
       item { PetListItem(animal) { events(PetListScreen.Event.ClickAnimal(animal.id)) } }
     }

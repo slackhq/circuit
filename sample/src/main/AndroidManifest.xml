@@ -20,9 +20,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="Circuit"
-        android:name=".CircuitApp"
-        android:theme="@style/Theme.Material3.DayNight"
+        android:label="Social Tees Animal Rescue"
+        android:name=".StarApp"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/StarTheme"
         >
         <activity
             android:name=".MainActivity"

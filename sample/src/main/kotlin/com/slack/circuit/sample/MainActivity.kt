@@ -18,11 +18,11 @@ package com.slack.circuit.sample
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.MaterialTheme
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.Navigator
 import com.slack.circuit.sample.di.CircuitViewModelProviderFactory
 import com.slack.circuit.sample.petlist.PetListScreen
+import com.slack.circuit.sample.ui.StarTheme
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -32,11 +32,11 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    (application as CircuitApp).appComponent().inject(this)
+    (application as StarApp).appComponent().inject(this)
 
     val navigator =
       navigatorFactory.create(
-        { content -> setContent { MaterialTheme { content() } } },
+        { content -> setContent { StarTheme { content() } } },
         onBackPressedDispatcher::onBackPressed
       )
 

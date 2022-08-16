@@ -40,7 +40,7 @@ class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) 
     }
 
   private suspend fun fetchAnimals() {
-    val response = petFinderApi.animals(limit = 25)
+    val response = petFinderApi.animals(limit = 100)
     animals.tryEmit(response.animals)
     fetched = true
   }

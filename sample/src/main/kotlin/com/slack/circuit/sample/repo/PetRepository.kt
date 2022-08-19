@@ -25,13 +25,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+interface PetRepository {
+  val animalsStateFlow: StateFlow<List<Animal>>
+  fun getAnimal(id: Long): Animal
+}
+
 @Singleton
-class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) {
+class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi): PetRepository {
   private var animals: MutableStateFlow<List<Animal>> = MutableStateFlow(emptyList())
   private var fetched = false
 
   @OptIn(DelicateCoroutinesApi::class) // badpokerface.png
-  val animalsStateFlow: StateFlow<List<Animal>>
+  override val animalsStateFlow: StateFlow<List<Animal>>
     get() {
       if (!fetched) {
         GlobalScope.launch { fetchAnimals() }
@@ -45,7 +50,7 @@ class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) 
     fetched = true
   }
 
-  fun getAnimal(id: Long): Animal {
+  override fun getAnimal(id: Long): Animal {
     val animalList = animalsStateFlow.value
     check(animalList.isNotEmpty()) { "Animal List is empty" }
     return animalList.find { it.id == id } ?: error("Cannot find animal $id in the list ")

@@ -49,6 +49,7 @@ import com.slack.circuit.StateRenderer
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
+import com.slack.circuit.sample.repo.PetRepositoryImpl
 import com.slack.circuit.ui
 import dagger.Binds
 import dagger.Module
@@ -132,6 +133,7 @@ interface PetListModule {
   @Binds
   @IntoSet
   fun PetListScreenPresenterFactory.bindPetListScreenPresenterFactory(): PresenterFactory
+  @Binds fun PetRepositoryImpl.bindPetRepository(): PetRepository
 }
 
 class PetListScreenFactory @Inject constructor() : ScreenViewFactory {

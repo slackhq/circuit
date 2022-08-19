@@ -117,14 +117,14 @@ constructor(
     }
   }
 
-  private fun Animal.toPetListAnimal(): PetListAnimal {
-    return PetListAnimal(id = id, name = name, description = description)
-  }
-
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
   }
+}
+
+internal fun Animal.toPetListAnimal(): PetListAnimal {
+  return PetListAnimal(id = id, name = name, description = description)
 }
 
 @Module

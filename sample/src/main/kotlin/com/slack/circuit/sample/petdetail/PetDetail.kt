@@ -71,9 +71,9 @@ class PetDetailPresenter
 constructor(
   @Assisted private val screen: PetDetailScreen,
   private val petRepository: PetRepository
-) : Presenter<PetDetailScreen.State, Unit> {
+) : Presenter<PetDetailScreen.State, Nothing> {
   @Composable
-  override fun present(render: StateRenderer<PetDetailScreen.State, Unit>) {
+  override fun present(render: StateRenderer<PetDetailScreen.State, Nothing>) {
     val animal = petRepository.getAnimal(screen.petId)
     val state by rememberSaveable {
       mutableStateOf(
@@ -110,7 +110,7 @@ class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> renderImpl(state) }
+private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> renderImpl(state) }
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {

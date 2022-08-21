@@ -15,30 +15,9 @@
  */
 package com.slack.circuit.sample.di
 
-import com.slack.circuit.sample.MainActivity
-import com.slack.circuit.sample.data.DataModule
-import com.squareup.anvil.annotations.MergeComponent
-import dagger.Component
+import javax.inject.Scope
+import kotlin.reflect.KClass
 
-@MergeComponent(
-  scope = AppScope::class,
-  modules =
-    [
-      BaseUiModule::class,
-      CircuitModule::class,
-      DataModule::class,
-    ]
-)
-@SingleIn(AppScope::class)
-interface AppComponent {
-  fun inject(mainActivity: MainActivity)
+@Scope annotation class SingleIn(val scope: KClass<*>)
 
-  @Component.Factory
-  interface Factory {
-    fun create(): AppComponent
-  }
-
-  companion object {
-    fun create(): AppComponent = DaggerAppComponent.factory().create()
-  }
-}
+class AppScope private constructor()

@@ -6,6 +6,7 @@ plugins {
   kotlin("kapt")
   kotlin("plugin.parcelize")
   alias(libs.plugins.moshiGradlePlugin)
+  alias(libs.plugins.anvil)
 }
 
 android {

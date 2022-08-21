@@ -15,31 +15,34 @@
  */
 package com.slack.circuit.sample.data
 
+import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.di.SingleIn
+import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 
+@ContributesTo(AppScope::class)
 @Module
 object DataModule {
   @Provides
-  @Singleton
+  @SingleIn(AppScope::class)
   fun provideMoshi(): Moshi {
     return Moshi.Builder().build()
   }
 
   @Provides
-  @Singleton
+  @SingleIn(AppScope::class)
   fun provideOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder().build()
   }
 
   @Provides
-  @Singleton
+  @SingleIn(AppScope::class)
   fun providePetfinderApi(moshi: Moshi, okHttpClient: OkHttpClient): PetfinderApi {
     val baseRetrofit =
       Retrofit.Builder()

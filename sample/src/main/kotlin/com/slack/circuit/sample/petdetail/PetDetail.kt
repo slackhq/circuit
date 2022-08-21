@@ -35,14 +35,13 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.StateRenderer
+import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
-import dagger.Binds
-import dagger.Module
+import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
@@ -57,6 +56,7 @@ data class PetDetailScreen(val petId: Long) : Screen {
   ) : Parcelable
 }
 
+@ContributesMultibinding(AppScope::class)
 class PetDetailScreenPresenterFactory
 @Inject
 constructor(private val petDetailPresenterFactory: PetDetailPresenter.Factory) : PresenterFactory {
@@ -95,14 +95,7 @@ constructor(
   }
 }
 
-@Module
-interface PetDetailModule {
-  @Binds @IntoSet fun PetDetailScreenFactory.bindPetDetailScreenFactory(): ScreenViewFactory
-  @Binds
-  @IntoSet
-  fun PetDetailScreenPresenterFactory.bindPetDetailScreenPresenterFactory(): PresenterFactory
-}
-
+@ContributesMultibinding(AppScope::class)
 class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
     if (screen is PetDetailScreen) return ScreenView(container, petDetailUi())

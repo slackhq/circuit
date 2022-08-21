@@ -15,10 +15,11 @@
  */
 package com.slack.circuit.sample.di
 
-import com.slack.circuit.sample.MainActivity
+import android.app.Activity
 import com.slack.circuit.sample.data.DataModule
 import com.squareup.anvil.annotations.MergeComponent
 import dagger.Component
+import javax.inject.Provider
 
 @MergeComponent(
   scope = AppScope::class,
@@ -31,7 +32,7 @@ import dagger.Component
 )
 @SingleIn(AppScope::class)
 interface AppComponent {
-  fun inject(mainActivity: MainActivity)
+  val activityProviders: Map<Class<out Activity>, @JvmSuppressWildcards Provider<Activity>>
 
   @Component.Factory
   interface Factory {

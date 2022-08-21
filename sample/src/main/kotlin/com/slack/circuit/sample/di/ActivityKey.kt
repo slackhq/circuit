@@ -16,14 +16,10 @@
 package com.slack.circuit.sample.di
 
 import android.app.Activity
-import androidx.lifecycle.ViewModel
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import dagger.MapKey
+import kotlin.reflect.KClass
 
-@ContributesTo(AppScope::class)
-@Module
-interface BaseUiModule {
-  @Multibinds fun provideViewModelProviders(): Map<Class<out ViewModel>, ViewModel>
-  @Multibinds fun provideActivityProviders(): Map<Class<out Activity>, Activity>
-}
+/**
+ * A Dagger multi-binding key used for registering a [Activity] into the top level dagger graphs.
+ */
+@MapKey annotation class ActivityKey(val value: KClass<out Activity>)

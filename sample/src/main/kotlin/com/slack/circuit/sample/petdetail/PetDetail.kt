@@ -34,7 +34,6 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
-import com.slack.circuit.StateRenderer
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import dagger.Binds
@@ -43,6 +42,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
@@ -73,7 +73,7 @@ constructor(
   private val petRepository: PetRepository
 ) : Presenter<PetDetailScreen.State, Unit> {
   @Composable
-  override fun present(render: StateRenderer<PetDetailScreen.State, Unit>) {
+  override fun present(events: SharedFlow<Unit>): PetDetailScreen.State {
     val animal = petRepository.getAnimal(screen.petId)
     val state by rememberSaveable {
       mutableStateOf(
@@ -86,7 +86,9 @@ constructor(
       )
     }
 
-    render(state) { /* nothing to do yet! */}
+//    LaunchedEffect(this) { /* nothing to do yet */ }
+
+    return state
   }
 
   @AssistedFactory

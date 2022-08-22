@@ -31,10 +31,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
@@ -45,7 +43,6 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
-import com.slack.circuit.StateRenderer
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
@@ -57,6 +54,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
@@ -71,6 +69,7 @@ data class PetListAnimal(
 object PetListScreen : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
+    @Parcelize object NoAnimals : State
     @Parcelize data class Success(val animals: List<PetListAnimal>) : State
   }
 
@@ -95,26 +94,26 @@ constructor(
   private val petRepo: PetRepository,
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
-  override fun present(render: StateRenderer<PetListScreen.State, PetListScreen.Event>) {
-    val repoState by petRepo.animalsStateFlow.collectAsState()
-    // TODO revisit why we can't use rememberSavable here
-    val state by remember {
-      derivedStateOf {
-        if (repoState.isEmpty()) {
-          PetListScreen.State.Loading
-        } else {
-          repoState.map { it.toPetListAnimal() }.let { PetListScreen.State.Success(it) }
+  override fun present(events: SharedFlow<PetListScreen.Event>): PetListScreen.State {
+    val state = produceState<PetListScreen.State>(PetListScreen.State.Loading) {
+      val animals = petRepo.animalsStateFlow.value
+      value = when {
+        animals.isEmpty() -> PetListScreen.State.NoAnimals
+        else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
+      }
+    }
+
+    LaunchedEffect(this) { // TODO keys????
+      events.collect { event ->
+        when (event) {
+          is PetListScreen.Event.ClickAnimal -> {
+            navigator.goTo(PetDetailScreen(event.petId))
+          }
         }
       }
     }
 
-    render(state) { event ->
-      when (event) {
-        is PetListScreen.Event.ClickAnimal -> {
-          navigator.goTo(PetDetailScreen(event.petId))
-        }
-      }
-    }
+    return state.value
   }
 
   @AssistedFactory
@@ -170,6 +169,7 @@ private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event)
           CircularProgressIndicator()
         }
       }
+      PetListScreen.State.NoAnimals -> Unit
       is PetListScreen.State.Success -> {
         PetList(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),

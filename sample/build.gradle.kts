@@ -6,13 +6,14 @@ plugins {
   kotlin("kapt")
   kotlin("plugin.parcelize")
   alias(libs.plugins.moshiGradlePlugin)
+  alias(libs.plugins.anvil)
 }
 
 android {
   namespace = "com.slack.circuit.sample"
 
   defaultConfig {
-    minSdk = 24
+    minSdk = 28
     targetSdk = 33
     versionCode = 1
     versionName = "1"
@@ -36,6 +37,8 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.material.material3)
   implementation(libs.androidx.appCompat)
+  implementation(libs.androidx.palette)
+  debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)
   implementation(libs.coil.compose)

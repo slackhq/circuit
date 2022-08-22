@@ -32,7 +32,7 @@ interface PetRepository {
 
 @Singleton
 class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi): PetRepository {
-  private var animals: MutableStateFlow<List<Animal>> = MutableStateFlow(emptyList())
+  private val animals: MutableStateFlow<List<Animal>> = MutableStateFlow(emptyList())
   private var fetched = false
 
   @OptIn(DelicateCoroutinesApi::class) // badpokerface.png

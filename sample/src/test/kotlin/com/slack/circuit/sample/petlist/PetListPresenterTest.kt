@@ -1,13 +1,10 @@
 package com.slack.circuit.sample.petlist
 
-import android.os.Parcelable
-import androidx.compose.runtime.Composable
 import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
-import com.slack.circuit.StateRenderer
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.Breeds
 import com.slack.circuit.sample.data.Colors
@@ -18,7 +15,6 @@ import com.slack.circuit.sample.repo.PetRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
@@ -37,10 +33,10 @@ class PetListPresenterTest {
   fun `present - emit loading state then no animals state`() = runTest {
     val repository = TestRepository(emptyList())
     val presenter = PetListPresenter(navigator, repository)
-    val renderer = TestRenderer<PetListScreen.State, PetListScreen.Event>()
+    val events = MutableSharedFlow<PetListScreen.Event>()
 
     moleculeFlow(Immediate) {
-      presenter.present(renderer.events)
+      presenter.present(events)
     }.test {
       assertEquals(PetListScreen.State.Loading, awaitItem())
       assertEquals(PetListScreen.State.NoAnimals, awaitItem())
@@ -51,10 +47,10 @@ class PetListPresenterTest {
   fun `present - emit loading state then list of animals`() = runTest {
     val repository = TestRepository(listOf(animal))
     val presenter = PetListPresenter(navigator, repository)
-    val renderer = TestRenderer<PetListScreen.State, PetListScreen.Event>()
+    val events = MutableSharedFlow<PetListScreen.Event>()
 
     moleculeFlow(Immediate) {
-      presenter.present(renderer.events)
+      presenter.present(events)
     }.test {
       assertEquals(PetListScreen.State.Loading, awaitItem())
 
@@ -67,13 +63,16 @@ class PetListPresenterTest {
   fun `present - navigate to pet details screen`() = runTest {
     val repository = TestRepository(emptyList())
     val presenter = PetListPresenter(navigator, repository)
-    val renderer = TestRenderer<PetListScreen.State, PetListScreen.Event>()
+    val events = MutableSharedFlow<PetListScreen.Event>()
 
     moleculeFlow(Immediate) {
-      presenter.present(renderer.events)
+      presenter.present(events)
     }.test {
+      assertEquals(PetListScreen.State.Loading, awaitItem())
+      assertEquals(PetListScreen.State.NoAnimals, awaitItem())
+
       val clickAnimal = PetListScreen.Event.ClickAnimal(123L)
-      renderer.emitEvent(clickAnimal)
+      events.tryEmit(clickAnimal)
 
       // TODO how do we watch for event triggered behaviour that does NOT result in the emission
       // TODO of new state??
@@ -109,18 +108,6 @@ class PetListPresenterTest {
       )
     )
   }
-}
-
-private class TestRenderer<UiState, UiEvent> : StateRenderer<UiState, UiEvent>
-        where UiState : Any, UiState : Parcelable, UiEvent : Any
-{
-  private val _events = MutableSharedFlow<UiEvent>()
-  override val events = _events.asSharedFlow()
-
-  fun emitEvent(event: UiEvent): Boolean = _events.tryEmit(event)
-
-  @Composable
-  override fun render(state: UiState) = TODO("Not yet implemented")
 }
 
 private class TestRepository(animals: List<Animal>) : PetRepository {

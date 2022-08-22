@@ -18,23 +18,8 @@ package com.slack.circuit
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
-
-/**
- * A simple function that can [render] [UiState]. Usually sugar over [Ui.render] but defined
- * separately to keep the bones of the framework flexible.
- */
-interface StateRenderer<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
-  val events: SharedFlow<UiEvent>
-
-//  /** Renders a given [state] */
-  @Composable fun render(state: UiState)
-
-  /** Shorthand for [render]. */
-  // do not override!
-  @Composable
-  operator fun invoke(state: UiState) = render(state)
-}
 
 /**
  * Presents a given [UiState] and handles its [events][UiEvent].

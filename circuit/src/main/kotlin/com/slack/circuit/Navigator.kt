@@ -39,9 +39,9 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.flow.receiveAsFlow
 
 fun interface OnPopHandler {
   fun onPop()
@@ -116,18 +116,6 @@ constructor(
   }
 }
 
-private class UiStateRenderer<UiState, UiEvent : Any>(val ui: Ui<UiState, UiEvent>) :
-  StateRenderer<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
-
-  private val _events = MutableSharedFlow<UiEvent>()
-  override val events: SharedFlow<UiEvent> = _events.asSharedFlow()
-
-  @Composable
-  override fun render(state: UiState) {
-    ui.render(state, _events::tryEmit)
-  }
-}
-
 @Composable
 fun <R : BackStack.Record> FactoryNavigator(
   backStack: BackStack<R>,
@@ -194,9 +182,11 @@ fun <R : BackStack.Record> BasicFactoryNavigator(
           val currentRender: (@Composable (R) -> Unit) =
             if (presenter != null && ui != null) {
               {
-                val renderer = UiStateRenderer(ui)
-                val state = presenter.present(renderer.events)
-                renderer.render(state)
+                val channel = remember(presenter, ui) { Channel<Any>(BUFFERED) }
+                val eventsFlow = remember(channel) { channel.receiveAsFlow() }
+                // TODO where does rememberSaveable fit here??
+                val state = presenter.present(eventsFlow)
+                ui.render(state) { event -> channel.trySend(event) }
               }
             } else {
               { unavailableRoute(routeName) }

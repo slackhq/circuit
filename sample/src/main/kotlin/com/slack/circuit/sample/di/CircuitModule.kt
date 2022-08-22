@@ -21,12 +21,14 @@ import com.slack.circuit.NavigatorImpl
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
+import com.squareup.anvil.annotations.ContributesTo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import dagger.multibindings.Multibinds
 
+@ContributesTo(AppScope::class)
 @Module
 interface CircuitModule {
   @Multibinds fun presenterFactories(): Set<PresenterFactory>

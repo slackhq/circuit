@@ -17,11 +17,13 @@ package com.slack.circuit.sample.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
 import javax.inject.Provider
 
 /** A factory that will provide [ViewModels][ViewModel] using their Dagger provider. */
-class CircuitViewModelProviderFactory
+@ContributesBinding(AppScope::class)
+class StarViewModelProviderFactory
 @Inject
 constructor(
   private val modelProviders: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>

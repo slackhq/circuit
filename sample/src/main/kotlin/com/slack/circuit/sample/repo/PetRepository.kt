@@ -17,15 +17,16 @@ package com.slack.circuit.sample.repo
 
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.PetfinderApi
+import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.di.SingleIn
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-@Singleton
+@SingleIn(AppScope::class)
 class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) {
   private var animals: MutableStateFlow<List<Animal>> = MutableStateFlow(emptyList())
   private var fetched = false

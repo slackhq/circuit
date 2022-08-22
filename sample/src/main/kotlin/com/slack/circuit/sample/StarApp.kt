@@ -20,12 +20,7 @@ import com.slack.circuit.sample.di.AppComponent
 
 class StarApp : Application() {
 
-  private lateinit var appComponent: AppComponent
-
-  override fun onCreate() {
-    super.onCreate()
-    appComponent = AppComponent.create()
-  }
+  private val appComponent by lazy { AppComponent.create() }
 
   fun appComponent() = appComponent
 }

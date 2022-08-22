@@ -15,7 +15,8 @@
   -->
 
 <manifest package="com.slack.circuit.sample"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -25,6 +26,8 @@
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/StarTheme"
         android:enableOnBackInvokedCallback="true"
+        android:appComponentFactory="com.slack.circuit.sample.di.StarAppComponentFactory"
+        tools:replace="android:appComponentFactory"
         >
         <activity
             android:name=".MainActivity"

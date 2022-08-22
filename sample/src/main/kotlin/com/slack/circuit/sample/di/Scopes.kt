@@ -15,15 +15,9 @@
  */
 package com.slack.circuit.sample.di
 
-import android.app.Activity
-import androidx.lifecycle.ViewModel
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import javax.inject.Scope
+import kotlin.reflect.KClass
 
-@ContributesTo(AppScope::class)
-@Module
-interface BaseUiModule {
-  @Multibinds fun provideViewModelProviders(): Map<Class<out ViewModel>, ViewModel>
-  @Multibinds fun provideActivityProviders(): Map<Class<out Activity>, Activity>
-}
+@Scope annotation class SingleIn(val scope: KClass<*>)
+
+class AppScope private constructor()

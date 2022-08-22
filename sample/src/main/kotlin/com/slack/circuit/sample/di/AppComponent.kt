@@ -15,26 +15,24 @@
  */
 package com.slack.circuit.sample.di
 
-import com.slack.circuit.sample.MainActivity
+import android.app.Activity
 import com.slack.circuit.sample.data.DataModule
-import com.slack.circuit.sample.petdetail.PetDetailModule
-import com.slack.circuit.sample.petlist.PetListModule
+import com.squareup.anvil.annotations.MergeComponent
 import dagger.Component
-import javax.inject.Singleton
+import javax.inject.Provider
 
-@Component(
+@MergeComponent(
+  scope = AppScope::class,
   modules =
     [
       BaseUiModule::class,
       CircuitModule::class,
       DataModule::class,
-      PetDetailModule::class,
-      PetListModule::class,
     ]
 )
-@Singleton
+@SingleIn(AppScope::class)
 interface AppComponent {
-  fun inject(mainActivity: MainActivity)
+  val activityProviders: Map<Class<out Activity>, @JvmSuppressWildcards Provider<Activity>>
 
   @Component.Factory
   interface Factory {

@@ -39,6 +39,9 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 fun interface OnPopHandler {
   fun onPop()
@@ -113,12 +116,15 @@ constructor(
   }
 }
 
-@JvmInline
-private value class UiStateRenderer<UiState, UiEvent : Any>(val ui: Ui<UiState, UiEvent>) :
+private class UiStateRenderer<UiState, UiEvent : Any>(val ui: Ui<UiState, UiEvent>) :
   StateRenderer<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
+
+  private val _events = MutableSharedFlow<UiEvent>()
+  override val events: SharedFlow<UiEvent> = _events.asSharedFlow()
+
   @Composable
-  override fun render(state: UiState, uiEvents: (UiEvent) -> Unit) {
-    ui.render(state, uiEvents)
+  override fun render(state: UiState) {
+    ui.render(state, _events::tryEmit)
   }
 }
 
@@ -187,7 +193,11 @@ fun <R : BackStack.Record> BasicFactoryNavigator(
 
           val currentRender: (@Composable (R) -> Unit) =
             if (presenter != null && ui != null) {
-              { presenter.present(UiStateRenderer(ui)) }
+              {
+                val renderer = UiStateRenderer(ui)
+                val state = presenter.present(renderer.events)
+                renderer.render(state)
+              }
             } else {
               { unavailableRoute(routeName) }
             }

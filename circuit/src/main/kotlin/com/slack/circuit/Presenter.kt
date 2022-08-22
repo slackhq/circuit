@@ -18,19 +18,22 @@ package com.slack.circuit
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.SharedFlow
 
 /**
  * A simple function that can [render] [UiState]. Usually sugar over [Ui.render] but defined
  * separately to keep the bones of the framework flexible.
  */
-fun interface StateRenderer<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
-  /** Renders a given [state] and emits [UI events][UiEvent] back up to [uiEvents]. */
-  @Composable fun render(state: UiState, uiEvents: (UiEvent) -> Unit)
+interface StateRenderer<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
+  val events: SharedFlow<UiEvent>
+
+//  /** Renders a given [state] */
+  @Composable fun render(state: UiState)
 
   /** Shorthand for [render]. */
   // do not override!
   @Composable
-  operator fun invoke(state: UiState, uiEvents: (UiEvent) -> Unit) = render(state, uiEvents)
+  operator fun invoke(state: UiState) = render(state)
 }
 
 /**
@@ -40,6 +43,7 @@ fun interface StateRenderer<UiState, UiEvent : Any> where UiState : Any, UiState
  */
 interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
   /**
+   * // TODO out of date - update!!
    * The primary entry point to present a [Composable] [render] to connect this [Presenter] with a
    * given [Ui], usually automatically handled by a [Navigator]. The structure of this function is
    * based around two parameters:
@@ -62,7 +66,7 @@ interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parce
    * }
    * ```
    */
-  @Composable fun present(render: StateRenderer<UiState, UiEvent>)
+  @Composable fun present(events: SharedFlow<UiEvent>): UiState
 }
 
 fun interface PresenterFactory {

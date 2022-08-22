@@ -43,6 +43,7 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.collectEvents
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
@@ -103,12 +104,10 @@ constructor(
       }
     }
 
-    LaunchedEffect(this) { // TODO keys????
-      events.collect { event ->
-        when (event) {
-          is PetListScreen.Event.ClickAnimal -> {
-            navigator.goTo(PetDetailScreen(event.petId))
-          }
+    collectEvents(events) { event ->
+      when (event) {
+        is PetListScreen.Event.ClickAnimal -> {
+          navigator.goTo(PetDetailScreen(event.petId))
         }
       }
     }

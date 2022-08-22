@@ -16,16 +16,20 @@
 package com.slack.circuit.sample.petdetail
 
 import android.os.Parcelable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import coil.compose.SubcomposeAsyncImage
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
@@ -114,16 +118,20 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> render
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {
-  Scaffold { padding ->
+  Scaffold(
+    modifier = Modifier.systemBarsPadding(),
+  ) { padding ->
     LazyColumn(modifier = Modifier.padding(padding)) {
       item {
         SubcomposeAsyncImage(
+          modifier = Modifier.fillMaxWidth(),
           model = state.photoUrl,
           contentDescription = state.name,
+          contentScale = ContentScale.FillWidth,
           loading = { CircularProgressIndicator() }
         )
       }
-      item { Text(text = state.name) }
+      item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
       item { Text(text = state.description) }
     }
   }

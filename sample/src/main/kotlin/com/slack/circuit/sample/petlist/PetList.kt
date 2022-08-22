@@ -29,6 +29,8 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
@@ -38,6 +40,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -101,7 +104,7 @@ object PetListScreen : Screen {
   }
 
   sealed interface Event {
-    data class ClickAnimal(val petId: Long) : Event
+    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String) : Event
   }
 }
 
@@ -138,7 +141,7 @@ constructor(
     render(state) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
-          navigator.goTo(PetDetailScreen(event.petId))
+          navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
         }
       }
     }
@@ -226,7 +229,9 @@ private fun PetList(
       key = { i -> animals[i].id },
     ) { index ->
       val animal = animals[index]
-      PetListItem(modifier, animal) { events(PetListScreen.Event.ClickAnimal(animal.id)) }
+      PetListItem(modifier, animal) {
+        events(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+      }
     }
   }
 }
@@ -256,6 +261,7 @@ private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)
+          .memoryCacheKey(animal.imageUrl)
           .crossfade(true)
           // Default is hardware, which isn't usable in Palette
           .bitmapConfig(Bitmap.Config.ARGB_8888)
@@ -270,7 +276,7 @@ private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -
         }
       }
     )
-    Column(modifier.padding(8.dp)) {
+    Column(modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
       val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
       // Name
       Text(text = animal.name, style = MaterialTheme.typography.labelLarge, color = textColor)
@@ -278,12 +284,14 @@ private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -
       animal.breed?.let {
         Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium, color = textColor)
       }
-      // Gender, age
-      Text(
-        text = "${animal.gender} – ${animal.age}",
-        style = MaterialTheme.typography.bodySmall,
-        color = textColor
-      )
+      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        // Gender, age
+        Text(
+          text = "${animal.gender} – ${animal.age}",
+          style = MaterialTheme.typography.bodySmall,
+          color = textColor
+        )
+      }
     }
   }
 }

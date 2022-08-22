@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.SubcomposeAsyncImage
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -50,11 +51,12 @@ import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long) : Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) : Screen {
   @Parcelize
   data class State(
     val url: String,
     val photoUrl: String,
+    val photoUrlMemoryCacheKey: String,
     val name: String,
     val description: String,
   ) : Parcelable
@@ -84,6 +86,7 @@ constructor(
         PetDetailScreen.State(
           url = animal.url,
           photoUrl = animal.photos.first().large,
+          photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
           name = animal.name,
           description = animal.description
         )
@@ -116,12 +119,16 @@ private fun renderImpl(state: PetDetailScreen.State) {
   ) { padding ->
     LazyColumn(modifier = Modifier.padding(padding)) {
       item {
-        SubcomposeAsyncImage(
+        AsyncImage(
           modifier = Modifier.fillMaxWidth(),
-          model = state.photoUrl,
+          model =
+            ImageRequest.Builder(LocalContext.current)
+              .data(state.photoUrl)
+              .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
+              .crossfade(true)
+              .build(),
           contentDescription = state.name,
           contentScale = ContentScale.FillWidth,
-          loading = { CircularProgressIndicator() }
         )
       }
       item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }

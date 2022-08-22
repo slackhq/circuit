@@ -15,7 +15,6 @@ import com.slack.circuit.sample.data.Link
 import com.slack.circuit.sample.data.Links
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +25,6 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PetListPresenterTest {
   private lateinit var navigator: TestNavigator
 

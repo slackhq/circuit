@@ -51,7 +51,7 @@ interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parce
    * }
    * ```
    */
-  @Composable fun present(events: SharedFlow<UiEvent>): UiState
+  @Composable fun present(events: Flow<UiEvent>): UiState
 }
 
 fun interface PresenterFactory {

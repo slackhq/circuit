@@ -42,6 +42,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
@@ -73,7 +74,7 @@ constructor(
   private val petRepository: PetRepository
 ) : Presenter<PetDetailScreen.State, Unit> {
   @Composable
-  override fun present(events: SharedFlow<Unit>): PetDetailScreen.State {
+  override fun present(events: Flow<Unit>): PetDetailScreen.State {
     val animal = petRepository.getAnimal(screen.petId)
     val state by rememberSaveable {
       mutableStateOf(

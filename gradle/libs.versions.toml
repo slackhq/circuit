@@ -1,6 +1,6 @@
 [versions]
 accompanist = "0.26.0-alpha"
-androidx-activity = "1.5.1"
+androidx-activity = "1.6.0-beta01"
 androidx-appcompat = "1.4.2"
 androidx-lifecycle = "2.5.1"
 agp = "7.2.2"
@@ -87,6 +87,7 @@ androidx-compose-ui-ui = { module = "androidx.compose.ui:ui", version.ref = "com
 androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit", version.ref = "compose" }
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose" }
+androidx-palette = "androidx.palette:palette-ktx:1.0.0"
 
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }

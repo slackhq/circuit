@@ -25,6 +25,7 @@
         android:name=".StarApp"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/StarTheme"
+        android:enableOnBackInvokedCallback="true"
         android:appComponentFactory="com.slack.circuit.sample.di.StarAppComponentFactory"
         tools:replace="android:appComponentFactory"
         >

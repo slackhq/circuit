@@ -37,6 +37,8 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.material.material3)
   implementation(libs.androidx.appCompat)
+  implementation(libs.androidx.palette)
+  debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)
   implementation(libs.coil.compose)

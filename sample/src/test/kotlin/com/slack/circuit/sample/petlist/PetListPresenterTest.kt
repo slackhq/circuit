@@ -17,6 +17,7 @@ package com.slack.circuit.sample.petlist
 
 import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.moleculeFlow
+import app.cash.turbine.Turbine
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.Navigator
@@ -26,9 +27,9 @@ import com.slack.circuit.sample.data.Breeds
 import com.slack.circuit.sample.data.Colors
 import com.slack.circuit.sample.data.Link
 import com.slack.circuit.sample.data.Links
+import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +38,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class PetListPresenterTest {
-  private val navigator = TestNavigator()
+  private val navigator = FakeNavigator()
 
   @Test
   fun `present - emit loading state then no animals state`() = runTest {
@@ -80,11 +81,8 @@ class PetListPresenterTest {
 
         val clickAnimal = PetListScreen.Event.ClickAnimal(123L)
         events.send(clickAnimal)
+        assertThat(navigator.awaitNextScreen()).isEqualTo(PetDetailScreen(clickAnimal.petId))
       }
-    navigator.screens().test {
-      // Hangs forever waiting
-      //      assertThat(PetDetailScreen(123L)).isEqualTo(awaitItem())
-    }
   }
 
   private companion object {
@@ -121,20 +119,31 @@ private class TestRepository(animals: List<Animal>) : PetRepository {
   override fun getAnimal(id: Long): Animal = TODO("Not yet implemented")
 }
 
-// TODO expose the backstack directly here somehow and assert the stack?
-private class TestNavigator : Navigator {
-  private val screens = MutableSharedFlow<Screen>()
-  private val pops = MutableSharedFlow<Unit>()
+// TODO move this to test artifact
+class FakeNavigator : Navigator {
+  private val navigatedScreens = Turbine<Screen>()
+  private val pops = Turbine<Unit>()
 
   override fun goTo(screen: Screen) {
-    screens.tryEmit(screen)
+    navigatedScreens.add(screen)
   }
 
   override fun pop() {
-    pops.tryEmit(Unit)
+    pops.add(Unit)
   }
 
-  fun screens(): Flow<Screen> = screens
+  // For non-coroutines users only
+  fun takeNextScreen() = navigatedScreens.takeItem()
 
-  fun takePop(): Flow<Unit> = pops
+  suspend fun awaitNextScreen() = navigatedScreens.awaitItem()
+
+  suspend fun awaitPop(): Unit = pops.awaitItem()
+
+  fun assertIsEmpty() {
+    navigatedScreens.ensureAllEventsConsumed()
+  }
+
+  fun expectNoEvents() {
+    navigatedScreens.expectNoEvents()
+  }
 }

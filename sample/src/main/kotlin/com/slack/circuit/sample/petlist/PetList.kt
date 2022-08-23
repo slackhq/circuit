@@ -31,7 +31,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,13 +95,15 @@ constructor(
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val state = produceState<PetListScreen.State>(PetListScreen.State.Loading) {
-      val animals = petRepo.animalsStateFlow.value
-      value = when {
-        animals.isEmpty() -> PetListScreen.State.NoAnimals
-        else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
+    val state =
+      produceState<PetListScreen.State>(PetListScreen.State.Loading) {
+        val animals = petRepo.animalsStateFlow.value
+        value =
+          when {
+            animals.isEmpty() -> PetListScreen.State.NoAnimals
+            else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
+          }
       }
-    }
 
     collectEvents(events) { event ->
       when (event) {

@@ -29,11 +29,9 @@ import com.slack.circuit.sample.data.Link
 import com.slack.circuit.sample.data.Links
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -72,15 +70,15 @@ class PetListPresenterTest {
   fun `present - navigate to pet details screen`() = runTest {
     val repository = TestRepository(emptyList())
     val presenter = PetListPresenter(navigator, repository)
-    val events = Channel<PetListScreen.Event>(Channel.BUFFERED)
+    val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) { presenter.present(events.receiveAsFlow()) }
+    moleculeFlow(Immediate) { presenter.present(events) }
       .test {
         assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
         assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
 
         val clickAnimal = PetListScreen.Event.ClickAnimal(123L)
-        events.send(clickAnimal)
+        events.emit(clickAnimal)
         assertThat(navigator.awaitNextScreen()).isEqualTo(PetDetailScreen(clickAnimal.petId))
       }
   }

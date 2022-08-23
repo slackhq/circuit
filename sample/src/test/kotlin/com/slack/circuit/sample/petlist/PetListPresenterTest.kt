@@ -1,7 +1,23 @@
+/*
+ * Copyright (C) 2022 Slack Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.slack.circuit.sample.petlist
 
 import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.moleculeFlow
+import app.cash.turbine.Turbine
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.Navigator
@@ -17,17 +33,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.fail
-import org.junit.Before
 import org.junit.Test
 
 class PetListPresenterTest {
-  private lateinit var navigator: TestNavigator
-
-  @Before
-  fun setup() {
-    navigator = TestNavigator()
-  }
+  private val navigator = FakeNavigator()
 
   @Test
   fun `present - emit loading state then no animals state`() = runTest {
@@ -35,12 +44,11 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) {
-      presenter.present(events)
-    }.test {
-      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
-      assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
-    }
+    moleculeFlow(Immediate) { presenter.present(events) }
+      .test {
+        assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+        assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
+      }
   }
 
   @Test
@@ -49,14 +57,13 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) {
-      presenter.present(events)
-    }.test {
-      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+    moleculeFlow(Immediate) { presenter.present(events) }
+      .test {
+        assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
 
-      val animals = listOf(animal).map { it.toPetListAnimal() }
-      assertThat(PetListScreen.State.Success(animals)).isEqualTo(awaitItem())
-    }
+        val animals = listOf(animal).map { it.toPetListAnimal() }
+        assertThat(PetListScreen.State.Success(animals)).isEqualTo(awaitItem())
+      }
   }
 
   @Test
@@ -65,48 +72,41 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) {
-      presenter.present(events)
-    }.test {
-      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
-      assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
+    moleculeFlow(Immediate) { presenter.present(events) }
+      .test {
+        assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+        assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
 
-      val clickAnimal = PetListScreen.Event.ClickAnimal(123L)
-      events.tryEmit(clickAnimal)
-
-      // TODO how do we watch for event triggered behaviour that does NOT result in the emission
-      // TODO of new state??
-      navigator.assertGoTo(PetDetailScreen(123L))
-    }
+        val clickAnimal = PetListScreen.Event.ClickAnimal(123L)
+        events.emit(clickAnimal)
+        assertThat(navigator.awaitNextScreen()).isEqualTo(PetDetailScreen(clickAnimal.petId))
+      }
   }
 
   private companion object {
-    val animal = Animal(
-      id = 1L,
-      organizationId = "organizationId",
-      url = "url",
-      type = "type",
-      species = "species",
-      breeds = Breeds(),
-      colors = Colors(),
-      age = "age",
-      size = "size",
-      coat = "coat",
-      name = "name",
-      description = "description",
-      photos = emptyList(),
-      videos = emptyList(),
-      status = "status",
-      attributes = emptyMap(),
-      environment = emptyMap(),
-      tags = emptyList(),
-      publishedAt = "publishedAt",
-      links = Links(
-        self = Link("self"),
-        type = Link("type"),
-        organization = Link("organization")
+    val animal =
+      Animal(
+        id = 1L,
+        organizationId = "organizationId",
+        url = "url",
+        type = "type",
+        species = "species",
+        breeds = Breeds(),
+        colors = Colors(),
+        age = "age",
+        size = "size",
+        coat = "coat",
+        name = "name",
+        description = "description",
+        photos = emptyList(),
+        videos = emptyList(),
+        status = "status",
+        attributes = emptyMap(),
+        environment = emptyMap(),
+        tags = emptyList(),
+        publishedAt = "publishedAt",
+        links = Links(self = Link("self"), type = Link("type"), organization = Link("organization"))
       )
-    )
   }
 }
 
@@ -117,16 +117,31 @@ private class TestRepository(animals: List<Animal>) : PetRepository {
   override fun getAnimal(id: Long): Animal = TODO("Not yet implemented")
 }
 
-private class TestNavigator : Navigator {
-  private var receivedGoToScreen: Screen? = null
+// TODO move this to test artifact
+class FakeNavigator : Navigator {
+  private val navigatedScreens = Turbine<Screen>()
+  private val pops = Turbine<Unit>()
 
   override fun goTo(screen: Screen) {
-    receivedGoToScreen = screen
+    navigatedScreens.add(screen)
   }
 
-  override fun pop() = TODO("Not yet implemented")
+  override fun pop() {
+    pops.add(Unit)
+  }
 
-  fun assertGoTo(screen: Screen, lazyMessage: (() -> String)? = null) {
-    if (receivedGoToScreen != screen) fail(lazyMessage?.invoke())
+  // For non-coroutines users only
+  fun takeNextScreen() = navigatedScreens.takeItem()
+
+  suspend fun awaitNextScreen() = navigatedScreens.awaitItem()
+
+  suspend fun awaitPop(): Unit = pops.awaitItem()
+
+  fun assertIsEmpty() {
+    navigatedScreens.ensureAllEventsConsumed()
+  }
+
+  fun expectNoEvents() {
+    navigatedScreens.expectNoEvents()
   }
 }

@@ -19,7 +19,6 @@ import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
 
 /**
  * Presents a given [UiState] and handles its [events][UiEvent].
@@ -28,10 +27,9 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
   /**
-   * // TODO out of date - update!!
-   * The primary entry point to present a [Composable] [render] to connect this [Presenter] with a
-   * given [Ui], usually automatically handled by a [Navigator]. The structure of this function is
-   * based around two parameters:
+   * // TODO out of date - update!! The primary entry point to present a [Composable] [render] to
+   * connect this [Presenter] with a given [Ui], usually automatically handled by a [Navigator]. The
+   * structure of this function is based around two parameters:
    * 1. `state` - the current `UiState`.
    * 2. `uiEvents` - a callback to listen to UiEvent emissions from the corresponding [Ui].
    *

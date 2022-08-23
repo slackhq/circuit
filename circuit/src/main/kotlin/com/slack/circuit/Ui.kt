@@ -76,10 +76,8 @@ inline fun <UiState, UiEvent : Any> ui(
   }
 }
 
+@Suppress("NOTHING_TO_INLINE")
 @Composable
-// TODO inline
-fun <E : Any> collectEvents(events: Flow<E>, handler: (event: E) -> Unit) {
-  LaunchedEffect(events) {
-    events.collect(handler)
-  }
+inline fun <E : Any> collectEvents(events: Flow<E>, noinline handler: (event: E) -> Unit) {
+  LaunchedEffect(events) { events.collect(handler) }
 }

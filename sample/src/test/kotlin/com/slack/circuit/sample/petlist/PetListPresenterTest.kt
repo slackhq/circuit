@@ -27,11 +27,10 @@ import com.slack.circuit.sample.data.Breeds
 import com.slack.circuit.sample.data.Colors
 import com.slack.circuit.sample.data.Link
 import com.slack.circuit.sample.data.Links
+import com.slack.circuit.sample.data.Photo
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -77,13 +76,21 @@ class PetListPresenterTest {
         assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
         assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
 
-        val clickAnimal = PetListScreen.Event.ClickAnimal(123L)
+        val clickAnimal = PetListScreen.Event.ClickAnimal(123L, "key")
         events.emit(clickAnimal)
-        assertThat(navigator.awaitNextScreen()).isEqualTo(PetDetailScreen(clickAnimal.petId))
+        assertThat(navigator.awaitNextScreen()).isEqualTo(
+          PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey)
+        )
       }
   }
 
   private companion object {
+    val photo = Photo(
+      small = "small",
+      medium = "medium",
+      large = "large",
+      full = "full"
+    )
     val animal =
       Animal(
         id = 1L,
@@ -98,7 +105,8 @@ class PetListPresenterTest {
         coat = "coat",
         name = "name",
         description = "description",
-        photos = emptyList(),
+        gender = "gender",
+        photos = listOf(photo),
         videos = emptyList(),
         status = "status",
         attributes = emptyMap(),
@@ -124,8 +132,9 @@ class FakeNavigator : Navigator {
     navigatedScreens.add(screen)
   }
 
-  override fun pop() {
+  override fun pop(): Screen? {
     pops.add(Unit)
+    return null
   }
 
   // For non-coroutines users only

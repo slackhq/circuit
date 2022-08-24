@@ -147,22 +147,22 @@ constructor(
     return state.value
   }
   
-  private fun Animal.toPetListAnimal(): PetListAnimal {
-    return PetListAnimal(
-      id = id,
-      // Names are sometimes all caps
-      name = name.lowercase().capitalize(Locale.current),
-      imageUrl = photos[0].medium,
-      breed = breeds.primary,
-      gender = gender,
-      age = age
-    )
-  }
-
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
   }
+}
+
+internal fun Animal.toPetListAnimal(): PetListAnimal {
+  return PetListAnimal(
+    id = id,
+    // Names are sometimes all caps
+    name = name.lowercase().capitalize(Locale.current),
+    imageUrl = photos[0].medium,
+    breed = breeds.primary,
+    gender = gender,
+    age = age
+  )
 }
 
 @ContributesMultibinding(AppScope::class)

@@ -22,9 +22,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import coil.compose.SubcomposeAsyncImage
 import com.slack.circuit.ContentContainer
@@ -48,13 +46,17 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PetDetailScreen(val petId: Long) : Screen {
-  @Parcelize
-  data class State(
-    val url: String,
-    val photoUrl: String,
-    val name: String,
-    val description: String,
-  ) : Parcelable
+  sealed interface State : Parcelable {
+    @Parcelize object Loading : State
+    @Parcelize object NoAnimal : State
+    @Parcelize
+    data class Success(
+      val url: String,
+      val photoUrl: String,
+      val name: String,
+      val description: String,
+    ) : State
+  }
 }
 
 class PetDetailScreenPresenterFactory
@@ -74,21 +76,24 @@ constructor(
 ) : Presenter<PetDetailScreen.State, Unit> {
   @Composable
   override fun present(events: Flow<Unit>): PetDetailScreen.State {
-    val animal = petRepository.getAnimal(screen.petId)
-    val state by rememberSaveable {
-      mutableStateOf(
-        PetDetailScreen.State(
-          url = animal.url,
-          photoUrl = animal.photos.first().large,
-          name = animal.name,
-          description = animal.description
-        )
-      )
+    val state = produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+      val animal = petRepository.getAnimal(screen.petId)
+      value = when {
+        animal == null -> PetDetailScreen.State.NoAnimal
+        else -> {
+          PetDetailScreen.State.Success(
+            url = animal.url,
+            photoUrl = animal.photos.first().large,
+            name = animal.name,
+            description = animal.description
+          )
+        }
+      }
     }
 
     //    LaunchedEffect(this) { /* nothing to do yet */ }
 
-    return state
+    return state.value
   }
 
   @AssistedFactory
@@ -116,17 +121,24 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> render
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {
+  state.toString()
   Scaffold { padding ->
-    LazyColumn(modifier = Modifier.padding(padding)) {
-      item {
-        SubcomposeAsyncImage(
-          model = state.photoUrl,
-          contentDescription = state.name,
-          loading = { CircularProgressIndicator() }
-        )
+    when (state) {
+      PetDetailScreen.State.Loading -> Unit
+      PetDetailScreen.State.NoAnimal -> Unit
+      is PetDetailScreen.State.Success -> {
+        LazyColumn(modifier = Modifier.padding(padding)) {
+          item {
+            SubcomposeAsyncImage(
+              model = state.photoUrl,
+              contentDescription = state.name,
+              loading = { CircularProgressIndicator() }
+            )
+          }
+          item { Text(text = state.name) }
+          item { Text(text = state.description) }
+        }
       }
-      item { Text(text = state.name) }
-      item { Text(text = state.description) }
     }
   }
 }

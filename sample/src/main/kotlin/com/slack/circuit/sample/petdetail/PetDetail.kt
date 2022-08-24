@@ -16,15 +16,20 @@
 package com.slack.circuit.sample.petdetail
 
 import android.os.Parcelable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
-import coil.compose.SubcomposeAsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -32,20 +37,19 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
-import dagger.Binds
-import dagger.Module
+import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long) : Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
     @Parcelize object NoAnimal : State
@@ -53,12 +57,14 @@ data class PetDetailScreen(val petId: Long) : Screen {
     data class Success(
       val url: String,
       val photoUrl: String,
+      val photoUrlMemoryCacheKey: String,
       val name: String,
       val description: String,
     ) : State
   }
 }
 
+@ContributesMultibinding(AppScope::class)
 class PetDetailScreenPresenterFactory
 @Inject
 constructor(private val petDetailPresenterFactory: PetDetailPresenter.Factory) : PresenterFactory {
@@ -73,23 +79,26 @@ class PetDetailPresenter
 constructor(
   @Assisted private val screen: PetDetailScreen,
   private val petRepository: PetRepository
-) : Presenter<PetDetailScreen.State, Unit> {
+) : Presenter<PetDetailScreen.State, Nothing> {
   @Composable
-  override fun present(events: Flow<Unit>): PetDetailScreen.State {
-    val state = produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
-      val animal = petRepository.getAnimal(screen.petId)
-      value = when {
-        animal == null -> PetDetailScreen.State.NoAnimal
-        else -> {
-          PetDetailScreen.State.Success(
-            url = animal.url,
-            photoUrl = animal.photos.first().large,
-            name = animal.name,
-            description = animal.description
-          )
-        }
+  override fun present(events: Flow<Nothing>): PetDetailScreen.State {
+    val state =
+      produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+        val animal = petRepository.getAnimal(screen.petId)
+        value =
+          when {
+            animal == null -> PetDetailScreen.State.NoAnimal
+            else -> {
+              PetDetailScreen.State.Success(
+                url = animal.url,
+                photoUrl = animal.photos.first().large,
+                photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+                name = animal.name,
+                description = animal.description
+              )
+            }
+          }
       }
-    }
 
     //    LaunchedEffect(this) { /* nothing to do yet */ }
 
@@ -102,14 +111,7 @@ constructor(
   }
 }
 
-@Module
-interface PetDetailModule {
-  @Binds @IntoSet fun PetDetailScreenFactory.bindPetDetailScreenFactory(): ScreenViewFactory
-  @Binds
-  @IntoSet
-  fun PetDetailScreenPresenterFactory.bindPetDetailScreenPresenterFactory(): PresenterFactory
-}
-
+@ContributesMultibinding(AppScope::class)
 class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
     if (screen is PetDetailScreen) return ScreenView(container, petDetailUi())
@@ -117,25 +119,30 @@ class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-private fun petDetailUi() = ui<PetDetailScreen.State, Unit> { state, _ -> renderImpl(state) }
+private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> renderImpl(state) }
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {
-  state.toString()
-  Scaffold { padding ->
+  Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
       PetDetailScreen.State.Loading -> Unit
       PetDetailScreen.State.NoAnimal -> Unit
       is PetDetailScreen.State.Success -> {
         LazyColumn(modifier = Modifier.padding(padding)) {
           item {
-            SubcomposeAsyncImage(
-              model = state.photoUrl,
+            AsyncImage(
+              modifier = Modifier.fillMaxWidth(),
+              model =
+                ImageRequest.Builder(LocalContext.current)
+                  .data(state.photoUrl)
+                  .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
+                  .crossfade(true)
+                  .build(),
               contentDescription = state.name,
-              loading = { CircularProgressIndicator() }
+              contentScale = ContentScale.FillWidth,
             )
           }
-          item { Text(text = state.name) }
+          item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
           item { Text(text = state.description) }
         }
       }

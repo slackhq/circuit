@@ -17,25 +17,20 @@ package com.slack.circuit.sample.repo
 
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.PetfinderApi
+import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.di.SingleIn
 import javax.inject.Inject
-import javax.inject.Singleton
 
-interface PetRepository {
-  suspend fun getAnimals(): List<Animal>
-  suspend fun getAnimal(id: Long): Animal?
-}
-
-@Singleton
-class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi) :
-  PetRepository {
+@SingleIn(AppScope::class)
+class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) {
   private lateinit var animals: List<Animal>
 
-  override suspend fun getAnimals(): List<Animal> {
+  suspend fun getAnimals(): List<Animal> {
     if (!this::animals.isInitialized) fetchAnimals()
     return animals
   }
 
-  override suspend fun getAnimal(id: Long): Animal? {
+  suspend fun getAnimal(id: Long): Animal? {
     if (!this::animals.isInitialized) fetchAnimals()
     return animals.find { it.id == id }
   }

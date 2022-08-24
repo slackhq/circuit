@@ -191,6 +191,11 @@ subprojects {
       sourceCompatibility = JavaVersion.VERSION_11
       targetCompatibility = JavaVersion.VERSION_11
     }
+
+    lint {
+      // https://issuetracker.google.com/issues/243267012
+      disable += "Instantiatable"
+    }
   }
 
   // Android library config

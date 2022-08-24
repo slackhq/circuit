@@ -66,6 +66,7 @@ data class Animal(
   val url: String,
   val type: String,
   val species: String,
+  val gender: String,
   val breeds: Breeds,
   val colors: Colors,
   val age: String,

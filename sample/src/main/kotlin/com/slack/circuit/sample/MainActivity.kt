@@ -15,27 +15,34 @@
  */
 package com.slack.circuit.sample
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.slack.circuit.Navigator
-import com.slack.circuit.sample.di.CircuitViewModelProviderFactory
+import com.slack.circuit.Circuit
+import com.slack.circuit.navigator
+import com.slack.circuit.sample.di.ActivityKey
+import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.ui.StarTheme
+import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
-
-  @Inject lateinit var viewModelProviderFactory: CircuitViewModelProviderFactory
-  @Inject lateinit var navigatorFactory: Navigator.Factory<*>
+@ContributesMultibinding(AppScope::class, boundType = Activity::class)
+@ActivityKey(MainActivity::class)
+class MainActivity
+@Inject
+constructor(
+  private val viewModelProviderFactory: ViewModelProvider.Factory,
+  private val circuit: Circuit
+) : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    (application as StarApp).appComponent().inject(this)
 
     val navigator =
-      navigatorFactory.create(
+      circuit.navigator(
         { content -> setContent { StarTheme { content() } } },
         onBackPressedDispatcher::onBackPressed
       )

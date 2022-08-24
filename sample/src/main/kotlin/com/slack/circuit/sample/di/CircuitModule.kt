@@ -16,24 +16,23 @@
 package com.slack.circuit.sample.di
 
 import androidx.lifecycle.ViewModel
-import com.slack.circuit.Navigator
-import com.slack.circuit.NavigatorImpl
+import com.slack.circuit.Circuit
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
+import com.squareup.anvil.annotations.ContributesTo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import dagger.multibindings.Multibinds
 
+@ContributesTo(AppScope::class)
 @Module
 interface CircuitModule {
   @Multibinds fun presenterFactories(): Set<PresenterFactory>
 
   @Multibinds fun viewFactories(): Set<ScreenViewFactory>
-
-  @Binds fun NavigatorImpl.Factory.bindNavigatorImpl(): Navigator.Factory<*>
 
   @ViewModelKey(BackStackRecordLocalProviderViewModel::class)
   @IntoMap
@@ -44,6 +43,23 @@ interface CircuitModule {
     @Provides
     fun provideBackStackRecordLocalProviderViewModel(): BackStackRecordLocalProviderViewModel {
       return BackStackRecordLocalProviderViewModel()
+    }
+
+    @Provides
+    fun provideCircuit(
+      presenterFactories: @JvmSuppressWildcards Set<PresenterFactory>,
+      uiFactories: @JvmSuppressWildcards Set<ScreenViewFactory>,
+    ): Circuit {
+      return Circuit.Builder()
+        .apply {
+          for (presenterFactory in presenterFactories) {
+            addPresenterFactory(presenterFactory)
+          }
+          for (uiFactory in uiFactories) {
+            addUiFactory(uiFactory)
+          }
+        }
+        .build()
     }
   }
 }

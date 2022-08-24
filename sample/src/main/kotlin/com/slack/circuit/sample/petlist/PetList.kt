@@ -15,26 +15,55 @@
  */
 package com.slack.circuit.sample.petlist
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.systemGesturesPadding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
+import androidx.palette.graphics.Palette
+import androidx.palette.graphics.Palette.Swatch
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.request.ImageRequest
 import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -44,25 +73,27 @@ import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.collectEvents
 import com.slack.circuit.sample.data.Animal
+import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
-import com.slack.circuit.sample.repo.PetRepositoryImpl
 import com.slack.circuit.ui
-import dagger.Binds
-import dagger.Module
+import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class PetListAnimal(
   val id: Long,
   val name: String,
-  val description: String,
+  val imageUrl: String,
+  val breed: String?,
+  val gender: String,
+  val age: String,
 ) : Parcelable
 
 @Parcelize
@@ -74,10 +105,11 @@ object PetListScreen : Screen {
   }
 
   sealed interface Event {
-    data class ClickAnimal(val petId: Long) : Event
+    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String) : Event
   }
 }
 
+@ContributesMultibinding(AppScope::class)
 class PetListScreenPresenterFactory
 @Inject
 constructor(private val petListPresenterFactory: PetListPresenter.Factory) : PresenterFactory {
@@ -107,12 +139,24 @@ constructor(
     collectEvents(events) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
-          navigator.goTo(PetDetailScreen(event.petId))
+          navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
         }
       }
     }
 
     return state.value
+  }
+  
+  private fun Animal.toPetListAnimal(): PetListAnimal {
+    return PetListAnimal(
+      id = id,
+      // Names are sometimes all caps
+      name = name.lowercase().capitalize(Locale.current),
+      imageUrl = photos[0].medium,
+      breed = breeds.primary,
+      gender = gender,
+      age = age
+    )
   }
 
   @AssistedFactory
@@ -121,19 +165,7 @@ constructor(
   }
 }
 
-internal fun Animal.toPetListAnimal(): PetListAnimal {
-  return PetListAnimal(id = id, name = name, description = description)
-}
-
-@Module
-interface PetListModule {
-  @Binds @IntoSet fun PetListScreenFactory.bindPetListScreenFactory(): ScreenViewFactory
-  @Binds
-  @IntoSet
-  fun PetListScreenPresenterFactory.bindPetListScreenPresenterFactory(): PresenterFactory
-  @Binds fun PetRepositoryImpl.bindPetRepository(): PetRepository
-}
-
+@ContributesMultibinding(AppScope::class)
 class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
     if (screen is PetListScreen) {
@@ -149,7 +181,7 @@ private fun petListUi() =
 @Composable
 private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
   Scaffold(
-    modifier = Modifier.systemBarsPadding().systemGesturesPadding().fillMaxWidth(),
+    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
@@ -186,14 +218,87 @@ private fun PetList(
   animals: List<PetListAnimal>,
   events: (PetListScreen.Event) -> Unit
 ) {
-  LazyColumn(modifier) {
-    animals.forEach { animal ->
-      item { PetListItem(animal) { events(PetListScreen.Event.ClickAnimal(animal.id)) } }
+  LazyVerticalGrid(
+    columns = GridCells.Fixed(2),
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+    contentPadding = PaddingValues(16.dp),
+  ) {
+    items(
+      count = animals.size,
+      key = { i -> animals[i].id },
+    ) { index ->
+      val animal = animals[index]
+      PetListItem(modifier, animal) {
+        events(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+      }
     }
   }
 }
 
 @Composable
-private fun PetListItem(animal: PetListAnimal, onClick: () -> Unit) {
-  Text(modifier = Modifier.clickable { onClick() }, text = animal.name)
+private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -> Unit) {
+  // Palette for extracted colors from the image
+  var paletteState by remember { mutableStateOf<Palette?>(null) }
+  val swatch = paletteState?.getSwatch()
+  val defaultColors = CardDefaults.cardColors()
+  val colors =
+    swatch?.let { s ->
+      CardDefaults.cardColors(
+        containerColor = Color(s.rgb),
+      )
+    }
+      ?: defaultColors
+
+  Card(
+    modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { onClick() },
+    colors = colors,
+    shape = RoundedCornerShape(16.dp),
+  ) {
+    // Image
+    AsyncImage(
+      modifier = Modifier.fillMaxWidth(),
+      model =
+        ImageRequest.Builder(LocalContext.current)
+          .data(animal.imageUrl)
+          .memoryCacheKey(animal.imageUrl)
+          .crossfade(true)
+          // Default is hardware, which isn't usable in Palette
+          .bitmapConfig(Bitmap.Config.ARGB_8888)
+          .build(),
+      contentDescription = animal.name,
+      contentScale = ContentScale.FillWidth,
+      onState = { state ->
+        if (state is AsyncImagePainter.State.Success) {
+          Palette.Builder(state.result.drawable.toBitmap()).generate { palette ->
+            paletteState = palette
+          }
+        }
+      }
+    )
+    Column(modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+      val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
+      // Name
+      Text(text = animal.name, style = MaterialTheme.typography.labelLarge, color = textColor)
+      // Type
+      animal.breed?.let {
+        Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium, color = textColor)
+      }
+      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        // Gender, age
+        Text(
+          text = "${animal.gender} – ${animal.age}",
+          style = MaterialTheme.typography.bodySmall,
+          color = textColor
+        )
+      }
+    }
+  }
+}
+
+private fun Palette.getSwatch(): Swatch {
+  return vibrantSwatch
+    ?: lightVibrantSwatch ?: darkVibrantSwatch ?: lightMutedSwatch ?: mutedSwatch ?: darkMutedSwatch
+      ?: error("No usable swatch found")
 }

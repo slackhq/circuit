@@ -19,18 +19,25 @@ import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.PetfinderApi
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.di.SingleIn
+import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
 
+interface PetRepository {
+  suspend fun getAnimals(): List<Animal>
+  suspend fun getAnimal(id: Long): Animal?
+}
+
 @SingleIn(AppScope::class)
-class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) {
+@ContributesBinding(AppScope::class)
+class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi): PetRepository {
   private lateinit var animals: List<Animal>
 
-  suspend fun getAnimals(): List<Animal> {
+  override suspend fun getAnimals(): List<Animal> {
     if (!this::animals.isInitialized) fetchAnimals()
     return animals
   }
 
-  suspend fun getAnimal(id: Long): Animal? {
+  override suspend fun getAnimal(id: Long): Animal? {
     if (!this::animals.isInitialized) fetchAnimals()
     return animals.find { it.id == id }
   }

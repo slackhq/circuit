@@ -89,7 +89,27 @@ class Circuit private constructor(builder: Builder) {
 
     fun addUiFactory(factory: ScreenViewFactory) = apply { uiFactories.add(factory) }
 
+    fun addUiFactory(vararg factory: ScreenViewFactory) = apply {
+      for (f in factory) {
+        uiFactories.add(f)
+      }
+    }
+
+    fun addUiFactories(factories: Iterable<ScreenViewFactory>) = apply {
+      uiFactories.addAll(factories)
+    }
+
     fun addPresenterFactory(factory: PresenterFactory) = apply { presenterFactories.add(factory) }
+
+    fun addPresenterFactory(vararg factory: PresenterFactory) = apply {
+      for (f in factory) {
+        presenterFactories.add(f)
+      }
+    }
+
+    fun addPresenterFactories(factories: Iterable<PresenterFactory>) = apply {
+      presenterFactories.addAll(factories)
+    }
 
     fun build(): Circuit {
       return Circuit(this)

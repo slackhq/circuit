@@ -97,12 +97,11 @@ constructor(
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
     val state =
       produceState<PetListScreen.State>(PetListScreen.State.Loading) {
-        val animals = petRepo.animalsStateFlow.value
-        value =
-          when {
-            animals.isEmpty() -> PetListScreen.State.NoAnimals
-            else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
-          }
+        val animals = petRepo.getAnimals()
+        value = when {
+          animals.isEmpty() -> PetListScreen.State.NoAnimals
+          else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
+        }
       }
 
     collectEvents(events) { event ->

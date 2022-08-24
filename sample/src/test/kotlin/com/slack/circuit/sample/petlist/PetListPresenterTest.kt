@@ -110,11 +110,9 @@ class PetListPresenterTest {
   }
 }
 
-private class TestRepository(animals: List<Animal>) : PetRepository {
-  private val _animalStateFlow = MutableStateFlow(emptyList<Animal>()).apply { tryEmit(animals) }
-  override val animalsStateFlow: StateFlow<List<Animal>> = _animalStateFlow
-
-  override fun getAnimal(id: Long): Animal = TODO("Not yet implemented")
+private class TestRepository(private val animals: List<Animal>) : PetRepository {
+  override suspend fun getAnimals(): List<Animal> = animals
+  override suspend fun getAnimal(id: Long): Animal? = TODO("Not yet implemented")
 }
 
 // TODO move this to test artifact

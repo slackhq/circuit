@@ -19,41 +19,28 @@ import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.PetfinderApi
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 interface PetRepository {
-  val animalsStateFlow: StateFlow<List<Animal>>
-  fun getAnimal(id: Long): Animal
+  suspend fun getAnimals(): List<Animal>
+  suspend fun getAnimal(id: Long): Animal?
 }
 
 @Singleton
 class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi) :
   PetRepository {
-  private val animals: MutableStateFlow<List<Animal>> = MutableStateFlow(emptyList())
-  private var fetched = false
+  private lateinit var animals: List<Animal>
 
-  @OptIn(DelicateCoroutinesApi::class) // badpokerface.png
-  override val animalsStateFlow: StateFlow<List<Animal>>
-    get() {
-      if (!fetched) {
-        GlobalScope.launch { fetchAnimals() }
-      }
-      return animals
-    }
-
-  private suspend fun fetchAnimals() {
-    val response = petFinderApi.animals(limit = 100)
-    animals.tryEmit(response.animals)
-    fetched = true
+  override suspend fun getAnimals(): List<Animal> {
+    if (!this::animals.isInitialized) fetchAnimals()
+    return animals
   }
 
-  override fun getAnimal(id: Long): Animal {
-    val animalList = animalsStateFlow.value
-    check(animalList.isNotEmpty()) { "Animal List is empty" }
-    return animalList.find { it.id == id } ?: error("Cannot find animal $id in the list ")
+  override suspend fun getAnimal(id: Long): Animal? {
+    if (!this::animals.isInitialized) fetchAnimals()
+    return animals.find { it.id == id }
+  }
+
+  private suspend fun fetchAnimals() {
+    animals = petFinderApi.animals(limit = 100).animals
   }
 }

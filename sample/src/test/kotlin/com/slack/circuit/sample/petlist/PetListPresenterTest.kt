@@ -84,7 +84,7 @@ class PetListPresenterTest {
       }
   }
 
-  private companion object {
+  companion object {
     val photo = Photo(
       small = "small",
       medium = "medium",
@@ -118,9 +118,9 @@ class PetListPresenterTest {
   }
 }
 
-private class TestRepository(private val animals: List<Animal>) : PetRepository {
+class TestRepository(private val animals: List<Animal>) : PetRepository {
   override suspend fun getAnimals(): List<Animal> = animals
-  override suspend fun getAnimal(id: Long): Animal? = TODO("Not yet implemented")
+  override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
 }
 
 // TODO move this to test artifact

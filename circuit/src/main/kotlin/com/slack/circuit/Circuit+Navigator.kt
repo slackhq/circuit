@@ -33,6 +33,9 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.flow.receiveAsFlow
 
 /**
  * Returns a new [Navigator] that is backed by this [Circuit] instance.
@@ -80,15 +83,6 @@ internal class CircuitNavigator(
   override fun pop(): Screen? {
     onRootPop?.onPop()
     return null
-  }
-}
-
-@JvmInline
-private value class UiStateRenderer<UiState, UiEvent : Any>(val ui: Ui<UiState, UiEvent>) :
-  StateRenderer<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
-  @Composable
-  override fun render(state: UiState, uiEvents: (UiEvent) -> Unit) {
-    ui.render(state, uiEvents)
   }
 }
 
@@ -146,7 +140,13 @@ internal fun <R : BackStack.Record> BasicFactoryNavigator(
 
           val currentRender: (@Composable (R) -> Unit) =
             if (presenter != null && ui != null) {
-              { presenter.present(UiStateRenderer(ui)) }
+              {
+                val channel = remember(presenter, ui) { Channel<Any>(BUFFERED) }
+                val eventsFlow = remember(channel) { channel.receiveAsFlow() }
+                // TODO where does rememberSaveable fit here??
+                val state = presenter.present(eventsFlow)
+                ui.render(state) { event -> channel.trySend(event) }
+              }
             } else {
               { unavailableRoute(routeName) }
             }

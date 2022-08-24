@@ -19,36 +19,30 @@ import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.PetfinderApi
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.di.SingleIn
+import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+
+interface PetRepository {
+  suspend fun getAnimals(): List<Animal>
+  suspend fun getAnimal(id: Long): Animal?
+}
 
 @SingleIn(AppScope::class)
-class PetRepository @Inject constructor(private val petFinderApi: PetfinderApi) {
-  private var animals: MutableStateFlow<List<Animal>> = MutableStateFlow(emptyList())
-  private var fetched = false
+@ContributesBinding(AppScope::class)
+class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi): PetRepository {
+  private lateinit var animals: List<Animal>
 
-  @OptIn(DelicateCoroutinesApi::class) // badpokerface.png
-  val animalsStateFlow: StateFlow<List<Animal>>
-    get() {
-      if (!fetched) {
-        GlobalScope.launch { fetchAnimals() }
-      }
-      return animals
-    }
-
-  private suspend fun fetchAnimals() {
-    val response = petFinderApi.animals(limit = 100)
-    animals.tryEmit(response.animals)
-    fetched = true
+  override suspend fun getAnimals(): List<Animal> {
+    if (!this::animals.isInitialized) fetchAnimals()
+    return animals
   }
 
-  fun getAnimal(id: Long): Animal {
-    val animalList = animalsStateFlow.value
-    check(animalList.isNotEmpty()) { "Animal List is empty" }
-    return animalList.find { it.id == id } ?: error("Cannot find animal $id in the list ")
+  override suspend fun getAnimal(id: Long): Animal? {
+    if (!this::animals.isInitialized) fetchAnimals()
+    return animals.find { it.id == id }
+  }
+
+  private suspend fun fetchAnimals() {
+    animals = petFinderApi.animals(limit = 100).animals
   }
 }

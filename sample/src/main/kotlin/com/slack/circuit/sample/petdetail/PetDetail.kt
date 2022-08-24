@@ -16,17 +16,19 @@
 package com.slack.circuit.sample.petdetail
 
 import android.os.Parcelable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +41,6 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
-import com.slack.circuit.StateRenderer
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
@@ -48,18 +49,23 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) : Screen {
-  @Parcelize
-  data class State(
-    val url: String,
-    val photoUrl: String,
-    val photoUrlMemoryCacheKey: String,
-    val name: String,
-    val description: String,
-  ) : Parcelable
+  sealed interface State : Parcelable {
+    @Parcelize object Loading : State
+    @Parcelize object NoAnimal : State
+    @Parcelize
+    data class Success(
+      val url: String,
+      val photoUrl: String,
+      val photoUrlMemoryCacheKey: String,
+      val name: String,
+      val description: String,
+    ) : State
+  }
 }
 
 @ContributesMultibinding(AppScope::class)
@@ -79,21 +85,28 @@ constructor(
   private val petRepository: PetRepository
 ) : Presenter<PetDetailScreen.State, Nothing> {
   @Composable
-  override fun present(render: StateRenderer<PetDetailScreen.State, Nothing>) {
-    val animal = petRepository.getAnimal(screen.petId)
-    val state by rememberSaveable {
-      mutableStateOf(
-        PetDetailScreen.State(
-          url = animal.url,
-          photoUrl = animal.photos.first().large,
-          photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-          name = animal.name,
-          description = animal.description
-        )
-      )
-    }
+  override fun present(events: Flow<Nothing>): PetDetailScreen.State {
+    val state =
+      produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+        val animal = petRepository.getAnimal(screen.petId)
+        value =
+          when(animal) {
+            null -> PetDetailScreen.State.NoAnimal
+            else -> {
+              PetDetailScreen.State.Success(
+                url = animal.url,
+                photoUrl = animal.photos.first().large,
+                photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+                name = animal.name,
+                description = animal.description
+              )
+            }
+          }
+      }
 
-    render(state) { /* nothing to do yet! */}
+    //    LaunchedEffect(this) { /* nothing to do yet */ }
+
+    return state.value
   }
 
   @AssistedFactory
@@ -114,25 +127,33 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> ren
 
 @Composable
 private fun renderImpl(state: PetDetailScreen.State) {
-  Scaffold(
-    modifier = Modifier.systemBarsPadding(),
-  ) { padding ->
-    LazyColumn(modifier = Modifier.padding(padding)) {
-      item {
-        AsyncImage(
-          modifier = Modifier.fillMaxWidth(),
-          model =
-            ImageRequest.Builder(LocalContext.current)
-              .data(state.photoUrl)
-              .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
-              .crossfade(true)
-              .build(),
-          contentDescription = state.name,
-          contentScale = ContentScale.FillWidth,
-        )
+  Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
+    when (state) {
+      PetDetailScreen.State.Loading -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
       }
-      item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
-      item { Text(text = state.description) }
+      PetDetailScreen.State.NoAnimal -> TODO()
+      is PetDetailScreen.State.Success -> {
+        LazyColumn(modifier = Modifier.padding(padding)) {
+          item {
+            AsyncImage(
+              modifier = Modifier.fillMaxWidth(),
+              model =
+                ImageRequest.Builder(LocalContext.current)
+                  .data(state.photoUrl)
+                  .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
+                  .crossfade(true)
+                  .build(),
+              contentDescription = state.name,
+              contentScale = ContentScale.FillWidth,
+            )
+          }
+          item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
+          item { Text(text = state.description) }
+        }
+      }
     }
   }
 }

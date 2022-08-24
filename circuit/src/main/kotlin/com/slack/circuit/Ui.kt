@@ -17,7 +17,9 @@ package com.slack.circuit
 
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Represents a composable UI for the given [UiState] and [UiEvent]. Conventionally, this should
@@ -72,4 +74,10 @@ inline fun <UiState, UiEvent : Any> ui(
       body(state, events)
     }
   }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+@Composable
+inline fun <E : Any> collectEvents(events: Flow<E>, noinline handler: (event: E) -> Unit) {
+  LaunchedEffect(events) { events.collect(handler) }
 }

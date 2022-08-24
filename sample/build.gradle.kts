@@ -46,6 +46,7 @@ dependencies {
   implementation(libs.okio)
   implementation(libs.retrofit)
   implementation(libs.retrofit.converters.moshi)
+  implementation(libs.dagger)
   testImplementation(libs.junit)
   testImplementation(libs.truth)
 }

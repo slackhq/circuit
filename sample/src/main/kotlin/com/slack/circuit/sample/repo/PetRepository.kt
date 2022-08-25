@@ -29,7 +29,8 @@ interface PetRepository {
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi): PetRepository {
+class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderApi) :
+  PetRepository {
   private lateinit var animals: List<Animal>
 
   override suspend fun getAnimals(): List<Animal> {

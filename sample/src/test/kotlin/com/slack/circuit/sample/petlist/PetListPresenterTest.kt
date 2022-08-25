@@ -78,19 +78,13 @@ class PetListPresenterTest {
 
         val clickAnimal = PetListScreen.Event.ClickAnimal(123L, "key")
         events.emit(clickAnimal)
-        assertThat(navigator.awaitNextScreen()).isEqualTo(
-          PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey)
-        )
+        assertThat(navigator.awaitNextScreen())
+          .isEqualTo(PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey))
       }
   }
 
   companion object {
-    val photo = Photo(
-      small = "small",
-      medium = "medium",
-      large = "large",
-      full = "full"
-    )
+    val photo = Photo(small = "small", medium = "medium", large = "large", full = "full")
     val animal =
       Animal(
         id = 1L,

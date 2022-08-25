@@ -90,7 +90,7 @@ constructor(
       produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
-          when(animal) {
+          when (animal) {
             null -> PetDetailScreen.State.NoAnimal
             else -> {
               PetDetailScreen.State.Success(

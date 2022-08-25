@@ -24,7 +24,10 @@ import com.slack.circuit.sample.petlist.TestRepository
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class PetDetailPresenterTest {
   @Test
   fun `present - emit loading state then no animal state`() = runTest {

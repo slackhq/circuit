@@ -15,7 +15,36 @@
  */
 package com.slack.circuit
 
-/** TODO */
+/**
+ * A factory that creates [ScreenViews][ScreenView], which in turn contain the desired [Ui] for a
+ * given [Screen].
+ *
+ * Note that individual UIs should just be top-level [ui] function calls that factories simply call
+ * into. This allows easily standing up composable preview functions.
+ *
+ * ```
+ * class FavoritesViewFactory @Inject constructor() : ViewFactory {
+ *  override fun createView(
+ *    screen: Screen,
+ *    container: ContentContainer
+ *  ): ScreenView? {
+ *    val view = when (screen) {
+ *      is AddFavorites -> {
+ *        addFavoritesUi()
+ *      }
+ *      else -> return null
+ *    }
+ *    return ScreenView(
+ *      container = container,
+ *      ui = view as Ui<*, *>,
+ *    )
+ *   }
+ * }
+ *
+ * private fun addFavoritesUi() =
+ *   ui<AddFavorites.State, AddFavorites.Event> { state, events -> RenderImpl(state, events) }
+ * ```
+ */
 fun interface ScreenViewFactory {
   fun createView(screen: Screen, container: ContentContainer): ScreenView?
 }
@@ -26,30 +55,3 @@ data class ScreenView(
 // TODO does this kind of thing eventually move to compose Modifier instead?
 //  val uiMetadata: UiMetadata = UiMetadata()
 )
-
-// Example
-// class FavoritesViewFactory @Inject constructor(
-//  private val picasso: Picasso,
-// ) : ViewFactory {
-//  override fun createView(
-//    screen: Screen,
-//    context: Context,
-//    parent: ViewGroup
-//  ): ScreenView? {
-//    val view = when (screen) {
-//      is AddFavorites -> {
-//        AddFavoritesView(
-//          context = context,
-//          picasso = picasso,
-//        )
-//      }
-//      else -> return null
-//    }
-//
-//    return ScreenView(
-//      view = view,
-//      ui = view as Ui<*, *>,
-//      uiMetadata = UiMetadata(treatment = FULL_SCREEN, hideTabs = true)
-//    )
-//  }
-// }

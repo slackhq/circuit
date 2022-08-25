@@ -27,9 +27,9 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
   /**
-   * // TODO out of date - update!! The primary entry point to present a [Composable] [render] to
-   * connect this [Presenter] with a given [Ui], usually automatically handled by a [Navigator]. The
-   * structure of this function is based around two parameters:
+   * The primary entry point to present a [Composable] [render] to connect this [Presenter] with a
+   * given [Ui], usually automatically handled by a [Navigator]. The structure of this function is
+   * based around two parameters:
    * 1. `state` - the current `UiState`.
    * 2. `uiEvents` - a callback to listen to UiEvent emissions from the corresponding [Ui].
    *

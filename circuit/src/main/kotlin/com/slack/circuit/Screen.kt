@@ -17,24 +17,30 @@ package com.slack.circuit
 
 import android.os.Parcelable
 
-/** TODO */
+/**
+ * Represents an individual screen, used as a key for [PresenterFactory] and [ScreenViewFactory].
+ *
+ * Screens can be simple sentinel `object` types or data classes with information to share. Screens
+ * with information should contain the minimum amount of data needed for the target presenter to
+ * begin presenting state.
+ *
+ * ```
+ * @Parcelize
+ * data class AddFavorites(
+ *   val externalId: UUID,
+ * ) : Screen
+ * ```
+ *
+ * Screens are then passed into [Navigators][Navigator] to navigate to them.
+ *
+ * ```
+ * override fun showAddFavorites() {
+ *  navigator.goTo(
+ *    AddFavorites(
+ *      externalId = uuidGenerator.generate()
+ *    )
+ *  )
+ * }
+ * ```
+ */
 interface Screen : Parcelable
-
-// Example
-// Screen implementations are typically data classes
-// @Parcelize
-// data class AddFavorites(
-//  val externalId: UUID,
-// ) : Screen
-//
-// so when you want to navigate to AddFavorites, you construct an instance and pass it to the
-// navigator:
-// override fun showAddFavorites() {
-//  analytics.logAddMoreFavorites()
-//
-//  navigator.goTo(
-//    AddFavorites(
-//      externalId = uuidGenerator.generate()
-//    )
-//  )
-// }

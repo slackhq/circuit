@@ -33,7 +33,10 @@ import com.slack.circuit.sample.repo.PetRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class PetListPresenterTest {
   private val navigator = FakeNavigator()
 

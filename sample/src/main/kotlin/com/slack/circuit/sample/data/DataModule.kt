@@ -22,6 +22,7 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
@@ -38,7 +39,14 @@ object DataModule {
   @Provides
   @SingleIn(AppScope::class)
   fun provideOkHttpClient(): OkHttpClient {
-    return OkHttpClient.Builder().build()
+    return OkHttpClient.Builder()
+      .addInterceptor(
+        HttpLoggingInterceptor().apply {
+          level = HttpLoggingInterceptor.Level.BASIC
+          redactHeader("Authorization")
+        }
+      )
+      .build()
   }
 
   @Provides
@@ -57,6 +65,6 @@ object DataModule {
       .newBuilder()
       .client(okHttpClient.newBuilder().addInterceptor(authInterceptor).build())
       .build()
-      .create<PetfinderApi>()
+      .create()
   }
 }

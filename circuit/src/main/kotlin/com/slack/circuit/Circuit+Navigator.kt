@@ -143,7 +143,6 @@ internal fun <R : BackStack.Record> BasicFactoryNavigator(
               {
                 val channel = remember(presenter, ui) { Channel<Any>(BUFFERED) }
                 val eventsFlow = remember(channel) { channel.receiveAsFlow() }
-                // TODO where does rememberSaveable fit here??
                 val state = presenter.present(eventsFlow)
                 ui.Render(state) { event -> channel.trySend(event) }
               }

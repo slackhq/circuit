@@ -40,11 +40,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -130,10 +130,11 @@ constructor(
     val state =
       produceState<PetListScreen.State>(PetListScreen.State.Loading) {
         val animals = petRepo.getAnimals()
-        value = when {
-          animals.isEmpty() -> PetListScreen.State.NoAnimals
-          else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
-        }
+        value =
+          when {
+            animals.isEmpty() -> PetListScreen.State.NoAnimals
+            else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
+          }
       }
 
     collectEvents(events) { event ->
@@ -146,7 +147,7 @@ constructor(
 
     return state.value
   }
-  
+
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter

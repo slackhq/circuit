@@ -21,6 +21,8 @@ android {
     testApplicationId = "com.slack.circuit.sample.androidTest"
   }
 
+  buildFeatures { compose = true }
+
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
@@ -55,10 +57,19 @@ dependencies {
   implementation(libs.dagger)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
-  testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.kotlin.coroutines.test)
   testImplementation(libs.molecule.runtime)
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
   testImplementation(libs.robolectric)
+
+  androidTestImplementation(libs.androidx.test.core)
+  androidTestImplementation(libs.androidx.test.rules)
+  androidTestImplementation(libs.androidx.test.runner)
+  debugImplementation(libs.androidx.compose.ui.testing.manifest)
+  androidTestImplementation(libs.androidx.compose.ui.testing.junit)
+  androidTestImplementation(libs.junit)
+  androidTestImplementation(libs.kotlin.coroutines.test)
+  androidTestImplementation(libs.truth)
 }

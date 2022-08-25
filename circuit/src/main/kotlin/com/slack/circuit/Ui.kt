@@ -53,7 +53,7 @@ import kotlinx.coroutines.flow.Flow
  * @see ui
  */
 interface Ui<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
-  @Composable fun render(state: UiState, events: (UiEvent) -> Unit)
+  @Composable fun Render(state: UiState, events: (UiEvent) -> Unit)
 }
 
 /**
@@ -70,7 +70,7 @@ inline fun <UiState, UiEvent : Any> ui(
 ): Ui<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
   return object : Ui<UiState, UiEvent> {
     @Composable
-    override fun render(state: UiState, events: (UiEvent) -> Unit) {
+    override fun Render(state: UiState, events: (UiEvent) -> Unit) {
       body(state, events)
     }
   }

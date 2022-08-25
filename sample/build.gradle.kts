@@ -48,6 +48,7 @@ dependencies {
   implementation(libs.coil)
   implementation(libs.coil.compose)
   implementation(libs.okhttp)
+  implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.okio)
   implementation(libs.retrofit)
   implementation(libs.retrofit.converters.moshi)

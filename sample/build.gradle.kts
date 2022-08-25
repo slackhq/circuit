@@ -19,6 +19,7 @@ android {
     versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.sample.androidTest"
+
   }
 
   buildFeatures { compose = true }

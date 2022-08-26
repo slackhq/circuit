@@ -25,7 +25,6 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavigatorDefaults
 import com.slack.circuit.backstack.NavigatorRouteDecoration
 import com.slack.circuit.backstack.ProvidedValues
@@ -87,14 +86,15 @@ internal class CircuitNavigator(
 }
 
 @Composable
-internal fun <R : BackStack.Record> FactoryNavigator(
+internal fun FactoryNavigator(
   circuit: Circuit,
-  backStack: BackStack<R>,
+  backStack: SaveableBackStack,
   navigator: Navigator,
   container: ContentContainer,
   modifier: Modifier = Modifier,
   enableBackHandler: Boolean = true,
-  providedValues: Map<R, ProvidedValues> = providedValuesForBackStack(backStack),
+  providedValues: Map<SaveableBackStack.Record, ProvidedValues> =
+    providedValuesForBackStack(backStack),
   decoration: NavigatorRouteDecoration = NavigatorDefaults.DefaultDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
@@ -113,39 +113,35 @@ internal fun <R : BackStack.Record> FactoryNavigator(
 }
 
 @Composable
-internal fun <R : BackStack.Record> BasicFactoryNavigator(
+internal fun BasicFactoryNavigator(
   circuit: Circuit,
-  backStack: BackStack<R>,
+  backStack: SaveableBackStack,
   navigator: Navigator,
   container: ContentContainer,
-  providedValues: Map<R, ProvidedValues>,
+  providedValues: Map<SaveableBackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
   decoration: NavigatorRouteDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
-  // TODO remember { mutableStatOf(circuit) } ?
-
   val activeContentProviders = buildList {
     for (record in backStack) {
       val provider =
         key(record.key) {
           val routeName = record.route
-          // TODO fix this
-          val screen = (record as SaveableBackStack.Record).screen
+          val screen = record.screen
 
           @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen, container) as Ui<Parcelable, Any>?
 
           @Suppress("UNCHECKED_CAST")
           val presenter = circuit.presenter(screen, navigator) as Presenter<Parcelable, Any>?
 
-          val currentRender: (@Composable (R) -> Unit) =
+          val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) =
             if (presenter != null && ui != null) {
               {
                 val channel = remember(presenter, ui) { Channel<Any>(BUFFERED) }
                 val eventsFlow = remember(channel) { channel.receiveAsFlow() }
-                // TODO where does rememberSaveable fit here??
                 val state = presenter.present(eventsFlow)
-                ui.render(state) { event -> channel.trySend(event) }
+                ui.Render(state) { event -> channel.trySend(event) }
               }
             } else {
               { unavailableRoute(routeName) }

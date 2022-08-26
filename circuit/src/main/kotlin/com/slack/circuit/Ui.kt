@@ -27,20 +27,20 @@ import kotlinx.coroutines.flow.Flow
  *
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
- * 2. Ensuring separation of renderImpl from the [Ui] instance allows for and encourages easy UI
+ * 2. Ensuring separation of `RenderImpl` from the [Ui] instance allows for and encourages easy UI
  * previews via Compose's [@Preview][Preview] annotations.
  *
  * Usage:
  * ```
  * internal fun tacoUi(): Ui<State, Event> = ui { state, events ->
- *   renderImpl(state, events)
+ *   RenderImpl(state, events)
  * }
  *
- * @Composable private fun renderImpl(state: State, ui: (Event) -> Unit = {}) {...}
+ * @Composable private fun RenderImpl(state: State, ui: (Event) -> Unit = {}) {...}
  *
  * @Preview
  * @Composable
- * private fun previewTacos() = renderImpl(...)
+ * private fun PreviewTacos() = RenderImpl(...)
  * ```
  *
  * Most UIs don't use dependency injection at all, unless maybe getting assisted injections of
@@ -53,7 +53,7 @@ import kotlinx.coroutines.flow.Flow
  * @see ui
  */
 interface Ui<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
-  @Composable fun render(state: UiState, events: (UiEvent) -> Unit)
+  @Composable fun Render(state: UiState, events: (UiEvent) -> Unit)
 }
 
 /**
@@ -70,7 +70,7 @@ inline fun <UiState, UiEvent : Any> ui(
 ): Ui<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
   return object : Ui<UiState, UiEvent> {
     @Composable
-    override fun render(state: UiState, events: (UiEvent) -> Unit) {
+    override fun Render(state: UiState, events: (UiEvent) -> Unit) {
       body(state, events)
     }
   }

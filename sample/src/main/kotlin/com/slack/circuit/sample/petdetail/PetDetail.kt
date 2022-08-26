@@ -104,8 +104,6 @@ constructor(
           }
       }
 
-    //    LaunchedEffect(this) { /* nothing to do yet */ }
-
     return state.value
   }
 
@@ -123,10 +121,10 @@ class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> renderImpl(state) }
+private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> RenderImpl(state) }
 
 @Composable
-private fun renderImpl(state: PetDetailScreen.State) {
+private fun RenderImpl(state: PetDetailScreen.State) {
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
       PetDetailScreen.State.Loading -> {

@@ -55,7 +55,6 @@ class Circuit private constructor(builder: Builder) {
       }
     }
 
-    // TODO do we want to error instead? Maybe that's a `validateEagerly` thing?
     return null
   }
 
@@ -72,7 +71,6 @@ class Circuit private constructor(builder: Builder) {
       }
     }
 
-    // TODO do we want to error instead? Maybe that's a `validateEagerly` thing?
     return null
   }
 

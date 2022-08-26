@@ -17,60 +17,128 @@ package com.slack.circuit
 
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Presents a given [UiState] and handles its [events][UiEvent].
  *
- * TODO doc factory patterns TODO doc accepting Screens and Navigator params
+ * @see present for more thorough documentation.
  */
 interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
   /**
-   * The primary entry point to present a [Composable] [render] to connect this [Presenter] with a
-   * given [Ui], usually automatically handled by a [Navigator]. The structure of this function is
-   * based around two parameters:
-   * 1. `state` - the current `UiState`.
-   * 2. `uiEvents` - a callback to listen to UiEvent emissions from the corresponding [Ui].
+   * The primary [Composable] entry point to present a [UiState] and handle its [events]. In
+   * production, a [Navigator] is used to automatically connect this with a corresponding [Ui] to
+   * render the state returned by this function.
    *
-   * Then when implementing, the [render] function is the jumping off point to the [Ui]. Usually,
-   * state is modeled as a [mutableStateOf] and then passed in to the [render] function. Then any
-   * time the state updates, the [render] function is recomposed accordingly.
+   * When collecting [events], use [collectEvents] to collect them.
    *
    * ```kotlin
-   * class FavoritesPresenter : Presenter<State, Event> {
-   *   @Composable override fun present(render: Renderer<State, Event>) {
-   *     var state by rememberSaveable { mutableStateOf(initialState) }
+   * class FavoritesPresenter(...) : Presenter<State, Event> {
+   *   @Composable override fun present(render: Flow<Event>): State {
+   *     var state by remember { mutableStateOf(initialState) }
    *     // ...
-   *     render(state) { event ->
+   *     collectEvents(events) { event ->
    *       // Handle UI events here
    *     }
+   *
+   *     return state
    *   }
+   * }
+   * ```
+   *
+   * ## Dependency Injection
+   *
+   * Presenters should use dependency injection, usually assisted injection to accept [Navigator] or
+   * [Screen] instances as inputs. Their corresponding assisted factories should then be used by
+   * hand-written [presenter factories][PresenterFactory].
+   *
+   * ```kotlin
+   *
+   * ```
+   *
+   * ## Testing
+   *
+   * When testing, simply drive UI events with a [MutableSharedFlow] use Molecule+Turbine to drive
+   * this function.
+   *
+   * ```
+   * @Test
+   * fun `present - emit loading state then list of animals`() = runTest {
+   *   val favorites = listOf("Moose", "Reeses", "Lola")
+   *   val repository = FakeFavoritesRepository(favorites)
+   *   val presenter = FavoritesPresenter(repository)
+   *   val events = MutableSharedFlow<Event>()
+   *
+   *   moleculeFlow(Immediate) { presenter.present(events) }
+   *     .test {
+   *       assertThat(awaitItem()).isEqualTo(State.Loading)
+   *       assertThat(awaitItem()).isEqualTo(State.Success(favorites))
+   *       events.emit(Event.Refresh)
+   *       assertThat(awaitItem()).isEqualTo(State.Success(favorites))
+   *     }
    * }
    * ```
    */
   @Composable fun present(events: Flow<UiEvent>): UiState
 }
 
+/**
+ * A factory that produces [presenters][Presenter] for a given [Screen]. [Circuit] instances use the
+ * created presenter and connects it to a given [Ui] for the same [Screen].
+ *
+ * Factories should be simple aggregate multiple presenters for a canonical "whole screen". That is
+ * to say, they should be hand-written and aggregate all the presenters responsible for the UI
+ * visible within the surface this presents on.
+ *
+ * ## Example
+ *
+ * Consider this example of a Profile UI.
+ *
+ * ```
+ *                           ┌────────────────────┐
+ *                      ┌─── │                    │
+ *                      │    ├────────────────────┤◄──┐
+ *                      │    │ X                  │   │
+ *                      │    │                    │ ProfileHeaderPresenter
+ *                      │    │ Fred Rogers        │   │
+ *                      │    ├────────────────────┤◄──┘
+ *                      │    │ ┌───────┐  ┌────┐  │
+ * ProfilePresenterFactory   │ │Message│  │Call│◄─┼─── ProfileActionsPresenter
+ *                      │    │ └───────┘  └────┘  │
+ *                      │    │                    │
+ *                      │    │  - - - - - - - - ◄─┼────┐
+ *                      │    │  - - - - - - - -   │    │
+ *                      │    │  - - - - - - - -   │  ProfileDetailsPresenter
+ *                      │    │  - - - - - - - - ◄─┼────┘
+ *                      └─── │                    │
+ *                           └────────────────────┘
+ * ```
+ *
+ * This would be represented by the following factory implementation:
+ *
+ * ```kotlin
+ * class ProfilePresenterFactory @Inject constructor(
+ *   val headerPresenter: ProfilerHeaderPresenter.Factory,
+ *   val actionsPresenter: ProfilerActionsPresenter.Factory,
+ *   val detailsPresenter: ProfilerDetailsPresenter.Factory,
+ *   val callScreenRouter: CallScreenRouter.Factory
+ * ) : PresenterFactory {
+ *   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+ *     return when (screen) {
+ *       is ProfileHeader -> headerPresenter.create(screen)
+ *       is ProfileActions -> actionsPresenter.create(screen, callScreenRouter.create(navigator))
+ *       is ProfileDetails -> detailsPresenter.create(screen)
+ *       else -> null
+ *     }
+ *   }
+ * }
+ * ```
+ */
 fun interface PresenterFactory {
+  /**
+   * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it cannot
+   * handle the given [screen].
+   */
   fun create(screen: Screen, navigator: Navigator): Presenter<*, *>?
 }
-
-// Example
-// class FavoritesPresenterFactory @Inject constructor(
-//  private val addFavoritesPresenter: AddFavoritesPresenter.Factory,
-// ) : PresenterFactory {
-//
-//  override fun create(
-//    screen: Screen,
-//    navigator: Navigator
-//  ): Presenter<*, *>? {
-//    return when (screen) {
-//      is AddFavorites -> addFavoritesPresenter.create(
-//        navigator = navigator,
-//        args = screen,
-//      ).asPresenter()
-//      else -> null
-//    }
-//  }
-// }

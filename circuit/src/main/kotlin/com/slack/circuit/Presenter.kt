@@ -148,8 +148,7 @@ interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parce
  * }
  * ```
  */
-// Diagram generated from
-// https://asciiflow.com/#/share/eJyrVspLzE1VssorzcnRUcpJrEwtUrJSqo5RqohRsrI0MdSJUaoEsowsQKyS1IoSICdGSQEneDRlD4UoJiaPoMkgDg41eLRTx32PprcQ41YoFYFTlijtuGQDivLTMnNSPVITU1KLAopSi1PzSlKLiDDPrSg1RSEoPz21qJgM59A16HDIEqERjxOweQNmLDRQ4cHplphckl9UiTDUN7W4ODE9FabFOTEnB81XEAQ1yDG5JDM%2Fr5iU6CHT5TQLSQVdNIjpWeKjE90sZFkK9END2yW1JDEzh6TQxvTdtF0keQ0REaSHMoYZ5KEYpVqlWgCGT1yD)
+// Diagram generated from asciiflow: https://shorturl.at/fgjtA
 fun interface PresenterFactory {
   /**
    * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it cannot

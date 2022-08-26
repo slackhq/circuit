@@ -15,7 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +51,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * @see ui
  */
-interface Ui<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
+interface Ui<UiState : Any, UiEvent : Any> {
   @Composable fun Render(state: UiState, events: (UiEvent) -> Unit)
 }
 
@@ -65,9 +64,9 @@ interface Ui<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState, UiEvent : Any> ui(
+inline fun <UiState : Any, UiEvent : Any> ui(
   crossinline body: @Composable (state: UiState, events: (UiEvent) -> Unit) -> Unit
-): Ui<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
+): Ui<UiState, UiEvent> {
   return object : Ui<UiState, UiEvent> {
     @Composable
     override fun Render(state: UiState, events: (UiEvent) -> Unit) {

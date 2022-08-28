@@ -29,7 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.slack.circuit.CircuitContainer
+import com.slack.circuit.CircuitContent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
@@ -138,7 +138,7 @@ private fun RenderImpl(state: PetDetailScreen.State) {
       is PetDetailScreen.State.Success -> {
         LazyColumn(modifier = Modifier.padding(padding)) {
           item {
-            CircuitContainer(
+            CircuitContent(
               PetPhotoCarousel(
                 name = state.name,
                 photoUrls = state.photoUrls,

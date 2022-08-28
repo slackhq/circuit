@@ -20,7 +20,7 @@ import androidx.compose.runtime.Immutable
 /**
  * Circuit adapts [presenterFactories][PresenterFactory] to their corresponding renderable
  * [uiFactories][ScreenViewFactory] using [screens][Screen]. Create instances using [the Builder]
- * [Builder] and create new [CircuitContainer] with it to run presenter/UI pairings.
+ * [Builder] and create new [CircuitContent] with it to run presenter/UI pairings.
  *
  * ## Construction
  *
@@ -35,15 +35,15 @@ import androidx.compose.runtime.Immutable
  *
  * ## Usage
  *
- * These instances can then be used with the composable [CircuitContainers][CircuitContainer] to run
+ * These instances can then be used with the composable [CircuitContainers][CircuitContent] to run
  * presenter/UI pairings for individual [screens][Screen].
  *
- * Circuit instances are consumed within these composable functions via the [CircuitContent]
+ * Circuit instances are consumed within these composable functions via the [CircuitProvider]
  * CompositionLocalProvider.
  *
  * ```kotlin
- * CircuitContent(circuit) {
- *   CircuitContainer(AddFavoritesScreen())
+ * CircuitProvider(circuit) {
+ *   CircuitContent(AddFavoritesScreen())
  * }
  * ```
  *
@@ -52,13 +52,13 @@ import androidx.compose.runtime.Immutable
  * ```kotlin
  * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
  * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
- * CircuitContent(circuit) {
- *   NavigableCircuitContainer(navigator, backstack)
+ * CircuitProvider(circuit) {
+ *   NavigableCircuitContent(navigator, backstack)
  * }
  * ```
  *
  * @see rememberCircuitNavigator
- * @see CircuitContainer
+ * @see CircuitContent
  * @see NavigableCircuitContainer
  */
 @Immutable

@@ -15,33 +15,125 @@
  */
 package com.slack.circuit
 
+import android.os.Parcelable
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidedValue
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Modifier
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.backstack.NavigatorDefaults
+import com.slack.circuit.backstack.ProvidedValues
+import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isAtRoot
+import com.slack.circuit.backstack.providedValuesForBackStack
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.flow.receiveAsFlow
 
-/** Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. */
 @Composable
-fun CircuitContent(circuit: Circuit, content: @Composable () -> Unit) {
-  CompositionLocalProvider(
-    LocalCircuitOwner provides circuit,
-  ) {
-    content()
+fun NavigableCircuitContainer(
+  navigator: Navigator,
+  backstack: SaveableBackStack,
+  modifier: Modifier = Modifier,
+  enableBackHandler: Boolean = true,
+  providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
+  decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
+  unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
+) {
+  BackHandler(enabled = enableBackHandler && !backstack.isAtRoot) { navigator.pop() }
+
+  BasicNavigableCircuitContainer(
+    navigator = navigator,
+    backstack = backstack,
+    providedValues = providedValues,
+    modifier = modifier,
+    decoration = decoration,
+    unavailableRoute = unavailableRoute,
+  )
+}
+
+@Composable
+fun BasicNavigableCircuitContainer(
+  navigator: Navigator,
+  backstack: SaveableBackStack,
+  providedValues: Map<out BackStack.Record, ProvidedValues>,
+  modifier: Modifier = Modifier,
+  decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
+  unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
+) {
+  val activeContentProviders = buildList {
+    for (record in backstack) {
+      val provider =
+        key(record.key) {
+          val routeName = record.route
+          val screen = record.screen
+
+          val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
+            CircuitContent(screen, navigator) { unavailableRoute(routeName) }
+          }
+
+          val currentRouteContent by rememberUpdatedState(currentRender)
+          val currentRecord by rememberUpdatedState(record)
+          remember { movableContentOf { currentRouteContent(currentRecord) } }
+        }
+      add(record to provider)
+    }
+  }
+
+  if (backstack.size > 0) {
+    @Suppress("SpreadOperator")
+    decoration.DecoratedContent(activeContentProviders.first(), backstack.size, modifier) {
+      (record, provider) ->
+      val values = providedValues[record]?.provideValues()
+      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+      CompositionLocalProvider(*providedLocals) { provider.invoke() }
+    }
   }
 }
 
-object LocalCircuitOwner {
-  private val LocalCircuit = staticCompositionLocalOf<Circuit?> { null }
+@Composable
+fun CircuitContent(
+  screen: Screen,
+  unavailableContent: (@Composable () -> Unit)? = null,
+) {
+  CircuitContent(screen, Navigator.NoOp, unavailableContent)
+}
 
-  /**
-   * Returns current composition local value for the owner or errors if one has not been provided.
-   */
-  val current: Circuit
-    @Composable get() = LocalCircuit.current ?: error("No circuit available")
+@Composable
+private fun CircuitContent(
+  screen: Screen,
+  navigator: Navigator,
+  unavailableContent: (@Composable () -> Unit)? = null,
+) {
+  val circuit = LocalCircuitOwner.current
 
-  /** Associates a [LocalCircuit] key to a value in a call to [CompositionLocalProvider]. */
-  infix fun provides(circuit: Circuit): ProvidedValue<Circuit?> {
-    return LocalCircuit.provides(circuit)
+  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Parcelable, Any>?
+
+  @Suppress("UNCHECKED_CAST")
+  val presenter = circuit.presenter(screen, navigator) as Presenter<Parcelable, Any>?
+
+  if (ui != null && presenter != null) {
+    CircuitRender(presenter, ui)
+  } else if (unavailableContent != null) {
+    unavailableContent()
+  } else {
+    error("Could not render screen $screen")
   }
+}
+
+@Composable
+private fun <UiState, UiEvent : Any> CircuitRender(
+  presenter: Presenter<UiState, UiEvent>,
+  ui: Ui<UiState, UiEvent>,
+) where UiState : Parcelable, UiState : Any {
+  val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
+  val eventsFlow = remember(channel) { channel.receiveAsFlow() }
+  val state = presenter.present(eventsFlow)
+  ui.Render(state) { event -> channel.trySend(event) }
 }

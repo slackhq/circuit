@@ -34,7 +34,7 @@ interface Navigator {
 }
 
 /**
- * Returns a new [Navigator] for navigating within [CircuitContainers][CircuitContainer].
+ * Returns a new [Navigator] for navigating within [CircuitContainers][CircuitContent].
  *
  * @see NavigableCircuitContainer
  *

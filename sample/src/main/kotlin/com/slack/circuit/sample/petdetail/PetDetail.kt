@@ -36,6 +36,7 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
@@ -61,6 +62,16 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) 
       val description: String,
     ) : State
   }
+}
+
+internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String): PetDetailScreen.State {
+  return PetDetailScreen.State.Success(
+    url = url,
+    photoUrls = photos.map { it.large },
+    photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+    name = name,
+    description = description
+  )
 }
 
 @ContributesMultibinding(AppScope::class)
@@ -91,15 +102,7 @@ constructor(
         value =
           when (animal) {
             null -> PetDetailScreen.State.NoAnimal
-            else -> {
-              PetDetailScreen.State.Success(
-                url = animal.url,
-                photoUrls = animal.photos.map { it.large },
-                photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-                name = animal.name,
-                description = animal.description
-              )
-            }
+            else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
           }
       }
 

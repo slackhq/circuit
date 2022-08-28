@@ -39,6 +39,10 @@ interface Navigator {
   }
 }
 
+/** `true` if the [Navigator.backstack] contains exactly one record. */
+val Navigator.isAtRoot: Boolean
+  get() = backstack.size == 1
+
 /**
  * Returns a new [Navigator] for navigating within [CircuitContainers][CircuitContainer].
  *

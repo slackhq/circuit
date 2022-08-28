@@ -47,8 +47,7 @@ fun NavigableCircuitContainer(
   decoration: NavigatorRouteDecoration = NavigatorDefaults.DefaultDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
-  val backstack = navigator.backstack
-  BackHandler(enabled = enableBackHandler && !backstack.isAtRoot) { backstack.pop() }
+  BackHandler(enabled = enableBackHandler && !navigator.isAtRoot) { navigator.pop() }
 
   BasicNavigableCircuitContainer(
     circuit = circuit,

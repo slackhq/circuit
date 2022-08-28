@@ -37,7 +37,7 @@ inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> B
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
-class SaveableBackStack : BackStack<SaveableBackStack.Record> {
+class SaveableBackStack : MutableBackStack<SaveableBackStack.Record> {
 
   private val entryList = mutableStateListOf<Record>()
 

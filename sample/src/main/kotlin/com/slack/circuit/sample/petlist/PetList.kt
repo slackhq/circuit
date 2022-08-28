@@ -64,7 +64,6 @@ import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
-import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
@@ -168,9 +167,9 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 
 @ContributesMultibinding(AppScope::class)
 class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
+  override fun createView(screen: Screen): ScreenView? {
     if (screen is PetListScreen) {
-      return ScreenView(container, petListUi())
+      return ScreenView(petListUi())
     }
     return null
   }

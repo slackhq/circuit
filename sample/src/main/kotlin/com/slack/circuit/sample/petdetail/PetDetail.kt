@@ -34,7 +34,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.slack.circuit.ContentContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
@@ -115,8 +114,8 @@ constructor(
 
 @ContributesMultibinding(AppScope::class)
 class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
-    if (screen is PetDetailScreen) return ScreenView(container, petDetailUi())
+  override fun createView(screen: Screen): ScreenView? {
+    if (screen is PetDetailScreen) return ScreenView(petDetailUi())
     return null
   }
 }

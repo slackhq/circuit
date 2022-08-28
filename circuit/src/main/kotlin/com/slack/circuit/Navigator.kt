@@ -15,20 +15,82 @@
  */
 package com.slack.circuit
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ComposeView
-
-fun interface OnPopHandler {
-  fun onPop()
-}
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.rememberSaveableBackStack
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
+@Stable
 interface Navigator {
+  val backstack: BackStack<*>
+
   fun goTo(screen: Screen)
 
   fun pop(): Screen?
+
+  object NoOp : Navigator {
+    override val backstack: BackStack<*>
+      get() = error("No backstack")
+    override fun goTo(screen: Screen) {}
+    override fun pop(): Screen? = null
+  }
+}
+
+/**
+ * Returns a new [Navigator] for navigating within [CircuitContainers][CircuitContainer].
+ *
+ * @see NavigableCircuitContainer
+ *
+ * @param initialScreen The initial [Screen] to render.
+ * @param onRootPop The callback to handle root [Navigator.pop] calls.
+ */
+@Composable
+fun rememberCircuitNavigator(initialScreen: Screen, onRootPop: (() -> Unit)?): Navigator {
+  val backstack = rememberSaveableBackStack { push(initialScreen) }
+  return remember { NavigatorImpl(backstack, onRootPop) }
+}
+
+internal class NavigatorImpl(
+  override val backstack: SaveableBackStack,
+  private val onRootPop: (() -> Unit)?,
+) : Navigator {
+
+  override fun goTo(screen: Screen) {
+    backstack.push(screen)
+  }
+
+  override fun pop(): Screen? {
+    backstack.pop()?.screen?.let {
+      return it
+    }
+    onRootPop?.invoke()
+    return null
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as NavigatorImpl
+
+    if (backstack != other.backstack) return false
+    if (onRootPop != other.onRootPop) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = backstack.hashCode()
+    result = 31 * result + (onRootPop?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
+  }
 }
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
@@ -39,20 +101,4 @@ fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
       break
     }
   }
-}
-
-/**
- * A simple rendering abstraction over a `@Composable () -> Unit`.
- *
- * This allows for any host container that can render composable functions to be used with a given
- * [Circuit.navigator] call, such as [ComponentActivity] and [ComposeView].
- */
-fun interface ContentContainer {
-  fun render(content: @Composable () -> Unit)
-}
-
-fun ComposeView.asContentContainer() = ContentContainer(::setContent)
-
-fun ComponentActivity.asContentContainer() = ContentContainer { content ->
-  setContent(content = content)
 }

@@ -26,11 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.NavigatorDefaults
-import com.slack.circuit.backstack.NavigatorRouteDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
@@ -44,7 +43,7 @@ fun NavigableCircuitContainer(
   enableBackHandler: Boolean = true,
   providedValues: Map<out BackStack.Record, ProvidedValues> =
     providedValuesForBackStack(navigator.backstack),
-  decoration: NavigatorRouteDecoration = NavigatorDefaults.DefaultDecoration,
+  decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
   BackHandler(enabled = enableBackHandler && !navigator.isAtRoot) { navigator.pop() }
@@ -65,7 +64,7 @@ fun BasicNavigableCircuitContainer(
   navigator: Navigator,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
-  decoration: NavigatorRouteDecoration = NavigatorDefaults.EmptyDecoration,
+  decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
   val activeContentProviders = buildList {

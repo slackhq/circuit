@@ -26,7 +26,7 @@ import androidx.compose.ui.text.TextStyle
 
 /** Presentation logic for currently visible routes of a navigable UI. */
 @Stable
-interface NavigatorRouteDecoration {
+interface NavDecoration {
   @Composable
   fun <T> DecoratedContent(
     arg: T,
@@ -36,11 +36,11 @@ interface NavigatorRouteDecoration {
   )
 }
 
-/** Default values and common alternatives used by the [Navigator] family of composables. */
+/** Default values and common alternatives used by navigable composables. */
 object NavigatorDefaults {
 
-  /** The default [NavigatorRouteDecoration] used by [Navigator]. */
-  object DefaultDecoration : NavigatorRouteDecoration {
+  /** The default [NavDecoration] used in navigation. */
+  object DefaultDecoration : NavDecoration {
     @Composable
     override fun <T> DecoratedContent(
       arg: T,
@@ -52,11 +52,8 @@ object NavigatorDefaults {
     }
   }
 
-  /**
-   * An empty [NavigatorRouteDecoration] that emits the content with no surrounding decoration or
-   * logic.
-   */
-  object EmptyDecoration : NavigatorRouteDecoration {
+  /** An empty [NavDecoration] that emits the content with no surrounding decoration or logic. */
+  object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T> DecoratedContent(
       arg: T,

@@ -26,6 +26,12 @@ interface BackStack<R : BackStack.Record> : Iterable<R> {
   /** The number of records contained in this [BackStack] that will be seen by an iterator. */
   val size: Int
 
+  /**
+   * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
+   * successful or `null` if no entry was popped.
+   */
+  fun pop(): R?
+
   interface Record {
     /**
      * A value that identifies this record uniquely, even if it shares the same [route] with another
@@ -39,15 +45,6 @@ interface BackStack<R : BackStack.Record> : Iterable<R> {
     /** The name of the route that should present this record. */
     val route: String
   }
-}
-
-@Stable
-interface MutableBackStack<R : BackStack.Record> : BackStack<R> {
-  /**
-   * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
-   * successful or `null` if no entry was popped.
-   */
-  fun pop(): R?
 }
 
 /** `true` if the [BackStack] contains no records. [BackStack.firstOrNull] will return `null`. */

@@ -73,6 +73,7 @@ fun BasicNavigableCircuitContainer(
       val provider =
         key(record.key) {
           val routeName = record.route
+          // TODO can we push this into the API somehow? Maybe make args part of BackStack.Record?
           val screen = (record as SaveableBackStack.Record).screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {

@@ -18,47 +18,36 @@ package com.slack.circuit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.backstack.rememberSaveableBackStack
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
 interface Navigator {
-  val backstack: BackStack<*>
-
   fun goTo(screen: Screen)
 
   fun pop(): Screen?
 
   object NoOp : Navigator {
-    override val backstack: BackStack<*>
-      get() = error("No backstack")
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
   }
 }
-
-/** `true` if the [Navigator.backstack] contains exactly one record. */
-val Navigator.isAtRoot: Boolean
-  get() = backstack.size == 1
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContainers][CircuitContainer].
  *
  * @see NavigableCircuitContainer
  *
- * @param initialScreen The initial [Screen] to render.
+ * @param backstack The backing [SaveableBackStack] to navigate.
  * @param onRootPop The callback to handle root [Navigator.pop] calls.
  */
 @Composable
-fun rememberCircuitNavigator(initialScreen: Screen, onRootPop: (() -> Unit)?): Navigator {
-  val backstack = rememberSaveableBackStack { push(initialScreen) }
+fun rememberCircuitNavigator(backstack: SaveableBackStack, onRootPop: (() -> Unit)?): Navigator {
   return remember { NavigatorImpl(backstack, onRootPop) }
 }
 
-internal class NavigatorImpl(
-  override val backstack: SaveableBackStack,
+private class NavigatorImpl(
+  private val backstack: SaveableBackStack,
   private val onRootPop: (() -> Unit)?,
 ) : Navigator {
 

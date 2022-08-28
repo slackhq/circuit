@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.Circuit
 import com.slack.circuit.NavigableCircuitContainer
+import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.sample.di.ActivityKey
 import com.slack.circuit.sample.di.AppScope
@@ -43,9 +45,9 @@ constructor(
     super.onCreate(savedInstanceState)
     setContent {
       StarTheme {
-        val navigator =
-          rememberCircuitNavigator(PetListScreen, onBackPressedDispatcher::onBackPressed)
-        NavigableCircuitContainer(circuit, navigator)
+        val backstack = rememberSaveableBackStack { push(PetListScreen) }
+        val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
+        NavigableCircuitContainer(circuit, navigator, backstack)
       }
     }
   }

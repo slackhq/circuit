@@ -30,6 +30,7 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.NavigatorDefaults
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
@@ -39,18 +40,19 @@ import kotlinx.coroutines.flow.receiveAsFlow
 fun NavigableCircuitContainer(
   circuit: Circuit,
   navigator: Navigator,
+  backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
   enableBackHandler: Boolean = true,
-  providedValues: Map<out BackStack.Record, ProvidedValues> =
-    providedValuesForBackStack(navigator.backstack),
+  providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
-  BackHandler(enabled = enableBackHandler && !navigator.isAtRoot) { navigator.pop() }
+  BackHandler(enabled = enableBackHandler && !backstack.isAtRoot) { navigator.pop() }
 
   BasicNavigableCircuitContainer(
     circuit = circuit,
     navigator = navigator,
+    backstack = backstack,
     providedValues = providedValues,
     modifier = modifier,
     decoration = decoration,
@@ -62,18 +64,18 @@ fun NavigableCircuitContainer(
 fun BasicNavigableCircuitContainer(
   circuit: Circuit,
   navigator: Navigator,
+  backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
   val activeContentProviders = buildList {
-    for (record in navigator.backstack) {
+    for (record in backstack) {
       val provider =
         key(record.key) {
           val routeName = record.route
-          // TODO can we push this into the API somehow? Maybe make args part of BackStack.Record?
-          val screen = (record as SaveableBackStack.Record).screen
+          val screen = record.screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
             CircuitContainer(circuit, screen, navigator) { unavailableRoute(routeName) }
@@ -87,13 +89,10 @@ fun BasicNavigableCircuitContainer(
     }
   }
 
-  if (navigator.backstack.size > 0) {
+  if (backstack.size > 0) {
     @Suppress("SpreadOperator")
-    decoration.DecoratedContent(
-      activeContentProviders.first(),
-      navigator.backstack.size,
-      modifier
-    ) { (record, provider) ->
+    decoration.DecoratedContent(activeContentProviders.first(), backstack.size, modifier) {
+      (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
       CompositionLocalProvider(*providedLocals) { provider.invoke() }

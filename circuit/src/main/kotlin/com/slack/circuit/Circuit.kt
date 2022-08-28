@@ -45,8 +45,9 @@ import androidx.compose.runtime.Immutable
  * If using navigation, use [NavigableCircuitContainer] instead.
  *
  * ```kotlin
- * val navigator = rememberCircuitNavigator(AddFavoritesScreen())
- * NavigableCircuitContainer(circuit, navigator)
+ * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
+ * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
+ * NavigableCircuitContainer(circuit, navigator, backstack)
  * ```
  *
  * @see rememberCircuitNavigator

@@ -22,6 +22,8 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.MutableBackStack
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.data.Breeds
 import com.slack.circuit.sample.data.Colors
@@ -125,12 +127,17 @@ class FakeNavigator : Navigator {
   private val navigatedScreens = Turbine<Screen>()
   private val pops = Turbine<Unit>()
 
+  private val screenBackStack = ScreenBackStack()
+  override val backstack: BackStack<*> = screenBackStack
+
   override fun goTo(screen: Screen) {
     navigatedScreens.add(screen)
+    screenBackStack.push(screen)
   }
 
   override fun pop(): Screen? {
     pops.add(Unit)
+    screenBackStack.pop()
     return null
   }
 
@@ -147,5 +154,31 @@ class FakeNavigator : Navigator {
 
   fun expectNoEvents() {
     navigatedScreens.expectNoEvents()
+  }
+}
+
+private class ScreenBackStack : MutableBackStack<ScreenBackStack.Record> {
+  private val stack = mutableListOf<Record>()
+
+  fun push(screen: Screen) {
+    stack.add(Record(screen))
+  }
+
+  override fun pop(): Record? {
+    return stack.removeLastOrNull()
+  }
+
+  override val size: Int
+    get() = stack.size
+
+  override fun iterator(): Iterator<Record> {
+    return stack.iterator()
+  }
+
+  data class Record(val screen: Screen) : BackStack.Record {
+    override val key: String
+      get() = screen.toString()
+    override val route: String
+      get() = screen.javaClass.name
   }
 }

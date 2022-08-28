@@ -34,9 +34,9 @@ interface Navigator {
 }
 
 /**
- * Returns a new [Navigator] for navigating within [CircuitContainers][CircuitContent].
+ * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
- * @see NavigableCircuitContainer
+ * @see NavigableCircuitContent
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
  * @param onRootPop The callback to handle root [Navigator.pop] calls.

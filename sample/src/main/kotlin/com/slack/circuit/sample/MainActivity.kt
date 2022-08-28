@@ -22,7 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.Circuit
 import com.slack.circuit.CircuitProvider
-import com.slack.circuit.NavigableCircuitContainer
+import com.slack.circuit.NavigableCircuitContent
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
@@ -48,7 +48,7 @@ constructor(
       StarTheme {
         val backstack = rememberSaveableBackStack { push(PetListScreen) }
         val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
-        CircuitProvider(circuit) { NavigableCircuitContainer(navigator, backstack) }
+        CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
       }
     }
   }

@@ -37,7 +37,7 @@ import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
-fun NavigableCircuitContainer(
+fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
@@ -48,7 +48,7 @@ fun NavigableCircuitContainer(
 ) {
   BackHandler(enabled = enableBackHandler && !backstack.isAtRoot) { navigator.pop() }
 
-  BasicNavigableCircuitContainer(
+  BasicNavigableCircuitContent(
     navigator = navigator,
     backstack = backstack,
     providedValues = providedValues,
@@ -59,7 +59,7 @@ fun NavigableCircuitContainer(
 }
 
 @Composable
-fun BasicNavigableCircuitContainer(
+fun BasicNavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,

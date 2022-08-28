@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 fun NavigableCircuitContainer(
-  circuit: Circuit,
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
@@ -50,7 +49,6 @@ fun NavigableCircuitContainer(
   BackHandler(enabled = enableBackHandler && !backstack.isAtRoot) { navigator.pop() }
 
   BasicNavigableCircuitContainer(
-    circuit = circuit,
     navigator = navigator,
     backstack = backstack,
     providedValues = providedValues,
@@ -62,7 +60,6 @@ fun NavigableCircuitContainer(
 
 @Composable
 fun BasicNavigableCircuitContainer(
-  circuit: Circuit,
   navigator: Navigator,
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
@@ -78,7 +75,7 @@ fun BasicNavigableCircuitContainer(
           val screen = record.screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContainer(circuit, screen, navigator) { unavailableRoute(routeName) }
+            CircuitContainer(screen, navigator) { unavailableRoute(routeName) }
           }
 
           val currentRouteContent by rememberUpdatedState(currentRender)
@@ -100,30 +97,30 @@ fun BasicNavigableCircuitContainer(
   }
 }
 
-// TODO would be cool to expose circuit as a providedvalue
+// TODO call this CircuitScreen?
 @Composable
 fun CircuitContainer(
-  circuit: Circuit,
   screen: Screen,
   unavailableContent: (@Composable () -> Unit)? = null,
 ) {
-  CircuitContainer(circuit, screen, Navigator.NoOp, unavailableContent)
+  CircuitContainer(screen, Navigator.NoOp, unavailableContent)
 }
 
 @Composable
 private fun CircuitContainer(
-  circuit: Circuit,
   screen: Screen,
   navigator: Navigator,
   unavailableContent: (@Composable () -> Unit)? = null,
 ) {
+  val circuit = LocalCircuitOwner.current
+
   @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Parcelable, Any>?
 
   @Suppress("UNCHECKED_CAST")
   val presenter = circuit.presenter(screen, navigator) as Presenter<Parcelable, Any>?
 
   if (ui != null && presenter != null) {
-    CircuitContainer(presenter, ui)
+    CircuitRender(presenter, ui)
   } else if (unavailableContent != null) {
     unavailableContent()
   } else {
@@ -132,7 +129,7 @@ private fun CircuitContainer(
 }
 
 @Composable
-private fun <UiState, UiEvent : Any> CircuitContainer(
+private fun <UiState, UiEvent : Any> CircuitRender(
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
 ) where UiState : Parcelable, UiState : Any {

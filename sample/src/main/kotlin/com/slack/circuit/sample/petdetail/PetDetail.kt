@@ -18,7 +18,6 @@ package com.slack.circuit.sample.petdetail
 import android.os.Parcelable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,10 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.slack.circuit.CircuitContainer
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
@@ -59,7 +55,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) 
     @Parcelize
     data class Success(
       val url: String,
-      val photoUrl: String,
+      val photoUrls: List<String>,
       val photoUrlMemoryCacheKey: String,
       val name: String,
       val description: String,
@@ -70,9 +66,13 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) 
 @ContributesMultibinding(AppScope::class)
 class PetDetailScreenPresenterFactory
 @Inject
-constructor(private val petDetailPresenterFactory: PetDetailPresenter.Factory) : PresenterFactory {
+constructor(
+  private val petDetailPresenterFactory: PetDetailPresenter.Factory,
+  private val petPhotoCarousel: PetPhotoCarouselPresenter.Factory
+) : PresenterFactory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     if (screen is PetDetailScreen) return petDetailPresenterFactory.create(screen)
+    if (screen is PetPhotoCarousel) return petPhotoCarousel.create(screen)
     return null
   }
 }
@@ -94,7 +94,7 @@ constructor(
             else -> {
               PetDetailScreen.State.Success(
                 url = animal.url,
-                photoUrl = animal.photos.first().large,
+                photoUrls = animal.photos.map { it.large },
                 photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
                 name = animal.name,
                 description = animal.description
@@ -135,16 +135,12 @@ private fun RenderImpl(state: PetDetailScreen.State) {
       is PetDetailScreen.State.Success -> {
         LazyColumn(modifier = Modifier.padding(padding)) {
           item {
-            AsyncImage(
-              modifier = Modifier.fillMaxWidth(),
-              model =
-                ImageRequest.Builder(LocalContext.current)
-                  .data(state.photoUrl)
-                  .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
-                  .crossfade(true)
-                  .build(),
-              contentDescription = state.name,
-              contentScale = ContentScale.FillWidth,
+            CircuitContainer(
+              PetPhotoCarousel(
+                name = state.name,
+                photoUrls = state.photoUrls,
+                photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+              )
             )
           }
           item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }

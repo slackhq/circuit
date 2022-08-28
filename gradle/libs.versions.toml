@@ -1,12 +1,12 @@
 [versions]
-accompanist = "0.26.0-alpha"
+accompanist = "0.26.2-beta"
 androidx-activity = "1.6.0-beta01"
 androidx-appcompat = "1.4.2"
 androidx-lifecycle = "2.5.1"
 agp = "7.2.2"
 anvil = "2.4.1"
 coil = "2.1.0"
-compose = "1.3.0-alpha02"
+compose = "1.3.0-beta01"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 composeCompiler = "1.3.0-rc02"
@@ -55,6 +55,7 @@ androidx-compose-accompanist-appCompatThemeAdapter = { module = "com.google.acco
 androidx-compose-accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanist" }
 androidx-compose-accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 androidx-compose-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
+androidx-compose-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 androidx-compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder", version.ref = "accompanist" }
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
@@ -89,6 +90,7 @@ androidx-compose-ui-tooling-data = { module = "androidx.compose.ui:ui-tooling-da
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 androidx-compose-ui-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit", version.ref = "compose" }
+androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose" }
 androidx-palette = "androidx.palette:palette-ktx:1.0.0"

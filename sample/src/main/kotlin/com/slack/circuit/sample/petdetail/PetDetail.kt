@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.ContentContainer
@@ -41,6 +43,7 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
@@ -56,7 +59,7 @@ import kotlinx.parcelize.Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
-    @Parcelize object NoAnimal : State
+    @Parcelize object UnknownAnimal : State
     @Parcelize
     data class Success(
       val url: String,
@@ -91,7 +94,7 @@ constructor(
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
-            null -> PetDetailScreen.State.NoAnimal
+            null -> PetDetailScreen.State.UnknownAnimal
             else -> {
               PetDetailScreen.State.Success(
                 url = animal.url,
@@ -132,7 +135,14 @@ private fun RenderImpl(state: PetDetailScreen.State) {
           CircularProgressIndicator()
         }
       }
-      PetDetailScreen.State.NoAnimal -> TODO()
+      PetDetailScreen.State.UnknownAnimal -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+            modifier = Modifier.testTag("unknown animal"),
+            text = stringResource(id = R.string.unknown_animals)
+          )
+        }
+      }
       is PetDetailScreen.State.Success -> {
         LazyColumn(modifier = Modifier.padding(padding)) {
           item {

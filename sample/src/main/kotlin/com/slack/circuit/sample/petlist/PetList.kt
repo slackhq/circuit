@@ -54,6 +54,8 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -72,6 +74,7 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.collectEvents
+import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
@@ -177,10 +180,10 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, events -> RenderImpl(state, events) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, events -> PetList(state, events) }
 
 @Composable
-private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
+internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
@@ -196,32 +199,36 @@ private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event)
     },
   ) { paddingValues ->
     when (state) {
-      PetListScreen.State.Loading -> {
+      PetListScreen.State.Loading ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
+          CircularProgressIndicator(modifier = Modifier.testTag("progress"))
         }
-      }
-      PetListScreen.State.NoAnimals -> Unit
-      is PetListScreen.State.Success -> {
-        PetList(
+      PetListScreen.State.NoAnimals ->
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+            modifier = Modifier.testTag("no animals"),
+            text = stringResource(id = R.string.no_animals)
+          )
+        }
+      is PetListScreen.State.Success ->
+        PetListGrid(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
           events = events
         )
-      }
     }
   }
 }
 
 @Composable
-private fun PetList(
+private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
   events: (PetListScreen.Event) -> Unit
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
-    modifier = modifier,
+    modifier = modifier.testTag("grid"),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     contentPadding = PaddingValues(16.dp),
@@ -231,7 +238,7 @@ private fun PetList(
       key = { i -> animals[i].id },
     ) { index ->
       val animal = animals[index]
-      PetListItem(modifier, animal) {
+      PetListGridItem(modifier, animal) {
         events(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
       }
     }
@@ -239,18 +246,18 @@ private fun PetList(
 }
 
 @Composable
-private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -> Unit) {
+private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: () -> Unit) {
   // Palette for extracted colors from the image
   var paletteState by remember { mutableStateOf<Palette?>(null) }
   val swatch = paletteState?.getSwatch()
   val defaultColors = CardDefaults.cardColors()
-  val colors =
-    swatch?.let { s ->
+  val colors = swatch
+    ?.let { s ->
       CardDefaults.cardColors(
         containerColor = Color(s.rgb),
       )
     }
-      ?: defaultColors
+    ?: defaultColors
 
   Card(
     modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { onClick() },
@@ -259,10 +266,11 @@ private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().testTag("image"),
       model =
         ImageRequest.Builder(LocalContext.current)
-          .data(animal.imageUrl)
+          .data(animal.imageUrl.takeIf { it.startsWith("http") })
+          .fallback(R.drawable.dog)
           .memoryCacheKey(animal.imageUrl)
           .crossfade(true)
           // Default is hardware, which isn't usable in Palette
@@ -281,14 +289,25 @@ private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -
     Column(modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
       val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
       // Name
-      Text(text = animal.name, style = MaterialTheme.typography.labelLarge, color = textColor)
+      Text(
+        modifier = Modifier.testTag("name"),
+        text = animal.name,
+        style = MaterialTheme.typography.labelLarge,
+        color = textColor
+      )
       // Type
       animal.breed?.let {
-        Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium, color = textColor)
+        Text(
+          modifier = Modifier.testTag("breed"),
+          text = animal.breed,
+          style = MaterialTheme.typography.bodyMedium,
+          color = textColor
+        )
       }
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         // Gender, age
         Text(
+          modifier = Modifier.testTag("gender & age"),
           text = "${animal.gender} – ${animal.age}",
           style = MaterialTheme.typography.bodySmall,
           color = textColor

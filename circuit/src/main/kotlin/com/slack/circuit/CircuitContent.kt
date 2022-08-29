@@ -15,7 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -113,10 +112,10 @@ private fun CircuitContent(
 ) {
   val circuit = LocalCircuitOwner.current
 
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Parcelable, Any>?
+  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
 
   @Suppress("UNCHECKED_CAST")
-  val presenter = circuit.presenter(screen, navigator) as Presenter<Parcelable, Any>?
+  val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
 
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)
@@ -128,10 +127,10 @@ private fun CircuitContent(
 }
 
 @Composable
-private fun <UiState, UiEvent : Any> CircuitRender(
+private fun <UiState : Any, UiEvent : Any> CircuitRender(
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
-) where UiState : Parcelable, UiState : Any {
+) {
   val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
   val eventsFlow = remember(channel) { channel.receiveAsFlow() }
   val state = presenter.present(eventsFlow)

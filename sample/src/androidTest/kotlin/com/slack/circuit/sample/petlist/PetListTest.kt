@@ -27,6 +27,13 @@ import com.slack.circuit.sample.data.Breeds
 import com.slack.circuit.sample.data.Colors
 import com.slack.circuit.sample.data.Link
 import com.slack.circuit.sample.data.Links
+import com.slack.circuit.sample.petlist.PetListTestConstants.BREED_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.GENDER_AND_AGE_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.GRID_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.IMAGE_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.NAME_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.NO_ANIMALS_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.PROGRESS_TAG
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -40,9 +47,9 @@ class PetListTest {
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.Loading) {} }
 
-      onNodeWithTag("progress").assertIsDisplayed()
-      onNodeWithTag("no animals").assertDoesNotExist()
-      onNodeWithTag("grid").assertDoesNotExist()
+      onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
+      onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
+      onNodeWithTag(GRID_TAG).assertDoesNotExist()
     }
   }
 
@@ -51,9 +58,9 @@ class PetListTest {
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.NoAnimals) {} }
 
-      onNodeWithTag("progress").assertDoesNotExist()
-      onNodeWithTag("no animals").assertIsDisplayed()
-      onNodeWithTag("grid").assertDoesNotExist()
+      onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
+      onNodeWithTag(NO_ANIMALS_TAG).assertIsDisplayed()
+      onNodeWithTag(GRID_TAG).assertDoesNotExist()
     }
   }
 
@@ -64,13 +71,13 @@ class PetListTest {
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.Success(animals)) {} }
 
-      onNodeWithTag("progress").assertDoesNotExist()
-      onNodeWithTag("no animals").assertDoesNotExist()
+      onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
+      onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
 
-      onNodeWithTag("image", true).assertIsDisplayed()
-      onNodeWithTag("name", true).assertIsDisplayed()
-      onNodeWithTag("breed", true).assertIsDisplayed()
-      onNodeWithTag("gender & age", true).assertIsDisplayed()
+      onNodeWithTag(IMAGE_TAG, true).assertIsDisplayed()
+      onNodeWithTag(NAME_TAG, true).assertIsDisplayed()
+      onNodeWithTag(BREED_TAG, true).assertIsDisplayed()
+      onNodeWithTag(GENDER_AND_AGE_TAG, true).assertIsDisplayed()
     }
   }
 
@@ -83,7 +90,7 @@ class PetListTest {
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.Success(animals), channel::trySend) }
 
-      onNode(hasParent(hasTestTag("grid")), true).assertIsDisplayed().performClick()
+      onNode(hasParent(hasTestTag(GRID_TAG)), true).assertIsDisplayed().performClick()
 
       val event = channel.receive()
       assertThat(event)

@@ -45,6 +45,12 @@ import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.DESCRIPTION_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.IMAGE_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.NAME_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -126,28 +132,37 @@ class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
 
 private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> PetDetail(state) }
 
+internal object PetDetailTestConstants {
+  const val ANIMAL_CONTAINER_TAG = "animal_container"
+  const val DESCRIPTION_TAG = "description"
+  const val IMAGE_TAG = "image"
+  const val NAME_TAG = "name"
+  const val PROGRESS_TAG = "progress"
+  const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
+}
+
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
       PetDetailScreen.State.Loading -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator(modifier = Modifier.testTag("progress"))
+          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
       }
       PetDetailScreen.State.UnknownAnimal -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
-            modifier = Modifier.testTag("unknown animal"),
+            modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
             text = stringResource(id = R.string.unknown_animals)
           )
         }
       }
       is PetDetailScreen.State.Success -> {
-        LazyColumn(modifier = Modifier.padding(padding).testTag("animal container")) {
+        LazyColumn(modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)) {
           item {
             AsyncImage(
-              modifier = Modifier.fillMaxWidth().testTag("image"),
+              modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
               model =
                 ImageRequest.Builder(LocalContext.current)
                   .data(state.photoUrl)
@@ -161,12 +176,12 @@ internal fun PetDetail(state: PetDetailScreen.State) {
           }
           item {
             Text(
-              modifier = Modifier.testTag("name"),
+              modifier = Modifier.testTag(NAME_TAG),
               text = state.name,
               style = MaterialTheme.typography.displayLarge
             )
           }
-          item { Text(modifier = Modifier.testTag("description"), text = state.description) }
+          item { Text(modifier = Modifier.testTag(DESCRIPTION_TAG), text = state.description) }
         }
       }
     }

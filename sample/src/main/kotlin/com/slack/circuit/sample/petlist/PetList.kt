@@ -78,6 +78,13 @@ import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
+import com.slack.circuit.sample.petlist.PetListTestConstants.BREED_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.GENDER_AND_AGE_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.GRID_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.IMAGE_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.NAME_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.NO_ANIMALS_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -182,6 +189,16 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 private fun petListUi() =
   ui<PetListScreen.State, PetListScreen.Event> { state, events -> PetList(state, events) }
 
+internal object PetListTestConstants {
+  const val PROGRESS_TAG = "progress"
+  const val NO_ANIMALS_TAG = "no_animals"
+  const val GRID_TAG = "grid"
+  const val IMAGE_TAG = "image"
+  const val NAME_TAG = "name"
+  const val BREED_TAG = "breed"
+  const val GENDER_AND_AGE_TAG = "gender_and_age"
+}
+
 @Composable
 internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
   Scaffold(
@@ -201,12 +218,12 @@ internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -
     when (state) {
       PetListScreen.State.Loading ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator(modifier = Modifier.testTag("progress"))
+          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
       PetListScreen.State.NoAnimals ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
-            modifier = Modifier.testTag("no animals"),
+            modifier = Modifier.testTag(NO_ANIMALS_TAG),
             text = stringResource(id = R.string.no_animals)
           )
         }
@@ -228,7 +245,7 @@ private fun PetListGrid(
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
-    modifier = modifier.testTag("grid"),
+    modifier = modifier.testTag(GRID_TAG),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     contentPadding = PaddingValues(16.dp),
@@ -266,7 +283,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth().testTag("image"),
+      modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)
@@ -290,7 +307,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
       // Name
       Text(
-        modifier = Modifier.testTag("name"),
+        modifier = Modifier.testTag(NAME_TAG),
         text = animal.name,
         style = MaterialTheme.typography.labelLarge,
         color = textColor
@@ -298,7 +315,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       // Type
       animal.breed?.let {
         Text(
-          modifier = Modifier.testTag("breed"),
+          modifier = Modifier.testTag(BREED_TAG),
           text = animal.breed,
           style = MaterialTheme.typography.bodyMedium,
           color = textColor
@@ -307,7 +324,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         // Gender, age
         Text(
-          modifier = Modifier.testTag("gender & age"),
+          modifier = Modifier.testTag(GENDER_AND_AGE_TAG),
           text = "${animal.gender} – ${animal.age}",
           style = MaterialTheme.typography.bodySmall,
           color = textColor

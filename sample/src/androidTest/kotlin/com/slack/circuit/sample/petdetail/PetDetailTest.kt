@@ -18,6 +18,12 @@ package com.slack.circuit.sample.petdetail
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.DESCRIPTION_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.IMAGE_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.NAME_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,9 +35,9 @@ class PetDetailTest {
     composeTestRule.run {
       setContent { PetDetail(PetDetailScreen.State.Loading) }
 
-      onNodeWithTag("progress").assertIsDisplayed()
-      onNodeWithTag("unknown animal").assertDoesNotExist()
-      onNodeWithTag("animal container").assertDoesNotExist()
+      onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
+      onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
+      onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
     }
   }
 
@@ -40,9 +46,9 @@ class PetDetailTest {
     composeTestRule.run {
       setContent { PetDetail(PetDetailScreen.State.UnknownAnimal) }
 
-      onNodeWithTag("progress").assertDoesNotExist()
-      onNodeWithTag("unknown animal").assertIsDisplayed()
-      onNodeWithTag("animal container").assertDoesNotExist()
+      onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
+      onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertIsDisplayed()
+      onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
     }
   }
 
@@ -60,12 +66,12 @@ class PetDetailTest {
     composeTestRule.run {
       setContent { PetDetail(success) }
 
-      onNodeWithTag("progress").assertDoesNotExist()
-      onNodeWithTag("unknown animal").assertDoesNotExist()
+      onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
+      onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
 
-      onNodeWithTag("image").assertIsDisplayed()
-      onNodeWithTag("name").assertIsDisplayed()
-      onNodeWithTag("description").assertIsDisplayed()
+      onNodeWithTag(IMAGE_TAG).assertIsDisplayed()
+      onNodeWithTag(NAME_TAG).assertIsDisplayed()
+      onNodeWithTag(DESCRIPTION_TAG).assertIsDisplayed()
     }
   }
 }

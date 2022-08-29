@@ -19,10 +19,7 @@ android {
     versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.sample.androidTest"
-
   }
-
-  buildFeatures { compose = true }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
@@ -65,9 +62,6 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(libs.robolectric)
 
-  androidTestImplementation(libs.androidx.test.core)
-  androidTestImplementation(libs.androidx.test.rules)
-  androidTestImplementation(libs.androidx.test.runner)
   debugImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.androidx.compose.ui.testing.junit)
   androidTestImplementation(libs.junit)

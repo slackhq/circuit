@@ -3,8 +3,6 @@ accompanist = "0.26.0-alpha"
 androidx-activity = "1.6.0-beta01"
 androidx-appcompat = "1.4.2"
 androidx-lifecycle = "2.5.1"
-androidx-test = "1.5.0-alpha01"
-androidx-test-rules = "1.4.1-alpha07"
 agp = "7.2.2"
 anvil = "2.4.1"
 coil = "2.1.0"
@@ -104,9 +102,6 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
 
 # Test dependencies
-androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test" }
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
 junit = "junit:junit:4.13.2"
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }

@@ -15,7 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -130,10 +129,10 @@ internal fun BasicFactoryNavigator(
           val routeName = record.route
           val screen = record.screen
 
-          @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen, container) as Ui<Parcelable, Any>?
+          @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen, container) as Ui<Any, Any>?
 
           @Suppress("UNCHECKED_CAST")
-          val presenter = circuit.presenter(screen, navigator) as Presenter<Parcelable, Any>?
+          val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) =
             if (presenter != null && ui != null) {

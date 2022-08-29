@@ -15,7 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +24,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  *
  * @see present for more thorough documentation.
  */
-interface Presenter<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
+interface Presenter<UiState : Any, UiEvent : Any> {
   /**
    * The primary [Composable] entry point to present a [UiState] and handle its [events]. In
    * production, a [Navigator] is used to automatically connect this with a corresponding [Ui] to

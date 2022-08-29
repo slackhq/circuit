@@ -63,7 +63,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
     @Parcelize
     data class Success(
       val url: String,
-      val photoUrl: String,
+      val photoUrl: String?,
       val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
@@ -98,7 +98,7 @@ constructor(
             else -> {
               PetDetailScreen.State.Success(
                 url = animal.url,
-                photoUrl = animal.photos.first().large,
+                photoUrl = animal.photos.firstOrNull()?.large?.takeIf { it.startsWith("http") },
                 photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
                 name = animal.name,
                 description = animal.description
@@ -124,15 +124,15 @@ class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> RenderImpl(state) }
+private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> PetDetail(state) }
 
 @Composable
-private fun RenderImpl(state: PetDetailScreen.State) {
+internal fun PetDetail(state: PetDetailScreen.State) {
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
       PetDetailScreen.State.Loading -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
+          CircularProgressIndicator(modifier = Modifier.testTag("progress"))
         }
       }
       PetDetailScreen.State.UnknownAnimal -> {
@@ -144,13 +144,14 @@ private fun RenderImpl(state: PetDetailScreen.State) {
         }
       }
       is PetDetailScreen.State.Success -> {
-        LazyColumn(modifier = Modifier.padding(padding)) {
+        LazyColumn(modifier = Modifier.padding(padding).testTag("animal container")) {
           item {
             AsyncImage(
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().testTag("image"),
               model =
                 ImageRequest.Builder(LocalContext.current)
                   .data(state.photoUrl)
+                  .fallback(R.drawable.dog)
                   .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
                   .crossfade(true)
                   .build(),
@@ -158,8 +159,19 @@ private fun RenderImpl(state: PetDetailScreen.State) {
               contentScale = ContentScale.FillWidth,
             )
           }
-          item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
-          item { Text(text = state.description) }
+          item {
+            Text(
+              modifier = Modifier.testTag("name"),
+              text = state.name,
+              style = MaterialTheme.typography.displayLarge
+            )
+          }
+          item {
+            Text(
+              modifier = Modifier.testTag("description"),
+              text = state.description
+            )
+          }
         }
       }
     }

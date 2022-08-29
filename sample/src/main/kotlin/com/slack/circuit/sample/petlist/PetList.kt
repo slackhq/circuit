@@ -162,7 +162,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     id = id,
     // Names are sometimes all caps
     name = name.lowercase().capitalize(Locale.current),
-    imageUrl = photos[0].medium.takeIf { it.startsWith("http") },
+    imageUrl = photos.firstOrNull()?.medium?.takeIf { it.startsWith("http") },
     breed = breeds.primary,
     gender = gender,
     age = age

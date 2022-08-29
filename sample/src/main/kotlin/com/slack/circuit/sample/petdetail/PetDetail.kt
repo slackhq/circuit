@@ -166,12 +166,7 @@ internal fun PetDetail(state: PetDetailScreen.State) {
               style = MaterialTheme.typography.displayLarge
             )
           }
-          item {
-            Text(
-              modifier = Modifier.testTag("description"),
-              text = state.description
-            )
-          }
+          item { Text(modifier = Modifier.testTag("description"), text = state.description) }
         }
       }
     }

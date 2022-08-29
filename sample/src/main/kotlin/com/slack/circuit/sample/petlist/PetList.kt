@@ -251,13 +251,13 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
   var paletteState by remember { mutableStateOf<Palette?>(null) }
   val swatch = paletteState?.getSwatch()
   val defaultColors = CardDefaults.cardColors()
-  val colors = swatch
-    ?.let { s ->
+  val colors =
+    swatch?.let { s ->
       CardDefaults.cardColors(
         containerColor = Color(s.rgb),
       )
     }
-    ?: defaultColors
+      ?: defaultColors
 
   Card(
     modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { onClick() },

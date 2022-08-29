@@ -23,33 +23,41 @@ class PetListTest {
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
-    composeTestRule.setContent { PetList (PetListScreen.State.Loading) {} }
+    composeTestRule.run {
+      setContent { PetList (PetListScreen.State.Loading) {} }
 
-    composeTestRule.onNodeWithTag("progress").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("no animals").assertDoesNotExist()
+      onNodeWithTag("progress").assertIsDisplayed()
+      onNodeWithTag("no animals").assertDoesNotExist()
+      onNodeWithTag("grid").assertDoesNotExist()
+    }
   }
 
   @Test
   fun petList_show_message_for_no_animals_state() {
-    composeTestRule.setContent { PetList (PetListScreen.State.NoAnimals) {} }
+    composeTestRule.run {
+      setContent { PetList (PetListScreen.State.NoAnimals) {} }
 
-    composeTestRule.onNodeWithTag("progress").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("no animals").assertIsDisplayed()
+      onNodeWithTag("progress").assertDoesNotExist()
+      onNodeWithTag("no animals").assertIsDisplayed()
+      onNodeWithTag("grid").assertDoesNotExist()
+    }
   }
 
   @Test
   fun petList_show_list_for_success_state() {
     val animals = listOf(animal.toPetListAnimal())
 
-    composeTestRule.setContent { PetList (PetListScreen.State.Success(animals)) {} }
+    composeTestRule.run {
+      setContent { PetList (PetListScreen.State.Success(animals)) {} }
 
-    composeTestRule.onNodeWithTag("progress").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("no animals").assertDoesNotExist()
+      onNodeWithTag("progress").assertDoesNotExist()
+      onNodeWithTag("no animals").assertDoesNotExist()
 
-    composeTestRule.onNodeWithTag("image", true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("name", true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("breed", true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("gender & age", true).assertIsDisplayed()
+      onNodeWithTag("image", true).assertIsDisplayed()
+      onNodeWithTag("name", true).assertIsDisplayed()
+      onNodeWithTag("breed", true).assertIsDisplayed()
+      onNodeWithTag("gender & age", true).assertIsDisplayed()
+    }
   }
 
   @Test
@@ -58,15 +66,16 @@ class PetListTest {
     val petListAnimal = animal.toPetListAnimal()
     val animals = listOf(petListAnimal)
 
-    composeTestRule.setContent { PetList(PetListScreen.State.Success(animals), channel::trySend) }
+    composeTestRule.run {
+      setContent { PetList(PetListScreen.State.Success(animals), channel::trySend) }
 
-    composeTestRule
-      .onNode(hasParent(hasTestTag("grid")), true)
-      .assertIsDisplayed()
-      .performClick()
+      onNode(hasParent(hasTestTag("grid")), true)
+        .assertIsDisplayed()
+        .performClick()
 
-    val event = channel.receive()
-    assertThat(event).isEqualTo(PetListScreen.Event.ClickAnimal(petListAnimal.id, petListAnimal.imageUrl))
+      val event = channel.receive()
+      assertThat(event).isEqualTo(PetListScreen.Event.ClickAnimal(petListAnimal.id, petListAnimal.imageUrl))
+    }
   }
 
   private companion object {

@@ -93,7 +93,7 @@ import kotlinx.parcelize.Parcelize
 data class PetListAnimal(
   val id: Long,
   val name: String,
-  val imageUrl: String,
+  val imageUrl: String?,
   val breed: String?,
   val gender: String,
   val age: String,
@@ -108,7 +108,7 @@ object PetListScreen : Screen {
   }
 
   sealed interface Event {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String) : Event
+    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
   }
 }
 
@@ -162,7 +162,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     id = id,
     // Names are sometimes all caps
     name = name.lowercase().capitalize(Locale.current),
-    imageUrl = photos[0].medium,
+    imageUrl = photos[0].medium.takeIf { it.startsWith("http") },
     breed = breeds.primary,
     gender = gender,
     age = age
@@ -269,7 +269,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       modifier = Modifier.fillMaxWidth().testTag("image"),
       model =
         ImageRequest.Builder(LocalContext.current)
-          .data(animal.imageUrl.takeIf { it.startsWith("http") })
+          .data(animal.imageUrl)
           .fallback(R.drawable.dog)
           .memoryCacheKey(animal.imageUrl)
           .crossfade(true)

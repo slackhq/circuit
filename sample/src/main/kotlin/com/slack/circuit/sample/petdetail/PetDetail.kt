@@ -53,7 +53,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) : Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
     @Parcelize object NoAnimal : State
@@ -61,7 +61,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) 
     data class Success(
       val url: String,
       val photoUrl: String,
-      val photoUrlMemoryCacheKey: String,
+      val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
     ) : State

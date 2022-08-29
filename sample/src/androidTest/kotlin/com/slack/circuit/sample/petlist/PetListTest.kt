@@ -27,7 +27,6 @@ import com.slack.circuit.sample.data.Breeds
 import com.slack.circuit.sample.data.Colors
 import com.slack.circuit.sample.data.Link
 import com.slack.circuit.sample.data.Links
-import com.slack.circuit.sample.data.Photo
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule

@@ -57,13 +57,15 @@ class PetDetailTest {
         description = "Grumpy looking Australian Terrier"
       )
 
-    composeTestRule.setContent { PetDetail(success) }
+    composeTestRule.run {
+      setContent { PetDetail(success) }
 
-    composeTestRule.onNodeWithTag("progress").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("unknown animal").assertDoesNotExist()
+      onNodeWithTag("progress").assertDoesNotExist()
+      onNodeWithTag("unknown animal").assertDoesNotExist()
 
-    composeTestRule.onNodeWithTag("image").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("name").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("description").assertIsDisplayed()
+      onNodeWithTag("image").assertIsDisplayed()
+      onNodeWithTag("name").assertIsDisplayed()
+      onNodeWithTag("description").assertIsDisplayed()
+    }
   }
 }

@@ -98,7 +98,7 @@ constructor(
             else -> {
               PetDetailScreen.State.Success(
                 url = animal.url,
-                photoUrl = animal.photos.firstOrNull()?.large?.takeIf { it.startsWith("http") },
+                photoUrl = animal.photos.firstOrNull()?.large,
                 photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
                 name = animal.name,
                 description = animal.description

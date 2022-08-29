@@ -93,7 +93,6 @@ class PetListTest {
   }
 
   private companion object {
-    val photo = Photo(small = "small", medium = "medium", large = "large", full = "full")
     val animal =
       Animal(
         id = 1L,
@@ -109,7 +108,7 @@ class PetListTest {
         name = "Baxter",
         description = "description",
         gender = "male",
-        photos = listOf(photo),
+        photos = emptyList(),
         videos = emptyList(),
         status = "status",
         attributes = emptyMap(),

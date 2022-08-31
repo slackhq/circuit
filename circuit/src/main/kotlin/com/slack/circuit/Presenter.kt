@@ -53,7 +53,20 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    * hand-written [presenter factories][PresenterFactory].
    *
    * ```kotlin
+   * class FavoritesPresenter @AssistedInject constructor(
+   *   @Assisted private val screen: FavoritesScreen,
+   *   @Assisted private val navigator: Navigator,
+   *   private val favoritesRepository: FavoritesRepository
+   * ) : Presenter<State, Event> {
+   *   @Composable override fun present(render: Flow<Event>): State {
+   *     // ...
+   *   }
    *
+   *   @AssistedFactory
+   *   fun interface Factory {
+   *     fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+   *   }
+   * }
    * ```
    *
    * ## Testing
@@ -63,7 +76,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    *
    * ```
    * @Test
-   * fun `present - emit loading state then list of animals`() = runTest {
+   * fun `emit initial state and refresh`() = runTest {
    *   val favorites = listOf("Moose", "Reeses", "Lola")
    *   val repository = FakeFavoritesRepository(favorites)
    *   val presenter = FavoritesPresenter(repository)
@@ -134,6 +147,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
  * }
  * ```
  */
+// Diagram generated from asciiflow: https://shorturl.at/fgjtA
 fun interface PresenterFactory {
   /**
    * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it cannot

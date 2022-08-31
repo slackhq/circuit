@@ -26,7 +26,6 @@ package com.slack.circuit
  * class FavoritesViewFactory @Inject constructor() : ViewFactory {
  *  override fun createView(
  *    screen: Screen,
- *    container: ContentContainer
  *  ): ScreenView? {
  *    val view = when (screen) {
  *      is AddFavorites -> {
@@ -35,7 +34,6 @@ package com.slack.circuit
  *      else -> return null
  *    }
  *    return ScreenView(
- *      container = container,
  *      ui = view as Ui<*, *>,
  *    )
  *   }
@@ -46,11 +44,10 @@ package com.slack.circuit
  * ```
  */
 fun interface ScreenViewFactory {
-  fun createView(screen: Screen, container: ContentContainer): ScreenView?
+  fun createView(screen: Screen): ScreenView?
 }
 
 data class ScreenView(
-  val container: ContentContainer,
   val ui: Ui<*, *>,
 // TODO does this kind of thing eventually move to compose Modifier instead?
 //  val uiMetadata: UiMetadata = UiMetadata()

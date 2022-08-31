@@ -21,7 +21,11 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.Circuit
-import com.slack.circuit.navigator
+import com.slack.circuit.CircuitProvider
+import com.slack.circuit.NavigableCircuitContent
+import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.push
+import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.sample.di.ActivityKey
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.PetListScreen
@@ -40,14 +44,13 @@ constructor(
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    val navigator =
-      circuit.navigator(
-        { content -> setContent { StarTheme { content() } } },
-        onBackPressedDispatcher::onBackPressed
-      )
-
-    navigator.goTo(PetListScreen)
+    setContent {
+      StarTheme {
+        val backstack = rememberSaveableBackStack { push(PetListScreen) }
+        val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
+        CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
+      }
+    }
   }
 
   override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {

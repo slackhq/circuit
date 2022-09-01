@@ -40,13 +40,13 @@ fun <R : BackStack.Record> providedValuesForBackStack(
   backStack: BackStack<R>,
   stackLocalProviders: List<BackStackRecordLocalProvider<R>> = emptyList(),
   includeDefaults: Boolean = true,
-): Map<R, ProvidedValues> = buildMap {
+): Map<R, ProvidedValues> = buildMap(backStack.size) {
   backStack.forEach { record ->
     key(record) {
       put(
         record,
         CompositeProvidedValues(
-          buildList {
+          buildList(stackLocalProviders.size + 1) {
             if (includeDefaults) {
               LocalBackStackRecordLocalProviders.current.forEach {
                 add(key(it) { it.providedValuesFor(record) })

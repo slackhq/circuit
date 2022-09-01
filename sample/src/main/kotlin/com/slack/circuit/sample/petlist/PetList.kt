@@ -126,7 +126,7 @@ constructor(
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val state =
+    val state by
       produceState<PetListScreen.State>(PetListScreen.State.Loading) {
         val animals = petRepo.getAnimals()
         value =
@@ -144,7 +144,7 @@ constructor(
       }
     }
 
-    return state.value
+    return state
   }
 
   @AssistedFactory

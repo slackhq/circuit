@@ -26,6 +26,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,7 +97,7 @@ constructor(
 ) : Presenter<PetDetailScreen.State, Nothing> {
   @Composable
   override fun present(events: Flow<Nothing>): PetDetailScreen.State {
-    val state =
+    val state by
       produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
@@ -106,7 +107,7 @@ constructor(
           }
       }
 
-    return state.value
+    return state
   }
 
   @AssistedFactory

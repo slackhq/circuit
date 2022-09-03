@@ -18,12 +18,15 @@ package com.slack.circuit
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.NavigatorDefaults
@@ -112,10 +115,34 @@ private fun CircuitContent(
 ) {
   val circuit = LocalCircuitOwner.current
 
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
+  val containerViewModel = viewModel<Continuity>()
+  val presenter =
+    remember(containerViewModel) {
+      containerViewModel.presenterForScreen(screen) {
+        @Suppress("UNCHECKED_CAST")
+        circuit.presenter(screen, navigator) as Presenter<Any, Any>?
+      }
+    }
+  val activity = LocalContext.current.findActivity()
+  remember(screen) {
+    object : RememberObserver {
+      override fun onAbandoned() = disposeIfNotChangingConfiguration()
 
-  @Suppress("UNCHECKED_CAST")
-  val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
+      override fun onForgotten() = disposeIfNotChangingConfiguration()
+
+      override fun onRemembered() {
+        // Do nothing
+      }
+
+      fun disposeIfNotChangingConfiguration() {
+        if (activity?.isChangingConfigurations != true) {
+          containerViewModel.removePresenterForScreen<Any, Any>(screen)
+        }
+      }
+    }
+  }
+
+  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen, navigator) as Ui<Any, Any>?
 
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)

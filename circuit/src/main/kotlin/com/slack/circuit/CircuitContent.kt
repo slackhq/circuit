@@ -18,6 +18,7 @@ package com.slack.circuit
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
@@ -118,7 +119,8 @@ private fun CircuitContent(
   val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
 
   if (ui != null && presenter != null) {
-    CircuitRender(presenter, ui)
+    val eventListener = circuit.eventListenerFactory?.create(screen) ?: EventListener.NONE
+    CircuitRender(eventListener, presenter, ui)
   } else if (unavailableContent != null) {
     unavailableContent()
   } else {
@@ -128,11 +130,14 @@ private fun CircuitContent(
 
 @Composable
 private fun <UiState : Any, UiEvent : Any> CircuitRender(
+  eventListener: EventListener,
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
 ) {
   val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
   val eventsFlow = remember(channel) { channel.receiveAsFlow() }
+  collectEvents(eventsFlow) { eventListener.onEvent(it) }
   val state = presenter.present(eventsFlow)
+  SideEffect { eventListener.onState(state) }
   ui.Render(state) { event -> channel.trySend(event) }
 }

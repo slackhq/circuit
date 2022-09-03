@@ -77,7 +77,9 @@ fun BasicNavigableCircuitContent(
           val screen = record.screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator) { unavailableRoute(routeName) }
+            NavigatorProvider(navigator = navigator) {
+              CircuitContent(screen) { unavailableRoute(routeName) }
+            }
           }
 
           val currentRouteContent by rememberUpdatedState(currentRender)
@@ -104,15 +106,6 @@ fun CircuitContent(
   screen: Screen,
   unavailableContent: (@Composable () -> Unit)? = null,
 ) {
-  CircuitContent(screen, Navigator.NoOp, unavailableContent)
-}
-
-@Composable
-private fun CircuitContent(
-  screen: Screen,
-  navigator: Navigator,
-  unavailableContent: (@Composable () -> Unit)? = null,
-) {
   val circuit = LocalCircuitOwner.current
 
   val containerViewModel = viewModel<Continuity>()
@@ -120,7 +113,7 @@ private fun CircuitContent(
     remember(containerViewModel) {
       containerViewModel.presenterForScreen(screen) {
         @Suppress("UNCHECKED_CAST")
-        circuit.presenter(screen, navigator) as Presenter<Any, Any>?
+        circuit.presenter(screen) as Presenter<Any, Any>?
       }
     }
   val activity = LocalContext.current.findActivity()
@@ -142,7 +135,7 @@ private fun CircuitContent(
     }
   }
 
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen, navigator) as Ui<Any, Any>?
+  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
 
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)
@@ -161,5 +154,5 @@ private fun <UiState : Any, UiEvent : Any> CircuitRender(
   val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
   val eventsFlow = remember(channel) { channel.receiveAsFlow() }
   val state = presenter.present(eventsFlow)
-  ui.Render(state) { event -> channel.trySend(event) }
+  ui.Render(state, channel::trySend)
 }

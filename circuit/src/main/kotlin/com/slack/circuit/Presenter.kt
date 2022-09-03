@@ -153,5 +153,5 @@ fun interface PresenterFactory {
    * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it cannot
    * handle the given [screen].
    */
-  fun create(screen: Screen, navigator: Navigator): Presenter<*, *>?
+  fun create(screen: Screen, circuit: Circuit): Presenter<*, *>?
 }

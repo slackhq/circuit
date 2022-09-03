@@ -42,6 +42,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -64,7 +65,8 @@ import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
-import com.slack.circuit.Navigator
+import com.slack.circuit.Circuit
+import com.slack.circuit.LocalNavigatorOwner
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
@@ -77,7 +79,6 @@ import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
-import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
@@ -112,22 +113,24 @@ object PetListScreen : Screen {
 class PetListScreenPresenterFactory
 @Inject
 constructor(private val petListPresenterFactory: PetListPresenter.Factory) : PresenterFactory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
+  override fun create(screen: Screen, circuit: Circuit): Presenter<*, *>? {
+    if (screen is PetListScreen) return petListPresenterFactory.create()
     return null
   }
 }
 
-class PetListPresenter
-@AssistedInject
-constructor(
-  @Assisted private val navigator: Navigator,
-  private val petRepo: PetRepository,
-) : Presenter<PetListScreen.State, PetListScreen.Event> {
+class PetListPresenter @AssistedInject constructor(private val petRepo: PetRepository) :
+  Presenter<PetListScreen.State, PetListScreen.Event> {
+
+  init {
+    println("PetListPresenter init")
+  }
+
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
     val state =
       produceState<PetListScreen.State>(PetListScreen.State.Loading) {
+        println("Computing state from $petRepo")
         val animals = petRepo.getAnimals()
         value =
           when {
@@ -136,6 +139,8 @@ constructor(
           }
       }
 
+    val navigator = LocalNavigatorOwner.current
+    // TODO key with the navigator too
     collectEvents(events) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
@@ -149,7 +154,7 @@ constructor(
 
   @AssistedFactory
   interface Factory {
-    fun create(navigator: Navigator): PetListPresenter
+    fun create(): PetListPresenter
   }
 }
 
@@ -176,7 +181,10 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, events -> RenderImpl(state, events) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, events ->
+    SideEffect { println("PetListScreen state: ${state.javaClass}") }
+    RenderImpl(state, events)
+  }
 
 @Composable
 private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {

@@ -66,18 +66,14 @@ class Circuit private constructor(builder: Builder) {
   private val uiFactories: List<ScreenViewFactory> = builder.uiFactories.toList()
   private val presenterFactories: List<PresenterFactory> = builder.presenterFactories.toList()
 
-  fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    return nextPresenter(null, screen, navigator)
+  fun presenter(screen: Screen): Presenter<*, *>? {
+    return nextPresenter(null, screen)
   }
 
-  fun nextPresenter(
-    skipPast: PresenterFactory?,
-    screen: Screen,
-    navigator: Navigator
-  ): Presenter<*, *>? {
+  fun nextPresenter(skipPast: PresenterFactory?, screen: Screen): Presenter<*, *>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
-      val presenter = presenterFactories[i].create(screen, navigator)
+      val presenter = presenterFactories[i].create(screen, this)
       if (presenter != null) {
         return presenter
       }

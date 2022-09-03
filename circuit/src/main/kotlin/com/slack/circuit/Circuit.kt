@@ -65,6 +65,7 @@ import androidx.compose.runtime.Immutable
 class Circuit private constructor(builder: Builder) {
   private val uiFactories: List<ScreenViewFactory> = builder.uiFactories.toList()
   private val presenterFactories: List<PresenterFactory> = builder.presenterFactories.toList()
+  internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     return nextPresenter(null, screen, navigator)
@@ -107,10 +108,12 @@ class Circuit private constructor(builder: Builder) {
   class Builder constructor() {
     val uiFactories = mutableListOf<ScreenViewFactory>()
     val presenterFactories = mutableListOf<PresenterFactory>()
+    var eventListenerFactory: EventListener.Factory? = null
 
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
       presenterFactories.addAll(circuit.presenterFactories)
+      eventListenerFactory = circuit.eventListenerFactory
     }
 
     fun addUiFactory(factory: ScreenViewFactory) = apply { uiFactories.add(factory) }
@@ -135,6 +138,10 @@ class Circuit private constructor(builder: Builder) {
 
     fun addPresenterFactories(factories: Iterable<PresenterFactory>) = apply {
       presenterFactories.addAll(factories)
+    }
+
+    fun eventListenerFactory(factory: EventListener.Factory) = apply {
+      eventListenerFactory = factory
     }
 
     fun build(): Circuit {

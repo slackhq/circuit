@@ -23,11 +23,14 @@ import app.cash.molecule.moleculeFlow
 import app.cash.turbine.Turbine
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.parcelize.Parcelize
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.Timeout
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -35,6 +38,12 @@ import org.robolectric.annotation.Config
 @Config(minSdk = 32, manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class EventListenerTest {
+
+  @JvmField
+  @Rule
+  val timeout: Timeout =
+    Timeout.builder().withTimeout(10, TimeUnit.SECONDS).withLookingForStuckThread(true).build()
+
   @Test
   fun basicEventRecording() = runTest {
     val eventListenerFactory = RecordingEventListener.Factory()

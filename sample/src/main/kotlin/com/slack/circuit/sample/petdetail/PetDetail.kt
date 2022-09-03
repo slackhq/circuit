@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.Circuit
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
@@ -81,7 +82,7 @@ constructor(
   private val petDetailPresenterFactory: PetDetailPresenter.Factory,
   private val petPhotoCarousel: PetPhotoCarouselPresenter.Factory
 ) : PresenterFactory {
-  override fun create(screen: Screen, circuit: Circuit): Presenter<*, *>? {
+  override fun create(screen: Screen, navigator: Navigator, circuit: Circuit): Presenter<*, *>? {
     if (screen is PetDetailScreen) return petDetailPresenterFactory.create(screen)
     if (screen is PetPhotoCarousel) return petPhotoCarousel.create(screen)
     return null

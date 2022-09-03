@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 
 /** Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. */
@@ -44,30 +43,5 @@ object LocalCircuitOwner {
   /** Associates a [LocalCircuit] key to a value in a call to [CompositionLocalProvider]. */
   infix fun provides(circuit: Circuit): ProvidedValue<Circuit?> {
     return LocalCircuit.provides(circuit)
-  }
-}
-
-/** Provides the given [navigator] as a [CompositionLocal] to all composables within [content]. */
-@Composable
-fun NavigatorProvider(navigator: Navigator, content: @Composable () -> Unit) {
-  CompositionLocalProvider(
-    LocalNavigatorOwner provides navigator,
-  ) {
-    content()
-  }
-}
-
-object LocalNavigatorOwner {
-  private val LocalNavigator = compositionLocalOf<Navigator?> { null }
-
-  /**
-   * Returns current composition local value for the owner or errors if one has not been provided.
-   */
-  val current: Navigator
-    @Composable get() = LocalNavigator.current ?: error("No navigator available")
-
-  /** Associates a [LocalNavigator] key to a value in a call to [CompositionLocalProvider]. */
-  infix fun provides(navigator: Navigator): ProvidedValue<Navigator?> {
-    return LocalNavigator.provides(navigator)
   }
 }

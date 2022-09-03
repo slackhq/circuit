@@ -31,21 +31,27 @@ internal fun Context.findActivity(): Activity? {
 
 class Continuity : ViewModel() {
   private val presenters = mutableMapOf<Screen, Presenter<*, *>?>()
+  private val navigators = mutableMapOf<String, NavigatorImpl>()
 
   @Suppress("UNCHECKED_CAST")
-  fun <T : Any, E : Any> presenterForScreen(
+  internal fun <T : Any, E : Any> presenterForScreen(
     screen: Screen,
     defaultValue: () -> Presenter<T, E>?
   ): Presenter<T, E>? {
-    println("presenterForScreen $screen")
     return presenters.getOrPut(screen, defaultValue) as Presenter<T, E>?
   }
 
   @Suppress("UNCHECKED_CAST")
-  fun <T : Any, E : Any> removePresenterForScreen(screen: Screen): Presenter<T, E>? {
-    println("Removing presenter for screen $screen")
+  internal fun <T : Any, E : Any> removePresenterForScreen(screen: Screen): Presenter<T, E>? {
     return presenters.remove(screen) as Presenter<T, E>?
   }
+
+  internal fun navigatorForBackStack(
+    key: String,
+    defaultValue: () -> NavigatorImpl
+  ): NavigatorImpl = navigators.getOrPut(key, defaultValue)
+
+  internal fun removeNavigatorForBackStack(key: String): NavigatorImpl? = navigators.remove(key)
 
   override fun onCleared() {
     presenters.clear()

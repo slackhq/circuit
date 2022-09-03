@@ -77,9 +77,7 @@ fun BasicNavigableCircuitContent(
           val screen = record.screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            NavigatorProvider(navigator = navigator) {
-              CircuitContent(screen) { unavailableRoute(routeName) }
-            }
+            CircuitContent(screen, navigator) { unavailableRoute(routeName) }
           }
 
           val currentRouteContent by rememberUpdatedState(currentRender)
@@ -106,14 +104,23 @@ fun CircuitContent(
   screen: Screen,
   unavailableContent: (@Composable () -> Unit)? = null,
 ) {
+  CircuitContent(screen, Navigator.NoOp, unavailableContent)
+}
+
+@Composable
+fun CircuitContent(
+  screen: Screen,
+  navigator: Navigator,
+  unavailableContent: (@Composable () -> Unit)? = null,
+) {
   val circuit = LocalCircuitOwner.current
 
-  val containerViewModel = viewModel<Continuity>()
+  val continuity = viewModel<Continuity>()
   val presenter =
-    remember(containerViewModel) {
-      containerViewModel.presenterForScreen(screen) {
+    remember(continuity) {
+      continuity.presenterForScreen(screen) {
         @Suppress("UNCHECKED_CAST")
-        circuit.presenter(screen) as Presenter<Any, Any>?
+        circuit.presenter(screen, navigator) as Presenter<Any, Any>?
       }
     }
   val activity = LocalContext.current.findActivity()
@@ -129,7 +136,7 @@ fun CircuitContent(
 
       fun disposeIfNotChangingConfiguration() {
         if (activity?.isChangingConfigurations != true) {
-          containerViewModel.removePresenterForScreen<Any, Any>(screen)
+          continuity.removePresenterForScreen<Any, Any>(screen)
         }
       }
     }

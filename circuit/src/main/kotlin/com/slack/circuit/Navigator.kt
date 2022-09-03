@@ -16,9 +16,14 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.backstack.SaveableBackStack
+import java.util.UUID
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
@@ -43,13 +48,56 @@ interface Navigator {
  */
 @Composable
 fun rememberCircuitNavigator(backstack: SaveableBackStack, onRootPop: (() -> Unit)?): Navigator {
-  return remember { NavigatorImpl(backstack, onRootPop) }
+  val continuity = viewModel<Continuity>()
+  val backstackKey = rememberSaveable { UUID.randomUUID().toString() }
+  val navImpl = remember { continuity.navigatorForBackStack(backstackKey, ::NavigatorImpl) }
+  navImpl.bind(backstack, onRootPop)
+  val activity = LocalContext.current.findActivity()
+  remember(backstack) {
+    object : RememberObserver {
+      override fun onAbandoned() {
+        navImpl.unbind()
+        disposeIfNotChangingConfiguration()
+      }
+
+      override fun onForgotten() {
+        navImpl.unbind()
+        disposeIfNotChangingConfiguration()
+      }
+
+      override fun onRemembered() {
+        // Do nothing
+      }
+
+      fun disposeIfNotChangingConfiguration() {
+        if (activity?.isChangingConfigurations != true) {
+          continuity.removeNavigatorForBackStack(backstackKey)
+        }
+      }
+    }
+  }
+
+  return navImpl
 }
 
-private class NavigatorImpl(
-  private val backstack: SaveableBackStack,
-  private val onRootPop: (() -> Unit)?,
-) : Navigator {
+internal class NavigatorImpl : Navigator {
+
+  private var _backstack: SaveableBackStack? = null
+  private var onRootPop: (() -> Unit)? = null
+  private val backstack: SaveableBackStack
+    get() = checkNotNull(_backstack) { "Navigator is null" }
+
+  // TODO these are called on the Applier thread from compose
+  fun bind(backstack: SaveableBackStack, onRootPop: (() -> Unit)?) {
+    check(_backstack == null) { "Navigator has already been bound" }
+    _backstack = backstack
+    this.onRootPop = onRootPop
+  }
+
+  fun unbind() {
+    _backstack = null
+    onRootPop = null
+  }
 
   override fun goTo(screen: Screen) {
     backstack.push(screen)

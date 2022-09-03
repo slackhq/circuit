@@ -17,6 +17,7 @@ package com.slack.circuit.sample.di
 
 import androidx.lifecycle.ViewModel
 import com.slack.circuit.Circuit
+import com.slack.circuit.Continuity
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
@@ -39,10 +40,17 @@ interface CircuitModule {
   @Binds
   fun BackStackRecordLocalProviderViewModel.bindBackStackRecordLocalProviderViewModel(): ViewModel
 
+  @ViewModelKey(Continuity::class) @IntoMap @Binds fun Continuity.bindContinuity(): ViewModel
+
   companion object {
     @Provides
     fun provideBackStackRecordLocalProviderViewModel(): BackStackRecordLocalProviderViewModel {
       return BackStackRecordLocalProviderViewModel()
+    }
+
+    @Provides
+    fun provideContinuity(): Continuity {
+      return Continuity()
     }
 
     @Provides

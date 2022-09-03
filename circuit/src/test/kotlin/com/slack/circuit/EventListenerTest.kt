@@ -107,12 +107,11 @@ private class RecordingEventListener : EventListener {
   }
 
   class Factory : EventListener.Factory {
-    val listeners = mutableMapOf<Screen, RecordingEventListener>()
-
-    override fun create(screen: Screen): EventListener {
-      val listener = RecordingEventListener()
-      listeners[screen] = listener
-      return listener
-    }
+    private val listeners = mutableMapOf<Screen, RecordingEventListener>()
+    
+    fun get(screen: Screen): RecordingEventListener =
+      listeners[screen] ?: (RecordingEventListener().also { listeners[screen] = it })
+      
+    override fun create(screen: Screen): EventListener = get(screen)
   }
 }

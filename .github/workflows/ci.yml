@@ -38,11 +38,7 @@ jobs:
         run: ./.github/checksum.sh checksum.txt
 
       - name: Check LFS files
-        run: |
-          # fail fast if files not checked in using git lfs
-          "$HOOKS_DIR"/pre-receive
-          git lfs install --local
-          git lfs pull
+        uses: actionsdesk/lfs-warning@v3.2
 
       - uses: actions/cache@v3
         with:

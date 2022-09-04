@@ -45,6 +45,7 @@ plugins {
   alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.moshiGradlePlugin) apply false
+  alias(libs.plugins.paparazzi) apply false
 }
 
 configure<DetektExtension> {
@@ -182,7 +183,9 @@ subprojects {
 
   // Common android config
   val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
-    compileSdk = 33
+    // Due to paparazzi not supporting API 33 yet
+    // https://github.com/cashapp/paparazzi/issues/558
+    compileSdk = 32
 
     buildFeatures { compose = true }
     composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }

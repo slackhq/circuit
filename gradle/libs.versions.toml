@@ -26,6 +26,7 @@ molecule = "0.4.0"
 moshi = "1.13.0"
 moshix = "0.18.3"
 okhttp = "5.0.0-alpha.10"
+paparazzi = "1.0.0"
 retrofit = "2.9.0"
 robolectric = "4.8.2"
 spotless = "6.9.0"
@@ -41,6 +42,7 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 moshiGradlePlugin = { id = "dev.zacsweers.moshix", version.ref = "moshix" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 

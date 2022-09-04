@@ -57,7 +57,7 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check
+          arguments: check verifyPaparazzi
 
       # TODO eventually also run instrumentation/UI tests?
 

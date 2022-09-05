@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "reviewers": [
+    "ZacSweers",
+    "kierse",
+    "iamritav",
+    "jpetote"
+  ],
+  "branchPrefix": "test-renovate/",
+  "gitAuthor": "OSS-Bot <svc-oss-bot@slack-corp.com>",
+  "repositories": [
+    "slackhq/circuit"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["renovatebot/github-action"],
+      "extends": ["schedule:monthly"]
+    }
+  ]
+}

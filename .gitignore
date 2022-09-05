@@ -20,3 +20,7 @@ out/
 
 # We have one gitignore but project generation often generates extra ones. Ignore those
 */**/.gitignore
+
+docs/code-of-conduct.md
+docs/contributing.md
+site/

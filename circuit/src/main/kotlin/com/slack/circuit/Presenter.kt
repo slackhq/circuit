@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 /**
  * Presents a given [UiState] and handles its [events][UiEvent].
  *
+ * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
+ *
  * @see present for more thorough documentation.
  */
 interface Presenter<UiState : Any, UiEvent : Any> {

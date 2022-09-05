@@ -42,10 +42,11 @@ import kotlinx.coroutines.flow.Flow
  * private fun PreviewTacos() = RenderImpl(...)
  * ```
  *
- * Most UIs don't use dependency injection at all, unless maybe getting assisted injections of
- * things like image loaders.
+ * This could be a class, but isn't necessary unless you're using dependency injection. Most UIs
+ * don't use dependency injection at all however, unless maybe getting assisted injections of things
+ * like image loaders.
  *
- * This could be a class, but isn't necessary unless you're using
+ * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
  *
  * Note that due to a bug in studio, we can't make this a `fun interface` _yet_. Instead, use [ui].
  *

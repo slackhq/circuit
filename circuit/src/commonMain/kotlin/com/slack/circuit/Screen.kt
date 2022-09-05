@@ -15,8 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
-
 /**
  * Represents an individual screen, used as a key for [PresenterFactory] and [ScreenViewFactory].
  *
@@ -43,4 +41,4 @@ import android.os.Parcelable
  * }
  * ```
  */
-interface Screen : Parcelable
+public expect interface Screen

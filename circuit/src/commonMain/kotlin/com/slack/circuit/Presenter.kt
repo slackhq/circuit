@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  *
  * @see present for more thorough documentation.
  */
-interface Presenter<UiState : Any, UiEvent : Any> {
+public interface Presenter<UiState : Any, UiEvent : Any> {
   /**
    * The primary [Composable] entry point to present a [UiState] and handle its [events]. In
    * production, a [Navigator] is used to automatically connect this with a corresponding [Ui] to
@@ -92,7 +92,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    * }
    * ```
    */
-  @Composable fun present(events: Flow<UiEvent>): UiState
+  @Composable public fun present(events: Flow<UiEvent>): UiState
 }
 
 /**
@@ -148,10 +148,10 @@ interface Presenter<UiState : Any, UiEvent : Any> {
  * ```
  */
 // Diagram generated from asciiflow: https://shorturl.at/fgjtA
-fun interface PresenterFactory {
+public fun interface PresenterFactory {
   /**
    * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it cannot
    * handle the given [screen].
    */
-  fun create(screen: Screen, navigator: Navigator): Presenter<*, *>?
+  public fun create(screen: Screen, navigator: Navigator): Presenter<*, *>?
 }

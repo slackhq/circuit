@@ -47,7 +47,7 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  *
- * If using navigation, use [NavigableCircuitContent] instead.
+ * If using navigation, use `NavigableCircuitContent` instead.
  *
  * ```kotlin
  * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
@@ -57,26 +57,27 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  *
- * @see rememberCircuitNavigator
+ * @see `rememberCircuitNavigator`
+ * @see `NavigableCircuitContent`
  * @see CircuitContent
- * @see NavigableCircuitContent
  */
 @Immutable
-class Circuit private constructor(builder: Builder) {
+public class Circuit private constructor(builder: Builder) {
   private val uiFactories: List<ScreenViewFactory> = builder.uiFactories.toList()
   private val presenterFactories: List<PresenterFactory> = builder.presenterFactories.toList()
 
-  fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+  public fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     return nextPresenter(null, screen, navigator)
   }
 
-  fun nextPresenter(
+  public fun nextPresenter(
     skipPast: PresenterFactory?,
     screen: Screen,
     navigator: Navigator
   ): Presenter<*, *>? {
     val start = presenterFactories.indexOf(skipPast) + 1
-    for (i in start until presenterFactories.size) {
+    // TODO use the normal range syntax in 1.7.20
+    (start until presenterFactories.size).forEach { i ->
       val presenter = presenterFactories[i].create(screen, navigator)
       if (presenter != null) {
         return presenter
@@ -86,13 +87,14 @@ class Circuit private constructor(builder: Builder) {
     return null
   }
 
-  fun ui(screen: Screen): Ui<*, *>? {
+  public fun ui(screen: Screen): Ui<*, *>? {
     return nextUi(null, screen)
   }
 
-  fun nextUi(skipPast: ScreenViewFactory?, screen: Screen): Ui<*, *>? {
+  public fun nextUi(skipPast: ScreenViewFactory?, screen: Screen): Ui<*, *>? {
     val start = uiFactories.indexOf(skipPast) + 1
-    for (i in start until uiFactories.size) {
+    // TODO use the normal range syntax in 1.7.20
+    (start until uiFactories.size).forEach { i ->
       val ui = uiFactories[i].createView(screen)
       if (ui != null) {
         return ui.ui
@@ -102,42 +104,46 @@ class Circuit private constructor(builder: Builder) {
     return null
   }
 
-  fun newBuilder() = Builder(this)
+  public fun newBuilder(): Builder = Builder(this)
 
-  class Builder constructor() {
-    val uiFactories = mutableListOf<ScreenViewFactory>()
-    val presenterFactories = mutableListOf<PresenterFactory>()
+  public class Builder constructor() {
+    public val uiFactories: MutableList<ScreenViewFactory> = mutableListOf()
+    public val presenterFactories: MutableList<PresenterFactory> = mutableListOf()
 
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
       presenterFactories.addAll(circuit.presenterFactories)
     }
 
-    fun addUiFactory(factory: ScreenViewFactory) = apply { uiFactories.add(factory) }
+    public fun addUiFactory(factory: ScreenViewFactory): Builder = apply {
+      uiFactories.add(factory)
+    }
 
-    fun addUiFactory(vararg factory: ScreenViewFactory) = apply {
+    public fun addUiFactory(vararg factory: ScreenViewFactory): Builder = apply {
       for (f in factory) {
         uiFactories.add(f)
       }
     }
 
-    fun addUiFactories(factories: Iterable<ScreenViewFactory>) = apply {
+    public fun addUiFactories(factories: Iterable<ScreenViewFactory>): Builder = apply {
       uiFactories.addAll(factories)
     }
 
-    fun addPresenterFactory(factory: PresenterFactory) = apply { presenterFactories.add(factory) }
+    public fun addPresenterFactory(factory: PresenterFactory): Builder = apply {
+      presenterFactories.add(factory)
+    }
 
-    fun addPresenterFactory(vararg factory: PresenterFactory) = apply {
+    public fun addPresenterFactory(vararg factory: PresenterFactory): Builder = apply {
       for (f in factory) {
         presenterFactories.add(f)
       }
     }
 
-    fun addPresenterFactories(factories: Iterable<PresenterFactory>) = apply {
+    public fun addPresenterFactories(factories: Iterable<PresenterFactory>): Builder = apply {
       presenterFactories.addAll(factories)
     }
 
-    fun build(): Circuit {
+    public fun build(): Circuit {
       return Circuit(this)
     }
   }

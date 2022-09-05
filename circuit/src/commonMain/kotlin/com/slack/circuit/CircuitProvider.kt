@@ -23,7 +23,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 /** Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. */
 @Composable
-fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
+public fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
   CompositionLocalProvider(
     LocalCircuitOwner provides circuit,
   ) {
@@ -31,17 +31,17 @@ fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
   }
 }
 
-object LocalCircuitOwner {
+public object LocalCircuitOwner {
   private val LocalCircuit = staticCompositionLocalOf<Circuit?> { null }
 
   /**
    * Returns current composition local value for the owner or errors if one has not been provided.
    */
-  val current: Circuit
+  public val current: Circuit
     @Composable get() = LocalCircuit.current ?: error("No circuit available")
 
   /** Associates a [LocalCircuit] key to a value in a call to [CompositionLocalProvider]. */
-  infix fun provides(circuit: Circuit): ProvidedValue<Circuit?> {
+  public infix fun provides(circuit: Circuit): ProvidedValue<Circuit?> {
     return LocalCircuit.provides(circuit)
   }
 }

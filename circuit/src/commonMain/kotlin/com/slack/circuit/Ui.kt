@@ -17,7 +17,6 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -27,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
  * 2. Ensuring separation of `RenderImpl` from the [Ui] instance allows for and encourages easy UI
- * previews via Compose's [@Preview][Preview] annotations.
+ * previews via Compose's `@Preview` annotations.
  *
  * Usage:
  * ```
@@ -51,8 +50,8 @@ import kotlinx.coroutines.flow.Flow
  *
  * @see ui
  */
-interface Ui<UiState : Any, UiEvent : Any> {
-  @Composable fun Render(state: UiState, events: (UiEvent) -> Unit)
+public interface Ui<UiState : Any, UiEvent : Any> {
+  @Composable public fun Render(state: UiState, events: (UiEvent) -> Unit)
 }
 
 /**
@@ -64,7 +63,7 @@ interface Ui<UiState : Any, UiEvent : Any> {
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState : Any, UiEvent : Any> ui(
+public inline fun <UiState : Any, UiEvent : Any> ui(
   crossinline body: @Composable (state: UiState, events: (UiEvent) -> Unit) -> Unit
 ): Ui<UiState, UiEvent> {
   return object : Ui<UiState, UiEvent> {
@@ -77,6 +76,6 @@ inline fun <UiState : Any, UiEvent : Any> ui(
 
 @Suppress("NOTHING_TO_INLINE")
 @Composable
-inline fun <E : Any> collectEvents(events: Flow<E>, noinline handler: (event: E) -> Unit) {
+public inline fun <E : Any> collectEvents(events: Flow<E>, noinline handler: (event: E) -> Unit) {
   LaunchedEffect(events) { events.collect(handler) }
 }

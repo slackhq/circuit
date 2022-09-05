@@ -43,11 +43,11 @@ package com.slack.circuit
  *   ui<AddFavorites.State, AddFavorites.Event> { state, events -> RenderImpl(state, events) }
  * ```
  */
-fun interface ScreenViewFactory {
-  fun createView(screen: Screen): ScreenView?
+public fun interface ScreenViewFactory {
+  public fun createView(screen: Screen): ScreenView?
 }
 
-data class ScreenView(
+public data class ScreenView(
   val ui: Ui<*, *>,
 // TODO does this kind of thing eventually move to compose Modifier instead?
 //  val uiMetadata: UiMetadata = UiMetadata()

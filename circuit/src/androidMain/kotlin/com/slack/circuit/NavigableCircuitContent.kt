@@ -31,12 +31,9 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
-fun NavigableCircuitContent(
+public fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
@@ -58,7 +55,7 @@ fun NavigableCircuitContent(
 }
 
 @Composable
-fun BasicNavigableCircuitContent(
+public fun BasicNavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
@@ -94,45 +91,4 @@ fun BasicNavigableCircuitContent(
       CompositionLocalProvider(*providedLocals) { provider.invoke() }
     }
   }
-}
-
-@Composable
-fun CircuitContent(
-  screen: Screen,
-  unavailableContent: (@Composable () -> Unit)? = null,
-) {
-  CircuitContent(screen, Navigator.NoOp, unavailableContent)
-}
-
-@Composable
-private fun CircuitContent(
-  screen: Screen,
-  navigator: Navigator,
-  unavailableContent: (@Composable () -> Unit)? = null,
-) {
-  val circuit = LocalCircuitOwner.current
-
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
-
-  @Suppress("UNCHECKED_CAST")
-  val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
-
-  if (ui != null && presenter != null) {
-    CircuitRender(presenter, ui)
-  } else if (unavailableContent != null) {
-    unavailableContent()
-  } else {
-    error("Could not render screen $screen")
-  }
-}
-
-@Composable
-private fun <UiState : Any, UiEvent : Any> CircuitRender(
-  presenter: Presenter<UiState, UiEvent>,
-  ui: Ui<UiState, UiEvent>,
-) {
-  val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
-  val eventsFlow = remember(channel) { channel.receiveAsFlow() }
-  val state = presenter.present(eventsFlow)
-  ui.Render(state) { event -> channel.trySend(event) }
 }

@@ -17,7 +17,7 @@ package com.slack.circuit
 
 import com.slack.circuit.backstack.SaveableBackStack
 
-fun SaveableBackStack.push(screen: Screen) {
+public fun SaveableBackStack.push(screen: Screen) {
   push(
     SaveableBackStack.Record(
       route = screen.javaClass.simpleName,
@@ -27,5 +27,5 @@ fun SaveableBackStack.push(screen: Screen) {
   )
 }
 
-val SaveableBackStack.Record.screen: Screen
+public val SaveableBackStack.Record.screen: Screen
   get() = args.getValue("screen") as Screen

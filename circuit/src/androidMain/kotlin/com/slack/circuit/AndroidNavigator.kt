@@ -16,22 +16,8 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
-
-/** A basic navigation interface for navigating between [screens][Screen]. */
-@Stable
-interface Navigator {
-  fun goTo(screen: Screen)
-
-  fun pop(): Screen?
-
-  object NoOp : Navigator {
-    override fun goTo(screen: Screen) {}
-    override fun pop(): Screen? = null
-  }
-}
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
@@ -41,8 +27,12 @@ interface Navigator {
  * @param backstack The backing [SaveableBackStack] to navigate.
  * @param onRootPop The callback to handle root [Navigator.pop] calls.
  */
+// TODO can we make this common-friendly?
 @Composable
-fun rememberCircuitNavigator(backstack: SaveableBackStack, onRootPop: (() -> Unit)?): Navigator {
+public fun rememberCircuitNavigator(
+  backstack: SaveableBackStack,
+  onRootPop: (() -> Unit)?
+): Navigator {
   return remember { NavigatorImpl(backstack, onRootPop) }
 }
 
@@ -83,15 +73,5 @@ private class NavigatorImpl(
 
   override fun toString(): String {
     return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
-  }
-}
-
-/** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
-fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
-  while (true) {
-    val screen = pop() ?: break
-    if (predicate(screen)) {
-      break
-    }
   }
 }

@@ -70,7 +70,7 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
-import com.slack.circuit.collectEvents
+import com.slack.circuit.EventCollector
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
@@ -136,7 +136,7 @@ constructor(
           }
       }
 
-    collectEvents(events) { event ->
+    EventCollector(events) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
           navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))

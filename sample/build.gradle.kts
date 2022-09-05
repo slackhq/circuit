@@ -49,6 +49,8 @@ dependencies {
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)
   implementation(libs.coil.compose)
+  implementation(libs.coroutines)
+  implementation(libs.coroutines.android)
   implementation(libs.okhttp)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.okio)

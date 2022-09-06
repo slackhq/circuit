@@ -90,7 +90,8 @@ data class PetPhotoCarouselScreen(
 //  screen type?
 class PetPhotoCarouselPresenter
 @AssistedInject
-constructor(@Assisted private val screen: PetPhotoCarouselScreen) : Presenter<PetPhotoCarouselScreen, Nothing> {
+constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
+  Presenter<PetPhotoCarouselScreen, Nothing> {
 
   @Composable
   override fun present(events: Flow<Nothing>): PetPhotoCarouselScreen {
@@ -114,9 +115,11 @@ class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ -> PetPhotoCarousel(state) }
+fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ ->
+  PetPhotoCarousel(state)
+}
 
-internal object PetPhotoCarouselTestConstants{
+internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
@@ -138,8 +141,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
   Column(
-    Modifier
-      .testTag(CAROUSEL_TAG)
+    Modifier.testTag(CAROUSEL_TAG)
       .fillMaxSize()
       // Some images are different sizes. We probably want to constrain them to the same common
       // size though

@@ -166,12 +166,7 @@ internal fun PetDetail(state: PetDetailScreen.State) {
               )
             )
           }
-          item {
-            Text(
-              text = state.name,
-              style = MaterialTheme.typography.displayLarge
-            )
-          }
+          item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
           item { Text(text = state.description) }
         }
       }

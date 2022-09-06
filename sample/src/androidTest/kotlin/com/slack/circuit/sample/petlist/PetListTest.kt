@@ -90,24 +90,22 @@ class PetListTest {
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.Success(animals), channel::trySend) }
 
-      onAllNodesWithTag(CARD_TAG)
-        .assertCountEquals(1)[0]
-        .performClick()
+      onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 
       val event = channel.receive()
-      assertThat(event)
-        .isEqualTo(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
+      assertThat(event).isEqualTo(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
     }
   }
 
   private companion object {
-    val ANIMAL = PetListAnimal(
-      id = 1L,
-      name = "Baxter",
-      imageUrl = null,
-      breed = "Australian Terrier",
-      gender = "male",
-      age = "12"
-    )
+    val ANIMAL =
+      PetListAnimal(
+        id = 1L,
+        name = "Baxter",
+        imageUrl = null,
+        breed = "Australian Terrier",
+        gender = "male",
+        age = "12"
+      )
   }
 }

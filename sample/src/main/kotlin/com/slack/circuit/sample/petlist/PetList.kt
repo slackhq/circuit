@@ -272,11 +272,12 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       ?: defaultColors
 
   Card(
-    modifier = modifier
-      .fillMaxWidth()
-      .clip(RoundedCornerShape(16.dp))
-      .clickable { onClick() }
-      .testTag(CARD_TAG),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(RoundedCornerShape(16.dp))
+        .clickable { onClick() }
+        .testTag(CARD_TAG),
     colors = colors,
     shape = RoundedCornerShape(16.dp),
   ) {
@@ -305,18 +306,10 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
     Column(modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
       val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
       // Name
-      Text(
-        text = animal.name,
-        style = MaterialTheme.typography.labelLarge,
-        color = textColor
-      )
+      Text(text = animal.name, style = MaterialTheme.typography.labelLarge, color = textColor)
       // Type
       animal.breed?.let {
-        Text(
-          text = animal.breed,
-          style = MaterialTheme.typography.bodyMedium,
-          color = textColor
-        )
+        Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium, color = textColor)
       }
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         // Gender, age

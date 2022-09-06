@@ -40,6 +40,7 @@ fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
+  circuit: Circuit = LocalCircuitOwner.current,
   enableBackHandler: Boolean = true,
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
@@ -52,6 +53,7 @@ fun NavigableCircuitContent(
     backstack = backstack,
     providedValues = providedValues,
     modifier = modifier,
+    circuit = circuit,
     decoration = decoration,
     unavailableRoute = unavailableRoute,
   )
@@ -63,6 +65,7 @@ fun BasicNavigableCircuitContent(
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
+  circuit: Circuit = LocalCircuitOwner.current,
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
@@ -74,7 +77,7 @@ fun BasicNavigableCircuitContent(
           val screen = record.screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator) { unavailableRoute(routeName) }
+            CircuitContent(screen, navigator, circuit) { unavailableRoute(routeName) }
           }
 
           val currentRouteContent by rememberUpdatedState(currentRender)
@@ -99,19 +102,19 @@ fun BasicNavigableCircuitContent(
 @Composable
 fun CircuitContent(
   screen: Screen,
+  circuit: Circuit = LocalCircuitOwner.current,
   unavailableContent: (@Composable () -> Unit)? = null,
 ) {
-  CircuitContent(screen, Navigator.NoOp, unavailableContent)
+  CircuitContent(screen, Navigator.NoOp, circuit, unavailableContent)
 }
 
 @Composable
 private fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
+  circuit: Circuit,
   unavailableContent: (@Composable () -> Unit)? = null,
 ) {
-  val circuit = LocalCircuitOwner.current
-
   @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
 
   @Suppress("UNCHECKED_CAST")

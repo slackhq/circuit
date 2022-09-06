@@ -30,13 +30,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.slack.circuit.ContentContainer
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -48,7 +43,6 @@ import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
-import com.slack.circuit.sample.petdetail.PetDetailTestConstants.IMAGE_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.sample.repo.PetRepository
@@ -96,7 +90,7 @@ constructor(
 ) : PresenterFactory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     if (screen is PetDetailScreen) return petDetailPresenterFactory.create(screen)
-    if (screen is PetPhotoCarousel) return petPhotoCarousel.create(screen)
+    if (screen is PetPhotoCarouselScreen) return petPhotoCarousel.create(screen)
     return null
   }
 }
@@ -188,7 +182,7 @@ internal fun PetDetail(state: PetDetailScreen.State) {
               contentScale = ContentScale.FillWidth,
               */
             CircuitContent(
-              PetPhotoCarousel(
+              PetPhotoCarouselScreen(
                 name = state.name,
                 photoUrls = state.photoUrls,
                 photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,

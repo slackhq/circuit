@@ -77,7 +77,7 @@ import kotlinx.parcelize.Parcelize
 // TODO are we sure we want to do this?
 @Immutable
 @Parcelize
-data class PetPhotoCarousel(
+data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
   val photoUrlMemoryCacheKey: String
@@ -87,23 +87,23 @@ data class PetPhotoCarousel(
 //  screen type?
 class PetPhotoCarouselPresenter
 @AssistedInject
-constructor(@Assisted private val screen: PetPhotoCarousel) : Presenter<PetPhotoCarousel, Nothing> {
+constructor(@Assisted private val screen: PetPhotoCarouselScreen) : Presenter<PetPhotoCarouselScreen, Nothing> {
 
   @Composable
-  override fun present(events: Flow<Nothing>): PetPhotoCarousel {
+  override fun present(events: Flow<Nothing>): PetPhotoCarouselScreen {
     return screen
   }
 
   @AssistedFactory
   interface Factory {
-    fun create(screen: PetPhotoCarousel): PetPhotoCarouselPresenter
+    fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter
   }
 }
 
 @ContributesMultibinding(AppScope::class)
 class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen): ScreenView? {
-    return if (screen is PetPhotoCarousel) {
+    return if (screen is PetPhotoCarouselScreen) {
       ScreenView(petPhotoCarousel())
     } else {
       null
@@ -111,11 +111,11 @@ class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-fun petPhotoCarousel(): Ui<PetPhotoCarousel, Nothing> = ui { state, _ -> RenderImpl(state) }
+fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ -> RenderImpl(state) }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun RenderImpl(state: PetPhotoCarousel) {
+private fun RenderImpl(state: PetPhotoCarouselScreen) {
   // Prefetch images
   val context = LocalContext.current
   LaunchedEffect(Unit) {

@@ -15,20 +15,22 @@
  */
 package com.slack.circuit.sample.petdetail
 
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import com.slack.circuit.sample.R
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
-import com.slack.circuit.sample.petdetail.PetDetailTestConstants.DESCRIPTION_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.IMAGE_TAG
-import com.slack.circuit.sample.petdetail.PetDetailTestConstants.NAME_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import org.junit.Rule
 import org.junit.Test
 
 class PetDetailTest {
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
@@ -47,8 +49,11 @@ class PetDetailTest {
       setContent { PetDetail(PetDetailScreen.State.UnknownAnimal) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
-      onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertIsDisplayed()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
+
+      onNodeWithTag(UNKNOWN_ANIMAL_TAG)
+        .assertIsDisplayed()
+        .assertTextEquals(activity.getString(R.string.unknown_animals))
     }
   }
 
@@ -70,8 +75,8 @@ class PetDetailTest {
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
 
       onNodeWithTag(IMAGE_TAG).assertIsDisplayed()
-      onNodeWithTag(NAME_TAG).assertIsDisplayed()
-      onNodeWithTag(DESCRIPTION_TAG).assertIsDisplayed()
+      onNodeWithText(success.name).assertIsDisplayed()
+      onNodeWithText(success.description).assertIsDisplayed()
     }
   }
 }

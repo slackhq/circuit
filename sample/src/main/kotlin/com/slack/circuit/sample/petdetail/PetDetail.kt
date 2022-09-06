@@ -46,9 +46,7 @@ import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
-import com.slack.circuit.sample.petdetail.PetDetailTestConstants.DESCRIPTION_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.IMAGE_TAG
-import com.slack.circuit.sample.petdetail.PetDetailTestConstants.NAME_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.sample.repo.PetRepository
@@ -134,9 +132,7 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> Pet
 
 internal object PetDetailTestConstants {
   const val ANIMAL_CONTAINER_TAG = "animal_container"
-  const val DESCRIPTION_TAG = "description"
   const val IMAGE_TAG = "image"
-  const val NAME_TAG = "name"
   const val PROGRESS_TAG = "progress"
   const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
 }
@@ -176,12 +172,11 @@ internal fun PetDetail(state: PetDetailScreen.State) {
           }
           item {
             Text(
-              modifier = Modifier.testTag(NAME_TAG),
               text = state.name,
               style = MaterialTheme.typography.displayLarge
             )
           }
-          item { Text(modifier = Modifier.testTag(DESCRIPTION_TAG), text = state.description) }
+          item { Text(text = state.description) }
         }
       }
     }

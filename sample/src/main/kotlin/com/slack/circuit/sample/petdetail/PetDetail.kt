@@ -15,8 +15,11 @@
  */
 package com.slack.circuit.sample.petdetail
 
+import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -32,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalConfiguration
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -140,6 +144,7 @@ internal object PetDetailTestConstants {
 
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
+  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
       PetDetailScreen.State.Loading -> {
@@ -156,8 +161,10 @@ internal fun PetDetail(state: PetDetailScreen.State) {
         }
       }
       is PetDetailScreen.State.Success -> {
-        LazyColumn(modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)) {
-          item {
+        if (isLandscape) {
+          Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+          ) {
             CircuitContent(
               PetPhotoCarouselScreen(
                 name = state.name,
@@ -165,9 +172,25 @@ internal fun PetDetail(state: PetDetailScreen.State) {
                 photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
               )
             )
+            LazyColumn {
+              item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
+              item { Text(text = state.description) }
+            }
           }
-          item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
-          item { Text(text = state.description) }
+        } else {
+          LazyColumn(modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)) {
+            item {
+              CircuitContent(
+                PetPhotoCarouselScreen(
+                  name = state.name,
+                  photoUrls = state.photoUrls,
+                  photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+                )
+              )
+            }
+            item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
+            item { Text(text = state.description) }
+          }
         }
       }
     }

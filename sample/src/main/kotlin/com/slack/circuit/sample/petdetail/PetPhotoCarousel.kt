@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.sample.petdetail
 
+import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.focusable
@@ -36,6 +37,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -126,8 +128,9 @@ internal object PetPhotoCarouselTestConstants {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
-  // Prefetch images
   val context = LocalContext.current
+  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+  // Prefetch images
   LaunchedEffect(Unit) {
     for (url in state.photoUrls) {
       if (url.isBlank()) continue
@@ -140,9 +143,10 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
+  val columnModifier = if (isLandscape) Modifier.fillMaxWidth(0.5f) else Modifier.fillMaxSize()
   Column(
-    Modifier.testTag(CAROUSEL_TAG)
-      .fillMaxSize()
+    columnModifier
+      .testTag(CAROUSEL_TAG)
       // Some images are different sizes. We probably want to constrain them to the same common
       // size though
       .animateContentSize()

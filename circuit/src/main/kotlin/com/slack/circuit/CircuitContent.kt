@@ -103,7 +103,7 @@ fun BasicNavigableCircuitContent(
 fun CircuitContent(
   screen: Screen,
   circuit: Circuit = LocalCircuitOwner.current,
-  unavailableContent: (@Composable () -> Unit)? = null,
+  unavailableContent: (@Composable (screen: Any) -> Unit)? = circuit.onUnavailableContent,
 ) {
   CircuitContent(screen, Navigator.NoOp, circuit, unavailableContent)
 }
@@ -113,7 +113,7 @@ private fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
   circuit: Circuit,
-  unavailableContent: (@Composable () -> Unit)? = null,
+  unavailableContent: (@Composable (screen: Any) -> Unit)?,
 ) {
   @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
 
@@ -122,10 +122,8 @@ private fun CircuitContent(
 
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)
-  } else if (circuit.onUnavailableContent != null) {
-    circuit.onUnavailableContent.invoke(screen)
   } else if (unavailableContent != null) {
-    unavailableContent()
+    unavailableContent(screen)
   } else {
     error("Could not render screen $screen")
   }

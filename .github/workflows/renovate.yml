@@ -16,4 +16,4 @@ jobs:
         uses: renovatebot/github-action@v32.190.6
         with:
           configurationFile: config/renovate/renovate.json
-          token: ${{ secrets.SLACK_OSS_GITHUB_TOKEN }}
+          token: ${{ secrets.SLACKHQ_MBR_GITHUB_TOKEN }}

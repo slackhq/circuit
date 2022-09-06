@@ -15,18 +15,20 @@
  */
 package com.slack.circuit.sample.petlist
 
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasParent
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.sample.petlist.PetListTestConstants.BREED_TAG
-import com.slack.circuit.sample.petlist.PetListTestConstants.GENDER_AND_AGE_TAG
+import com.slack.circuit.sample.R
+import com.slack.circuit.sample.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.IMAGE_TAG
-import com.slack.circuit.sample.petlist.PetListTestConstants.NAME_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.PROGRESS_TAG
 import kotlinx.coroutines.channels.Channel
@@ -35,7 +37,7 @@ import org.junit.Rule
 import org.junit.Test
 
 class PetListTest {
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
@@ -54,8 +56,11 @@ class PetListTest {
       setContent { PetList(PetListScreen.State.NoAnimals) {} }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
-      onNodeWithTag(NO_ANIMALS_TAG).assertIsDisplayed()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
+
+      onNodeWithTag(NO_ANIMALS_TAG)
+        .assertIsDisplayed()
+        .assertTextEquals(activity.getString(R.string.no_animals))
     }
   }
 
@@ -69,10 +74,11 @@ class PetListTest {
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
 
+      onAllNodesWithTag(CARD_TAG).assertCountEquals(1)
       onNodeWithTag(IMAGE_TAG, true).assertIsDisplayed()
-      onNodeWithTag(NAME_TAG, true).assertIsDisplayed()
-      onNodeWithTag(BREED_TAG, true).assertIsDisplayed()
-      onNodeWithTag(GENDER_AND_AGE_TAG, true).assertIsDisplayed()
+      onNodeWithText(ANIMAL.name).assertIsDisplayed()
+      onNodeWithText(ANIMAL.breed ?: "").assertIsDisplayed()
+      onNodeWithText("${ANIMAL.gender} – ${ANIMAL.age}").assertIsDisplayed()
     }
   }
 
@@ -84,7 +90,9 @@ class PetListTest {
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.Success(animals), channel::trySend) }
 
-      onNode(hasParent(hasTestTag(GRID_TAG)), true).assertIsDisplayed().performClick()
+      onAllNodesWithTag(CARD_TAG)
+        .assertCountEquals(1)[0]
+        .performClick()
 
       val event = channel.receive()
       assertThat(event)

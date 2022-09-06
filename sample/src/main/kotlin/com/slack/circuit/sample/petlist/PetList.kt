@@ -78,11 +78,9 @@ import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
-import com.slack.circuit.sample.petlist.PetListTestConstants.BREED_TAG
-import com.slack.circuit.sample.petlist.PetListTestConstants.GENDER_AND_AGE_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.IMAGE_TAG
-import com.slack.circuit.sample.petlist.PetListTestConstants.NAME_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.repo.PetRepository
@@ -193,10 +191,8 @@ internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
   const val NO_ANIMALS_TAG = "no_animals"
   const val GRID_TAG = "grid"
+  const val CARD_TAG = "card"
   const val IMAGE_TAG = "image"
-  const val NAME_TAG = "name"
-  const val BREED_TAG = "breed"
-  const val GENDER_AND_AGE_TAG = "gender_and_age"
 }
 
 @Composable
@@ -277,7 +273,11 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       ?: defaultColors
 
   Card(
-    modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { onClick() },
+    modifier = modifier
+      .fillMaxWidth()
+      .clip(RoundedCornerShape(16.dp))
+      .clickable { onClick() }
+      .testTag(CARD_TAG),
     colors = colors,
     shape = RoundedCornerShape(16.dp),
   ) {
@@ -307,7 +307,6 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
       // Name
       Text(
-        modifier = Modifier.testTag(NAME_TAG),
         text = animal.name,
         style = MaterialTheme.typography.labelLarge,
         color = textColor
@@ -315,7 +314,6 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       // Type
       animal.breed?.let {
         Text(
-          modifier = Modifier.testTag(BREED_TAG),
           text = animal.breed,
           style = MaterialTheme.typography.bodyMedium,
           color = textColor
@@ -324,7 +322,6 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         // Gender, age
         Text(
-          modifier = Modifier.testTag(GENDER_AND_AGE_TAG),
           text = "${animal.gender} – ${animal.age}",
           style = MaterialTheme.typography.bodySmall,
           color = textColor

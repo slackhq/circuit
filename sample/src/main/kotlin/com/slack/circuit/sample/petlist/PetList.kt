@@ -66,14 +66,13 @@ import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
-import com.slack.circuit.ContentContainer
+import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
-import com.slack.circuit.collectEvents
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -135,7 +134,7 @@ constructor(
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val state =
+    val state by
       produceState<PetListScreen.State>(PetListScreen.State.Loading) {
         val animals = petRepo.getAnimals()
         value =
@@ -145,7 +144,7 @@ constructor(
           }
       }
 
-    collectEvents(events) { event ->
+    EventCollector(events) { event ->
       when (event) {
         is PetListScreen.Event.ClickAnimal -> {
           navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
@@ -153,7 +152,7 @@ constructor(
       }
     }
 
-    return state.value
+    return state
   }
 
   @AssistedFactory
@@ -176,9 +175,9 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 
 @ContributesMultibinding(AppScope::class)
 class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen, container: ContentContainer): ScreenView? {
+  override fun createView(screen: Screen): ScreenView? {
     if (screen is PetListScreen) {
-      return ScreenView(container, petListUi())
+      return ScreenView(petListUi())
     }
     return null
   }

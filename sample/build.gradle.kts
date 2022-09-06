@@ -41,6 +41,9 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.material.material3)
   implementation(libs.androidx.appCompat)
+  implementation(libs.androidx.compose.ui.util)
+  implementation(libs.androidx.compose.accompanist.pager)
+  implementation(libs.androidx.compose.accompanist.pager.indicators)
   implementation(libs.androidx.palette)
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.androidx.activity)
@@ -51,12 +54,12 @@ dependencies {
   implementation(libs.okio)
   implementation(libs.retrofit)
   implementation(libs.retrofit.converters.moshi)
-
+  implementation(libs.leakcanary.android)
   implementation(libs.dagger)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)
-  testImplementation(libs.kotlin.coroutines.test)
+  testImplementation(libs.coroutines.test)
   testImplementation(libs.molecule.runtime)
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
@@ -65,6 +68,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.androidx.compose.ui.testing.junit)
   androidTestImplementation(libs.junit)
-  androidTestImplementation(libs.kotlin.coroutines.test)
+  androidTestImplementation(libs.coroutines.test)
   androidTestImplementation(libs.truth)
 }

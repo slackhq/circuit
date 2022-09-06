@@ -53,16 +53,7 @@ class PetDetailPresenterTest {
       .test {
         assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
 
-        val success =
-          animal.run {
-            PetDetailScreen.State.Success(
-              url = url,
-              photoUrl = photos.first().large,
-              photoUrlMemoryCacheKey = photos.first().small,
-              name = name,
-              description = description
-            )
-          }
+        val success = animal.toPetDetailState(animal.photos.first().small)
         assertThat(success).isEqualTo(awaitItem())
       }
   }

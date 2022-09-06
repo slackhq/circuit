@@ -15,7 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,16 +42,17 @@ import kotlinx.coroutines.flow.Flow
  * private fun PreviewTacos() = Tacos(...)
  * ```
  *
- * Most UIs don't use dependency injection at all, unless maybe getting assisted injections of
- * things like image loaders.
+ * This could be a class, but isn't necessary unless you're using dependency injection. Most UIs
+ * don't use dependency injection at all however, unless maybe getting assisted injections of things
+ * like image loaders.
  *
- * This could be a class, but isn't necessary unless you're using
+ * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
  *
  * Note that due to a bug in studio, we can't make this a `fun interface` _yet_. Instead, use [ui].
  *
  * @see ui
  */
-interface Ui<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
+interface Ui<UiState : Any, UiEvent : Any> {
   @Composable fun Render(state: UiState, events: (UiEvent) -> Unit)
 }
 
@@ -65,9 +65,9 @@ interface Ui<UiState, UiEvent : Any> where UiState : Any, UiState : Parcelable {
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState, UiEvent : Any> ui(
+inline fun <UiState : Any, UiEvent : Any> ui(
   crossinline body: @Composable (state: UiState, events: (UiEvent) -> Unit) -> Unit
-): Ui<UiState, UiEvent> where UiState : Any, UiState : Parcelable {
+): Ui<UiState, UiEvent> {
   return object : Ui<UiState, UiEvent> {
     @Composable
     override fun Render(state: UiState, events: (UiEvent) -> Unit) {
@@ -78,6 +78,6 @@ inline fun <UiState, UiEvent : Any> ui(
 
 @Suppress("NOTHING_TO_INLINE")
 @Composable
-inline fun <E : Any> collectEvents(events: Flow<E>, noinline handler: (event: E) -> Unit) {
+inline fun <E : Any> EventCollector(events: Flow<E>, noinline handler: (event: E) -> Unit) {
   LaunchedEffect(events) { events.collect(handler) }
 }

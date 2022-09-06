@@ -20,18 +20,46 @@ import androidx.compose.runtime.Immutable
 /**
  * Circuit adapts [presenterFactories][PresenterFactory] to their corresponding renderable
  * [uiFactories][ScreenViewFactory] using [screens][Screen]. Create instances using [the Builder]
- * [Builder] and create new [Navigator] instances from this using [Circuit.navigator].
+ * [Builder] and create new [CircuitContent] with it to run presenter/UI pairings.
  *
- * For example,
+ * ## Construction
+ *
+ * Construction of [Circuit] instances is done using [the Builder] [Builder].
  *
  * ```kotlin
  * val circuit = Circuit.Builder()
  *     .addUiFactory(AddFavoritesScreenViewFactory()
  *     .addPresenterFactory(AddFavoritesPresenterFactory()
  *     .build()
- *
- * val navigator = circuit.navigator(AddFavoritesScreen())
  * ```
+ *
+ * ## Usage
+ *
+ * These instances can then be used with the composable [CircuitContent] functions to run
+ * presenter/UI pairings for individual [screens][Screen].
+ *
+ * Circuit instances are consumed within these composable functions via the [CircuitProvider]
+ * CompositionLocalProvider.
+ *
+ * ```kotlin
+ * CircuitProvider(circuit) {
+ *   CircuitContent(AddFavoritesScreen())
+ * }
+ * ```
+ *
+ * If using navigation, use [NavigableCircuitContent] instead.
+ *
+ * ```kotlin
+ * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
+ * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
+ * CircuitProvider(circuit) {
+ *   NavigableCircuitContent(navigator, backstack)
+ * }
+ * ```
+ *
+ * @see rememberCircuitNavigator
+ * @see CircuitContent
+ * @see NavigableCircuitContent
  */
 @Immutable
 class Circuit private constructor(builder: Builder) {
@@ -58,14 +86,14 @@ class Circuit private constructor(builder: Builder) {
     return null
   }
 
-  fun ui(screen: Screen, container: ContentContainer): Ui<*, *>? {
-    return nextUi(null, screen, container)
+  fun ui(screen: Screen): Ui<*, *>? {
+    return nextUi(null, screen)
   }
 
-  fun nextUi(skipPast: ScreenViewFactory?, screen: Screen, container: ContentContainer): Ui<*, *>? {
+  fun nextUi(skipPast: ScreenViewFactory?, screen: Screen): Ui<*, *>? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
-      val ui = uiFactories[i].createView(screen, container)
+      val ui = uiFactories[i].createView(screen)
       if (ui != null) {
         return ui.ui
       }

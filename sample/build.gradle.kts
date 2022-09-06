@@ -54,7 +54,7 @@ dependencies {
   implementation(libs.okio)
   implementation(libs.retrofit)
   implementation(libs.retrofit.converters.moshi)
-
+  implementation(libs.leakcanary.android)
   implementation(libs.dagger)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)

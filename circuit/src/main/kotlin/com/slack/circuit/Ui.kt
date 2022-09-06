@@ -17,7 +17,6 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -27,8 +26,9 @@ import kotlinx.coroutines.flow.Flow
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
  * 2. Ensuring separation of [Ui] instance from [Screen] specific ui composables allows for and
+ * ```
  *    encourages easy UI previews via Compose's [@Preview][Preview] annotations.
- *
+ * ```
  * Usage:
  * ```
  * internal fun tacoUi(): Ui<State, Event> = ui { state, events ->

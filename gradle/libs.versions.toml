@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.26.2-beta"
+accompanist = "0.26.2-SNAPSHOT"
 androidx-activity = "1.6.0-beta01"
 androidx-appcompat = "1.4.2"
 androidx-lifecycle = "2.5.1"

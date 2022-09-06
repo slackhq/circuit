@@ -111,11 +111,11 @@ class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ -> RenderImpl(state) }
+fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ -> PetPhotoCarousel(state) }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun RenderImpl(state: PetPhotoCarouselScreen) {
+private fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
   // Prefetch images
   val context = LocalContext.current
   LaunchedEffect(Unit) {

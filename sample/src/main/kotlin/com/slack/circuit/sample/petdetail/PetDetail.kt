@@ -71,7 +71,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
   }
 }
 
-internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String): PetDetailScreen.State {
+internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
     photoUrls = photos.map { it.large },
@@ -108,15 +108,6 @@ constructor(
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
-/*
-PetDetailScreen.State.Success(
-                url = animal.url,
-                photoUrl = animal.photos.firstOrNull()?.large,
-                photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-                name = animal.name,
-                description = animal.description
-              )
-*/
             null -> PetDetailScreen.State.UnknownAnimal
             else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
           }
@@ -143,7 +134,6 @@ private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> Pet
 
 internal object PetDetailTestConstants {
   const val ANIMAL_CONTAINER_TAG = "animal_container"
-  const val IMAGE_TAG = "image"
   const val PROGRESS_TAG = "progress"
   const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
 }
@@ -168,19 +158,6 @@ internal fun PetDetail(state: PetDetailScreen.State) {
       is PetDetailScreen.State.Success -> {
         LazyColumn(modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)) {
           item {
-/*
-           AsyncImage(
-              modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
-              model =
-                ImageRequest.Builder(LocalContext.current)
-                  .data(state.photoUrl)
-                  .fallback(R.drawable.dog)
-                  .placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
-                  .crossfade(true)
-                  .build(),
-              contentDescription = state.name,
-              contentScale = ContentScale.FillWidth,
-              */
             CircuitContent(
               PetPhotoCarouselScreen(
                 name = state.name,

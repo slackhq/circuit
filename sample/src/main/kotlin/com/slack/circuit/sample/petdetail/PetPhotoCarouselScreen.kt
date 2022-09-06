@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
@@ -52,7 +53,9 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.Ui
+import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
@@ -80,7 +83,7 @@ import kotlinx.parcelize.Parcelize
 data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
-  val photoUrlMemoryCacheKey: String
+  val photoUrlMemoryCacheKey: String?
 ) : Screen
 
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
@@ -113,13 +116,18 @@ class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
 
 fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ -> PetPhotoCarousel(state) }
 
+internal object PetPhotoCarouselTestConstants{
+  const val CAROUSEL_TAG = "carousel"
+}
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
+internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
   // Prefetch images
   val context = LocalContext.current
   LaunchedEffect(Unit) {
     for (url in state.photoUrls) {
+      if (url.isBlank()) continue
       val request = ImageRequest.Builder(context).data(url).build()
       context.imageLoader.enqueue(request)
     }
@@ -130,7 +138,9 @@ private fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
   Column(
-    Modifier.fillMaxSize()
+    Modifier
+      .testTag(CAROUSEL_TAG)
+      .fillMaxSize()
       // Some images are different sizes. We probably want to constrain them to the same common
       // size though
       .animateContentSize()
@@ -185,7 +195,8 @@ private fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
           modifier = Modifier.fillMaxWidth(),
           model =
             ImageRequest.Builder(LocalContext.current)
-              .data(state.photoUrls[page])
+              .data(state.photoUrls[page].takeIf(String::isNotBlank))
+              .fallback(R.drawable.dog)
               .apply {
                 if (page == 0) {
                   placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)

@@ -21,11 +21,14 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.Circuit
+import com.slack.circuit.CircuitProvider
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
-import com.slack.circuit.sample.petdetail.PetDetailTestConstants.IMAGE_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
+import com.slack.circuit.sample.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import org.junit.Rule
 import org.junit.Test
 
@@ -62,21 +65,42 @@ class PetDetailTest {
     val success =
       PetDetailScreen.State.Success(
         url = "url",
-        photoUrl = null,
+        photoUrls = listOf(""), // using empty string here to trigger use of fallback image
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier"
       )
 
+    var carouselScreen: PetPhotoCarouselScreen? = null
+    val circuit =
+      Circuit.Builder()
+        .setOnUnavailableContentCallback { screen ->
+          carouselScreen = screen as PetPhotoCarouselScreen
+          PetPhotoCarousel(screen)
+        }
+        .build()
+
+    val expectedScreen =
+      PetPhotoCarouselScreen(
+        name = success.name,
+        photoUrls = success.photoUrls,
+        photoUrlMemoryCacheKey = null
+      )
+
     composeTestRule.run {
-      setContent { PetDetail(success) }
+      setContent { CircuitProvider(circuit) { PetDetail(success) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
 
-      onNodeWithTag(IMAGE_TAG).assertIsDisplayed()
+      onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed()
       onNodeWithText(success.name).assertIsDisplayed()
       onNodeWithText(success.description).assertIsDisplayed()
+
+      assertThat(carouselScreen).run {
+        isNotNull()
+        isEqualTo(expectedScreen)
+      }
     }
   }
 }

@@ -56,7 +56,15 @@ jobs:
         with:
           arguments: check
 
-      # TODO eventually also run instrumentation/UI tests?
+      - name: Run instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          disable-animations: true
+          disk-size: 2000M
+          heap-size: 600M
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
 
       - name: (Fail-only) Bundle the build report
         if: failure()

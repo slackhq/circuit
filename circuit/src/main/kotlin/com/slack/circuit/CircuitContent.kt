@@ -122,6 +122,8 @@ private fun CircuitContent(
 
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)
+  } else if (circuit.onUnavailableContent != null) {
+    circuit.onUnavailableContent.invoke(screen)
   } else if (unavailableContent != null) {
     unavailableContent()
   } else {

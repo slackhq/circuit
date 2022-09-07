@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     name: JDK ${{ matrix.ci_java_version }} / Kotlin ${{ matrix.ci_kotlin_version }}
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     strategy:
       fail-fast: false
       matrix:
@@ -56,7 +56,15 @@ jobs:
         with:
           arguments: check
 
-      # TODO eventually also run instrumentation/UI tests?
+      - name: Build and run instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          disable-animations: true
+          disk-size: 2000M
+          heap-size: 600M
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
 
       - name: (Fail-only) Bundle the build report
         if: failure()

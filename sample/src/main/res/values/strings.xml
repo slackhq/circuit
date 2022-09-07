@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_animals">No animals</string>
+    <string name="unknown_animals">Unknown animal</string>
+</resources>

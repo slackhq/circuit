@@ -54,6 +54,8 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -71,9 +73,15 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
+import com.slack.circuit.sample.petlist.PetListTestConstants.CARD_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.GRID_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.IMAGE_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.NO_ANIMALS_TAG
+import com.slack.circuit.sample.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -89,7 +97,7 @@ import kotlinx.parcelize.Parcelize
 data class PetListAnimal(
   val id: Long,
   val name: String,
-  val imageUrl: String,
+  val imageUrl: String?,
   val breed: String?,
   val gender: String,
   val age: String,
@@ -104,7 +112,7 @@ object PetListScreen : Screen {
   }
 
   sealed interface Event {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String) : Event
+    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
   }
 }
 
@@ -158,7 +166,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     id = id,
     // Names are sometimes all caps
     name = name.lowercase().capitalize(Locale.current),
-    imageUrl = photos[0].medium,
+    imageUrl = photos.firstOrNull()?.medium,
     breed = breeds.primary,
     gender = gender,
     age = age
@@ -176,10 +184,18 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, events -> RenderImpl(state, events) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, events -> PetList(state, events) }
+
+internal object PetListTestConstants {
+  const val PROGRESS_TAG = "progress"
+  const val NO_ANIMALS_TAG = "no_animals"
+  const val GRID_TAG = "grid"
+  const val CARD_TAG = "card"
+  const val IMAGE_TAG = "image"
+}
 
 @Composable
-private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
+internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
@@ -195,32 +211,36 @@ private fun RenderImpl(state: PetListScreen.State, events: (PetListScreen.Event)
     },
   ) { paddingValues ->
     when (state) {
-      PetListScreen.State.Loading -> {
+      PetListScreen.State.Loading ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
+          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
-      }
-      PetListScreen.State.NoAnimals -> Unit
-      is PetListScreen.State.Success -> {
-        PetList(
+      PetListScreen.State.NoAnimals ->
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+            modifier = Modifier.testTag(NO_ANIMALS_TAG),
+            text = stringResource(id = R.string.no_animals)
+          )
+        }
+      is PetListScreen.State.Success ->
+        PetListGrid(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
           events = events
         )
-      }
     }
   }
 }
 
 @Composable
-private fun PetList(
+private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
   events: (PetListScreen.Event) -> Unit
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
-    modifier = modifier,
+    modifier = modifier.testTag(GRID_TAG),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     contentPadding = PaddingValues(16.dp),
@@ -230,7 +250,7 @@ private fun PetList(
       key = { i -> animals[i].id },
     ) { index ->
       val animal = animals[index]
-      PetListItem(modifier, animal) {
+      PetListGridItem(modifier, animal) {
         events(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
       }
     }
@@ -238,7 +258,7 @@ private fun PetList(
 }
 
 @Composable
-private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -> Unit) {
+private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: () -> Unit) {
   // Palette for extracted colors from the image
   var paletteState by remember { mutableStateOf<Palette?>(null) }
   val swatch = paletteState?.getSwatch()
@@ -252,16 +272,22 @@ private fun PetListItem(modifier: Modifier, animal: PetListAnimal, onClick: () -
       ?: defaultColors
 
   Card(
-    modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { onClick() },
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(RoundedCornerShape(16.dp))
+        .clickable { onClick() }
+        .testTag(CARD_TAG),
     colors = colors,
     shape = RoundedCornerShape(16.dp),
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)
+          .fallback(R.drawable.dog)
           .memoryCacheKey(animal.imageUrl)
           .crossfade(true)
           // Default is hardware, which isn't usable in Palette

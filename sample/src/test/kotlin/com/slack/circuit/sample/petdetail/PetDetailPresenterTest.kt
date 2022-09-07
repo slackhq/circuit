@@ -38,7 +38,7 @@ class PetDetailPresenterTest {
     moleculeFlow(Immediate) { presenter.present(emptyFlow()) }
       .test {
         assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
-        assertThat(PetDetailScreen.State.NoAnimal).isEqualTo(awaitItem())
+        assertThat(PetDetailScreen.State.UnknownAnimal).isEqualTo(awaitItem())
       }
   }
 

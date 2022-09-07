@@ -58,10 +58,16 @@ dependencies {
   implementation(libs.dagger)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
-  testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.coroutines.test)
   testImplementation(libs.molecule.runtime)
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
   testImplementation(libs.robolectric)
+
+  debugImplementation(libs.androidx.compose.ui.testing.manifest)
+  androidTestImplementation(libs.androidx.compose.ui.testing.junit)
+  androidTestImplementation(libs.junit)
+  androidTestImplementation(libs.coroutines.test)
+  androidTestImplementation(libs.truth)
 }

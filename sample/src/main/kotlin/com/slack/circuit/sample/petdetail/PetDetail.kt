@@ -34,6 +34,8 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -41,8 +43,12 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
+import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -54,22 +60,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String) : Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
-    @Parcelize object NoAnimal : State
+    @Parcelize object UnknownAnimal : State
     @Parcelize
     data class Success(
       val url: String,
       val photoUrls: List<String>,
-      val photoUrlMemoryCacheKey: String,
+      val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
     ) : State
   }
 }
 
-internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String): PetDetailScreen.State {
+internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
     photoUrls = photos.map { it.large },
@@ -88,7 +94,7 @@ constructor(
 ) : PresenterFactory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     if (screen is PetDetailScreen) return petDetailPresenterFactory.create(screen)
-    if (screen is PetPhotoCarousel) return petPhotoCarousel.create(screen)
+    if (screen is PetPhotoCarouselScreen) return petPhotoCarousel.create(screen)
     return null
   }
 }
@@ -106,7 +112,7 @@ constructor(
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
-            null -> PetDetailScreen.State.NoAnimal
+            null -> PetDetailScreen.State.UnknownAnimal
             else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
           }
       }
@@ -128,26 +134,39 @@ class PetDetailScreenFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> RenderImpl(state) }
+private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> PetDetail(state) }
+
+internal object PetDetailTestConstants {
+  const val ANIMAL_CONTAINER_TAG = "animal_container"
+  const val PROGRESS_TAG = "progress"
+  const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
+}
 
 @Composable
-private fun RenderImpl(state: PetDetailScreen.State) {
+internal fun PetDetail(state: PetDetailScreen.State) {
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
       PetDetailScreen.State.Loading -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
+          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
       }
-      PetDetailScreen.State.NoAnimal -> TODO()
+      PetDetailScreen.State.UnknownAnimal -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+            modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
+            text = stringResource(id = R.string.unknown_animals)
+          )
+        }
+      }
       is PetDetailScreen.State.Success -> {
         if (isLandscape) {
           Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
           ) {
             CircuitContent(
-              PetPhotoCarousel(
+              PetPhotoCarouselScreen(
                 name = state.name,
                 photoUrls = state.photoUrls,
                 photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
@@ -159,10 +178,10 @@ private fun RenderImpl(state: PetDetailScreen.State) {
             }
           }
         } else {
-          LazyColumn(modifier = Modifier.padding(padding)) {
+          LazyColumn(modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)) {
             item {
               CircuitContent(
-                PetPhotoCarousel(
+                PetPhotoCarouselScreen(
                   name = state.name,
                   photoUrls = state.photoUrls,
                   photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,

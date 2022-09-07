@@ -15,13 +15,10 @@
  */
 package com.slack.circuit.sample.petdetail
 
-import app.cash.molecule.RecompositionClock.Immediate
-import app.cash.molecule.moleculeFlow
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.sample.petlist.PetListPresenterTest
 import com.slack.circuit.sample.petlist.TestRepository
-import kotlinx.coroutines.flow.emptyFlow
+import com.slack.circuit.sample.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,11 +32,10 @@ class PetDetailPresenterTest {
     val screen = PetDetailScreen(123L, "key")
     val presenter = PetDetailPresenter(screen, repository)
 
-    moleculeFlow(Immediate) { presenter.present(emptyFlow()) }
-      .test {
-        assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
-        assertThat(PetDetailScreen.State.UnknownAnimal).isEqualTo(awaitItem())
-      }
+    presenter.test {
+      assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
+      assertThat(PetDetailScreen.State.UnknownAnimal).isEqualTo(awaitItem())
+    }
   }
 
   @Test
@@ -49,12 +45,11 @@ class PetDetailPresenterTest {
     val screen = PetDetailScreen(animal.id, animal.photos.first().small)
     val presenter = PetDetailPresenter(screen, repository)
 
-    moleculeFlow(Immediate) { presenter.present(emptyFlow()) }
-      .test {
-        assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
+    presenter.test {
+      assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
 
-        val success = animal.toPetDetailState(animal.photos.first().small)
-        assertThat(success).isEqualTo(awaitItem())
-      }
+      val success = animal.toPetDetailState(animal.photos.first().small)
+      assertThat(success).isEqualTo(awaitItem())
+    }
   }
 }

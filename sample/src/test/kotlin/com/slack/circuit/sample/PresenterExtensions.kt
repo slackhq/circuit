@@ -23,13 +23,13 @@ import com.slack.circuit.Presenter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
-suspend fun <State : Any, Event : Any> Presenter<State, Event>.test(
-  block: suspend ReceiveTurbine<State>.() -> Unit
+suspend fun <UiState : Any, UiEvent : Any> Presenter<UiState, UiEvent>.test(
+  block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) = test(emptyFlow(), block)
 
-suspend fun <State : Any, Event : Any> Presenter<State, Event>.test(
-  events: Flow<Event>,
-  block: suspend ReceiveTurbine<State>.() -> Unit
+suspend fun <UiState : Any, UiEvent : Any> Presenter<UiState, UiEvent>.test(
+  events: Flow<UiEvent>,
+  block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {
   moleculeFlow(RecompositionClock.Immediate) { present(events) }.test(block)
 }

@@ -55,7 +55,6 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.Ui
-import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.ui
@@ -202,7 +201,6 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
           model =
             ImageRequest.Builder(LocalContext.current)
               .data(state.photoUrls[page].takeIf(String::isNotBlank))
-              .fallback(R.drawable.dog)
               .apply {
                 if (page == 0) {
                   placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)

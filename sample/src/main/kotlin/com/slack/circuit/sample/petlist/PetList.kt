@@ -287,7 +287,6 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)
-          .fallback(R.drawable.dog)
           .memoryCacheKey(animal.imageUrl)
           .crossfade(true)
           // Default is hardware, which isn't usable in Palette

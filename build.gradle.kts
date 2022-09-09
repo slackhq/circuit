@@ -144,9 +144,6 @@ subprojects {
             // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
             "-Xtype-enhancement-improvements-strict-mode",
             "-Xjspecify-annotations=strict",
-            // Skip compose version check
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
           )
       }
     }

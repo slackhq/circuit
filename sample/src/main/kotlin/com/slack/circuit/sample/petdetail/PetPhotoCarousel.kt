@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.sample.petdetail
 
+import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.focusable
@@ -36,7 +37,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
@@ -53,6 +56,7 @@ import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
@@ -77,33 +81,34 @@ import kotlinx.parcelize.Parcelize
 // TODO are we sure we want to do this?
 @Immutable
 @Parcelize
-data class PetPhotoCarousel(
+data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
-  val photoUrlMemoryCacheKey: String
+  val photoUrlMemoryCacheKey: String?
 ) : Screen
 
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
 //  screen type?
 class PetPhotoCarouselPresenter
 @AssistedInject
-constructor(@Assisted private val screen: PetPhotoCarousel) : Presenter<PetPhotoCarousel, Nothing> {
+constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
+  Presenter<PetPhotoCarouselScreen, Nothing> {
 
   @Composable
-  override fun present(events: Flow<Nothing>): PetPhotoCarousel {
+  override fun present(events: Flow<Nothing>): PetPhotoCarouselScreen {
     return screen
   }
 
   @AssistedFactory
   interface Factory {
-    fun create(screen: PetPhotoCarousel): PetPhotoCarouselPresenter
+    fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter
   }
 }
 
 @ContributesMultibinding(AppScope::class)
 class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen): ScreenView? {
-    return if (screen is PetPhotoCarousel) {
+    return if (screen is PetPhotoCarouselScreen) {
       ScreenView(petPhotoCarousel())
     } else {
       null
@@ -111,15 +116,23 @@ class PetPhotoCarouselUiFactory @Inject constructor() : ScreenViewFactory {
   }
 }
 
-fun petPhotoCarousel(): Ui<PetPhotoCarousel, Nothing> = ui { state, _ -> RenderImpl(state) }
+fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ ->
+  PetPhotoCarousel(state)
+}
+
+internal object PetPhotoCarouselTestConstants {
+  const val CAROUSEL_TAG = "carousel"
+}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun RenderImpl(state: PetPhotoCarousel) {
-  // Prefetch images
+internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
   val context = LocalContext.current
+  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+  // Prefetch images
   LaunchedEffect(Unit) {
     for (url in state.photoUrls) {
+      if (url.isBlank()) continue
       val request = ImageRequest.Builder(context).data(url).build()
       context.imageLoader.enqueue(request)
     }
@@ -129,8 +142,10 @@ private fun RenderImpl(state: PetPhotoCarousel) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
+  val columnModifier = if (isLandscape) Modifier.fillMaxWidth(0.5f) else Modifier.fillMaxSize()
   Column(
-    Modifier.fillMaxSize()
+    columnModifier
+      .testTag(CAROUSEL_TAG)
       // Some images are different sizes. We probably want to constrain them to the same common
       // size though
       .animateContentSize()
@@ -185,7 +200,7 @@ private fun RenderImpl(state: PetPhotoCarousel) {
           modifier = Modifier.fillMaxWidth(),
           model =
             ImageRequest.Builder(LocalContext.current)
-              .data(state.photoUrls[page])
+              .data(state.photoUrls[page].takeIf(String::isNotBlank))
               .apply {
                 if (page == 0) {
                   placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)

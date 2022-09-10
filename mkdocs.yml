@@ -1,0 +1,71 @@
+# pip install mkdocs mkdocs-material
+# mkdocs serve
+# mkdocs gh-deploy
+
+site_name: Circuit
+repo_name: Circuit
+repo_url: https://github.com/slackhq/circuit
+site_description: "A Compose-driven architecture for Android apps"
+site_author: Slack
+remote_branch: gh-pages
+
+copyright: 'Copyright &copy; 2022 Slack Technologies, LLC'
+
+theme:
+  name: 'material'
+  favicon: images/slack_logo_small.png
+  logo: images/slack_logo.png
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: 'teal'
+      accent: 'white'
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: 'teal'
+      accent: 'white'
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: 'Lato'
+    code: 'Fira Code'
+
+extra_css:
+  - 'css/app.css'
+
+markdown_extensions:
+  - smarty
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.emoji
+  - tables
+  - admonition
+
+nav:
+  - 'Overview':
+      - 'Circuit': index.md
+  # TODO example is from KotlinPoet, adapt from them once we have docs uploaded
+#  - 'API':
+#      - 'kotlinpoet': 1.x/kotlinpoet/index.html
+#      - 'interop-javapoet': 1.x/interop-javapoet/index.html
+#      - 'interop-kotlinx-metadata': 1.x/interop-kotlinx-metadata/index.html
+#      - 'interop-ksp': 1.x/interop-ksp/index.html
+#  - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
+#  - 'Change Log': changelog.md
+  - 'Contributing': contributing.md
+  - 'CoC': code-of-conduct.md

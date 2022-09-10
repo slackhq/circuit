@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 /**
  * Presents a given [UiState] and handles its [events][UiEvent].
  *
+ * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
+ *
  * @see present for more thorough documentation.
  */
 interface Presenter<UiState : Any, UiEvent : Any> {
@@ -30,7 +32,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    * production, a [Navigator] is used to automatically connect this with a corresponding [Ui] to
    * render the state returned by this function.
    *
-   * When collecting [events], use [collectEvents] to collect them.
+   * When collecting [events], use [EventCollector] to collect them.
    *
    * ```kotlin
    * class FavoritesPresenter(...) : Presenter<State, Event> {

@@ -43,6 +43,7 @@ fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
+  circuit: Circuit = LocalCircuitOwner.current,
   enableBackHandler: Boolean = true,
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
@@ -55,6 +56,7 @@ fun NavigableCircuitContent(
     backstack = backstack,
     providedValues = providedValues,
     modifier = modifier,
+    circuit = circuit,
     decoration = decoration,
     unavailableRoute = unavailableRoute,
   )
@@ -66,6 +68,7 @@ fun BasicNavigableCircuitContent(
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
+  circuit: Circuit = LocalCircuitOwner.current,
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
@@ -77,7 +80,7 @@ fun BasicNavigableCircuitContent(
           val screen = record.screen
 
           val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator) { unavailableRoute(routeName) }
+            CircuitContent(screen, navigator, circuit) { unavailableRoute(routeName) }
           }
 
           val currentRouteContent by rememberUpdatedState(currentRender)
@@ -102,19 +105,19 @@ fun BasicNavigableCircuitContent(
 @Composable
 fun CircuitContent(
   screen: Screen,
-  unavailableContent: (@Composable () -> Unit)? = null,
+  circuit: Circuit = LocalCircuitOwner.current,
+  unavailableContent: (@Composable (screen: Any) -> Unit)? = circuit.onUnavailableContent,
 ) {
-  CircuitContent(screen, Navigator.NoOp, unavailableContent)
+  CircuitContent(screen, Navigator.NoOp, circuit, unavailableContent)
 }
 
 @Composable
 fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
-  unavailableContent: (@Composable () -> Unit)? = null,
+  circuit: Circuit = LocalCircuitOwner.current,
+  unavailableContent: (@Composable (screen: Any) -> Unit)?,
 ) {
-  val circuit = LocalCircuitOwner.current
-
   val continuity = viewModel<Continuity>()
   val presenter =
     remember(continuity) {
@@ -147,7 +150,7 @@ fun CircuitContent(
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)
   } else if (unavailableContent != null) {
-    unavailableContent()
+    unavailableContent(screen)
   } else {
     error("Could not render screen $screen")
   }

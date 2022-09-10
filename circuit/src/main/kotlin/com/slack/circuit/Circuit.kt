@@ -15,6 +15,7 @@
  */
 package com.slack.circuit
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 
 /**
@@ -65,6 +66,7 @@ import androidx.compose.runtime.Immutable
 class Circuit private constructor(builder: Builder) {
   private val uiFactories: List<ScreenViewFactory> = builder.uiFactories.toList()
   private val presenterFactories: List<PresenterFactory> = builder.presenterFactories.toList()
+  val onUnavailableContent: (@Composable (screen: Any) -> Unit)? = builder.onUnavailableContent
 
   fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     return nextPresenter(null, screen, navigator)
@@ -107,6 +109,8 @@ class Circuit private constructor(builder: Builder) {
   class Builder constructor() {
     val uiFactories = mutableListOf<ScreenViewFactory>()
     val presenterFactories = mutableListOf<PresenterFactory>()
+    var onUnavailableContent: (@Composable (screen: Any) -> Unit)? = null
+      private set
 
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
@@ -135,6 +139,10 @@ class Circuit private constructor(builder: Builder) {
 
     fun addPresenterFactories(factories: Iterable<PresenterFactory>) = apply {
       presenterFactories.addAll(factories)
+    }
+
+    fun setOnUnavailableContentCallback(callback: @Composable (screen: Any) -> Unit) = apply {
+      onUnavailableContent = callback
     }
 
     fun build(): Circuit {

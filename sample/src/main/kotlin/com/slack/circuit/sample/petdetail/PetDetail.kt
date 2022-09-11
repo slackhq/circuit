@@ -46,6 +46,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
@@ -72,6 +74,7 @@ import dagger.assisted.AssistedInject
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
+import java.util.Locale
 
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
@@ -238,7 +241,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
         ) {
           Text(
             modifier = Modifier.padding(12.dp),
-            text = tag,
+            text = tag.capitalize(LocaleList.current),
             color = Color.White,
             style = MaterialTheme.typography.labelLarge
           )

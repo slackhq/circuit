@@ -94,7 +94,7 @@ fun BasicNavigableCircuitContent(
       (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider.invoke() }
+      CompositionLocalProvider(*providedLocals) { provider() }
     }
   }
 }

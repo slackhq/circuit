@@ -19,7 +19,10 @@ import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Parcelable
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
+import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +54,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.slack.circuit.CircuitContent
@@ -102,7 +106,16 @@ internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetail
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
     description = description,
-    tags = listOfNotNull(colors.primary, breeds.primary, gender, size, status, type)
+    tags =
+      listOfNotNull(
+        colors.primary,
+        colors.secondary,
+        breeds.primary,
+        breeds.secondary,
+        gender,
+        size,
+        status
+      )
   )
 }
 
@@ -233,6 +246,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
       mainAxisSpacing = 8.dp,
       crossAxisSpacing = 8.dp,
       mainAxisAlignment = FlowMainAxisAlignment.Center,
+      crossAxisAlignment = FlowCrossAxisAlignment.Center,
     ) {
       state.tags.forEach { tag ->
         Surface(
@@ -259,17 +273,19 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
     val context = LocalContext.current
     Button(modifier = Modifier.fillMaxWidth(), onClick = { openTab(context, state.url) }) {
       Text(
-        text = "Full bio on Petfinder",
+        text = "Full bio on Petfinder ➡",
         color = MaterialTheme.colorScheme.onSurface,
-        style = MaterialTheme.typography.labelLarge
+        style = MaterialTheme.typography.headlineSmall
       )
     }
   }
 }
 
 private fun openTab(context: Context, url: String) {
+  val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
   CustomTabsIntent.Builder()
-    .setToolbarColor(0x000000)
+    .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)
+    .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
     .setShowTitle(true)
     .build()
     .launchUrl(context, Uri.parse(url))

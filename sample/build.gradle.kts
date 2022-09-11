@@ -41,6 +41,7 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.material.material3)
   implementation(libs.androidx.appCompat)
+  implementation(libs.androidx.browser)
   implementation(libs.androidx.compose.ui.util)
   implementation(libs.androidx.compose.accompanist.pager)
   implementation(libs.androidx.compose.accompanist.pager.indicators)

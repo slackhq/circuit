@@ -15,10 +15,11 @@
  */
 package com.slack.circuit.sample.petdetail
 
-import android.content.Intent
+import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Parcelable
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,7 +75,6 @@ import dagger.assisted.AssistedInject
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
-import java.util.Locale
 
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
@@ -257,18 +257,20 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   }
   item(state.url) {
     val context = LocalContext.current
-    Button(
-      modifier = Modifier.fillMaxWidth(),
-      onClick = {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(state.url))
-        context.startActivity(browserIntent)
-      }
-    ) {
+    Button(modifier = Modifier.fillMaxWidth(), onClick = { openTab(context, state.url) }) {
       Text(
-        text = "Adopt Me!",
+        text = "Full bio on Petfinder",
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.labelLarge
       )
     }
   }
+}
+
+private fun openTab(context: Context, url: String) {
+  CustomTabsIntent.Builder()
+    .setToolbarColor(0x000000)
+    .setShowTitle(true)
+    .build()
+    .launchUrl(context, Uri.parse(url))
 }

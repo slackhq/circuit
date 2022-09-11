@@ -49,6 +49,10 @@ interface NavDecoration {
 /** Default values and common alternatives used by navigable composables. */
 object NavigatorDefaults {
 
+  private const val FIVE_PERCENT = 0.05f
+  private val SlightlyRight = { width: Int -> (width * FIVE_PERCENT).toInt() }
+  private val SlightlyLeft = { width: Int -> 0 - (width * FIVE_PERCENT).toInt() }
+
   /** The default [NavDecoration] used in navigation. */
   object DefaultDecoration : NavDecoration {
     @OptIn(ExperimentalAnimationApi::class)
@@ -116,7 +120,3 @@ object NavigatorDefaults {
     )
   }
 }
-
-private const val FIVE_PERCENT = 0.05f
-private val SlightlyRight = { width: Int -> (width * FIVE_PERCENT).toInt() }
-private val SlightlyLeft = { width: Int -> 0 - (width * FIVE_PERCENT).toInt() }

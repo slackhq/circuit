@@ -100,7 +100,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.2.2"
 junit = "junit:junit:4.13.2"
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }

@@ -81,7 +81,8 @@ class PetDetailTest {
         photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
-        description = "Grumpy looking Australian Terrier"
+        description = "Grumpy looking Australian Terrier",
+        tags = listOf("dog", "terrier", "male"),
       )
 
     var carouselScreen: PetPhotoCarouselScreen? = null

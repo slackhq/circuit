@@ -74,7 +74,6 @@ import com.slack.circuit.Screen
 import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.sample.R
-import com.slack.circuit.sample.bottomNavBar.SampleBottomNavigation
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailScreen
@@ -210,7 +209,6 @@ internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -
           )
       )
     },
-    bottomBar = { SampleBottomNavigation().BottomNavigationBar() }
   ) { paddingValues ->
     when (state) {
       PetListScreen.State.Loading ->

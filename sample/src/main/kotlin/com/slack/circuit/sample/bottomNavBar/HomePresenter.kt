@@ -6,23 +6,35 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
-import com.slack.circuit.*
+import com.slack.circuit.EventCollector
+import com.slack.circuit.Navigator
+import com.slack.circuit.Presenter
+import com.slack.circuit.PresenterFactory
+import com.slack.circuit.Screen
+import com.slack.circuit.ScreenView
+import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.PetList
 import com.slack.circuit.sample.petlist.PetListPresenter
 import com.slack.circuit.sample.petlist.PetListScreen
+import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -33,12 +45,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-
 @Parcelize
 object HomeScreen : Screen {
+    @Immutable
     data class State(val index: Int, val bottomNavItems: List<Screen>, val petListState: PetListScreen.State? = null)
 
     sealed interface Event {
+        @Immutable
         data class NavClickEvent(val index: Int) : Event
         data class PetListEvent(val event: PetListScreen.Event) : Event
     }
@@ -62,7 +75,6 @@ constructor(
 ) : Presenter<HomeScreen.State, HomeScreen.Event> {
     private val homeScreenNavItems = listOf(PetListScreen, PetListScreen)
 
-    @SuppressLint("FlowOperatorInvokedInComposition")
     @Composable
     override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
         var state by remember {
@@ -72,17 +84,21 @@ constructor(
         EventCollector(events = events) { event ->
             when(event) {
                 is HomeScreen.Event.NavClickEvent -> state = state.copy(index = event.index)
-                else -> {
-
+                is HomeScreen.Event.PetListEvent -> {
+                    // Would Like to put PetListPresenter logic here but can't call
+                    // Composable functions here
                 }
             }
         }
 
-        if (state.index == 0) {
-            val petListPresenter = petListPresenterFactory.create(navigator)
-            val listState = petListPresenter.present(events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event })
-            state = state.copy(petListState = listState)
+    if (state.index == 0) {
+        val petListPresenter = petListPresenterFactory.create(navigator)
+        val filteredEvent = remember(events) {
+            events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
         }
+        val listState = petListPresenter.present(filteredEvent)
+        state = state.copy(petListState = listState)
+    }
 
         return state
     }

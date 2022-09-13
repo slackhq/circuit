@@ -25,20 +25,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -59,7 +55,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
 import androidx.palette.graphics.Palette.Swatch
@@ -100,11 +95,25 @@ data class PetListAnimal(
   val imageUrl: String?,
   val breed: String?,
   val gender: String,
+  val size: String,
   val age: String,
 ) : Parcelable
 
+enum class Gender {
+  ALL,
+  MALE,
+  FEMALE
+}
+
+enum class Size {
+  ALL,
+  SMALL,
+  MEDIUM,
+  LARGE
+}
+
 @Parcelize
-object PetListScreen : Screen {
+data class PetListScreen(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
     @Parcelize object NoAnimals : State
@@ -119,9 +128,11 @@ object PetListScreen : Screen {
 @ContributesMultibinding(AppScope::class)
 class PetListScreenPresenterFactory
 @Inject
-constructor(private val petListPresenterFactory: PetListPresenter.Factory) : PresenterFactory {
+constructor(
+  private val petListPresenterFactory: PetListPresenter.Factory,
+) : PresenterFactory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
+    if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
     return null
   }
 }
@@ -130,19 +141,26 @@ class PetListPresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
+  @Assisted private val screen: PetListScreen,
   private val petRepo: PetRepository,
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val state by
-      produceState<PetListScreen.State>(PetListScreen.State.Loading) {
-        val animals = petRepo.getAnimals()
-        value =
-          when {
-            animals.isEmpty() -> PetListScreen.State.NoAnimals
-            else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
-          }
+    val animalState by produceState<List<PetListAnimal>?>(null) {
+      val animals = petRepo.getAnimals()
+      value = animals.map { it.toPetListAnimal() }
+    }
+
+    val state = remember(screen, animalState) {
+      val animals = animalState
+      when {
+        animals == null -> PetListScreen.State.Loading
+        animals.isEmpty() -> PetListScreen.State.NoAnimals
+        else -> PetListScreen.State.Success(
+          animals = animals.filter(::shouldKeep)
+        )
       }
+    }
 
     EventCollector(events) { event ->
       when (event) {
@@ -155,9 +173,23 @@ constructor(
     return state
   }
 
+  private fun shouldKeep(animal: PetListAnimal): Boolean {
+    return screen.gender.shouldKeep(animal.gender) && screen.size.shouldKeep(animal.size)
+  }
+
+  private fun Gender.shouldKeep(gender: String): Boolean {
+    if (this == Gender.ALL) return true
+    return this.name.lowercase() == gender.lowercase()
+  }
+
+  private fun Size.shouldKeep(size: String): Boolean {
+    if (this == Size.ALL) return true
+    return this.name.lowercase() == size.lowercase()
+  }
+
   @AssistedFactory
   interface Factory {
-    fun create(navigator: Navigator): PetListPresenter
+    fun create(navigator: Navigator, screen: PetListScreen): PetListPresenter
   }
 }
 
@@ -169,6 +201,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     imageUrl = photos.firstOrNull()?.medium,
     breed = breeds.primary,
     gender = gender,
+    size = size,
     age = age
   )
 }
@@ -196,39 +229,24 @@ internal object PetListTestConstants {
 
 @Composable
 internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
-  Scaffold(
-    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
-    topBar = {
-      CenterAlignedTopAppBar(
-        title = {
-          Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        },
-        colors =
-          TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-          )
-      )
-    },
-  ) { paddingValues ->
-    when (state) {
-      PetListScreen.State.Loading ->
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
-        }
-      PetListScreen.State.NoAnimals ->
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-            modifier = Modifier.testTag(NO_ANIMALS_TAG),
-            text = stringResource(id = R.string.no_animals)
-          )
-        }
-      is PetListScreen.State.Success ->
-        PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
-          animals = state.animals,
-          events = events
+  when (state) {
+    PetListScreen.State.Loading ->
+      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+      }
+    PetListScreen.State.NoAnimals ->
+      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+          modifier = Modifier.testTag(NO_ANIMALS_TAG),
+          text = stringResource(id = R.string.no_animals)
         )
-    }
+      }
+    is PetListScreen.State.Success ->
+      PetListGrid(
+        modifier = Modifier.fillMaxSize(),
+        animals = state.animals,
+        events = events
+      )
   }
 }
 

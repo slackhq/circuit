@@ -28,6 +28,7 @@ import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.sample.di.ActivityKey
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petlist.PetListFilterScreen
 import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -46,7 +47,7 @@ constructor(
     super.onCreate(savedInstanceState)
     setContent {
       StarTheme {
-        val backstack = rememberSaveableBackStack { push(PetListScreen) }
+        val backstack = rememberSaveableBackStack { push(PetListFilterScreen) }
         val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
         CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
       }

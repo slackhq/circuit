@@ -20,38 +20,49 @@ import androidx.compose.ui.unit.sp
 import com.slack.circuit.*
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petlist.PetList
 import com.slack.circuit.sample.petlist.PetListPresenter
 import com.slack.circuit.sample.petlist.PetListScreen
 import com.squareup.anvil.annotations.ContributesMultibinding
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-import javax.inject.Provider
 
 
 @Parcelize
 object HomeScreen : Screen {
-    data class State(val index: Int, val bottomNavItems: List<Screen>)
+    data class State(val index: Int, val bottomNavItems: List<Screen>, val petListState: PetListScreen.State? = null)
 
     sealed interface Event {
         data class NavClickEvent(val index: Int) : Event
+        data class PetListEvent(val event: PetListScreen.Event) : Event
     }
 }
 
 @ContributesMultibinding(AppScope::class)
 class HomeScreenPresenterFactory
 @Inject
-constructor(private val homePresenterFactory: Provider<HomePresenter>) : PresenterFactory {
+constructor(private val homePresenterFactory: HomePresenter.Factory) : PresenterFactory {
     override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-        if (screen is HomeScreen) return homePresenterFactory.get()
+        if (screen is HomeScreen) return homePresenterFactory.create(navigator)
         return null
     }
 }
 
-
-class HomePresenter @Inject constructor() : Presenter<HomeScreen.State, HomeScreen.Event> {
+class HomePresenter
+@AssistedInject
+constructor(
+    @Assisted private val navigator: Navigator,
+    private val petListPresenterFactory: PetListPresenter.Factory
+) : Presenter<HomeScreen.State, HomeScreen.Event> {
     private val homeScreenNavItems = listOf(PetListScreen, PetListScreen)
 
+    @SuppressLint("FlowOperatorInvokedInComposition")
     @Composable
     override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
         var state by remember {
@@ -60,11 +71,25 @@ class HomePresenter @Inject constructor() : Presenter<HomeScreen.State, HomeScre
 
         EventCollector(events = events) { event ->
             when(event) {
-                is HomeScreen.Event.NavClickEvent -> state = state.copy(event.index)
+                is HomeScreen.Event.NavClickEvent -> state = state.copy(index = event.index)
+                else -> {
+
+                }
             }
         }
 
+        if (state.index == 0) {
+            val petListPresenter = petListPresenterFactory.create(navigator)
+            val listState = petListPresenter.present(events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event })
+            state = state.copy(petListState = listState)
+        }
+
         return state
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navigator: Navigator): HomePresenter
     }
 }
 
@@ -78,7 +103,6 @@ class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
     }
 }
 
-
 private fun homeScreenUi() = ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeScreen(state, events) }
 
 @Composable
@@ -86,8 +110,8 @@ private fun homeScreenUi() = ui<HomeScreen.State, HomeScreen.Event> { state, eve
 fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
     Scaffold(
         modifier = Modifier
-        .systemBarsPadding()
-        .fillMaxWidth(),
+            .systemBarsPadding()
+            .fillMaxWidth(),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -101,7 +125,11 @@ fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
         },
         bottomBar = { BottomNavigationBar(selectedIndex = state.index) { index -> events(HomeScreen.Event.NavClickEvent(index)) } },
     ) {
-        CircuitContent(state.bottomNavItems[state.index])
+        state.petListState?.let {
+            PetList(it) { event ->
+                events(HomeScreen.Event.PetListEvent(event))
+            }
+        }
     }
 }
 
@@ -134,95 +162,3 @@ fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//@ContributesMultibinding(AppScope::class)
-//class HomeScreenPresenterFactory
-//@Inject
-//constructor(private val homePresenterFactory: HomePresenter.Factory) : PresenterFactory {
-//    override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-//        if (screen is HomeScreen) return homePresenterFactory.create(navigator)
-//        return null
-//    }
-//}
-//
-//class HomePresenter
-//@AssistedInject
-//constructor(@Assisted private val navigator: Navigator,) : Presenter<HomeScreen.State, HomeScreen.Event> {
-//    val bottomNav = BottomNav(navigator)
-//
-//    @Composable
-//    override fun present(events : Flow<HomeScreen.Event>): HomeScreen.State {
-//
-//    }
-//
-//    // Events are NavBar click events?
-//    // and State would be THe grid view im returning
-//
-//    @Composable
-//    internal fun Home(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
-//        Scaffold(
-//            modifier = Modifier
-//                .systemBarsPadding()
-//                .fillMaxWidth(),
-//            topBar = {
-//                CenterAlignedTopAppBar(
-//                    title = {
-//                        Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-//                    },
-//                    colors =
-//                    TopAppBarDefaults.centerAlignedTopAppBarColors(
-//                        containerColor = MaterialTheme.colorScheme.primaryContainer
-//                    )
-//                )
-//            },
-//            bottomBar = { bottomNav.BottomNavigationBar() },
-//            content = { paddingValues ->
-//                when (state) {
-//                    PetListScreen.State.Loading ->
-//                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                            CircularProgressIndicator(modifier = Modifier.testTag(PetListTestConstants.PROGRESS_TAG))
-//                        }
-//                    PetListScreen.State.NoAnimals ->
-//                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                            Text(
-//                                modifier = Modifier.testTag(PetListTestConstants.NO_ANIMALS_TAG),
-//                                text = stringResource(id = R.string.no_animals)
-//                            )
-//                        }
-//                    is PetListScreen.State.Success ->
-//                        PetListGrid(
-//                            modifier = Modifier
-//                                .padding(paddingValues)
-//                                .fillMaxSize(),
-//                            animals = state.animals,
-//                            events = events
-//                        )
-//                }
-//            }
-//        )
-//    }
-//
-//    @Composable
-//    fun Navigation(navigator: Navigator) {
-//
-//    }
-//
-//    @AssistedFactory
-//    interface Factory {
-//        fun create(navigator: Navigator): HomePresenter
-//    }
-//}

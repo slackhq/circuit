@@ -198,17 +198,6 @@ internal object PetListTestConstants {
 internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier.systemBarsPadding().fillMaxWidth(),
-    topBar = {
-      CenterAlignedTopAppBar(
-        title = {
-          Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        },
-        colors =
-          TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-          )
-      )
-    },
   ) { paddingValues ->
     when (state) {
       PetListScreen.State.Loading ->

@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
-import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
@@ -75,37 +74,41 @@ class HomePresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
-  private val petListPresenterFactory: PetListPresenter.Factory
+  petListPresenterFactory: PetListPresenter.Factory
 ) : Presenter<HomeScreen.State, HomeScreen.Event> {
+  private val petListPresenter = petListPresenterFactory.create(navigator)
   private val homeScreenNavItems = listOf(PetListScreen, PetListScreen)
 
+  @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
   override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
     var state by remember {
       mutableStateOf(HomeScreen.State(0, homeScreenNavItems))
     }
 
-    EventCollector(events = events) { event ->
-      when (event) {
-        is HomeScreen.Event.NavClickEvent -> state = state.copy(index = event.index)
-        is HomeScreen.Event.PetListEvent -> {
-          // Would Like to put PetListPresenter logic here but can't call
-          // Composable functions here
-        }
-      }
-    }
+    // Nav click events.
+    val filteredNavClickEventEvents = rememberFilteredHomeEvents(events)
+    filteredNavClickEventEvents.map { event -> state = state.copy(index = event.index) }
 
-    if (state.index == 0) {
-      val petListPresenter = petListPresenterFactory.create(navigator)
-      val filteredEvent = remember(events) {
-        events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
-      }
-      val listState = petListPresenter.present(filteredEvent)
-      state = state.copy(petListState = listState)
-    }
+    // Pet events.
+    val filteredPetEvents = rememberFilteredPetEvents(events)
+    val listState = petListPresenter.present(filteredPetEvents)
+    state = state.copy(petListState = listState)
 
     return state
   }
+
+  @Composable
+  private fun rememberFilteredHomeEvents(events: Flow<HomeScreen.Event>): Flow<HomeScreen.Event.NavClickEvent> =
+    remember(events) {
+      events.filterIsInstance<HomeScreen.Event.NavClickEvent>().map { it }
+    }
+
+  @Composable
+  private fun rememberFilteredPetEvents(events: Flow<HomeScreen.Event>): Flow<PetListScreen.Event> =
+    remember(events) {
+      events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
+    }
 
   @AssistedFactory
   interface Factory {
@@ -131,8 +134,8 @@ private fun homeScreenUi() =
 fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier
-        .systemBarsPadding()
-        .fillMaxWidth(),
+      .systemBarsPadding()
+      .fillMaxWidth(),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
@@ -153,13 +156,14 @@ fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
         )
       }
     },
-  ) {
-    state.petListState?.let {
-      PetList(it) { event ->
-        events(HomeScreen.Event.PetListEvent(event))
+    content = {
+      state.petListState?.let {
+        PetList(it) { event ->
+          events(HomeScreen.Event.PetListEvent(event))
+        }
       }
     }
-  }
+  )
 }
 
 @Composable

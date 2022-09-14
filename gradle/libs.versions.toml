@@ -30,7 +30,7 @@ moshix = "0.18.3"
 okhttp = "5.0.0-alpha.10"
 retrofit = "2.9.0"
 robolectric = "4.8.2"
-spotless = "6.10.0"
+spotless = "6.11.0"
 turbine = "0.9.0"
 versionsPlugin = "0.42.0"
 

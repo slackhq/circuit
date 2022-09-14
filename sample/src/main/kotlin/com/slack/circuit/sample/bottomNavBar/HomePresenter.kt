@@ -47,134 +47,147 @@ import javax.inject.Inject
 
 @Parcelize
 object HomeScreen : Screen {
-    @Immutable
-    data class State(val index: Int, val bottomNavItems: List<Screen>, val petListState: PetListScreen.State? = null)
+  @Immutable
+  data class State(
+    val index: Int,
+    val bottomNavItems: List<Screen>,
+    val petListState: PetListScreen.State? = null
+  )
 
-    sealed interface Event {
-        @Immutable
-        data class NavClickEvent(val index: Int) : Event
-        data class PetListEvent(val event: PetListScreen.Event) : Event
-    }
+  sealed interface Event {
+    @Immutable
+    data class NavClickEvent(val index: Int) : Event
+    data class PetListEvent(val event: PetListScreen.Event) : Event
+  }
 }
 
 @ContributesMultibinding(AppScope::class)
 class HomeScreenPresenterFactory
 @Inject
 constructor(private val homePresenterFactory: HomePresenter.Factory) : PresenterFactory {
-    override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-        if (screen is HomeScreen) return homePresenterFactory.create(navigator)
-        return null
-    }
+  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+    if (screen is HomeScreen) return homePresenterFactory.create(navigator)
+    return null
+  }
 }
 
 class HomePresenter
 @AssistedInject
 constructor(
-    @Assisted private val navigator: Navigator,
-    private val petListPresenterFactory: PetListPresenter.Factory
+  @Assisted private val navigator: Navigator,
+  private val petListPresenterFactory: PetListPresenter.Factory
 ) : Presenter<HomeScreen.State, HomeScreen.Event> {
-    private val homeScreenNavItems = listOf(PetListScreen, PetListScreen)
+  private val homeScreenNavItems = listOf(PetListScreen, PetListScreen)
 
-    @Composable
-    override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
-        var state by remember {
-            mutableStateOf(HomeScreen.State(0, homeScreenNavItems))
-        }
+  @Composable
+  override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
+    var state by remember {
+      mutableStateOf(HomeScreen.State(0, homeScreenNavItems))
+    }
 
-        EventCollector(events = events) { event ->
-            when(event) {
-                is HomeScreen.Event.NavClickEvent -> state = state.copy(index = event.index)
-                is HomeScreen.Event.PetListEvent -> {
-                    // Would Like to put PetListPresenter logic here but can't call
-                    // Composable functions here
-                }
-            }
+    EventCollector(events = events) { event ->
+      when (event) {
+        is HomeScreen.Event.NavClickEvent -> state = state.copy(index = event.index)
+        is HomeScreen.Event.PetListEvent -> {
+          // Would Like to put PetListPresenter logic here but can't call
+          // Composable functions here
         }
+      }
+    }
 
     if (state.index == 0) {
-        val petListPresenter = petListPresenterFactory.create(navigator)
-        val filteredEvent = remember(events) {
-            events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
-        }
-        val listState = petListPresenter.present(filteredEvent)
-        state = state.copy(petListState = listState)
+      val petListPresenter = petListPresenterFactory.create(navigator)
+      val filteredEvent = remember(events) {
+        events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
+      }
+      val listState = petListPresenter.present(filteredEvent)
+      state = state.copy(petListState = listState)
     }
 
-        return state
-    }
+    return state
+  }
 
-    @AssistedFactory
-    interface Factory {
-        fun create(navigator: Navigator): HomePresenter
-    }
+  @AssistedFactory
+  interface Factory {
+    fun create(navigator: Navigator): HomePresenter
+  }
 }
 
 @ContributesMultibinding(AppScope::class)
 class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
-    override fun createView(screen: Screen): ScreenView? {
-        if (screen is HomeScreen) {
-            return ScreenView(homeScreenUi())
-        }
-        return null
+  override fun createView(screen: Screen): ScreenView? {
+    if (screen is HomeScreen) {
+      return ScreenView(homeScreenUi())
     }
+    return null
+  }
 }
 
-private fun homeScreenUi() = ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeScreen(state, events) }
+private fun homeScreenUi() =
+  ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeScreen(state, events) }
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
-    Scaffold(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxWidth(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                },
-                colors =
-                TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
+  Scaffold(
+    modifier = Modifier
+        .systemBarsPadding()
+        .fillMaxWidth(),
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
         },
-        bottomBar = { BottomNavigationBar(selectedIndex = state.index) { index -> events(HomeScreen.Event.NavClickEvent(index)) } },
-    ) {
-        state.petListState?.let {
-            PetList(it) { event ->
-                events(HomeScreen.Event.PetListEvent(event))
-            }
-        }
+        colors =
+        TopAppBarDefaults.centerAlignedTopAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+      )
+    },
+    bottomBar = {
+      BottomNavigationBar(selectedIndex = state.index) { index ->
+        events(
+          HomeScreen.Event.NavClickEvent(
+            index
+          )
+        )
+      }
+    },
+  ) {
+    state.petListState?.let {
+      PetList(it) { event ->
+        events(HomeScreen.Event.PetListEvent(event))
+      }
     }
+  }
 }
 
 @Composable
 fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
-    // These are the buttons on the NavBar, they dictate where we navigate too.
-    val items = listOf(BottomNavItem.Dogs, BottomNavItem.Cats)
-    BottomNavigation(
-        backgroundColor = MaterialTheme.colorScheme.primary,
-        contentColor = Color.White
-    ) {
-        items.forEachIndexed { index, item ->
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        painterResource(id = R.drawable.drago_dog),
-                        contentDescription = item.title,
-                        modifier = Modifier.scale(0.5f)
-                    )
-                },
-                label = { androidx.compose.material.Text(text = item.title) },
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.White.copy(0.4f),
-                alwaysShowLabel = true,
-                selected = selectedIndex == index,
-                onClick = {
-                    onSelectedIndex(index)
-                }
-            )
+  // These are the buttons on the NavBar, they dictate where we navigate too.
+  val items = listOf(BottomNavItem.Dogs, BottomNavItem.Cats)
+  BottomNavigation(
+    backgroundColor = MaterialTheme.colorScheme.primary,
+    contentColor = Color.White
+  ) {
+    items.forEachIndexed { index, item ->
+      BottomNavigationItem(
+        icon = {
+          Icon(
+            painterResource(id = R.drawable.drago_dog),
+            contentDescription = item.title,
+            modifier = Modifier.scale(0.5f)
+          )
+        },
+        label = { androidx.compose.material.Text(text = item.title) },
+        selectedContentColor = Color.White,
+        unselectedContentColor = Color.White.copy(0.4f),
+        alwaysShowLabel = true,
+        selected = selectedIndex == index,
+        onClick = {
+          onSelectedIndex(index)
         }
+      )
     }
+  }
 }

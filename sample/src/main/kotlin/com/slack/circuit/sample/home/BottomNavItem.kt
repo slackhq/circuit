@@ -1,4 +1,4 @@
-package com.slack.circuit.sample.bottomNavBar
+package com.slack.circuit.sample.home
 
 import com.slack.circuit.Screen
 import com.slack.circuit.sample.petlist.PetListScreen

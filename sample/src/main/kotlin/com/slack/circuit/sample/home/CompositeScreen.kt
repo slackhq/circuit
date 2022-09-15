@@ -1,4 +1,4 @@
-package com.slack.circuit.sample.bottomNavBar
+package com.slack.circuit.sample.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,11 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -44,94 +39,78 @@ import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
+// Need better naming conventions.
 @Parcelize
-object HomeScreen : Screen {
-  @Immutable
-  data class State(
-    val index: Int,
-    val bottomNavItems: List<Screen>,
-    val petListState: PetListScreen.State? = null
-  )
+object CompositeScreen : Screen {
+  data class CompositeState(val homeState: HomeScreen.State, val petListState: PetListScreen.State)
 
-  sealed interface Event {
-    @Immutable
-    data class NavClickEvent(val index: Int) : Event
-    data class PetListEvent(val event: PetListScreen.Event) : Event
+  sealed interface CompositeEvent {
+    class CompositeHomeEvent(val event: HomeScreen.Event.NavClickEvent) : CompositeEvent
+    class CompositePetListEvent(val event: PetListScreen.Event) : CompositeEvent
   }
 }
 
 @ContributesMultibinding(AppScope::class)
-class HomeScreenPresenterFactory
+class CompositePresenterFactory
 @Inject
-constructor(private val homePresenterFactory: HomePresenter.Factory) : PresenterFactory {
+constructor(private val compositePresenterFactory: CompositePresenter.Factory) : PresenterFactory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    if (screen is HomeScreen) return homePresenterFactory.create(navigator)
+    if (screen is CompositeScreen) return compositePresenterFactory.create(navigator)
     return null
   }
 }
 
-class HomePresenter
+class CompositePresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
+  private val homePresenter: HomePresenter,
   petListPresenterFactory: PetListPresenter.Factory
-) : Presenter<HomeScreen.State, HomeScreen.Event> {
+) : Presenter<CompositeScreen.CompositeState, CompositeScreen.CompositeEvent> {
   private val petListPresenter = petListPresenterFactory.create(navigator)
-  private val homeScreenNavItems = listOf(PetListScreen, PetListScreen)
 
   @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
-  override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
-    var state by remember {
-      mutableStateOf(HomeScreen.State(0, homeScreenNavItems))
-    }
+  override fun present(events: Flow<CompositeScreen.CompositeEvent>): CompositeScreen.CompositeState {
+    val homeState = homePresenter.present(
+      events.filterIsInstance<CompositeScreen.CompositeEvent.CompositeHomeEvent>().map { it.event })
+    val petListState = petListPresenter.present(
+      events.filterIsInstance<CompositeScreen.CompositeEvent.CompositePetListEvent>()
+        .map { it.event })
 
-    // Nav click events.
-    val filteredNavClickEventEvents = rememberFilteredHomeEvents(events)
-    filteredNavClickEventEvents.map { event -> state = state.copy(index = event.index) }
-
-    // Pet events.
-    val filteredPetEvents = rememberFilteredPetEvents(events)
-    val listState = petListPresenter.present(filteredPetEvents)
-    state = state.copy(petListState = listState)
-
-    return state
+    return CompositeScreen.CompositeState(homeState, petListState)
   }
-
-  @Composable
-  private fun rememberFilteredHomeEvents(events: Flow<HomeScreen.Event>): Flow<HomeScreen.Event.NavClickEvent> =
-    remember(events) {
-      events.filterIsInstance<HomeScreen.Event.NavClickEvent>().map { it }
-    }
-
-  @Composable
-  private fun rememberFilteredPetEvents(events: Flow<HomeScreen.Event>): Flow<PetListScreen.Event> =
-    remember(events) {
-      events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
-    }
 
   @AssistedFactory
   interface Factory {
-    fun create(navigator: Navigator): HomePresenter
+    fun create(navigator: Navigator): CompositePresenter
   }
 }
 
 @ContributesMultibinding(AppScope::class)
-class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
+class CompositeScreenFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen): ScreenView? {
-    if (screen is HomeScreen) {
-      return ScreenView(homeScreenUi())
+    if (screen is CompositeScreen) {
+      return ScreenView(compositeUi())
     }
     return null
   }
 }
 
-private fun homeScreenUi() =
-  ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeScreen(state, events) }
+private fun compositeUi() =
+  ui<CompositeScreen.CompositeState, CompositeScreen.CompositeEvent> { state, events ->
+    CompositeScreen(
+      state,
+      events
+    )
+  }
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
+fun CompositeScreen(
+  state: CompositeScreen.CompositeState,
+  eventSink: (CompositeScreen.CompositeEvent) -> Unit
+) {
   Scaffold(
     modifier = Modifier
       .systemBarsPadding()
@@ -148,19 +127,15 @@ fun HomeScreen(state: HomeScreen.State, events: (HomeScreen.Event) -> Unit) {
       )
     },
     bottomBar = {
-      BottomNavigationBar(selectedIndex = state.index) { index ->
-        events(
-          HomeScreen.Event.NavClickEvent(
-            index
-          )
+      BottomNavigationBar(selectedIndex = state.homeState.index) { index ->
+        eventSink(
+          CompositeScreen.CompositeEvent.CompositeHomeEvent(HomeScreen.Event.NavClickEvent(index))
         )
       }
     },
     content = {
-      state.petListState?.let {
-        PetList(it) { event ->
-          events(HomeScreen.Event.PetListEvent(event))
-        }
+      PetList(state.petListState) { event ->
+        eventSink(CompositeScreen.CompositeEvent.CompositePetListEvent(event))
       }
     }
   )
@@ -183,7 +158,7 @@ fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
             modifier = Modifier.scale(0.5f)
           )
         },
-        label = { androidx.compose.material.Text(text = item.title) },
+        label = { Text(text = item.title) },
         selectedContentColor = Color.White,
         unselectedContentColor = Color.White.copy(0.4f),
         alwaysShowLabel = true,

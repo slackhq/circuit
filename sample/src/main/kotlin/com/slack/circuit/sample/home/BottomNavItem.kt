@@ -16,9 +16,15 @@
 package com.slack.circuit.sample.home
 
 import com.slack.circuit.Screen
+import com.slack.circuit.sample.petlist.AboutScreen
 import com.slack.circuit.sample.petlist.PetListScreen
 
-sealed class BottomNavItem(val title: String, val screen: Screen) {
-  object Dogs : BottomNavItem("Dogs", PetListScreen)
-  object Cats : BottomNavItem("Cats", PetListScreen)
+private const val DOGS_SCREEN_NAME = "Dogs"
+private const val ABOUT_SCREEN_NAME = "About"
+const val DOGS_SCREEN_INDEX = 0
+const val ABOUT_SCREEN_INDEX = 1
+
+sealed class BottomNavItem(val title: String, val screen: Screen, val index: Int) {
+  object Dogs : BottomNavItem(DOGS_SCREEN_NAME, PetListScreen, DOGS_SCREEN_INDEX)
+  object About : BottomNavItem(ABOUT_SCREEN_NAME, AboutScreen, ABOUT_SCREEN_INDEX)
 }

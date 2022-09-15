@@ -40,6 +40,7 @@ import com.slack.circuit.ScreenView
 import com.slack.circuit.ScreenViewFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.petlist.About
 import com.slack.circuit.sample.petlist.PetList
 import com.slack.circuit.sample.petlist.PetListPresenter
 import com.slack.circuit.sample.petlist.PetListScreen
@@ -153,8 +154,12 @@ fun CompositeScreen(
       }
     },
     content = {
-      PetList(state.petListState) { event ->
-        eventSink(CompositeScreen.CompositeEvent.CompositePetListEvent(event))
+      if (state.homeState.index == DOGS_SCREEN_INDEX) {
+        PetList(state.petListState) { event ->
+          eventSink(CompositeScreen.CompositeEvent.CompositePetListEvent(event))
+        }
+      } else if (state.homeState.index == ABOUT_SCREEN_INDEX) {
+        About()
       }
     }
   )
@@ -163,7 +168,7 @@ fun CompositeScreen(
 @Composable
 fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
   // These are the buttons on the NavBar, they dictate where we navigate too.
-  val items = listOf(BottomNavItem.Dogs, BottomNavItem.Cats)
+  val items = listOf(BottomNavItem.Dogs, BottomNavItem.About)
   BottomNavigation(
     backgroundColor = MaterialTheme.colorScheme.primary,
     contentColor = Color.White

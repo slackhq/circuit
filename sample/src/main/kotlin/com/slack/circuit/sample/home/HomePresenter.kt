@@ -34,7 +34,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object HomeScreen : Screen {
-  @Immutable data class State(val index: Int = 0, val bottomNavItems: List<Screen>)
+  @Immutable data class State(val index: Int, val bottomNavItems: List<Screen>)
 
   sealed interface Event {
     @Immutable data class NavClickEvent(val index: Int) : Event
@@ -52,11 +52,13 @@ constructor(private val homePresenterFactory: HomePresenter) : PresenterFactory 
 }
 
 class HomePresenter @Inject constructor() : Presenter<HomeScreen.State, HomeScreen.Event> {
-  private val homeScreenNavItems = listOf(BottomNavItem.Dogs.screen, BottomNavItem.Cats.screen)
+  private val homeScreenNavItems = listOf(BottomNavItem.Dogs.screen, BottomNavItem.About.screen)
 
   @Composable
   override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
-    var state by remember { mutableStateOf(HomeScreen.State(bottomNavItems = homeScreenNavItems)) }
+    var state by remember {
+      mutableStateOf(HomeScreen.State(BottomNavItem.Dogs.index, homeScreenNavItems))
+    }
 
     // LaunchedEffect makes it take two clicks, figure it out when i come back.
     LaunchedEffect(events) {

@@ -184,7 +184,7 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, events -> PetList(state, events) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink -> PetList(state, eventSink) }
 
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
@@ -195,7 +195,7 @@ internal object PetListTestConstants {
 }
 
 @Composable
-internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
+internal fun PetList(state: PetListScreen.State, eventSink: (PetListScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
@@ -226,7 +226,7 @@ internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -
         PetListGrid(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
-          events = events
+          eventSink = eventSink
         )
     }
   }
@@ -236,7 +236,7 @@ internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -
 private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
-  events: (PetListScreen.Event) -> Unit
+  eventSink: (PetListScreen.Event) -> Unit
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
@@ -251,7 +251,7 @@ private fun PetListGrid(
     ) { index ->
       val animal = animals[index]
       PetListGridItem(modifier, animal) {
-        events(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+        eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
       }
     }
   }

@@ -66,7 +66,7 @@ object HomeScreen : Screen {
 }
 
 @ContributesMultibinding(AppScope::class)
-class CompositePresenterFactory
+class HomePresenterFactory
 @Inject
 constructor(private val homePresenterFactory: HomePresenter.Factory) : PresenterFactory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
@@ -86,7 +86,7 @@ constructor(
   @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
   override fun present(events: Flow<HomeScreen.CompositeEvent>): HomeScreen.CompositeState {
-    val homeState =
+    val homeNavState =
       homeNavPresenter(
         events.filterIsInstance<HomeScreen.CompositeEvent.CompositeHomeEvent>().map { it.event }
       )
@@ -95,7 +95,7 @@ constructor(
         events.filterIsInstance<HomeScreen.CompositeEvent.CompositePetListEvent>().map { it.event }
       )
 
-    return HomeScreen.CompositeState(homeState, petListState)
+    return HomeScreen.CompositeState(homeNavState, petListState)
   }
 
   @AssistedFactory
@@ -105,7 +105,7 @@ constructor(
 }
 
 @ContributesMultibinding(AppScope::class)
-class CompositeScreenFactory @Inject constructor() : ScreenViewFactory {
+class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
   override fun createView(screen: Screen): ScreenView? {
     if (screen is HomeScreen) {
       return ScreenView(homeUi())

@@ -17,11 +17,11 @@ package com.slack.circuit.sample.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.slack.circuit.EventCollector
 import com.slack.circuit.Screen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
@@ -43,7 +43,8 @@ fun homeNavPresenter(events: Flow<HomeNavScreen.Event.HomeNavEvent>): HomeNavScr
     mutableStateOf(HomeNavScreen.HomeNavState(DOGS_SCREEN_INDEX, homeScreenNavItems))
   }
 
-  // LaunchedEffect makes it take two clicks, figure it out when i come back.
-  LaunchedEffect(events) { events.collect { event -> state = state.copy(index = event.index) } }
+  // LaunchedEffect/EventCollector makes it take two clicks, figure it out when i come back.
+  EventCollector(events) { event -> state = state.copy(index = event.index) }
+
   return state
 }

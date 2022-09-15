@@ -15,10 +15,7 @@
  */
 package com.slack.circuit.sample.petlist
 
-import app.cash.molecule.RecompositionClock.Immediate
-import app.cash.molecule.moleculeFlow
 import app.cash.turbine.Turbine
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
@@ -30,6 +27,7 @@ import com.slack.circuit.sample.data.Links
 import com.slack.circuit.sample.data.Photo
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
+import com.slack.circuit.sample.test
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -46,11 +44,10 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) { presenter.present(events) }
-      .test {
-        assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
-        assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
-      }
+    presenter.test(events) {
+      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+      assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
+    }
   }
 
   @Test
@@ -59,13 +56,12 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) { presenter.present(events) }
-      .test {
-        assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+    presenter.test(events) {
+      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
 
-        val animals = listOf(animal).map { it.toPetListAnimal() }
-        assertThat(PetListScreen.State.Success(animals)).isEqualTo(awaitItem())
-      }
+      val animals = listOf(animal).map { it.toPetListAnimal() }
+      assertThat(PetListScreen.State.Success(animals)).isEqualTo(awaitItem())
+    }
   }
 
   @Test
@@ -74,16 +70,15 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
-    moleculeFlow(Immediate) { presenter.present(events) }
-      .test {
-        assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
-        assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
+    presenter.test(events) {
+      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+      assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
 
-        val clickAnimal = PetListScreen.Event.ClickAnimal(123L, "key")
-        events.emit(clickAnimal)
-        assertThat(navigator.awaitNextScreen())
-          .isEqualTo(PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey))
-      }
+      val clickAnimal = PetListScreen.Event.ClickAnimal(123L, "key")
+      events.emit(clickAnimal)
+      assertThat(navigator.awaitNextScreen())
+        .isEqualTo(PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey))
+    }
   }
 
   companion object {

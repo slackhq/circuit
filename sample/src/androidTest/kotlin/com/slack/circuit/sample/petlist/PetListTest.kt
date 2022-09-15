@@ -24,7 +24,10 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
+import coil.Coil
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.sample.FakeImageLoader
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.GRID_TAG
@@ -33,11 +36,19 @@ import com.slack.circuit.sample.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.sample.petlist.PetListTestConstants.PROGRESS_TAG
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class PetListTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+  @Before
+  fun setup() {
+    val fakeImageLoader =
+      FakeImageLoader(InstrumentationRegistry.getInstrumentation().targetContext, R.drawable.dog)
+    Coil.setImageLoader(fakeImageLoader)
+  }
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
@@ -102,7 +113,7 @@ class PetListTest {
       PetListAnimal(
         id = 1L,
         name = "Baxter",
-        imageUrl = null,
+        imageUrl = "http://some.url",
         breed = "Australian Terrier",
         gender = "male",
         age = "12"

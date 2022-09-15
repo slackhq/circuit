@@ -40,9 +40,9 @@ package com.slack.circuit
  * }
  *
  * private fun addFavoritesUi() =
- *   ui<AddFavorites.State, AddFavorites.Event> { state, events -> Favorites(state, events) }
+ *   ui<AddFavorites.State, AddFavorites.Event> { state, eventSink -> Favorites(state, eventSink) }
  *
- * @Composable private fun Favorites(state: State, ui: (Event) -> Unit = {}) {...}
+ * @Composable private fun Favorites(state: State, eventSink: (Event) -> Unit = {}) {...}
  * ```
  */
 fun interface ScreenViewFactory {

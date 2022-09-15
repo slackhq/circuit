@@ -15,27 +15,48 @@
  */
 package com.slack.circuit.sample.petdetail
 
+import android.content.Context
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Parcelable
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
+import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -63,7 +84,9 @@ import kotlinx.parcelize.Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : Parcelable {
     @Parcelize object Loading : State
+
     @Parcelize object UnknownAnimal : State
+
     @Parcelize
     data class Success(
       val url: String,
@@ -71,6 +94,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
       val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
+      val tags: List<String>,
     ) : State
   }
 }
@@ -81,7 +105,17 @@ internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetail
     photoUrls = photos.map { it.large },
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
-    description = description
+    description = description,
+    tags =
+      listOfNotNull(
+        colors.primary,
+        colors.secondary,
+        breeds.primary,
+        breeds.secondary,
+        gender,
+        size,
+        status
+      )
   )
 }
 
@@ -163,6 +197,7 @@ internal fun PetDetail(state: PetDetailScreen.State) {
       is PetDetailScreen.State.Success -> {
         if (isLandscape) {
           Row(
+            modifier = Modifier.padding(padding),
             horizontalArrangement = Arrangement.SpaceEvenly,
           ) {
             CircuitContent(
@@ -172,13 +207,14 @@ internal fun PetDetail(state: PetDetailScreen.State) {
                 photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
               )
             )
-            LazyColumn {
-              item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
-              item { Text(text = state.description) }
-            }
+            LazyColumn { petDetailDescriptions(state) }
           }
         } else {
-          LazyColumn(modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)) {
+          LazyColumn(
+            modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+          ) {
             item {
               CircuitContent(
                 PetPhotoCarouselScreen(
@@ -188,11 +224,69 @@ internal fun PetDetail(state: PetDetailScreen.State) {
                 )
               )
             }
-            item { Text(text = state.name, style = MaterialTheme.typography.displayLarge) }
-            item { Text(text = state.description) }
+            petDetailDescriptions(state)
           }
         }
       }
     }
   }
+}
+
+private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Success) {
+  item(state.name) {
+    Text(
+      modifier = Modifier.fillMaxWidth(),
+      textAlign = TextAlign.Center,
+      text = state.name,
+      style = MaterialTheme.typography.displayLarge
+    )
+  }
+  item(state.tags) {
+    FlowRow(
+      mainAxisSpacing = 8.dp,
+      crossAxisSpacing = 8.dp,
+      mainAxisAlignment = FlowMainAxisAlignment.Center,
+      crossAxisAlignment = FlowCrossAxisAlignment.Center,
+    ) {
+      state.tags.forEach { tag ->
+        Surface(
+          color = Color(0xFFE91E63),
+          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+        ) {
+          Text(
+            modifier = Modifier.padding(12.dp),
+            text = tag.capitalize(LocaleList.current),
+            color = Color.White,
+            style = MaterialTheme.typography.labelLarge
+          )
+        }
+      }
+    }
+  }
+  item(state.description) {
+    Text(
+      text = state.description.lineSequence().first(),
+      style = MaterialTheme.typography.bodyLarge
+    )
+  }
+  item(state.url) {
+    val context = LocalContext.current
+    Button(modifier = Modifier.fillMaxWidth(), onClick = { openTab(context, state.url) }) {
+      Text(
+        text = "Full bio on Petfinder ➡",
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.headlineSmall
+      )
+    }
+  }
+}
+
+private fun openTab(context: Context, url: String) {
+  val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
+  CustomTabsIntent.Builder()
+    .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)
+    .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
+    .setShowTitle(true)
+    .build()
+    .launchUrl(context, Uri.parse(url))
 }

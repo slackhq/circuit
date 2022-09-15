@@ -39,7 +39,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    *   @Composable override fun present(render: Flow<Event>): State {
    *     var state by remember { mutableStateOf(initialState) }
    *     // ...
-   *     collectEvents(events) { event ->
+   *     EventCollector(events) { event ->
    *       // Handle UI events here
    *     }
    *

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,10 +33,11 @@ import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-@Parcelize object AboutScreen : Screen
+@Parcelize
+object AboutScreen : Screen
 
 @ContributesMultibinding(AppScope::class)
 class AboutScreenFactory @Inject constructor() : ScreenViewFactory {
@@ -53,10 +55,12 @@ private fun aboutScreenUi() = ui<Any, Any> { _, _ -> About() }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun About() {
   Scaffold(
-    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
+    modifier = Modifier
+      .systemBarsPadding()
+      .fillMaxWidth(),
     content = {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        androidx.compose.material.Text(text = stringResource(id = R.string.about_screen))
+        Text(text = stringResource(id = R.string.about_screen))
       }
     }
   )

@@ -28,7 +28,7 @@ import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.sample.di.ActivityKey
 import com.slack.circuit.sample.di.AppScope
-import com.slack.circuit.sample.home.CompositeScreen
+import com.slack.circuit.sample.home.HomeScreen
 import com.slack.circuit.sample.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
@@ -46,7 +46,7 @@ constructor(
     super.onCreate(savedInstanceState)
     setContent {
       StarTheme {
-        val backstack = rememberSaveableBackStack { push(CompositeScreen) }
+        val backstack = rememberSaveableBackStack { push(HomeScreen) }
         val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
         CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
       }

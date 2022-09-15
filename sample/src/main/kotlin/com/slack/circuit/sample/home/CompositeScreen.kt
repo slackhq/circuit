@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2022 Slack Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.slack.circuit.sample.home
 
 import android.annotation.SuppressLint
@@ -33,11 +48,11 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 
 // Need better naming conventions.
 @Parcelize
@@ -71,12 +86,21 @@ constructor(
 
   @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
-  override fun present(events: Flow<CompositeScreen.CompositeEvent>): CompositeScreen.CompositeState {
-    val homeState = homePresenter.present(
-      events.filterIsInstance<CompositeScreen.CompositeEvent.CompositeHomeEvent>().map { it.event })
-    val petListState = petListPresenter.present(
-      events.filterIsInstance<CompositeScreen.CompositeEvent.CompositePetListEvent>()
-        .map { it.event })
+  override fun present(
+    events: Flow<CompositeScreen.CompositeEvent>
+  ): CompositeScreen.CompositeState {
+    val homeState =
+      homePresenter.present(
+        events.filterIsInstance<CompositeScreen.CompositeEvent.CompositeHomeEvent>().map {
+          it.event
+        }
+      )
+    val petListState =
+      petListPresenter.present(
+        events.filterIsInstance<CompositeScreen.CompositeEvent.CompositePetListEvent>().map {
+          it.event
+        }
+      )
 
     return CompositeScreen.CompositeState(homeState, petListState)
   }
@@ -99,10 +123,7 @@ class CompositeScreenFactory @Inject constructor() : ScreenViewFactory {
 
 private fun compositeUi() =
   ui<CompositeScreen.CompositeState, CompositeScreen.CompositeEvent> { state, events ->
-    CompositeScreen(
-      state,
-      events
-    )
+    CompositeScreen(state, events)
   }
 
 @Composable
@@ -112,18 +133,16 @@ fun CompositeScreen(
   eventSink: (CompositeScreen.CompositeEvent) -> Unit
 ) {
   Scaffold(
-    modifier = Modifier
-      .systemBarsPadding()
-      .fillMaxWidth(),
+    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
           Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
         },
         colors =
-        TopAppBarDefaults.centerAlignedTopAppBarColors(
-          containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+          TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+          )
       )
     },
     bottomBar = {
@@ -163,9 +182,7 @@ fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
         unselectedContentColor = Color.White.copy(0.4f),
         alwaysShowLabel = true,
         selected = selectedIndex == index,
-        onClick = {
-          onSelectedIndex(index)
-        }
+        onClick = { onSelectedIndex(index) }
       )
     }
   }

@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -84,10 +85,9 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
-import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Immutable
 @Parcelize

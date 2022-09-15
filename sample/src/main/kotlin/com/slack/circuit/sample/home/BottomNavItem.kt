@@ -28,6 +28,16 @@ const val DOGS_SCREEN_INDEX = 0
 const val ABOUT_SCREEN_INDEX = 1
 
 sealed class BottomNavItem(val title: String, val screen: Screen, val icon: ImageVector) {
-  object Dogs : BottomNavItem(DOGS_SCREEN_NAME, PetListScreen, androidx.compose.material.icons.Icons.Filled.Home)
-  object About : BottomNavItem(ABOUT_SCREEN_NAME, AboutScreen, androidx.compose.material.icons.Icons.Filled.Info)
+  object Dogs :
+    BottomNavItem(
+      DOGS_SCREEN_NAME,
+      PetListScreen,
+      androidx.compose.material.icons.Icons.Filled.Home
+    )
+  object About :
+    BottomNavItem(
+      ABOUT_SCREEN_NAME,
+      AboutScreen,
+      androidx.compose.material.icons.Icons.Filled.Info
+    )
 }

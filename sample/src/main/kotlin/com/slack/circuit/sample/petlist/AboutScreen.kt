@@ -33,11 +33,10 @@ import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
-@Parcelize
-object AboutScreen : Screen
+@Parcelize object AboutScreen : Screen
 
 @ContributesMultibinding(AppScope::class)
 class AboutScreenFactory @Inject constructor() : ScreenViewFactory {
@@ -55,9 +54,7 @@ private fun aboutScreenUi() = ui<Any, Any> { _, _ -> About() }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun About() {
   Scaffold(
-    modifier = Modifier
-      .systemBarsPadding()
-      .fillMaxWidth(),
+    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     content = {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = stringResource(id = R.string.about_screen))

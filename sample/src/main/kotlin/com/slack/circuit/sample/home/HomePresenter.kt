@@ -46,11 +46,11 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 
 @Parcelize
 object HomeScreen : Screen {
@@ -85,20 +85,14 @@ constructor(
 
   @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
-  override fun present(
-    events: Flow<HomeScreen.CompositeEvent>
-  ): HomeScreen.CompositeState {
+  override fun present(events: Flow<HomeScreen.CompositeEvent>): HomeScreen.CompositeState {
     val homeState =
       homeNavPresenter(
-        events.filterIsInstance<HomeScreen.CompositeEvent.CompositeHomeEvent>().map {
-          it.event
-        }
+        events.filterIsInstance<HomeScreen.CompositeEvent.CompositeHomeEvent>().map { it.event }
       )
     val petListState =
       petListPresenter.present(
-        events.filterIsInstance<HomeScreen.CompositeEvent.CompositePetListEvent>().map {
-          it.event
-        }
+        events.filterIsInstance<HomeScreen.CompositeEvent.CompositePetListEvent>().map { it.event }
       )
 
     return HomeScreen.CompositeState(homeState, petListState)
@@ -127,23 +121,18 @@ private fun homeUi() =
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun HomeContent(
-  state: HomeScreen.CompositeState,
-  eventSink: (HomeScreen.CompositeEvent) -> Unit
-) {
+fun HomeContent(state: HomeScreen.CompositeState, eventSink: (HomeScreen.CompositeEvent) -> Unit) {
   Scaffold(
-    modifier = Modifier
-      .systemBarsPadding()
-      .fillMaxWidth(),
+    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
           Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
         },
         colors =
-        TopAppBarDefaults.centerAlignedTopAppBarColors(
-          containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+          TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+          )
       )
     },
     bottomBar = {

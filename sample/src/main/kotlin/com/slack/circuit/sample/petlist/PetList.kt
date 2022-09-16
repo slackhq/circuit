@@ -35,10 +35,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -59,7 +57,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
 import androidx.palette.graphics.Palette.Swatch
@@ -198,17 +195,6 @@ internal object PetListTestConstants {
 internal fun PetList(state: PetListScreen.State, eventSink: (PetListScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier.systemBarsPadding().fillMaxWidth(),
-    topBar = {
-      CenterAlignedTopAppBar(
-        title = {
-          Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        },
-        colors =
-          TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-          )
-      )
-    },
   ) { paddingValues ->
     when (state) {
       PetListScreen.State.Loading ->

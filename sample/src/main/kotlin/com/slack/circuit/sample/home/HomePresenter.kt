@@ -54,14 +54,14 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object HomeScreen : Screen {
-  data class CompositeState(
+  data class State(
     val homeNavState: HomeNavScreen.HomeNavState,
     val petListState: PetListScreen.State
   )
 
-  sealed interface CompositeEvent {
-    class CompositeHomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : CompositeEvent
-    class CompositePetListEvent(val event: PetListScreen.Event) : CompositeEvent
+  sealed interface Event {
+    class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
+    class PetListEvent(val event: PetListScreen.Event) : Event
   }
 }
 
@@ -80,22 +80,22 @@ class HomePresenter
 constructor(
   @Assisted private val navigator: Navigator,
   petListPresenterFactory: PetListPresenter.Factory
-) : Presenter<HomeScreen.CompositeState, HomeScreen.CompositeEvent> {
+) : Presenter<HomeScreen.State, HomeScreen.Event> {
   private val petListPresenter = petListPresenterFactory.create(navigator)
 
   @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
-  override fun present(events: Flow<HomeScreen.CompositeEvent>): HomeScreen.CompositeState {
+  override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
     val homeNavState =
       homeNavPresenter(
-        events.filterIsInstance<HomeScreen.CompositeEvent.CompositeHomeEvent>().map { it.event }
+        events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event }
       )
     val petListState =
       petListPresenter.present(
-        events.filterIsInstance<HomeScreen.CompositeEvent.CompositePetListEvent>().map { it.event }
+        events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
       )
 
-    return HomeScreen.CompositeState(homeNavState, petListState)
+    return HomeScreen.State(homeNavState, petListState)
   }
 
   @AssistedFactory
@@ -115,13 +115,13 @@ class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun homeUi() =
-  ui<HomeScreen.CompositeState, HomeScreen.CompositeEvent> { state, events ->
+  ui<HomeScreen.State, HomeScreen.Event> { state, events ->
     HomeContent(state, events)
   }
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun HomeContent(state: HomeScreen.CompositeState, eventSink: (HomeScreen.CompositeEvent) -> Unit) {
+fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
   Scaffold(
     modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     topBar = {
@@ -138,14 +138,14 @@ fun HomeContent(state: HomeScreen.CompositeState, eventSink: (HomeScreen.Composi
     bottomBar = {
       BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
         eventSink(
-          HomeScreen.CompositeEvent.CompositeHomeEvent(HomeNavScreen.Event.HomeNavEvent(index))
+          HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index))
         )
       }
     },
     content = {
       if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
         PetList(state.petListState) { event ->
-          eventSink(HomeScreen.CompositeEvent.CompositePetListEvent(event))
+          eventSink(HomeScreen.Event.PetListEvent(event))
         }
       } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
         About()

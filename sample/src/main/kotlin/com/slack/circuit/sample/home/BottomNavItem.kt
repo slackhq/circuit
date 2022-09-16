@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.sample.home
 
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,12 +33,12 @@ sealed class BottomNavItem(val title: String, val screen: Screen, val icon: Imag
     BottomNavItem(
       DOGS_SCREEN_NAME,
       PetListScreen,
-      androidx.compose.material.icons.Icons.Filled.Home
+      Icons.Filled.Home
     )
   object About :
     BottomNavItem(
       ABOUT_SCREEN_NAME,
       AboutScreen,
-      androidx.compose.material.icons.Icons.Filled.Info
+      Icons.Filled.Info
     )
 }

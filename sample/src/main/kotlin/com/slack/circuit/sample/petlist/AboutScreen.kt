@@ -54,7 +54,6 @@ private fun aboutScreenUi() = ui<Any, Any> { _, _ -> About() }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun About() {
   Scaffold(
-    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
     content = {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = stringResource(id = R.string.about_screen))

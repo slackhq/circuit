@@ -30,7 +30,8 @@ private val homeScreenNavItems = listOf(BottomNavItem.Dogs.screen, BottomNavItem
 
 @Parcelize
 object HomeNavScreen : Screen {
-  @Immutable data class HomeNavState(val index: Int = DOGS_SCREEN_INDEX, val bottomNavItems: List<Screen>)
+  @Immutable
+  data class HomeNavState(val index: Int = DOGS_SCREEN_INDEX, val bottomNavItems: List<Screen>)
 
   sealed interface Event {
     @Immutable data class HomeNavEvent(val index: Int) : Event

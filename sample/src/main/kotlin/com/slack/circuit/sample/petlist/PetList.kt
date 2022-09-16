@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -226,7 +227,7 @@ private fun PetListGrid(
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
-    modifier = modifier.testTag(GRID_TAG),
+    modifier = modifier.padding(top = 64.dp).padding(bottom = 64.dp).testTag(GRID_TAG),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     contentPadding = PaddingValues(16.dp),
@@ -269,7 +270,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
+      modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)

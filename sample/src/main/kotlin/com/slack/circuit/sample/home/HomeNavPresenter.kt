@@ -30,7 +30,7 @@ private val homeScreenNavItems = listOf(BottomNavItem.Dogs.screen, BottomNavItem
 
 @Parcelize
 object HomeNavScreen : Screen {
-  @Immutable data class HomeNavState(val index: Int, val bottomNavItems: List<Screen>)
+  @Immutable data class HomeNavState(val index: Int = DOGS_SCREEN_INDEX, val bottomNavItems: List<Screen>)
 
   sealed interface Event {
     @Immutable data class HomeNavEvent(val index: Int) : Event
@@ -40,7 +40,7 @@ object HomeNavScreen : Screen {
 @Composable
 fun homeNavPresenter(events: Flow<HomeNavScreen.Event.HomeNavEvent>): HomeNavScreen.HomeNavState {
   var state by remember {
-    mutableStateOf(HomeNavScreen.HomeNavState(DOGS_SCREEN_INDEX, homeScreenNavItems))
+    mutableStateOf(HomeNavScreen.HomeNavState(bottomNavItems = homeScreenNavItems))
   }
 
   // LaunchedEffect/EventCollector makes it take two clicks, figure it out when i come back.

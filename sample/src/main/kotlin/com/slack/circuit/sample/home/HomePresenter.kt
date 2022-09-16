@@ -87,9 +87,7 @@ constructor(
   @Composable
   override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
     val homeNavState =
-      homeNavPresenter(
-        events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event }
-      )
+      homeNavPresenter(events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event })
     val petListState =
       petListPresenter.present(
         events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
@@ -115,9 +113,7 @@ class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun homeUi() =
-  ui<HomeScreen.State, HomeScreen.Event> { state, events ->
-    HomeContent(state, events)
-  }
+  ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeContent(state, events) }
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -137,16 +133,12 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     },
     bottomBar = {
       BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-        eventSink(
-          HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index))
-        )
+        eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
       }
     },
     content = {
       if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
-        PetList(state.petListState) { event ->
-          eventSink(HomeScreen.Event.PetListEvent(event))
-        }
+        PetList(state.petListState) { event -> eventSink(HomeScreen.Event.PetListEvent(event)) }
       } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
         About()
       }

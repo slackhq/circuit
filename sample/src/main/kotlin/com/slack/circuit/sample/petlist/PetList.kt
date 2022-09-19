@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -182,7 +181,9 @@ class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink -> PetList(state, eventSink) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink ->
+    PetList(state = state, eventSink = eventSink)
+  }
 
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
@@ -193,9 +194,13 @@ internal object PetListTestConstants {
 }
 
 @Composable
-internal fun PetList(state: PetListScreen.State, eventSink: (PetListScreen.Event) -> Unit) {
+internal fun PetList(
+  modifier: Modifier = Modifier,
+  state: PetListScreen.State,
+  eventSink: (PetListScreen.Event) -> Unit
+) {
   Scaffold(
-    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
+    modifier = modifier,
   ) { paddingValues ->
     when (state) {
       PetListScreen.State.Loading ->
@@ -227,7 +232,7 @@ private fun PetListGrid(
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
-    modifier = modifier.padding(top = 64.dp).padding(bottom = 64.dp).testTag(GRID_TAG),
+    modifier = modifier.testTag(GRID_TAG),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     contentPadding = PaddingValues(16.dp),

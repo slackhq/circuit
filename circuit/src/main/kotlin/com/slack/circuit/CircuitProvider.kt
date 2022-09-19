@@ -20,12 +20,17 @@ import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.slack.circuit.retained.Continuity
+import com.slack.circuit.retained.LocalRetainedStateRegistry
 
 /** Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. */
 @Composable
 fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
+  val retainedStateRegistry = viewModel<Continuity>()
   CompositionLocalProvider(
     LocalCircuitOwner provides circuit,
+    LocalRetainedStateRegistry provides retainedStateRegistry,
   ) {
     content()
   }

@@ -40,9 +40,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,6 +70,7 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.UiFactory
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -132,7 +133,7 @@ constructor(
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
     val state by
-      produceState<PetListScreen.State>(PetListScreen.State.Loading) {
+      produceRetainedState<PetListScreen.State>(PetListScreen.State.Loading) {
         val animals = petRepo.getAnimals()
         value =
           when {
@@ -140,6 +141,8 @@ constructor(
             else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
           }
       }
+
+    SideEffect { println("rememberRetained: State is $state") }
 
     EventCollector(events) { event ->
       when (event) {

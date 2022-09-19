@@ -20,6 +20,7 @@ import com.slack.circuit.Circuit
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.UiFactory
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
+import com.slack.circuit.retained.Continuity
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Binds
 import dagger.Module
@@ -39,10 +40,17 @@ interface CircuitModule {
   @Binds
   fun BackStackRecordLocalProviderViewModel.bindBackStackRecordLocalProviderViewModel(): ViewModel
 
+  @ViewModelKey(Continuity::class) @IntoMap @Binds fun Continuity.bindContinuity(): ViewModel
+
   companion object {
     @Provides
     fun provideBackStackRecordLocalProviderViewModel(): BackStackRecordLocalProviderViewModel {
       return BackStackRecordLocalProviderViewModel()
+    }
+
+    @Provides
+    fun provideContinuity(): Continuity {
+      return Continuity()
     }
 
     @Provides

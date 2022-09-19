@@ -64,6 +64,7 @@ import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.UiFactory
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -142,7 +143,7 @@ constructor(
   @Composable
   override fun present(events: Flow<Nothing>): PetDetailScreen.State {
     val state by
-      produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {

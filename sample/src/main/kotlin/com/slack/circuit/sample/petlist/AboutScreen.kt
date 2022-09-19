@@ -27,8 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenView
-import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.ScreenUi
+import com.slack.circuit.UiFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.ui
@@ -39,10 +39,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize object AboutScreen : Screen
 
 @ContributesMultibinding(AppScope::class)
-class AboutScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen): ScreenView? {
+class AboutScreenFactory @Inject constructor() : UiFactory {
+  override fun create(screen: Screen): ScreenUi? {
     if (screen is AboutScreen) {
-      return ScreenView(aboutScreenUi())
+      return ScreenUi(aboutScreenUi())
     }
     return null
   }

@@ -36,7 +36,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    *
    * ```kotlin
    * class FavoritesPresenter(...) : Presenter<State, Event> {
-   *   @Composable override fun present(render: Flow<Event>): State {
+   *   @Composable override fun present(events: Flow<Event>): State {
    *     var state by remember { mutableStateOf(initialState) }
    *     // ...
    *     EventCollector(events) { event ->
@@ -60,7 +60,7 @@ interface Presenter<UiState : Any, UiEvent : Any> {
    *   @Assisted private val navigator: Navigator,
    *   private val favoritesRepository: FavoritesRepository
    * ) : Presenter<State, Event> {
-   *   @Composable override fun present(render: Flow<Event>): State {
+   *   @Composable override fun present(events: Flow<Event>): State {
    *     // ...
    *   }
    *

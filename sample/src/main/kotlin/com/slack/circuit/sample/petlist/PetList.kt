@@ -68,8 +68,8 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenView
-import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.ScreenUi
+import com.slack.circuit.UiFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -171,10 +171,10 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen): ScreenView? {
+class PetListScreenFactory @Inject constructor() : UiFactory {
+  override fun create(screen: Screen): ScreenUi? {
     if (screen is PetListScreen) {
-      return ScreenView(petListUi())
+      return ScreenUi(petListUi())
     }
     return null
   }

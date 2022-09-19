@@ -36,8 +36,8 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenView
-import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.ScreenUi
+import com.slack.circuit.UiFactory
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.About
 import com.slack.circuit.sample.petlist.PetList
@@ -105,10 +105,10 @@ constructor(
 }
 
 @ContributesMultibinding(AppScope::class)
-class HomeScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen): ScreenView? {
+class HomeScreenFactory @Inject constructor() : UiFactory {
+  override fun create(screen: Screen): ScreenUi? {
     if (screen is HomeScreen) {
-      return ScreenView(homeUi())
+      return ScreenUi(homeUi())
     }
     return null
   }

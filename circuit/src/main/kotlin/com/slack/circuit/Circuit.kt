@@ -20,8 +20,8 @@ import androidx.compose.runtime.Immutable
 
 /**
  * Circuit adapts [presenterFactories][PresenterFactory] to their corresponding renderable
- * [uiFactories][UiFactory] using [screens][Screen]. Create instances using [the Builder]
- * [Builder] and create new [CircuitContent] with it to run presenter/UI pairings.
+ * [uiFactories][UiFactory] using [screens][Screen]. Create instances using [the Builder] [Builder]
+ * and create new [CircuitContent] with it to run presenter/UI pairings.
  *
  * ## Construction
  *
@@ -125,9 +125,7 @@ class Circuit private constructor(builder: Builder) {
       }
     }
 
-    fun addUiFactories(factories: Iterable<UiFactory>) = apply {
-      uiFactories.addAll(factories)
-    }
+    fun addUiFactories(factories: Iterable<UiFactory>) = apply { uiFactories.addAll(factories) }
 
     fun addPresenterFactory(factory: PresenterFactory) = apply { presenterFactories.add(factory) }
 

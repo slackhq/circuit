@@ -18,7 +18,7 @@ package com.slack.circuit
 import android.os.Parcelable
 
 /**
- * Represents an individual screen, used as a key for [PresenterFactory] and [ScreenViewFactory].
+ * Represents an individual screen, used as a key for [PresenterFactory] and [UiFactory].
  *
  * Screens can be simple sentinel `object` types or data classes with information to share. Screens
  * with information should contain the minimum amount of data needed for the target presenter to

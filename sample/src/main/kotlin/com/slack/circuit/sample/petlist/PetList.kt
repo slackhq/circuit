@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -66,8 +68,8 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenView
-import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.ScreenUi
+import com.slack.circuit.UiFactory
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -207,17 +209,19 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetListScreenFactory @Inject constructor() : ScreenViewFactory {
-  override fun createView(screen: Screen): ScreenView? {
+class PetListScreenFactory @Inject constructor() : UiFactory {
+  override fun create(screen: Screen): ScreenUi? {
     if (screen is PetListScreen) {
-      return ScreenView(petListUi())
+      return ScreenUi(petListUi())
     }
     return null
   }
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, events -> PetList(state, events) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink ->
+    PetList(state = state, eventSink = eventSink)
+  }
 
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
@@ -228,25 +232,33 @@ internal object PetListTestConstants {
 }
 
 @Composable
-internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -> Unit) {
-  when (state) {
-    PetListScreen.State.Loading ->
-      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
-      }
-    PetListScreen.State.NoAnimals ->
-      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-          modifier = Modifier.testTag(NO_ANIMALS_TAG),
-          text = stringResource(id = R.string.no_animals)
+internal fun PetList(
+  modifier: Modifier = Modifier,
+  state: PetListScreen.State,
+  eventSink: (PetListScreen.Event) -> Unit
+) {
+  Scaffold(
+    modifier = modifier,
+  ) { paddingValues ->
+    when (state) {
+      PetListScreen.State.Loading ->
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+        }
+      PetListScreen.State.NoAnimals ->
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+            modifier = Modifier.testTag(NO_ANIMALS_TAG),
+            text = stringResource(id = R.string.no_animals)
+          )
+        }
+      is PetListScreen.State.Success ->
+        PetListGrid(
+          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          animals = state.animals,
+          eventSink = eventSink
         )
-      }
-    is PetListScreen.State.Success ->
-      PetListGrid(
-        modifier = Modifier.fillMaxSize(),
-        animals = state.animals,
-        events = events
-      )
+    }
   }
 }
 
@@ -254,7 +266,7 @@ internal fun PetList(state: PetListScreen.State, events: (PetListScreen.Event) -
 private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
-  events: (PetListScreen.Event) -> Unit
+  eventSink: (PetListScreen.Event) -> Unit
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
@@ -269,7 +281,7 @@ private fun PetListGrid(
     ) { index ->
       val animal = animals[index]
       PetListGridItem(modifier, animal) {
-        events(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+        eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
       }
     }
   }
@@ -301,7 +313,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
+      modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)

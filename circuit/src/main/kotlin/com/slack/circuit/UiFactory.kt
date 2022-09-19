@@ -16,25 +16,25 @@
 package com.slack.circuit
 
 /**
- * A factory that creates [ScreenViews][ScreenView], which in turn contain the desired [Ui] for a
- * given [Screen].
+ * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a given
+ * [Screen].
  *
  * Note that individual UIs should just be top-level [ui] function calls that factories simply call
  * into. This allows easily standing up composable preview functions.
  *
  * ```
- * class FavoritesViewFactory @Inject constructor() : ViewFactory {
- *  override fun createView(
+ * class FavoritesUiFactory @Inject constructor() : UiFactory {
+ *  override fun create(
  *    screen: Screen,
- *  ): ScreenView? {
- *    val view = when (screen) {
+ *  ): ScreenUi? {
+ *    val ui = when (screen) {
  *      is AddFavorites -> {
  *        addFavoritesUi()
  *      }
  *      else -> return null
  *    }
- *    return ScreenView(
- *      ui = view as Ui<*, *>,
+ *    return ScreenUi(
+ *      ui = ui as Ui<*, *>,
  *    )
  *   }
  * }
@@ -45,11 +45,11 @@ package com.slack.circuit
  * @Composable private fun Favorites(state: State, eventSink: (Event) -> Unit = {}) {...}
  * ```
  */
-fun interface ScreenViewFactory {
-  fun createView(screen: Screen): ScreenView?
+fun interface UiFactory {
+  fun create(screen: Screen): ScreenUi?
 }
 
-data class ScreenView(
+data class ScreenUi(
   val ui: Ui<*, *>,
 // TODO does this kind of thing eventually move to compose Modifier instead?
 //  val uiMetadata: UiMetadata = UiMetadata()

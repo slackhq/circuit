@@ -18,7 +18,7 @@ package com.slack.circuit.sample.di
 import androidx.lifecycle.ViewModel
 import com.slack.circuit.Circuit
 import com.slack.circuit.PresenterFactory
-import com.slack.circuit.ScreenViewFactory
+import com.slack.circuit.UiFactory
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Binds
@@ -32,7 +32,7 @@ import dagger.multibindings.Multibinds
 interface CircuitModule {
   @Multibinds fun presenterFactories(): Set<PresenterFactory>
 
-  @Multibinds fun viewFactories(): Set<ScreenViewFactory>
+  @Multibinds fun viewFactories(): Set<UiFactory>
 
   @ViewModelKey(BackStackRecordLocalProviderViewModel::class)
   @IntoMap
@@ -48,7 +48,7 @@ interface CircuitModule {
     @Provides
     fun provideCircuit(
       presenterFactories: @JvmSuppressWildcards Set<PresenterFactory>,
-      uiFactories: @JvmSuppressWildcards Set<ScreenViewFactory>,
+      uiFactories: @JvmSuppressWildcards Set<UiFactory>,
     ): Circuit {
       return Circuit.Builder()
         .apply {

@@ -171,7 +171,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetListScreenFactory @Inject constructor() : UiFactory {
+class PetListUiFactory @Inject constructor() : UiFactory {
   override fun create(screen: Screen): ScreenUi? {
     if (screen is PetListScreen) {
       return ScreenUi(petListUi())

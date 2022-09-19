@@ -161,7 +161,7 @@ constructor(
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetDetailScreenFactory @Inject constructor() : UiFactory {
+class PetDetailUiFactory @Inject constructor() : UiFactory {
   override fun create(screen: Screen): ScreenUi? {
     if (screen is PetDetailScreen) return ScreenUi(petDetailUi())
     return null

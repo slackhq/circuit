@@ -105,7 +105,7 @@ constructor(
 }
 
 @ContributesMultibinding(AppScope::class)
-class HomeScreenFactory @Inject constructor() : UiFactory {
+class HomeUiFactory @Inject constructor() : UiFactory {
   override fun create(screen: Screen): ScreenUi? {
     if (screen is HomeScreen) {
       return ScreenUi(homeUi())

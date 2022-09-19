@@ -54,7 +54,6 @@ import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
-import com.slack.circuit.UiFactory
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.ui
@@ -106,12 +105,11 @@ constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetPhotoCarouselUiFactory @Inject constructor() : UiFactory {
+class PetPhotoCarouselUiFactory @Inject constructor() : Ui.Factory {
   override fun create(screen: Screen): ScreenUi? {
-    return if (screen is PetPhotoCarouselScreen) {
-      ScreenUi(petPhotoCarousel())
-    } else {
-      null
+    return when (screen) {
+      is PetPhotoCarouselScreen -> ScreenUi(petPhotoCarousel())
+      else -> null
     }
   }
 }

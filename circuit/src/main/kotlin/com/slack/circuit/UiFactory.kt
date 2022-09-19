@@ -16,8 +16,8 @@
 package com.slack.circuit
 
 /**
- * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a
- * given [Screen].
+ * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a given
+ * [Screen].
  *
  * Note that individual UIs should just be top-level [ui] function calls that factories simply call
  * into. This allows easily standing up composable preview functions.
@@ -27,14 +27,14 @@ package com.slack.circuit
  *  override fun create(
  *    screen: Screen,
  *  ): ScreenUi? {
- *    val view = when (screen) {
+ *    val ui = when (screen) {
  *      is AddFavorites -> {
  *        addFavoritesUi()
  *      }
  *      else -> return null
  *    }
  *    return ScreenUi(
- *      ui = view as Ui<*, *>,
+ *      ui = ui as Ui<*, *>,
  *    )
  *   }
  * }

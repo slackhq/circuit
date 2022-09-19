@@ -22,10 +22,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -181,7 +181,9 @@ class PetListScreenFactory @Inject constructor() : UiFactory {
 }
 
 private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink -> PetList(state, eventSink) }
+  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink ->
+    PetList(state = state, eventSink = eventSink)
+  }
 
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
@@ -192,9 +194,13 @@ internal object PetListTestConstants {
 }
 
 @Composable
-internal fun PetList(state: PetListScreen.State, eventSink: (PetListScreen.Event) -> Unit) {
+internal fun PetList(
+  modifier: Modifier = Modifier,
+  state: PetListScreen.State,
+  eventSink: (PetListScreen.Event) -> Unit
+) {
   Scaffold(
-    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
+    modifier = modifier,
   ) { paddingValues ->
     when (state) {
       PetListScreen.State.Loading ->
@@ -269,7 +275,7 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
+      modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)

@@ -17,6 +17,8 @@ package com.slack.circuit.sample.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -116,10 +118,9 @@ private fun homeUi() =
   ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeContent(state, events) }
 
 @Composable
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
   Scaffold(
-    modifier = Modifier.systemBarsPadding().fillMaxWidth(),
+    modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
@@ -135,15 +136,16 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
         eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
       }
-    },
-    content = {
-      if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
-        PetList(state.petListState) { event -> eventSink(HomeScreen.Event.PetListEvent(event)) }
-      } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
-        About()
-      }
     }
-  )
+  ) {
+    if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
+      PetList(modifier = Modifier.padding(it), state = state.petListState) { event ->
+        eventSink(HomeScreen.Event.PetListEvent(event))
+      }
+    } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
+      About()
+    }
+  }
 }
 
 @Composable

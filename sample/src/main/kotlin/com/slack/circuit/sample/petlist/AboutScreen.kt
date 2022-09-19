@@ -18,12 +18,14 @@ package com.slack.circuit.sample.petlist
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.UiFactory
@@ -53,7 +55,7 @@ private fun aboutScreenUi() = ui<Any, Any> { _, _ -> About() }
 fun About() {
   Scaffold(
     content = {
-      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
         Text(text = stringResource(id = R.string.about_screen))
       }
     }

@@ -21,7 +21,7 @@ import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.platform.LocalContext
+import com.slack.circuit.LocalCanRetainCheckerOwner
 
 /**
  * Remember the value produced by [init].
@@ -67,8 +67,7 @@ fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: (
   // the different order. so we use rememberUpdatedState.
   val valueState = rememberUpdatedState(value)
 
-  // TODO(zsweers) would be nice to abstract this bit away since it's Android-specific
-  val activity = LocalContext.current.findActivity()
+  val canRetainChecker = LocalCanRetainCheckerOwner.current
   remember(registry, finalKey) {
     val entry = registry.registerValue(finalKey, valueState.value)
     object : RememberObserver {
@@ -81,7 +80,7 @@ fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: (
       }
 
       fun registerIfNotChangingConfiguration() {
-        if (activity?.isChangingConfigurations != true) {
+        if (!canRetainChecker.shouldRetain()) {
           entry.unregister()
         }
       }

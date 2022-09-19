@@ -15,11 +15,15 @@
  */
 package com.slack.circuit
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -28,9 +32,11 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 @Composable
 fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
   val retainedStateRegistry = viewModel<Continuity>()
+  val activity = LocalContext.current.findActivity()
   CompositionLocalProvider(
     LocalCircuitOwner provides circuit,
     LocalRetainedStateRegistry provides retainedStateRegistry,
+    LocalCanRetainCheckerOwner provides { activity?.isChangingConfigurations == true },
   ) {
     content()
   }
@@ -49,4 +55,34 @@ object LocalCircuitOwner {
   infix fun provides(circuit: Circuit): ProvidedValue<Circuit?> {
     return LocalCircuit.provides(circuit)
   }
+}
+
+class CanRetainChecker(private val shouldRetain: () -> Boolean) {
+  fun shouldRetain() = shouldRetain.invoke()
+}
+
+object LocalCanRetainCheckerOwner {
+  private val LocalCanRetainChecker = staticCompositionLocalOf { CanRetainChecker { false } }
+
+  /**
+   * Returns current composition local value for the owner or errors if one has not been provided.
+   */
+  val current: CanRetainChecker
+    @Composable get() = LocalCanRetainChecker.current
+
+  /**
+   * Associates a [LocalCanRetainChecker] key to a value in a call to [CompositionLocalProvider].
+   */
+  infix fun provides(shouldRetain: () -> Boolean): ProvidedValue<CanRetainChecker> {
+    return LocalCanRetainChecker.provides(CanRetainChecker(shouldRetain))
+  }
+}
+
+private fun Context.findActivity(): Activity? {
+  var context = this
+  while (context is ContextWrapper) {
+    if (context is Activity) return context
+    context = context.baseContext
+  }
+  return null
 }

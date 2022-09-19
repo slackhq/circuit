@@ -34,7 +34,7 @@ import android.os.Parcelable
  * Screens are then passed into [Navigators][Navigator] to navigate to them.
  *
  * ```
- * override fun showAddFavorites() {
+ * fun showAddFavorites() {
  *  navigator.goTo(
  *    AddFavorites(
  *      externalId = uuidGenerator.generate()

@@ -19,8 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 
 /**
- * Circuit adapts [presenterFactories][PresenterFactory] to their corresponding renderable
- * [uiFactories][UiFactory] using [screens][Screen]. Create instances using [the Builder] [Builder]
+ * Circuit adapts [presenter factories][Presenter.Factory] to their corresponding renderable [ui
+ * factories][Ui.Factory] using [screens][Screen]. Create instances using [the Builder] [Builder]
  * and create new [CircuitContent] with it to run presenter/UI pairings.
  *
  * ## Construction
@@ -64,8 +64,8 @@ import androidx.compose.runtime.Immutable
  */
 @Immutable
 class Circuit private constructor(builder: Builder) {
-  private val uiFactories: List<UiFactory> = builder.uiFactories.toList()
-  private val presenterFactories: List<PresenterFactory> = builder.presenterFactories.toList()
+  private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
+  private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   val onUnavailableContent: (@Composable (screen: Any) -> Unit)? = builder.onUnavailableContent
 
   fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
@@ -73,7 +73,7 @@ class Circuit private constructor(builder: Builder) {
   }
 
   fun nextPresenter(
-    skipPast: PresenterFactory?,
+    skipPast: Presenter.Factory?,
     screen: Screen,
     navigator: Navigator
   ): Presenter<*, *>? {
@@ -92,7 +92,7 @@ class Circuit private constructor(builder: Builder) {
     return nextUi(null, screen)
   }
 
-  fun nextUi(skipPast: UiFactory?, screen: Screen): Ui<*, *>? {
+  fun nextUi(skipPast: Ui.Factory?, screen: Screen): Ui<*, *>? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
       val ui = uiFactories[i].create(screen)
@@ -107,8 +107,8 @@ class Circuit private constructor(builder: Builder) {
   fun newBuilder() = Builder(this)
 
   class Builder constructor() {
-    val uiFactories = mutableListOf<UiFactory>()
-    val presenterFactories = mutableListOf<PresenterFactory>()
+    val uiFactories = mutableListOf<Ui.Factory>()
+    val presenterFactories = mutableListOf<Presenter.Factory>()
     var onUnavailableContent: (@Composable (screen: Any) -> Unit)? = null
       private set
 
@@ -117,25 +117,25 @@ class Circuit private constructor(builder: Builder) {
       presenterFactories.addAll(circuit.presenterFactories)
     }
 
-    fun addUiFactory(factory: UiFactory) = apply { uiFactories.add(factory) }
+    fun addUiFactory(factory: Ui.Factory) = apply { uiFactories.add(factory) }
 
-    fun addUiFactory(vararg factory: UiFactory) = apply {
+    fun addUiFactory(vararg factory: Ui.Factory) = apply {
       for (f in factory) {
         uiFactories.add(f)
       }
     }
 
-    fun addUiFactories(factories: Iterable<UiFactory>) = apply { uiFactories.addAll(factories) }
+    fun addUiFactories(factories: Iterable<Ui.Factory>) = apply { uiFactories.addAll(factories) }
 
-    fun addPresenterFactory(factory: PresenterFactory) = apply { presenterFactories.add(factory) }
+    fun addPresenterFactory(factory: Presenter.Factory) = apply { presenterFactories.add(factory) }
 
-    fun addPresenterFactory(vararg factory: PresenterFactory) = apply {
+    fun addPresenterFactory(vararg factory: Presenter.Factory) = apply {
       for (f in factory) {
         presenterFactories.add(f)
       }
     }
 
-    fun addPresenterFactories(factories: Iterable<PresenterFactory>) = apply {
+    fun addPresenterFactories(factories: Iterable<Presenter.Factory>) = apply {
       presenterFactories.addAll(factories)
     }
 

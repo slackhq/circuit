@@ -34,10 +34,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
-import com.slack.circuit.UiFactory
+import com.slack.circuit.Ui
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.About
 import com.slack.circuit.sample.petlist.PetList
@@ -68,9 +67,9 @@ object HomeScreen : Screen {
 }
 
 @ContributesMultibinding(AppScope::class)
-class HomePresenterFactory
+class HomeScreenPresenterFactory
 @Inject
-constructor(private val homePresenterFactory: HomePresenter.Factory) : PresenterFactory {
+constructor(private val homePresenterFactory: HomePresenter.Factory) : Presenter.Factory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     if (screen is HomeScreen) return homePresenterFactory.create(navigator)
     return null
@@ -105,7 +104,7 @@ constructor(
 }
 
 @ContributesMultibinding(AppScope::class)
-class HomeScreenFactory @Inject constructor() : UiFactory {
+class HomeUiFactory @Inject constructor() : Ui.Factory {
   override fun create(screen: Screen): ScreenUi? {
     if (screen is HomeScreen) {
       return ScreenUi(homeUi())

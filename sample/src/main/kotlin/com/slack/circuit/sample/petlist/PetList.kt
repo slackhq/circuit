@@ -147,21 +147,21 @@ constructor(
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val animalState by produceState<List<PetListAnimal>?>(null) {
-      val animals = petRepo.getAnimals()
-      value = animals.map { it.toPetListAnimal() }
-    }
-
-    val state = remember(screen, animalState) {
-      val animals = animalState
-      when {
-        animals == null -> PetListScreen.State.Loading
-        animals.isEmpty() -> PetListScreen.State.NoAnimals
-        else -> PetListScreen.State.Success(
-          animals = animals.filter(::shouldKeep)
-        )
+    val animalState by
+      produceState<List<PetListAnimal>?>(null) {
+        val animals = petRepo.getAnimals()
+        value = animals.map { it.toPetListAnimal() }
       }
-    }
+
+    val state =
+      remember(screen, animalState) {
+        val animals = animalState
+        when {
+          animals == null -> PetListScreen.State.Loading
+          animals.isEmpty() -> PetListScreen.State.NoAnimals
+          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep))
+        }
+      }
 
     EventCollector(events) { event ->
       when (event) {

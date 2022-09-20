@@ -65,11 +65,11 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 
 @Parcelize
 object HomeScreen : Screen {
@@ -108,13 +108,19 @@ constructor(
 
   @Composable
   override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
-    val rememberHomeNavState = remember { events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event } }
+    val rememberHomeNavState = remember {
+      events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event }
+    }
     val homeNavState = homeNavPresenter(rememberHomeNavState)
 
-    val rememberPetListFilterState = remember { events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event } }
+    val rememberPetListFilterState = remember {
+      events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event }
+    }
     val petListFilterState = petListFilterPresenter.present(rememberPetListFilterState)
 
-    val rememberChildNavigationEvent = remember { events.filterIsInstance<HomeScreen.Event.ChildNavigation>() }
+    val rememberChildNavigationEvent = remember {
+      events.filterIsInstance<HomeScreen.Event.ChildNavigation>()
+    }
     EventCollector(rememberChildNavigationEvent) { event ->
       when (event) {
         is HomeScreen.Event.ChildNavigation.GoTo -> navigator.goTo(event.screen)
@@ -152,7 +158,8 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
   val modalState =
     rememberModalBottomSheetState(
       initialValue =
-      if (state.petListFilterState.showBottomSheet) ModalBottomSheetValue.Expanded else ModalBottomSheetValue.Hidden
+        if (state.petListFilterState.showBottomSheet) ModalBottomSheetValue.Expanded
+        else ModalBottomSheetValue.Hidden
     )
 
   // Monitor bottom sheet state and emit event whenever the user dismisses the modal
@@ -161,7 +168,9 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       .collect { isVisible ->
         // Toggle if state says the modal should be visible but the snapshot says it isn't.
         if (state.petListFilterState.showBottomSheet && !isVisible)
-          eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)
+          )
       }
   }
 
@@ -175,22 +184,33 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     }
   ) {
     Scaffold(
-      modifier = Modifier
-        .navigationBarsPadding()
-        .systemBarsPadding()
-        .fillMaxWidth(),
+      modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
       topBar = {
         CenterAlignedTopAppBar(
           title = {
-            Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(
+              "Adoptables",
+              fontSize = 22.sp,
+              color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
           },
           colors =
-          TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-          ),
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+              containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
           actions = {
-            IconButton(onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)) }) {
-              androidx.compose.material.Icon(imageVector = Icons.Default.FilterList, contentDescription = "filter pet list", tint = Color.White)
+            IconButton(
+              onClick = {
+                eventSink(
+                  HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)
+                )
+              }
+            ) {
+              androidx.compose.material.Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = "filter pet list",
+                tint = Color.White
+              )
             }
           },
         )
@@ -204,10 +224,11 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
         Box(modifier = Modifier.padding(paddingValues)) {
           CircuitContent(
-            screen = PetListScreen(
-              gender = state.petListFilterState.gender,
-              size = state.petListFilterState.size
-            ),
+            screen =
+              PetListScreen(
+                gender = state.petListFilterState.gender,
+                size = state.petListFilterState.size
+              ),
             navigator = childNavigator
           )
         }
@@ -265,21 +286,39 @@ private fun GenderFilterOption(
       Text(text = "All")
       RadioButton(
         selected = state.gender == Gender.ALL,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(Gender.ALL))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(
+              PetListFilterScreen.Event.FilterByGender(Gender.ALL)
+            )
+          )
+        }
       )
     }
     Column {
       Text(text = "Male")
       RadioButton(
         selected = state.gender == Gender.MALE,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(Gender.MALE))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(
+              PetListFilterScreen.Event.FilterByGender(Gender.MALE)
+            )
+          )
+        }
       )
     }
     Column {
       Text(text = "Female")
       RadioButton(
         selected = state.gender == Gender.FEMALE,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(Gender.FEMALE))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(
+              PetListFilterScreen.Event.FilterByGender(Gender.FEMALE)
+            )
+          )
+        }
       )
     }
   }
@@ -296,28 +335,44 @@ private fun SizeFilterOption(
       Text(text = "All")
       RadioButton(
         selected = state.size == Size.ALL,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.ALL))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.ALL))
+          )
+        }
       )
     }
     Column {
       Text(text = "Small")
       RadioButton(
         selected = state.size == Size.SMALL,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.SMALL))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.SMALL))
+          )
+        }
       )
     }
     Column {
       Text(text = "Medium")
       RadioButton(
         selected = state.size == Size.MEDIUM,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.MEDIUM))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.MEDIUM))
+          )
+        }
       )
     }
     Column {
       Text(text = "Large")
       RadioButton(
         selected = state.size == Size.LARGE,
-        onClick = { eventSink(HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.LARGE))) }
+        onClick = {
+          eventSink(
+            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.LARGE))
+          )
+        }
       )
     }
   }

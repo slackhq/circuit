@@ -40,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -141,8 +140,6 @@ constructor(
             else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
           }
       }
-
-    SideEffect { println("rememberRetained: State is $state") }
 
     EventCollector(events) { event ->
       when (event) {

@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
@@ -31,10 +32,11 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.shareIn
 
 @Composable
 fun NavigableCircuitContent(
@@ -121,14 +123,20 @@ fun CircuitContent(
   }
 }
 
-@OptIn(ObsoleteCoroutinesApi::class)
 @Composable
 private fun <UiState : Any, UiEvent : Any> CircuitRender(
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
 ) {
-  val channel = remember(presenter, ui) { BroadcastChannel<UiEvent>(BUFFERED) }
-  @Suppress("DEPRECATION") val eventsFlow = remember(channel) { channel.asFlow() }
+  val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
+  val scope = rememberCoroutineScope()
+  val eventsFlow =
+    remember(channel, scope) { channel.consumeAsFlow().shareIn(scope, SharingStarted.Lazily) }
   val state = presenter.present(eventsFlow)
-  ui.Render(state) { event -> channel.trySend(event) }
+  ui.Render(state) { event ->
+    val result = channel.trySend(event)
+    if (!result.isSuccess && !result.isClosed) {
+      error("Event buffer overflow")
+    }
+  }
 }

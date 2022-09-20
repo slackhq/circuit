@@ -59,7 +59,6 @@ import com.slack.circuit.sample.petlist.About
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
-import com.slack.circuit.sample.petlist.PetListPresenter
 import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.petlist.Size
 import com.slack.circuit.ui
@@ -67,23 +66,21 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @Parcelize
 object HomeScreen : Screen {
   data class State(
     val homeNavState: HomeNavScreen.HomeNavState,
-    val petListState: PetListScreen.State,
     val petListFilterState: PetListFilterScreen.State
   )
 
   sealed interface Event {
     class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
-    class PetListEvent(val event: PetListScreen.Event) : Event
     class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
     sealed interface ChildNavigation : Event {
       object Pop : ChildNavigation
@@ -106,10 +103,8 @@ class HomePresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
-  petListPresenterFactory: PetListPresenter.Factory,
   petListFilterPresenterFactory: PetListFilterPresenter.Factory
 ) : Presenter<HomeScreen.State, HomeScreen.Event> {
-  private val petListPresenter = petListPresenterFactory.create(navigator, PetListScreen(Gender.ALL, Size.ALL))
   private val petListFilterPresenter = petListFilterPresenterFactory.create()
 
   @Composable
@@ -120,11 +115,6 @@ constructor(
     val rememberPetListFilterState = remember { events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event } }
     val petListFilterState = petListFilterPresenter.present(rememberPetListFilterState)
 
-    // TODO I think this can now be removed
-    val rememberPetListState = remember { events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event } }
-    val petListState = petListPresenter.present(rememberPetListState)
-    // TODO I think this can now be removed
-
     val rememberChildNavigationEvent = remember { events.filterIsInstance<HomeScreen.Event.ChildNavigation>() }
     EventCollector(rememberChildNavigationEvent) { event ->
       when (event) {
@@ -133,7 +123,7 @@ constructor(
       }
     }
 
-    return HomeScreen.State(homeNavState, petListState, petListFilterState)
+    return HomeScreen.State(homeNavState, petListFilterState)
   }
 
   @AssistedFactory
@@ -158,18 +148,7 @@ private fun homeUi() =
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
-  val childNavigator = remember {
-    object : Navigator {
-      override fun goTo(screen: Screen) {
-        eventSink(HomeScreen.Event.ChildNavigation.GoTo(screen))
-      }
-
-      override fun pop(): Screen? {
-        eventSink(HomeScreen.Event.ChildNavigation.Pop)
-        return null
-      }
-    }
-  }
+  val childNavigator = rememberChildNavigator(eventSink)
 
   val modalState =
     rememberModalBottomSheetState(
@@ -236,6 +215,20 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
         About()
       }
+    }
+  }
+}
+
+@Composable
+private fun rememberChildNavigator(eventSink: (HomeScreen.Event) -> Unit) = remember {
+  object : Navigator {
+    override fun goTo(screen: Screen) {
+      eventSink(HomeScreen.Event.ChildNavigation.GoTo(screen))
+    }
+
+    override fun pop(): Screen? {
+      eventSink(HomeScreen.Event.ChildNavigation.Pop)
+      return null
     }
   }
 }

@@ -31,9 +31,10 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.asFlow
 
 @Composable
 fun NavigableCircuitContent(
@@ -129,13 +130,14 @@ private fun CircuitContent(
   }
 }
 
+@OptIn(ObsoleteCoroutinesApi::class)
 @Composable
 private fun <UiState : Any, UiEvent : Any> CircuitRender(
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
 ) {
-  val channel = remember(presenter, ui) { Channel<UiEvent>(BUFFERED) }
-  val eventsFlow = remember(channel) { channel.receiveAsFlow() }
+  val channel = remember(presenter, ui) { BroadcastChannel<UiEvent>(BUFFERED) }
+  @Suppress("DEPRECATION") val eventsFlow = remember(channel) { channel.asFlow() }
   val state = presenter.present(eventsFlow)
   ui.Render(state) { event -> channel.trySend(event) }
 }

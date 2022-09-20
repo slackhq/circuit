@@ -35,7 +35,7 @@ interface Navigator {
 
 // Todo Fill kdoc.
 fun Navigator.onNavEvent(event: NavEvent) {
-  when(event) {
+  when (event) {
     is GoToNavEvent -> goTo(event.screen)
     PopNavEvent -> pop()
   }
@@ -43,7 +43,9 @@ fun Navigator.onNavEvent(event: NavEvent) {
 
 // Todo Fill kdoc.
 sealed interface NavEvent
+
 internal object PopNavEvent : NavEvent
+
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
 
 /**

@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -109,18 +110,16 @@ constructor(
   private val petListPresenter = petListPresenterFactory.create(navigator, PetListScreen(Gender.ALL, Size.ALL))
   private val petListFilterPresenter = petListFilterPresenterFactory.create()
 
-  @SuppressLint("FlowOperatorInvokedInComposition")
   @Composable
   override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
-    val homeNavState =
-      homeNavPresenter(events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event })
-    val petListFilterState = petListFilterPresenter.present(
-      events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event }
-    )
-    val petListState =
-      petListPresenter.present(
-        events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
-      )
+    val rememberHomeNavState = remember { events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event } }
+    val homeNavState = homeNavPresenter(rememberHomeNavState)
+
+    val rememberPetListFilterState = remember { events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event } }
+    val petListFilterState = petListFilterPresenter.present(rememberPetListFilterState)
+
+    val rememberPetListState = remember { events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event } }
+    val petListState = petListPresenter.present(rememberPetListState)
 
     EventCollector(events = events, eventCollector = { event ->
       when (event) {

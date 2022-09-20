@@ -55,7 +55,47 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Ui<UiState : Any, UiEvent : Any> {
   @Composable fun Render(state: UiState, eventSink: (UiEvent) -> Unit)
+
+  /**
+   * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a
+   * given [Screen].
+   *
+   * Note that individual UIs should just be top-level [ui] function calls that factories simply
+   * call into. This allows easily standing up composable preview functions.
+   *
+   * ```
+   * class FavoritesUiFactory @Inject constructor() : Ui.Factory {
+   *  override fun create(
+   *    screen: Screen,
+   *  ): ScreenUi? {
+   *    val ui = when (screen) {
+   *      is AddFavorites -> {
+   *        addFavoritesUi()
+   *      }
+   *      else -> return null
+   *    }
+   *    return ScreenUi(
+   *      ui = ui as Ui<*, *>,
+   *    )
+   *   }
+   * }
+   *
+   * private fun addFavoritesUi() =
+   *   ui<AddFavorites.State, AddFavorites.Event> { state, eventSink -> Favorites(state, eventSink) }
+   *
+   * @Composable private fun Favorites(state: State, eventSink: (Event) -> Unit = {}) {...}
+   * ```
+   */
+  fun interface Factory {
+    fun create(screen: Screen): ScreenUi?
+  }
 }
+
+data class ScreenUi(
+  val ui: Ui<*, *>,
+// TODO does this kind of thing eventually move to compose Modifier instead?
+//  val uiMetadata: UiMetadata = UiMetadata()
+)
 
 /**
  * Due to this bug in Studio, we can't write lambda impls of [Ui] directly. This works around it by

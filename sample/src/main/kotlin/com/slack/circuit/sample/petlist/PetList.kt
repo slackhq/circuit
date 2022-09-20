@@ -66,10 +66,9 @@ import coil.request.ImageRequest
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
-import com.slack.circuit.UiFactory
+import com.slack.circuit.Ui
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -132,7 +131,7 @@ class PetListScreenPresenterFactory
 @Inject
 constructor(
   private val petListPresenterFactory: PetListPresenter.Factory,
-) : PresenterFactory {
+) : Presenter.Factory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
     return null
@@ -209,7 +208,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetListScreenFactory @Inject constructor() : UiFactory {
+class PetListUiFactory @Inject constructor() : Ui.Factory {
   override fun create(screen: Screen): ScreenUi? {
     if (screen is PetListScreen) {
       return ScreenUi(petListUi())

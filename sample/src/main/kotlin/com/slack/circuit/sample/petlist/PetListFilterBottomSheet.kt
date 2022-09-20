@@ -9,10 +9,9 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.PresenterFactory
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
-import com.slack.circuit.UiFactory
+import com.slack.circuit.Ui
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -35,7 +34,7 @@ object PetListFilterScreen : Screen {
 }
 
 @ContributesMultibinding(AppScope::class)
-class PetListFilterScreenFactory @Inject constructor() : UiFactory {
+class PetListFilterScreenFactory @Inject constructor() : Ui.Factory {
   override fun create(screen: Screen): ScreenUi? {
     if (screen is PetListFilterScreen) return ScreenUi(petListFilterUi())
     return null
@@ -45,8 +44,7 @@ class PetListFilterScreenFactory @Inject constructor() : UiFactory {
 @ContributesMultibinding(AppScope::class)
 class PetListFilterPresenterFactory
 @Inject
-constructor(private val petListFilterPresenterFactory: PetListFilterPresenter.Factory) :
-  PresenterFactory {
+constructor(private val petListFilterPresenterFactory: PetListFilterPresenter.Factory) : Presenter.Factory  {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     if (screen is PetListFilterScreen) return petListFilterPresenterFactory.create()
     return null

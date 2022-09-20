@@ -47,11 +47,14 @@ import kotlinx.coroutines.flow.Flow
  *
  * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
  *
+ * If a given [Presenter] only ever emits the same state, you can define a single value-less
+ * `object` type for the state.
+ *
  * Note that due to a bug in studio, we can't make this a `fun interface` _yet_. Instead, use [ui].
  *
  * @see ui
  */
-interface Ui<UiState : Any, UiEvent : Any> {
+interface Ui<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
   @Composable fun Render(state: UiState, eventSink: (UiEvent) -> Unit)
 
   /**
@@ -104,7 +107,7 @@ data class ScreenUi(
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState : Any, UiEvent : Any> ui(
+inline fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> ui(
   crossinline body: @Composable (state: UiState, eventSink: (UiEvent) -> Unit) -> Unit
 ): Ui<UiState, UiEvent> {
   return object : Ui<UiState, UiEvent> {
@@ -117,6 +120,9 @@ inline fun <UiState : Any, UiEvent : Any> ui(
 
 @Suppress("NOTHING_TO_INLINE")
 @Composable
-inline fun <E : Any> EventCollector(events: Flow<E>, noinline eventCollector: (event: E) -> Unit) {
+inline fun <E : CircuitUiEvent> EventCollector(
+  events: Flow<E>,
+  noinline eventCollector: (event: E) -> Unit
+) {
   LaunchedEffect(events) { events.collect(eventCollector) }
 }

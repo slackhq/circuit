@@ -103,18 +103,9 @@ fun BasicNavigableCircuitContent(
 @Composable
 fun CircuitContent(
   screen: Screen,
+  navigator: Navigator = Navigator.NoOp,
   circuit: Circuit = LocalCircuitOwner.current,
   unavailableContent: (@Composable (screen: Any) -> Unit)? = circuit.onUnavailableContent,
-) {
-  CircuitContent(screen, Navigator.NoOp, circuit, unavailableContent)
-}
-
-@Composable
-private fun CircuitContent(
-  screen: Screen,
-  navigator: Navigator,
-  circuit: Circuit,
-  unavailableContent: (@Composable (screen: Any) -> Unit)?,
 ) {
   @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
 

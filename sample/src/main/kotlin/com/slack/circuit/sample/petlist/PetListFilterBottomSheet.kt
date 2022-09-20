@@ -150,8 +150,8 @@ internal fun PetListFilter(
     sheetState = modalState,
     sheetContent = {
       Column {
-        GenderFilterOption(state, events)
-        SizeFilterOption(state, events)
+        GenderFilterOption2(state, events)
+        SizeFilterOption2(state, events)
       }
     }
   ) {
@@ -186,7 +186,7 @@ internal fun PetListFilter(
 }
 
 @Composable
-private fun GenderFilterOption(
+private fun GenderFilterOption2(
   state: PetListFilterScreen.State,
   events: (PetListFilterScreen.Event) -> Unit
 ) {
@@ -217,7 +217,7 @@ private fun GenderFilterOption(
 }
 
 @Composable
-private fun SizeFilterOption(
+private fun SizeFilterOption2(
   state: PetListFilterScreen.State,
   events: (PetListFilterScreen.Event) -> Unit
 ) {

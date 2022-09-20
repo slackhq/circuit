@@ -17,6 +17,8 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -124,5 +126,6 @@ inline fun <E : CircuitUiEvent> EventCollector(
   events: Flow<E>,
   noinline eventCollector: (event: E) -> Unit
 ) {
-  LaunchedEffect(events) { events.collect(eventCollector) }
+  val currentCollector by rememberUpdatedState(eventCollector)
+  LaunchedEffect(events) { events.collect { currentCollector(it) } }
 }

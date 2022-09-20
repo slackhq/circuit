@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.PresenterFactory
@@ -80,6 +81,8 @@ object HomeScreen : Screen {
   )
 
   sealed interface Event {
+    data class NavTo(val screen: Screen) : Event
+    object NavPop : Event
     class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
     class PetListEvent(val event: PetListScreen.Event) : Event
     class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
@@ -103,7 +106,6 @@ constructor(
   petListPresenterFactory: PetListPresenter.Factory,
   petListFilterPresenterFactory: PetListFilterPresenter.Factory
 ) : Presenter<HomeScreen.State, HomeScreen.Event> {
-  // Should this presenter should be set up with the states returned from Pet List Filter Presenter?
   private val petListPresenter = petListPresenterFactory.create(navigator, PetListScreen(Gender.ALL, Size.ALL))
   private val petListFilterPresenter = petListFilterPresenterFactory.create()
 
@@ -119,6 +121,14 @@ constructor(
       petListPresenter.present(
         events.filterIsInstance<HomeScreen.Event.PetListEvent>().map { it.event }
       )
+
+    EventCollector(events = events, eventCollector = { event ->
+      when (event) {
+        is HomeScreen.Event.NavTo -> navigator.goTo(event.screen)
+        HomeScreen.Event.NavPop -> navigator.pop()
+        else -> {}
+      }
+    })
 
     return HomeScreen.State(homeNavState, petListState, petListFilterState)
   }
@@ -203,17 +213,17 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     ) {
       if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
         // I think CircuitContent might need to expose modifier.
-        CircuitContent(PetListScreen(gender = state.petListFilterState.gender, size = state.petListFilterState.size))
+        val nav = object : Navigator {
+          override fun goTo(screen: Screen) {
+            eventSink(HomeScreen.Event.NavTo(screen))
+          }
 
-//      PetListFilter(modifier = Modifier.padding(it), /*modalState = modalState,*/ state = state.petListFilterState) { event ->
-//        eventSink(HomeScreen.Event.PetListFilterEvent(event))
-//      }
-//
-//
-//      PetList(modifier = Modifier.padding(it), state = state.petListState) { event ->
-//        eventSink(HomeScreen.Event.PetListEvent(event))
-//      }
-
+          override fun pop(): Screen? {
+            eventSink(HomeScreen.Event.NavPop)
+            return null
+          }
+        }
+        CircuitContent(PetListScreen(gender = state.petListFilterState.gender, size = state.petListFilterState.size), navigator = nav)
       } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
         About()
       }

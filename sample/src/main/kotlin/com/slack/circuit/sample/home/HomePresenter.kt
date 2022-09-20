@@ -48,11 +48,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.EventCollector
+import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.onNavEvent
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.About
 import com.slack.circuit.sample.petlist.Gender
@@ -81,10 +83,7 @@ object HomeScreen : Screen {
   sealed interface Event {
     class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
     class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
-    sealed interface ChildNavigation : Event {
-      object Pop : ChildNavigation
-      data class GoTo(val screen: Screen) : ChildNavigation
-    }
+    class ChildNav(val navEvent: NavEvent) : Event
   }
 }
 
@@ -118,15 +117,11 @@ constructor(
     }
     val petListFilterState = petListFilterPresenter.present(rememberPetListFilterState)
 
+    // Todo extract into helper fun NavEventsCollector.
     val rememberChildNavigationEvent = remember {
-      events.filterIsInstance<HomeScreen.Event.ChildNavigation>()
+      events.filterIsInstance<HomeScreen.Event.ChildNav>().map { it.navEvent }
     }
-    EventCollector(rememberChildNavigationEvent) { event ->
-      when (event) {
-        is HomeScreen.Event.ChildNavigation.GoTo -> navigator.goTo(event.screen)
-        HomeScreen.Event.ChildNavigation.Pop -> navigator.pop()
-      }
-    }
+    EventCollector(rememberChildNavigationEvent, navigator::onNavEvent)
 
     return HomeScreen.State(homeNavState, petListFilterState)
   }
@@ -153,8 +148,6 @@ private fun homeUi() =
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
-  val childNavigator = rememberChildNavigator(eventSink)
-
   val modalState =
     rememberModalBottomSheetState(
       initialValue =
@@ -229,26 +222,12 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
                 gender = state.petListFilterState.gender,
                 size = state.petListFilterState.size
               ),
-            navigator = childNavigator
+            onNavEvent = { event -> eventSink(HomeScreen.Event.ChildNav(event)) }
           )
         }
       } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
         About()
       }
-    }
-  }
-}
-
-@Composable
-private fun rememberChildNavigator(eventSink: (HomeScreen.Event) -> Unit) = remember {
-  object : Navigator {
-    override fun goTo(screen: Screen) {
-      eventSink(HomeScreen.Event.ChildNavigation.GoTo(screen))
-    }
-
-    override fun pop(): Screen? {
-      eventSink(HomeScreen.Event.ChildNavigation.Pop)
-      return null
     }
   }
 }

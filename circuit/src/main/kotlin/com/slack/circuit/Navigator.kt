@@ -33,6 +33,19 @@ interface Navigator {
   }
 }
 
+// Todo Fill kdoc.
+fun Navigator.onNavEvent(event: NavEvent) {
+  when(event) {
+    is GoToNavEvent -> goTo(event.screen)
+    PopNavEvent -> pop()
+  }
+}
+
+// Todo Fill kdoc.
+sealed interface NavEvent
+internal object PopNavEvent : NavEvent
+internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
+
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *

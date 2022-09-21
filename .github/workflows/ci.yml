@@ -73,7 +73,12 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest
+          script: |
+            adb uninstall com.slack.circuit.sample
+            adb uninstall com.slack.circuit.sample.androidTest
+            ./gradlew connectedDebugAndroidTest
+            adb uninstall com.slack.circuit.sample
+            adb uninstall com.slack.circuit.sample.androidTest
 
       - name: (Fail-only) Bundle the build report
         if: failure()

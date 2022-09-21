@@ -90,4 +90,4 @@ fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: (
 }
 
 /** The maximum radix available for conversion to and from strings. */
-private val MaxSupportedRadix = 36
+private const val MaxSupportedRadix = 36

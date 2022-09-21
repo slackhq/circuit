@@ -23,10 +23,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
@@ -34,7 +31,10 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -148,7 +148,6 @@ class HomeUiFactory @Inject constructor() : Ui.Factory {
 private fun homeUi() =
   ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeContent(state, events) }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
@@ -185,11 +184,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       topBar = {
         CenterAlignedTopAppBar(
           title = {
-            Text(
-              "Adoptables",
-              fontSize = 22.sp,
-              color = MaterialTheme.colorScheme.onBackground
-            )
+            Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
           },
           colors =
             TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -213,8 +208,10 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
         )
       },
       bottomBar = {
-        BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-          eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
+        StarTheme(useDarkTheme = true) {
+          BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
+            eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
+          }
         }
       }
     ) { paddingValues ->
@@ -243,17 +240,14 @@ private fun getScreen(index: Int, gender: Gender, size: Size): Screen {
 @Composable
 private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
   // These are the buttons on the NavBar, they dictate where we navigate too.
-  val items = listOf(BottomNavItem.Dogs, BottomNavItem.About)
-  BottomNavigation(
-    backgroundColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    contentColor = Color.White
+  val items = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
+  NavigationBar(
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {
     items.forEachIndexed { index, item ->
-      BottomNavigationItem(
+      NavigationBarItem(
         icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
         label = { Text(text = item.title) },
-        selectedContentColor = MaterialTheme.colorScheme.secondary,
-        unselectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(0.4f),
         alwaysShowLabel = true,
         selected = selectedIndex == index,
         onClick = { onSelectedIndex(index) }

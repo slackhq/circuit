@@ -79,7 +79,7 @@ internal class RetainedStateRegistryImpl(
 
   override fun consumeValue(key: String): Any? {
     val list = retained.remove(key)
-    return if (list != null && list.isNotEmpty()) {
+    return if (!list.isNullOrEmpty()) {
       if (list.size > 1) {
         retained[key] = list.subList(1, list.size)
       }
@@ -96,7 +96,7 @@ internal class RetainedStateRegistryImpl(
       override fun unregister() {
         val list = retained.remove(key)
         list?.remove(value)
-        if (list != null && list.isNotEmpty()) {
+        if (!list.isNullOrEmpty()) {
           // if there are other providers for this key return list back to the map
           retained[key] = list
         }

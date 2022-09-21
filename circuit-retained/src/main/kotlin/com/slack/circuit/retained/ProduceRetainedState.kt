@@ -56,12 +56,12 @@ private class ProduceRetainedStateScopeImpl<T>(
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
- *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
- *         favoritesRepository.people
- *             .map { UiState.Data(it) }
- *             .collect { value = it }
- *     }
- *     return state
+ *   val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *     favoritesRepository.people
+ *       .map { UiState.Data(it) }
+ *       .collect { value = it }
+ *   }
+ *   return state
  * }
  * ```
  */
@@ -94,12 +94,12 @@ fun <T> produceRetainedState(
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
- *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
- *         favoritesRepository.people
- *             .map { UiState.Data(it) }
- *             .collect { value = it }
- *     }
- *     return state
+ *   val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *     favoritesRepository.people
+ *       .map { UiState.Data(it) }
+ *       .collect { value = it }
+ *   }
+ *   return state
  * }
  * ```
  */
@@ -133,12 +133,12 @@ fun <T> produceRetainedState(
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
- *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
- *         favoritesRepository.people
- *             .map { UiState.Data(it) }
- *             .collect { value = it }
- *     }
- *     return state
+ *   val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *     favoritesRepository.people
+ *       .map { UiState.Data(it) }
+ *       .collect { value = it }
+ *   }
+ *   return state
  * }
  * ```
  */
@@ -173,12 +173,12 @@ fun <T> produceRetainedState(
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
- *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
- *         favoritesRepository.people
- *             .map { UiState.Data(it) }
- *             .collect { value = it }
- *     }
- *     return state
+ *   val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *     favoritesRepository.people
+ *       .map { UiState.Data(it) }
+ *       .collect { value = it }
+ *   }
+ *   return state
  * }
  * ```
  */
@@ -216,12 +216,12 @@ fun <T> produceRetainedState(
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
- *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
- *         favoritesRepository.people
- *             .map { UiState.Data(it) }
- *             .collect { value = it }
- *     }
- *     return state
+ *   val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *     favoritesRepository.people
+ *       .map { UiState.Data(it) }
+ *       .collect { value = it }
+ *   }
+ *   return state
  * }
  * ```
  */

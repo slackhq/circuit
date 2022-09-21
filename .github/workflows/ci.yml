@@ -81,11 +81,11 @@ jobs:
           target: 'aosp_atd'
           channel: canary # Necessary for ATDs
           script: |
-            adb uninstall com.slack.circuit.sample
-            adb uninstall com.slack.circuit.sample.androidTest
+            adb uninstall com.slack.circuit.sample || true
+            adb uninstall com.slack.circuit.sample.androidTest || true
             ./gradlew connectedDebugAndroidTest
-            adb uninstall com.slack.circuit.sample
-            adb uninstall com.slack.circuit.sample.androidTest
+            adb uninstall com.slack.circuit.sample || true
+            adb uninstall com.slack.circuit.sample.androidTest || true
 
       - name: (Fail-only) Bundle the build report
         if: failure()

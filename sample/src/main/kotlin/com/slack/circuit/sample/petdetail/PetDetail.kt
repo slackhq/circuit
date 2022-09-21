@@ -247,6 +247,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   }
   item(state.tags) {
     FlowRow(
+      modifier = Modifier.fillMaxWidth(),
       mainAxisSpacing = 8.dp,
       crossAxisSpacing = 8.dp,
       mainAxisAlignment = FlowMainAxisAlignment.Center,

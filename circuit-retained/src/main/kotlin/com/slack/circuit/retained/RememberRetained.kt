@@ -33,7 +33,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
  *
  * This differs from [rememberSaveable] by not being tied to Android bundles or parcelable. You
  * should take care to ensure that the state computed by [init] does not capture anything that is
- * not save to persist across reconfiguration, such as Navigators.
+ * not save to persist across reconfiguration, such as Navigators. The same caveats of
+ * [rememberSaveable] also still apply (i.e. do not retain Android Contexts, Views, etc).
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  * reset and [init] to be rerun

@@ -41,7 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,6 +62,7 @@ import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -142,7 +142,7 @@ constructor(
   @Composable
   override fun present(events: Flow<Nothing>): PetDetailScreen.State {
     val state by
-      produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {

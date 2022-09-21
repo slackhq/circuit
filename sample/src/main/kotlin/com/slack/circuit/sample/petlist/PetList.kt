@@ -41,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,6 +69,7 @@ import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -149,7 +149,7 @@ constructor(
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
     val animalState by
-      produceState<List<PetListAnimal>?>(null) {
+      produceRetainedState<List<PetListAnimal>?>(null) {
         val animals = petRepo.getAnimals()
         value = animals.map { it.toPetListAnimal() }
       }

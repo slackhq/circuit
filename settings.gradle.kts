@@ -143,6 +143,7 @@ rootProject.name = "circuit-root"
 // Please keep these in alphabetical order!
 include(":backstack")
 include(":circuit")
+include(":circuit-retained")
 include(":sample")
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

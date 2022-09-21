@@ -72,8 +72,6 @@ jobs:
           channel: canary # Necessary for ATDs
           script: echo "Generated AVD snapshot for caching."
 
-      - run: ls -al ~/.android/avd
-
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

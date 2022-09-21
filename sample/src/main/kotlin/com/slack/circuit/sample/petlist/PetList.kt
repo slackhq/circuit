@@ -112,7 +112,8 @@ enum class Size {
   LARGE
 }
 
-@Parcelize class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
+@Parcelize
+data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {

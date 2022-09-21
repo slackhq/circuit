@@ -15,7 +15,6 @@
  */
 package com.slack.circuit.sample.petlist
 
-import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +39,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object PetListFilterScreen : Screen {
-  @Parcelize
-  data class State(val gender: Gender, val size: Size, val showBottomSheet: Boolean) :
-    CircuitUiState, Parcelable
+  data class State(val filters: Filters, val showBottomSheet: Boolean) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     object ToggleAnimalFilter : Event
@@ -74,9 +71,7 @@ class PetListFilterPresenter @AssistedInject constructor() :
   Presenter<PetListFilterScreen.State, PetListFilterScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListFilterScreen.Event>): PetListFilterScreen.State {
-    var state by remember {
-      mutableStateOf(PetListFilterScreen.State(gender = Gender.ALL, size = Size.ALL, false))
-    }
+    var state by remember { mutableStateOf(PetListFilterScreen.State(Filters(), false)) }
 
     EventCollector(events) { event ->
       state =
@@ -85,10 +80,10 @@ class PetListFilterPresenter @AssistedInject constructor() :
             state.copy(showBottomSheet = !state.showBottomSheet)
           }
           is PetListFilterScreen.Event.FilterByGender -> {
-            state.copy(gender = event.gender)
+            state.copy(filters = state.filters.copy(gender = event.gender))
           }
           is PetListFilterScreen.Event.FilterBySize -> {
-            state.copy(size = event.size)
+            state.copy(filters = state.filters.copy(size = event.size))
           }
         }
     }

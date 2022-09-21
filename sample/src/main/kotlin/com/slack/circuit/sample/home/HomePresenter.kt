@@ -44,7 +44,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
@@ -59,12 +58,9 @@ import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.sample.di.AppScope
-import com.slack.circuit.sample.petlist.AboutScreen
-import com.slack.circuit.sample.petlist.Filters
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
-import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.petlist.Size
 import com.slack.circuit.sample.ui.StarTheme
 import com.slack.circuit.ui
@@ -222,23 +218,12 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     ) { paddingValues ->
       Box(modifier = Modifier.padding(paddingValues)) {
         val screen =
-          getScreen(
-            state.homeNavState.index,
-            state.petListFilterState.gender,
-            state.petListFilterState.size
+          state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
+            state.petListFilterState.filters
           )
         CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
       }
     }
-  }
-}
-
-@Composable
-private fun getScreen(index: Int, gender: Gender, size: Size): Screen {
-  return if (index == DOGS_SCREEN_INDEX) {
-    PetListScreen(Filters(gender = gender, size = size))
-  } else {
-    AboutScreen()
   }
 }
 
@@ -272,7 +257,7 @@ private fun GenderFilterOption(
       Column {
         Text(text = gender.name)
         RadioButton(
-          selected = state.gender == gender,
+          selected = state.filters.gender == gender,
           onClick = {
             eventSink(
               HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender))
@@ -295,7 +280,7 @@ private fun SizeFilterOption(
       Column {
         Text(text = size.name)
         RadioButton(
-          selected = state.size == size,
+          selected = state.filters.size == size,
           onClick = {
             eventSink(
               HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))

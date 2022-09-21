@@ -15,12 +15,12 @@
  */
 package com.slack.circuit.sample.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.BottomNavigation
@@ -217,14 +217,16 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
         }
       }
-    ) {
-      val screen =
-        getScreen(
-          state.homeNavState.index,
-          state.petListFilterState.gender,
-          state.petListFilterState.size
-        )
-      CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
+    ) { paddingValues ->
+      Box(modifier = Modifier.padding(paddingValues)) {
+        val screen =
+          getScreen(
+            state.homeNavState.index,
+            state.petListFilterState.gender,
+            state.petListFilterState.size
+          )
+        CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
+      }
     }
   }
 }

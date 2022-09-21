@@ -18,7 +18,6 @@ package com.slack.circuit.sample.petdetail
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
-import android.os.Parcelable
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
@@ -58,6 +57,7 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -81,12 +81,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
-  sealed interface State : Parcelable {
-    @Parcelize object Loading : State
+  sealed interface State : CircuitUiState {
+    object Loading : State
 
-    @Parcelize object UnknownAnimal : State
+    object UnknownAnimal : State
 
-    @Parcelize
     data class Success(
       val url: String,
       val photoUrls: List<String>,

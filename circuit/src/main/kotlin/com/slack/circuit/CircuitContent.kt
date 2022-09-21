@@ -106,7 +106,7 @@ fun BasicNavigableCircuitContent(
 fun CircuitContent(
   screen: Screen,
   circuit: Circuit = LocalCircuitOwner.current,
-  unavailableContent: (@Composable (screen: Any) -> Unit)? = circuit.onUnavailableContent,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuit.onUnavailableContent,
 ) {
   CircuitContent(screen, Navigator.NoOp, circuit, unavailableContent)
 }
@@ -116,7 +116,7 @@ fun CircuitContent(
   screen: Screen,
   onNavEvent: (event: NavEvent) -> Unit,
   circuit: Circuit = LocalCircuitOwner.current,
-  unavailableContent: (@Composable (screen: Any) -> Unit)? = circuit.onUnavailableContent,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuit.onUnavailableContent,
 ) {
   val navigator =
     remember(onNavEvent) {
@@ -139,12 +139,12 @@ private fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
   circuit: Circuit,
-  unavailableContent: (@Composable (screen: Any) -> Unit)?,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)?,
 ) {
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
+  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<CircuitUiState, CircuitUiEvent>?
 
   @Suppress("UNCHECKED_CAST")
-  val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
+  val presenter = circuit.presenter(screen, navigator) as Presenter<CircuitUiState, CircuitUiEvent>?
 
   if (ui != null && presenter != null) {
     CircuitRender(presenter, ui)
@@ -156,7 +156,7 @@ private fun CircuitContent(
 }
 
 @Composable
-private fun <UiState : Any, UiEvent : Any> CircuitRender(
+private fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> CircuitRender(
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
 ) {

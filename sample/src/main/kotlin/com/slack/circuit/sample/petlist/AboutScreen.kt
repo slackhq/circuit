@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -33,7 +35,6 @@ import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
-import com.slack.circuit.sample.home.ABOUT_SCREEN_INDEX
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.AssistedFactory
@@ -43,9 +44,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class AboutScreen(val index: Int = ABOUT_SCREEN_INDEX) : Screen {
-  object State
-  object Event
+class AboutScreen : Screen {
+  object State : CircuitUiState
+  object Event : CircuitUiEvent
 }
 
 @ContributesMultibinding(AppScope::class)
@@ -81,7 +82,7 @@ class AboutUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-private fun aboutScreenUi() = ui<Any, Any> { _, _ -> About() }
+private fun aboutScreenUi() = ui<AboutScreen.State, Nothing> { _, _ -> About() }
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -39,7 +39,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -63,6 +62,8 @@ import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
+import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -88,8 +89,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
-@Immutable
-@Parcelize
 data class PetListAnimal(
   val id: Long,
   val name: String,
@@ -98,7 +97,7 @@ data class PetListAnimal(
   val gender: String,
   val size: String,
   val age: String,
-) : Parcelable
+)
 
 enum class Gender {
   ALL,
@@ -117,13 +116,13 @@ enum class Size {
 
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {
-  sealed interface State : Parcelable {
-    @Parcelize object Loading : State
-    @Parcelize object NoAnimals : State
-    @Parcelize data class Success(val animals: List<PetListAnimal>) : State
+  sealed interface State : CircuitUiState {
+    object Loading : State
+    object NoAnimals : State
+    data class Success(val animals: List<PetListAnimal>) : State
   }
 
-  sealed interface Event {
+  sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
   }
 }

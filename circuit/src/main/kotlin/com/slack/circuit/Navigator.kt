@@ -42,7 +42,7 @@ fun Navigator.onNavEvent(event: NavEvent) {
 }
 
 // Todo Fill kdoc.
-sealed interface NavEvent
+sealed interface NavEvent : CircuitUiEvent
 
 internal object PopNavEvent : NavEvent
 

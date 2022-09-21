@@ -47,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.EventCollector
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
@@ -79,9 +81,9 @@ object HomeScreen : Screen {
   data class State(
     val homeNavState: HomeNavScreen.HomeNavState,
     val petListFilterState: PetListFilterScreen.State
-  )
+  ) : CircuitUiState
 
-  sealed interface Event {
+  sealed interface Event : CircuitUiEvent {
     class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
     class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
     class ChildNav(val navEvent: NavEvent) : Event

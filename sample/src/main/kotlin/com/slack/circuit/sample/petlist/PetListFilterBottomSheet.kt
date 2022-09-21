@@ -21,6 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -39,9 +41,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object PetListFilterScreen : Screen {
   @Parcelize
-  data class State(val gender: Gender, val size: Size, val showBottomSheet: Boolean) : Parcelable
+  data class State(val gender: Gender, val size: Size, val showBottomSheet: Boolean) :
+    CircuitUiState, Parcelable
 
-  sealed interface Event {
+  sealed interface Event : CircuitUiEvent {
     object ToggleAnimalFilter : Event
     data class FilterByGender(val gender: Gender) : Event
     data class FilterBySize(val size: Size) : Event

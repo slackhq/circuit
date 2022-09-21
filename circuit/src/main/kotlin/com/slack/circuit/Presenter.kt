@@ -24,9 +24,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  *
  * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
  *
+ * If a given [Presenter] only ever emits the same state, you can define a single value-less
+ * `object` type for the state.
+ *
  * @see present for more thorough documentation.
  */
-interface Presenter<UiState : Any, UiEvent : Any> {
+interface Presenter<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
   /**
    * The primary [Composable] entry point to present a [UiState] and handle its [events]. In
    * production, a [Navigator] is used to automatically connect this with a corresponding [Ui] to

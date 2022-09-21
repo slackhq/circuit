@@ -26,7 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.Navigator
+import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
@@ -34,12 +37,39 @@ import com.slack.circuit.sample.R
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object AboutScreen : Screen {
+class AboutScreen : Screen {
   object State : CircuitUiState
+  object Event : CircuitUiEvent
+}
+
+@ContributesMultibinding(AppScope::class)
+class AboutPresenterFactory
+@Inject
+constructor(private val aboutPresenterFactory: AboutPresenter.Factory) : Presenter.Factory {
+  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+    if (screen is AboutScreen) return aboutPresenterFactory.create()
+    return null
+  }
+}
+
+class AboutPresenter @AssistedInject constructor() :
+  Presenter<AboutScreen.State, AboutScreen.Event> {
+  @Composable
+  override fun present(events: Flow<AboutScreen.Event>): AboutScreen.State {
+    return AboutScreen.State
+  }
+
+  @AssistedFactory
+  interface Factory {
+    fun create(): AboutPresenter
+  }
 }
 
 @ContributesMultibinding(AppScope::class)

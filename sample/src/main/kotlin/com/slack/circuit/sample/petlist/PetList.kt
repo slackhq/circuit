@@ -16,6 +16,7 @@
 package com.slack.circuit.sample.petlist
 
 import android.graphics.Bitmap
+import android.os.Parcelable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,11 +95,27 @@ data class PetListAnimal(
   val imageUrl: String?,
   val breed: String?,
   val gender: String,
+  val size: String,
   val age: String,
 )
 
+enum class Gender {
+  ALL,
+  MALE,
+  FEMALE
+}
+
+enum class Size {
+  ALL,
+  SMALL,
+  MEDIUM,
+  LARGE
+}
+
+@Parcelize class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
+
 @Parcelize
-object PetListScreen : Screen {
+data class PetListScreen(val filters: Filters = Filters()) : Screen {
   sealed interface State : CircuitUiState {
     object Loading : State
     object NoAnimals : State
@@ -113,9 +130,11 @@ object PetListScreen : Screen {
 @ContributesMultibinding(AppScope::class)
 class PetListScreenPresenterFactory
 @Inject
-constructor(private val petListPresenterFactory: PetListPresenter.Factory) : Presenter.Factory {
+constructor(
+  private val petListPresenterFactory: PetListPresenter.Factory,
+) : Presenter.Factory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
+    if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
     return null
   }
 }
@@ -124,18 +143,25 @@ class PetListPresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
+  @Assisted private val screen: PetListScreen,
   private val petRepo: PetRepository,
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val state by
-      produceState<PetListScreen.State>(PetListScreen.State.Loading) {
+    val animalState by
+      produceState<List<PetListAnimal>?>(null) {
         val animals = petRepo.getAnimals()
-        value =
-          when {
-            animals.isEmpty() -> PetListScreen.State.NoAnimals
-            else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
-          }
+        value = animals.map { it.toPetListAnimal() }
+      }
+
+    val state =
+      remember(screen, animalState) {
+        val animals = animalState
+        when {
+          animals == null -> PetListScreen.State.Loading
+          animals.isEmpty() -> PetListScreen.State.NoAnimals
+          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep))
+        }
       }
 
     EventCollector(events) { event ->
@@ -149,9 +175,24 @@ constructor(
     return state
   }
 
+  private fun shouldKeep(animal: PetListAnimal): Boolean {
+    return screen.filters.gender.shouldKeep(animal.gender) &&
+      screen.filters.size.shouldKeep(animal.size)
+  }
+
+  private fun Gender.shouldKeep(gender: String): Boolean {
+    if (this == Gender.ALL) return true
+    return this.name.lowercase() == gender.lowercase()
+  }
+
+  private fun Size.shouldKeep(size: String): Boolean {
+    if (this == Size.ALL) return true
+    return this.name.lowercase() == size.lowercase()
+  }
+
   @AssistedFactory
   interface Factory {
-    fun create(navigator: Navigator): PetListPresenter
+    fun create(navigator: Navigator, screen: PetListScreen): PetListPresenter
   }
 }
 
@@ -163,6 +204,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     imageUrl = photos.firstOrNull()?.medium,
     breed = breeds.primary,
     gender = gender,
+    size = size,
     age = age
   )
 }

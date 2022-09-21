@@ -117,6 +117,7 @@ class PetListTest {
         imageUrl = "http://some.url",
         breed = "Australian Terrier",
         gender = "male",
+        size = "small",
         age = "12"
       )
   }

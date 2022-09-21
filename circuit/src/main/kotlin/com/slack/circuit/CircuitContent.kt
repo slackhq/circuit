@@ -112,6 +112,29 @@ fun CircuitContent(
 }
 
 @Composable
+fun CircuitContent(
+  screen: Screen,
+  onNavEvent: (event: NavEvent) -> Unit,
+  circuit: Circuit = LocalCircuitOwner.current,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuit.onUnavailableContent,
+) {
+  val navigator =
+    remember(onNavEvent) {
+      object : Navigator {
+        override fun goTo(screen: Screen) {
+          onNavEvent(GoToNavEvent(screen))
+        }
+
+        override fun pop(): Screen? {
+          onNavEvent(PopNavEvent)
+          return null
+        }
+      }
+    }
+  CircuitContent(screen, navigator, circuit, unavailableContent)
+}
+
+@Composable
 private fun CircuitContent(
   screen: Screen,
   navigator: Navigator,

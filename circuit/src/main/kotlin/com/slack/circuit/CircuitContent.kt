@@ -141,13 +141,14 @@ private fun CircuitContent(
   circuit: Circuit,
   unavailableContent: (@Composable (screen: Screen) -> Unit)?,
 ) {
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<CircuitUiState, CircuitUiEvent>?
+  val screenUi = circuit.ui(screen)
 
   @Suppress("UNCHECKED_CAST")
   val presenter = circuit.presenter(screen, navigator) as Presenter<CircuitUiState, CircuitUiEvent>?
 
-  if (ui != null && presenter != null) {
-    CircuitRender(presenter, ui)
+  if (screenUi != null && presenter != null) {
+    @Suppress("UNCHECKED_CAST")
+    CircuitRender(presenter, screenUi.ui as Ui<CircuitUiState, CircuitUiEvent>)
   } else if (unavailableContent != null) {
     unavailableContent(screen)
   } else {

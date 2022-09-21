@@ -70,15 +70,15 @@ fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: (
   remember(registry, finalKey) {
     val entry = registry.registerValue(finalKey, valueState.value)
     object : RememberObserver {
-      override fun onAbandoned() = registerIfNotChangingConfiguration()
+      override fun onAbandoned() = unRegisterIfNotChangingConfiguration()
 
-      override fun onForgotten() = registerIfNotChangingConfiguration()
+      override fun onForgotten() = unRegisterIfNotChangingConfiguration()
 
       override fun onRemembered() {
         // Do nothing
       }
 
-      fun registerIfNotChangingConfiguration() {
+      fun unRegisterIfNotChangingConfiguration() {
         if (!canRetainChecker.shouldRetain()) {
           entry.unregister()
         }

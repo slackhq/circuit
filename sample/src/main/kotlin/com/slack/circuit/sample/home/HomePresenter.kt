@@ -46,6 +46,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -65,6 +66,7 @@ import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
 import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.petlist.Size
+import com.slack.circuit.sample.ui.StarTheme
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
@@ -151,6 +153,9 @@ private fun homeUi() =
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
+  val systemUiController = rememberSystemUiController()
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
   val modalState =
     rememberModalBottomSheetState(
       initialValue =

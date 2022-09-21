@@ -15,12 +15,12 @@
  */
 package com.slack.circuit.sample.home
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.BottomNavigation
@@ -56,7 +56,8 @@ import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.sample.di.AppScope
-import com.slack.circuit.sample.petlist.About
+import com.slack.circuit.sample.petlist.AboutScreen
+import com.slack.circuit.sample.petlist.Filters
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
@@ -67,11 +68,11 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @Parcelize
 object HomeScreen : Screen {
@@ -112,10 +113,10 @@ constructor(
     }
     val homeNavState = homeNavPresenter(rememberHomeNavState)
 
-    val rememberPetListFilterState = remember {
+    val rememberPetListFilterEventFlow = remember {
       events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event }
     }
-    val petListFilterState = petListFilterPresenter.present(rememberPetListFilterState)
+    val petListFilterState = petListFilterPresenter.present(rememberPetListFilterEventFlow)
 
     // Todo extract into helper fun NavEventsCollector.
     val rememberChildNavigationEvent = remember {
@@ -145,6 +146,7 @@ class HomeUiFactory @Inject constructor() : Ui.Factory {
 private fun homeUi() =
   ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeContent(state, events) }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
@@ -177,7 +179,10 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     }
   ) {
     Scaffold(
-      modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
+      modifier = Modifier
+        .navigationBarsPadding()
+        .systemBarsPadding()
+        .fillMaxWidth(),
       topBar = {
         CenterAlignedTopAppBar(
           title = {
@@ -213,22 +218,24 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
         }
       }
-    ) { paddingValues ->
-      if (state.homeNavState.index == DOGS_SCREEN_INDEX) {
-        Box(modifier = Modifier.padding(paddingValues)) {
-          CircuitContent(
-            screen =
-              PetListScreen(
-                gender = state.petListFilterState.gender,
-                size = state.petListFilterState.size
-              ),
-            onNavEvent = { event -> eventSink(HomeScreen.Event.ChildNav(event)) }
-          )
-        }
-      } else if (state.homeNavState.index == ABOUT_SCREEN_INDEX) {
-        About()
-      }
+    ) {
+      val screen = getScreen(state.homeNavState.index, state.petListFilterState.gender, state.petListFilterState.size)
+      CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
     }
+  }
+}
+
+@Composable
+private fun getScreen(index : Int, gender: Gender, size: Size) : Screen {
+  return if (index == DOGS_SCREEN_INDEX) {
+    PetListScreen(
+      Filters(
+        gender = gender,
+        size = size
+      )
+    )
+  } else {
+    AboutScreen()
   }
 }
 
@@ -261,44 +268,20 @@ private fun GenderFilterOption(
 ) {
   Box { Text(text = "Gender") }
   Row(modifier = Modifier.selectableGroup()) {
-    Column {
-      Text(text = "All")
-      RadioButton(
-        selected = state.gender == Gender.ALL,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(
-              PetListFilterScreen.Event.FilterByGender(Gender.ALL)
+    Gender.values().forEach { gender ->
+      Column {
+        Text(text = gender.name)
+        RadioButton(
+          selected = state.gender == gender,
+          onClick = {
+            eventSink(
+              HomeScreen.Event.PetListFilterEvent(
+                PetListFilterScreen.Event.FilterByGender(gender)
+              )
             )
-          )
-        }
-      )
-    }
-    Column {
-      Text(text = "Male")
-      RadioButton(
-        selected = state.gender == Gender.MALE,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(
-              PetListFilterScreen.Event.FilterByGender(Gender.MALE)
-            )
-          )
-        }
-      )
-    }
-    Column {
-      Text(text = "Female")
-      RadioButton(
-        selected = state.gender == Gender.FEMALE,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(
-              PetListFilterScreen.Event.FilterByGender(Gender.FEMALE)
-            )
-          )
-        }
-      )
+          }
+        )
+      }
     }
   }
 }
@@ -310,49 +293,18 @@ private fun SizeFilterOption(
 ) {
   Box { Text(text = "Size") }
   Row(modifier = Modifier.selectableGroup()) {
-    Column {
-      Text(text = "All")
-      RadioButton(
-        selected = state.size == Size.ALL,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.ALL))
-          )
-        }
-      )
-    }
-    Column {
-      Text(text = "Small")
-      RadioButton(
-        selected = state.size == Size.SMALL,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.SMALL))
-          )
-        }
-      )
-    }
-    Column {
-      Text(text = "Medium")
-      RadioButton(
-        selected = state.size == Size.MEDIUM,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.MEDIUM))
-          )
-        }
-      )
-    }
-    Column {
-      Text(text = "Large")
-      RadioButton(
-        selected = state.size == Size.LARGE,
-        onClick = {
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(Size.LARGE))
-          )
-        }
-      )
+    Size.values().forEach { size ->
+      Column {
+        Text(text = size.name)
+        RadioButton(
+          selected = state.size == size,
+          onClick = {
+            eventSink(
+              HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))
+            )
+          }
+        )
+      }
     }
   }
 }

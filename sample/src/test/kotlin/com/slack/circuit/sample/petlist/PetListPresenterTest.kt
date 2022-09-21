@@ -41,7 +41,7 @@ class PetListPresenterTest {
   @Test
   fun `present - emit loading state then no animals state`() = runTest {
     val repository = TestRepository(emptyList())
-    val presenter = PetListPresenter(navigator, PetListScreen(Gender.ALL, Size.ALL), repository)
+    val presenter = PetListPresenter(navigator, PetListScreen(), repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
     presenter.test(events) {
@@ -53,7 +53,7 @@ class PetListPresenterTest {
   @Test
   fun `present - emit loading state then list of animals`() = runTest {
     val repository = TestRepository(listOf(animal))
-    val presenter = PetListPresenter(navigator, PetListScreen(Gender.ALL, Size.ALL), repository)
+    val presenter = PetListPresenter(navigator, PetListScreen(), repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
     presenter.test(events) {
@@ -67,7 +67,7 @@ class PetListPresenterTest {
   @Test
   fun `present - navigate to pet details screen`() = runTest {
     val repository = TestRepository(emptyList())
-    val presenter = PetListPresenter(navigator, PetListScreen(Gender.ALL, Size.ALL), repository)
+    val presenter = PetListPresenter(navigator, PetListScreen(), repository)
     val events = MutableSharedFlow<PetListScreen.Event>()
 
     presenter.test(events) {

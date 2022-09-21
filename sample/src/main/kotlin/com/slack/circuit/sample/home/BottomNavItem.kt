@@ -21,9 +21,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.slack.circuit.Screen
 import com.slack.circuit.sample.petlist.AboutScreen
-import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListScreen
-import com.slack.circuit.sample.petlist.Size
 
 private const val DOGS_SCREEN_NAME = "Dogs"
 private const val ABOUT_SCREEN_NAME = "About"
@@ -32,6 +30,6 @@ const val ABOUT_SCREEN_INDEX = 1
 
 sealed class BottomNavItem(val title: String, val screen: Screen, val icon: ImageVector) {
   object Dogs :
-    BottomNavItem(DOGS_SCREEN_NAME, PetListScreen(Gender.ALL, Size.ALL), Icons.Filled.Home)
-  object About : BottomNavItem(ABOUT_SCREEN_NAME, AboutScreen, Icons.Filled.Info)
+    BottomNavItem(DOGS_SCREEN_NAME, PetListScreen(), Icons.Filled.Home)
+  object About : BottomNavItem(ABOUT_SCREEN_NAME, AboutScreen(), Icons.Filled.Info)
 }

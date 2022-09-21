@@ -57,7 +57,6 @@ fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: (
   // value is restored using the registry or created via [init] lambda
   val value =
     remember(*inputs) {
-      // TODO not restore when the input values changed (use hashKeys?) b/152014032
       val restored = registry.consumeValue(finalKey)
       restored ?: init()
     }

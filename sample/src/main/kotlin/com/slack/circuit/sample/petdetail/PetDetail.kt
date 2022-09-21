@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -178,6 +179,9 @@ internal object PetDetailTestConstants {
 
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
+  val systemUiController = rememberSystemUiController()
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.surface)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.surface)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {

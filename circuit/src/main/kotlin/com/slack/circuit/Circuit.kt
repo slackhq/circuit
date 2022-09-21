@@ -88,16 +88,16 @@ class Circuit private constructor(builder: Builder) {
     return null
   }
 
-  fun ui(screen: Screen): Ui<*, *>? {
+  fun ui(screen: Screen): ScreenUi? {
     return nextUi(null, screen)
   }
 
-  fun nextUi(skipPast: Ui.Factory?, screen: Screen): Ui<*, *>? {
+  fun nextUi(skipPast: Ui.Factory?, screen: Screen): ScreenUi? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
       val ui = uiFactories[i].create(screen)
       if (ui != null) {
-        return ui.ui
+        return ui
       }
     }
 

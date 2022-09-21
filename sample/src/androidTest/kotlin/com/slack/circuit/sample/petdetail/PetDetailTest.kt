@@ -90,7 +90,7 @@ class PetDetailTest {
       Circuit.Builder()
         .setOnUnavailableContentCallback { screen ->
           carouselScreen = screen as PetPhotoCarouselScreen
-          PetPhotoCarousel(screen)
+          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
         }
         .build()
 

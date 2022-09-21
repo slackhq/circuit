@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
@@ -36,7 +37,10 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
-@Parcelize object AboutScreen : Screen
+@Parcelize
+object AboutScreen : Screen {
+  object State : CircuitUiState
+}
 
 @ContributesMultibinding(AppScope::class)
 class AboutUiFactory @Inject constructor() : Ui.Factory {
@@ -48,7 +52,7 @@ class AboutUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-private fun aboutScreenUi() = ui<Any, Any> { _, _ -> About() }
+private fun aboutScreenUi() = ui<AboutScreen.State, Nothing> { _, _ -> About() }
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -19,15 +19,17 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
+import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
-suspend fun <UiState : Any, UiEvent : Any> Presenter<UiState, UiEvent>.test(
+suspend fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> Presenter<UiState, UiEvent>.test(
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) = test(emptyFlow(), block)
 
-suspend fun <UiState : Any, UiEvent : Any> Presenter<UiState, UiEvent>.test(
+suspend fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> Presenter<UiState, UiEvent>.test(
   events: Flow<UiEvent>,
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {

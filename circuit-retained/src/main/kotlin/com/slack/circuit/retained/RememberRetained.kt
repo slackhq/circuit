@@ -21,7 +21,6 @@ import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import com.slack.circuit.LocalCanRetainCheckerOwner
 
 /**
  * Remember the value produced by [init].

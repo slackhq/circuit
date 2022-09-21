@@ -52,10 +52,6 @@ private class ProduceRetainedStateScopeImpl<T>(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
- * @sample androidx.compose.runtime.samples.ProduceState
- *
- * @sample androidx.compose.runtime.samples.ProduceStateAwaitDispose
  */
 @Composable
 fun <T> produceRetainedState(
@@ -82,10 +78,6 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
- * @sample androidx.compose.runtime.samples.ProduceState
- *
- * @sample androidx.compose.runtime.samples.ProduceStateAwaitDispose
  */
 @Composable
 fun <T> produceRetainedState(
@@ -113,10 +105,6 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
- * @sample androidx.compose.runtime.samples.ProduceState
- *
- * @sample androidx.compose.runtime.samples.ProduceStateAwaitDispose
  */
 @Composable
 fun <T> produceRetainedState(
@@ -145,10 +133,6 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
- * @sample androidx.compose.runtime.samples.ProduceState
- *
- * @sample androidx.compose.runtime.samples.ProduceStateAwaitDispose
  */
 @Composable
 fun <T> produceRetainedState(
@@ -180,10 +164,6 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
- * @sample androidx.compose.runtime.samples.ProduceState
- *
- * @sample androidx.compose.runtime.samples.ProduceStateAwaitDispose
  */
 @Composable
 fun <T> produceRetainedState(

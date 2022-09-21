@@ -50,8 +50,6 @@ jobs:
           arguments: check :sample:assembleDebug :sample:assembleDebugAndroidTest
           gradle-home-cache-cleanup: true
 
-      - run: ls -al ~/.android/avd
-
       - name: AVD cache
         uses: actions/cache@v3
         id: avd-cache
@@ -60,8 +58,6 @@ jobs:
             ~/.android/avd/*
             ~/.android/adb*
           key: avd-${{ matrix.api-level }}-${{ matrix.avd-target }}
-
-      - run: ls -al ~/.android/avd
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'

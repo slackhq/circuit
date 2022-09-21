@@ -150,7 +150,7 @@ private fun homeUi() =
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
   val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.surface)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
   val modalState =
     rememberModalBottomSheetState(
@@ -189,7 +189,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           },
           colors =
             TopAppBarDefaults.centerAlignedTopAppBarColors(
-              containerColor = MaterialTheme.colorScheme.background
+              containerColor = MaterialTheme.colorScheme.surface
             ),
           actions = {
             IconButton(

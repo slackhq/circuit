@@ -180,8 +180,8 @@ internal object PetDetailTestConstants {
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.surface)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.surface)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {

@@ -38,11 +38,12 @@ import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 
-@Parcelize data class AboutScreen(val index : Int = ABOUT_SCREEN_INDEX) : Screen {
+@Parcelize
+data class AboutScreen(val index: Int = ABOUT_SCREEN_INDEX) : Screen {
   object State
   object Event
 }
@@ -57,7 +58,8 @@ constructor(private val aboutPresenterFactory: AboutPresenter.Factory) : Present
   }
 }
 
-class AboutPresenter @AssistedInject constructor() : Presenter<AboutScreen.State, AboutScreen.Event> {
+class AboutPresenter @AssistedInject constructor() :
+  Presenter<AboutScreen.State, AboutScreen.Event> {
   @Composable
   override fun present(events: Flow<AboutScreen.Event>): AboutScreen.State {
     return AboutScreen.State

@@ -68,11 +68,11 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 
 @Parcelize
 object HomeScreen : Screen {
@@ -179,10 +179,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     }
   ) {
     Scaffold(
-      modifier = Modifier
-        .navigationBarsPadding()
-        .systemBarsPadding()
-        .fillMaxWidth(),
+      modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
       topBar = {
         CenterAlignedTopAppBar(
           title = {
@@ -219,21 +216,21 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
         }
       }
     ) {
-      val screen = getScreen(state.homeNavState.index, state.petListFilterState.gender, state.petListFilterState.size)
+      val screen =
+        getScreen(
+          state.homeNavState.index,
+          state.petListFilterState.gender,
+          state.petListFilterState.size
+        )
       CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
     }
   }
 }
 
 @Composable
-private fun getScreen(index : Int, gender: Gender, size: Size) : Screen {
+private fun getScreen(index: Int, gender: Gender, size: Size): Screen {
   return if (index == DOGS_SCREEN_INDEX) {
-    PetListScreen(
-      Filters(
-        gender = gender,
-        size = size
-      )
-    )
+    PetListScreen(Filters(gender = gender, size = size))
   } else {
     AboutScreen()
   }
@@ -275,9 +272,7 @@ private fun GenderFilterOption(
           selected = state.gender == gender,
           onClick = {
             eventSink(
-              HomeScreen.Event.PetListFilterEvent(
-                PetListFilterScreen.Event.FilterByGender(gender)
-              )
+              HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender))
             )
           }
         )

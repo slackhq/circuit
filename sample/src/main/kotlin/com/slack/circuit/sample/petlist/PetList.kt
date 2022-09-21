@@ -113,8 +113,7 @@ enum class Size {
   LARGE
 }
 
-@Parcelize
-class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
+@Parcelize class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {
@@ -178,7 +177,8 @@ constructor(
   }
 
   private fun shouldKeep(animal: PetListAnimal): Boolean {
-    return screen.filters.gender.shouldKeep(animal.gender) && screen.filters.size.shouldKeep(animal.size)
+    return screen.filters.gender.shouldKeep(animal.gender) &&
+      screen.filters.size.shouldKeep(animal.size)
   }
 
   private fun Gender.shouldKeep(gender: String): Boolean {

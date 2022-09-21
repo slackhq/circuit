@@ -23,6 +23,7 @@ jobs:
       matrix:
         # Test on API 30 because that's the first version with ATDs
         api-level: ['30']
+        avd-target: ['aosp_atd']
         ci_java_version: ['17']
         ci_kotlin_version: ['1.7.10']
     env:
@@ -49,6 +50,8 @@ jobs:
           arguments: check :sample:assembleDebug :sample:assembleDebugAndroidTest
           gradle-home-cache-cleanup: true
 
+      - run: ls -al ~/.android/avd
+
       - name: AVD cache
         uses: actions/cache@v3
         id: avd-cache
@@ -56,7 +59,9 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
+          key: avd-${{ matrix.api-level }}-${{ matrix.avd-target }}
+
+      - run: ls -al ~/.android/avd
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -67,9 +72,11 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           disable-spellchecker: true
-          target: 'aosp_atd'
+          target: ${{ matrix.avd-target }}
           channel: canary # Necessary for ATDs
           script: echo "Generated AVD snapshot for caching."
+
+      - run: ls -al ~/.android/avd
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2

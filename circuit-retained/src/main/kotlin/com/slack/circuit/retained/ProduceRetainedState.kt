@@ -52,6 +52,18 @@ private class ProduceRetainedStateScopeImpl<T>(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
+ *
+ * ```
+ * @Composable
+ * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
+ *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *         favoritesRepository.people
+ *             .map { UiState.Data(it) }
+ *             .collect { value = it }
+ *     }
+ *     return state
+ * }
+ * ```
  */
 @Composable
 fun <T> produceRetainedState(
@@ -78,6 +90,18 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
+ *
+ * ```
+ * @Composable
+ * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
+ *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *         favoritesRepository.people
+ *             .map { UiState.Data(it) }
+ *             .collect { value = it }
+ *     }
+ *     return state
+ * }
+ * ```
  */
 @Composable
 fun <T> produceRetainedState(
@@ -105,6 +129,18 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
+ *
+ * ```
+ * @Composable
+ * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
+ *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *         favoritesRepository.people
+ *             .map { UiState.Data(it) }
+ *             .collect { value = it }
+ *     }
+ *     return state
+ * }
+ * ```
  */
 @Composable
 fun <T> produceRetainedState(
@@ -133,6 +169,18 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
+ *
+ * ```
+ * @Composable
+ * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
+ *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *         favoritesRepository.people
+ *             .map { UiState.Data(it) }
+ *             .collect { value = it }
+ *     }
+ *     return state
+ * }
+ * ```
  */
 @Composable
 fun <T> produceRetainedState(
@@ -164,6 +212,18 @@ fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
+ *
+ * ```
+ * @Composable
+ * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
+ *     val state by produceRetainedState<UiState<List<Person>>>(UiState.Loading, favoritesRepository) {
+ *         favoritesRepository.people
+ *             .map { UiState.Data(it) }
+ *             .collect { value = it }
+ *     }
+ *     return state
+ * }
+ * ```
  */
 @Composable
 fun <T> produceRetainedState(

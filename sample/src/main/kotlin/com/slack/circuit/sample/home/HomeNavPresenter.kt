@@ -16,11 +16,11 @@
 package com.slack.circuit.sample.home
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Screen
 import kotlinx.coroutines.flow.Flow
@@ -30,11 +30,11 @@ private val homeScreenNavItems = listOf(BottomNavItem.Dogs.screen, BottomNavItem
 
 @Parcelize
 object HomeNavScreen : Screen {
-  @Immutable
-  data class HomeNavState(val index: Int = DOGS_SCREEN_INDEX, val bottomNavItems: List<Screen>)
+  data class HomeNavState(val index: Int = DOGS_SCREEN_INDEX, val bottomNavItems: List<Screen>) :
+    CircuitUiEvent
 
-  sealed interface Event {
-    @Immutable data class HomeNavEvent(val index: Int) : Event
+  sealed interface Event : CircuitUiEvent {
+    data class HomeNavEvent(val index: Int) : Event
   }
 }
 

@@ -39,7 +39,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +61,8 @@ import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
+import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -88,26 +89,40 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
-@Immutable
-@Parcelize
 data class PetListAnimal(
   val id: Long,
   val name: String,
   val imageUrl: String?,
   val breed: String?,
   val gender: String,
+  val size: String,
   val age: String,
-) : Parcelable
+)
+
+enum class Gender {
+  ALL,
+  MALE,
+  FEMALE
+}
+
+enum class Size {
+  ALL,
+  SMALL,
+  MEDIUM,
+  LARGE
+}
+
+@Parcelize class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
-object PetListScreen : Screen {
-  sealed interface State : Parcelable {
-    @Parcelize object Loading : State
-    @Parcelize object NoAnimals : State
-    @Parcelize data class Success(val animals: List<PetListAnimal>) : State
+data class PetListScreen(val filters: Filters = Filters()) : Screen {
+  sealed interface State : CircuitUiState {
+    object Loading : State
+    object NoAnimals : State
+    data class Success(val animals: List<PetListAnimal>) : State
   }
 
-  sealed interface Event {
+  sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
   }
 }
@@ -115,9 +130,11 @@ object PetListScreen : Screen {
 @ContributesMultibinding(AppScope::class)
 class PetListScreenPresenterFactory
 @Inject
-constructor(private val petListPresenterFactory: PetListPresenter.Factory) : Presenter.Factory {
+constructor(
+  private val petListPresenterFactory: PetListPresenter.Factory,
+) : Presenter.Factory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
+    if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
     return null
   }
 }
@@ -126,18 +143,25 @@ class PetListPresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
+  @Assisted private val screen: PetListScreen,
   private val petRepo: PetRepository,
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
-    val state by
-      produceRetainedState<PetListScreen.State>(PetListScreen.State.Loading) {
+    val animalState by
+      produceRetainedState<List<PetListAnimal>?>(null) {
         val animals = petRepo.getAnimals()
-        value =
-          when {
-            animals.isEmpty() -> PetListScreen.State.NoAnimals
-            else -> PetListScreen.State.Success(animals.map { it.toPetListAnimal() })
-          }
+        value = animals.map { it.toPetListAnimal() }
+      }
+
+    val state =
+      remember(screen, animalState) {
+        val animals = animalState
+        when {
+          animals == null -> PetListScreen.State.Loading
+          animals.isEmpty() -> PetListScreen.State.NoAnimals
+          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep))
+        }
       }
 
     EventCollector(events) { event ->
@@ -151,9 +175,24 @@ constructor(
     return state
   }
 
+  private fun shouldKeep(animal: PetListAnimal): Boolean {
+    return screen.filters.gender.shouldKeep(animal.gender) &&
+      screen.filters.size.shouldKeep(animal.size)
+  }
+
+  private fun Gender.shouldKeep(gender: String): Boolean {
+    if (this == Gender.ALL) return true
+    return this.name.lowercase() == gender.lowercase()
+  }
+
+  private fun Size.shouldKeep(size: String): Boolean {
+    if (this == Size.ALL) return true
+    return this.name.lowercase() == size.lowercase()
+  }
+
   @AssistedFactory
   interface Factory {
-    fun create(navigator: Navigator): PetListPresenter
+    fun create(navigator: Navigator, screen: PetListScreen): PetListPresenter
   }
 }
 
@@ -165,6 +204,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     imageUrl = photos.firstOrNull()?.medium,
     breed = breeds.primary,
     gender = gender,
+    size = size,
     age = age
   )
 }

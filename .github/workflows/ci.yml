@@ -64,6 +64,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
+          target: 'aosp_atd'
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run instrumentation tests
@@ -73,6 +74,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
+          target: 'aosp_atd'
           script: |
             adb uninstall com.slack.circuit.sample
             adb uninstall com.slack.circuit.sample.androidTest

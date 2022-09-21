@@ -21,7 +21,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: ['28']
+        # Test on API 30 because that's the first version with ATDs
+        api-level: ['30']
         ci_java_version: ['17']
         ci_kotlin_version: ['1.7.10']
     env:

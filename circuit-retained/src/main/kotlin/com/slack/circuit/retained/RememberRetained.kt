@@ -59,7 +59,7 @@ fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: (
     remember(*inputs) {
       // TODO not restore when the input values changed (use hashKeys?) b/152014032
       val restored = registry.consumeValue(finalKey)
-      restored ?: run { init() }
+      restored ?: init()
     }
 
   // we want to use the latest instances of value in the valueProvider lambda

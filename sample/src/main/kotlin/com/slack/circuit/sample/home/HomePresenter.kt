@@ -188,12 +188,12 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
             Text(
               "Adoptables",
               fontSize = 22.sp,
-              color = MaterialTheme.colorScheme.onPrimaryContainer
+              color = MaterialTheme.colorScheme.onBackground
             )
           },
           colors =
             TopAppBarDefaults.centerAlignedTopAppBarColors(
-              containerColor = MaterialTheme.colorScheme.primaryContainer
+              containerColor = MaterialTheme.colorScheme.background
             ),
           actions = {
             IconButton(
@@ -203,10 +203,10 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
                 )
               }
             ) {
-              androidx.compose.material.Icon(
+              Icon(
                 imageVector = Icons.Default.FilterList,
-                contentDescription = "filter pet list",
-                tint = Color.White
+                contentDescription = "Filter pet list",
+                tint = MaterialTheme.colorScheme.onBackground
               )
             }
           },

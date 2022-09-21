@@ -67,6 +67,7 @@ jobs:
           disable-animations: true
           disable-spellchecker: true
           target: 'aosp_atd'
+          channel: canary # Necessary for ATDs
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run instrumentation tests
@@ -78,6 +79,7 @@ jobs:
           disable-animations: true
           disable-spellchecker: true
           target: 'aosp_atd'
+          channel: canary # Necessary for ATDs
           script: |
             adb uninstall com.slack.circuit.sample
             adb uninstall com.slack.circuit.sample.androidTest

@@ -63,6 +63,7 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           force-avd-creation: false
+          arch: x86_64
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           target: 'aosp_atd'
@@ -73,6 +74,7 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           force-avd-creation: false
+          arch: x86_64
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           target: 'aosp_atd'

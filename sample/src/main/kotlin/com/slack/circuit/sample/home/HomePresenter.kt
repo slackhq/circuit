@@ -59,9 +59,12 @@ import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.helpers.rememberFilterEventAndGetState
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.home.HomeScreen.Event.ChildNav
+import com.slack.circuit.sample.home.HomeScreen.Event.PetListFilterEvent
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
+import com.slack.circuit.sample.petlist.PetListFilterScreen.State as PetListFilterState
 import com.slack.circuit.sample.petlist.Size
 import com.slack.circuit.sample.ui.StarTheme
 import com.slack.circuit.ui
@@ -118,13 +121,12 @@ constructor(
 
     @Suppress("UNCHECKED_CAST")
     val petListFilterState =
-      rememberFilterEventAndGetState<
-        HomeScreen.Event.PetListFilterEvent, PetListFilterScreen.State>(
+      rememberFilterEventAndGetState<PetListFilterEvent, PetListFilterState>(
         events,
         petListFilterPresenter as Presenter<CircuitUiState, CircuitUiEvent>
       )
 
-    NavEventsCollector<HomeScreen.Event.ChildNav>(navigator, events)
+    NavEventsCollector<ChildNav>(navigator, events)
 
     return HomeScreen.State(homeNavState, petListFilterState)
   }
@@ -167,9 +169,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       .collect { isVisible ->
         // Toggle if state says the modal should be visible but the snapshot says it isn't.
         if (state.petListFilterState.showBottomSheet && !isVisible)
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)
-          )
+          eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
       }
   }
 
@@ -196,9 +196,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           actions = {
             IconButton(
               onClick = {
-                eventSink(
-                  HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)
-                )
+                eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
               }
             ) {
               Icon(
@@ -223,7 +221,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
             state.petListFilterState.filters
           )
-        CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
+        CircuitContent(screen, { event -> eventSink(ChildNav(event)) })
       }
     }
   }
@@ -261,9 +259,7 @@ private fun GenderFilterOption(
         RadioButton(
           selected = state.filters.gender == gender,
           onClick = {
-            eventSink(
-              HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender))
-            )
+            eventSink(PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender)))
           }
         )
       }
@@ -283,11 +279,7 @@ private fun SizeFilterOption(
         Text(text = size.name)
         RadioButton(
           selected = state.filters.size == size,
-          onClick = {
-            eventSink(
-              HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))
-            )
-          }
+          onClick = { eventSink(PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))) }
         )
       }
     }

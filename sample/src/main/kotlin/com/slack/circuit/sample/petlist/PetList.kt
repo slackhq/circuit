@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.sample.petlist
 
+import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -259,8 +261,9 @@ private fun PetListGrid(
   animals: List<PetListAnimal>,
   eventSink: (PetListScreen.Event) -> Unit
 ) {
+  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   LazyVerticalGrid(
-    columns = GridCells.Fixed(2),
+    columns = GridCells.Fixed(if (isLandscape) 3 else 2),
     modifier = modifier.testTag(GRID_TAG),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),

@@ -61,6 +61,9 @@ import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.EventCollector
@@ -117,13 +120,17 @@ enum class Size {
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {
   sealed interface State : CircuitUiState {
-    object Loading : State
-    object NoAnimals : State
-    data class Success(val animals: List<PetListAnimal>) : State
+    val isRefreshing : Boolean
+    object Loading : State {
+      override val isRefreshing: Boolean = false
+    }
+   data class NoAnimals(override val isRefreshing: Boolean) : State
+    data class Success(val animals: List<PetListAnimal>, override val isRefreshing: Boolean) : State
   }
 
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+    object RefreshAnimals: Event
   }
 }
 
@@ -148,9 +155,13 @@ constructor(
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
+
+    var isRefreshing by remember{mutableStateOf(false)}
+
     val animalState by
       produceRetainedState<List<PetListAnimal>?>(null) {
-        val animals = petRepo.getAnimals()
+        val animals = petRepo.getAnimals(isRefreshing)
+        isRefreshing = false
         value = animals.map { it.toPetListAnimal() }
       }
 
@@ -159,8 +170,8 @@ constructor(
         val animals = animalState
         when {
           animals == null -> PetListScreen.State.Loading
-          animals.isEmpty() -> PetListScreen.State.NoAnimals
-          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep))
+          animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
+          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep), isRefreshing)
         }
       }
 
@@ -169,6 +180,8 @@ constructor(
         is PetListScreen.Event.ClickAnimal -> {
           navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
         }
+        PetListScreen.Event.RefreshAnimals ->
+          isRefreshing = true
       }
     }
 
@@ -179,7 +192,6 @@ constructor(
     return screen.filters.gender.shouldKeep(animal.gender) &&
       screen.filters.size.shouldKeep(animal.size)
   }
-
   private fun Gender.shouldKeep(gender: String): Boolean {
     if (this == Gender.ALL) return true
     return this.name.lowercase() == gender.lowercase()
@@ -246,7 +258,7 @@ internal fun PetList(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
-      PetListScreen.State.NoAnimals ->
+      is PetListScreen.State.NoAnimals ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             modifier = Modifier.testTag(NO_ANIMALS_TAG),
@@ -255,8 +267,11 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
           animals = state.animals,
+          state.isRefreshing,
           eventSink = eventSink
         )
     }
@@ -267,22 +282,25 @@ internal fun PetList(
 private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
+  isRefreshing: Boolean,
   eventSink: (PetListScreen.Event) -> Unit
 ) {
-  LazyVerticalGrid(
-    columns = GridCells.Fixed(2),
-    modifier = modifier.testTag(GRID_TAG),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    contentPadding = PaddingValues(16.dp),
-  ) {
-    items(
-      count = animals.size,
-      key = { i -> animals[i].id },
-    ) { index ->
-      val animal = animals[index]
-      PetListGridItem(modifier, animal) {
-        eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+  SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing), onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals)}) {
+    LazyVerticalGrid(
+      columns = GridCells.Fixed(2),
+      modifier = modifier.testTag(GRID_TAG),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      contentPadding = PaddingValues(16.dp),
+    ) {
+      items(
+        count = animals.size,
+        key = { i -> animals[i].id },
+      ) { index ->
+        val animal = animals[index]
+        PetListGridItem(modifier, animal) {
+          eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+        }
       }
     }
   }
@@ -304,17 +322,20 @@ private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: 
 
   Card(
     modifier =
-      modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(16.dp))
-        .clickable { onClick() }
-        .testTag(CARD_TAG),
+    modifier
+      .fillMaxWidth()
+      .clip(RoundedCornerShape(16.dp))
+      .clickable { onClick() }
+      .testTag(CARD_TAG),
     colors = colors,
     shape = RoundedCornerShape(16.dp),
   ) {
     // Image
     AsyncImage(
-      modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+      modifier = Modifier
+        .fillMaxWidth()
+        .aspectRatio(1f)
+        .testTag(IMAGE_TAG),
       model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)

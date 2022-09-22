@@ -23,7 +23,7 @@ import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
 
 interface PetRepository {
-  suspend fun getAnimals(): List<Animal>
+  suspend fun getAnimals(forceRefresh: Boolean): List<Animal>
   suspend fun getAnimal(id: Long): Animal?
 }
 
@@ -33,7 +33,8 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
   PetRepository {
   private lateinit var animals: List<Animal>
 
-  override suspend fun getAnimals(): List<Animal> {
+  // force refresh parameter?
+  override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> {
     if (!this::animals.isInitialized) fetchAnimals()
     return animals
   }

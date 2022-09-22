@@ -38,18 +38,3 @@ inline fun <
   val rememberEventFlow = remember { events.filterIsInstance<NestedEventHolder>().map(mapper) }
   return presenter.present(rememberEventFlow)
 }
-
-@Composable
-inline fun <
-  reified CompositeEvent : CircuitUiEvent,
-  reified NestedEventHolder : CompositeEvent,
-  NestedUiState : CircuitUiState,
-  NestedUiEvent : CircuitUiEvent
-> rememberNestedState(
-  presenter: @Composable (Flow<NestedUiEvent>) -> NestedUiState,
-  events: Flow<CompositeEvent>,
-  crossinline mapper: (NestedEventHolder) -> NestedUiEvent
-): NestedUiState {
-  val rememberEventFlow = remember { events.filterIsInstance<NestedEventHolder>().map(mapper) }
-  return presenter(rememberEventFlow)
-}

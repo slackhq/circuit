@@ -15,7 +15,7 @@
  */
 package com.slack.circuit.sample.petlist
 
-import android.graphics.Bitmap
+import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,40 +29,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color as ComposeColor
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
-import androidx.palette.graphics.Palette
-import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -115,7 +102,8 @@ enum class Size {
   LARGE
 }
 
-@Parcelize class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
+@Parcelize
+data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {
@@ -285,9 +273,10 @@ private fun PetListGrid(
   isRefreshing: Boolean,
   eventSink: (PetListScreen.Event) -> Unit
 ) {
+  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing), onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals)}) {
     LazyVerticalGrid(
-      columns = GridCells.Fixed(2),
+      columns =  GridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -298,7 +287,7 @@ private fun PetListGrid(
         key = { i -> animals[i].id },
       ) { index ->
         val animal = animals[index]
-        PetListGridItem(modifier, animal) {
+        PetListGridItem(animal) {
           eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
         }
       }
@@ -307,75 +296,45 @@ private fun PetListGrid(
 }
 
 @Composable
-private fun PetListGridItem(modifier: Modifier, animal: PetListAnimal, onClick: () -> Unit) {
-  // Palette for extracted colors from the image
-  var paletteState by remember { mutableStateOf<Palette?>(null) }
-  val swatch = paletteState?.getSwatch()
-  val defaultColors = CardDefaults.cardColors()
-  val colors =
-    swatch?.let { s ->
-      CardDefaults.cardColors(
-        containerColor = Color(s.rgb),
-      )
-    }
-      ?: defaultColors
-
-  Card(
-    modifier =
-    modifier
-      .fillMaxWidth()
-      .clip(RoundedCornerShape(16.dp))
-      .clickable { onClick() }
-      .testTag(CARD_TAG),
-    colors = colors,
+private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
+  ElevatedCard(
+    modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
+    colors =
+    CardDefaults.elevatedCardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceVariant,
+      contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    ),
   ) {
-    // Image
-    AsyncImage(
-      modifier = Modifier
-        .fillMaxWidth()
-        .aspectRatio(1f)
-        .testTag(IMAGE_TAG),
-      model =
+    Column(modifier = Modifier.clickable { onClick() }) {
+      // Image
+      AsyncImage(
+        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+        model =
         ImageRequest.Builder(LocalContext.current)
           .data(animal.imageUrl)
           .memoryCacheKey(animal.imageUrl)
           .crossfade(true)
-          // Default is hardware, which isn't usable in Palette
-          .bitmapConfig(Bitmap.Config.ARGB_8888)
           .build(),
-      contentDescription = animal.name,
-      contentScale = ContentScale.FillWidth,
-      onState = { state ->
-        if (state is AsyncImagePainter.State.Success) {
-          Palette.Builder(state.result.drawable.toBitmap()).generate { palette ->
-            paletteState = palette
-          }
+        contentDescription = animal.name,
+        contentScale = ContentScale.Crop,
+      )
+      Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+        // Name
+        Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
+        // Type
+        animal.breed?.let { Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium) }
+        CompositionLocalProvider(
+          LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
+        ) {
+          // Gender, age
+          Text(
+            text = "${animal.gender} – ${animal.age}",
+            style = MaterialTheme.typography.bodySmall,
+          )
         }
-      }
-    )
-    Column(modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
-      val textColor = swatch?.bodyTextColor?.let(::ComposeColor) ?: ComposeColor.Unspecified
-      // Name
-      Text(text = animal.name, style = MaterialTheme.typography.labelLarge, color = textColor)
-      // Type
-      animal.breed?.let {
-        Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium, color = textColor)
-      }
-      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-        // Gender, age
-        Text(
-          text = "${animal.gender} – ${animal.age}",
-          style = MaterialTheme.typography.bodySmall,
-          color = textColor
-        )
       }
     }
   }
-}
 
-private fun Palette.getSwatch(): Swatch {
-  return vibrantSwatch
-    ?: lightVibrantSwatch ?: darkVibrantSwatch ?: lightMutedSwatch ?: mutedSwatch ?: darkMutedSwatch
-      ?: error("No usable swatch found")
 }

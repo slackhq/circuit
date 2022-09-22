@@ -44,7 +44,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class AboutScreen : Screen {
+object AboutScreen : Screen {
   object State : CircuitUiState
   object Event : CircuitUiEvent
 }

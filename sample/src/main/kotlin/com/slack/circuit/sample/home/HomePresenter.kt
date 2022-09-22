@@ -49,14 +49,15 @@ import androidx.compose.ui.unit.sp
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.EventCollector
+import com.slack.circuit.CompositeCircuitUiEvent
 import com.slack.circuit.NavEvent
+import com.slack.circuit.NavEventsCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
-import com.slack.circuit.onNavEvent
+import com.slack.circuit.helpers.rememberFilterEventAndGetState
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petlist.AboutScreen
 import com.slack.circuit.sample.petlist.Filters
@@ -84,9 +85,11 @@ object HomeScreen : Screen {
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
-    class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
-    class ChildNav(val navEvent: NavEvent) : Event
+    class HomeEvent(override val event: HomeNavScreen.Event.HomeNavEvent) :
+      CompositeCircuitUiEvent(event), Event
+    class PetListFilterEvent(override val event: PetListFilterScreen.Event) :
+      CompositeCircuitUiEvent(event), Event
+    class ChildNav(navEvent: NavEvent) : CompositeCircuitUiEvent(navEvent), Event
   }
 }
 
@@ -115,16 +118,14 @@ constructor(
     }
     val homeNavState = homeNavPresenter(rememberHomeNavState)
 
-    val rememberPetListFilterEventFlow = remember {
-      events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event }
-    }
-    val petListFilterState = petListFilterPresenter.present(rememberPetListFilterEventFlow)
+    @Suppress("UNCHECKED_CAST")
+    val petListFilterState =
+      rememberFilterEventAndGetState<HomeScreen.Event.PetListFilterEvent, PetListFilterScreen.State>(
+        events,
+        petListFilterPresenter as Presenter<CircuitUiState, CircuitUiEvent>
+      )
 
-    // Todo extract into helper fun NavEventsCollector.
-    val rememberChildNavigationEvent = remember {
-      events.filterIsInstance<HomeScreen.Event.ChildNav>().map { it.navEvent }
-    }
-    EventCollector(rememberChildNavigationEvent, navigator::onNavEvent)
+    NavEventsCollector<HomeScreen.Event.ChildNav>(navigator, events)
 
     return HomeScreen.State(homeNavState, petListFilterState)
   }

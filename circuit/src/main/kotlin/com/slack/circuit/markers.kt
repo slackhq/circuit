@@ -42,7 +42,6 @@ import androidx.compose.runtime.Immutable
  */
 @Immutable interface CircuitUiEvent
 
-
 /**
  * Marker interface for composite (in other words nested) UiEvent types.
  *

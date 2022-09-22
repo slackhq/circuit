@@ -120,7 +120,8 @@ constructor(
 
     @Suppress("UNCHECKED_CAST")
     val petListFilterState =
-      rememberFilterEventAndGetState<HomeScreen.Event.PetListFilterEvent, PetListFilterScreen.State>(
+      rememberFilterEventAndGetState<
+        HomeScreen.Event.PetListFilterEvent, PetListFilterScreen.State>(
         events,
         petListFilterPresenter as Presenter<CircuitUiState, CircuitUiEvent>
       )

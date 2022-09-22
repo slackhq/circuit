@@ -45,15 +45,17 @@ fun Navigator.onNavEvent(event: NavEvent) {
 }
 
 /**
- * Helper to collect the Events from a [Presenter], filter out the [NavEvent], then navigate to
- * the intended [Screen].
- *
+ * Helper to collect the Events from a [Presenter], filter out the [NavEvent], then navigate to the
+ * intended [Screen].
  *
  * @param navigator The injected [Navigator].
  * @param events The [events][UiEvent] being passed in from the [Presenter].
  */
 @Composable
-inline  fun <reified E : CompositeCircuitUiEvent> NavEventsCollector(navigator: Navigator, events: Flow<CircuitUiEvent>) {
+inline fun <reified E : CompositeCircuitUiEvent> NavEventsCollector(
+  navigator: Navigator,
+  events: Flow<CircuitUiEvent>
+) {
   val rememberChildNavigationEvent = remember {
     events.filterIsInstance<E>().map { it.event as NavEvent }
   }

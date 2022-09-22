@@ -19,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
@@ -41,12 +44,25 @@ fun Navigator.onNavEvent(event: NavEvent) {
   }
 }
 
+@Composable
+inline  fun <reified E : CompositeCircuitUiEvent> NavEventsCollector(navigator: Navigator, events: Flow<CircuitUiEvent>) {
+  val rememberChildNavigationEvent = remember {
+    events.filterIsInstance<E>().map { it.event as NavEvent }
+  }
+
+  EventCollector(rememberChildNavigationEvent, navigator::onNavEvent)
+}
+
 // Todo Fill kdoc.
 sealed interface NavEvent : CircuitUiEvent
 
 internal object PopNavEvent : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
+
+// From a previous Idea, only solving for Navigation while the CompositeEvent will solve
+// multiple cases. Remember to delete this.
+abstract class ChildNavEvent(open val navEvent: NavEvent) : CircuitUiEvent
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].

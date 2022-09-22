@@ -41,3 +41,5 @@ import androidx.compose.runtime.Immutable
  * **Circuit event types should be truly immutable types.**
  */
 @Immutable interface CircuitUiEvent
+
+@Immutable abstract class CompositeCircuitUiEvent(open val event: CircuitUiEvent) : CircuitUiEvent

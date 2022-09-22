@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Screen
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +31,7 @@ private val HOME_NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.Abou
 
 @Parcelize
 object HomeNavScreen : Screen {
-  data class HomeNavState(val index: Int, val bottomNavItems: List<BottomNavItem>) : CircuitUiEvent
+  data class State(val index: Int, val bottomNavItems: List<BottomNavItem>) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data class HomeNavEvent(val index: Int) : Event
@@ -38,12 +39,16 @@ object HomeNavScreen : Screen {
 }
 
 @Composable
-fun homeNavPresenter(events: Flow<HomeNavScreen.Event.HomeNavEvent>): HomeNavScreen.HomeNavState {
+fun homeNavPresenter(events: Flow<HomeNavScreen.Event>): HomeNavScreen.State {
   var state by remember {
-    mutableStateOf(HomeNavScreen.HomeNavState(index = 0, bottomNavItems = HOME_NAV_ITEMS))
+    mutableStateOf(HomeNavScreen.State(index = 0, bottomNavItems = HOME_NAV_ITEMS))
   }
 
-  EventCollector(events) { event -> state = state.copy(index = event.index) }
+  EventCollector(events) { event ->
+    when (event) {
+      is HomeNavScreen.Event.HomeNavEvent -> state = state.copy(index = event.index)
+    }
+  }
 
   return state
 }

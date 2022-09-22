@@ -49,22 +49,21 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.CompositeCircuitUiEvent
 import com.slack.circuit.NavEvent
-import com.slack.circuit.NavEventsCollector
+import com.slack.circuit.NavEventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
-import com.slack.circuit.helpers.rememberFilterEventAndGetState
+import com.slack.circuit.helpers.rememberNestedState
+import com.slack.circuit.onNavEvent
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.sample.home.HomeScreen.Event.PetListFilterEvent
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
-import com.slack.circuit.sample.petlist.PetListFilterScreen.State as PetListFilterState
 import com.slack.circuit.sample.petlist.Size
 import com.slack.circuit.sample.ui.StarTheme
 import com.slack.circuit.ui
@@ -81,16 +80,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object HomeScreen : Screen {
   data class State(
-    val homeNavState: HomeNavScreen.HomeNavState,
+    val homeNavState: HomeNavScreen.State,
     val petListFilterState: PetListFilterScreen.State
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    class HomeEvent(override val event: HomeNavScreen.Event.HomeNavEvent) :
-      CompositeCircuitUiEvent(event), Event
-    class PetListFilterEvent(override val event: PetListFilterScreen.Event) :
-      CompositeCircuitUiEvent(event), Event
-    class ChildNav(navEvent: NavEvent) : CompositeCircuitUiEvent(navEvent), Event
+    class HomeEvent(val event: HomeNavScreen.Event) : Event
+    class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
+    class ChildNav(val navEvent: NavEvent) : Event
   }
 }
 
@@ -119,14 +116,10 @@ constructor(
     }
     val homeNavState = homeNavPresenter(rememberHomeNavState)
 
-    @Suppress("UNCHECKED_CAST")
     val petListFilterState =
-      rememberFilterEventAndGetState<PetListFilterEvent, PetListFilterState>(
-        events,
-        petListFilterPresenter as Presenter<CircuitUiState, CircuitUiEvent>
-      )
+      rememberNestedState(petListFilterPresenter, events, PetListFilterEvent::event)
 
-    NavEventsCollector<ChildNav>(navigator, events)
+    NavEventCollector(events, ChildNav::navEvent, navigator::onNavEvent)
 
     return HomeScreen.State(homeNavState, petListFilterState)
   }

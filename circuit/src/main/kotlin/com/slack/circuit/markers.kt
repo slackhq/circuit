@@ -41,13 +41,3 @@ import androidx.compose.runtime.Immutable
  * **Circuit event types should be truly immutable types.**
  */
 @Immutable interface CircuitUiEvent
-
-/**
- * Marker interface for composite (in other words nested) UiEvent types.
- *
- * Events in Circuit should generally reflect user interactions with the UI. They are mediated by
- * [presenters][Presenter] and may or may not influence the current [state][CircuitUiState].
- *
- * **Circuit event types should be truly immutable types.**
- */
-@Immutable abstract class CompositeCircuitUiEvent(open val event: CircuitUiEvent) : CircuitUiEvent

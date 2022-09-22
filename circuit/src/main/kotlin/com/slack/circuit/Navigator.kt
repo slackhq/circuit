@@ -52,15 +52,16 @@ fun Navigator.onNavEvent(event: NavEvent) {
  * @param events The [events][UiEvent] being passed in from the [Presenter].
  */
 @Composable
-inline fun <reified E : CompositeCircuitUiEvent> NavEventsCollector(
-  navigator: Navigator,
-  events: Flow<CircuitUiEvent>
+inline fun <reified E : CircuitUiEvent, reified NavEventHolder : E> NavEventCollector(
+  events: Flow<E>,
+  crossinline mapper: (NavEventHolder) -> NavEvent,
+  crossinline collector: (NavEvent) -> Unit
 ) {
   val rememberChildNavigationEvent = remember {
-    events.filterIsInstance<E>().map { it.event as NavEvent }
+    events.filterIsInstance<NavEventHolder>().map(mapper)
   }
 
-  EventCollector(rememberChildNavigationEvent, navigator::onNavEvent)
+  EventCollector(rememberChildNavigationEvent) { event -> collector(event) }
 }
 
 /** A sealed navigation interface intended to be used when making a navigation call back. */

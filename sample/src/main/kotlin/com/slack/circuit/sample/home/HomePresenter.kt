@@ -15,18 +15,15 @@
  */
 package com.slack.circuit.sample.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
@@ -34,7 +31,10 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,8 +44,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -59,13 +59,11 @@ import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.helpers.rememberFilterEventAndGetState
 import com.slack.circuit.sample.di.AppScope
-import com.slack.circuit.sample.petlist.AboutScreen
-import com.slack.circuit.sample.petlist.Filters
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
-import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.petlist.Size
+import com.slack.circuit.sample.ui.StarTheme
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
@@ -150,10 +148,12 @@ class HomeUiFactory @Inject constructor() : Ui.Factory {
 private fun homeUi() =
   ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeContent(state, events) }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
+  val systemUiController = rememberSystemUiController()
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
   val modalState =
     rememberModalBottomSheetState(
       initialValue =
@@ -187,15 +187,11 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       topBar = {
         CenterAlignedTopAppBar(
           title = {
-            Text(
-              "Adoptables",
-              fontSize = 22.sp,
-              color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
           },
           colors =
             TopAppBarDefaults.centerAlignedTopAppBarColors(
-              containerColor = MaterialTheme.colorScheme.primaryContainer
+              containerColor = MaterialTheme.colorScheme.background
             ),
           actions = {
             IconButton(
@@ -205,55 +201,45 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
                 )
               }
             ) {
-              androidx.compose.material.Icon(
+              Icon(
                 imageVector = Icons.Default.FilterList,
-                contentDescription = "filter pet list",
-                tint = Color.White
+                contentDescription = "Filter pet list",
+                tint = MaterialTheme.colorScheme.onBackground
               )
             }
           },
         )
       },
       bottomBar = {
-        BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-          eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
+        StarTheme(useDarkTheme = true) {
+          BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
+            eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
+          }
         }
       }
-    ) {
-      val screen =
-        getScreen(
-          state.homeNavState.index,
-          state.petListFilterState.gender,
-          state.petListFilterState.size
-        )
-      CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
+    ) { paddingValues ->
+      Box(modifier = Modifier.padding(paddingValues)) {
+        val screen =
+          state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
+            state.petListFilterState.filters
+          )
+        CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
+      }
     }
-  }
-}
-
-@Composable
-private fun getScreen(index: Int, gender: Gender, size: Size): Screen {
-  return if (index == DOGS_SCREEN_INDEX) {
-    PetListScreen(Filters(gender = gender, size = size))
-  } else {
-    AboutScreen()
   }
 }
 
 @Composable
 private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
   // These are the buttons on the NavBar, they dictate where we navigate too.
-  val items = listOf(BottomNavItem.Dogs, BottomNavItem.About)
-  BottomNavigation(
-    backgroundColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    contentColor = Color.White
+  val items = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
+  NavigationBar(
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {
     items.forEachIndexed { index, item ->
-      BottomNavigationItem(
+      NavigationBarItem(
         icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
         label = { Text(text = item.title) },
-        selectedContentColor = MaterialTheme.colorScheme.secondary,
-        unselectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(0.4f),
         alwaysShowLabel = true,
         selected = selectedIndex == index,
         onClick = { onSelectedIndex(index) }
@@ -273,7 +259,7 @@ private fun GenderFilterOption(
       Column {
         Text(text = gender.name)
         RadioButton(
-          selected = state.gender == gender,
+          selected = state.filters.gender == gender,
           onClick = {
             eventSink(
               HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender))
@@ -296,7 +282,7 @@ private fun SizeFilterOption(
       Column {
         Text(text = size.name)
         RadioButton(
-          selected = state.size == size,
+          selected = state.filters.size == size,
           onClick = {
             eventSink(
               HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))

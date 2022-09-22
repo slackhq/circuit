@@ -21,14 +21,18 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.slack.circuit.Screen
 import com.slack.circuit.sample.petlist.AboutScreen
+import com.slack.circuit.sample.petlist.Filters
 import com.slack.circuit.sample.petlist.PetListScreen
 
-private const val DOGS_SCREEN_NAME = "Dogs"
+private const val DOGS_SCREEN_NAME = "Adoptables"
 private const val ABOUT_SCREEN_NAME = "About"
-const val DOGS_SCREEN_INDEX = 0
-const val ABOUT_SCREEN_INDEX = 1
 
-sealed class BottomNavItem(val title: String, val screen: Screen, val icon: ImageVector) {
-  object Dogs : BottomNavItem(DOGS_SCREEN_NAME, PetListScreen(), Icons.Filled.Home)
-  object About : BottomNavItem(ABOUT_SCREEN_NAME, AboutScreen(), Icons.Filled.Info)
+sealed class BottomNavItem(val title: String, val icon: ImageVector) {
+  abstract fun screenFor(filters: Filters): Screen
+  object Adoptables : BottomNavItem(DOGS_SCREEN_NAME, Icons.Filled.Home) {
+    override fun screenFor(filters: Filters) = PetListScreen(filters)
+  }
+  object About : BottomNavItem(ABOUT_SCREEN_NAME, Icons.Filled.Info) {
+    override fun screenFor(filters: Filters) = AboutScreen
+  }
 }

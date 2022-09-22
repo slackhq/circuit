@@ -8,11 +8,10 @@ if (hasProperty("SlackRepositoryUrl")) {
 }
 
 android {
-  namespace = "com.slack.circuit.backstack"
+  namespace = "com.slack.circuit.retained"
 }
 
 dependencies {
-  implementation(libs.androidx.lifecycle.viewModel.compose)
   api(libs.androidx.lifecycle.viewModel)
   api(libs.bundles.compose)
 }

@@ -21,6 +21,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Test on API 30 because that's the first version with ATDs
+        api-level: ['30']
+        avd-target: ['aosp_atd']
         ci_java_version: ['17']
         ci_kotlin_version: ['1.7.10']
     env:
@@ -34,16 +37,6 @@ jobs:
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Generate cache key
-        run: ./.github/checksum.sh checksum.txt
-
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ matrix.job }}-${{ hashFiles('checksum.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-${{ matrix.job }}-
-
       - name: Install JDK ${{ matrix.ci_java_version }}
         uses: actions/setup-java@v3
         with:
@@ -54,17 +47,48 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check
+          arguments: check :sample:assembleDebug :sample:assembleDebugAndroidTest
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
 
-      - name: Build and run instrumentation tests
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}-${{ matrix.avd-target }}
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          arch: x86_64
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          disk-size: 2000M
-          heap-size: 600M
-          script: ./gradlew connectedDebugAndroidTest --stacktrace
+          disable-spellchecker: true
+          target: ${{ matrix.avd-target }}
+          channel: canary # Necessary for ATDs
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          disable-spellchecker: true
+          target: 'aosp_atd'
+          channel: canary # Necessary for ATDs
+          script: |
+            adb uninstall com.slack.circuit.sample || true
+            adb uninstall com.slack.circuit.sample.androidTest || true
+            ./gradlew connectedDebugAndroidTest
+            adb uninstall com.slack.circuit.sample || true
+            adb uninstall com.slack.circuit.sample.androidTest || true
 
       - name: (Fail-only) Bundle the build report
         if: failure()

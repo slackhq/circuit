@@ -12,10 +12,11 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.compose.integration.viewModel)
-  api(libs.androidx.compose.integration.activity)
   api(libs.bundles.compose)
   api(projects.backstack)
+  api(projects.circuitRetained)
+  implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.lifecycle.viewModel.compose)
   testImplementation(libs.junit)
   testImplementation(libs.truth)
 }

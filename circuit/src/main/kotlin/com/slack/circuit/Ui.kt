@@ -94,11 +94,7 @@ interface Ui<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
   }
 }
 
-data class ScreenUi(
-  val ui: Ui<*, *>,
-// TODO does this kind of thing eventually move to compose Modifier instead?
-//  val uiMetadata: UiMetadata = UiMetadata()
-)
+data class ScreenUi(val ui: Ui<*, *>)
 
 /**
  * Due to this bug in Studio, we can't write lambda impls of [Ui] directly. This works around it by

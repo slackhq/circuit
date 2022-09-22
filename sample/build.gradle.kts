@@ -46,7 +46,7 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.pager)
   implementation(libs.androidx.compose.accompanist.pager.indicators)
   implementation(libs.androidx.compose.accompanist.flowlayout)
-  implementation(libs.androidx.palette)
+  implementation(libs.androidx.compose.accompanist.systemUi)
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)

@@ -19,6 +19,8 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.Circuit
 import com.slack.circuit.CircuitProvider
@@ -46,9 +48,13 @@ constructor(
     super.onCreate(savedInstanceState)
     setContent {
       StarTheme {
-        val backstack = rememberSaveableBackStack { push(HomeScreen) }
-        val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
-        CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
+        // TODO why isn't the windowBackground enough so we don't need to do this?
+        Surface(color = MaterialTheme.colorScheme.background) {
+          val backstack = rememberSaveableBackStack { push(HomeScreen) }
+          val navigator =
+            rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
+          CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
+        }
       }
     }
   }

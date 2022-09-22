@@ -36,7 +36,7 @@ interface Navigator {
   }
 }
 
-// Todo Fill kdoc.
+/** A Circuit call back to help navigate to different screens. */
 fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
@@ -44,6 +44,14 @@ fun Navigator.onNavEvent(event: NavEvent) {
   }
 }
 
+/**
+ * Helper to collect the Events from a [Presenter], filter out the [NavEvent], then navigate to
+ * the intended [Screen].
+ *
+ *
+ * @param navigator The injected [Navigator].
+ * @param events The [events][UiEvent] being passed in from the [Presenter].
+ */
 @Composable
 inline  fun <reified E : CompositeCircuitUiEvent> NavEventsCollector(navigator: Navigator, events: Flow<CircuitUiEvent>) {
   val rememberChildNavigationEvent = remember {
@@ -53,16 +61,12 @@ inline  fun <reified E : CompositeCircuitUiEvent> NavEventsCollector(navigator: 
   EventCollector(rememberChildNavigationEvent, navigator::onNavEvent)
 }
 
-// Todo Fill kdoc.
+/** A sealed navigation interface intended to be used when making a navigation call back. */
 sealed interface NavEvent : CircuitUiEvent
 
 internal object PopNavEvent : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
-
-// From a previous Idea, only solving for Navigation while the CompositeEvent will solve
-// multiple cases. Remember to delete this.
-abstract class ChildNavEvent(open val navEvent: NavEvent) : CircuitUiEvent
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].

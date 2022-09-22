@@ -44,7 +44,6 @@ fun homeNavPresenter(events: Flow<HomeNavScreen.Event.HomeNavEvent>): HomeNavScr
     mutableStateOf(HomeNavScreen.HomeNavState(bottomNavItems = homeScreenNavItems))
   }
 
-  // LaunchedEffect/EventCollector makes it take two clicks, figure it out when i come back.
   EventCollector(events) { event -> state = state.copy(index = event.index) }
 
   return state

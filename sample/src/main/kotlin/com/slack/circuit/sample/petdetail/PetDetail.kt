@@ -33,17 +33,16 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -180,8 +179,8 @@ internal object PetDetailTestConstants {
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.surface)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.surface)
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
@@ -247,6 +246,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   }
   item(state.tags) {
     FlowRow(
+      modifier = Modifier.fillMaxWidth(),
       mainAxisSpacing = 8.dp,
       crossAxisSpacing = 8.dp,
       mainAxisAlignment = FlowMainAxisAlignment.Center,
@@ -254,13 +254,13 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
     ) {
       state.tags.forEach { tag ->
         Surface(
-          color = Color(0xFFE91E63),
+          color = MaterialTheme.colorScheme.tertiary,
           shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
         ) {
           Text(
             modifier = Modifier.padding(12.dp),
             text = tag.capitalize(LocaleList.current),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onTertiary,
             style = MaterialTheme.typography.labelLarge
           )
         }
@@ -276,11 +276,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   item(state.url) {
     val context = LocalContext.current
     Button(modifier = Modifier.fillMaxWidth(), onClick = { openTab(context, state.url) }) {
-      Text(
-        text = "Full bio on Petfinder ➡",
-        color = MaterialTheme.colorScheme.onSurface,
-        style = MaterialTheme.typography.headlineSmall
-      )
+      Text(text = "Full bio on Petfinder ➡", style = MaterialTheme.typography.headlineSmall)
     }
   }
 }

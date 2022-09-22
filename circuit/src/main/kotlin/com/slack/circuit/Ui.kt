@@ -49,11 +49,14 @@ import kotlinx.coroutines.flow.Flow
  *
  * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
  *
+ * If a given [Presenter] only ever emits the same state, you can define a single value-less
+ * `object` type for the state.
+ *
  * Note that due to a bug in studio, we can't make this a `fun interface` _yet_. Instead, use [ui].
  *
  * @see ui
  */
-interface Ui<UiState : Any, UiEvent : Any> {
+interface Ui<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
   @Composable fun Render(state: UiState, eventSink: (UiEvent) -> Unit)
 
   /**
@@ -91,11 +94,7 @@ interface Ui<UiState : Any, UiEvent : Any> {
   }
 }
 
-data class ScreenUi(
-  val ui: Ui<*, *>,
-// TODO does this kind of thing eventually move to compose Modifier instead?
-//  val uiMetadata: UiMetadata = UiMetadata()
-)
+data class ScreenUi(val ui: Ui<*, *>)
 
 /**
  * Due to this bug in Studio, we can't write lambda impls of [Ui] directly. This works around it by
@@ -106,7 +105,7 @@ data class ScreenUi(
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState : Any, UiEvent : Any> ui(
+inline fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> ui(
   crossinline body: @Composable (state: UiState, eventSink: (UiEvent) -> Unit) -> Unit
 ): Ui<UiState, UiEvent> {
   return object : Ui<UiState, UiEvent> {
@@ -119,7 +118,10 @@ inline fun <UiState : Any, UiEvent : Any> ui(
 
 @Suppress("NOTHING_TO_INLINE")
 @Composable
-inline fun <E : Any> EventCollector(events: Flow<E>, noinline eventCollector: (event: E) -> Unit) {
+inline fun <E : CircuitUiEvent> EventCollector(
+  events: Flow<E>,
+  noinline eventCollector: (event: E) -> Unit
+) {
   val currentCollector by rememberUpdatedState(eventCollector)
   LaunchedEffect(events) { events.collect { currentCollector(it) } }
 }

@@ -16,32 +16,31 @@
 package com.slack.circuit.sample.home
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.EventCollector
 import com.slack.circuit.Screen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
-private val homeScreenNavItems = listOf(BottomNavItem.Dogs.screen, BottomNavItem.About.screen)
+private val HOME_NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
 
 @Parcelize
 object HomeNavScreen : Screen {
-  @Immutable
-  data class HomeNavState(val index: Int = DOGS_SCREEN_INDEX, val bottomNavItems: List<Screen>)
+  data class HomeNavState(val index: Int, val bottomNavItems: List<BottomNavItem>) : CircuitUiEvent
 
-  sealed interface Event {
-    @Immutable data class HomeNavEvent(val index: Int) : Event
+  sealed interface Event : CircuitUiEvent {
+    data class HomeNavEvent(val index: Int) : Event
   }
 }
 
 @Composable
 fun homeNavPresenter(events: Flow<HomeNavScreen.Event.HomeNavEvent>): HomeNavScreen.HomeNavState {
   var state by remember {
-    mutableStateOf(HomeNavScreen.HomeNavState(bottomNavItems = homeScreenNavItems))
+    mutableStateOf(HomeNavScreen.HomeNavState(index = 0, bottomNavItems = HOME_NAV_ITEMS))
   }
 
   // LaunchedEffect/EventCollector makes it take two clicks, figure it out when i come back.

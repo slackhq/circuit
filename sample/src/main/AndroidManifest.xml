@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<manifest package="com.slack.circuit.sample"
+<manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 

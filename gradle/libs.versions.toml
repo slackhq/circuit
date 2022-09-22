@@ -71,7 +71,6 @@ androidx-compose-integration-activity = { module = "androidx.activity:activity-c
 androidx-compose-integration-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "compose-integration-constraintlayout" }
 androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }
 androidx-compose-integration-rxjava3 = { module = "androidx.compose.runtime:runtime-rxjava3", version.ref = "compose" }
-androidx-compose-integration-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 # Material design icons
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "compose" }
 androidx-compose-material-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
@@ -96,7 +95,10 @@ androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit", version.ref
 androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose" }
-androidx-palette = "androidx.palette:palette-ktx:1.0.0"
+
+androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }

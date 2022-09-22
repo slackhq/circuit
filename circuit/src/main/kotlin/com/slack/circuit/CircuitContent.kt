@@ -106,9 +106,32 @@ fun BasicNavigableCircuitContent(
 fun CircuitContent(
   screen: Screen,
   circuit: Circuit = LocalCircuitOwner.current,
-  unavailableContent: (@Composable (screen: Any) -> Unit)? = circuit.onUnavailableContent,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuit.onUnavailableContent,
 ) {
   CircuitContent(screen, Navigator.NoOp, circuit, unavailableContent)
+}
+
+@Composable
+fun CircuitContent(
+  screen: Screen,
+  onNavEvent: (event: NavEvent) -> Unit,
+  circuit: Circuit = LocalCircuitOwner.current,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuit.onUnavailableContent,
+) {
+  val navigator =
+    remember(onNavEvent) {
+      object : Navigator {
+        override fun goTo(screen: Screen) {
+          onNavEvent(GoToNavEvent(screen))
+        }
+
+        override fun pop(): Screen? {
+          onNavEvent(PopNavEvent)
+          return null
+        }
+      }
+    }
+  CircuitContent(screen, navigator, circuit, unavailableContent)
 }
 
 @Composable
@@ -116,15 +139,16 @@ private fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
   circuit: Circuit,
-  unavailableContent: (@Composable (screen: Any) -> Unit)?,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)?,
 ) {
-  @Suppress("UNCHECKED_CAST") val ui = circuit.ui(screen) as Ui<Any, Any>?
+  val screenUi = circuit.ui(screen)
 
   @Suppress("UNCHECKED_CAST")
-  val presenter = circuit.presenter(screen, navigator) as Presenter<Any, Any>?
+  val presenter = circuit.presenter(screen, navigator) as Presenter<CircuitUiState, CircuitUiEvent>?
 
-  if (ui != null && presenter != null) {
-    CircuitRender(presenter, ui)
+  if (screenUi != null && presenter != null) {
+    @Suppress("UNCHECKED_CAST")
+    CircuitRender(presenter, screenUi.ui as Ui<CircuitUiState, CircuitUiEvent>)
   } else if (unavailableContent != null) {
     unavailableContent(screen)
   } else {
@@ -133,7 +157,7 @@ private fun CircuitContent(
 }
 
 @Composable
-private fun <UiState : Any, UiEvent : Any> CircuitRender(
+private fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> CircuitRender(
   presenter: Presenter<UiState, UiEvent>,
   ui: Ui<UiState, UiEvent>,
 ) {

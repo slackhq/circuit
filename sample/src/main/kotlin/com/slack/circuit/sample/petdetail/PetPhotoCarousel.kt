@@ -25,8 +25,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,6 +50,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
@@ -77,25 +78,25 @@ import kotlinx.parcelize.Parcelize
  */
 
 // We're using the screen key as the state as it's all static
-// TODO are we sure we want to do this?
-@Immutable
 @Parcelize
 data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
   val photoUrlMemoryCacheKey: String?
-) : Screen
+) : Screen {
+  data class State(val input: PetPhotoCarouselScreen) : CircuitUiState
+}
 
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
 //  screen type?
 class PetPhotoCarouselPresenter
 @AssistedInject
 constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
-  Presenter<PetPhotoCarouselScreen, Nothing> {
+  Presenter<PetPhotoCarouselScreen.State, Nothing> {
 
   @Composable
-  override fun present(events: Flow<Nothing>): PetPhotoCarouselScreen {
-    return screen
+  override fun present(events: Flow<Nothing>): PetPhotoCarouselScreen.State {
+    return PetPhotoCarouselScreen.State(screen)
   }
 
   @AssistedFactory
@@ -114,7 +115,7 @@ class PetPhotoCarouselUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen, Nothing> = ui { state, _ ->
+fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen.State, Nothing> = ui { state, _ ->
   PetPhotoCarousel(state)
 }
 
@@ -124,19 +125,20 @@ internal object PetPhotoCarouselTestConstants {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
+internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
+  val (name, photoUrls, photoUrlMemoryCacheKey) = state.input
   val context = LocalContext.current
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   // Prefetch images
   LaunchedEffect(Unit) {
-    for (url in state.photoUrls) {
+    for (url in photoUrls) {
       if (url.isBlank()) continue
       val request = ImageRequest.Builder(context).data(url).build()
       context.imageLoader.enqueue(request)
     }
   }
 
-  val totalPhotos = state.photoUrls.size
+  val totalPhotos = photoUrls.size
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
@@ -172,7 +174,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
     HorizontalPager(
       count = totalPhotos,
       state = pagerState,
-      key = state.photoUrls::get,
+      key = photoUrls::get,
       contentPadding = PaddingValues(16.dp),
     ) { page ->
       Card(
@@ -198,15 +200,15 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
           modifier = Modifier.fillMaxWidth(),
           model =
             ImageRequest.Builder(LocalContext.current)
-              .data(state.photoUrls[page].takeIf(String::isNotBlank))
+              .data(photoUrls[page].takeIf(String::isNotBlank))
               .apply {
                 if (page == 0) {
-                  placeholderMemoryCacheKey(state.photoUrlMemoryCacheKey)
+                  placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
                   crossfade(true)
                 }
               }
               .build(),
-          contentDescription = state.name,
+          contentDescription = name,
           contentScale = ContentScale.FillWidth,
         )
       }
@@ -215,6 +217,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen) {
     HorizontalPagerIndicator(
       pagerState = pagerState,
       modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+      activeColor = MaterialTheme.colorScheme.onBackground
     )
   }
 

@@ -66,7 +66,7 @@ import androidx.compose.runtime.Immutable
 class Circuit private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
-  val onUnavailableContent: (@Composable (screen: Any) -> Unit)? = builder.onUnavailableContent
+  val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = builder.onUnavailableContent
 
   fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
     return nextPresenter(null, screen, navigator)
@@ -88,16 +88,16 @@ class Circuit private constructor(builder: Builder) {
     return null
   }
 
-  fun ui(screen: Screen): Ui<*, *>? {
+  fun ui(screen: Screen): ScreenUi? {
     return nextUi(null, screen)
   }
 
-  fun nextUi(skipPast: Ui.Factory?, screen: Screen): Ui<*, *>? {
+  fun nextUi(skipPast: Ui.Factory?, screen: Screen): ScreenUi? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
       val ui = uiFactories[i].create(screen)
       if (ui != null) {
-        return ui.ui
+        return ui
       }
     }
 
@@ -109,7 +109,7 @@ class Circuit private constructor(builder: Builder) {
   class Builder constructor() {
     val uiFactories = mutableListOf<Ui.Factory>()
     val presenterFactories = mutableListOf<Presenter.Factory>()
-    var onUnavailableContent: (@Composable (screen: Any) -> Unit)? = null
+    var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
       private set
 
     internal constructor(circuit: Circuit) : this() {
@@ -139,7 +139,7 @@ class Circuit private constructor(builder: Builder) {
       presenterFactories.addAll(factories)
     }
 
-    fun setOnUnavailableContentCallback(callback: @Composable (screen: Any) -> Unit) = apply {
+    fun setOnUnavailableContentCallback(callback: @Composable (screen: Screen) -> Unit) = apply {
       onUnavailableContent = callback
     }
 

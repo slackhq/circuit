@@ -18,7 +18,6 @@ package com.slack.circuit.sample.petdetail
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
-import android.os.Parcelable
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
@@ -34,18 +33,16 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -57,12 +54,15 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.data.Animal
 import com.slack.circuit.sample.di.AppScope
@@ -81,12 +81,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
-  sealed interface State : Parcelable {
-    @Parcelize object Loading : State
+  sealed interface State : CircuitUiState {
+    object Loading : State
 
-    @Parcelize object UnknownAnimal : State
+    object UnknownAnimal : State
 
-    @Parcelize
     data class Success(
       val url: String,
       val photoUrls: List<String>,
@@ -143,7 +142,7 @@ constructor(
   @Composable
   override fun present(events: Flow<Nothing>): PetDetailScreen.State {
     val state by
-      produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
@@ -179,6 +178,9 @@ internal object PetDetailTestConstants {
 
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
+  val systemUiController = rememberSystemUiController()
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
     when (state) {
@@ -244,6 +246,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   }
   item(state.tags) {
     FlowRow(
+      modifier = Modifier.fillMaxWidth(),
       mainAxisSpacing = 8.dp,
       crossAxisSpacing = 8.dp,
       mainAxisAlignment = FlowMainAxisAlignment.Center,
@@ -251,13 +254,13 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
     ) {
       state.tags.forEach { tag ->
         Surface(
-          color = Color(0xFFE91E63),
+          color = MaterialTheme.colorScheme.tertiary,
           shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
         ) {
           Text(
             modifier = Modifier.padding(12.dp),
             text = tag.capitalize(LocaleList.current),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onTertiary,
             style = MaterialTheme.typography.labelLarge
           )
         }
@@ -273,11 +276,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   item(state.url) {
     val context = LocalContext.current
     Button(modifier = Modifier.fillMaxWidth(), onClick = { openTab(context, state.url) }) {
-      Text(
-        text = "Full bio on Petfinder ➡",
-        color = MaterialTheme.colorScheme.onSurface,
-        style = MaterialTheme.typography.headlineSmall
-      )
+      Text(text = "Full bio on Petfinder ➡", style = MaterialTheme.typography.headlineSmall)
     }
   }
 }

@@ -33,7 +33,6 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
   PetRepository {
   private lateinit var animals: List<Animal>
 
-  // force refresh parameter?
   override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> {
     if (!this::animals.isInitialized) fetchAnimals()
     return animals

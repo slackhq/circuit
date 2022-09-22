@@ -46,12 +46,8 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.pager)
   implementation(libs.androidx.compose.accompanist.pager.indicators)
   implementation(libs.androidx.compose.accompanist.flowlayout)
-<<<<<<< HEAD
   implementation(libs.androidx.compose.accompanist.swiperefresh)
-  implementation(libs.androidx.palette)
-=======
   implementation(libs.androidx.compose.accompanist.systemUi)
->>>>>>> origin/main
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)

@@ -108,17 +108,18 @@ data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) :
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {
   sealed interface State : CircuitUiState {
-    val isRefreshing : Boolean
+    val isRefreshing: Boolean
     object Loading : State {
       override val isRefreshing: Boolean = false
     }
-   data class NoAnimals(override val isRefreshing: Boolean) : State
-    data class Success(val animals: List<PetListAnimal>, override val isRefreshing: Boolean) : State
+    data class NoAnimals(override val isRefreshing: Boolean) : State
+    data class Success(val animals: List<PetListAnimal>, override val isRefreshing: Boolean) :
+      State
   }
 
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
-    object RefreshAnimals: Event
+    object RefreshAnimals : Event
   }
 }
 
@@ -144,7 +145,7 @@ constructor(
   @Composable
   override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
 
-    var isRefreshing by remember{mutableStateOf(false)}
+    var isRefreshing by remember { mutableStateOf(false) }
 
     val animalState by
       produceRetainedState<List<PetListAnimal>?>(null) {
@@ -168,8 +169,7 @@ constructor(
         is PetListScreen.Event.ClickAnimal -> {
           navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
         }
-        PetListScreen.Event.RefreshAnimals ->
-          isRefreshing = true
+        PetListScreen.Event.RefreshAnimals -> isRefreshing = true
       }
     }
 
@@ -255,9 +255,7 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier
-            .padding(paddingValues)
-            .fillMaxSize(),
+          modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
           state.isRefreshing,
           eventSink = eventSink
@@ -274,9 +272,12 @@ private fun PetListGrid(
   eventSink: (PetListScreen.Event) -> Unit
 ) {
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing), onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals)}) {
+  SwipeRefresh(
+    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+    onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals) }
+  ) {
     LazyVerticalGrid(
-      columns =  GridCells.Fixed(if (isLandscape) 3 else 2),
+      columns = GridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -301,21 +302,21 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
     modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
-    CardDefaults.elevatedCardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceVariant,
-      contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    ),
+      CardDefaults.elevatedCardColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+      ),
   ) {
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
         modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
         model =
-        ImageRequest.Builder(LocalContext.current)
-          .data(animal.imageUrl)
-          .memoryCacheKey(animal.imageUrl)
-          .crossfade(true)
-          .build(),
+          ImageRequest.Builder(LocalContext.current)
+            .data(animal.imageUrl)
+            .memoryCacheKey(animal.imageUrl)
+            .crossfade(true)
+            .build(),
         contentDescription = animal.name,
         contentScale = ContentScale.Crop,
       )
@@ -336,5 +337,4 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
       }
     }
   }
-
 }

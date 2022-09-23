@@ -37,7 +37,9 @@ interface Navigator {
   }
 }
 
-/** A Circuit call back to help navigate to different screens. */
+/** A Circuit call back to help navigate to different screens. Intended to be used
+ * when forwarding [NavEvent]s from nested [Presenter]s.
+ * */
 fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
@@ -46,18 +48,19 @@ fun Navigator.onNavEvent(event: NavEvent) {
 }
 
 /**
- * Helper to collect the Events from a [Presenter], filter out the [NavEvent], then navigate to the
- * intended [Screen].
+ * Helper to [collect][Flow.collect] [NavEvents][NavEvent] from a given [events] Flow.
+ * Events are mapped from the parent event type [E] to the target [NavEventHolder] subtype,
+ * then collected in [collector].
  *
  * @param events The [Flow] of events to be filtered.
- * @param mapper That maps from [NavEventHolder] to [NavEvent].
+ * @param mapper Maps from the parent event type [E] to the target [NavEventHolder] subtype.
  * @param collector To be passed on to [EventCollector].
  */
 @Composable
-inline fun <reified E : CircuitUiEvent, reified NavEventHolder : E> NavEventCollector(
+inline fun <E : CircuitUiEvent, reified NavEventHolder : E> NavEventCollector(
   events: Flow<E>,
   crossinline mapper: @DisallowComposableCalls (NavEventHolder) -> NavEvent,
-  crossinline collector: (NavEvent) -> Unit
+  crossinline collector: @DisallowComposableCalls (NavEvent) -> Unit
 ) {
   val rememberChildNavigationEvent = remember {
     events.filterIsInstance<NavEventHolder>().map { mapper(it) }

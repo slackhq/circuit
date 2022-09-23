@@ -36,6 +36,8 @@ inline fun <
   events: Flow<CompositeEvent>,
   crossinline mapper: @DisallowComposableCalls (NestedEventHolder) -> NestedUiEvent
 ): NestedUiState {
-  val rememberEventFlow = remember { events.filterIsInstance<NestedEventHolder>().map { mapper(it) } }
+  val rememberEventFlow = remember {
+    events.filterIsInstance<NestedEventHolder>().map { mapper(it) }
+  }
   return presenter.present(rememberEventFlow)
 }

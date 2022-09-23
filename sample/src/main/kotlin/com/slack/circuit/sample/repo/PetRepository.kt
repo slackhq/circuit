@@ -34,7 +34,7 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
   private lateinit var animals: List<Animal>
 
   override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> {
-    if (!this::animals.isInitialized) fetchAnimals()
+    if (!this::animals.isInitialized || forceRefresh) fetchAnimals()
     return animals
   }
 

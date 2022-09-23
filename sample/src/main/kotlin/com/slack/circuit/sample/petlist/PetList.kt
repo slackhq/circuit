@@ -80,26 +80,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 data class PetListAnimal(
-  val id: Long,
-  val name: String,
-  val imageUrl: String?,
-  val breed: String?,
-  val gender: String,
-  val size: String,
-  val age: String,
+    val id: Long,
+    val name: String,
+    val imageUrl: String?,
+    val breed: String?,
+    val gender: String,
+    val size: String,
+    val age: String,
 )
 
 enum class Gender {
-  ALL,
-  MALE,
-  FEMALE
+    ALL, MALE, FEMALE
 }
 
 enum class Size {
-  ALL,
-  SMALL,
-  MEDIUM,
-  LARGE
+    ALL, SMALL, MEDIUM, LARGE
 }
 
 @Parcelize
@@ -107,234 +102,242 @@ data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) :
 
 @Parcelize
 data class PetListScreen(val filters: Filters = Filters()) : Screen {
-  sealed interface State : CircuitUiState {
-    val isRefreshing: Boolean
-    object Loading : State {
-      override val isRefreshing: Boolean = false
-    }
-    data class NoAnimals(override val isRefreshing: Boolean) : State
-    data class Success(val animals: List<PetListAnimal>, override val isRefreshing: Boolean) :
-      State
-  }
+    sealed interface State : CircuitUiState {
+        val isRefreshing: Boolean
 
-  sealed interface Event : CircuitUiEvent {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
-    object RefreshAnimals : Event
-  }
+        object Loading : State {
+            override val isRefreshing: Boolean = false
+        }
+
+        data class NoAnimals(override val isRefreshing: Boolean) : State
+        data class Success(val animals: List<PetListAnimal>, override val isRefreshing: Boolean) :
+            State
+    }
+
+    sealed interface Event : CircuitUiEvent {
+        data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+        object RefreshAnimals : Event
+    }
 }
 
 @ContributesMultibinding(AppScope::class)
 class PetListScreenPresenterFactory
-@Inject
-constructor(
-  private val petListPresenterFactory: PetListPresenter.Factory,
+@Inject constructor(
+    private val petListPresenterFactory: PetListPresenter.Factory,
 ) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
-    return null
-  }
+    override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+        if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
+        return null
+    }
 }
 
 class PetListPresenter
-@AssistedInject
-constructor(
-  @Assisted private val navigator: Navigator,
-  @Assisted private val screen: PetListScreen,
-  private val petRepo: PetRepository,
+@AssistedInject constructor(
+    @Assisted private val navigator: Navigator,
+    @Assisted private val screen: PetListScreen,
+    private val petRepo: PetRepository,
 ) : Presenter<PetListScreen.State, PetListScreen.Event> {
-  @Composable
-  override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
+    @Composable
+    override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
 
-    var isRefreshing by remember { mutableStateOf(false) }
+        var isRefreshing by remember { mutableStateOf(false) }
 
-    val animalState by
-      produceRetainedState<List<PetListAnimal>?>(null) {
-        val animals = petRepo.getAnimals(isRefreshing)
-        isRefreshing = false
-        value = animals.map { it.toPetListAnimal() }
-      }
-
-    val state =
-      remember(screen, animalState) {
-        val animals = animalState
-        when {
-          animals == null -> PetListScreen.State.Loading
-          animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
-          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep), isRefreshing)
+        val animalState by produceRetainedState<List<PetListAnimal>?>(null) {
+            val animals = petRepo.getAnimals(isRefreshing)
+            isRefreshing = false
+            value = animals.map { it.toPetListAnimal() }
         }
-      }
 
-    EventCollector(events) { event ->
-      when (event) {
-        is PetListScreen.Event.ClickAnimal -> {
-          navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+        val state = remember(screen, animalState) {
+            val animals = animalState
+            when {
+                animals == null -> PetListScreen.State.Loading
+                animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
+                else -> PetListScreen.State.Success(
+                    animals = animals.filter(::shouldKeep), isRefreshing
+                )
+            }
         }
-        PetListScreen.Event.RefreshAnimals -> isRefreshing = true
-      }
+
+        EventCollector(events) { event ->
+            when (event) {
+                is PetListScreen.Event.ClickAnimal -> {
+                    navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+                }
+                PetListScreen.Event.RefreshAnimals -> isRefreshing = true
+            }
+        }
+
+        return state
     }
 
-    return state
-  }
+    private fun shouldKeep(animal: PetListAnimal): Boolean {
+        return screen.filters.gender.shouldKeep(animal.gender) && screen.filters.size.shouldKeep(
+            animal.size
+        )
+    }
 
-  private fun shouldKeep(animal: PetListAnimal): Boolean {
-    return screen.filters.gender.shouldKeep(animal.gender) &&
-      screen.filters.size.shouldKeep(animal.size)
-  }
-  private fun Gender.shouldKeep(gender: String): Boolean {
-    if (this == Gender.ALL) return true
-    return this.name.lowercase() == gender.lowercase()
-  }
+    private fun Gender.shouldKeep(gender: String): Boolean {
+        if (this == Gender.ALL) return true
+        return this.name.lowercase() == gender.lowercase()
+    }
 
-  private fun Size.shouldKeep(size: String): Boolean {
-    if (this == Size.ALL) return true
-    return this.name.lowercase() == size.lowercase()
-  }
+    private fun Size.shouldKeep(size: String): Boolean {
+        if (this == Size.ALL) return true
+        return this.name.lowercase() == size.lowercase()
+    }
 
-  @AssistedFactory
-  interface Factory {
-    fun create(navigator: Navigator, screen: PetListScreen): PetListPresenter
-  }
+    @AssistedFactory
+    interface Factory {
+        fun create(navigator: Navigator, screen: PetListScreen): PetListPresenter
+    }
 }
 
 internal fun Animal.toPetListAnimal(): PetListAnimal {
-  return PetListAnimal(
-    id = id,
-    // Names are sometimes all caps
-    name = name.lowercase().capitalize(Locale.current),
-    imageUrl = photos.firstOrNull()?.medium,
-    breed = breeds.primary,
-    gender = gender,
-    size = size,
-    age = age
-  )
+    return PetListAnimal(
+        id = id,
+        // Names are sometimes all caps
+        name = name.lowercase().capitalize(Locale.current),
+        imageUrl = photos.firstOrNull()?.medium,
+        breed = breeds.primary,
+        gender = gender,
+        size = size,
+        age = age
+    )
 }
 
 @ContributesMultibinding(AppScope::class)
 class PetListUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
-    if (screen is PetListScreen) {
-      return ScreenUi(petListUi())
+    override fun create(screen: Screen): ScreenUi? {
+        if (screen is PetListScreen) {
+            return ScreenUi(petListUi())
+        }
+        return null
     }
-    return null
-  }
 }
 
-private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink ->
+private fun petListUi() = ui<PetListScreen.State, PetListScreen.Event> { state, eventSink ->
     PetList(state = state, eventSink = eventSink)
-  }
+}
 
 internal object PetListTestConstants {
-  const val PROGRESS_TAG = "progress"
-  const val NO_ANIMALS_TAG = "no_animals"
-  const val GRID_TAG = "grid"
-  const val CARD_TAG = "card"
-  const val IMAGE_TAG = "image"
+    const val PROGRESS_TAG = "progress"
+    const val NO_ANIMALS_TAG = "no_animals"
+    const val GRID_TAG = "grid"
+    const val CARD_TAG = "card"
+    const val IMAGE_TAG = "image"
 }
 
 @Composable
 internal fun PetList(
-  modifier: Modifier = Modifier,
-  state: PetListScreen.State,
-  eventSink: (PetListScreen.Event) -> Unit
+    modifier: Modifier = Modifier,
+    state: PetListScreen.State,
+    eventSink: (PetListScreen.Event) -> Unit
 ) {
-  Scaffold(
-    modifier = modifier,
-  ) { paddingValues ->
-    when (state) {
-      PetListScreen.State.Loading ->
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+    Scaffold(
+        modifier = modifier,
+    ) { paddingValues ->
+        when (state) {
+            PetListScreen.State.Loading -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+            }
+            is PetListScreen.State.NoAnimals -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier.testTag(NO_ANIMALS_TAG),
+                    text = stringResource(id = R.string.no_animals)
+                )
+            }
+            is PetListScreen.State.Success -> PetListGrid(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                animals = state.animals,
+                state.isRefreshing,
+                eventSink = eventSink
+            )
         }
-      is PetListScreen.State.NoAnimals ->
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-            modifier = Modifier.testTag(NO_ANIMALS_TAG),
-            text = stringResource(id = R.string.no_animals)
-          )
-        }
-      is PetListScreen.State.Success ->
-        PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
-          animals = state.animals,
-          state.isRefreshing,
-          eventSink = eventSink
-        )
     }
-  }
 }
 
 @Composable
 private fun PetListGrid(
-  modifier: Modifier = Modifier,
-  animals: List<PetListAnimal>,
-  isRefreshing: Boolean,
-  eventSink: (PetListScreen.Event) -> Unit
+    modifier: Modifier = Modifier,
+    animals: List<PetListAnimal>,
+    isRefreshing: Boolean,
+    eventSink: (PetListScreen.Event) -> Unit
 ) {
-  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  SwipeRefresh(
-    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-    onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals) }
-  ) {
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(if (isLandscape) 3 else 2),
-      modifier = modifier.testTag(GRID_TAG),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
-      contentPadding = PaddingValues(16.dp),
-    ) {
-      items(
-        count = animals.size,
-        key = { i -> animals[i].id },
-      ) { index ->
-        val animal = animals[index]
-        PetListGridItem(animal) {
-          eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+        onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals) }) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(if (isLandscape) 3 else 2),
+            modifier = modifier.testTag(GRID_TAG),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp),
+        ) {
+            items(
+                count = animals.size,
+                key = { i -> animals[i].id },
+            ) { index ->
+                val animal = animals[index]
+                PetListGridItem(animal) {
+                    eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+                }
+            }
         }
-      }
     }
-  }
 }
 
 @Composable
 private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
-  ElevatedCard(
-    modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
-    shape = RoundedCornerShape(16.dp),
-    colors =
-      CardDefaults.elevatedCardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-      ),
-  ) {
-    Column(modifier = Modifier.clickable { onClick() }) {
-      // Image
-      AsyncImage(
-        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
-        model =
-          ImageRequest.Builder(LocalContext.current)
-            .data(animal.imageUrl)
-            .memoryCacheKey(animal.imageUrl)
-            .crossfade(true)
-            .build(),
-        contentDescription = animal.name,
-        contentScale = ContentScale.Crop,
-      )
-      Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
-        // Name
-        Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
-        // Type
-        animal.breed?.let { Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium) }
-        CompositionLocalProvider(
-          LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
-        ) {
-          // Gender, age
-          Text(
-            text = "${animal.gender} – ${animal.age}",
-            style = MaterialTheme.typography.bodySmall,
-          )
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(CARD_TAG),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+    ) {
+        Column(modifier = Modifier.clickable { onClick() }) {
+            // Image
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .testTag(IMAGE_TAG),
+                model = ImageRequest.Builder(LocalContext.current).data(animal.imageUrl)
+                    .memoryCacheKey(animal.imageUrl).crossfade(true).build(),
+                contentDescription = animal.name,
+                contentScale = ContentScale.Crop,
+            )
+            Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+                // Name
+                Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
+                // Type
+                animal.breed?.let {
+                    Text(
+                        text = animal.breed, style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                CompositionLocalProvider(
+                    LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
+                ) {
+                    // Gender, age
+                    Text(
+                        text = "${animal.gender} – ${animal.age}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
         }
-      }
     }
-  }
 }

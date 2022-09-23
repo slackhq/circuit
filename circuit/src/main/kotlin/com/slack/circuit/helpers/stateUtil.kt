@@ -26,26 +26,29 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 
 /**
- * Helper to [remember][remember] [NestedUiState] given [events] [Flow] of [CompositeEvent]s.
- * Events are filtered by instance of [NestedEventHolder] then mapped from the parent type
- * [NestedUiEvent] to the target [NavEventHolder] subtype, then we fetch and return
- * the [NestedUiState] with the given [presenter].
+ * Helper to [remember][remember] [NestedUiState] given [events] [Flow] of [CompositeEvent]s. Events
+ * are filtered by instance of [NestedEventHolder] then mapped from the parent type [NestedUiEvent]
+ * to the target [NavEventHolder] subtype, then we fetch and return the [NestedUiState] with the
+ * given [presenter].
  *
- * @param presenter The [Presenter] used to take in a [Flow] of [NestedUiEvent]s
- * then fetch and return the [NestedUiState].
+ * @param presenter The [Presenter] used to take in a [Flow] of [NestedUiEvent]s then fetch and
+ * return the [NestedUiState].
  * @param events The [Flow] of events to be filtered.
  * @param mapper Maps from the parent type [NestedUiEvent] to the target [NavEventHolder] subtype.
  */
 @Composable
-inline fun <CompositeEvent, reified NestedEventHolder, NestedUiState, NestedUiEvent> rememberNestedState(
+inline fun <
+  CompositeEvent, reified NestedEventHolder, NestedUiState, NestedUiEvent> rememberNestedState(
   presenter: Presenter<NestedUiState, NestedUiEvent>,
   events: Flow<CompositeEvent>,
   crossinline mapper: @DisallowComposableCalls (NestedEventHolder) -> NestedUiEvent
-): NestedUiState where CompositeEvent : CircuitUiEvent, NestedEventHolder : CompositeEvent, NestedUiState : CircuitUiState, NestedUiEvent : CircuitUiEvent {
+): NestedUiState where
+CompositeEvent : CircuitUiEvent,
+NestedEventHolder : CompositeEvent,
+NestedUiState : CircuitUiState,
+NestedUiEvent : CircuitUiEvent {
   val rememberEventFlow = remember {
-    events.filterIsInstance<NestedEventHolder>().map {
-      mapper(it)
-    }
+    events.filterIsInstance<NestedEventHolder>().map { mapper(it) }
   }
   return presenter.present(rememberEventFlow)
 }

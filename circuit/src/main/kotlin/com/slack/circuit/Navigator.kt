@@ -37,9 +37,10 @@ interface Navigator {
   }
 }
 
-/** A Circuit call back to help navigate to different screens. Intended to be used
- * when forwarding [NavEvent]s from nested [Presenter]s.
- * */
+/**
+ * A Circuit call back to help navigate to different screens. Intended to be used when forwarding
+ * [NavEvent]s from nested [Presenter]s.
+ */
 fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
@@ -48,9 +49,9 @@ fun Navigator.onNavEvent(event: NavEvent) {
 }
 
 /**
- * Helper to [collect][Flow.collect] [NavEvents][NavEvent] from a given [events] Flow.
- * Events are mapped from the parent event type [E] to the target [NavEventHolder] subtype,
- * then collected in [collector].
+ * Helper to [collect][Flow.collect] [NavEvents][NavEvent] from a given [events] Flow. Events are
+ * mapped from the parent event type [E] to the target [NavEventHolder] subtype, then collected in
+ * [collector].
  *
  * @param events The [Flow] of events to be filtered.
  * @param mapper Maps from the parent event type [E] to the target [NavEventHolder] subtype.

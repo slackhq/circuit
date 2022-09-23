@@ -53,6 +53,10 @@ fun Navigator.onNavEvent(event: NavEvent) {
  * mapped from the parent event type [E] to the target [NavEventHolder] subtype, then collected in
  * [collector].
  *
+ * Currently [mapper] has a bug where we get JVM IR: "IndexOutOfBoundsException: Cannot pop operand
+ * off an empty stack" with crossinline lambdas and interface delegation. Being tracked here:
+ * https://youtrack.jetbrains.com/issue/KT-51950
+ *
  * @param events The [Flow] of events to be filtered.
  * @param mapper Maps from the parent event type [E] to the target [NavEventHolder] subtype.
  * @param collector To be passed on to [EventCollector].

@@ -31,6 +31,10 @@ import kotlinx.coroutines.flow.map
  * to the target [NavEventHolder] subtype, then we fetch and return the [NestedUiState] with the
  * given [presenter].
  *
+ * Currently [mapper] has a bug where we get JVM IR: "IndexOutOfBoundsException: Cannot pop operand
+ * off an empty stack" with crossinline lambdas and interface delegation. Being tracked here:
+ * https://youtrack.jetbrains.com/issue/KT-51950
+ *
  * @param presenter The [Presenter] used to take in a [Flow] of [NestedUiEvent]s then fetch and
  * return the [NestedUiState].
  * @param events The [Flow] of events to be filtered.

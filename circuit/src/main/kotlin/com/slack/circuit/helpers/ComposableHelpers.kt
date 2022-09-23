@@ -16,6 +16,7 @@
 package com.slack.circuit.helpers
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.remember
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -33,8 +34,8 @@ inline fun <
 > rememberNestedState(
   presenter: Presenter<NestedUiState, NestedUiEvent>,
   events: Flow<CompositeEvent>,
-  crossinline mapper: (NestedEventHolder) -> NestedUiEvent
+  crossinline mapper: @DisallowComposableCalls (NestedEventHolder) -> NestedUiEvent
 ): NestedUiState {
-  val rememberEventFlow = remember { events.filterIsInstance<NestedEventHolder>().map(mapper) }
+  val rememberEventFlow = remember { events.filterIsInstance<NestedEventHolder>().map { mapper(it) } }
   return presenter.present(rememberEventFlow)
 }

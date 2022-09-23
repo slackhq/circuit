@@ -16,6 +16,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
@@ -48,17 +49,18 @@ fun Navigator.onNavEvent(event: NavEvent) {
  * Helper to collect the Events from a [Presenter], filter out the [NavEvent], then navigate to the
  * intended [Screen].
  *
- * @param navigator The injected [Navigator].
- * @param events The [events][UiEvent] being passed in from the [Presenter].
+ * @param events The [Flow] of events to be filtered.
+ * @param mapper That maps from [NavEventHolder] to [NavEvent].
+ * @param collector To be passed on to [EventCollector].
  */
 @Composable
 inline fun <reified E : CircuitUiEvent, reified NavEventHolder : E> NavEventCollector(
   events: Flow<E>,
-  crossinline mapper: (NavEventHolder) -> NavEvent,
+  crossinline mapper: @DisallowComposableCalls (NavEventHolder) -> NavEvent,
   crossinline collector: (NavEvent) -> Unit
 ) {
   val rememberChildNavigationEvent = remember {
-    events.filterIsInstance<NavEventHolder>().map(mapper)
+    events.filterIsInstance<NavEventHolder>().map { mapper(it) }
   }
 
   EventCollector(rememberChildNavigationEvent) { event -> collector(event) }

@@ -40,8 +40,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
@@ -50,16 +50,15 @@ import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.NavEvent
-import com.slack.circuit.NavEventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
-import com.slack.circuit.helpers.rememberNestedState
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.home.HomeScreen.Event.ChildNav
+import com.slack.circuit.sample.home.HomeScreen.Event.HomeEvent
 import com.slack.circuit.sample.home.HomeScreen.Event.PetListFilterEvent
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
@@ -72,16 +71,14 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object HomeScreen : Screen {
   data class State(
     val homeNavState: HomeNavScreen.State,
-    val petListFilterState: PetListFilterScreen.State
+    val petListFilterState: PetListFilterScreen.State,
+    val eventSink: @DisallowComposableCalls (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
@@ -95,7 +92,7 @@ object HomeScreen : Screen {
 class HomeScreenPresenterFactory
 @Inject
 constructor(private val homePresenterFactory: HomePresenter.Factory) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
     if (screen is HomeScreen) return homePresenterFactory.create(navigator)
     return null
   }
@@ -105,23 +102,21 @@ class HomePresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
-  petListFilterPresenterFactory: PetListFilterPresenter.Factory
-) : Presenter<HomeScreen.State, HomeScreen.Event> {
+  petListFilterPresenterFactory: PetListFilterPresenter.Factory,
+) : Presenter<HomeScreen.State> {
   private val petListFilterPresenter = petListFilterPresenterFactory.create()
 
   @Composable
-  override fun present(events: Flow<HomeScreen.Event>): HomeScreen.State {
-    val rememberHomeNavState = remember {
-      events.filterIsInstance<HomeScreen.Event.HomeEvent>().map { it.event }
+  override fun present(): HomeScreen.State {
+    val homeNavState = homeNavPresenter()
+    val petListFilterState = petListFilterPresenter.present()
+    return HomeScreen.State(homeNavState, petListFilterState) { event ->
+      when (event) {
+        is HomeEvent -> homeNavState.eventSink(event.event)
+        is PetListFilterEvent -> petListFilterState.eventSink(event.event)
+        is ChildNav -> navigator.onNavEvent(event.navEvent)
+      }
     }
-    val homeNavState = homeNavPresenter(rememberHomeNavState)
-
-    val petListFilterState =
-      rememberNestedState(petListFilterPresenter, events, PetListFilterEvent::event)
-
-    NavEventCollector(events, ChildNav::navEvent, navigator::onNavEvent)
-
-    return HomeScreen.State(homeNavState, petListFilterState)
   }
 
   @AssistedFactory
@@ -140,12 +135,11 @@ class HomeUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-private fun homeUi() =
-  ui<HomeScreen.State, HomeScreen.Event> { state, events -> HomeContent(state, events) }
+private fun homeUi() = ui<HomeScreen.State> { state -> HomeContent(state) }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) {
+fun HomeContent(state: HomeScreen.State) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
@@ -162,7 +156,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       .collect { isVisible ->
         // Toggle if state says the modal should be visible but the snapshot says it isn't.
         if (state.petListFilterState.showBottomSheet && !isVisible)
-          eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
+          state.eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
       }
   }
 
@@ -170,8 +164,8 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
     sheetState = modalState,
     sheetContent = {
       Column {
-        GenderFilterOption(state.petListFilterState, eventSink)
-        SizeFilterOption(state.petListFilterState, eventSink)
+        GenderFilterOption(state.petListFilterState, state.eventSink)
+        SizeFilterOption(state.petListFilterState, state.eventSink)
       }
     }
   ) {
@@ -189,7 +183,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           actions = {
             IconButton(
               onClick = {
-                eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
+                state.eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
               }
             ) {
               Icon(
@@ -204,7 +198,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       bottomBar = {
         StarTheme(useDarkTheme = true) {
           BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-            eventSink(HomeScreen.Event.HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
+            state.eventSink(HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
           }
         }
       }
@@ -214,7 +208,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
             state.petListFilterState.filters
           )
-        CircuitContent(screen, { event -> eventSink(ChildNav(event)) })
+        CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
       }
     }
   }
@@ -242,7 +236,7 @@ private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Un
 @Composable
 private fun GenderFilterOption(
   state: PetListFilterScreen.State,
-  eventSink: (HomeScreen.Event) -> Unit
+  eventSink: (HomeScreen.Event) -> Unit,
 ) {
   Box { Text(text = "Gender") }
   Row(modifier = Modifier.selectableGroup()) {
@@ -263,7 +257,7 @@ private fun GenderFilterOption(
 @Composable
 private fun SizeFilterOption(
   state: PetListFilterScreen.State,
-  eventSink: (HomeScreen.Event) -> Unit
+  eventSink: (HomeScreen.Event) -> Unit,
 ) {
   Box { Text(text = "Size") }
   Row(modifier = Modifier.selectableGroup()) {

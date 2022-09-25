@@ -64,7 +64,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
 import kotlin.math.absoluteValue
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -82,7 +81,7 @@ import kotlinx.parcelize.Parcelize
 data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
-  val photoUrlMemoryCacheKey: String?
+  val photoUrlMemoryCacheKey: String?,
 ) : Screen {
   data class State(val input: PetPhotoCarouselScreen) : CircuitUiState
 }
@@ -92,12 +91,9 @@ data class PetPhotoCarouselScreen(
 class PetPhotoCarouselPresenter
 @AssistedInject
 constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
-  Presenter<PetPhotoCarouselScreen.State, Nothing> {
+  Presenter<PetPhotoCarouselScreen.State> {
 
-  @Composable
-  override fun present(events: Flow<Nothing>): PetPhotoCarouselScreen.State {
-    return PetPhotoCarouselScreen.State(screen)
-  }
+  @Composable override fun present() = PetPhotoCarouselScreen.State(screen)
 
   @AssistedFactory
   interface Factory {
@@ -115,9 +111,7 @@ class PetPhotoCarouselUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen.State, Nothing> = ui { state, _ ->
-  PetPhotoCarousel(state)
-}
+fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen.State> = ui { state -> PetPhotoCarousel(state) }
 
 internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
@@ -186,7 +180,8 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
 
             // We animate the scaleX + scaleY, between 85% and 100%
-            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
+            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also {
+              scale,
               ->
               scaleX = scale
               scaleY = scale

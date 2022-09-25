@@ -16,13 +16,13 @@
 package com.slack.circuit.sample.petlist
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -34,12 +34,15 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object PetListFilterScreen : Screen {
-  data class State(val filters: Filters, val showBottomSheet: Boolean) : CircuitUiState
+  data class State(
+    val filters: Filters,
+    val showBottomSheet: Boolean,
+    val eventSink: @DisallowComposableCalls (Event) -> Unit,
+  ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     object ToggleAnimalFilter : Event
@@ -61,34 +64,31 @@ class PetListFilterPresenterFactory
 @Inject
 constructor(private val petListFilterPresenterFactory: PetListFilterPresenter.Factory) :
   Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
     if (screen is PetListFilterScreen) return petListFilterPresenterFactory.create()
     return null
   }
 }
 
-class PetListFilterPresenter @AssistedInject constructor() :
-  Presenter<PetListFilterScreen.State, PetListFilterScreen.Event> {
+class PetListFilterPresenter @AssistedInject constructor() : Presenter<PetListFilterScreen.State> {
   @Composable
-  override fun present(events: Flow<PetListFilterScreen.Event>): PetListFilterScreen.State {
-    var state by remember { mutableStateOf(PetListFilterScreen.State(Filters(), false)) }
+  override fun present(): PetListFilterScreen.State {
+    var filters by remember { mutableStateOf(Filters()) }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
-    EventCollector(events) { event ->
-      state =
-        when (event) {
-          PetListFilterScreen.Event.ToggleAnimalFilter -> {
-            state.copy(showBottomSheet = !state.showBottomSheet)
-          }
-          is PetListFilterScreen.Event.FilterByGender -> {
-            state.copy(filters = state.filters.copy(gender = event.gender))
-          }
-          is PetListFilterScreen.Event.FilterBySize -> {
-            state.copy(filters = state.filters.copy(size = event.size))
-          }
+    return PetListFilterScreen.State(filters, showBottomSheet) { event ->
+      when (event) {
+        PetListFilterScreen.Event.ToggleAnimalFilter -> {
+          showBottomSheet = !showBottomSheet
         }
+        is PetListFilterScreen.Event.FilterByGender -> {
+          filters = filters.copy(gender = event.gender)
+        }
+        is PetListFilterScreen.Event.FilterBySize -> {
+          filters = filters.copy(size = event.size)
+        }
+      }
     }
-
-    return state
   }
 
   @AssistedFactory
@@ -97,7 +97,6 @@ class PetListFilterPresenter @AssistedInject constructor() :
   }
 }
 
-private fun petListFilterUi() =
-  ui<PetListFilterScreen.State, PetListFilterScreen.Event> { _, _ -> PetListFilter() }
+private fun petListFilterUi() = ui<PetListFilterScreen.State> { PetListFilter() }
 
 @Composable internal fun PetListFilter() {}

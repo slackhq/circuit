@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -54,7 +55,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.EventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -77,7 +77,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 data class PetListAnimal(
@@ -111,7 +110,10 @@ data class PetListScreen(val filters: Filters = Filters()) : Screen {
   sealed interface State : CircuitUiState {
     object Loading : State
     object NoAnimals : State
-    data class Success(val animals: List<PetListAnimal>) : State
+    data class Success(
+      val animals: List<PetListAnimal>,
+      val eventSink: @DisallowComposableCalls (Event) -> Unit,
+    ) : State
   }
 
   sealed interface Event : CircuitUiEvent {
@@ -125,7 +127,7 @@ class PetListScreenPresenterFactory
 constructor(
   private val petListPresenterFactory: PetListPresenter.Factory,
 ) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
     if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
     return null
   }
@@ -137,34 +139,30 @@ constructor(
   @Assisted private val navigator: Navigator,
   @Assisted private val screen: PetListScreen,
   private val petRepo: PetRepository,
-) : Presenter<PetListScreen.State, PetListScreen.Event> {
+) : Presenter<PetListScreen.State> {
   @Composable
-  override fun present(events: Flow<PetListScreen.Event>): PetListScreen.State {
+  override fun present(): PetListScreen.State {
     val animalState by
       produceRetainedState<List<PetListAnimal>?>(null) {
         val animals = petRepo.getAnimals()
         value = animals.map { it.toPetListAnimal() }
       }
 
-    val state =
-      remember(screen, animalState) {
-        val animals = animalState
-        when {
-          animals == null -> PetListScreen.State.Loading
-          animals.isEmpty() -> PetListScreen.State.NoAnimals
-          else -> PetListScreen.State.Success(animals = animals.filter(::shouldKeep))
-        }
-      }
-
-    EventCollector(events) { event ->
-      when (event) {
-        is PetListScreen.Event.ClickAnimal -> {
-          navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
-        }
+    return remember(screen, animalState) {
+      val animals = animalState
+      when {
+        animals == null -> PetListScreen.State.Loading
+        animals.isEmpty() -> PetListScreen.State.NoAnimals
+        else ->
+          PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
+            when (event) {
+              is PetListScreen.Event.ClickAnimal -> {
+                navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+              }
+            }
+          }
       }
     }
-
-    return state
   }
 
   private fun shouldKeep(animal: PetListAnimal): Boolean {
@@ -211,10 +209,7 @@ class PetListUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-private fun petListUi() =
-  ui<PetListScreen.State, PetListScreen.Event> { state, eventSink ->
-    PetList(state = state, eventSink = eventSink)
-  }
+private fun petListUi() = ui<PetListScreen.State> { state -> PetList(state = state) }
 
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
@@ -228,7 +223,6 @@ internal object PetListTestConstants {
 internal fun PetList(
   modifier: Modifier = Modifier,
   state: PetListScreen.State,
-  eventSink: (PetListScreen.Event) -> Unit
 ) {
   Scaffold(
     modifier = modifier,
@@ -249,7 +243,7 @@ internal fun PetList(
         PetListGrid(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
-          eventSink = eventSink
+          eventSink = state.eventSink
         )
     }
   }
@@ -259,7 +253,7 @@ internal fun PetList(
 private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
-  eventSink: (PetListScreen.Event) -> Unit
+  eventSink: (PetListScreen.Event) -> Unit,
 ) {
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   LazyVerticalGrid(

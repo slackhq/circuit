@@ -16,6 +16,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -120,7 +121,7 @@ inline fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> ui(
 @Composable
 inline fun <E : CircuitUiEvent> EventCollector(
   events: Flow<E>,
-  noinline eventCollector: (event: E) -> Unit
+  noinline eventCollector: @DisallowComposableCalls (event: E) -> Unit
 ) {
   val currentCollector by rememberUpdatedState(eventCollector)
   LaunchedEffect(events) { events.collect { currentCollector(it) } }

@@ -16,9 +16,13 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
@@ -33,7 +37,10 @@ interface Navigator {
   }
 }
 
-// Todo Fill kdoc.
+/**
+ * A Circuit call back to help navigate to different screens. Intended to be used when forwarding
+ * [NavEvent]s from nested [Presenter]s.
+ */
 fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
@@ -41,7 +48,33 @@ fun Navigator.onNavEvent(event: NavEvent) {
   }
 }
 
-// Todo Fill kdoc.
+/**
+ * Helper to [collect][Flow.collect] [NavEvents][NavEvent] from a given [events] Flow. Events are
+ * mapped from the parent event type [E] to the target [NavEventHolder] subtype, then collected in
+ * [collector].
+ *
+ * Currently [mapper] has a bug where we get JVM IR: "IndexOutOfBoundsException: Cannot pop operand
+ * off an empty stack" with crossinline lambdas and interface delegation. Being tracked here:
+ * https://youtrack.jetbrains.com/issue/KT-51950
+ *
+ * @param events The [Flow] of events to be filtered.
+ * @param mapper Maps from the parent event type [E] to the target [NavEventHolder] subtype.
+ * @param collector To be passed on to [EventCollector].
+ */
+@Composable
+inline fun <E : CircuitUiEvent, reified NavEventHolder : E> NavEventCollector(
+  events: Flow<E>,
+  crossinline mapper: @DisallowComposableCalls (NavEventHolder) -> NavEvent,
+  crossinline collector: @DisallowComposableCalls (NavEvent) -> Unit
+) {
+  val rememberChildNavigationEvent = remember {
+    events.filterIsInstance<NavEventHolder>().map { mapper(it) }
+  }
+
+  EventCollector(rememberChildNavigationEvent) { event -> collector(event) }
+}
+
+/** A sealed navigation interface intended to be used when making a navigation call back. */
 sealed interface NavEvent : CircuitUiEvent
 
 internal object PopNavEvent : NavEvent

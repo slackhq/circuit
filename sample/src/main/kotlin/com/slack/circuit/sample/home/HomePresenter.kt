@@ -49,15 +49,18 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.EventCollector
 import com.slack.circuit.NavEvent
+import com.slack.circuit.NavEventCollector
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.helpers.rememberNestedState
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.sample.di.AppScope
+import com.slack.circuit.sample.home.HomeScreen.Event.ChildNav
+import com.slack.circuit.sample.home.HomeScreen.Event.PetListFilterEvent
 import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
@@ -77,12 +80,12 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object HomeScreen : Screen {
   data class State(
-    val homeNavState: HomeNavScreen.HomeNavState,
+    val homeNavState: HomeNavScreen.State,
     val petListFilterState: PetListFilterScreen.State
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    class HomeEvent(val event: HomeNavScreen.Event.HomeNavEvent) : Event
+    class HomeEvent(val event: HomeNavScreen.Event) : Event
     class PetListFilterEvent(val event: PetListFilterScreen.Event) : Event
     class ChildNav(val navEvent: NavEvent) : Event
   }
@@ -113,16 +116,10 @@ constructor(
     }
     val homeNavState = homeNavPresenter(rememberHomeNavState)
 
-    val rememberPetListFilterEventFlow = remember {
-      events.filterIsInstance<HomeScreen.Event.PetListFilterEvent>().map { it.event }
-    }
-    val petListFilterState = petListFilterPresenter.present(rememberPetListFilterEventFlow)
+    val petListFilterState =
+      rememberNestedState(petListFilterPresenter, events, PetListFilterEvent::event)
 
-    // Todo extract into helper fun NavEventsCollector.
-    val rememberChildNavigationEvent = remember {
-      events.filterIsInstance<HomeScreen.Event.ChildNav>().map { it.navEvent }
-    }
-    EventCollector(rememberChildNavigationEvent, navigator::onNavEvent)
+    NavEventCollector(events, ChildNav::navEvent, navigator::onNavEvent)
 
     return HomeScreen.State(homeNavState, petListFilterState)
   }
@@ -165,9 +162,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
       .collect { isVisible ->
         // Toggle if state says the modal should be visible but the snapshot says it isn't.
         if (state.petListFilterState.showBottomSheet && !isVisible)
-          eventSink(
-            HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)
-          )
+          eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
       }
   }
 
@@ -194,9 +189,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           actions = {
             IconButton(
               onClick = {
-                eventSink(
-                  HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter)
-                )
+                eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
               }
             ) {
               Icon(
@@ -221,7 +214,7 @@ fun HomeContent(state: HomeScreen.State, eventSink: (HomeScreen.Event) -> Unit) 
           state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
             state.petListFilterState.filters
           )
-        CircuitContent(screen, { event -> eventSink(HomeScreen.Event.ChildNav(event)) })
+        CircuitContent(screen, { event -> eventSink(ChildNav(event)) })
       }
     }
   }
@@ -259,9 +252,7 @@ private fun GenderFilterOption(
         RadioButton(
           selected = state.filters.gender == gender,
           onClick = {
-            eventSink(
-              HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender))
-            )
+            eventSink(PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender)))
           }
         )
       }
@@ -281,11 +272,7 @@ private fun SizeFilterOption(
         Text(text = size.name)
         RadioButton(
           selected = state.filters.size == size,
-          onClick = {
-            eventSink(
-              HomeScreen.Event.PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))
-            )
-          }
+          onClick = { eventSink(PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))) }
         )
       }
     }

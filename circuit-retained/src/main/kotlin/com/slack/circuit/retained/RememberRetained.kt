@@ -63,7 +63,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
  * ```kotlin
  * @Composable
  * override fun present(events: Flow<CounterEvent>): CounterState {
- *   var count by rememberRetained { mutableStateOf(0) }
+ *   var count by rememberSaveable { mutableStateOf(0) }
  *
  *   EventCollector(events) { event ->
  *     when (event) {

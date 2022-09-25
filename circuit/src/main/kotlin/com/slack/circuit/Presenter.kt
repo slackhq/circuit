@@ -35,8 +35,7 @@ interface Presenter<UiState : CircuitUiState> {
    * used to automatically connect this with a corresponding [Ui] to render the state returned by
    * this function.
    *
-   * When handling events, embed a `eventSink: (Event) -> Unit` property in
-   * the state as needed.
+   * When handling events, embed a `eventSink: (Event) -> Unit` property in the state as needed.
    *
    * ```kotlin
    * data class State(

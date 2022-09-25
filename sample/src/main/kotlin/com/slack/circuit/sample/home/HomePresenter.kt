@@ -40,7 +40,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -78,7 +77,7 @@ object HomeScreen : Screen {
   data class State(
     val homeNavState: HomeNavScreen.State,
     val petListFilterState: PetListFilterScreen.State,
-    val eventSink: @DisallowComposableCalls (Event) -> Unit,
+    val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {

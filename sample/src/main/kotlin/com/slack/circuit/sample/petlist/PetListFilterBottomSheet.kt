@@ -16,7 +16,6 @@
 package com.slack.circuit.sample.petlist
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +40,7 @@ object PetListFilterScreen : Screen {
   data class State(
     val filters: Filters,
     val showBottomSheet: Boolean,
-    val eventSink: @DisallowComposableCalls (Event) -> Unit,
+    val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {

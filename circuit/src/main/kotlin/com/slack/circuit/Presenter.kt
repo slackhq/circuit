@@ -35,13 +35,13 @@ interface Presenter<UiState : CircuitUiState> {
    * used to automatically connect this with a corresponding [Ui] to render the state returned by
    * this function.
    *
-   * When handling events, embed a `eventSink: @DisallowComposableCalls (Event) -> Unit` property in
+   * When handling events, embed a `eventSink: (Event) -> Unit` property in
    * the state as needed.
    *
    * ```kotlin
    * data class State(
    *   val favorites: List<Favorite>,
-   *   eventSink: @DisallowComposableCalls (Event) -> Unit
+   *   eventSink: (Event) -> Unit
    * ) : CircuitUiState
    *
    * class FavoritesPresenter(...) : Presenter<State, Event> {

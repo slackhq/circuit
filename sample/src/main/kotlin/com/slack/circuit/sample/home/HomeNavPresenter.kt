@@ -16,7 +16,6 @@
 package com.slack.circuit.sample.home
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +32,7 @@ object HomeNavScreen : Screen {
   data class State(
     val index: Int,
     val bottomNavItems: List<BottomNavItem>,
-    val eventSink: @DisallowComposableCalls (Event) -> Unit,
+    val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {

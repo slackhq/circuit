@@ -16,15 +16,10 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisallowComposableCalls
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
-import kotlinx.coroutines.flow.Flow
 
 /**
- * Represents a composable UI for the given [UiState] and [UiEvent]. Conventionally, this should
- * just be the return type of a ui function and a thin shim over a "real" render implementation.
+ * Represents a composable UI for the given [UiState]. Conventionally, this should just be the
+ * return type of a ui function and a thin shim over a "real" render implementation.
  *
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
@@ -33,11 +28,11 @@ import kotlinx.coroutines.flow.Flow
  *
  * Usage:
  * ```
- * internal fun tacoUi(): Ui<State, Event> = ui { state, eventSink ->
- *   Tacos(state, eventSink)
+ * internal fun tacoUi(): Ui<State> = ui { state ->
+ *   Tacos(state)
  * }
  *
- * @Composable private fun Tacos(state: State, eventSink: (Event) -> Unit = {}) {...}
+ * @Composable private fun Tacos(state: State) {...}
  *
  * @Preview
  * @Composable
@@ -48,8 +43,6 @@ import kotlinx.coroutines.flow.Flow
  * don't use dependency injection at all however, unless maybe getting assisted injections of things
  * like image loaders.
  *
- * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
- *
  * If a given [Presenter] only ever emits the same state, you can define a single value-less
  * `object` type for the state.
  *
@@ -57,8 +50,8 @@ import kotlinx.coroutines.flow.Flow
  *
  * @see ui
  */
-interface Ui<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
-  @Composable fun Render(state: UiState, eventSink: (UiEvent) -> Unit)
+interface Ui<UiState : CircuitUiState> {
+  @Composable fun Render(state: UiState)
 
   /**
    * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a
@@ -85,9 +78,9 @@ interface Ui<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
    * }
    *
    * private fun addFavoritesUi() =
-   *   ui<AddFavorites.State, AddFavorites.Event> { state, eventSink -> Favorites(state, eventSink) }
+   *   ui<AddFavorites.State> { state -> Favorites(state) }
    *
-   * @Composable private fun Favorites(state: State, eventSink: (Event) -> Unit = {}) {...}
+   * @Composable private fun Favorites(state: State) {...}
    * ```
    */
   fun interface Factory {
@@ -95,7 +88,7 @@ interface Ui<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
   }
 }
 
-data class ScreenUi(val ui: Ui<*, *>)
+data class ScreenUi(val ui: Ui<*>)
 
 /**
  * Due to this bug in Studio, we can't write lambda impls of [Ui] directly. This works around it by
@@ -106,23 +99,13 @@ data class ScreenUi(val ui: Ui<*, *>)
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState : CircuitUiState, UiEvent : CircuitUiEvent> ui(
-  crossinline body: @Composable (state: UiState, eventSink: (UiEvent) -> Unit) -> Unit
-): Ui<UiState, UiEvent> {
-  return object : Ui<UiState, UiEvent> {
+inline fun <UiState : CircuitUiState> ui(
+  crossinline body: @Composable (state: UiState) -> Unit
+): Ui<UiState> {
+  return object : Ui<UiState> {
     @Composable
-    override fun Render(state: UiState, eventSink: (UiEvent) -> Unit) {
-      body(state, eventSink)
+    override fun Render(state: UiState) {
+      body(state)
     }
   }
-}
-
-@Suppress("NOTHING_TO_INLINE")
-@Composable
-inline fun <E : CircuitUiEvent> EventCollector(
-  events: Flow<E>,
-  noinline eventCollector: @DisallowComposableCalls (event: E) -> Unit
-) {
-  val currentCollector by rememberUpdatedState(eventCollector)
-  LaunchedEffect(events) { events.collect { currentCollector(it) } }
 }

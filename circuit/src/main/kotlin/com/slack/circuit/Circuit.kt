@@ -68,7 +68,7 @@ class Circuit private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = builder.onUnavailableContent
 
-  fun presenter(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+  fun presenter(screen: Screen, navigator: Navigator): Presenter<*>? {
     return nextPresenter(null, screen, navigator)
   }
 
@@ -76,7 +76,7 @@ class Circuit private constructor(builder: Builder) {
     skipPast: Presenter.Factory?,
     screen: Screen,
     navigator: Navigator
-  ): Presenter<*, *>? {
+  ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
       val presenter = presenterFactories[i].create(screen, navigator)

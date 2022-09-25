@@ -57,7 +57,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
  * }
  * ```
  *
- * This second case will retain `state` across configuration changes _and_ survive process death.
+ * This second case will retain `count` across configuration changes _and_ survive process death.
  * However, it only works with primitives or `Parcelable` state types.
  *
  * ```kotlin

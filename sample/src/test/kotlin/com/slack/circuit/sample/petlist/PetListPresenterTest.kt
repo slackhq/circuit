@@ -28,7 +28,6 @@ import com.slack.circuit.sample.data.Photo
 import com.slack.circuit.sample.petdetail.PetDetailScreen
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.sample.test
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,9 +41,8 @@ class PetListPresenterTest {
   fun `present - emit loading state then no animals state`() = runTest {
     val repository = TestRepository(emptyList())
     val presenter = PetListPresenter(navigator, PetListScreen(), repository)
-    val events = MutableSharedFlow<PetListScreen.Event>()
 
-    presenter.test(events) {
+    presenter.test {
       assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
       assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
     }
@@ -54,28 +52,30 @@ class PetListPresenterTest {
   fun `present - emit loading state then list of animals`() = runTest {
     val repository = TestRepository(listOf(animal))
     val presenter = PetListPresenter(navigator, PetListScreen(), repository)
-    val events = MutableSharedFlow<PetListScreen.Event>()
 
-    presenter.test(events) {
+    presenter.test {
       assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
 
       val animals = listOf(animal).map { it.toPetListAnimal() }
-      assertThat(PetListScreen.State.Success(animals)).isEqualTo(awaitItem())
+      val state = awaitItem()
+      check(state is PetListScreen.State.Success)
+      assertThat(state.animals).isEqualTo(animals)
     }
   }
 
   @Test
   fun `present - navigate to pet details screen`() = runTest {
-    val repository = TestRepository(emptyList())
+    val repository = TestRepository(listOf(animal))
     val presenter = PetListPresenter(navigator, PetListScreen(), repository)
-    val events = MutableSharedFlow<PetListScreen.Event>()
 
-    presenter.test(events) {
+    presenter.test {
       assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
-      assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
+      val successState = awaitItem()
+      check(successState is PetListScreen.State.Success)
+      assertThat(successState.animals).isEqualTo(listOf(animal).map { it.toPetListAnimal() })
 
       val clickAnimal = PetListScreen.Event.ClickAnimal(123L, "key")
-      events.emit(clickAnimal)
+      successState.eventSink(clickAnimal)
       assertThat(navigator.awaitNextScreen())
         .isEqualTo(PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey))
     }

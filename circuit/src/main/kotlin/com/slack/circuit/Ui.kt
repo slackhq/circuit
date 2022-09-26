@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 
 /**
  * Represents a composable UI for the given [UiState]. Conventionally, this should just be the
- * return type of a ui function and a thin shim over a "real" render implementation.
+ * return type of a ui function and a thin shim over a "real" implementation.
  *
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
@@ -51,7 +51,7 @@ import androidx.compose.runtime.Composable
  * @see ui
  */
 interface Ui<UiState : CircuitUiState> {
-  @Composable fun Render(state: UiState)
+  @Composable fun Content(state: UiState)
 
   /**
    * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a
@@ -104,7 +104,7 @@ inline fun <UiState : CircuitUiState> ui(
 ): Ui<UiState> {
   return object : Ui<UiState> {
     @Composable
-    override fun Render(state: UiState) {
+    override fun Content(state: UiState) {
       body(state)
     }
   }

@@ -43,11 +43,9 @@ object HomeNavScreen : Screen {
 @Composable
 fun homeNavPresenter(): HomeNavScreen.State {
   var index by remember { mutableStateOf(0) }
-  return remember {
-    HomeNavScreen.State(index = index, bottomNavItems = HOME_NAV_ITEMS) { event ->
-      when (event) {
-        is HomeNavScreen.Event.HomeNavEvent -> index = event.index
-      }
+  return HomeNavScreen.State(index = index, bottomNavItems = HOME_NAV_ITEMS) { event ->
+    when (event) {
+      is HomeNavScreen.Event.HomeNavEvent -> index = event.index
     }
   }
 }

@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.CircuitUiEvent
+import com.slack.circuit.CircuitUiResult
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -86,6 +87,7 @@ data class PetListAnimal(
   val gender: String,
   val size: String,
   val age: String,
+  val favorite: Boolean = false
 )
 
 enum class Gender {
@@ -116,8 +118,14 @@ data class PetListScreen(val filters: Filters = Filters()) : Screen {
   }
 
   sealed interface Event : CircuitUiEvent {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+    data class ClickAnimal(
+      val petId: Long,
+      val favorite: Boolean,
+      val photoUrlMemoryCacheKey: String?,
+    ) : Event
   }
+
+  data class ToggleFavoritePet(val id: Long) : CircuitUiResult
 }
 
 @ContributesMultibinding(AppScope::class)
@@ -156,7 +164,8 @@ constructor(
           PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
             when (event) {
               is PetListScreen.Event.ClickAnimal -> {
-                navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+                navigator.goTo(PetDetailScreen(event.petId, event.favorite, event.photoUrlMemoryCacheKey))
+
               }
             }
           }
@@ -268,7 +277,7 @@ private fun PetListGrid(
     ) { index ->
       val animal = animals[index]
       PetListGridItem(animal) {
-        eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+        eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.favorite, animal.imageUrl))
       }
     }
   }

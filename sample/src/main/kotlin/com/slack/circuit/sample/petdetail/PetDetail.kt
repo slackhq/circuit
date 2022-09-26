@@ -33,6 +33,10 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -41,8 +45,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -56,6 +62,7 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -69,6 +76,7 @@ import com.slack.circuit.sample.di.AppScope
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
+import com.slack.circuit.sample.petlist.PetListScreen
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -79,25 +87,39 @@ import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
+data class PetDetailScreen(
+  val petId: Long,
+  val favorite: Boolean,
+  val photoUrlMemoryCacheKey: String?
+) : Screen {
   sealed interface State : CircuitUiState {
     object Loading : State
-
     object UnknownAnimal : State
 
     data class Success(
+      val favorite: Boolean,
       val url: String,
       val photoUrls: List<String>,
       val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
       val tags: List<String>,
+      val eventSink: (Event) -> Unit,
     ) : State
+  }
+
+  sealed interface Event : CircuitUiEvent {
+    object ToggleFavorite : Event
   }
 }
 
-internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetailScreen.State {
+internal fun Animal.toPetDetailState(
+  favorite: Boolean,
+  photoUrlMemoryCacheKey: String?,
+  eventSink: (PetDetailScreen.Event) -> Unit
+): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
+    favorite = favorite,
     url = url,
     photoUrls = photos.map { it.large },
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
@@ -112,7 +134,8 @@ internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetail
         gender,
         size,
         status
-      )
+      ),
+    eventSink = eventSink
   )
 }
 
@@ -125,7 +148,7 @@ constructor(
 ) : Presenter.Factory {
   override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
     return when (screen) {
-      is PetDetailScreen -> petDetailPresenterFactory.create(screen)
+      is PetDetailScreen -> petDetailPresenterFactory.create(navigator, screen)
       is PetPhotoCarouselScreen -> petPhotoCarousel.create(screen)
       else -> null
     }
@@ -135,27 +158,34 @@ constructor(
 class PetDetailPresenter
 @AssistedInject
 constructor(
+  @Assisted private val navigator: Navigator,
   @Assisted private val screen: PetDetailScreen,
   private val petRepository: PetRepository,
 ) : Presenter<PetDetailScreen.State> {
   @Composable
   override fun present(): PetDetailScreen.State {
-    val state by
-      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
-        val animal = petRepository.getAnimal(screen.petId)
-        value =
-          when (animal) {
-            null -> PetDetailScreen.State.UnknownAnimal
-            else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
-          }
+    val animalState by
+      produceRetainedState<Animal?>(null) {
+        value = petRepository.getAnimal(screen.petId)
       }
 
-    return state
+    return remember(animalState) {
+      when (val animal = animalState) {
+        null -> PetDetailScreen.State.UnknownAnimal
+        else -> animal.toPetDetailState(screen.favorite, screen.photoUrlMemoryCacheKey) { event ->
+          when (event) {
+            PetDetailScreen.Event.ToggleFavorite -> navigator.pop(
+              PetListScreen.ToggleFavoritePet(screen.petId)
+            )
+          }
+        }
+      }
+    }
   }
 
   @AssistedFactory
   interface Factory {
-    fun create(screen: PetDetailScreen): PetDetailPresenter
+    fun create(navigator: Navigator, screen: PetDetailScreen): PetDetailPresenter
   }
 }
 
@@ -213,10 +243,24 @@ internal fun PetDetail(state: PetDetailScreen.State) {
           }
         } else {
           LazyColumn(
-            modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+            modifier = Modifier
+              .padding(padding)
+              .testTag(ANIMAL_CONTAINER_TAG),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
           ) {
+            item {
+              IconButton(
+//            modifier = Modifier.align(Alignment.TopEnd),
+            onClick = { state.eventSink(PetDetailScreen.Event.ToggleFavorite) }
+              ) {
+                Icon(
+                  imageVector = Icons.Default.Star,
+                  tint = if (state.favorite) Color.Yellow else Color.Gray,
+                  contentDescription = "Favorite this animal",
+                )
+              }
+            }
             item {
               CircuitContent(
                 PetPhotoCarouselScreen(

@@ -33,8 +33,8 @@ class PetDetailPresenterTest {
     val presenter = PetDetailPresenter(screen, repository)
 
     presenter.test {
-      assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
-      assertThat(PetDetailScreen.State.UnknownAnimal).isEqualTo(awaitItem())
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.UnknownAnimal)
     }
   }
 
@@ -49,7 +49,7 @@ class PetDetailPresenterTest {
       assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
 
       val success = animal.toPetDetailState(animal.photos.first().small)
-      assertThat(success).isEqualTo(awaitItem())
+      assertThat(awaitItem()).isEqualTo(success)
     }
   }
 }

@@ -76,7 +76,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -122,9 +121,9 @@ class PetDetailScreenPresenterFactory
 @Inject
 constructor(
   private val petDetailPresenterFactory: PetDetailPresenter.Factory,
-  private val petPhotoCarousel: PetPhotoCarouselPresenter.Factory
+  private val petPhotoCarousel: PetPhotoCarouselPresenter.Factory,
 ) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
     return when (screen) {
       is PetDetailScreen -> petDetailPresenterFactory.create(screen)
       is PetPhotoCarouselScreen -> petPhotoCarousel.create(screen)
@@ -137,10 +136,10 @@ class PetDetailPresenter
 @AssistedInject
 constructor(
   @Assisted private val screen: PetDetailScreen,
-  private val petRepository: PetRepository
-) : Presenter<PetDetailScreen.State, Nothing> {
+  private val petRepository: PetRepository,
+) : Presenter<PetDetailScreen.State> {
   @Composable
-  override fun present(events: Flow<Nothing>): PetDetailScreen.State {
+  override fun present(): PetDetailScreen.State {
     val state by
       produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
@@ -168,7 +167,7 @@ class PetDetailUiFactory @Inject constructor() : Ui.Factory {
   }
 }
 
-private fun petDetailUi() = ui<PetDetailScreen.State, Nothing> { state, _ -> PetDetail(state) }
+private fun petDetailUi() = ui<PetDetailScreen.State> { state -> PetDetail(state) }
 
 internal object PetDetailTestConstants {
   const val ANIMAL_CONTAINER_TAG = "animal_container"

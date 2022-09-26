@@ -16,37 +16,39 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
- * Presents a given [UiState] and handles its [events][UiEvent].
+ * Presents a given [UiState].
  *
- * If a given [Ui] never emits events, then you can use [Nothing] for the [UiEvent] type instead.
+ * Events (if any) should be a part of the [UiState] itself as an `eventSink: (Event) -> Unit`
+ * property.
  *
  * If a given [Presenter] only ever emits the same state, you can define a single value-less
  * `object` type for the state.
  *
  * @see present for more thorough documentation.
  */
-interface Presenter<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
+interface Presenter<UiState : CircuitUiState> {
   /**
-   * The primary [Composable] entry point to present a [UiState] and handle its [events]. In
-   * production, a [Navigator] is used to automatically connect this with a corresponding [Ui] to
-   * render the state returned by this function.
+   * The primary [Composable] entry point to present a [UiState]. In production, a [Navigator] is
+   * used to automatically connect this with a corresponding [Ui] to render the state returned by
+   * this function.
    *
-   * When collecting [events], use [EventCollector] to collect them.
+   * When handling events, embed a `eventSink: (Event) -> Unit` property in the state as needed.
    *
    * ```kotlin
+   * data class State(
+   *   val favorites: List<Favorite>,
+   *   eventSink: (Event) -> Unit
+   * ) : CircuitUiState
+   *
    * class FavoritesPresenter(...) : Presenter<State, Event> {
-   *   @Composable override fun present(events: Flow<Event>): State {
-   *     var state by remember { mutableStateOf(initialState) }
+   *   @Composable override fun present(): State {
    *     // ...
-   *     EventCollector(events) { event ->
+   *     return State(...) { event ->
    *       // Handle UI events here
    *     }
-   *
-   *     return state
    *   }
    * }
    * ```
@@ -62,8 +64,8 @@ interface Presenter<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
    *   @Assisted private val screen: FavoritesScreen,
    *   @Assisted private val navigator: Navigator,
    *   private val favoritesRepository: FavoritesRepository
-   * ) : Presenter<State, Event> {
-   *   @Composable override fun present(events: Flow<Event>): State {
+   * ) : Presenter<State> {
+   *   @Composable override fun present(): State {
    *     // ...
    *   }
    *
@@ -85,19 +87,22 @@ interface Presenter<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
    *   val favorites = listOf("Moose", "Reeses", "Lola")
    *   val repository = FakeFavoritesRepository(favorites)
    *   val presenter = FavoritesPresenter(repository)
-   *   val events = MutableSharedFlow<Event>()
    *
-   *   moleculeFlow(Immediate) { presenter.present(events) }
+   *   moleculeFlow(Immediate) { presenter.present() }
    *     .test {
    *       assertThat(awaitItem()).isEqualTo(State.Loading)
-   *       assertThat(awaitItem()).isEqualTo(State.Success(favorites))
-   *       events.emit(Event.Refresh)
+   *       val successState = awaitItem()
+   *       assertThat(successState).isEqualTo(State.Success(favorites))
+   *       successState.eventSink(Event.Refresh)
    *       assertThat(awaitItem()).isEqualTo(State.Success(favorites))
    *     }
    * }
    * ```
+   *
+   * Note that Circuit's test artifact has a `Presenter.test()` helper extension function for the
+   * above case.
    */
-  @Composable fun present(events: Flow<UiEvent>): UiState
+  @Composable fun present(): UiState
 
   /**
    * A factory that produces [presenters][Presenter] for a given [Screen]. [Circuit] instances use
@@ -157,6 +162,6 @@ interface Presenter<UiState : CircuitUiState, UiEvent : CircuitUiEvent> {
      * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it
      * cannot handle the given [screen].
      */
-    fun create(screen: Screen, navigator: Navigator): Presenter<*, *>?
+    fun create(screen: Screen, navigator: Navigator): Presenter<*>?
   }
 }

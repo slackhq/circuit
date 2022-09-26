@@ -36,16 +36,16 @@ object HomeNavScreen : Screen {
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    data class HomeNavEvent(val index: Int) : Event
+    data class ClickNavItem(val index: Int) : Event
   }
 }
 
 @Composable
-fun homeNavPresenter(): HomeNavScreen.State {
+fun HomeNavPresenter(): HomeNavScreen.State {
   var index by remember { mutableStateOf(0) }
   return HomeNavScreen.State(index = index, bottomNavItems = HOME_NAV_ITEMS) { event ->
     when (event) {
-      is HomeNavScreen.Event.HomeNavEvent -> index = event.index
+      is HomeNavScreen.Event.ClickNavItem -> index = event.index
     }
   }
 }

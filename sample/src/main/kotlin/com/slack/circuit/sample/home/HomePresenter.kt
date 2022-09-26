@@ -107,7 +107,7 @@ constructor(
 
   @Composable
   override fun present(): HomeScreen.State {
-    val homeNavState = homeNavPresenter()
+    val homeNavState = HomeNavPresenter()
     val petListFilterState = petListFilterPresenter.present()
     return HomeScreen.State(homeNavState, petListFilterState) { event ->
       when (event) {
@@ -197,7 +197,7 @@ fun HomeContent(state: HomeScreen.State) {
       bottomBar = {
         StarTheme(useDarkTheme = true) {
           BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-            state.eventSink(HomeEvent(HomeNavScreen.Event.HomeNavEvent(index)))
+            state.eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
           }
         }
       }

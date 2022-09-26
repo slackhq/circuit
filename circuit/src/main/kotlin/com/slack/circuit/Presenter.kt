@@ -97,6 +97,9 @@ interface Presenter<UiState : CircuitUiState> {
    *     }
    * }
    * ```
+   *
+   * Note that Circuit's test artifact has a `Presenter.test()` helper extension function for the
+   * above case.
    */
   @Composable fun present(): UiState
 

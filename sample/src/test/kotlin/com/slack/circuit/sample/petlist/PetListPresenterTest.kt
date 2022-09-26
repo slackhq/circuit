@@ -43,8 +43,8 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, PetListScreen(), repository)
 
     presenter.test {
-      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
-      assertThat(PetListScreen.State.NoAnimals).isEqualTo(awaitItem())
+      assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
+      assertThat(awaitItem()).isEqualTo(PetListScreen.State.NoAnimals)
     }
   }
 
@@ -54,7 +54,7 @@ class PetListPresenterTest {
     val presenter = PetListPresenter(navigator, PetListScreen(), repository)
 
     presenter.test {
-      assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())
+      assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
 
       val animals = listOf(animal).map { it.toPetListAnimal() }
       val state = awaitItem()

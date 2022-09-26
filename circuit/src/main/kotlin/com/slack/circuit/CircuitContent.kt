@@ -73,11 +73,11 @@ fun BasicNavigableCircuitContent(
           val routeName = record.route
           val screen = record.screen
 
-          val currentRender: (@Composable (SaveableBackStack.Record) -> Unit) = {
+          val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
             CircuitContent(screen, navigator, circuit) { unavailableRoute(routeName) }
           }
 
-          val currentRouteContent by rememberUpdatedState(currentRender)
+          val currentRouteContent by rememberUpdatedState(currentContent)
           val currentRecord by rememberUpdatedState(record)
           remember { movableContentOf { currentRouteContent(currentRecord) } }
         }
@@ -141,7 +141,7 @@ private fun CircuitContent(
   val presenter = circuit.presenter(screen, navigator) as Presenter<CircuitUiState>?
 
   if (screenUi != null && presenter != null) {
-    @Suppress("UNCHECKED_CAST") CircuitRender(presenter, screenUi.ui as Ui<CircuitUiState>)
+    @Suppress("UNCHECKED_CAST") (CircuitContent(presenter, screenUi.ui as Ui<CircuitUiState>))
   } else if (unavailableContent != null) {
     unavailableContent(screen)
   } else {
@@ -150,10 +150,10 @@ private fun CircuitContent(
 }
 
 @Composable
-private fun <UiState : CircuitUiState> CircuitRender(
+private fun <UiState : CircuitUiState> CircuitContent(
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
 ) {
   val state = presenter.present()
-  ui.Render(state)
+  ui.Content(state)
 }

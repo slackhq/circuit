@@ -180,9 +180,11 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
 
             // We animate the scaleX + scaleY, between 85% and 100%
-            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also {
-              scale,
-              ->
+            lerp(
+              start = 0.85f,
+              stop = 1f,
+              fraction = 1f - pageOffset.coerceIn(0f, 1f)
+            ).also { scale ->
               scaleX = scale
               scaleY = scale
             }

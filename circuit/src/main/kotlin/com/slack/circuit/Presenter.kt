@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 /**
  * Presents a given [UiState].
  *
- * Events (if any) should part of the [UiState] itself as an `eventSink: (Event) -> Unit` property.
+ * Events (if any) should be a part of the [UiState] itself as an `eventSink: (Event) -> Unit` property.
  *
  * If a given [Presenter] only ever emits the same state, you can define a single value-less
  * `object` type for the state.

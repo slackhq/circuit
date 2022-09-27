@@ -15,11 +15,8 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
 
@@ -28,14 +25,14 @@ import com.slack.circuit.backstack.SaveableBackStack
 interface Navigator {
 //  val result: State<Parcelable?>
   fun goTo(screen: Screen)
-  fun pop(result: CircuitUiResult? = null): Screen?
-  fun <T : CircuitUiResult> maybeGetResult(): T?
+  fun pop(result: Any? = null): Screen?
+  fun <T : Any> maybeGetResult(): T?
 
   object NoOp : Navigator {
 //    override val result: State<Parcelable?> = mutableStateOf(null)
     override fun goTo(screen: Screen) = Unit
-    override fun pop(result: CircuitUiResult?): Screen? = null
-    override fun <T : CircuitUiResult> maybeGetResult(): T? = null
+    override fun pop(result: Any?): Screen? = null
+    override fun <T : Any> maybeGetResult(): T? = null
   }
 }
 
@@ -53,7 +50,7 @@ fun Navigator.onNavEvent(event: NavEvent) {
 /** A sealed navigation interface intended to be used when making a navigation call back. */
 sealed interface NavEvent : CircuitUiEvent
 
-internal data class PopNavEvent(val result: CircuitUiResult? = null) : NavEvent
+internal data class PopNavEvent(val result: Any? = null) : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
 
@@ -74,13 +71,13 @@ private class NavigatorImpl(
   private val backstack: SaveableBackStack,
   private val onRootPop: (() -> Unit)?,
 ) : Navigator {
-  private var _results: CircuitUiResult? = null
+  private var _results: Any? = null
 
   override fun goTo(screen: Screen) {
     backstack.push(screen)
   }
 
-  override fun pop(result: CircuitUiResult?): Screen? {
+  override fun pop(result: Any?): Screen? {
     // TODO do I always wants to overwrite this here??
     // TODO this won't survive a config change
     _results = result
@@ -92,7 +89,7 @@ private class NavigatorImpl(
     return null
   }
 
-  override fun <T : CircuitUiResult> maybeGetResult(): T? {
+  override fun <T : Any> maybeGetResult(): T? {
     if (_results == null) return null
 
     @Suppress("UNCHECKED_CAST")

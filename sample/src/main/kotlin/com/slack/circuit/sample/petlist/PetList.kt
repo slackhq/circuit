@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiResult
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -109,7 +108,10 @@ enum class Size {
 data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
-data class PetListScreen(val filters: Filters = Filters()) : Screen {
+data class PetListScreen(
+  val filters: Filters = Filters(),
+  val result: ToggleFavoritePet?
+) : Screen {
   sealed interface State : CircuitUiState {
     object Loading : State
     object NoAnimals : State
@@ -127,7 +129,8 @@ data class PetListScreen(val filters: Filters = Filters()) : Screen {
     ) : Event
   }
 
-  data class ToggleFavoritePet(val id: Long) : CircuitUiResult
+  @Parcelize
+  data class ToggleFavoritePet(val id: Long) : Parcelable
 }
 
 @ContributesMultibinding(AppScope::class)
@@ -151,31 +154,37 @@ constructor(
 ) : Presenter<PetListScreen.State> {
   @Composable
   override fun present(): PetListScreen.State {
-    val result = navigator.maybeGetResult<PetListScreen.ToggleFavoritePet>()
-
     val remoteAnimals by produceRetainedState<List<PetListAnimal>?>(null) {
       val animals = petRepo.getAnimals()
       value = animals.map { it.toPetListAnimal() }
     }
 
-    val animalState = remember(result, remoteAnimals) {
-      remoteAnimals?.map { animal ->
-        animal.run {
-          copy(favorite = if (id == result?.id) !favorite else favorite)
+    val animalState = remember(screen, remoteAnimals) {
+      remoteAnimals
+        ?.filter(::shouldKeep)
+        ?.map { animal ->
+          animal.run {
+            copy(favorite = if (id == screen.result?.id) !favorite else favorite)
+          }
         }
-      }
     }
 
-    return remember(screen, animalState) {
-      val animals = animalState
+    return remember(animalState) {
       when {
-        animals == null -> PetListScreen.State.Loading
-        animals.isEmpty() -> PetListScreen.State.NoAnimals
+        animalState == null -> PetListScreen.State.Loading
+        animalState.isEmpty() -> PetListScreen.State.NoAnimals
         else ->
-          PetListScreen.State.Success(animals = animals) { event ->
+//          PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
+          PetListScreen.State.Success(animals = animalState) { event ->
             when (event) {
               is PetListScreen.Event.ClickAnimal -> {
-                navigator.goTo(PetDetailScreen(event.petId, event.favorite, event.photoUrlMemoryCacheKey))
+                navigator.goTo(
+                  PetDetailScreen(
+                    event.petId,
+                    event.favorite,
+                    event.photoUrlMemoryCacheKey
+                  )
+                )
 
               }
             }

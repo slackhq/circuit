@@ -46,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitKontent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.NavEvent
@@ -211,8 +210,7 @@ fun HomeContent(state: HomeScreen.State) {
           state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
             state.petListFilterState.filters
           )
-//        CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
-        CircuitKontent(screen)
+        CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
       }
     }
   }

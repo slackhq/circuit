@@ -41,6 +41,3 @@ import androidx.compose.runtime.Immutable
  * **Circuit event types should be truly immutable types.**
  */
 @Immutable interface CircuitUiEvent
-
-// TODO add documentation!
-@Immutable interface CircuitUiResult

@@ -22,10 +22,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
@@ -100,15 +98,6 @@ fun BasicNavigableCircuitContent(
 }
 
 @Composable
-fun CircuitKontent(
-  screen: Screen,
-  circuit: Circuit = LocalCircuitOwner.current,
-  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuit.onUnavailableContent,
-) {
-  CircuitContent(screen, LocalNavigatorOwner.current!!, circuit, unavailableContent)
-}
-
-@Composable
 fun CircuitContent(
   screen: Screen,
   circuit: Circuit = LocalCircuitOwner.current,
@@ -131,12 +120,12 @@ fun CircuitContent(
           onNavEvent(GoToNavEvent(screen))
         }
 
-        override fun pop(result: CircuitUiResult?): Screen? {
+        override fun pop(result: Any?): Screen? {
           onNavEvent(PopNavEvent(result))
           return null
         }
 
-        override fun <T : CircuitUiResult> maybeGetResult(): T? {
+        override fun <T : Any> maybeGetResult(): T? {
           Log.d("kier", "requesting result from anonymous navigator!")
           return null
         }

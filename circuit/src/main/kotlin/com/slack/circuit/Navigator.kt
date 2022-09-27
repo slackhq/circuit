@@ -15,21 +15,27 @@
  */
 package com.slack.circuit
 
+import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
 interface Navigator {
+//  val result: State<Parcelable?>
   fun goTo(screen: Screen)
-
-  fun pop(): Screen?
+  fun pop(result: CircuitUiResult? = null): Screen?
+  fun <T : CircuitUiResult> maybeGetResult(): T?
 
   object NoOp : Navigator {
-    override fun goTo(screen: Screen) {}
-    override fun pop(): Screen? = null
+//    override val result: State<Parcelable?> = mutableStateOf(null)
+    override fun goTo(screen: Screen) = Unit
+    override fun pop(result: CircuitUiResult?): Screen? = null
+    override fun <T : CircuitUiResult> maybeGetResult(): T? = null
   }
 }
 
@@ -40,14 +46,14 @@ interface Navigator {
 fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
-    PopNavEvent -> pop()
+    is PopNavEvent -> pop(event.result)
   }
 }
 
 /** A sealed navigation interface intended to be used when making a navigation call back. */
 sealed interface NavEvent : CircuitUiEvent
 
-internal object PopNavEvent : NavEvent
+internal data class PopNavEvent(val result: CircuitUiResult? = null) : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
 
@@ -68,17 +74,29 @@ private class NavigatorImpl(
   private val backstack: SaveableBackStack,
   private val onRootPop: (() -> Unit)?,
 ) : Navigator {
+  private var _results: CircuitUiResult? = null
 
   override fun goTo(screen: Screen) {
     backstack.push(screen)
   }
 
-  override fun pop(): Screen? {
+  override fun pop(result: CircuitUiResult?): Screen? {
+    // TODO do I always wants to overwrite this here??
+    // TODO this won't survive a config change
+    _results = result
+
     backstack.pop()?.screen?.let {
       return it
     }
     onRootPop?.invoke()
     return null
+  }
+
+  override fun <T : CircuitUiResult> maybeGetResult(): T? {
+    if (_results == null) return null
+
+    @Suppress("UNCHECKED_CAST")
+    return _results as T
   }
 
   override fun equals(other: Any?): Boolean {

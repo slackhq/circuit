@@ -17,6 +17,7 @@ package com.slack.circuit.sample.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -149,11 +151,20 @@ constructor(
 ) : Presenter<PetListScreen.State> {
   @Composable
   override fun present(): PetListScreen.State {
-    val animalState by
-      produceRetainedState<List<PetListAnimal>?>(null) {
-        val animals = petRepo.getAnimals()
-        value = animals.map { it.toPetListAnimal() }
+    val result = navigator.maybeGetResult<PetListScreen.ToggleFavoritePet>()
+
+    val remoteAnimals by produceRetainedState<List<PetListAnimal>?>(null) {
+      val animals = petRepo.getAnimals()
+      value = animals.map { it.toPetListAnimal() }
+    }
+
+    val animalState = remember(result, remoteAnimals) {
+      remoteAnimals?.map { animal ->
+        animal.run {
+          copy(favorite = if (id == result?.id) !favorite else favorite)
+        }
       }
+    }
 
     return remember(screen, animalState) {
       val animals = animalState
@@ -161,7 +172,7 @@ constructor(
         animals == null -> PetListScreen.State.Loading
         animals.isEmpty() -> PetListScreen.State.NoAnimals
         else ->
-          PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
+          PetListScreen.State.Success(animals = animals) { event ->
             when (event) {
               is PetListScreen.Event.ClickAnimal -> {
                 navigator.goTo(PetDetailScreen(event.petId, event.favorite, event.photoUrlMemoryCacheKey))
@@ -249,7 +260,9 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
           animals = state.animals,
           eventSink = state.eventSink
         )
@@ -285,8 +298,11 @@ private fun PetListGrid(
 
 @Composable
 private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
+  val modifier = if (animal.favorite) Modifier.border(2.dp, Color.Red) else Modifier
   ElevatedCard(
-    modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
+    modifier = modifier
+      .fillMaxWidth()
+      .testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(
@@ -297,7 +313,10 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
-        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+        modifier = Modifier
+          .fillMaxWidth()
+          .aspectRatio(1f)
+          .testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(animal.imageUrl)

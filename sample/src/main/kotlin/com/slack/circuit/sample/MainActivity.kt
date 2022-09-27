@@ -17,14 +17,19 @@ package com.slack.circuit.sample
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.Circuit
 import com.slack.circuit.CircuitProvider
+import com.slack.circuit.LocalNavigatorOwner
 import com.slack.circuit.NavigableCircuitContent
+import com.slack.circuit.Navigator
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
@@ -53,7 +58,13 @@ constructor(
           val backstack = rememberSaveableBackStack { push(HomeScreen) }
           val navigator =
             rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
-          CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
+
+          CircuitProvider(circuit) {
+            CompositionLocalProvider(LocalNavigatorOwner provides navigator) {
+              NavigableCircuitContent(navigator, backstack)
+            }
+          }
+          Log.d("kier", "setContent")
         }
       }
     }

@@ -25,9 +25,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 /**
  * Remember the value produced by [init].
  *
- * It behaves similarly to [remember], but the stored value will survive the activity or process
- * recreation using the saved instance state mechanism (for example it happens when the screen is
- * rotated in the Android application).
+ * It behaves similarly to [remember], but the stored value will survive configuration changes, such
+ * as a screen rotation.
  *
  * You can use it with a value stored inside [androidx.compose.runtime.mutableStateOf].
  *
@@ -35,6 +34,47 @@ import androidx.compose.runtime.saveable.rememberSaveable
  * should take care to ensure that the state computed by [init] does not capture anything that is
  * not save to persist across reconfiguration, such as Navigators. The same caveats of
  * [rememberSaveable] also still apply (i.e. do not retain Android Contexts, Views, etc).
+ *
+ * However, it does not participate in saved instance state either, so care should be taken to
+ * choose the right retention mechanism for your use case. Consider the below two examples.
+ *
+ * The first case will retain `state` across configuration changes but will _not_ survive process
+ * death.
+ *
+ * ```kotlin
+ * @Composable
+ * override fun present(events: Flow<CounterEvent>): CounterState {
+ *   var state by rememberRetained { mutableStateOf(CounterState(0)) }
+ *
+ *   EventCollector(events) { event ->
+ *     when (event) {
+ *       is CounterEvent.Increment -> state = state.copy(count = state.count + 1)
+ *       is CounterEvent.Decrement -> state = state.copy(count = state.count - 1)
+ *     }
+ *   }
+ *
+ *   return state
+ * }
+ * ```
+ *
+ * This second case will retain `count` across configuration changes _and_ survive process death.
+ * However, it only works with primitives or `Parcelable` state types.
+ *
+ * ```kotlin
+ * @Composable
+ * override fun present(events: Flow<CounterEvent>): CounterState {
+ *   var count by rememberSaveable { mutableStateOf(0) }
+ *
+ *   EventCollector(events) { event ->
+ *     when (event) {
+ *       is CounterEvent.Increment -> state = count++
+ *       is CounterEvent.Decrement -> state = count--
+ *     }
+ *   }
+ *
+ *   return CounterState(count)
+ * }
+ * ```
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  * reset and [init] to be rerun

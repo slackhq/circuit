@@ -26,8 +26,8 @@ import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.Coil
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.Circuit
-import com.slack.circuit.CircuitProvider
+import com.slack.circuit.CircuitCompositionLocals
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.sample.FakeImageLoader
 import com.slack.circuit.sample.R
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -86,8 +86,8 @@ class PetDetailTest {
       )
 
     var carouselScreen: PetPhotoCarouselScreen? = null
-    val circuit =
-      Circuit.Builder()
+    val circuitConfig =
+      CircuitConfig.Builder()
         .setOnUnavailableContentCallback { screen ->
           carouselScreen = screen as PetPhotoCarouselScreen
           PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
@@ -102,7 +102,7 @@ class PetDetailTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitProvider(circuit) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()

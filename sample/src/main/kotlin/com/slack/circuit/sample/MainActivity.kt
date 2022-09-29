@@ -22,8 +22,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.lifecycle.ViewModelProvider
-import com.slack.circuit.Circuit
-import com.slack.circuit.CircuitProvider
+import com.slack.circuit.CircuitCompositionLocals
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.NavigableCircuitContent
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.push
@@ -41,7 +41,7 @@ class MainActivity
 @Inject
 constructor(
   private val viewModelProviderFactory: ViewModelProvider.Factory,
-  private val circuit: Circuit
+  private val circuitConfig: CircuitConfig
 ) : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ constructor(
           val backstack = rememberSaveableBackStack { push(HomeScreen) }
           val navigator =
             rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
-          CircuitProvider(circuit) { NavigableCircuitContent(navigator, backstack) }
+          CircuitCompositionLocals(circuitConfig) { NavigableCircuitContent(navigator, backstack) }
         }
       }
     }

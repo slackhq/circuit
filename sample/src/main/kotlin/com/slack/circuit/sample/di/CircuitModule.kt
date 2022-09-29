@@ -16,7 +16,7 @@
 package com.slack.circuit.sample.di
 
 import androidx.lifecycle.ViewModel
-import com.slack.circuit.Circuit
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.Presenter
 import com.slack.circuit.Ui
 import com.slack.circuit.backstack.BackStackRecordLocalProviderViewModel
@@ -57,8 +57,8 @@ interface CircuitModule {
     fun provideCircuit(
       presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
       uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-    ): Circuit {
-      return Circuit.Builder()
+    ): CircuitConfig {
+      return CircuitConfig.Builder()
         .apply {
           for (factory in presenterFactories) {
             addPresenterFactory(factory)

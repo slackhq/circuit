@@ -28,7 +28,7 @@ import androidx.compose.runtime.Immutable
  * Construction of [CircuitConfig] instances is done using [the Builder] [Builder].
  *
  * ```kotlin
- * val circuit = CircuitConfig.Builder()
+ * val circuitConfig = CircuitConfig.Builder()
  *     .addUiFactory(AddFavoritesUiFactory()
  *     .addPresenterFactory(AddFavoritesPresenterFactory()
  *     .build()

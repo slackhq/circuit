@@ -16,19 +16,19 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ProvidedValue
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.key
 
-fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
-  @Composable fun providedValuesFor(record: R): ProvidedValues
+public fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
+  @Composable public fun providedValuesFor(record: R): ProvidedValues
 }
 
-fun interface ProvidedValues {
-  @Composable fun provideValues(): List<ProvidedValue<*>>
+public fun interface ProvidedValues {
+  @Composable public fun provideValues(): List<ProvidedValue<*>>
 }
 
-class CompositeProvidedValues(private val list: List<ProvidedValues>) : ProvidedValues {
+internal class CompositeProvidedValues(private val list: List<ProvidedValues>) : ProvidedValues {
   @Composable
   override fun provideValues(): List<ProvidedValue<*>> = buildList {
     list.forEach { addAll(key(it) { it.provideValues() }) }
@@ -36,7 +36,7 @@ class CompositeProvidedValues(private val list: List<ProvidedValues>) : Provided
 }
 
 @Composable
-fun <R : BackStack.Record> providedValuesForBackStack(
+public fun <R : BackStack.Record> providedValuesForBackStack(
   backStack: BackStack<R>,
   stackLocalProviders: List<BackStackRecordLocalProvider<R>> = emptyList(),
   includeDefaults: Boolean = true,
@@ -61,8 +61,5 @@ fun <R : BackStack.Record> providedValuesForBackStack(
     }
   }
 
-@Suppress("RemoveExplicitTypeArguments")
-val LocalBackStackRecordLocalProviders =
-  compositionLocalOf<List<BackStackRecordLocalProvider<BackStack.Record>>> {
-    listOf(SaveableStateRegistryBackStackRecordLocalProvider, ViewModelBackStackRecordLocalProvider)
-  }
+internal expect val LocalBackStackRecordLocalProviders:
+  ProvidableCompositionLocal<List<BackStackRecordLocalProvider<BackStack.Record>>>

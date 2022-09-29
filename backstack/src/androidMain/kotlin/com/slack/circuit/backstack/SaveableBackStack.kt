@@ -22,14 +22,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import java.util.UUID
 
 @Composable
-fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
+public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
   rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack().apply(init) }
 
-fun SaveableBackStack.push(route: String, args: Map<String, Any?> = emptyMap()) {
+public fun SaveableBackStack.push(route: String, args: Map<String, Any?> = emptyMap()) {
   push(SaveableBackStack.Record(route, args))
 }
 
-inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> Boolean) {
+public inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> Boolean) {
   while (topRecord?.let(predicate) == false) pop()
 }
 
@@ -37,7 +37,7 @@ inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> B
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
-class SaveableBackStack : BackStack<SaveableBackStack.Record> {
+public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   private val entryList = mutableStateListOf<Record>()
 
@@ -46,21 +46,21 @@ class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   override fun iterator(): Iterator<Record> = entryList.iterator()
 
-  val topRecord: Record?
+  public val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  fun push(record: Record) {
+  public fun push(record: Record) {
     entryList.add(0, record)
   }
 
   override fun pop(): Record? = entryList.removeFirstOrNull()
 
-  data class Record(
+  public data class Record(
     override val route: String,
     val args: Map<String, Any?> = emptyMap(),
     override val key: String = UUID.randomUUID().toString()
   ) : BackStack.Record {
-    companion object {
+    internal companion object {
       val Saver: Saver<Record, List<Any>> =
         Saver(
           save = { value ->
@@ -82,7 +82,7 @@ class SaveableBackStack : BackStack<SaveableBackStack.Record> {
     }
   }
 
-  companion object {
+  internal companion object {
     val Saver =
       Saver<SaveableBackStack, List<Any>>(
         save = { value -> value.entryList.map { with(Record.Saver) { save(it)!! } } },

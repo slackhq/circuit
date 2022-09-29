@@ -39,7 +39,8 @@ private fun Context.findActivity(): Activity? {
 }
 
 /** A [BackStackRecordLocalProvider] that provides [LocalViewModelStoreOwner] */
-object ViewModelBackStackRecordLocalProvider : BackStackRecordLocalProvider<BackStack.Record> {
+internal object ViewModelBackStackRecordLocalProvider :
+  BackStackRecordLocalProvider<BackStack.Record> {
   @Composable
   override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
     // Implementation note: providedValuesFor stays in the composition as long as the
@@ -81,12 +82,13 @@ object ViewModelBackStackRecordLocalProvider : BackStackRecordLocalProvider<Back
   }
 }
 
-class BackStackRecordLocalProviderViewModel : ViewModel() {
+public class BackStackRecordLocalProviderViewModel : ViewModel() {
   private val owners = mutableMapOf<String, ViewModelStore>()
 
-  fun viewModelStoreForKey(key: String): ViewModelStore = owners.getOrPut(key) { ViewModelStore() }
+  internal fun viewModelStoreForKey(key: String): ViewModelStore =
+    owners.getOrPut(key) { ViewModelStore() }
 
-  fun removeViewModelStoreOwnerForKey(key: String): ViewModelStore? = owners.remove(key)
+  internal fun removeViewModelStoreOwnerForKey(key: String): ViewModelStore? = owners.remove(key)
 
   override fun onCleared() {
     owners.forEach { (_, store) -> store.clear() }

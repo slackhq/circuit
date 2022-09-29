@@ -36,9 +36,9 @@ import androidx.compose.ui.text.TextStyle
 
 /** Presentation logic for currently visible routes of a navigable UI. */
 @Stable
-interface NavDecoration {
+public interface NavDecoration {
   @Composable
-  fun <T> DecoratedContent(
+  public fun <T> DecoratedContent(
     arg: T,
     backStackDepth: Int,
     modifier: Modifier,
@@ -47,14 +47,14 @@ interface NavDecoration {
 }
 
 /** Default values and common alternatives used by navigable composables. */
-object NavigatorDefaults {
+public object NavigatorDefaults {
 
   private const val FIVE_PERCENT = 0.05f
   private val SlightlyRight = { width: Int -> (width * FIVE_PERCENT).toInt() }
   private val SlightlyLeft = { width: Int -> 0 - (width * FIVE_PERCENT).toInt() }
 
   /** The default [NavDecoration] used in navigation. */
-  object DefaultDecoration : NavDecoration {
+  public object DefaultDecoration : NavDecoration {
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     override fun <T> DecoratedContent(
@@ -96,7 +96,7 @@ object NavigatorDefaults {
   }
 
   /** An empty [NavDecoration] that emits the content with no surrounding decoration or logic. */
-  object EmptyDecoration : NavDecoration {
+  public object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T> DecoratedContent(
       arg: T,
@@ -112,7 +112,7 @@ object NavigatorDefaults {
    * Bright ugly error text telling a developer they didn't provide a route that a [BackStack] asked
    * for.
    */
-  val UnavailableRoute: @Composable (String) -> Unit = { route ->
+  public val UnavailableRoute: @Composable (String) -> Unit = { route ->
     BasicText(
       "Route not available: $route",
       Modifier.background(Color.Red),

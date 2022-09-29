@@ -29,13 +29,16 @@ import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.LocalCanRetainCheckerOwner
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 
-/** Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. */
+/**
+ * Provides the given [circuitConfig] as a [CompositionLocal] to all composables within [content].
+ * Also adds any other composition locals that Circuit needs.
+ */
 @Composable
-fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
+fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Composable () -> Unit) {
   val retainedStateRegistry = viewModel<Continuity>()
   val activity = LocalContext.current.findActivity()
   CompositionLocalProvider(
-    LocalCircuitOwner provides circuit,
+    LocalCircuitOwner provides circuitConfig,
     LocalRetainedStateRegistry provides retainedStateRegistry,
     LocalCanRetainCheckerOwner provides { activity?.isChangingConfigurations == true },
   ) {
@@ -44,17 +47,17 @@ fun CircuitProvider(circuit: Circuit, content: @Composable () -> Unit) {
 }
 
 object LocalCircuitOwner {
-  private val LocalCircuit = staticCompositionLocalOf<Circuit?> { null }
+  private val LocalCircuitConfig = staticCompositionLocalOf<CircuitConfig?> { null }
 
   /**
    * Returns current composition local value for the owner or errors if one has not been provided.
    */
-  val current: Circuit
-    @Composable get() = LocalCircuit.current ?: error("No circuit available")
+  val current: CircuitConfig
+    @Composable get() = LocalCircuitConfig.current ?: error("No circuit available")
 
-  /** Associates a [LocalCircuit] key to a value in a call to [CompositionLocalProvider]. */
-  infix fun provides(circuit: Circuit): ProvidedValue<Circuit?> {
-    return LocalCircuit.provides(circuit)
+  /** Associates a [LocalCircuitConfig] key to a value in a call to [CompositionLocalProvider]. */
+  infix fun provides(circuitConfig: CircuitConfig): ProvidedValue<CircuitConfig?> {
+    return LocalCircuitConfig.provides(circuitConfig)
   }
 }
 

@@ -19,16 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 
 /**
- * Circuit adapts [presenter factories][Presenter.Factory] to their corresponding renderable [ui
- * factories][Ui.Factory] using [screens][Screen]. Create instances using [the Builder] [Builder]
+ * [CircuitConfig] adapts [presenter factories][Presenter.Factory] to their corresponding renderable
+ * [uifactories][Ui.Factory] using [screens][Screen]. Create instances using [the Builder] [Builder]
  * and create new [CircuitContent] with it to run presenter/UI pairings.
  *
  * ## Construction
  *
- * Construction of [Circuit] instances is done using [the Builder] [Builder].
+ * Construction of [CircuitConfig] instances is done using [the Builder] [Builder].
  *
  * ```kotlin
- * val circuit = Circuit.Builder()
+ * val circuit = CircuitConfig.Builder()
  *     .addUiFactory(AddFavoritesUiFactory()
  *     .addPresenterFactory(AddFavoritesPresenterFactory()
  *     .build()
@@ -39,8 +39,8 @@ import androidx.compose.runtime.Immutable
  * These instances can then be used with the composable [CircuitContent] functions to run
  * presenter/UI pairings for individual [screens][Screen].
  *
- * Circuit instances are consumed within these composable functions via the [CircuitProvider]
- * CompositionLocalProvider.
+ * Circuit instances are consumed within these composable functions via the
+ * [CircuitCompositionLocals] CompositionLocalProvider.
  *
  * ```kotlin
  * CircuitProvider(circuit) {
@@ -63,7 +63,7 @@ import androidx.compose.runtime.Immutable
  * @see NavigableCircuitContent
  */
 @Immutable
-class Circuit private constructor(builder: Builder) {
+class CircuitConfig private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = builder.onUnavailableContent
@@ -112,9 +112,9 @@ class Circuit private constructor(builder: Builder) {
     var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
       private set
 
-    internal constructor(circuit: Circuit) : this() {
-      uiFactories.addAll(circuit.uiFactories)
-      presenterFactories.addAll(circuit.presenterFactories)
+    internal constructor(circuitConfig: CircuitConfig) : this() {
+      uiFactories.addAll(circuitConfig.uiFactories)
+      presenterFactories.addAll(circuitConfig.presenterFactories)
     }
 
     fun addUiFactory(factory: Ui.Factory) = apply { uiFactories.add(factory) }
@@ -143,8 +143,8 @@ class Circuit private constructor(builder: Builder) {
       onUnavailableContent = callback
     }
 
-    fun build(): Circuit {
-      return Circuit(this)
+    fun build(): CircuitConfig {
+      return CircuitConfig(this)
     }
   }
 }

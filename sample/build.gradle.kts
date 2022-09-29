@@ -25,13 +25,26 @@ android {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
+  @Suppress("SuspiciousCollectionReassignment")
   kotlinOptions {
-    @Suppress("SuspiciousCollectionReassignment")
     freeCompilerArgs +=
       listOf(
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
       )
+
+    if (project.hasProperty("circuit.enableComposeCompilerReports")) {
+      freeCompilerArgs += listOf(
+        "-P",
+        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+          project.buildDir.absolutePath + "/compose_metrics"
+      )
+      freeCompilerArgs += listOf(
+        "-P",
+        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+          project.buildDir.absolutePath + "/compose_metrics"
+      )
+    }
   }
 }
 

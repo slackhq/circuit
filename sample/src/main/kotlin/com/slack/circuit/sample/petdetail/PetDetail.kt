@@ -77,6 +77,7 @@ import com.slack.circuit.sample.petdetail.PetDetailTestConstants.ANIMAL_CONTAINE
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.sample.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.sample.petlist.PetListScreen
+import com.slack.circuit.sample.petlist.ToggleFavoritePet
 import com.slack.circuit.sample.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -175,7 +176,7 @@ constructor(
         else -> animal.toPetDetailState(screen.favorite, screen.photoUrlMemoryCacheKey) { event ->
           when (event) {
             PetDetailScreen.Event.ToggleFavorite -> navigator.pop(
-              PetListScreen.ToggleFavoritePet(screen.petId)
+              ToggleFavoritePet(screen.petId)
             )
           }
         }

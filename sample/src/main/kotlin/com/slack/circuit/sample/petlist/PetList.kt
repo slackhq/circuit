@@ -108,6 +108,9 @@ enum class Size {
 data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
+data class ToggleFavoritePet(val id: Long) : Parcelable
+
+@Parcelize
 data class PetListScreen(
   val filters: Filters = Filters(),
   val result: ToggleFavoritePet?
@@ -128,9 +131,6 @@ data class PetListScreen(
       val photoUrlMemoryCacheKey: String?,
     ) : Event
   }
-
-  @Parcelize
-  data class ToggleFavoritePet(val id: Long) : Parcelable
 }
 
 @ContributesMultibinding(AppScope::class)

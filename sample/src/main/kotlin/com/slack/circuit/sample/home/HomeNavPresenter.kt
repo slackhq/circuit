@@ -23,15 +23,20 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Screen
+import com.slack.circuit.sample.petlist.AboutScreen
+import com.slack.circuit.sample.petlist.Filters
+import com.slack.circuit.sample.petlist.PetListScreen
+import com.slack.circuit.sample.petlist.ToggleFavoritePet
 import kotlinx.parcelize.Parcelize
 
-private val HOME_NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
-
 @Parcelize
-object HomeNavScreen : Screen {
+data class HomeNavScreen(
+  val filters: Filters,
+  val result: ToggleFavoritePet?
+) : Screen {
   data class State(
     val index: Int,
-    val bottomNavItems: List<BottomNavItem>,
+    val currentScreen: Screen,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
@@ -41,11 +46,20 @@ object HomeNavScreen : Screen {
 }
 
 @Composable
-fun HomeNavPresenter(): HomeNavScreen.State {
-  var index by remember { mutableStateOf(0) }
-  return HomeNavScreen.State(index = index, bottomNavItems = HOME_NAV_ITEMS) { event ->
-    when (event) {
-      is HomeNavScreen.Event.ClickNavItem -> index = event.index
+fun HomeNavPresenter(screen: HomeNavScreen): HomeNavScreen.State {
+    var index by remember { mutableStateOf(0) }
+
+    val currentScreen = remember(screen, index) {
+      when (index) {
+        0 -> PetListScreen(filters = screen.filters, result = screen.result)
+        1 -> AboutScreen
+        else -> error("Unknown nav index: $index")
+      }
     }
-  }
+
+    return HomeNavScreen.State(index = index, currentScreen = currentScreen) { event ->
+      when (event) {
+        is HomeNavScreen.Event.ClickNavItem -> index = event.index
+      }
+    }
 }

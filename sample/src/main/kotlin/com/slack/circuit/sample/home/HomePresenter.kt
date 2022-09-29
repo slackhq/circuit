@@ -63,6 +63,7 @@ import com.slack.circuit.sample.petlist.Gender
 import com.slack.circuit.sample.petlist.PetListFilterPresenter
 import com.slack.circuit.sample.petlist.PetListFilterScreen
 import com.slack.circuit.sample.petlist.Size
+import com.slack.circuit.sample.petlist.ToggleFavoritePet
 import com.slack.circuit.sample.ui.StarTheme
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -107,8 +108,16 @@ constructor(
 
   @Composable
   override fun present(): HomeScreen.State {
-    val homeNavState = HomeNavPresenter()
+    val result = navigator.maybeGetResult<ToggleFavoritePet>()
+
     val petListFilterState = petListFilterPresenter.present()
+    val homeNavState = HomeNavPresenter(
+      HomeNavScreen(
+        filters = petListFilterState.filters,
+        result = result
+      )
+    )
+
     return HomeScreen.State(homeNavState, petListFilterState) { event ->
       when (event) {
         is HomeEvent -> homeNavState.eventSink(event.event)
@@ -206,11 +215,10 @@ fun HomeContent(state: HomeScreen.State) {
       }
     ) { paddingValues ->
       Box(modifier = Modifier.padding(paddingValues)) {
-        val screen =
-          state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
-            state.petListFilterState.filters
-          )
-        CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
+        CircuitContent(
+          screen = state.homeNavState.currentScreen,
+          onNavEvent = { event -> state.eventSink(ChildNav(event)) }
+        )
       }
     }
   }

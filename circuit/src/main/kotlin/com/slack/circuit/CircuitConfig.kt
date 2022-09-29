@@ -43,7 +43,7 @@ import androidx.compose.runtime.Immutable
  * [CircuitCompositionLocals] CompositionLocalProvider.
  *
  * ```kotlin
- * CircuitProvider(circuit) {
+ * CircuitCompositionLocals(circuitConfig) {
  *   CircuitContent(AddFavoritesScreen())
  * }
  * ```
@@ -53,7 +53,7 @@ import androidx.compose.runtime.Immutable
  * ```kotlin
  * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
  * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
- * CircuitProvider(circuit) {
+ * CircuitCompositionLocals(circuitConfig) {
  *   NavigableCircuitContent(navigator, backstack)
  * }
  * ```

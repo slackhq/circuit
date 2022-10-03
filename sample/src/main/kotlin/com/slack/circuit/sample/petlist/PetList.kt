@@ -174,7 +174,6 @@ constructor(
         animalState == null -> PetListScreen.State.Loading
         animalState.isEmpty() -> PetListScreen.State.NoAnimals
         else ->
-//          PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
           PetListScreen.State.Success(animals = animalState) { event ->
             when (event) {
               is PetListScreen.Event.ClickAnimal -> {

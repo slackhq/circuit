@@ -32,7 +32,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class HomeNavScreen(
   val filters: Filters,
-  val result: ToggleFavoritePet?
+//  val result: ToggleFavoritePet?
 ) : Screen {
   data class State(
     val index: Int,
@@ -42,16 +42,19 @@ data class HomeNavScreen(
 
   sealed interface Event : CircuitUiEvent {
     data class ClickNavItem(val index: Int) : Event
+    data class PetListResult(val favoritePet: ToggleFavoritePet) : Event
   }
 }
 
 @Composable
 fun HomeNavPresenter(screen: HomeNavScreen): HomeNavScreen.State {
     var index by remember { mutableStateOf(0) }
+    var petListResult by remember { mutableStateOf<ToggleFavoritePet?>(null) }
 
-    val currentScreen = remember(screen, index) {
+    val currentScreen = remember(screen, index, petListResult) {
       when (index) {
-        0 -> PetListScreen(filters = screen.filters, result = screen.result)
+//        0 -> PetListScreen(filters = screen.filters, result = screen.result)
+        0 -> PetListScreen(filters = screen.filters, result = petListResult)
         1 -> AboutScreen
         else -> error("Unknown nav index: $index")
       }
@@ -60,6 +63,7 @@ fun HomeNavPresenter(screen: HomeNavScreen): HomeNavScreen.State {
     return HomeNavScreen.State(index = index, currentScreen = currentScreen) { event ->
       when (event) {
         is HomeNavScreen.Event.ClickNavItem -> index = event.index
+        is HomeNavScreen.Event.PetListResult -> petListResult = event.favoritePet
       }
     }
 }

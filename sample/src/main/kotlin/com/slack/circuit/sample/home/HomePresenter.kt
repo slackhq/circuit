@@ -108,15 +108,13 @@ constructor(
 
   @Composable
   override fun present(): HomeScreen.State {
-    val result = navigator.maybeGetResult<ToggleFavoritePet>()
-
     val petListFilterState = petListFilterPresenter.present()
-    val homeNavState = HomeNavPresenter(
-      HomeNavScreen(
-        filters = petListFilterState.filters,
-        result = result
-      )
-    )
+    val homeNavState = HomeNavPresenter(HomeNavScreen(petListFilterState.filters))
+
+    val result = navigator.maybeGetResult<ToggleFavoritePet>()
+    if (result != null) {
+      homeNavState.eventSink(HomeNavScreen.Event.PetListResult(result))
+    }
 
     return HomeScreen.State(homeNavState, petListFilterState) { event ->
       when (event) {

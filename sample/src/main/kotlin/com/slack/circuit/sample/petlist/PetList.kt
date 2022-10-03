@@ -52,6 +52,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -126,7 +127,11 @@ class PetListScreenPresenterFactory
 constructor(
   private val petListPresenterFactory: PetListPresenter.Factory,
 ) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    circuitConfig: CircuitConfig
+  ): Presenter<*>? {
     if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
     return null
   }
@@ -200,7 +205,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
 
 @ContributesMultibinding(AppScope::class)
 class PetListUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
     if (screen is PetListScreen) {
       return ScreenUi(petListUi())
     }

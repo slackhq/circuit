@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -52,7 +53,7 @@ object PetListFilterScreen : Screen {
 
 @ContributesMultibinding(AppScope::class)
 class PetListFilterScreenFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
     if (screen is PetListFilterScreen) return ScreenUi(petListFilterUi())
     return null
   }
@@ -63,7 +64,11 @@ class PetListFilterPresenterFactory
 @Inject
 constructor(private val petListFilterPresenterFactory: PetListFilterPresenter.Factory) :
   Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    circuitConfig: CircuitConfig
+  ): Presenter<*>? {
     if (screen is PetListFilterScreen) return petListFilterPresenterFactory.create()
     return null
   }

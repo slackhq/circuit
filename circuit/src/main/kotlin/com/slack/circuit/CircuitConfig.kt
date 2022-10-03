@@ -20,8 +20,8 @@ import androidx.compose.runtime.Immutable
 
 /**
  * [CircuitConfig] adapts [presenter factories][Presenter.Factory] to their corresponding renderable
- * [uifactories][Ui.Factory] using [screens][Screen]. Create instances using [the Builder] [Builder]
- * and create new [CircuitContent] with it to run presenter/UI pairings.
+ * [ui factories][Ui.Factory] using [screens][Screen]. Create instances using [the Builder]
+ * [Builder] and create new [CircuitContent] with it to run presenter/UI pairings.
  *
  * ## Construction
  *
@@ -79,7 +79,7 @@ class CircuitConfig private constructor(builder: Builder) {
   ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
-      val presenter = presenterFactories[i].create(screen, navigator)
+      val presenter = presenterFactories[i].create(screen, navigator, this)
       if (presenter != null) {
         return presenter
       }
@@ -95,7 +95,7 @@ class CircuitConfig private constructor(builder: Builder) {
   fun nextUi(skipPast: Ui.Factory?, screen: Screen): ScreenUi? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
-      val ui = uiFactories[i].create(screen)
+      val ui = uiFactories[i].create(screen, this)
       if (ui != null) {
         return ui
       }

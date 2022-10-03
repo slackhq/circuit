@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -50,7 +51,11 @@ object AboutScreen : Screen {
 class AboutPresenterFactory
 @Inject
 constructor(private val aboutPresenterFactory: AboutPresenter.Factory) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    circuitConfig: CircuitConfig
+  ): Presenter<*>? {
     if (screen is AboutScreen) return aboutPresenterFactory.create()
     return null
   }
@@ -67,7 +72,7 @@ class AboutPresenter @AssistedInject constructor() : Presenter<AboutScreen.State
 
 @ContributesMultibinding(AppScope::class)
 class AboutUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
     if (screen is AboutScreen) {
       return ScreenUi(aboutScreenUi())
     }

@@ -45,6 +45,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -91,7 +92,11 @@ object HomeScreen : Screen {
 class HomeScreenPresenterFactory
 @Inject
 constructor(private val homePresenterFactory: HomePresenter.Factory) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    circuitConfig: CircuitConfig
+  ): Presenter<*>? {
     if (screen is HomeScreen) return homePresenterFactory.create(navigator)
     return null
   }
@@ -126,7 +131,7 @@ constructor(
 
 @ContributesMultibinding(AppScope::class)
 class HomeUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
     if (screen is HomeScreen) {
       return ScreenUi(homeUi())
     }

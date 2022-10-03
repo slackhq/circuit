@@ -64,6 +64,7 @@ interface Ui<UiState : CircuitUiState> {
    * class FavoritesUiFactory @Inject constructor() : Ui.Factory {
    *  override fun create(
    *    screen: Screen,
+   *    circuitConfig: CircuitConfig
    *  ): ScreenUi? {
    *    val ui = when (screen) {
    *      is AddFavorites -> {
@@ -84,7 +85,7 @@ interface Ui<UiState : CircuitUiState> {
    * ```
    */
   fun interface Factory {
-    fun create(screen: Screen): ScreenUi?
+    fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi?
   }
 }
 

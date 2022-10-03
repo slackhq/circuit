@@ -50,6 +50,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -103,7 +104,7 @@ constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
 
 @ContributesMultibinding(AppScope::class)
 class PetPhotoCarouselUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
     return when (screen) {
       is PetPhotoCarouselScreen -> ScreenUi(petPhotoCarousel())
       else -> null

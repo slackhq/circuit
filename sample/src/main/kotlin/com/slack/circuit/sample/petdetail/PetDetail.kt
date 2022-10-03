@@ -55,6 +55,7 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -123,7 +124,11 @@ constructor(
   private val petDetailPresenterFactory: PetDetailPresenter.Factory,
   private val petPhotoCarousel: PetPhotoCarouselPresenter.Factory,
 ) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    circuitConfig: CircuitConfig
+  ): Presenter<*>? {
     return when (screen) {
       is PetDetailScreen -> petDetailPresenterFactory.create(screen)
       is PetPhotoCarouselScreen -> petPhotoCarousel.create(screen)
@@ -161,7 +166,7 @@ constructor(
 
 @ContributesMultibinding(AppScope::class)
 class PetDetailUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
     if (screen is PetDetailScreen) return ScreenUi(petDetailUi())
     return null
   }

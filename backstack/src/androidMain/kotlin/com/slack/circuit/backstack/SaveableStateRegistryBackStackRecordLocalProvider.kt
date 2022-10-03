@@ -30,7 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 
 /** A [BackStackRecordLocalProvider] that provides a [SaveableStateRegistry] for each record. */
-object SaveableStateRegistryBackStackRecordLocalProvider :
+public object SaveableStateRegistryBackStackRecordLocalProvider :
   BackStackRecordLocalProvider<BackStack.Record> {
   @Composable
   override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
@@ -43,7 +43,6 @@ object SaveableStateRegistryBackStackRecordLocalProvider :
     // This write depends on childRegistry.parentRegistry being snapshot state backed
     childRegistry.parentRegistry = LocalSaveableStateRegistry.current
     return remember(childRegistry) {
-      @Suppress("ObjectLiteralToLambda")
       object : ProvidedValues {
         val list = listOf(LocalSaveableStateRegistry provides childRegistry)
         @Composable

@@ -15,6 +15,9 @@
  */
 package com.slack.circuit.retained
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.slack.circuit.retained.RetainedStateRegistry.Entry
 
@@ -22,14 +25,14 @@ import com.slack.circuit.retained.RetainedStateRegistry.Entry
  * Allows components to save and restore their state using the `onRetainNonConfigurationInstance`
  * mechanism.
  */
-interface RetainedStateRegistry {
+public interface RetainedStateRegistry {
   /**
    * Returns the restored value for the given key. Once being restored the value is cleared, so you
    * can't restore the same key twice.
    *
    * @param key Key used to save the value
    */
-  fun consumeValue(key: String): Any?
+  public fun consumeValue(key: String): Any?
 
   /**
    * Registers the value provider.
@@ -46,12 +49,12 @@ interface RetainedStateRegistry {
    * @param value The current value
    * @return the registry entry which you can use to unregister the provider
    */
-  fun registerValue(key: String, value: Any?): Entry
+  public fun registerValue(key: String, value: Any?): Entry
 
   /** The registry entry which you get when you use [registerValue]. */
-  interface Entry {
+  public interface Entry {
     /** Unregister previously registered entry. */
-    fun unregister()
+    public fun unregister()
   }
 }
 
@@ -64,14 +67,31 @@ internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
  *
  * @param values The map of the restored values
  */
-fun RetainedStateRegistry(values: Map<String, List<Any?>>?): RetainedStateRegistry =
+public fun RetainedStateRegistry(values: Map<String, List<Any?>>?): RetainedStateRegistry =
   RetainedStateRegistryImpl(
     values?.mapValues { it.value.toMutableList() }?.toMutableMap() ?: mutableMapOf()
   )
 
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
-val LocalRetainedStateRegistry =
-  staticCompositionLocalOf<RetainedStateRegistry> { NoOpRetainedStateRegistry }
+public object LocalRetainedStateRegistryOwner {
+  private val LocalRetainedStateRegistry =
+    staticCompositionLocalOf<RetainedStateRegistry> { NoOpRetainedStateRegistry }
+
+  /**
+   * Returns current composition local value for the owner or errors if one has not been provided.
+   */
+  public val current: RetainedStateRegistry
+    @Composable get() = LocalRetainedStateRegistry.current
+
+  /**
+   * Associates a [LocalRetainedStateRegistry] key to a value in a call to
+   * [CompositionLocalProvider].
+   */
+  @Composable
+  public infix fun provides(registry: RetainedStateRegistry): ProvidedValue<RetainedStateRegistry> {
+    return LocalRetainedStateRegistry.provides(registry)
+  }
+}
 
 internal class RetainedStateRegistryImpl(
   override val retained: MutableMap<String, MutableList<Any?>> = mutableMapOf()
@@ -91,7 +111,7 @@ internal class RetainedStateRegistryImpl(
 
   override fun registerValue(key: String, value: Any?): Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
-    @Suppress("UNCHECKED_CAST") retained.getOrPut(key) { mutableListOf() }.add(value)
+    retained.getOrPut(key) { mutableListOf() }.add(value)
     return object : Entry {
       override fun unregister() {
         val list = retained.remove(key)
@@ -105,7 +125,7 @@ internal class RetainedStateRegistryImpl(
   }
 }
 
-private object NoOpRetainedStateRegistry : RetainedStateRegistry {
+internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
   override fun consumeValue(key: String): Any? = null
   override fun registerValue(key: String, value: Any?): Entry = NoOpEntry
 

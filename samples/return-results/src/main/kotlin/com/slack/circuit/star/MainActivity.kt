@@ -50,7 +50,7 @@ constructor(
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
-          val backstack = rememberSaveableBackStack { push(PetListScreen()) }
+          val backstack = rememberSaveableBackStack { push(PetListScreen) }
           val navigator =
             rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
           CircuitCompositionLocals(circuitConfig) { NavigableCircuitContent(navigator, backstack) }

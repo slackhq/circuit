@@ -44,6 +44,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,6 +76,7 @@ import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
+import com.slack.circuit.star.petlistfilter.PetListFilterScreen
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -88,11 +90,18 @@ data class PetListAnimal(
   val id: Long,
   val name: String,
   val imageUrl: String?,
+  val species: String,
   val breed: String?,
   val gender: String,
   val size: String,
   val age: String,
 )
+
+enum class Species {
+  ALL,
+  DOG,
+  CAT
+}
 
 enum class Gender {
   ALL,
@@ -108,18 +117,25 @@ enum class Size {
 }
 
 @Parcelize
-data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
+data class Filters(
+  val species: Species = Species.ALL,
+  val gender: Gender = Gender.ALL,
+  val size: Size = Size.ALL
+) : Parcelable
 
 @Parcelize
-data class PetListScreen(val filters: Filters = Filters()) : Screen {
+object PetListScreen : Screen {
   sealed interface State : CircuitUiState {
     object Loading : State
     object NoAnimals : State
-    data class Success(val animals: List<PetListAnimal>) : State
+    data class Success(
+      val animals: List<PetListAnimal>,
+      val eventSink: (Event) -> Unit,
+    ) : State
   }
 
   sealed interface Event : CircuitUiEvent {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+    object ClickFilters : Event
   }
 }
 
@@ -134,7 +150,7 @@ constructor(
     navigator: Navigator,
     circuitConfig: CircuitConfig
   ): Presenter<*>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
+    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
     return null
   }
 }
@@ -143,31 +159,44 @@ class PetListPresenter
 @AssistedInject
 constructor(
   @Assisted private val navigator: Navigator,
-  @Assisted private val screen: PetListScreen,
   private val petRepo: PetRepository,
 ) : Presenter<PetListScreen.State> {
   @Composable
   override fun present(): PetListScreen.State {
+    val result = navigator.maybeGetResult<Filters>()
+    val filters by remember(result) { mutableStateOf(result ?: Filters()) }
+//    val filters by remember { mutableStateOf(Filters()) }
+
     val animalState by
       produceRetainedState<List<PetListAnimal>?>(null) {
         val animals = petRepo.getAnimals()
         value = animals.map { it.toPetListAnimal() }
       }
 
-    return remember(screen, animalState) {
+    return remember(filters, animalState) {
       val animals = animalState
       when {
         animals == null -> PetListScreen.State.Loading
         animals.isEmpty() -> PetListScreen.State.NoAnimals
         else ->
-          PetListScreen.State.Success(animals = animals.filter(::shouldKeep))
+          PetListScreen.State.Success(animals = animals.filter { it.shouldKeep(filters) }) { event ->
+            when (event) {
+              is PetListScreen.Event.ClickFilters -> navigator.goTo(PetListFilterScreen(filters))
+            }
+          }
       }
     }
   }
 
-  private fun shouldKeep(animal: PetListAnimal): Boolean {
-    return screen.filters.gender.shouldKeep(animal.gender) &&
-      screen.filters.size.shouldKeep(animal.size)
+  private fun PetListAnimal.shouldKeep(filters: Filters): Boolean {
+    return filters.species.shouldKeep(species)
+      && filters.gender.shouldKeep(gender)
+      && filters.size.shouldKeep(size)
+  }
+
+  private fun Species.shouldKeep(species: String): Boolean {
+    if (this == Species.ALL) return true
+    return this.name.lowercase() == species.lowercase()
   }
 
   private fun Gender.shouldKeep(gender: String): Boolean {
@@ -182,7 +211,7 @@ constructor(
 
   @AssistedFactory
   interface Factory {
-    fun create(navigator: Navigator, screen: PetListScreen): PetListPresenter
+    fun create(navigator: Navigator): PetListPresenter
   }
 }
 
@@ -192,6 +221,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     // Names are sometimes all caps
     name = name.lowercase().capitalize(Locale.current),
     imageUrl = photos.firstOrNull()?.medium,
+    species = species,
     breed = breeds.primary,
     gender = gender,
     size = size,
@@ -236,16 +266,18 @@ internal fun PetList(
           containerColor = MaterialTheme.colorScheme.background
         ),
         actions = {
-          IconButton(
-            onClick = {
-//              state.eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
+          if (state is PetListScreen.State.Success) {
+            IconButton(
+              onClick = {
+                state.eventSink(PetListScreen.Event.ClickFilters)
+              }
+            ) {
+              Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = "Filter pet list",
+                tint = MaterialTheme.colorScheme.onBackground
+              )
             }
-          ) {
-            Icon(
-              imageVector = Icons.Default.FilterList,
-              contentDescription = "Filter pet list",
-              tint = MaterialTheme.colorScheme.onBackground
-            )
           }
         },
       )
@@ -265,7 +297,9 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
           animals = state.animals
         )
     }
@@ -297,7 +331,9 @@ private fun PetListGrid(
 @Composable
 private fun PetListGridItem(animal: PetListAnimal) {
   ElevatedCard(
-    modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
+    modifier = Modifier
+      .fillMaxWidth()
+      .testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(
@@ -308,7 +344,10 @@ private fun PetListGridItem(animal: PetListAnimal) {
     Column {
       // Image
       AsyncImage(
-        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+        modifier = Modifier
+          .fillMaxWidth()
+          .aspectRatio(1f)
+          .testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(animal.imageUrl)

@@ -27,6 +27,10 @@ interface Navigator {
 
   fun pop(): Screen?
 
+  fun <T : Any> maybeGetResult(): T? = null
+
+  fun callbackResult(result: Any) = Unit
+
   object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
@@ -68,6 +72,7 @@ private class NavigatorImpl(
   private val backstack: SaveableBackStack,
   private val onRootPop: (() -> Unit)?,
 ) : Navigator {
+  private var _results: Any? = null
 
   override fun goTo(screen: Screen) {
     backstack.push(screen)
@@ -79,6 +84,17 @@ private class NavigatorImpl(
     }
     onRootPop?.invoke()
     return null
+  }
+
+  override fun <T : Any> maybeGetResult(): T? {
+    if (_results == null) return null
+
+    @Suppress("UNCHECKED_CAST")
+    return _results as T
+  }
+
+  override fun callbackResult(result: Any) {
+    _results = result
   }
 
   override fun equals(other: Any?): Boolean {

@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-  namespace = "com.slack.circuit.sample"
+  namespace = "com.slack.circuit.star"
 
   defaultConfig {
     minSdk = 28
@@ -18,7 +18,7 @@ android {
     versionCode = 1
     versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    testApplicationId = "com.slack.circuit.sample.androidTest"
+    testApplicationId = "com.slack.circuit.star.androidTest"
   }
 
   testOptions { unitTests.isIncludeAndroidResources = true }

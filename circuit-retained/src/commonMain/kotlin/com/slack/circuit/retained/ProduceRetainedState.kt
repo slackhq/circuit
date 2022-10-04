@@ -66,9 +66,9 @@ private class ProduceRetainedStateScopeImpl<T>(
  * ```
  */
 @Composable
-fun <T> produceRetainedState(
+public fun <T> produceRetainedState(
   initialValue: T,
-  @BuilderInference producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(Unit) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
@@ -104,10 +104,10 @@ fun <T> produceRetainedState(
  * ```
  */
 @Composable
-fun <T> produceRetainedState(
+public fun <T> produceRetainedState(
   initialValue: T,
   key1: Any?,
-  @BuilderInference producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(key1) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
@@ -143,11 +143,11 @@ fun <T> produceRetainedState(
  * ```
  */
 @Composable
-fun <T> produceRetainedState(
+public fun <T> produceRetainedState(
   initialValue: T,
   key1: Any?,
   key2: Any?,
-  @BuilderInference producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(key1, key2) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
@@ -183,12 +183,12 @@ fun <T> produceRetainedState(
  * ```
  */
 @Composable
-fun <T> produceRetainedState(
+public fun <T> produceRetainedState(
   initialValue: T,
   key1: Any?,
   key2: Any?,
   key3: Any?,
-  @BuilderInference producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(key1, key2, key3) {
@@ -226,15 +226,12 @@ fun <T> produceRetainedState(
  * ```
  */
 @Composable
-fun <T> produceRetainedState(
+public fun <T> produceRetainedState(
   initialValue: T,
   vararg keys: Any?,
-  @BuilderInference producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
-  @Suppress("CHANGING_ARGUMENTS_EXECUTION_ORDER_FOR_NAMED_VARARGS")
-  (LaunchedEffect(keys = keys) {
-    ProduceRetainedStateScopeImpl(result, coroutineContext).producer()
-  })
+  LaunchedEffect(keys = keys) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
   return result
 }

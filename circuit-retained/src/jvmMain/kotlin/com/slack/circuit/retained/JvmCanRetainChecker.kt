@@ -15,20 +15,11 @@
  */
 package com.slack.circuit.retained
 
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 
-class Continuity : ViewModel(), RetainedStateRegistry {
-  private val delegate = RetainedStateRegistryImpl()
-
-  override fun consumeValue(key: String): Any? {
-    return delegate.consumeValue(key)
-  }
-
-  override fun registerValue(key: String, value: Any?): RetainedStateRegistry.Entry {
-    return delegate.registerValue(key, value)
-  }
-
-  override fun onCleared() {
-    delegate.retained.clear()
-  }
+/** No-op on the JVM! */
+@Composable
+internal actual fun rememberCanRetainChecker(): () -> Boolean {
+  return remember { { false } }
 }

@@ -16,7 +16,6 @@ dependencies {
   api(projects.backstack)
   api(projects.circuitRetained)
   implementation(libs.androidx.compose.integration.activity)
-  implementation(libs.androidx.lifecycle.viewModel.compose)
   testImplementation(libs.junit)
   testImplementation(libs.truth)
 }

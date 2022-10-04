@@ -23,11 +23,8 @@ import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.LocalCanRetainCheckerOwner
-import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
+import com.slack.circuit.retained.continuityRetainedStateRegistry
 
 /**
  * Provides the given [circuitConfig] as a [CompositionLocal] to all composables within [content].
@@ -35,12 +32,10 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
  */
 @Composable
 fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Composable () -> Unit) {
-  val retainedStateRegistry = viewModel<Continuity>()
-  val activity = LocalContext.current.findActivity()
   CompositionLocalProvider(
     LocalCircuitOwner provides circuitConfig,
-    LocalRetainedStateRegistry provides retainedStateRegistry,
-    LocalCanRetainCheckerOwner provides { activity?.isChangingConfigurations == true },
+    // TODO move these to platform-specific composition locals in KMP
+    LocalRetainedStateRegistryOwner provides continuityRetainedStateRegistry(),
   ) {
     content()
   }

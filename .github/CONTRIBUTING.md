@@ -8,7 +8,7 @@ discussion.
 
 Check out this repo with Android Studio. It's a standard gradle project and conventional to checkout.
 
-The primary project is `circuit`. The primary sample is `sample`.
+The primary project is `circuit`. The primary sample is `samples/star`.
 
 This project is written in Kotlin and should only use Kotlin.
 

@@ -47,7 +47,7 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :sample:assembleDebug :sample:assembleDebugAndroidTest
+          arguments: check :samples:star:assembleDebug :samples:star:assembleDebugAndroidTest
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
@@ -84,11 +84,11 @@ jobs:
           target: 'aosp_atd'
           channel: canary # Necessary for ATDs
           script: |
-            adb uninstall com.slack.circuit.sample || true
-            adb uninstall com.slack.circuit.sample.androidTest || true
+            adb uninstall com.slack.circuit.star || true
+            adb uninstall com.slack.circuit.star.androidTest || true
             ./gradlew connectedDebugAndroidTest
-            adb uninstall com.slack.circuit.sample || true
-            adb uninstall com.slack.circuit.sample.androidTest || true
+            adb uninstall com.slack.circuit.star || true
+            adb uninstall com.slack.circuit.star.androidTest || true
 
       - name: (Fail-only) Bundle the build report
         if: failure()

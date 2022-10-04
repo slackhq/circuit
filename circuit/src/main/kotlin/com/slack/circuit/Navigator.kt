@@ -16,8 +16,12 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.slack.circuit.backstack.SaveableBackStack
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
@@ -28,6 +32,8 @@ interface Navigator {
   fun pop(): Screen?
 
   fun <T : Any> maybeGetResult(): T? = null
+
+  fun <T : Any> getResult(callback: (T) -> Unit) = Unit
 
   fun callbackResult(result: Any) = Unit
 
@@ -72,7 +78,7 @@ private class NavigatorImpl(
   private val backstack: SaveableBackStack,
   private val onRootPop: (() -> Unit)?,
 ) : Navigator {
-  private var _results: Any? = null
+  private var _results by mutableStateOf<Any?>(null)
 
   override fun goTo(screen: Screen) {
     backstack.push(screen)
@@ -87,10 +93,16 @@ private class NavigatorImpl(
   }
 
   override fun <T : Any> maybeGetResult(): T? {
-    if (_results == null) return null
+    @Suppress("UNCHECKED_CAST")
+    return _results as T?
+  }
+
+  override fun <T : Any> getResult(callback: (T) -> Unit) {
+    val result = _results ?: return
 
     @Suppress("UNCHECKED_CAST")
-    return _results as T
+    callback.invoke(result as T)
+    _results = null
   }
 
   override fun callbackResult(result: Any) {

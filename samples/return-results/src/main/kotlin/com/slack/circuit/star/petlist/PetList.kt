@@ -46,6 +46,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -125,13 +126,18 @@ data class Filters(
 
 @Parcelize
 object PetListScreen : Screen {
+  interface WithEventSink {
+    val eventSink: (Event) -> Unit
+  }
   sealed interface State : CircuitUiState {
     object Loading : State
-    object NoAnimals : State
+    data class NoAnimals(
+      override val eventSink: (Event) -> Unit,
+    ) : State, WithEventSink
     data class Success(
       val animals: List<PetListAnimal>,
-      val eventSink: (Event) -> Unit,
-    ) : State
+      override val eventSink: (Event) -> Unit,
+    ) : State, WithEventSink
   }
 
   sealed interface Event : CircuitUiEvent {
@@ -163,27 +169,31 @@ constructor(
 ) : Presenter<PetListScreen.State> {
   @Composable
   override fun present(): PetListScreen.State {
-    val result = navigator.maybeGetResult<Filters>()
-    val filters by remember(result) { mutableStateOf(result ?: Filters()) }
-//    val filters by remember { mutableStateOf(Filters()) }
-
     val animalState by
       produceRetainedState<List<PetListAnimal>?>(null) {
         val animals = petRepo.getAnimals()
         value = animals.map { it.toPetListAnimal() }
       }
+    var filters by remember { mutableStateOf(Filters()) }
+
+    navigator.getResult<Filters> { result ->
+      filters = result
+    }
 
     return remember(filters, animalState) {
-      val animals = animalState
+      val animals = animalState?.filter { it.shouldKeep(filters) }
       when {
         animals == null -> PetListScreen.State.Loading
-        animals.isEmpty() -> PetListScreen.State.NoAnimals
-        else ->
-          PetListScreen.State.Success(animals = animals.filter { it.shouldKeep(filters) }) { event ->
-            when (event) {
-              is PetListScreen.Event.ClickFilters -> navigator.goTo(PetListFilterScreen(filters))
-            }
-          }
+        animals.isEmpty() -> PetListScreen.State.NoAnimals(buildEventSink(filters))
+        else -> PetListScreen.State.Success(animals, buildEventSink(filters))
+      }
+    }
+  }
+
+  private fun buildEventSink(filters: Filters): (PetListScreen.Event) -> Unit {
+    return { event ->
+      when (event) {
+        is PetListScreen.Event.ClickFilters -> navigator.goTo(PetListFilterScreen(filters))
       }
     }
   }
@@ -266,7 +276,7 @@ internal fun PetList(
           containerColor = MaterialTheme.colorScheme.background
         ),
         actions = {
-          if (state is PetListScreen.State.Success) {
+          if (state is PetListScreen.WithEventSink) {
             IconButton(
               onClick = {
                 state.eventSink(PetListScreen.Event.ClickFilters)
@@ -288,7 +298,7 @@ internal fun PetList(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
-      PetListScreen.State.NoAnimals ->
+      is PetListScreen.State.NoAnimals ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             modifier = Modifier.testTag(NO_ANIMALS_TAG),

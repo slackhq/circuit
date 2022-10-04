@@ -97,6 +97,8 @@ class PetListFilterPresenter @AssistedInject constructor(
         is PetListFilterScreen.Event.FilterBySize -> filters.copy(size = event.size)
       }
 
+      // TODO find way of catching back press so this can be set only when returning to
+      // TODO previous screen
       navigator.callbackResult(filters)
     }
   }

@@ -144,7 +144,7 @@ rootProject.name = "circuit-root"
 include(":backstack")
 include(":circuit")
 include(":circuit-retained")
-include(":samples:star-app")
+include(":samples:star")
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance
 enableFeaturePreview("GROOVY_COMPILATION_AVOIDANCE")

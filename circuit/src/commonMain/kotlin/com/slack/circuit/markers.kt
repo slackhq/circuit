@@ -30,7 +30,7 @@ import androidx.compose.runtime.Immutable
  *
  * **Circuit state types should be truly immutable types.**
  */
-@Immutable interface CircuitUiState
+@Immutable public interface CircuitUiState
 
 /**
  * Marker interface for all UiEvent types.
@@ -40,4 +40,4 @@ import androidx.compose.runtime.Immutable
  *
  * **Circuit event types should be truly immutable types.**
  */
-@Immutable interface CircuitUiEvent
+@Immutable public interface CircuitUiEvent

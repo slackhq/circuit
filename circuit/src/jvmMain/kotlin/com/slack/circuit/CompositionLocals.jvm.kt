@@ -15,17 +15,10 @@
  */
 package com.slack.circuit
 
-import com.slack.circuit.backstack.SaveableBackStack
+import androidx.compose.runtime.Composable
 
-fun SaveableBackStack.push(screen: Screen) {
-  push(
-    SaveableBackStack.Record(
-      route = screen.javaClass.simpleName,
-      args = mapOf("screen" to screen),
-      key = screen.hashCode().toString()
-    )
-  )
+@Composable
+internal actual fun PlatformCompositionLocals(content: @Composable () -> Unit) {
+  // No JVM-specific locals currently!
+  content()
 }
-
-val SaveableBackStack.Record.screen: Screen
-  get() = args.getValue("screen") as Screen

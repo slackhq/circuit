@@ -50,8 +50,8 @@ import androidx.compose.runtime.Composable
  *
  * @see ui
  */
-interface Ui<UiState : CircuitUiState> {
-  @Composable fun Content(state: UiState)
+public interface Ui<UiState : CircuitUiState> {
+  @Composable public fun Content(state: UiState)
 
   /**
    * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a
@@ -84,12 +84,12 @@ interface Ui<UiState : CircuitUiState> {
    * @Composable private fun Favorites(state: State) {...}
    * ```
    */
-  fun interface Factory {
-    fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi?
+  public fun interface Factory {
+    public fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi?
   }
 }
 
-data class ScreenUi(val ui: Ui<*>)
+public data class ScreenUi(val ui: Ui<*>)
 
 /**
  * Due to this bug in Studio, we can't write lambda impls of [Ui] directly. This works around it by
@@ -100,7 +100,7 @@ data class ScreenUi(val ui: Ui<*>)
  *
  * @see [Ui] for main docs.
  */
-inline fun <UiState : CircuitUiState> ui(
+public inline fun <UiState : CircuitUiState> ui(
   crossinline body: @Composable (state: UiState) -> Unit
 ): Ui<UiState> {
   return object : Ui<UiState> {

@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  *
  * @see present for more thorough documentation.
  */
-interface Presenter<UiState : CircuitUiState> {
+public interface Presenter<UiState : CircuitUiState> {
   /**
    * The primary [Composable] entry point to present a [UiState]. In production, a [Navigator] is
    * used to automatically connect this with a corresponding [Ui] to render the state returned by
@@ -102,7 +102,7 @@ interface Presenter<UiState : CircuitUiState> {
    * Note that Circuit's test artifact has a `Presenter.test()` helper extension function for the
    * above case.
    */
-  @Composable fun present(): UiState
+  @Composable public fun present(): UiState
 
   /**
    * A factory that produces [presenters][Presenter] for a given [Screen]. [CircuitConfig] instances
@@ -157,11 +157,15 @@ interface Presenter<UiState : CircuitUiState> {
    * ```
    */
   // Diagram generated from asciiflow: https://shorturl.at/fgjtA
-  fun interface Factory {
+  public fun interface Factory {
     /**
      * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it
      * cannot handle the given [screen].
      */
-    fun create(screen: Screen, navigator: Navigator, circuitConfig: CircuitConfig): Presenter<*>?
+    public fun create(
+      screen: Screen,
+      navigator: Navigator,
+      circuitConfig: CircuitConfig
+    ): Presenter<*>?
   }
 }

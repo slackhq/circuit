@@ -3,7 +3,7 @@
 
 🚧 **Under construction** 🚧
 
-This project is very much a work in progress and far from finished!
+### [slackhq.github.io/circuit](https://slackhq.github.io/circuit)
 
 License
 --------

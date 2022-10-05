@@ -16,40 +16,8 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
-
-/** A basic navigation interface for navigating between [screens][Screen]. */
-@Stable
-interface Navigator {
-  fun goTo(screen: Screen)
-
-  fun pop(): Screen?
-
-  object NoOp : Navigator {
-    override fun goTo(screen: Screen) {}
-    override fun pop(): Screen? = null
-  }
-}
-
-/**
- * A Circuit call back to help navigate to different screens. Intended to be used when forwarding
- * [NavEvent]s from nested [Presenter]s.
- */
-fun Navigator.onNavEvent(event: NavEvent) {
-  when (event) {
-    is GoToNavEvent -> goTo(event.screen)
-    PopNavEvent -> pop()
-  }
-}
-
-/** A sealed navigation interface intended to be used when making a navigation call back. */
-sealed interface NavEvent : CircuitUiEvent
-
-internal object PopNavEvent : NavEvent
-
-internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
@@ -60,7 +28,10 @@ internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
  * @param onRootPop The callback to handle root [Navigator.pop] calls.
  */
 @Composable
-fun rememberCircuitNavigator(backstack: SaveableBackStack, onRootPop: (() -> Unit)?): Navigator {
+public fun rememberCircuitNavigator(
+  backstack: SaveableBackStack,
+  onRootPop: (() -> Unit)?
+): Navigator {
   return remember { NavigatorImpl(backstack, onRootPop) }
 }
 
@@ -101,15 +72,5 @@ private class NavigatorImpl(
 
   override fun toString(): String {
     return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
-  }
-}
-
-/** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
-fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
-  while (true) {
-    val screen = pop() ?: break
-    if (predicate(screen)) {
-      break
-    }
   }
 }

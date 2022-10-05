@@ -15,8 +15,6 @@
  */
 package com.slack.circuit
 
-import android.os.Parcelable
-
 /**
  * Represents an individual screen, used as a key for [Presenter.Factory] and [Ui.Factory].
  *
@@ -25,7 +23,6 @@ import android.os.Parcelable
  * begin presenting state.
  *
  * ```
- * @Parcelize
  * data class AddFavorites(
  *   val externalId: UUID,
  * ) : Screen
@@ -43,4 +40,4 @@ import android.os.Parcelable
  * }
  * ```
  */
-interface Screen : Parcelable
+public expect interface Screen

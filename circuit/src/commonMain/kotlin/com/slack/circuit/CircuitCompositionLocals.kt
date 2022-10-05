@@ -15,52 +15,38 @@
  */
 package com.slack.circuit
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
-import com.slack.circuit.retained.continuityRetainedStateRegistry
+
+@Composable internal expect fun PlatformCompositionLocals(content: @Composable () -> Unit)
 
 /**
  * Provides the given [circuitConfig] as a [CompositionLocal] to all composables within [content].
  * Also adds any other composition locals that Circuit needs.
  */
 @Composable
-fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Composable () -> Unit) {
+public fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Composable () -> Unit) {
   CompositionLocalProvider(
     LocalCircuitOwner provides circuitConfig,
-    // TODO move these to platform-specific composition locals in KMP
-    LocalRetainedStateRegistryOwner provides continuityRetainedStateRegistry(),
   ) {
-    content()
+    PlatformCompositionLocals(content)
   }
 }
 
-object LocalCircuitOwner {
+public object LocalCircuitOwner {
   private val LocalCircuitConfig = staticCompositionLocalOf<CircuitConfig?> { null }
 
   /**
    * Returns current composition local value for the owner or errors if one has not been provided.
    */
-  val current: CircuitConfig
+  public val current: CircuitConfig
     @Composable get() = LocalCircuitConfig.current ?: error("No circuit available")
 
   /** Associates a [LocalCircuitConfig] key to a value in a call to [CompositionLocalProvider]. */
-  infix fun provides(circuitConfig: CircuitConfig): ProvidedValue<CircuitConfig?> {
+  public infix fun provides(circuitConfig: CircuitConfig): ProvidedValue<CircuitConfig?> {
     return LocalCircuitConfig.provides(circuitConfig)
   }
-}
-
-private fun Context.findActivity(): Activity? {
-  var context = this
-  while (context is ContextWrapper) {
-    if (context is Activity) return context
-    context = context.baseContext
-  }
-  return null
 }

@@ -48,7 +48,7 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  *
- * If using navigation, use [NavigableCircuitContent] instead.
+ * If using navigation, use `NavigableCircuitContent` instead.
  *
  * ```kotlin
  * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
@@ -63,16 +63,17 @@ import androidx.compose.runtime.Immutable
  * @see NavigableCircuitContent
  */
 @Immutable
-class CircuitConfig private constructor(builder: Builder) {
+public class CircuitConfig private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
-  val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = builder.onUnavailableContent
+  public val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? =
+    builder.onUnavailableContent
 
-  fun presenter(screen: Screen, navigator: Navigator): Presenter<*>? {
+  public fun presenter(screen: Screen, navigator: Navigator): Presenter<*>? {
     return nextPresenter(null, screen, navigator)
   }
 
-  fun nextPresenter(
+  public fun nextPresenter(
     skipPast: Presenter.Factory?,
     screen: Screen,
     navigator: Navigator
@@ -88,11 +89,11 @@ class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  fun ui(screen: Screen): ScreenUi? {
+  public fun ui(screen: Screen): ScreenUi? {
     return nextUi(null, screen)
   }
 
-  fun nextUi(skipPast: Ui.Factory?, screen: Screen): ScreenUi? {
+  public fun nextUi(skipPast: Ui.Factory?, screen: Screen): ScreenUi? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
       val ui = uiFactories[i].create(screen, this)
@@ -104,12 +105,13 @@ class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  fun newBuilder() = Builder(this)
+  public fun newBuilder(): Builder = Builder(this)
 
-  class Builder constructor() {
-    val uiFactories = mutableListOf<Ui.Factory>()
-    val presenterFactories = mutableListOf<Presenter.Factory>()
-    var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
+  public class Builder constructor() {
+    public val uiFactories: MutableList<Ui.Factory> = mutableListOf<Ui.Factory>()
+    public val presenterFactories: MutableList<Presenter.Factory> =
+      mutableListOf<Presenter.Factory>()
+    public var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
       private set
 
     internal constructor(circuitConfig: CircuitConfig) : this() {
@@ -117,33 +119,37 @@ class CircuitConfig private constructor(builder: Builder) {
       presenterFactories.addAll(circuitConfig.presenterFactories)
     }
 
-    fun addUiFactory(factory: Ui.Factory) = apply { uiFactories.add(factory) }
+    public fun addUiFactory(factory: Ui.Factory): Builder = apply { uiFactories.add(factory) }
 
-    fun addUiFactory(vararg factory: Ui.Factory) = apply {
+    public fun addUiFactory(vararg factory: Ui.Factory): Builder = apply {
       for (f in factory) {
         uiFactories.add(f)
       }
     }
 
-    fun addUiFactories(factories: Iterable<Ui.Factory>) = apply { uiFactories.addAll(factories) }
+    public fun addUiFactories(factories: Iterable<Ui.Factory>): Builder = apply {
+      uiFactories.addAll(factories)
+    }
 
-    fun addPresenterFactory(factory: Presenter.Factory) = apply { presenterFactories.add(factory) }
+    public fun addPresenterFactory(factory: Presenter.Factory): Builder = apply {
+      presenterFactories.add(factory)
+    }
 
-    fun addPresenterFactory(vararg factory: Presenter.Factory) = apply {
+    public fun addPresenterFactory(vararg factory: Presenter.Factory): Builder = apply {
       for (f in factory) {
         presenterFactories.add(f)
       }
     }
 
-    fun addPresenterFactories(factories: Iterable<Presenter.Factory>) = apply {
+    public fun addPresenterFactories(factories: Iterable<Presenter.Factory>): Builder = apply {
       presenterFactories.addAll(factories)
     }
 
-    fun setOnUnavailableContentCallback(callback: @Composable (screen: Screen) -> Unit) = apply {
-      onUnavailableContent = callback
-    }
+    public fun setOnUnavailableContentCallback(
+      callback: @Composable (screen: Screen) -> Unit
+    ): Builder = apply { onUnavailableContent = callback }
 
-    fun build(): CircuitConfig {
+    public fun build(): CircuitConfig {
       return CircuitConfig(this)
     }
   }

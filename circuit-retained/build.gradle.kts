@@ -3,10 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 plugins {
   id("com.android.library")
   kotlin("multiplatform")
-}
-
-if (hasProperty("SlackRepositoryUrl")) {
-  apply(plugin = "com.vanniktech.maven.publish")
+  id("com.vanniktech.maven.publish")
 }
 
 kotlin {

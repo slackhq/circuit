@@ -33,7 +33,7 @@ import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
 
 @Composable
-fun NavigableCircuitContent(
+public fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
@@ -57,7 +57,7 @@ fun NavigableCircuitContent(
 }
 
 @Composable
-fun BasicNavigableCircuitContent(
+public fun BasicNavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
@@ -94,66 +94,4 @@ fun BasicNavigableCircuitContent(
       CompositionLocalProvider(*providedLocals) { provider() }
     }
   }
-}
-
-@Composable
-fun CircuitContent(
-  screen: Screen,
-  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
-  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
-) {
-  CircuitContent(screen, Navigator.NoOp, circuitConfig, unavailableContent)
-}
-
-@Composable
-fun CircuitContent(
-  screen: Screen,
-  onNavEvent: (event: NavEvent) -> Unit,
-  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
-  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
-) {
-  val navigator =
-    remember(onNavEvent) {
-      object : Navigator {
-        override fun goTo(screen: Screen) {
-          onNavEvent(GoToNavEvent(screen))
-        }
-
-        override fun pop(): Screen? {
-          onNavEvent(PopNavEvent)
-          return null
-        }
-      }
-    }
-  CircuitContent(screen, navigator, circuitConfig, unavailableContent)
-}
-
-@Composable
-private fun CircuitContent(
-  screen: Screen,
-  navigator: Navigator,
-  circuitConfig: CircuitConfig,
-  unavailableContent: (@Composable (screen: Screen) -> Unit)?,
-) {
-  val screenUi = circuitConfig.ui(screen)
-
-  @Suppress("UNCHECKED_CAST")
-  val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
-
-  if (screenUi != null && presenter != null) {
-    @Suppress("UNCHECKED_CAST") (CircuitContent(presenter, screenUi.ui as Ui<CircuitUiState>))
-  } else if (unavailableContent != null) {
-    unavailableContent(screen)
-  } else {
-    error("Could not render screen $screen")
-  }
-}
-
-@Composable
-private fun <UiState : CircuitUiState> CircuitContent(
-  presenter: Presenter<UiState>,
-  ui: Ui<UiState>,
-) {
-  val state = presenter.present()
-  ui.Content(state)
 }

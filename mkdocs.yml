@@ -18,15 +18,15 @@ theme:
   palette:
     - media: '(prefers-color-scheme: light)'
       scheme: default
-      primary: 'teal'
-      accent: 'white'
+      primary: 'white'
+      accent: 'yellow'
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: '(prefers-color-scheme: dark)'
       scheme: slate
-      primary: 'teal'
-      accent: 'white'
+      primary: 'black'
+      accent: 'yellow'
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -57,14 +57,21 @@ markdown_extensions:
   - admonition
 
 nav:
-  - 'Overview':
-      - 'Circuit': index.md
-  # TODO example is from KotlinPoet, adapt from them once we have docs uploaded
-#  - 'API':
-#      - 'kotlinpoet': 1.x/kotlinpoet/index.html
-#      - 'interop-javapoet': 1.x/interop-javapoet/index.html
-#      - 'interop-kotlinx-metadata': 1.x/interop-kotlinx-metadata/index.html
-#      - 'interop-ksp': 1.x/interop-ksp/index.html
+  - 'Introduction': index.md
+  - 'States and Events': states-and-events.md
+  - 'Screen': screen.md
+  - 'CircuitContent': circuit-content.md
+  - 'Navigation': navigation.md
+  - 'Presenter': presenter.md
+  - 'Ui': ui.md
+  - 'Testing': testing.md
+  - 'Factories': factories.md
+  - 'Code Generation': code-gen.md
+  - 'Interop': interop.md
+  - 'API':
+      - 'circuit': api/0.x/circuit/com.slack.circuit/index.md
+      - 'circuit-retained': api/0.x/circuit-retained/com.slack.circuit.retained/index.md
+      - 'backstack': api/0.x/circuit/com.slack.circuit.backstack/index.html
 #  - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
 #  - 'Change Log': changelog.md
   - 'Contributing': contributing.md

@@ -29,14 +29,61 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-/** TODO doc this */
+/**
+ * An OverlayHost can be used [show] [overlays][Overlay] with content on top of other content. This
+ * is useful for one-off request/result flows such as:
+ * - Bottom sheets
+ * - Modals/dialogs
+ * - Tooltips
+ * - Full-screen takeover prompts
+ * - etc.
+ *
+ * The suspend [show] function is generically typed and can be suspended on to await the result of
+ * whatever overlay was launched.
+ *
+ * [currentOverlayData] is read-only and can be used to observe the current overlay data. This is
+ * generally intended to be used wherever the [OverlayHost] is provided via [LocalOverlayHost].
+ *
+ * In Android, this can be managed via the `ContentWithOverlays` composable function.
+ *
+ * To avoid accidentally capturing unnecessary state, it's recommended to create extension functions
+ * on `OverlayHost` that call [show] with the appropriate overlay and result type.
+ *
+ * ```
+ * private suspend fun OverlayHost.confirm(message: String): ConfirmationResult {
+ *   return show(ConfirmationOverlay(message))
+ * }
+ * ```
+ */
 @Stable
 public interface OverlayHost {
+  /**
+   * The current [OverlayHostData] or null if no overlay is currently showing.
+   *
+   * ```
+   * val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
+   * Box(modifier) {
+   *   content() // The regular content
+   *   key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }
+   * }
+   * ```
+   */
   public val currentOverlayData: OverlayHostData<Any>?
-  public suspend fun <T : Any> show(overlay: Overlay<T>): T
+
+  /**
+   * Shows the given [overlay] and suspends until the overlay is finished with a [Result]. The
+   * overlay should _always_ signal a result (even if it's just something like `Result.Dismissed`)
+   * so that the [OverlayHost] can properly clear its [currentOverlayData].
+   *
+   * If no data is needed in a result, use [Unit] for the result type.
+   *
+   * This function should only be called from UI contexts and _not_ presenters, as overlays are a UI
+   * concern.
+   */
+  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Result
 }
 
-/** TODO doc this */
+/** Returns a remembered an [OverlayHost] that can be used to show overlays. */
 @Composable public fun rememberOverlayHost(): OverlayHost = remember { OverlayHostImpl() }
 
 private class OverlayHostImpl : OverlayHost {
@@ -66,11 +113,20 @@ private class OverlayHostImpl : OverlayHost {
     }
 }
 
-/** TODO doc this */
+/**
+ * Data managed by an [OverlayHost] to track the current overlay state. This should rarely be
+ * implemented by consumers!
+ */
 @Stable
-public interface OverlayHostData<T : Any> {
-  public val overlay: Overlay<T>
-  public fun finish(result: T)
+public interface OverlayHostData<Result : Any> {
+  /** The [Overlay] that is currently being shown. Read-only. */
+  public val overlay: Overlay<Result>
+
+  /**
+   * Invoked to finish the current overlay with the given [result]. This should be called by
+   * wherever the [OverlayHost] is being managed.
+   */
+  public fun finish(result: Result)
 }
 
 private class OverlayHostDataImpl<T : Any>(
@@ -100,18 +156,30 @@ private class OverlayHostDataImpl<T : Any>(
   }
 }
 
-/** TODO doc this */
+/**
+ * An [OverlayNavigator] is a simple API offered to [overlays][Overlay] to call [finish] with a
+ * result when they are done.
+ */
 @Stable
-public fun interface OverlayNavigator<T : Any> {
-  public fun finish(result: T)
+public fun interface OverlayNavigator<Result : Any> {
+  /** Called by the [Overlay] with a [result] it's done. */
+  public fun finish(result: Result)
 }
 
-/** TODO doc this */
-public interface Overlay<T : Any> {
-  @Composable public fun Content(navigator: OverlayNavigator<T>)
+/**
+ * An [Overlay] is composable content that can be shown on top of other content via an [OverlayHost]
+ * . Overlays are typically used for one-off request/result flows and should not usually attempt to
+ * do any sort of external navigation or make any assumptions about the state of the app. They
+ * should only emit a [Result] to the given `OverlayNavigator` when they are done.
+ *
+ * For common overlays, it's useful to create a common `Overlay` subtype that can be reused. For
+ * example: `BottomSheetOverlay`, `ModalOverlay`, `TooltipOverlay`, etc.
+ */
+public interface Overlay<Result : Any> {
+  @Composable public fun Content(navigator: OverlayNavigator<Result>)
 }
 
-/** TODO doc this */
+/** A [ProvidableCompositionLocal] to expose the current [OverlayHost] in the composition tree. */
 public val LocalOverlayHost: ProvidableCompositionLocal<OverlayHost> = compositionLocalOf {
   error("No OverlayHost provided")
 }

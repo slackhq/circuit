@@ -26,6 +26,10 @@ import androidx.compose.ui.Modifier
 /**
  * Renders the given [content] with the ability to show overlays on top of it. This works by
  * exposing an [OverlayHost] via [LocalOverlayHost].
+ *
+ * @param modifier The modifier to be applied to the layout.
+ * @param overlayHost the [OverlayHost] to use for managing overlays.
+ * @param content The regular content to render. Any overlays will be rendered over them.
  */
 @Composable
 public fun ContentWithOverlays(

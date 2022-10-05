@@ -174,7 +174,7 @@ fun HomeContent(state: HomeScreen.State) {
           IconButton(
             onClick = {
               scope.launch {
-                val result = overlayHost.showFiltersSheet(state.petListFilterState)
+                val result = overlayHost.updateFilters(state.petListFilterState)
                 state.eventSink(
                   PetListFilterEvent(PetListFilterScreen.Event.UpdatedFilters(result))
                 )
@@ -227,7 +227,7 @@ private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Un
   }
 }
 
-private suspend fun OverlayHost.showFiltersSheet(state: PetListFilterScreen.State): Filters {
+private suspend fun OverlayHost.updateFilters(state: PetListFilterScreen.State): Filters {
   return show(
     BottomSheetOverlay(
       model = state.filters,

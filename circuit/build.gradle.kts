@@ -29,9 +29,12 @@ kotlin {
         implementation(libs.androidx.compose.integration.activity)
       }
     }
-    maybeCreate("commonTest").apply {
+     maybeCreate("commonTest").apply {
       dependencies {
         implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+        implementation(libs.turbine)
+        implementation(libs.coroutines.test)
       }
     }
     val commonJvmTest = maybeCreate("commonJvmTest").apply {

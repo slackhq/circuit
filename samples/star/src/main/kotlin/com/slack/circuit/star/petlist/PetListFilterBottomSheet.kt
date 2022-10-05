@@ -40,14 +40,11 @@ import kotlinx.parcelize.Parcelize
 object PetListFilterScreen : Screen {
   data class State(
     val filters: Filters,
-    val showBottomSheet: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    object ToggleAnimalFilter : Event
-    data class FilterByGender(val gender: Gender) : Event
-    data class FilterBySize(val size: Size) : Event
+    data class UpdatedFilters(val newFilters: Filters) : Event
   }
 }
 
@@ -78,20 +75,12 @@ class PetListFilterPresenter @AssistedInject constructor() : Presenter<PetListFi
   @Composable
   override fun present(): PetListFilterScreen.State {
     var filters by remember { mutableStateOf(Filters()) }
-    var showBottomSheet by remember { mutableStateOf(false) }
 
-    return PetListFilterScreen.State(filters, showBottomSheet) { event ->
-      when (event) {
-        PetListFilterScreen.Event.ToggleAnimalFilter -> {
-          showBottomSheet = !showBottomSheet
+    return PetListFilterScreen.State(filters) { event ->
+      filters =
+        when (event) {
+          is PetListFilterScreen.Event.UpdatedFilters -> event.newFilters
         }
-        is PetListFilterScreen.Event.FilterByGender -> {
-          filters = filters.copy(gender = event.gender)
-        }
-        is PetListFilterScreen.Event.FilterBySize -> {
-          filters = filters.copy(size = event.size)
-        }
-      }
     }
   }
 

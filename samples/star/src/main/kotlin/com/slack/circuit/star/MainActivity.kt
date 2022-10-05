@@ -55,9 +55,7 @@ constructor(
           val navigator =
             rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
           CircuitCompositionLocals(circuitConfig) {
-            ContentWithOverlays {
-              NavigableCircuitContent(navigator, backstack)
-            }
+            ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
           }
         }
       }

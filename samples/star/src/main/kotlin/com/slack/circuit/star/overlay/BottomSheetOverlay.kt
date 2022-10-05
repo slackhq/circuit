@@ -66,6 +66,7 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
           // Delay setting the result until we've finished dismissing
           val coroutineScope = rememberCoroutineScope()
           content(model) { result ->
+            // This is the OverlayNavigator.finish() callback
             coroutineScope.launch {
               sheetState.hide()
               navigator.finish(result)

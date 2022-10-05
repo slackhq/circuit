@@ -26,12 +26,9 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -60,6 +57,8 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.HomeEvent
 import com.slack.circuit.star.home.HomeScreen.Event.PetListFilterEvent
+import com.slack.circuit.star.overlay.ModalMessage
+import com.slack.circuit.star.overlay.ModalMessageModel
 import com.slack.circuit.star.petlist.Gender
 import com.slack.circuit.star.petlist.PetListFilterPresenter
 import com.slack.circuit.star.petlist.PetListFilterScreen
@@ -185,17 +184,7 @@ fun HomeContent(state: HomeScreen.State) {
               containerColor = MaterialTheme.colorScheme.background
             ),
           actions = {
-            IconButton(
-              onClick = {
-                state.eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
-              }
-            ) {
-              Icon(
-                imageVector = Icons.Default.FilterList,
-                contentDescription = "Filter pet list",
-                tint = MaterialTheme.colorScheme.onBackground
-              )
-            }
+            ModalMessage(ModalMessageModel("Title", "You have a new message"))
           },
         )
       },

@@ -19,6 +19,7 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.dokka.gradle.DokkaTask
@@ -157,23 +158,19 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
 
     tasks.withType<DokkaTask>().configureEach {
-      outputDirectory.set(rootDir.resolve("../docs/0.x"))
+      outputDirectory.set(rootProject.rootDir.resolve("docs/api/0.x"))
       dokkaSourceSets.configureEach {
+        if (name.contains("androidTest", ignoreCase = true)) {
+          suppress.set(true)
+        }
         skipDeprecated.set(true)
-        // TODO link compose+android docs
+        // AndroidX and Android docs are automatically added by the Dokka plugin.
       }
     }
 
-    // Add our maven repository repo
-    configure<PublishingExtension> {
-      val url = providers.gradleProperty("SlackRepositoryUrl").get()
-      repositories {
-        maven {
-          name = "SlackRepository"
-          setUrl(url)
-          credentials(PasswordCredentials::class.java)
-        }
-      }
+    configure<MavenPublishBaseExtension> {
+      publishToMavenCentral(automaticRelease = true)
+      signAllPublications()
     }
   }
 

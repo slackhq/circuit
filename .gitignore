@@ -23,4 +23,6 @@ out/
 
 docs/code-of-conduct.md
 docs/contributing.md
+docs/api/
 site/
+temp-clone/

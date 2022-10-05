@@ -17,6 +17,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -113,8 +114,7 @@ data class PetListScreen(val filters: Filters = Filters()) : Screen {
             val animals: List<PetListAnimal>,
             override val isRefreshing: Boolean,
             val eventSink: (Event) -> Unit
-        ) :
-            State
+        ) : State
     }
 
     sealed interface Event : CircuitUiEvent {
@@ -128,7 +128,7 @@ class PetListScreenPresenterFactory
 @Inject constructor(
     private val petListPresenterFactory: PetListPresenter.Factory,
 ) : Presenter.Factory {
-    override fun create(screen: Screen, navigator: Navigator): Presenter<*, *>? {
+    override fun create(screen: Screen, navigator: Navigator, circuitConfig: CircuitConfig): Presenter<*>? {
         if (screen is PetListScreen) return petListPresenterFactory.create(navigator, screen)
         return null
     }
@@ -144,16 +144,14 @@ constructor(
     @Composable
     override fun present(): PetListScreen.State {
         var isRefreshing by remember { mutableStateOf(false) }
-
         val animalState by
-        produceRetainedState<List<PetListAnimal>?>(null) {
+        produceRetainedState<List<PetListAnimal>?>(null, isRefreshing) {
             val animals = petRepo.getAnimals(isRefreshing)
             isRefreshing = false
             value = animals.map { it.toPetListAnimal() }
         }
 
-        return remember(screen, animalState) {
-
+        return remember(screen, animalState, isRefreshing) {
             val animals = animalState
             when {
                 animals == null -> PetListScreen.State.Loading
@@ -177,6 +175,11 @@ constructor(
                     }
             }
         }
+    }
+
+    private fun shouldKeep(animal: PetListAnimal): Boolean {
+        return screen.filters.gender.shouldKeep(animal.gender) &&
+                screen.filters.size.shouldKeep(animal.size)
     }
 
     private fun Gender.shouldKeep(gender: String): Boolean {
@@ -261,7 +264,7 @@ internal fun PetList(
                     .fillMaxSize(),
                 animals = state.animals,
                 state.isRefreshing,
-                eventSink = eventSink
+                eventSink = state.eventSink
             )
         }
 

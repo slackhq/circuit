@@ -100,7 +100,9 @@ class PetListTest {
     val animals = listOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(Modifier, PetListScreen.State.Success(animals, false, channel::trySend)) }
+      setContent {
+        PetList(Modifier, PetListScreen.State.Success(animals, false, channel::trySend))
+      }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 

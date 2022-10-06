@@ -18,24 +18,11 @@ package com.slack.circuit.star.petlist
 import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,14 +38,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
-import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
+import com.slack.circuit.*
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.data.Animal
@@ -70,7 +50,6 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -123,7 +102,7 @@ data class PetListScreen(val filters: Filters = Filters()) : Screen {
 
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
-    object RefreshAnimals : Event
+    object Refresh : Event
   }
 }
 
@@ -172,7 +151,7 @@ constructor(
               is PetListScreen.Event.ClickAnimal -> {
                 navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
               }
-              PetListScreen.Event.RefreshAnimals -> isRefreshing = true
+              PetListScreen.Event.Refresh -> isRefreshing = true
             }
           }
       }
@@ -274,7 +253,7 @@ private fun PetListGrid(
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   SwipeRefresh(
     state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-    onRefresh = { eventSink(PetListScreen.Event.RefreshAnimals) }
+    onRefresh = { eventSink(PetListScreen.Event.Refresh) }
   ) {
     LazyVerticalGrid(
       columns = GridCells.Fixed(if (isLandscape) 3 else 2),

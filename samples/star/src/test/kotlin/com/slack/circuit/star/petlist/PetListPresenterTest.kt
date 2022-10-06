@@ -44,7 +44,7 @@ class PetListPresenterTest {
 
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
-      assertThat(awaitItem()).isEqualTo(PetListScreen.State.NoAnimals)
+      assertThat(awaitItem()).isEqualTo(PetListScreen.State.NoAnimals(false))
     }
   }
 
@@ -111,7 +111,7 @@ class PetListPresenterTest {
 }
 
 class TestRepository(private val animals: List<Animal>) : PetRepository {
-  override suspend fun getAnimals(): List<Animal> = animals
+  override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> = animals
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
 }
 

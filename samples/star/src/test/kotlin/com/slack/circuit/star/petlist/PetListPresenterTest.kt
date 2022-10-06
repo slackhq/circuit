@@ -44,7 +44,7 @@ class PetListPresenterTest {
 
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
-      assertThat(awaitItem()).isEqualTo(PetListScreen.State.NoAnimals(false))
+      assertThat(awaitItem()).isEqualTo(PetListScreen.State.NoAnimals(isRefreshing = false))
     }
   }
 

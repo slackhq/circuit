@@ -65,7 +65,7 @@ class PetListTest {
   @Test
   fun petList_show_message_for_no_animals_state() {
     composeTestRule.run {
-      setContent { PetList(Modifier, PetListScreen.State.NoAnimals(false)) }
+      setContent { PetList(Modifier, PetListScreen.State.NoAnimals(isRefreshing = false)) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
@@ -81,7 +81,9 @@ class PetListTest {
     val animals = listOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(Modifier, PetListScreen.State.Success(animals, false) {}) }
+      setContent {
+        PetList(Modifier, PetListScreen.State.Success(animals, isRefreshing = false) {})
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -101,7 +103,10 @@ class PetListTest {
 
     composeTestRule.run {
       setContent {
-        PetList(Modifier, PetListScreen.State.Success(animals, false, channel::trySend))
+        PetList(
+          Modifier,
+          PetListScreen.State.Success(animals, isRefreshing = false, channel::trySend)
+        )
       }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()

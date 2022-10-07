@@ -15,10 +15,7 @@
  */
 package com.slack.circuit.star.petlist
 
-import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.data.Breeds
 import com.slack.circuit.star.data.Colors

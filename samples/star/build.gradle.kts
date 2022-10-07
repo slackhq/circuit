@@ -79,6 +79,7 @@ dependencies {
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
   testImplementation(libs.robolectric)
+  testImplementation(projects.circuitTest)
 
   debugImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.androidx.compose.ui.testing.junit)

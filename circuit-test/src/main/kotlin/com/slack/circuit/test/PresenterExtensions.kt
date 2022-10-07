@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.star
+package com.slack.circuit.test
 
 import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
@@ -23,7 +23,17 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import kotlin.time.Duration
 
-suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
+/**
+ * Presents this [Presenter] and invokes a `suspend` [ReceiveTurbine] [block] that can be used to
+ * assert state emissions from this presenter.
+ *
+ * @see moleculeFlow
+ * @see test
+ *
+ * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
+ * @param block the block to invoke.
+ */
+public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   timeout: Duration? = null,
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {

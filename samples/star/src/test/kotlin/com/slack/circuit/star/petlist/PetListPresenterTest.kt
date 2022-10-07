@@ -27,7 +27,7 @@ import com.slack.circuit.star.data.Links
 import com.slack.circuit.star.data.Photo
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.star.test
+import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith

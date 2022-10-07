@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.test
 
+import androidx.compose.runtime.Composable
 import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.ReceiveTurbine
@@ -37,5 +38,25 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   timeout: Duration? = null,
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {
+  presenterTestOf({ present() }, timeout, block)
   moleculeFlow(RecompositionClock.Immediate) { present() }.test(timeout, block)
+}
+
+/**
+ * Presents this [presentFunction] and invokes a `suspend` [ReceiveTurbine] [block] that can be used
+ * to assert state emissions from it.
+ *
+ * @see moleculeFlow
+ * @see test
+ *
+ * @param presentFunction the [Composable] present function being tested.
+ * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
+ * @param block the block to invoke.
+ */
+public suspend fun <UiState : CircuitUiState> presenterTestOf(
+  presentFunction: @Composable () -> UiState,
+  timeout: Duration? = null,
+  block: suspend ReceiveTurbine<UiState>.() -> Unit
+) {
+  moleculeFlow(RecompositionClock.Immediate, presentFunction).test(timeout, block)
 }

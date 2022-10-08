@@ -7,12 +7,10 @@ plugins {
 }
 
 kotlin {
-  //region KMP Targets
-  android {
-    publishLibraryVariants("release")
-  }
+  // region KMP Targets
+  android { publishLibraryVariants("release") }
   jvm()
-  //endregion
+  // endregion
 
   sourceSets {
     commonMain {
@@ -32,28 +30,24 @@ kotlin {
     maybeCreate("commonTest").apply {
       dependencies {
         implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+        implementation(libs.turbine)
+        implementation(libs.coroutines.test)
       }
     }
-    val commonJvmTest = maybeCreate("commonJvmTest").apply {
-      dependencies {
-        implementation(libs.junit)
-        implementation(libs.truth)
+    val commonJvmTest =
+      maybeCreate("commonJvmTest").apply {
+        dependencies {
+          implementation(libs.junit)
+          implementation(libs.truth)
+        }
       }
-    }
-    maybeCreate("jvmTest").apply {
-      dependsOn(commonJvmTest)
-    }
+    maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
   }
 }
 
-android {
-  namespace = "com.slack.circuit.core"
-}
+android { namespace = "com.slack.circuit.core" }
 
-androidComponents {
-  beforeVariants { variant -> variant.enableAndroidTest = false }
-}
+androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
-dependencies {
-  add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
-}
+dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }

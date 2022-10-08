@@ -15,20 +15,20 @@
  */
 package com.slack.circuit.star.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,17 +40,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.LocalOverlayHost
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
+import com.slack.circuit.OverlayHost
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
@@ -60,6 +67,8 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.HomeEvent
 import com.slack.circuit.star.home.HomeScreen.Event.PetListFilterEvent
+import com.slack.circuit.star.overlay.BottomSheetOverlay
+import com.slack.circuit.star.petlist.Filters
 import com.slack.circuit.star.petlist.Gender
 import com.slack.circuit.star.petlist.PetListFilterPresenter
 import com.slack.circuit.star.petlist.PetListFilterScreen
@@ -71,6 +80,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -141,79 +151,59 @@ class HomeUiFactory @Inject constructor() : Ui.Factory {
 
 private fun homeUi() = ui<HomeScreen.State> { state -> HomeContent(state) }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(state: HomeScreen.State) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
-  val modalState =
-    rememberModalBottomSheetState(
-      initialValue =
-        if (state.petListFilterState.showBottomSheet) ModalBottomSheetValue.Expanded
-        else ModalBottomSheetValue.Hidden
-    )
 
-  // Monitor bottom sheet state and emit event whenever the user dismisses the modal
-  LaunchedEffect(modalState) {
-    snapshotFlow { modalState.isVisible }
-      .collect { isVisible ->
-        // Toggle if state says the modal should be visible but the snapshot says it isn't.
-        if (state.petListFilterState.showBottomSheet && !isVisible)
-          state.eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
-      }
-  }
-
-  ModalBottomSheetLayout(
-    sheetState = modalState,
-    sheetContent = {
-      Column {
-        GenderFilterOption(state.petListFilterState, state.eventSink)
-        SizeFilterOption(state.petListFilterState, state.eventSink)
-      }
-    }
-  ) {
-    Scaffold(
-      modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
-      topBar = {
-        CenterAlignedTopAppBar(
-          title = {
-            Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
-          },
-          colors =
-            TopAppBarDefaults.centerAlignedTopAppBarColors(
-              containerColor = MaterialTheme.colorScheme.background
-            ),
-          actions = {
-            IconButton(
-              onClick = {
-                state.eventSink(PetListFilterEvent(PetListFilterScreen.Event.ToggleAnimalFilter))
+  Scaffold(
+    modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
+        },
+        colors =
+          TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background
+          ),
+        actions = {
+          val scope = rememberCoroutineScope()
+          val overlayHost = LocalOverlayHost.current
+          IconButton(
+            onClick = {
+              scope.launch {
+                val result = overlayHost.updateFilters(state.petListFilterState)
+                state.eventSink(
+                  PetListFilterEvent(PetListFilterScreen.Event.UpdatedFilters(result))
+                )
               }
-            ) {
-              Icon(
-                imageVector = Icons.Default.FilterList,
-                contentDescription = "Filter pet list",
-                tint = MaterialTheme.colorScheme.onBackground
-              )
             }
-          },
-        )
-      },
-      bottomBar = {
-        StarTheme(useDarkTheme = true) {
-          BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-            state.eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
+          ) {
+            Icon(
+              imageVector = Icons.Default.FilterList,
+              contentDescription = "Filter pet list",
+              tint = MaterialTheme.colorScheme.onBackground
+            )
           }
+        },
+      )
+    },
+    bottomBar = {
+      StarTheme(useDarkTheme = true) {
+        BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
+          state.eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
         }
       }
-    ) { paddingValues ->
-      Box(modifier = Modifier.padding(paddingValues)) {
-        val screen =
-          state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
-            state.petListFilterState.filters
-          )
-        CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
-      }
+    }
+  ) { paddingValues ->
+    Box(modifier = Modifier.padding(paddingValues)) {
+      val screen =
+        state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
+          state.petListFilterState.filters
+        )
+      CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
     }
   }
 }
@@ -237,22 +227,38 @@ private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Un
   }
 }
 
+private suspend fun OverlayHost.updateFilters(state: PetListFilterScreen.State): Filters {
+  return show(
+    BottomSheetOverlay(
+      model = state.filters,
+      onDismiss = { state.filters },
+    ) { initialFilters, overlayNavigator ->
+      var filters by remember { mutableStateOf(initialFilters) }
+      Column(Modifier.fillMaxWidth()) {
+        GenderFilterOption(filters.gender) { filters = filters.copy(gender = it) }
+        SizeFilterOption(filters.size) { filters = filters.copy(size = it) }
+
+        Row(Modifier.align(End)) {
+          Button(onClick = { overlayNavigator.finish(initialFilters) }) { Text("Cancel") }
+          Spacer(Modifier.width(16.dp))
+          Button(onClick = { overlayNavigator.finish(filters) }) { Text("Save") }
+        }
+      }
+    }
+  )
+}
+
 @Composable
 private fun GenderFilterOption(
-  state: PetListFilterScreen.State,
-  eventSink: (HomeScreen.Event) -> Unit,
+  selected: Gender,
+  selectedGender: (Gender) -> Unit,
 ) {
   Box { Text(text = "Gender") }
-  Row(modifier = Modifier.selectableGroup()) {
+  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
     Gender.values().forEach { gender ->
       Column {
         Text(text = gender.name)
-        RadioButton(
-          selected = state.filters.gender == gender,
-          onClick = {
-            eventSink(PetListFilterEvent(PetListFilterScreen.Event.FilterByGender(gender)))
-          }
-        )
+        RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
       }
     }
   }
@@ -260,18 +266,15 @@ private fun GenderFilterOption(
 
 @Composable
 private fun SizeFilterOption(
-  state: PetListFilterScreen.State,
-  eventSink: (HomeScreen.Event) -> Unit,
+  selected: Size,
+  selectedSize: (Size) -> Unit,
 ) {
   Box { Text(text = "Size") }
-  Row(modifier = Modifier.selectableGroup()) {
+  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
     Size.values().forEach { size ->
       Column {
         Text(text = size.name)
-        RadioButton(
-          selected = state.filters.size == size,
-          onClick = { eventSink(PetListFilterEvent(PetListFilterScreen.Event.FilterBySize(size))) }
-        )
+        RadioButton(selected = selected == size, onClick = { selectedSize(size) })
       }
     }
   }

@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
+import com.slack.circuit.ContentWithOverlays
 import com.slack.circuit.NavigableCircuitContent
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.push
@@ -53,7 +54,9 @@ constructor(
           val backstack = rememberSaveableBackStack { push(HomeScreen) }
           val navigator =
             rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
-          CircuitCompositionLocals(circuitConfig) { NavigableCircuitContent(navigator, backstack) }
+          CircuitCompositionLocals(circuitConfig) {
+            ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
+          }
         }
       }
     }

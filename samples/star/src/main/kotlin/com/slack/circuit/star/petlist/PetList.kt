@@ -152,20 +152,18 @@ constructor(
         value = animals.map { it.toPetListAnimal() }
       }
 
-    return remember(screen, animalState) {
-      val animals = animalState
-      when {
-        animals == null -> PetListScreen.State.Loading
-        animals.isEmpty() -> PetListScreen.State.NoAnimals
-        else ->
-          PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
-            when (event) {
-              is PetListScreen.Event.ClickAnimal -> {
-                navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
-              }
+    val animals = animalState
+    when {
+      animals == null -> PetListScreen.State.Loading
+      animals.isEmpty() -> PetListScreen.State.NoAnimals
+      else ->
+        PetListScreen.State.Success(animals = animals.filter(::shouldKeep)) { event ->
+          when (event) {
+            is PetListScreen.Event.ClickAnimal -> {
+              navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
             }
           }
-      }
+        }
     }
   }
 

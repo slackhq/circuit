@@ -56,6 +56,17 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
           }
         }
       )
+
+    val coroutineScope = rememberCoroutineScope()
+    val localNavigator = object : OverlayNavigator<Result> by navigator {
+        override fun finish(result: Result?) {
+            coroutineScope.launch {
+                sheetState.hide()
+                navigator.finish(result)
+            }
+        }
+    }
+
     ModalBottomSheetLayout(
       modifier = Modifier.fillMaxSize(),
       sheetContent = {
@@ -64,14 +75,15 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
         Box(Modifier.padding(32.dp)) {
           Box(Modifier.fillMaxSize(0.51f))
           // Delay setting the result until we've finished dismissing
-          val coroutineScope = rememberCoroutineScope()
-          content(model) { result ->
-            // This is the OverlayNavigator.finish() callback
-            coroutineScope.launch {
-              sheetState.hide()
-              navigator.finish(result)
-            }
-          }
+//          val coroutineScope = rememberCoroutineScope()
+//          content(model) { result ->
+//            // This is the OverlayNavigator.finish() callback
+//            coroutineScope.launch {
+//              sheetState.hide()
+//              navigator.finish(result)
+//            }
+//          }
+          content(model, localNavigator)
         }
       },
       sheetState = sheetState,

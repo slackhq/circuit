@@ -17,6 +17,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.End
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,6 +80,7 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.LocalOverlayHost
 import com.slack.circuit.Navigator
 import com.slack.circuit.OverlayHost
+import com.slack.circuit.OverlayNavigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
@@ -100,6 +102,7 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
@@ -280,8 +283,13 @@ internal fun PetList(
     val eventSink = state.eventSink
     val overlayHost = LocalOverlayHost.current
     LaunchedEffect(state) {
-      val result = overlayHost.updateFilters(state.filters)
-      eventSink(PetListScreen.Event.UpdatedFilters(result))
+      overlayHost
+        .updateFilters(state.filters)
+        .collect { filters ->
+          eventSink(
+            PetListScreen.Event.UpdatedFilters(filters)
+          )
+        }
     }
   }
 
@@ -325,7 +333,9 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
           animals = state.animals,
           isRefreshing = state.isRefreshing,
           eventSink = state.eventSink
@@ -369,7 +379,9 @@ private fun PetListGrid(
 @Composable
 private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
   ElevatedCard(
-    modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
+    modifier = Modifier
+      .fillMaxWidth()
+      .testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(
@@ -380,7 +392,10 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
-        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+        modifier = Modifier
+          .fillMaxWidth()
+          .aspectRatio(1f)
+          .testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(animal.imageUrl)
@@ -409,13 +424,13 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
   }
 }
 
-private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
+private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Flow<Filters> {
   return show(
     BottomSheetOverlay(
       model = currentFilters,
       onDismiss = { currentFilters },
     ) { initialFilters, overlayNavigator ->
-      UpdateFiltersSheet(initialFilters, overlayNavigator::finish)
+      UpdateFiltersSheet(initialFilters, overlayNavigator)
     }
   )
 }
@@ -427,16 +442,22 @@ internal fun PreviewUpdateFiltersSheet() {
 }
 
 @Composable
-private fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> Unit = {}) {
+private fun UpdateFiltersSheet(initialFilters: Filters, overlayNavigator: OverlayNavigator<Filters>) {
   var filters by remember { mutableStateOf(initialFilters) }
   Column(Modifier.fillMaxWidth()) {
-    GenderFilterOption(filters.gender) { filters = filters.copy(gender = it) }
-    SizeFilterOption(filters.size) { filters = filters.copy(size = it) }
+    GenderFilterOption(filters.gender) {
+      filters = filters.copy(gender = it)
+      overlayNavigator.emit(filters)
+    }
+    SizeFilterOption(filters.size) {
+      filters = filters.copy(size = it)
+      overlayNavigator.emit(filters)
+    }
 
     Row(Modifier.align(Alignment.End)) {
-      Button(onClick = { onDismiss(initialFilters) }) { Text("Cancel") }
+      Button(onClick = { overlayNavigator.finish(initialFilters) }) { Text("Cancel") }
       Spacer(Modifier.width(16.dp))
-      Button(onClick = { onDismiss(filters) }) { Text("Save") }
+      Button(onClick = { overlayNavigator.finish(filters) }) { Text("Save") }
     }
   }
 }

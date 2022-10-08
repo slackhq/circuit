@@ -15,7 +15,6 @@
  */
 package com.slack.circuit.star.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -83,11 +82,11 @@ class AboutUiFactory @Inject constructor() : Ui.Factory {
 private fun aboutScreenUi() = ui<AboutScreen.State> { About() }
 
 @Composable
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun About() {
   Scaffold(
-    content = {
-      Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+    modifier = Modifier.fillMaxSize().padding(16.dp),
+    content = { padding ->
+      Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
         Text(text = stringResource(id = R.string.about_screen))
       }
     }

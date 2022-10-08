@@ -30,9 +30,15 @@ import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
+/**
+ * A simple [TokenStorage] that uses `DataStore` to store [AuthenticationData] for reuse across app
+ * sessions.
+ */
 interface TokenStorage {
-  suspend fun updateToken(token: AuthenticationData)
-  suspend fun getToken(): AuthenticationData?
+  /** Updates the current stored auth data. */
+  suspend fun updateAuthData(authData: AuthenticationData)
+  /** Returns the current auth data or null if none are stored. */
+  suspend fun getAuthData(): AuthenticationData?
 }
 
 @ContributesBinding(AppScope::class)
@@ -41,15 +47,16 @@ class TokenStorageImpl @Inject constructor(@ApplicationContext context: Context)
   private val datastore =
     PreferenceDataStoreFactory.create { context.preferencesDataStoreFile("TokenManager") }
 
-  override suspend fun updateToken(token: AuthenticationData) {
+  override suspend fun updateAuthData(authData: AuthenticationData) {
     datastore.edit { prefs ->
-      prefs[expirationKey] = Instant.now().plus(Duration.ofSeconds(token.expiresIn)).toEpochMilli()
-      prefs[authTokenTypeKey] = token.tokenType
-      prefs[authTokenKey] = token.accessToken
+      prefs[expirationKey] =
+        Instant.now().plus(Duration.ofSeconds(authData.expiresIn)).toEpochMilli()
+      prefs[authTokenTypeKey] = authData.tokenType
+      prefs[authTokenKey] = authData.accessToken
     }
   }
 
-  override suspend fun getToken(): AuthenticationData? {
+  override suspend fun getAuthData(): AuthenticationData? {
     val expiration = datastore.data.first()[expirationKey]
     val tokenType = datastore.data.first()[authTokenTypeKey]
     val token = datastore.data.first()[authTokenKey]

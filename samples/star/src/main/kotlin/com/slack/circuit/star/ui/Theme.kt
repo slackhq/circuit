@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.star.ui
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -87,6 +88,7 @@ private val DarkColors =
     surfaceTint = md_theme_dark_surfaceTint,
   )
 
+@SuppressLint("NewApi") // False positive because we do check the API level.
 @Composable
 fun StarTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),

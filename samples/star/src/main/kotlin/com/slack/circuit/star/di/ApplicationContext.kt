@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.star
+package com.slack.circuit.star.di
 
-import android.app.Application
-import com.slack.circuit.star.di.AppComponent
+import android.content.Context
+import javax.inject.Qualifier
 
-class StarApp : Application() {
-
-  private val appComponent by lazy { AppComponent.create(this) }
-
-  fun appComponent() = appComponent
-}
+/** Qualifier to denote a [Context] that is specifically an Application context. */
+@Qualifier annotation class ApplicationContext

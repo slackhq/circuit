@@ -21,6 +21,7 @@ import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
+import javax.inject.Qualifier
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -49,21 +50,45 @@ object DataModule {
       .build()
   }
 
+  /** Qualifier to denote that a provided type is authenticated. */
+  @Qualifier annotation class Authenticated
+
   @Provides
   @SingleIn(AppScope::class)
-  fun providePetfinderApi(moshi: Moshi, okHttpClient: OkHttpClient): PetfinderApi {
-    val baseRetrofit =
-      Retrofit.Builder()
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl("https://api.petfinder.com/v2/")
-        .client(okHttpClient)
-        .build()
+  fun provideRetrofit(
+    moshi: Moshi,
+    okHttpClientLazy: dagger.Lazy<OkHttpClient>,
+  ): Retrofit {
+    return Retrofit.Builder()
+      .addConverterFactory(MoshiConverterFactory.create(moshi))
+      .baseUrl("https://api.petfinder.com/v2/")
+      .callFactory { okHttpClientLazy.get().newCall(it) }
+      .build()
+  }
+
+  @Authenticated
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideAuthedOkHttpClient(
+    baseRetrofit: Retrofit,
+    tokenStorage: TokenStorage,
+    okHttpClient: OkHttpClient,
+  ): OkHttpClient {
     val authApi = baseRetrofit.create<PetfinderAuthApi>()
-    val tokenManager = TokenManager(authApi)
+    val tokenManager = TokenManager(authApi, tokenStorage)
     val authInterceptor = AuthInterceptor(tokenManager)
+    return okHttpClient.newBuilder().addInterceptor(authInterceptor).build()
+  }
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun providePetfinderApi(
+    baseRetrofit: Retrofit,
+    @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
+  ): PetfinderApi {
     return baseRetrofit
       .newBuilder()
-      .client(okHttpClient.newBuilder().addInterceptor(authInterceptor).build())
+      .callFactory { okHttpClientLazy.get().newCall(it) }
       .build()
       .create()
   }

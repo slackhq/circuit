@@ -18,7 +18,7 @@ package com.slack.circuit.star.petlist
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
@@ -39,11 +39,13 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object PetListFilterScreen : Screen {
   data class State(
+    val showUpdateFiltersModal: Boolean,
     val filters: Filters,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
+    object UpdateFilters : Event
     data class UpdatedFilters(val newFilters: Filters) : Event
   }
 }
@@ -74,13 +76,18 @@ constructor(private val petListFilterPresenterFactory: PetListFilterPresenter.Fa
 class PetListFilterPresenter @AssistedInject constructor() : Presenter<PetListFilterScreen.State> {
   @Composable
   override fun present(): PetListFilterScreen.State {
-    var filters by remember { mutableStateOf(Filters()) }
+    var showUpdateFiltersModal by rememberSaveable { mutableStateOf(false) }
+    var filters by rememberSaveable { mutableStateOf(Filters()) }
 
-    return PetListFilterScreen.State(filters) { event ->
-      filters =
-        when (event) {
-          is PetListFilterScreen.Event.UpdatedFilters -> event.newFilters
+    return PetListFilterScreen.State(showUpdateFiltersModal, filters) { event ->
+      when (event) {
+        is PetListFilterScreen.Event.UpdatedFilters -> {
+          filters = event.newFilters
         }
+        PetListFilterScreen.Event.UpdateFilters -> {
+          showUpdateFiltersModal = true
+        }
+      }
     }
   }
 

@@ -40,10 +40,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
@@ -80,7 +80,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -157,6 +156,15 @@ fun HomeContent(state: HomeScreen.State) {
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
 
+  val eventSink = state.eventSink
+  if (state.petListFilterState.showUpdateFiltersModal) {
+    val overlayHost = LocalOverlayHost.current
+    LaunchedEffect(state.petListFilterState.showUpdateFiltersModal) {
+      val result = overlayHost.updateFilters(state.petListFilterState)
+      eventSink(PetListFilterEvent(PetListFilterScreen.Event.UpdatedFilters(result)))
+    }
+  }
+
   Scaffold(
     modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
     topBar = {
@@ -169,17 +177,8 @@ fun HomeContent(state: HomeScreen.State) {
             containerColor = MaterialTheme.colorScheme.background
           ),
         actions = {
-          val scope = rememberCoroutineScope()
-          val overlayHost = LocalOverlayHost.current
           IconButton(
-            onClick = {
-              scope.launch {
-                val result = overlayHost.updateFilters(state.petListFilterState)
-                state.eventSink(
-                  PetListFilterEvent(PetListFilterScreen.Event.UpdatedFilters(result))
-                )
-              }
-            }
+            onClick = { eventSink(PetListFilterEvent(PetListFilterScreen.Event.UpdateFilters)) }
           ) {
             Icon(
               imageVector = Icons.Default.FilterList,
@@ -193,7 +192,7 @@ fun HomeContent(state: HomeScreen.State) {
     bottomBar = {
       StarTheme(useDarkTheme = true) {
         BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-          state.eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
+          eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
         }
       }
     }
@@ -203,7 +202,7 @@ fun HomeContent(state: HomeScreen.State) {
         state.homeNavState.bottomNavItems[state.homeNavState.index].screenFor(
           state.petListFilterState.filters
         )
-      CircuitContent(screen, { event -> state.eventSink(ChildNav(event)) })
+      CircuitContent(screen, { event -> eventSink(ChildNav(event)) })
     }
   }
 }

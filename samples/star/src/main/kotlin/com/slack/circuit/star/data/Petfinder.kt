@@ -186,12 +186,12 @@ class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: 
     val (tokenType, expiration, token) =
       tokenStorage.getAuthData()
         ?: run {
-          runBlocking { refreshToken() }
+          refreshToken()
           return authenticate(request, isAfterRefresh)
         }
     if (Instant.now().isAfter(Instant.ofEpochMilli(expiration))) {
       check(!isAfterRefresh)
-      runBlocking { refreshToken() }
+      refreshToken()
       return authenticate(request, isAfterRefresh)
     } else {
       newBuilder.addHeader("Authorization", "$tokenType $token")

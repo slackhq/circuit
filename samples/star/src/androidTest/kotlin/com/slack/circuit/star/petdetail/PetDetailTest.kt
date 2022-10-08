@@ -88,7 +88,7 @@ class PetDetailTest {
     var carouselScreen: PetPhotoCarouselScreen? = null
     val circuitConfig =
       CircuitConfig.Builder()
-        .setOnUnavailableContentCallback { screen ->
+        .setOnUnavailableContent { screen ->
           carouselScreen = screen as PetPhotoCarouselScreen
           PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
         }

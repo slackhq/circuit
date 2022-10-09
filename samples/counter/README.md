@@ -6,8 +6,8 @@ count.
 
 ## Platforms
 
-| Platform | Status |
-|----------|--------|
-| Android  | ✅      |
-| Mosaic   | 🚧     |
-| iOS      | ❌      |
+| Platform                                        | Status |
+|-------------------------------------------------|--------|
+| Android                                         | ✅      |
+| [Mosaic](https://github.com/JakeWharton/mosaic) | 🚧     |
+| iOS                                             | ❌      |

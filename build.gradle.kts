@@ -149,7 +149,9 @@ subprojects {
       }
     }
 
-    extensions.configure<KotlinProjectExtension> { explicitApi() }
+    if (!project.path.startsWith(":samples")) {
+      extensions.configure<KotlinProjectExtension> { explicitApi() }
+    }
   }
 
   tasks.withType<Detekt>().configureEach { jvmTarget = "11" }

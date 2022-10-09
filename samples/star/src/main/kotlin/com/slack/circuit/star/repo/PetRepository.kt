@@ -44,6 +44,11 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
   }
 
   private suspend fun fetchAnimals() {
-    animals = petFinderApi.animals(limit = 100).animals
+    animals =
+      try {
+        petFinderApi.animals(limit = 100).animals
+      } catch (e: Exception) {
+        emptyList()
+      }
   }
 }

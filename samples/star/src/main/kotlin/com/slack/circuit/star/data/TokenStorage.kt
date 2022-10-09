@@ -25,14 +25,13 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
 import com.slack.circuit.star.di.SingleIn
 import com.squareup.anvil.annotations.ContributesBinding
-import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
 /**
- * A simple [TokenStorage] that uses `DataStore` to store [AuthenticationData] for reuse across app
- * sessions.
+ * A simple [TokenStorage] that uses `DataStore` to store [AuthenticationResponse] for reuse across
+ * app sessions.
  */
 interface TokenStorage {
   /** Updates the current stored auth data. */
@@ -40,6 +39,8 @@ interface TokenStorage {
   /** Returns the current auth data or null if none are stored. */
   suspend fun getAuthData(): AuthenticationData?
 }
+
+data class AuthenticationData(val tokenType: String, val expiration: Instant, val token: String)
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
@@ -49,10 +50,9 @@ class TokenStorageImpl @Inject constructor(@ApplicationContext context: Context)
 
   override suspend fun updateAuthData(authData: AuthenticationData) {
     datastore.edit { prefs ->
-      prefs[expirationKey] =
-        Instant.now().plus(Duration.ofSeconds(authData.expiresIn)).toEpochMilli()
+      prefs[expirationKey] = authData.expiration.toEpochMilli()
       prefs[authTokenTypeKey] = authData.tokenType
-      prefs[authTokenKey] = authData.accessToken
+      prefs[authTokenKey] = authData.token
     }
   }
 
@@ -61,7 +61,7 @@ class TokenStorageImpl @Inject constructor(@ApplicationContext context: Context)
     val tokenType = datastore.data.first()[authTokenTypeKey]
     val token = datastore.data.first()[authTokenKey]
     return if (expiration != null && tokenType != null && token != null) {
-      AuthenticationData(tokenType, expiration, token)
+      AuthenticationData(tokenType, Instant.ofEpochMilli(expiration), token)
     } else {
       null
     }

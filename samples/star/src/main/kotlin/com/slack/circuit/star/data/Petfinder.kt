@@ -42,7 +42,7 @@ interface PetfinderAuthApi {
     @Field("client_id") clientId: String = API_KEY,
     @Field("client_secret") secret: String = SECRET,
     @Field("grant_type") grantType: String = "client_credentials"
-  ): AuthenticationData
+  ): AuthenticationResponse
 }
 
 interface PetfinderApi {
@@ -162,11 +162,21 @@ data class Pagination(
 )
 
 @JsonClass(generateAdapter = true)
-data class AuthenticationData(
+data class AuthenticationResponse(
   @Json(name = "token_type") val tokenType: String,
   @Json(name = "expires_in") val expiresIn: Long,
   @Json(name = "access_token") val accessToken: String,
 )
+
+suspend fun TokenStorage.updateAuthData(response: AuthenticationResponse) {
+  updateAuthData(
+    AuthenticationData(
+      response.tokenType,
+      Instant.now().plusSeconds(response.expiresIn),
+      response.accessToken
+    )
+  )
+}
 
 /**
  * A hypothetical token manager that stores an auth token. Just in-memory and not thread-safe for
@@ -189,7 +199,7 @@ class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: 
           refreshToken()
           return authenticate(request, isAfterRefresh)
         }
-    if (Instant.now().isAfter(Instant.ofEpochMilli(expiration))) {
+    if (Instant.now().isAfter(expiration)) {
       check(!isAfterRefresh)
       refreshToken()
       return authenticate(request, isAfterRefresh)
@@ -204,8 +214,8 @@ class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: 
     mutex.withLock {
       println("INFO: Refreshing token")
 
-      val authData = api.authenticate()
-      tokenStorage.updateAuthData(authData)
+      val authResponse = api.authenticate()
+      tokenStorage.updateAuthData(authResponse)
     }
 }
 

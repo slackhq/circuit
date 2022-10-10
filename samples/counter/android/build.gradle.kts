@@ -31,8 +31,10 @@ android {
 dependencies {
   implementation(projects.samples.counter)
   implementation(projects.circuit)
-  implementation(libs.bundles.compose)
+  implementation(libs.bundles.compose.ui)
   implementation(libs.androidx.compose.integration.activity)
-  implementation(libs.androidx.compose.material.material3)
+  implementation(libs.androidx.compose.integration.materialThemeAdapter)
+  implementation(libs.androidx.compose.material.icons)
+  implementation(libs.androidx.compose.material.iconsExtended)
   implementation(libs.androidx.compose.accompanist.systemUi)
 }

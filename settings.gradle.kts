@@ -144,6 +144,7 @@ include(
   ":backstack",
   ":circuit",
   ":circuit-retained",
+  ":circuit-test",
   ":samples:star",
 )
 

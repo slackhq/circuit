@@ -145,9 +145,10 @@ public class CircuitConfig private constructor(builder: Builder) {
       presenterFactories.addAll(factories)
     }
 
-    public fun setOnUnavailableContentCallback(
-      callback: @Composable (screen: Screen) -> Unit
-    ): Builder = apply { onUnavailableContent = callback }
+    public fun setOnUnavailableContent(content: @Composable (screen: Screen) -> Unit): Builder =
+      apply {
+        onUnavailableContent = content
+      }
 
     public fun build(): CircuitConfig {
       return CircuitConfig(this)

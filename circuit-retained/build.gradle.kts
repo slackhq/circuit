@@ -19,6 +19,7 @@ plugins {
   id("com.android.library")
   kotlin("multiplatform")
   id("com.vanniktech.maven.publish")
+  `java-test-fixtures`
 }
 
 kotlin {
@@ -50,6 +51,10 @@ kotlin {
         }
       }
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+    // TODO export this in Android too when it's supported in kotlin projects
+    maybeCreate("jvmMain").apply {
+      dependencies.add("testFixturesApi", projects.circuitTest)
+    }
   }
 }
 

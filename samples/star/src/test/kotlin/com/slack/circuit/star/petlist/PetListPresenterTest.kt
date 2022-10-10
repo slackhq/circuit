@@ -15,10 +15,7 @@
  */
 package com.slack.circuit.star.petlist
 
-import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.data.Breeds
 import com.slack.circuit.star.data.Colors
@@ -27,7 +24,8 @@ import com.slack.circuit.star.data.Links
 import com.slack.circuit.star.data.Photo
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.star.test
+import com.slack.circuit.test.FakeNavigator
+import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -113,34 +111,4 @@ class PetListPresenterTest {
 class TestRepository(private val animals: List<Animal>) : PetRepository {
   override suspend fun getAnimals(): List<Animal> = animals
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
-}
-
-// TODO move this to test artifact
-class FakeNavigator : Navigator {
-  private val navigatedScreens = Turbine<Screen>()
-  private val pops = Turbine<Unit>()
-
-  override fun goTo(screen: Screen) {
-    navigatedScreens.add(screen)
-  }
-
-  override fun pop(): Screen? {
-    pops.add(Unit)
-    return null
-  }
-
-  // For non-coroutines users only
-  fun takeNextScreen() = navigatedScreens.takeItem()
-
-  suspend fun awaitNextScreen() = navigatedScreens.awaitItem()
-
-  suspend fun awaitPop(): Unit = pops.awaitItem()
-
-  fun assertIsEmpty() {
-    navigatedScreens.ensureAllEventsConsumed()
-  }
-
-  fun expectNoEvents() {
-    navigatedScreens.expectNoEvents()
-  }
 }

@@ -56,6 +56,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -102,7 +103,9 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
@@ -282,14 +285,13 @@ internal fun PetList(
   if (state is PetListScreen.State.Success && state.isUpdateFiltersModalShowing) {
     val eventSink = state.eventSink
     val overlayHost = LocalOverlayHost.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(state) {
-      overlayHost
-        .updateFilters(state.filters)
-        .collect { filters ->
-          eventSink(
-            PetListScreen.Event.UpdatedFilters(filters)
-          )
-        }
+      overlayHost.updateFilters(scope, state.filters) { filters ->
+        eventSink(
+          PetListScreen.Event.UpdatedFilters(filters)
+        )
+      }
     }
   }
 
@@ -424,21 +426,33 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
   }
 }
 
-private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Flow<Filters> {
-  return show(
-    BottomSheetOverlay(
-      model = currentFilters,
-      onDismiss = { currentFilters },
-    ) { initialFilters, overlayNavigator ->
-      UpdateFiltersSheet(initialFilters, overlayNavigator)
-    }
-  )
+private fun OverlayHost.updateFilters(
+  scope: CoroutineScope,
+  currentFilters: Filters,
+  collector: FlowCollector<Filters>
+) {
+  val overlay = BottomSheetOverlay(
+    model = currentFilters,
+    onDismiss = { currentFilters },
+  ) { initialFilters, overlayNavigator ->
+    UpdateFiltersSheet(initialFilters, overlayNavigator)
+  }
+
+  show(overlay, scope, collector)
 }
 
 @Preview
 @Composable
 internal fun PreviewUpdateFiltersSheet() {
-  Surface { UpdateFiltersSheet(initialFilters = Filters()) }
+  Surface {
+    UpdateFiltersSheet(
+      initialFilters = Filters(),
+      overlayNavigator = object : OverlayNavigator<Filters> {
+        override fun finish(result: Filters?) = Unit
+        override fun emit(value: Filters) = Unit
+      }
+    )
+  }
 }
 
 @Composable

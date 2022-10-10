@@ -23,12 +23,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import kotlin.coroutines.resume
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -84,7 +89,12 @@ public interface OverlayHost {
    * concern.
    */
 //  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Result
-  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Flow<Result>
+//  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Flow<Result>
+  public fun <Result : Any> show(
+      overlay: Overlay<Result>,
+      scope: CoroutineScope,
+      collector: FlowCollector<Result>
+  )
 }
 
 /** Returns a remembered an [OverlayHost] that can be used to show overlays. */
@@ -100,7 +110,7 @@ private class OverlayHostImpl : OverlayHost {
   override var currentOverlayData: OverlayHostData<Any>? by mutableStateOf(null)
     private set
 
-//  override suspend fun <T : Any> show(overlay: Overlay<T>): T =
+  //  override suspend fun <T : Any> show(overlay: Overlay<T>): T =
 //    mutex.withLock {
 //      try {
 //        return suspendCancellableCoroutine { continuation ->
@@ -115,14 +125,42 @@ private class OverlayHostImpl : OverlayHost {
 //        currentOverlayData = null
 //      }
 //    }
-  override suspend fun <Result : Any> show(overlay: Overlay<Result>): Flow<Result> {
-    return mutex.withLock {
-      flow {
+//  override suspend fun <Result : Any> show(overlay: Overlay<Result>): Flow<Result> {
+//    return mutex.withLock {
+//      flow {
+//        @Suppress("UNCHECKED_CAST")
+//        currentOverlayData = OverlayHostDataImpl(
+//            overlay as Overlay<Any>,
+//            this as FlowCollector<Any>
+//        )
+//      }
+//    }
+//  }
+  override fun <Result : Any> show(
+      overlay: Overlay<Result>,
+      scope: CoroutineScope,
+      collector: FlowCollector<Result>
+  ) {
+    val job = Job()
+    scope.launch(job + scope.coroutineContext) {
+      mutex.withLock {
+//        val emitter: FlowCollector<Result>.() -> Unit = {
+//          val navigator = OverlayNavigatorImpl(scope, job, this)
+//          @Suppress("UNCHECKED_CAST") val overlayData =
+//              OverlayHostDataImpl(overlay as Overlay<Any>, navigator as OverlayNavigator<Any>)
+//          currentOverlayData = overlayData
+//        }
+//
+//        flow(emitter).collect(collector)
+        val channel = Channel<Result>()
+        val navigator = OverlayNavigatorImpl(scope, job, channel)
         @Suppress("UNCHECKED_CAST")
-        currentOverlayData = OverlayHostDataImpl(
-            overlay as Overlay<Any>,
-            this as FlowCollector<Any>
-        )
+        currentOverlayData =
+            OverlayHostDataImpl(overlay as Overlay<Any>, navigator as OverlayNavigator<Any>)
+
+        channel
+            .consumeAsFlow()
+            .collect(collector)
       }
     }
   }
@@ -145,9 +183,11 @@ private class OverlayHostImpl : OverlayHost {
 //}
 
 @Stable
-public interface OverlayHostData<Result : Any> : FlowCollector<Result> {
+public interface OverlayHostData<Result : Any> {
   /** The [Overlay] that is currently being shown. Read-only. */
+  // TODO can these be internal??
   public val overlay: Overlay<Result>
+  public val navigator: OverlayNavigator<Result>
 }
 
 //private class OverlayHostDataImpl<T : Any>(
@@ -179,8 +219,8 @@ public interface OverlayHostData<Result : Any> : FlowCollector<Result> {
 
 private class OverlayHostDataImpl<T : Any>(
     override val overlay: Overlay<T>,
-    private val collector: FlowCollector<T>
-) : OverlayHostData<T>, FlowCollector<T> by collector {
+    override val navigator: OverlayNavigator<T>
+) : OverlayHostData<T> {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
@@ -188,14 +228,14 @@ private class OverlayHostDataImpl<T : Any>(
     other as OverlayHostDataImpl<*>
 
     if (overlay != other.overlay) return false
-    if (collector != other.collector) return false
+    if (navigator != other.navigator) return false
 
     return true
   }
 
   override fun hashCode(): Int {
     var result = overlay.hashCode()
-    result = 31 * result + collector.hashCode()
+    result = 31 * result + navigator.hashCode()
     return result
   }
 }
@@ -207,9 +247,24 @@ private class OverlayHostDataImpl<T : Any>(
 @Stable
 public interface OverlayNavigator<Result : Any> {
 //  /** Called by the [Overlay] with a [result] it's done. */
-//  public fun finish(result: Result)
+  public fun finish(result: Result? = null)
+  public fun emit(value: Result)
+}
 
-  public fun emit(result: Result)
+private class OverlayNavigatorImpl<Result : Any>(
+    private val scope: CoroutineScope,
+    private val job: Job,
+    private val channel: SendChannel<Result>
+) : OverlayNavigator<Result> {
+  override fun emit(value: Result) {
+    scope.launch { channel.send(value) }
+  }
+  override fun finish(result: Result?) {
+    scope.launch {
+      if (result != null) channel.send(result)
+      job.cancelAndJoin()
+    }
+  }
 }
 
 /**

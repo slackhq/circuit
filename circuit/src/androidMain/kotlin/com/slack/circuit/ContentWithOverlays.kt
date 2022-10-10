@@ -41,7 +41,7 @@ public fun ContentWithOverlays(
     val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
     Box(modifier) {
       content()
-      key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }
+      key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data.navigator) } }
     }
   }
 }

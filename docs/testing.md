@@ -8,6 +8,20 @@ Circuit will have a test artifact containing APIs to aid testing both presenters
 1. `Presenter.test()` - an extension function that bridges the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages [Molecule](https://github.com/cashapp/molecule) and [Turbine](https://github.com/cashapp/turbine).
 2. `FakeNavigator` - a test fake implementing the Circuit/Navigator interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back).
 
+## Installation
+
+Test helpers are available via the `circuit-test` artifact.
+
+```kotlin
+testImplementation("com.slack.circuit:circuit-test:<version>")
+```
+
+For Gradle JVM projects, you can use Gradle test fixtures syntax on the core circuit artifact.
+
+```kotlin
+testImplementation(testFixtures("com.slack.circuit:circuit:<version>"))
+```
+
 ## Example
 
 Testing a Circuit Presenter and UI is a breeze! Consider the following example:

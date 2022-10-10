@@ -58,6 +58,7 @@ markdown_extensions:
 
 nav:
   - 'Introduction': index.md
+  - 'Setting up Circuit': setup.md
   - 'States and Events': states-and-events.md
   - 'Screen': screen.md
   - 'CircuitContent': circuit-content.md
@@ -71,6 +72,7 @@ nav:
   - 'API':
       - 'circuit': api/0.x/circuit/com.slack.circuit/index.md
       - 'circuit-retained': api/0.x/circuit-retained/com.slack.circuit.retained/index.md
+      - 'circuit-test': api/0.x/circuit-test/com.slack.circuit.test/index.md
       - 'backstack': api/0.x/circuit/com.slack.circuit.backstack/index.html
 #  - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
 #  - 'Change Log': changelog.md

@@ -24,7 +24,7 @@ import javax.inject.Inject
 import retrofit2.HttpException
 
 interface PetRepository {
-  suspend fun getAnimals(): List<Animal>
+  suspend fun getAnimals(forceRefresh: Boolean): List<Animal>
   suspend fun getAnimal(id: Long): Animal?
 }
 
@@ -34,8 +34,8 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
   PetRepository {
   private lateinit var animals: List<Animal>
 
-  override suspend fun getAnimals(): List<Animal> {
-    if (!this::animals.isInitialized) fetchAnimals()
+  override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> {
+    if (!this::animals.isInitialized || forceRefresh) fetchAnimals()
     return animals
   }
 

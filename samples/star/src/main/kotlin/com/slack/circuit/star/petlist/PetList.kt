@@ -69,6 +69,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -128,10 +130,16 @@ data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) :
 @Parcelize
 object PetListScreen : Screen {
   sealed interface State : CircuitUiState {
-    object Loading : State
-    object NoAnimals : State
+    val isRefreshing: Boolean
+
+    object Loading : State {
+      override val isRefreshing: Boolean = false
+    }
+
+    data class NoAnimals(override val isRefreshing: Boolean) : State
     data class Success(
       val animals: List<PetListAnimal>,
+      override val isRefreshing: Boolean,
       val filters: Filters = Filters(),
       val isUpdateFiltersModalShowing: Boolean = false,
       val eventSink: (Event) -> Unit,
@@ -140,6 +148,7 @@ object PetListScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+    object Refresh : Event
     object UpdateFilters : Event
     data class UpdatedFilters(val newFilters: Filters) : Event
   }
@@ -169,9 +178,11 @@ constructor(
 ) : Presenter<PetListScreen.State> {
   @Composable
   override fun present(): PetListScreen.State {
+    var isRefreshing by remember { mutableStateOf(false) }
     val animalState by
-      produceRetainedState<List<PetListAnimal>?>(null) {
-        val animals = petRepo.getAnimals()
+      produceRetainedState<List<PetListAnimal>?>(null, isRefreshing) {
+        val animals = petRepo.getAnimals(isRefreshing)
+        isRefreshing = false
         value = animals.map { it.toPetListAnimal() }
       }
 
@@ -181,10 +192,11 @@ constructor(
     val animals = animalState
     return when {
       animals == null -> PetListScreen.State.Loading
-      animals.isEmpty() -> PetListScreen.State.NoAnimals
+      animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
       else ->
         PetListScreen.State.Success(
           animals = animals.filter { shouldKeep(filters, it) },
+          isRefreshing = isRefreshing,
           filters = filters,
           isUpdateFiltersModalShowing = isUpdateFiltersModalShowing,
         ) { event ->
@@ -198,6 +210,7 @@ constructor(
             PetListScreen.Event.UpdateFilters -> {
               isUpdateFiltersModalShowing = true
             }
+            PetListScreen.Event.Refresh -> isRefreshing = true
           }
         }
     }
@@ -301,7 +314,7 @@ internal fun PetList(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
-      PetListScreen.State.NoAnimals ->
+      is PetListScreen.State.NoAnimals ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             modifier = Modifier.testTag(NO_ANIMALS_TAG),
@@ -312,6 +325,7 @@ internal fun PetList(
         PetListGrid(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
+          isRefreshing = state.isRefreshing,
           eventSink = state.eventSink
         )
     }
@@ -322,23 +336,29 @@ internal fun PetList(
 private fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
-  eventSink: (PetListScreen.Event) -> Unit,
+  isRefreshing: Boolean,
+  eventSink: (PetListScreen.Event) -> Unit
 ) {
-  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  LazyVerticalGrid(
-    columns = GridCells.Fixed(if (isLandscape) 3 else 2),
-    modifier = modifier.testTag(GRID_TAG),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    contentPadding = PaddingValues(16.dp),
+  SwipeRefresh(
+    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+    onRefresh = { eventSink(PetListScreen.Event.Refresh) }
   ) {
-    items(
-      count = animals.size,
-      key = { i -> animals[i].id },
-    ) { index ->
-      val animal = animals[index]
-      PetListGridItem(animal) {
-        eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    LazyVerticalGrid(
+      columns = GridCells.Fixed(if (isLandscape) 3 else 2),
+      modifier = modifier.testTag(GRID_TAG),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      contentPadding = PaddingValues(16.dp),
+    ) {
+      items(
+        count = animals.size,
+        key = { i -> animals[i].id },
+      ) { index ->
+        val animal = animals[index]
+        PetListGridItem(animal) {
+          eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
+        }
       }
     }
   }

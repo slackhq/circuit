@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 plugins {
   kotlin("jvm")
   alias(libs.plugins.compose)
+  `java-library`
 }
 
 compose.desktop {

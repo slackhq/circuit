@@ -26,8 +26,6 @@ import javax.inject.Provider
 @Keep
 class StarAppComponentFactory : AppComponentFactory() {
 
-  private lateinit var activityProviders: Map<Class<out Activity>, Provider<Activity>>
-
   private inline fun <reified T> getInstance(
     cl: ClassLoader,
     className: String,
@@ -35,7 +33,7 @@ class StarAppComponentFactory : AppComponentFactory() {
   ): T? {
     val clazz = Class.forName(className, false, cl).asSubclass(T::class.java)
     val modelProvider = providers[clazz] ?: return null
-    @Suppress("UNCHECKED_CAST") return modelProvider.get() as T
+    return modelProvider.get() as T
   }
 
   override fun instantiateActivityCompat(
@@ -51,5 +49,10 @@ class StarAppComponentFactory : AppComponentFactory() {
     val app = super.instantiateApplicationCompat(cl, className)
     activityProviders = (app as StarApp).appComponent().activityProviders
     return app
+  }
+
+  // AppComponentFactory can be created multiple times
+  companion object {
+    private lateinit var activityProviders: Map<Class<out Activity>, Provider<Activity>>
   }
 }

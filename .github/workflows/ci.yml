@@ -25,7 +25,7 @@ jobs:
         api-level: ['30']
         avd-target: ['aosp_atd']
         ci_java_version: ['17']
-        ci_kotlin_version: ['1.7.10']
+        ci_kotlin_version: ['1.7.20']
     env:
       DEP_OVERRIDES: 'true'
       DEP_OVERRIDE_KOTLIN: '${{ matrix.ci_kotlin_version }}'
@@ -100,3 +100,7 @@ jobs:
         with:
           name: error-report
           path: build-reports.zip
+
+      - name: Publish snapshot (main branch only)
+        if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main' && matrix.api-level == '30' && matrix.avd-target == 'aosp_atd' && matrix.ci_java_version == '17' && matrix.ci_kotlin_version == '1.7.20'
+        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }}

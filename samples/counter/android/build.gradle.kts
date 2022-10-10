@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.star
+plugins {
+  id("com.android.application")
+  kotlin("android")
+  kotlin("plugin.parcelize")
+}
 
-import app.cash.molecule.RecompositionClock
-import app.cash.molecule.moleculeFlow
-import app.cash.turbine.ReceiveTurbine
-import app.cash.turbine.test
-import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Presenter
-import kotlin.time.Duration
+android {
+  namespace = "com.slack.circuit.sample.counter.android"
+  defaultConfig {
+    compileSdk = 33
+    minSdk = 33
+    targetSdk = 33
+  }
+}
 
-suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
-  timeout: Duration? = null,
-  block: suspend ReceiveTurbine<UiState>.() -> Unit
-) {
-  moleculeFlow(RecompositionClock.Immediate) { present() }.test(timeout, block)
+dependencies {
+  implementation(projects.samples.counter)
+  implementation(projects.circuit)
+  implementation(libs.bundles.compose)
+  implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.compose.material.material3)
+  implementation(libs.androidx.compose.accompanist.systemUi)
 }

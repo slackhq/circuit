@@ -21,6 +21,7 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.SingleIn
 import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
+import retrofit2.HttpException
 
 interface PetRepository {
   suspend fun getAnimals(forceRefresh: Boolean): List<Animal>
@@ -44,6 +45,12 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
   }
 
   private suspend fun fetchAnimals() {
-    animals = petFinderApi.animals(limit = 100).animals
+    animals =
+      try {
+        petFinderApi.animals(limit = 100).animals
+      } catch (e: HttpException) {
+        // Sometimes petfinder's API throws 429s for no reason.
+        emptyList()
+      }
   }
 }

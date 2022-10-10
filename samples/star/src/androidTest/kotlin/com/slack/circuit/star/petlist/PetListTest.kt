@@ -105,7 +105,7 @@ class PetListTest {
       setContent {
         PetList(
           Modifier,
-          PetListScreen.State.Success(animals, isRefreshing = false, channel::trySend)
+          PetListScreen.State.Success(animals, isRefreshing = false, eventSink = channel::trySend)
         )
       }
 

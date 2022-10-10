@@ -52,9 +52,7 @@ kotlin {
       }
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
     // TODO export this in Android too when it's supported in kotlin projects
-    maybeCreate("jvmMain").apply {
-      dependencies.add("testFixturesApi", projects.circuitTest)
-    }
+    maybeCreate("jvmMain").apply { dependencies.add("testFixturesApi", projects.circuitTest) }
   }
 }
 

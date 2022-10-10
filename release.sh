@@ -24,6 +24,7 @@ git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
 # Prepare next snapshot
 echo "Restoring snapshot version $SNAPSHOT_VERSION"
 sed -i '' "s/${NEW_VERSION}/${SNAPSHOT_VERSION}/g" gradle.properties
+./gradlew spotlessApply --no-configuration-cache
 git commit -am "Prepare next development version."
 
 # Push it all up

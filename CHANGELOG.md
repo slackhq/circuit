@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.1.1
+-----
+
+_2022-10-10_
+
+- **Fix**: Accidentally bundling more Compose UI dependencies than necessary.
+
 0.1.0
 -----
 

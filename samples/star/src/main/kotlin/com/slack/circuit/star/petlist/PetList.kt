@@ -165,7 +165,7 @@ constructor(
         value = animals.map { it.toPetListAnimal() }
       }
 
-    return remember(screen, animalState, isRefreshing) {
+    return remember(screen, animalState) {
       val animals = animalState
       when {
         animals == null -> PetListScreen.State.Loading

@@ -38,7 +38,7 @@ class PetListPresenterTest {
   @Test
   fun `present - emit loading state then no animals state`() = runTest {
     val repository = TestRepository(emptyList())
-    val presenter = PetListPresenter(navigator, PetListScreen(), repository)
+    val presenter = PetListPresenter(navigator, repository)
 
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
@@ -49,7 +49,7 @@ class PetListPresenterTest {
   @Test
   fun `present - emit loading state then list of animals`() = runTest {
     val repository = TestRepository(listOf(animal))
-    val presenter = PetListPresenter(navigator, PetListScreen(), repository)
+    val presenter = PetListPresenter(navigator, repository)
 
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
@@ -64,7 +64,7 @@ class PetListPresenterTest {
   @Test
   fun `present - navigate to pet details screen`() = runTest {
     val repository = TestRepository(listOf(animal))
-    val presenter = PetListPresenter(navigator, PetListScreen(), repository)
+    val presenter = PetListPresenter(navigator, repository)
 
     presenter.test {
       assertThat(PetListScreen.State.Loading).isEqualTo(awaitItem())

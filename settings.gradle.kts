@@ -147,6 +147,7 @@ include(":circuit-retained")
 include(":samples:star")
 include(":samples:counter")
 include(":samples:counter:android")
+include(":samples:counter:desktop")
 include(":samples:counter:mosaic")
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

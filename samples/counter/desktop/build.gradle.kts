@@ -1,0 +1,19 @@
+import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+
+plugins {
+  kotlin("jvm")
+  alias(libs.plugins.compose)
+}
+
+compose.desktop {
+  application {
+    mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt"
+  }
+}
+
+dependencies {
+  implementation(compose.desktop.currentOs)
+  implementation(projects.samples.counter)
+  implementation(projects.circuit)
+  add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
+}

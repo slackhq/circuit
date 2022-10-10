@@ -325,7 +325,7 @@ internal fun PetList(
         PetListGrid(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
-          state.isRefreshing,
+          isRefreshing = state.isRefreshing,
           eventSink = state.eventSink
         )
     }
@@ -339,11 +339,11 @@ private fun PetListGrid(
   isRefreshing: Boolean,
   eventSink: (PetListScreen.Event) -> Unit
 ) {
-  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   SwipeRefresh(
     state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
     onRefresh = { eventSink(PetListScreen.Event.Refresh) }
   ) {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     LazyVerticalGrid(
       columns = GridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),

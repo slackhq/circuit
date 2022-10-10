@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 
 plugins {
@@ -9,6 +10,10 @@ compose.desktop {
   application {
     mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt"
   }
+}
+
+tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
+  notCompatibleWithConfigurationCache("https://github.com/JetBrains/compose-jb/issues/2376")
 }
 
 dependencies {

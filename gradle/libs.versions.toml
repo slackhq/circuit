@@ -133,4 +133,5 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [bundles]
 androidx-activity = ["androidx-activity", "androidx-activity-ktx"]
-compose = ["androidx-compose-foundation", "androidx-compose-runtime", "androidx-compose-runtime-rxjava3", "androidx-compose-integration-materialThemeAdapter", "androidx-compose-integration-rxjava3", "androidx-compose-material-icons", "androidx-compose-material-iconsExtended", "androidx-compose-material-material", "androidx-compose-ui-ui", "androidx-compose-ui-tooling-preview", "androidx-compose-ui-viewBinding"]
+compose-core = ["androidx-compose-foundation", "androidx-compose-runtime"]
+compose-ui = ["androidx-compose-material-material", "androidx-compose-material-material3", "androidx-compose-ui-ui", "androidx-compose-ui-tooling-preview"]

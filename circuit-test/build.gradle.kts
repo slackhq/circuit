@@ -39,7 +39,7 @@ kotlin {
     }
     //    maybeCreate("androidMain").apply {
     //      dependencies {
-    //        api(libs.bundles.compose)
+    //        api(libs.bundles.compose.core)
     //      }
     //    }
   }

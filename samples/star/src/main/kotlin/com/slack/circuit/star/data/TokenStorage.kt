@@ -46,7 +46,7 @@ data class AuthenticationData(val tokenType: String, val expiration: Instant, va
 @SingleIn(AppScope::class)
 class TokenStorageImpl @Inject constructor(@ApplicationContext context: Context) : TokenStorage {
   private val datastore =
-    PreferenceDataStoreFactory.create { context.preferencesDataStoreFile("TokenManager") }
+    PreferenceDataStoreFactory.create { context.preferencesDataStoreFile(TOKEN_STORAGE_FILE_NAME) }
 
   override suspend fun updateAuthData(authData: AuthenticationData) {
     datastore.edit { prefs ->
@@ -68,6 +68,7 @@ class TokenStorageImpl @Inject constructor(@ApplicationContext context: Context)
   }
 
   companion object {
+    private const val TOKEN_STORAGE_FILE_NAME = "TokenManager"
     val authTokenKey = stringPreferencesKey("AUTH_TOKEN")
     val expirationKey = longPreferencesKey("AUTH_TOKEN_EXPIRATION")
     val authTokenTypeKey = stringPreferencesKey("AUTH_TOKEN_TYPE")

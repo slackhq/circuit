@@ -248,6 +248,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../../setup/" class="md-nav__link">
+        Setting up Circuit
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../../states-and-events/" class="md-nav__link">
         States and Events
       </a>
@@ -403,18 +418,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_12" type="checkbox" id="__nav_12" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_13" type="checkbox" id="__nav_13" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_12">
+        <label class="md-nav__link" for="__nav_13">
           API
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="API" data-md-level="1">
-        <label class="md-nav__title" for="__nav_12">
+        <label class="md-nav__title" for="__nav_13">
           <span class="md-nav__icon md-icon"></span>
           API
         </label>
@@ -497,6 +512,20 @@
     <li class="md-nav__item">
       <a href="../../circuit-retained/com.slack.circuit.retained/" class="md-nav__link">
         circuit-retained
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../circuit-test/com.slack.circuit.test/" class="md-nav__link">
+        circuit-test
       </a>
     </li>
   
@@ -654,6 +683,22 @@
 <td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>interface <a href="-navigator/">Navigator</a><br>A basic navigation interface for navigating between <a href="-screen/">screens</a>.</td>
 </tr>
 <tr>
+<td><a href="-overlay/">Overlay</a></td>
+<td>[common]<br>interface <a href="-overlay/">Overlay</a>&lt;<a href="-overlay/">Result</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<br>An <a href="-overlay/">Overlay</a> is composable content that can be shown on top of other content via an <a href="-overlay-host/">OverlayHost</a> . Overlays are typically used for one-off request/result flows and should not usually attempt to do any sort of external navigation or make any assumptions about the state of the app. They should only emit a <a href="-overlay/">Result</a> to the given <code>OverlayNavigator</code> when they are done.</td>
+</tr>
+<tr>
+<td><a href="-overlay-host/">OverlayHost</a></td>
+<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>interface <a href="-overlay-host/">OverlayHost</a><br>An OverlayHost can be used overlays<a href="-overlay/">Overlay</a> with content on top of other content. This is useful for one-off request/result flows such as:</td>
+</tr>
+<tr>
+<td><a href="-overlay-host-data/">OverlayHostData</a></td>
+<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>interface <a href="-overlay-host-data/">OverlayHostData</a>&lt;<a href="-overlay-host-data/">Result</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<br>Data managed by an <a href="-overlay-host/">OverlayHost</a> to track the current overlay state. This should rarely be implemented by consumers!</td>
+</tr>
+<tr>
+<td><a href="-overlay-navigator/">OverlayNavigator</a></td>
+<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>fun interface <a href="-overlay-navigator/">OverlayNavigator</a>&lt;<a href="-overlay-navigator/">Result</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<br>An <a href="-overlay-navigator/">OverlayNavigator</a> is a simple API offered to <a href="-overlay/">overlays</a> to call <a href="-overlay-navigator/finish/">finish</a> with a result when they are done.</td>
+</tr>
+<tr>
 <td><a href="-presenter/">Presenter</a></td>
 <td>[common]<br>interface <a href="-presenter/">Presenter</a>&lt;<a href="-presenter/">UiState</a> : <a href="-circuit-ui-state/">CircuitUiState</a>&gt;<br>Presents a given <a href="-presenter/">UiState</a>.</td>
 </tr>
@@ -693,6 +738,10 @@
 <td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-circuit-content/">CircuitContent</a>(screen: <a href="-screen/">Screen</a>, circuitConfig: <a href="-circuit-config/">CircuitConfig</a> = LocalCircuitOwner.current, unavailableContent: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(screen: <a href="-screen/">Screen</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>? = circuitConfig.onUnavailableContent)<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-circuit-content/">CircuitContent</a>(screen: <a href="-screen/">Screen</a>, onNavEvent: (event: <a href="-nav-event/">NavEvent</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>, circuitConfig: <a href="-circuit-config/">CircuitConfig</a> = LocalCircuitOwner.current, unavailableContent: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(screen: <a href="-screen/">Screen</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>? = circuitConfig.onUnavailableContent)</td>
 </tr>
 <tr>
+<td><a href="-content-with-overlays/">ContentWithOverlays</a></td>
+<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-content-with-overlays/">ContentWithOverlays</a>(modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a> = Modifier, overlayHost: OverlayHost = rememberOverlayHost(), content: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>() -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>)<br>Renders the given <a href="-content-with-overlays/">content</a> with the ability to show overlays on top of it. This works by exposing an OverlayHost via LocalOverlayHost.</td>
+</tr>
+<tr>
 <td><a href="-navigable-circuit-content/">NavigableCircuitContent</a></td>
 <td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-navigable-circuit-content/">NavigableCircuitContent</a>(navigator: Navigator, backstack: SaveableBackStack, modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a> = Modifier, circuitConfig: CircuitConfig = LocalCircuitOwner.current, enableBackHandler: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a> = true, providedValues: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a>&lt;out BackStack.Record, ProvidedValues&gt; = providedValuesForBackStack(backstack), decoration: NavDecoration = NavigatorDefaults.DefaultDecoration, unavailableRoute: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> = NavigatorDefaults.UnavailableRoute)</td>
 </tr>
@@ -705,12 +754,20 @@
 <td>[common]<br>fun <a href="-navigator/">Navigator</a>.<a href="pop-until/">popUntil</a>(predicate: (<a href="-screen/">Screen</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>)<br>Calls <a href="-navigator/pop/">Navigator.pop</a> until the given <a href="pop-until/">predicate</a> is matched or it pops the root.</td>
 </tr>
 <tr>
+<td><a href="presenter-of/">presenterOf</a></td>
+<td>[common]<br>inline fun &lt;<a href="presenter-of/">UiState</a> : <a href="-circuit-ui-state/">CircuitUiState</a>&gt; <a href="presenter-of/">presenterOf</a>(crossinline body: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>() -&gt; <a href="presenter-of/">UiState</a>): <a href="-presenter/">Presenter</a>&lt;<a href="presenter-of/">UiState</a>&gt;<br>Due to this bug in Studio, we can&rsquo;t write lambda impls of <a href="-presenter/">Presenter</a> directly. This works around it by offering a shim function of the same name. Once it&rsquo;s fixed, we can remove this and make <a href="-presenter/">Presenter</a> a fun interface instead.</td>
+</tr>
+<tr>
 <td><a href="push/">push</a></td>
 <td>[android]<br>fun SaveableBackStack.<a href="push/">push</a>(screen: <a href="-screen/">Screen</a>)</td>
 </tr>
 <tr>
 <td><a href="remember-circuit-navigator/">rememberCircuitNavigator</a></td>
 <td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-circuit-navigator/">rememberCircuitNavigator</a>(backstack: SaveableBackStack, onRootPop: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>?): Navigator<br>Returns a new Navigator for navigating within CircuitContents.</td>
+</tr>
+<tr>
+<td><a href="remember-overlay-host/">rememberOverlayHost</a></td>
+<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-overlay-host/">rememberOverlayHost</a>(): <a href="-overlay-host/">OverlayHost</a><br>Returns a remembered an <a href="-overlay-host/">OverlayHost</a> that can be used to show overlays.</td>
 </tr>
 <tr>
 <td><a href="ui/">ui</a></td>
@@ -727,6 +784,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><a href="-local-overlay-host/">LocalOverlayHost</a></td>
+<td>[common]<br>val <a href="-local-overlay-host/">LocalOverlayHost</a>: <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/ProvidableCompositionLocal.html">ProvidableCompositionLocal</a>&lt;<a href="-overlay-host/">OverlayHost</a>&gt;<br>A <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/ProvidableCompositionLocal.html">ProvidableCompositionLocal</a> to expose the current <a href="-overlay-host/">OverlayHost</a> in the composition tree.</td>
+</tr>
 <tr>
 <td><a href="screen/">screen</a></td>
 <td>[android]<br>val SaveableBackStack.Record.<a href="screen/">screen</a>: <a href="-screen/">Screen</a></td>

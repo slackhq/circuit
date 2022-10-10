@@ -27,6 +27,7 @@ material = "1.6.1"
 material-composeThemeAdapter = "1.1.20"
 mavenPublish = "0.22.0"
 molecule = "0.4.0"
+mosaic = "0.2.0"
 moshi = "1.14.0"
 moshix = "0.19.0"
 okhttp = "5.0.0-alpha.10"
@@ -38,12 +39,14 @@ versionsPlugin = "0.42.0"
 
 [plugins]
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ## Here to trigger Renovate updates
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 moshiGradlePlugin = { id = "dev.zacsweers.moshix", version.ref = "moshix" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
@@ -101,6 +104,8 @@ androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 
+clikt = "com.github.ajalt.clikt:clikt:3.5.0"
+
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
@@ -114,6 +119,7 @@ dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = 
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
+jline = "org.jline:jline:3.17.1"
 junit = "junit:junit:4.13.2"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }

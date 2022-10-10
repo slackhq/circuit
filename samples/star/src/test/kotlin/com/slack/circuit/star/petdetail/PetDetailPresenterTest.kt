@@ -18,7 +18,7 @@ package com.slack.circuit.star.petdetail
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.star.petlist.PetListPresenterTest
 import com.slack.circuit.star.petlist.TestRepository
-import com.slack.circuit.star.test
+import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith

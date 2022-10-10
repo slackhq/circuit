@@ -58,6 +58,7 @@ markdown_extensions:
 
 nav:
   - 'Introduction': index.md
+  - 'Setting up Circuit': setup.md
   - 'States and Events': states-and-events.md
   - 'Screen': screen.md
   - 'CircuitContent': circuit-content.md

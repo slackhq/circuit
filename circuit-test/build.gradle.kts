@@ -30,39 +30,21 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        api(projects.circuit)
         api(libs.compose.runtime)
         api(libs.coroutines)
-        api(projects.backstack)
-        api(projects.circuitRetained)
+        api(libs.turbine)
+        api(libs.molecule.runtime)
       }
     }
-    maybeCreate("androidMain").apply {
-      dependencies {
-        api(libs.bundles.compose)
-        implementation(libs.androidx.compose.integration.activity)
-      }
-    }
-    maybeCreate("commonTest").apply {
-      dependencies {
-        implementation(libs.kotlin.test)
-        implementation(libs.molecule.runtime)
-        implementation(libs.turbine)
-        implementation(libs.coroutines.test)
-      }
-    }
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
-      }
-    maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+    //    maybeCreate("androidMain").apply {
+    //      dependencies {
+    //        api(libs.bundles.compose)
+    //      }
+    //    }
   }
 }
 
-android { namespace = "com.slack.circuit.core" }
-
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+android { namespace = "com.slack.circuit.test" }
 
 dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }

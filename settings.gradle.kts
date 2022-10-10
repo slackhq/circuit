@@ -29,9 +29,7 @@ dependencyResolutionManagement {
 
   // Non-delegate APIs are annoyingly not public so we have to use withGroovyBuilder
   fun hasProperty(key: String): Boolean {
-    return settings.withGroovyBuilder {
-      "hasProperty"(key) as Boolean
-    }
+    return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
   }
 
   repositories {
@@ -52,9 +50,10 @@ dependencyResolutionManagement {
 
     google()
 
-    // Kotlin bootstrap repository, useful for testing against Kotlin dev builds. Usually only tested on CI shadow jobs
+    // Kotlin dev (previously bootstrap) repository, useful for testing against Kotlin dev builds.
+    // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap") {
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)
@@ -67,9 +66,7 @@ dependencyResolutionManagement {
         // For R8/D8 releases
         maven("https://storage.googleapis.com/r8-releases/raw")
       }
-      filter {
-        includeModule("com.android.tools", "r8")
-      }
+      filter { includeModule("com.android.tools", "r8") }
     }
 
     // Pre-release artifacts of compose-compiler, used to test with future Kotlin versions
@@ -87,9 +84,7 @@ dependencyResolutionManagement {
 pluginManagement {
   // Non-delegate APIs are annoyingly not public so we have to use withGroovyBuilder
   fun hasProperty(key: String): Boolean {
-    return settings.withGroovyBuilder {
-      "hasProperty"(key) as Boolean
-    }
+    return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
   }
 
   repositories {
@@ -110,9 +105,10 @@ pluginManagement {
 
     google()
 
-    // Kotlin bootstrap repository, useful for testing against Kotlin dev builds. Usually only tested on CI shadow jobs
+    // Kotlin dev (previously bootstrap) repository, useful for testing against Kotlin dev builds.
+    // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap") {
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)
@@ -126,7 +122,10 @@ pluginManagement {
       forRepository(::gradlePluginPortal)
       filter {
         includeModule("com.github.ben-manes", "gradle-versions-plugin")
-        includeModule("com.github.ben-manes.versions", "com.github.ben-manes.versions.gradle.plugin")
+        includeModule(
+          "com.github.ben-manes.versions",
+          "com.github.ben-manes.versions.gradle.plugin"
+        )
         includeModule("com.gradle", "gradle-enterprise-gradle-plugin")
         includeModule("com.gradle.enterprise", "com.gradle.enterprise.gradle.plugin")
         includeModule("com.diffplug.spotless", "com.diffplug.spotless.gradle.plugin")
@@ -141,14 +140,17 @@ pluginManagement {
 rootProject.name = "circuit-root"
 
 // Please keep these in alphabetical order!
-include(":backstack")
-include(":circuit")
-include(":circuit-retained")
-include(":samples:star")
-include(":samples:counter")
-include(":samples:counter:android")
-include(":samples:counter:desktop")
-include(":samples:counter:mosaic")
+include(
+  ":backstack",
+  ":circuit",
+  ":circuit-retained",
+  ":circuit-test",
+  ":samples:star",
+  ":samples:counter",
+  ":samples:counter:android",
+  ":samples:counter:desktop",
+  ":samples:counter:mosaic",
+)
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance
 enableFeaturePreview("GROOVY_COMPILATION_AVOIDANCE")

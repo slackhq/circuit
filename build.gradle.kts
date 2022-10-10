@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
@@ -39,7 +39,7 @@ buildscript {
 plugins {
   alias(libs.plugins.anvil) apply false
   alias(libs.plugins.detekt)
-  alias(libs.plugins.spotless) apply false
+  alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka) apply false
   //  alias(libs.plugins.ksp) apply false
@@ -65,7 +65,7 @@ val ktfmtVersion = libs.versions.ktfmt.get()
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
-  configure<SpotlessExtension> {
+  val spotlessFormatters: SpotlessExtension.() -> Unit = {
     format("misc") {
       target("*.md", ".gitignore")
       trimTrailingWhitespace()
@@ -79,13 +79,13 @@ allprojects {
       targetExclude("**/spotless.kt")
     }
     kotlinGradle {
-      target("src/**/*.kts")
+      target("*.kts")
       ktfmt(ktfmtVersion).googleStyle()
       trimTrailingWhitespace()
       endWithNewline()
       licenseHeaderFile(
         rootProject.file("spotless/spotless.kt"),
-        "(import|plugins|buildscript|dependencies|pluginManagement)"
+        "(import|plugins|buildscript|dependencies|pluginManagement|dependencyResolutionManagement)"
       )
     }
     // Apply license formatting separately for kotlin files so we can prevent it from overwriting
@@ -95,6 +95,15 @@ allprojects {
       target("src/**/*.kt")
       targetExclude("**/circuit/backstack/**/*.kt")
     }
+  }
+  configure<SpotlessExtension> {
+    spotlessFormatters()
+    if (project.rootProject == project) {
+      predeclareDeps()
+    }
+  }
+  if (project.rootProject == project) {
+    configure<SpotlessExtensionPredeclare> { spotlessFormatters() }
   }
 }
 
@@ -223,9 +232,7 @@ subprojects {
           matchingFallbacks += listOf("release")
         }
       }
-      compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-      }
+      compileOptions { isCoreLibraryDesugaringEnabled = true }
     }
     dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
   }

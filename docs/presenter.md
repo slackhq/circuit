@@ -65,7 +65,7 @@ fun ProfilePresenter(
 }
 ```
 
-Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters. [We have an example of this in the Circuit repo](https://github.com/slackhq/circuit/blob/main/sample/src/main/kotlin/com/slack/circuit/sample/home/HomePresenter.kt).
+Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters. [We have an example of this in the Circuit repo](https://github.com/slackhq/circuit/blob/main/samples/star/src/main/kotlin/com/slack/circuit/star/home/HomePresenter.kt).
 
 ## Retention
 

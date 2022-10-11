@@ -39,7 +39,9 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
         record,
         saver = BackStackRecordLocalSaveableStateRegistry.Saver,
         key = record.key
-      ) { BackStackRecordLocalSaveableStateRegistry(mutableStateMapOf()) }
+      ) {
+        BackStackRecordLocalSaveableStateRegistry(mutableStateMapOf())
+      }
     // This write depends on childRegistry.parentRegistry being snapshot state backed
     childRegistry.parentRegistry = LocalSaveableStateRegistry.current
     return remember(childRegistry) {

@@ -16,7 +16,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.application")
+  id("com.android.library")
   kotlin("android")
   kotlin("kapt")
   kotlin("plugin.parcelize")
@@ -29,14 +29,15 @@ android {
 
   defaultConfig {
     minSdk = 28
-    targetSdk = 32
-    versionCode = 1
-    versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.star.androidTest"
   }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
+}
+
+androidComponents {
+  beforeVariants { it.enableAndroidTest = true }
 }
 
 tasks.withType<KotlinCompile>().configureEach {

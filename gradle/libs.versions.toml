@@ -22,7 +22,7 @@ dokka = "1.7.20"
 java = "17"
 kotlin = "1.7.20"
 kotlinx-coroutines = "1.6.4"
-ktfmt = "0.39"
+ktfmt = "0.41"
 leakcanary = "2.9.1"
 material = "1.6.1"
 material-composeThemeAdapter = "1.1.20"
@@ -125,6 +125,8 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
 jline = "org.jline:jline:3.17.1"
 junit = "junit:junit:4.13.2"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+# Only present to trigger automatic renovate updates
+ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }

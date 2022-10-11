@@ -37,6 +37,9 @@ jobs:
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1
 
+      - name: Check LFS files
+        uses: actionsdesk/lfs-warning@v3.2
+
       - name: Install JDK ${{ matrix.ci_java_version }}
         uses: actions/setup-java@v3
         with:
@@ -47,7 +50,7 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:assembleDebug :samples:star:assembleDebugAndroidTest
+          arguments: check :samples:star:assembleDebug :samples:star:assembleDebugAndroidTest verifyPaparazzi
           gradle-home-cache-cleanup: true
           cache-read-only: false
 

@@ -78,6 +78,9 @@ dependencyResolutionManagement {
         includeGroup("androidx.compose.compiler")
       }
     }
+
+    // JB Compose Repo
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
   }
 }
 
@@ -115,6 +118,9 @@ pluginManagement {
         includeGroupByRegex("org\\.jetbrains.*")
       }
     }
+
+    // JB Compose Repo
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
 
     // Gradle's plugin portal proxies jcenter, which we don't want. To avoid this, we specify
     // exactly which dependencies to pull from here.

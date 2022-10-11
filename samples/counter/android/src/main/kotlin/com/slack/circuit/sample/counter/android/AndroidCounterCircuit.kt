@@ -65,11 +65,15 @@ fun Counter(state: CounterState) {
       Button(
         modifier = Modifier.align(CenterHorizontally),
         onClick = { sink(CounterEvent.Increment) }
-      ) { Icon(rememberVectorPainter(Icons.Filled.Add), "Increment") }
+      ) {
+        Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
+      }
       Button(
         modifier = Modifier.align(CenterHorizontally),
         onClick = { sink(CounterEvent.Decrement) }
-      ) { Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement") }
+      ) {
+        Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement")
+      }
     }
   }
 }

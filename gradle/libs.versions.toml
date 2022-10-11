@@ -15,6 +15,7 @@ composeCompilerKotlinVersion = "1.7.20"
 compose-jb = "1.2.0-beta01"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.44"
+datastore = "1.0.0"
 dependencyAnalysisPlugin = "1.13.1"
 detekt = "1.21.0"
 dokka = "1.7.20"
@@ -100,6 +101,8 @@ androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit", version.ref
 androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose" }
+
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }

@@ -16,8 +16,10 @@
 package com.slack.circuit.star.di
 
 import android.app.Activity
+import android.content.Context
 import com.slack.circuit.star.data.DataModule
 import com.squareup.anvil.annotations.MergeComponent
+import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Provider
 
@@ -36,10 +38,10 @@ interface AppComponent {
 
   @Component.Factory
   interface Factory {
-    fun create(): AppComponent
+    fun create(@ApplicationContext @BindsInstance context: Context): AppComponent
   }
 
   companion object {
-    fun create(): AppComponent = DaggerAppComponent.factory().create()
+    fun create(context: Context): AppComponent = DaggerAppComponent.factory().create(context)
   }
 }

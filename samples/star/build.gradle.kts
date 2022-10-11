@@ -95,6 +95,7 @@ dependencies {
   implementation(libs.retrofit.converters.moshi)
   implementation(libs.leakcanary.android)
   implementation(libs.dagger)
+  implementation(libs.androidx.datastore.preferences)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)

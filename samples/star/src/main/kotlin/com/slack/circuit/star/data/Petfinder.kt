@@ -17,9 +17,10 @@ package com.slack.circuit.star.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.time.Duration
 import java.time.Instant
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -41,7 +42,7 @@ interface PetfinderAuthApi {
     @Field("client_id") clientId: String = API_KEY,
     @Field("client_secret") secret: String = SECRET,
     @Field("grant_type") grantType: String = "client_credentials"
-  ): AuthenticationData
+  ): AuthenticationResponse
 }
 
 interface PetfinderApi {
@@ -161,63 +162,67 @@ data class Pagination(
 )
 
 @JsonClass(generateAdapter = true)
-data class AuthenticationData(
+data class AuthenticationResponse(
   @Json(name = "token_type") val tokenType: String,
   @Json(name = "expires_in") val expiresIn: Long,
   @Json(name = "access_token") val accessToken: String,
 )
 
+suspend fun TokenStorage.updateAuthData(response: AuthenticationResponse) {
+  updateAuthData(
+    AuthenticationData(
+      response.tokenType,
+      Instant.now().plusSeconds(response.expiresIn),
+      response.accessToken
+    )
+  )
+}
+
 /**
  * A hypothetical token manager that stores an auth token. Just in-memory and not thread-safe for
  * now.
  */
-class TokenManager(private val api: PetfinderAuthApi) {
-  // TODO store this somewhere
-  private var expiration: Instant = Instant.EPOCH
-  private var tokenType: String? = null
-  private var token: String? = null
+class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: TokenStorage) {
+  private val mutex = Mutex()
 
-  /** Returns a token if */
-  fun authenticate(request: Request): Request {
+  /** Authenticates a [request]. */
+  suspend fun authenticate(request: Request): Request {
     return authenticate(request, false)
   }
 
-  private fun authenticate(request: Request, isAfterRefresh: Boolean): Request {
+  private suspend fun authenticate(request: Request, isAfterRefresh: Boolean): Request {
     println("INFO: Authenticating request ${request.url}")
     val newBuilder = request.newBuilder()
+    val (tokenType, expiration, token) =
+      tokenStorage.getAuthData()
+        ?: run {
+          refreshToken()
+          return authenticate(request, isAfterRefresh)
+        }
     if (Instant.now().isAfter(expiration)) {
       check(!isAfterRefresh)
-      runBlocking { refreshToken() }
+      refreshToken()
       return authenticate(request, isAfterRefresh)
     } else {
-      val localTokenType = tokenType
-      val localToken = token
-      if (localToken != null && localTokenType != null) {
-        newBuilder.addHeader("Authorization", "$localTokenType $localToken")
-      } else {
-        check(!isAfterRefresh)
-        runBlocking { refreshToken() }
-        return authenticate(request, isAfterRefresh)
-      }
+      newBuilder.addHeader("Authorization", "$tokenType $token")
     }
 
     return newBuilder.build()
   }
 
-  private suspend fun refreshToken() {
-    println("INFO: Refreshing token")
+  private suspend fun refreshToken() =
+    mutex.withLock {
+      println("INFO: Refreshing token")
 
-    // TODO make this thread-safe to de-dupe requests?
-    val (tokenType, expiresIn, token) = api.authenticate()
-    this.expiration = Instant.now().plus(Duration.ofSeconds(expiresIn))
-    this.tokenType = tokenType
-    this.token = token
-  }
+      val authResponse = api.authenticate()
+      tokenStorage.updateAuthData(authResponse)
+    }
 }
 
 class AuthInterceptor(private val tokenManager: TokenManager) : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     // TODO check for 401s and re-auth?
-    return chain.proceed(tokenManager.authenticate(chain.request()))
+    val request = runBlocking { tokenManager.authenticate(chain.request()) }
+    return chain.proceed(request)
   }
 }

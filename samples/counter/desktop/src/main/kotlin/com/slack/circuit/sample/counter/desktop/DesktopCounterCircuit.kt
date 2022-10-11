@@ -33,9 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.singleWindowApplication
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
@@ -97,19 +96,17 @@ private fun CounterPreviewNegative() {
   Counter(CounterState(-1))
 }
 
-fun main() = application {
-  val circuitConfig: CircuitConfig =
-    CircuitConfig.Builder()
-      .addPresenterFactory(CounterPresenterFactory())
-      .addUiFactory(CounterUiFactory())
-      .build()
-  Window(
-    onCloseRequest = ::exitApplication,
+fun main() =
+  singleWindowApplication(
     title = "Counter Circuit (Desktop)",
-    state = rememberWindowState(width = 300.dp, height = 300.dp)
+    state = WindowState(width = 300.dp, height = 300.dp)
   ) {
+    val circuitConfig: CircuitConfig =
+      CircuitConfig.Builder()
+        .addPresenterFactory(CounterPresenterFactory())
+        .addUiFactory(CounterUiFactory())
+        .build()
     MaterialTheme {
       CircuitCompositionLocals(circuitConfig) { CircuitContent(DesktopCounterScreen) }
     }
   }
-}

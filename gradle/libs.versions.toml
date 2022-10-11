@@ -12,7 +12,7 @@ compose = "1.3.0-rc01"
 # https://androidx.dev/storage/compose-compiler/repository
 composeCompiler = "1.3.2"
 composeCompilerKotlinVersion = "1.7.20"
-compose-jb = "1.2.0-beta01"
+compose-jb = "1.2.0-rc01"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.44"
 dependencyAnalysisPlugin = "1.13.1"

@@ -36,10 +36,10 @@ import kotlin.time.Duration
  */
 public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   timeout: Duration? = null,
+  name: String? = null,
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {
-  presenterTestOf({ present() }, timeout, block)
-  moleculeFlow(RecompositionClock.Immediate) { present() }.test(timeout, block)
+  presenterTestOf({ present() }, timeout, name, block)
 }
 
 /**
@@ -56,7 +56,8 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
 public suspend fun <UiState : CircuitUiState> presenterTestOf(
   presentFunction: @Composable () -> UiState,
   timeout: Duration? = null,
+  name: String? = null,
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {
-  moleculeFlow(RecompositionClock.Immediate, presentFunction).test(timeout, block)
+  moleculeFlow(RecompositionClock.Immediate, presentFunction).test(timeout, name, block)
 }

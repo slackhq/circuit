@@ -35,7 +35,7 @@ okhttp = "5.0.0-alpha.10"
 retrofit = "2.9.0"
 robolectric = "4.9"
 spotless = "6.11.0"
-turbine = "0.11.0"
+turbine = "0.12.0"
 versionsPlugin = "0.42.0"
 
 [plugins]

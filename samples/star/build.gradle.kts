@@ -22,6 +22,7 @@ plugins {
   kotlin("plugin.parcelize")
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
+  alias(libs.plugins.paparazzi)
 }
 
 android {
@@ -36,9 +37,7 @@ android {
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
-androidComponents {
-  beforeVariants { it.enableAndroidTest = true }
-}
+androidComponents { beforeVariants { it.enableAndroidTest = true } }
 
 tasks.withType<KotlinCompile>().configureEach {
   @Suppress("SuspiciousCollectionReassignment")
@@ -67,6 +66,13 @@ tasks.withType<KotlinCompile>().configureEach {
         )
     }
   }
+}
+
+tasks.withType<Test>().configureEach {
+  jvmArgs(
+    "--add-opens=java.base/java.lang=ALL-UNNAMED",
+    "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+  )
 }
 
 dependencies {

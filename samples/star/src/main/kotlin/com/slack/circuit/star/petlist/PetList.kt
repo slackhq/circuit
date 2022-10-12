@@ -333,7 +333,7 @@ internal fun PetList(
 }
 
 @Composable
-private fun PetListGrid(
+internal fun PetListGrid(
   modifier: Modifier = Modifier,
   animals: List<PetListAnimal>,
   isRefreshing: Boolean,
@@ -365,7 +365,7 @@ private fun PetListGrid(
 }
 
 @Composable
-private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit) {
+internal fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
   ElevatedCard(
     modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -413,19 +413,24 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
       model = currentFilters,
       onDismiss = { currentFilters },
     ) { initialFilters, overlayNavigator ->
-      var filters by remember { mutableStateOf(initialFilters) }
-      Column(Modifier.fillMaxWidth()) {
-        GenderFilterOption(filters.gender) { filters = filters.copy(gender = it) }
-        SizeFilterOption(filters.size) { filters = filters.copy(size = it) }
-
-        Row(Modifier.align(Alignment.End)) {
-          Button(onClick = { overlayNavigator.finish(initialFilters) }) { Text("Cancel") }
-          Spacer(Modifier.width(16.dp))
-          Button(onClick = { overlayNavigator.finish(filters) }) { Text("Save") }
-        }
-      }
+      UpdateFiltersSheet(initialFilters, overlayNavigator::finish)
     }
   )
+}
+
+@Composable
+internal fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> Unit = {}) {
+  var filters by remember { mutableStateOf(initialFilters) }
+  Column(Modifier.fillMaxWidth()) {
+    GenderFilterOption(filters.gender) { filters = filters.copy(gender = it) }
+    SizeFilterOption(filters.size) { filters = filters.copy(size = it) }
+
+    Row(Modifier.align(Alignment.End)) {
+      Button(onClick = { onDismiss(initialFilters) }) { Text("Cancel") }
+      Spacer(Modifier.width(16.dp))
+      Button(onClick = { onDismiss(filters) }) { Text("Save") }
+    }
+  }
 }
 
 @Composable

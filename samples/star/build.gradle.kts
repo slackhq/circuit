@@ -37,8 +37,6 @@ android {
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
-androidComponents { beforeVariants { it.enableAndroidTest = true } }
-
 tasks.withType<KotlinCompile>().configureEach {
   @Suppress("SuspiciousCollectionReassignment")
   kotlinOptions {

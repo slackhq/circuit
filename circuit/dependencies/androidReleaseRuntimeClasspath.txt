@@ -7,10 +7,6 @@ androidx.arch.core:core-common
 androidx.arch.core:core-runtime
 androidx.autofill:autofill
 androidx.collection:collection
-androidx.compose.animation:animation-core
-androidx.compose.animation:animation
-androidx.compose.foundation:foundation-layout
-androidx.compose.foundation:foundation
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
 androidx.compose.ui:ui-geometry
@@ -22,7 +18,6 @@ androidx.compose.ui:ui
 androidx.concurrent:concurrent-futures
 androidx.core:core-ktx
 androidx.core:core
-androidx.customview:customview-poolingcontainer
 androidx.lifecycle:lifecycle-common-java8
 androidx.lifecycle:lifecycle-common
 androidx.lifecycle:lifecycle-livedata-core

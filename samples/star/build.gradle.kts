@@ -35,6 +35,7 @@ android {
   }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
 }
 
 tasks.withType<KotlinCompile>().configureEach {

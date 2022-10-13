@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.1.2
+-----
+
+_2022-10-12_
+
+- Update to compose-jb `1.2.0`.
+- Update to Turbine `0.12.0`.
+- **Fix**: Accidentally running molecule twice in `Presenter.test()`.
+
 0.1.1
 -----
 

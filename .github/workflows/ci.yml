@@ -106,4 +106,4 @@ jobs:
 
       - name: Publish snapshot (main branch only)
         if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main' && matrix.api-level == '30' && matrix.avd-target == 'aosp_atd' && matrix.ci_java_version == '17' && matrix.ci_kotlin_version == '1.7.20'
-        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }}
+        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache

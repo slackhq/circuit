@@ -15,7 +15,7 @@ composeCompilerKotlinVersion = "1.7.20"
 compose-jb = "1.2.0"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.44"
-datastore = "1.0.0"
+datastore = "1.1.0-dev01"
 dependencyAnalysisPlugin = "1.13.1"
 detekt = "1.21.0"
 dokka = "1.7.20"
@@ -36,7 +36,7 @@ paparazzi = "1.1.0-sdk33-alpha02"
 retrofit = "2.9.0"
 robolectric = "4.9"
 spotless = "6.11.0"
-turbine = "0.11.0"
+turbine = "0.12.0"
 versionsPlugin = "0.42.0"
 
 [plugins]
@@ -125,7 +125,7 @@ dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = 
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
-jline = "org.jline:jline:3.17.1"
+jline = "org.jline:jline:3.21.0"
 junit = "junit:junit:4.13.2"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 # Only present to trigger automatic renovate updates

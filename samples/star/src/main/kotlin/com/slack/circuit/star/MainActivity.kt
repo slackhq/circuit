@@ -54,7 +54,7 @@ constructor(
 ) : AppCompatActivity() {
   private val screensHashMap = hashMapOf(
     "see-our-animals" to HomeScreen,
-    "animalId" to PetListScreen,
+    "animalId" to PetDetailScreen("animalId".toLong(), null),
     "about" to AboutScreen
   )
 
@@ -102,9 +102,12 @@ constructor(
         val queryArray = query?.split("/")
         queryArray?.forEach { segment ->
           var screen = screensHashMap[segment]
-          if (screen is PetListScreen) {
-            val animal = runBlocking { petRepository.getAnimal(segment.toLong()) }
-            screen = PetDetailScreen(segment.toLong(), animal?.url)
+          if (segment.startsWith("animalId")) {
+            screen = screensHashMap[segment.replace("animalId", "")]
+            if (screen is PetDetailScreen) {
+              val animal = runBlocking { petRepository.getAnimal(segment.toLong()) }
+              screen = PetDetailScreen(segment.toLong(), animal?.url)
+            }
           }
           if (screen != null) {
             backstack.push(screen)

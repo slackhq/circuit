@@ -80,9 +80,7 @@ class PetListTest {
     val animals = listOf(ANIMAL)
 
     composeTestRule.run {
-      setContent {
-        PetList(PetListScreen.State.Success(animals, isRefreshing = false) {})
-      }
+      setContent { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()

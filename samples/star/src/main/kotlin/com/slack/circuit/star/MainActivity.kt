@@ -16,7 +16,9 @@
 package com.slack.circuit.star
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
@@ -31,9 +33,14 @@ import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.home.AboutScreen
 import com.slack.circuit.star.home.HomeScreen
+import com.slack.circuit.star.petdetail.PetDetailScreen
+import com.slack.circuit.star.petlist.PetListScreen
+import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
@@ -42,8 +49,14 @@ class MainActivity
 @Inject
 constructor(
   private val viewModelProviderFactory: ViewModelProvider.Factory,
-  private val circuitConfig: CircuitConfig
+  private val circuitConfig: CircuitConfig,
+  private val petRepository: PetRepository
 ) : AppCompatActivity() {
+  private val screensHashMap = hashMapOf(
+    "see-our-animals" to HomeScreen,
+    "animalId" to PetListScreen,
+    "about" to AboutScreen
+  )
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -51,6 +64,15 @@ constructor(
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
+
+          // uriPattern =
+          // "eway://${Screens.NOTIFICATION_DETAILS.navRoute}/{date}/{imageUrl}/{title}/{content}"
+//          val endString = "see-our-animals/54090287"
+//          val delim = "/"
+//
+//          val list = endString.split(delim)
+//          Log.d("list_oncreate", "list=$list")
+
           val backstack = rememberSaveableBackStack { push(HomeScreen) }
           val navigator =
             rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
@@ -64,5 +86,35 @@ constructor(
 
   override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
     return viewModelProviderFactory
+  }
+
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    setContent {
+//      val endString = "see-our-animals/54090287" // animal ID for Veronica.
+//      val delim = "/"
+//      val list = endString.split(delim)
+//      Log.d("list_onNewIntent", "list=$list")
+      val backstack = rememberSaveableBackStack { push(HomeScreen) } // Temp. because this is pushing two home screens.
+      intent.let {
+        val query = it?.data?.query
+        Log.d("query_intent", "q=$query")
+        val backStack = query?.split("/")
+        backStack?.forEach { segment ->
+          var screen = screensHashMap[segment]
+          if (screen is PetDetailScreen) {
+            val animal = runBlocking { petRepository.getAnimal(segment.toLong()) }
+            screen = PetDetailScreen(segment.toLong(), animal?.url)
+          }
+          if (screen != null) {
+            backstack.push(screen)
+          }
+        }
+      }
+      val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
+      CircuitCompositionLocals(circuitConfig) {
+        ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
+      }
+    }
   }
 }

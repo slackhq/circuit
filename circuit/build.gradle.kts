@@ -38,7 +38,9 @@ kotlin {
     }
     maybeCreate("androidMain").apply {
       dependencies {
-        api(libs.bundles.compose.core)
+        api(libs.androidx.compose.runtime)
+        api(libs.androidx.compose.animation)
+        api(libs.androidx.compose.foundation)
         implementation(libs.androidx.compose.integration.activity)
       }
     }

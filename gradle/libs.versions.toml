@@ -42,6 +42,7 @@ versionsPlugin = "0.42.0"
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }
+dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.3.2" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ## Here to trigger Renovate updates
@@ -144,5 +145,4 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [bundles]
 androidx-activity = ["androidx-activity", "androidx-activity-ktx"]
-compose-core = ["androidx-compose-foundation", "androidx-compose-runtime"]
-compose-ui = ["androidx-compose-material-material", "androidx-compose-material-material3", "androidx-compose-ui-ui", "androidx-compose-ui-tooling-preview"]
+compose-ui = ["androidx-compose-foundation", "androidx-compose-material-material", "androidx-compose-material-material3", "androidx-compose-ui-ui", "androidx-compose-ui-tooling-preview"]

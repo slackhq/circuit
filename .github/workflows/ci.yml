@@ -47,7 +47,7 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:assembleDebug :samples:star:assembleDebugAndroidTest
+          arguments: check :samples:star:assembleDebug :samples:star:assembleDebugAndroidTest dependencyGuard
           gradle-home-cache-cleanup: true
           cache-read-only: false
 

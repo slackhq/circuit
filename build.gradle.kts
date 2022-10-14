@@ -19,6 +19,7 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
@@ -46,6 +47,7 @@ plugins {
   alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.moshiGradlePlugin) apply false
+  alias(libs.plugins.dependencyGuard) apply false
 }
 
 configure<DetektExtension> {
@@ -176,6 +178,22 @@ subprojects {
         }
         skipDeprecated.set(true)
         // AndroidX and Android docs are automatically added by the Dokka plugin.
+      }
+    }
+
+    apply(plugin = "com.dropbox.dependency-guard")
+    configure<DependencyGuardPluginExtension> {
+      configuration("androidReleaseRuntimeClasspath") {
+        baselineMap = {
+          // Remove the version
+          it.substringBeforeLast(":")
+        }
+      }
+      configuration("jvmRuntimeClasspath") {
+        baselineMap = {
+          // Remove the version
+          it.substringBeforeLast(":")
+        }
       }
     }
 

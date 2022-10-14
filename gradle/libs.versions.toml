@@ -19,7 +19,7 @@ datastore = "1.1.0-dev01"
 dependencyAnalysisPlugin = "1.13.1"
 detekt = "1.21.0"
 dokka = "1.7.20"
-java = "17"
+java = "18"
 kotlin = "1.7.20"
 kotlinx-coroutines = "1.6.4"
 ktfmt = "0.41"
@@ -32,6 +32,7 @@ mosaic = "0.2.0"
 moshi = "1.14.0"
 moshix = "0.19.0"
 okhttp = "5.0.0-alpha.10"
+paparazzi = "1.1.0-sdk33-alpha02"
 retrofit = "2.9.0"
 robolectric = "4.9"
 spotless = "6.11.0"
@@ -50,6 +51,8 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 moshiGradlePlugin = { id = "dev.zacsweers.moshix", version.ref = "moshix" }
+# Using an early cut of this until a new version with API 33 is released
+paparazzi = { id = "dev.chrisbanes.paparazzi", version.ref = "paparazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 

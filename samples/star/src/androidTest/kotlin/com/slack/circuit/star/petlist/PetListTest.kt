@@ -16,7 +16,6 @@
 package com.slack.circuit.star.petlist
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -54,7 +53,7 @@ class PetListTest {
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetList(Modifier, PetListScreen.State.Loading) }
+      setContent { PetList(PetListScreen.State.Loading) }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -65,7 +64,7 @@ class PetListTest {
   @Test
   fun petList_show_message_for_no_animals_state() {
     composeTestRule.run {
-      setContent { PetList(Modifier, PetListScreen.State.NoAnimals(isRefreshing = false)) }
+      setContent { PetList(PetListScreen.State.NoAnimals(isRefreshing = false)) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
@@ -81,9 +80,7 @@ class PetListTest {
     val animals = listOf(ANIMAL)
 
     composeTestRule.run {
-      setContent {
-        PetList(Modifier, PetListScreen.State.Success(animals, isRefreshing = false) {})
-      }
+      setContent { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -104,7 +101,6 @@ class PetListTest {
     composeTestRule.run {
       setContent {
         PetList(
-          Modifier,
           PetListScreen.State.Success(animals, isRefreshing = false, eventSink = channel::trySend)
         )
       }

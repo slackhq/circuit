@@ -152,6 +152,7 @@ include(
   ":circuit-retained",
   ":circuit-test",
   ":samples:star",
+  ":samples:star:apk",
   ":samples:counter",
   ":samples:counter:android",
   ":samples:counter:desktop",

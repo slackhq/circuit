@@ -24,7 +24,7 @@ jobs:
         # Test on API 30 because that's the first version with ATDs
         api-level: ['30']
         avd-target: ['aosp_atd']
-        ci_java_version: ['18']
+        ci_java_version: ['17']
         ci_kotlin_version: ['1.7.20']
     env:
       DEP_OVERRIDES: 'true'

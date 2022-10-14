@@ -99,8 +99,8 @@ constructor(
       intent.let {
         val query = it?.data?.query
         Log.d("query_intent", "q=$query")
-        val backStack = query?.split("/")
-        backStack?.forEach { segment ->
+        val queryArray = query?.split("/")
+        queryArray?.forEach { segment ->
           var screen = screensHashMap[segment]
           if (screen is PetDetailScreen) {
             val animal = runBlocking { petRepository.getAnimal(segment.toLong()) }

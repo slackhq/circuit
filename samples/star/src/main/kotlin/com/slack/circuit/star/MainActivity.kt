@@ -102,7 +102,7 @@ constructor(
         val queryArray = query?.split("/")
         queryArray?.forEach { segment ->
           var screen = screensHashMap[segment]
-          if (screen is PetDetailScreen) {
+          if (screen is PetListScreen) {
             val animal = runBlocking { petRepository.getAnimal(segment.toLong()) }
             screen = PetDetailScreen(segment.toLong(), animal?.url)
           }

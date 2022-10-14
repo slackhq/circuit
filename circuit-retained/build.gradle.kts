@@ -39,7 +39,7 @@ kotlin {
       dependencies {
         api(libs.androidx.lifecycle.viewModel.compose)
         api(libs.androidx.lifecycle.viewModel)
-        api(libs.bundles.compose.core)
+        api(libs.androidx.compose.runtime)
       }
     }
     maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }

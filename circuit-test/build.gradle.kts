@@ -39,7 +39,7 @@ kotlin {
     }
     //    maybeCreate("androidMain").apply {
     //      dependencies {
-    //        api(libs.bundles.compose.core)
+    //        api(libs.androidx.compose.runtime)
     //      }
     //    }
   }

@@ -14,23 +14,13 @@
   ~ limitations under the License.
   -->
 
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:label="Social Tees Animal Rescue"
-        android:name=".StarApp"
-        android:icon="@mipmap/ic_launcher"
-        android:theme="@style/StarTheme"
-        android:enableOnBackInvokedCallback="true"
-        android:appComponentFactory="com.slack.circuit.star.di.StarAppComponentFactory"
-        tools:replace="android:appComponentFactory"
-        >
+    <application>
         <activity
-            android:name=".MainActivity"
+            android:name="com.slack.circuit.star.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

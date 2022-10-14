@@ -16,12 +16,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.application")
+  id("com.android.library")
   kotlin("android")
   kotlin("kapt")
   kotlin("plugin.parcelize")
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
+  alias(libs.plugins.paparazzi)
 }
 
 android {
@@ -29,14 +30,12 @@ android {
 
   defaultConfig {
     minSdk = 28
-    targetSdk = 32
-    versionCode = 1
-    versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.star.androidTest"
   }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
 }
 
 tasks.withType<KotlinCompile>().configureEach {

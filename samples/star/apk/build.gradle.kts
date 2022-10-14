@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Adam Powell
+ * Copyright (C) 2022 Slack Technologies, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.backstack
+plugins { id("com.android.application") }
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.Modifier
-
-/** Presentation logic for currently visible routes of a navigable UI. */
-@Stable
-public interface NavDecoration {
-  @Composable
-  public fun <T> DecoratedContent(
-    arg: T,
-    backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable (T) -> Unit
-  )
+android {
+  namespace = "com.slack.circuit.sample.star.apk"
+  defaultConfig {
+    minSdk = 28
+    targetSdk = 33
+    versionCode = 1
+    versionName = "1"
+  }
 }
+
+dependencies { implementation(projects.samples.star) }

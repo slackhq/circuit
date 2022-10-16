@@ -81,7 +81,7 @@ allprojects {
     // Apply license formatting separately for kotlin files so we can prevent it from overwriting
     // copied files
     format("license") {
-      licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "package ")
+      licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
       target("src/**/*.kt")
       targetExclude("**/circuit/backstack/**/*.kt")
     }

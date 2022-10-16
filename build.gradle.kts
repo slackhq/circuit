@@ -39,7 +39,7 @@ buildscript {
 
 plugins {
   alias(libs.plugins.anvil) apply false
-  alias(libs.plugins.detekt)
+  alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka) apply false
@@ -50,20 +50,8 @@ plugins {
   alias(libs.plugins.dependencyGuard) apply false
 }
 
-configure<DetektExtension> {
-  toolVersion = libs.versions.detekt.get()
-  allRules = true
-}
-
-tasks.withType<Detekt>().configureEach {
-  reports {
-    html.required.set(true)
-    xml.required.set(true)
-    txt.required.set(true)
-  }
-}
-
 val ktfmtVersion = libs.versions.ktfmt.get()
+val detektVersion = libs.versions.detekt.get()
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
@@ -165,7 +153,20 @@ subprojects {
     }
   }
 
-  tasks.withType<Detekt>().configureEach { jvmTarget = "11" }
+  plugins.apply("io.gitlab.arturbosch.detekt")
+  configure<DetektExtension> {
+    toolVersion = detektVersion
+    allRules = true
+  }
+
+  tasks.withType<Detekt>().configureEach {
+    jvmTarget = "11"
+    reports {
+      html.required.set(true)
+      xml.required.set(true)
+      txt.required.set(true)
+    }
+  }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")

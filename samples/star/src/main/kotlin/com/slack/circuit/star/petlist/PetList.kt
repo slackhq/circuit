@@ -445,14 +445,17 @@ private fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> 
 @Composable
 private fun GenderFilterOption(
   selected: Gender,
+  modifier: Modifier = Modifier,
   selectedGender: (Gender) -> Unit,
 ) {
-  Box { Text(text = "Gender") }
-  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-    Gender.values().forEach { gender ->
-      Column {
-        Text(text = gender.name)
-        RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+  Column(modifier) {
+    Text(text = "Gender")
+    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Gender.values().forEach { gender ->
+        Column {
+          Text(text = gender.name)
+          RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+        }
       }
     }
   }
@@ -461,14 +464,17 @@ private fun GenderFilterOption(
 @Composable
 private fun SizeFilterOption(
   selected: Size,
+  modifier: Modifier = Modifier,
   selectedSize: (Size) -> Unit,
 ) {
-  Box { Text(text = "Size") }
-  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-    Size.values().forEach { size ->
-      Column {
-        Text(text = size.name)
-        RadioButton(selected = selected == size, onClick = { selectedSize(size) })
+  Column(modifier) {
+    Text(text = "Size")
+    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Size.values().forEach { size ->
+        Column {
+          Text(text = size.name)
+          RadioButton(selected = selected == size, onClick = { selectedSize(size) })
+        }
       }
     }
   }

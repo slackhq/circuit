@@ -52,6 +52,7 @@ plugins {
 
 val ktfmtVersion = libs.versions.ktfmt.get()
 val detektVersion = libs.versions.detekt.get()
+val twitterDetektPlugin = libs.detektPlugins.twitterCompose
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
@@ -153,6 +154,7 @@ subprojects {
     }
   }
 
+  // region Detekt
   plugins.apply("io.gitlab.arturbosch.detekt")
   configure<DetektExtension> {
     toolVersion = detektVersion
@@ -169,6 +171,9 @@ subprojects {
       txt.required.set(true)
     }
   }
+
+  dependencies.add("detektPlugins", twitterDetektPlugin)
+  // endregion
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")

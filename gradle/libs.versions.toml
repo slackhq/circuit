@@ -125,6 +125,8 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
+detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.20"
+
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
 jline = "org.jline:jline:3.21.0"
 junit = "junit:junit:4.13.2"

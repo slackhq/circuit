@@ -7,7 +7,7 @@ Setting up Circuit is a breeze! Just add the following to your build:
 
 ```kotlin
 dependencies {
-  implementation("com.slack.circuit:circuit:<version>")
+  implementation("com.slack.circuit:circuit-core:<version>")
 }
 ```
 

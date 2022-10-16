@@ -48,6 +48,7 @@ import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import com.slack.circuit.CircuitConfig
@@ -137,6 +138,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
+  @Suppress("MagicNumber")
   val columnModifier = if (isLandscape) Modifier.fillMaxWidth(0.5f) else Modifier.fillMaxSize()
   Column(
     columnModifier
@@ -166,48 +168,13 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
         }
       }
   ) {
-    HorizontalPager(
+    PhotoPager(
       count = totalPhotos,
-      state = pagerState,
-      key = photoUrls::get,
-      contentPadding = PaddingValues(16.dp),
-    ) { page ->
-      Card(
-        modifier =
-          Modifier.graphicsLayer {
-            // Calculate the absolute offset for the current page from the
-            // scroll position. We use the absolute value which allows us to mirror
-            // any effects for both directions
-            val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-
-            // We animate the scaleX + scaleY, between 85% and 100%
-            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
-              ->
-              scaleX = scale
-              scaleY = scale
-            }
-
-            // We animate the alpha, between 50% and 100%
-            alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
-          }
-      ) {
-        AsyncImage(
-          modifier = Modifier.fillMaxWidth(),
-          model =
-            ImageRequest.Builder(LocalContext.current)
-              .data(photoUrls[page].takeIf(String::isNotBlank))
-              .apply {
-                if (page == 0) {
-                  placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
-                  crossfade(true)
-                }
-              }
-              .build(),
-          contentDescription = name,
-          contentScale = ContentScale.FillWidth,
-        )
-      }
-    }
+      pagerState = pagerState,
+      photoUrls = photoUrls,
+      name = name,
+      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey
+    )
 
     HorizontalPagerIndicator(
       pagerState = pagerState,
@@ -218,4 +185,57 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
 
   // Focus the pager so we can cycle through it with arrow keys
   LaunchedEffect(Unit) { requester.requestFocus() }
+}
+
+@ExperimentalPagerApi
+@Composable
+private fun PhotoPager(
+  count: Int,
+  pagerState: PagerState,
+  photoUrls: List<String>,
+  name: String,
+  photoUrlMemoryCacheKey: String? = null,
+) {
+  HorizontalPager(
+    count = count,
+    state = pagerState,
+    key = photoUrls::get,
+    contentPadding = PaddingValues(16.dp),
+  ) { page ->
+    Card(
+      modifier =
+        Modifier.graphicsLayer {
+          // Calculate the absolute offset for the current page from the
+          // scroll position. We use the absolute value which allows us to mirror
+          // any effects for both directions
+          val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+
+          // We animate the scaleX + scaleY, between 85% and 100%
+          lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
+            ->
+            scaleX = scale
+            scaleY = scale
+          }
+
+          // We animate the alpha, between 50% and 100%
+          alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+        }
+    ) {
+      AsyncImage(
+        modifier = Modifier.fillMaxWidth(),
+        model =
+          ImageRequest.Builder(LocalContext.current)
+            .data(photoUrls[page].takeIf(String::isNotBlank))
+            .apply {
+              if (page == 0) {
+                placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
+                crossfade(true)
+              }
+            }
+            .build(),
+        contentDescription = name,
+        contentScale = ContentScale.FillWidth,
+      )
+    }
+  }
 }

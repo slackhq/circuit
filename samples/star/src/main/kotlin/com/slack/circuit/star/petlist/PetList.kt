@@ -346,6 +346,7 @@ private fun PetListGrid(
     onRefresh = { eventSink(PetListScreen.Event.Refresh) }
   ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    @Suppress("MagicNumber")
     LazyVerticalGrid(
       columns = GridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),

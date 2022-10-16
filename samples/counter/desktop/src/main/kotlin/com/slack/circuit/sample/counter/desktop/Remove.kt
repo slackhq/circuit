@@ -20,12 +20,13 @@ import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 // Copied because it's not available in compose-desktop yet.
+@Suppress("MagicNumber")
 internal val Remove: ImageVector
   get() {
-    if (_remove != null) {
-      return _remove!!
+    _remove?.let {
+      return it
     }
-    _remove =
+    val remove =
       materialIcon(name = "Filled.Remove") {
         materialPath {
           moveTo(19.0f, 13.0f)
@@ -36,7 +37,9 @@ internal val Remove: ImageVector
           close()
         }
       }
-    return _remove!!
+
+    _remove = remove
+    return remove
   }
 
 private var _remove: ImageVector? = null

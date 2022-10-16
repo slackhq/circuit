@@ -82,7 +82,7 @@ private fun Counter(state: CounterState) {
     Text("Count: ${state.count}")
   }
 
-  // TODO: THIS DOES NOT WORK! Needs https://github.com/JakeWharton/mosaic/issues/3
+  // TODO THIS DOES NOT WORK! Needs https://github.com/JakeWharton/mosaic/issues/3
   //  This is left as a toe-hold for the future.
   val eventSink = state.eventSink
   LaunchedEffect(Unit) {
@@ -91,6 +91,7 @@ private fun Counter(state: CounterState) {
       terminal.enterRawMode()
       val reader = terminal.reader()
 
+      @Suppress("MagicNumber")
       while (true) {
         // TODO https://github.com/JakeWharton/mosaic/issues/10
         when (reader.read()) {
@@ -142,6 +143,7 @@ private suspend fun MosaicScope.runWithoutCircuit() {
     terminal.enterRawMode()
     val reader = terminal.reader()
 
+    @Suppress("MagicNumber")
     while (true) {
       // TODO https://github.com/JakeWharton/mosaic/issues/10
       when (reader.read()) {

@@ -558,6 +558,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    Extensions
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -596,6 +603,25 @@ object <a href="./">NoOp</a> : <a href="../">Navigator</a></p>
 <tr>
 <td><a href="pop/">pop</a></td>
 <td>[common]<br>open override fun <a href="pop/">pop</a>(): <a href="../../-screen/">Screen</a>?</td>
+</tr>
+</tbody>
+</table>
+<h2 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../on-nav-event/">onNavEvent</a></td>
+<td>[common]<br>fun <a href="../">Navigator</a>.<a href="../../on-nav-event/">onNavEvent</a>(event: <a href="../../-nav-event/">NavEvent</a>)<br>A Circuit call back to help navigate to different screens. Intended to be used when forwarding <a href="../../-nav-event/">NavEvent</a>s from nested <a href="../../-presenter/">Presenter</a>s.</td>
+</tr>
+<tr>
+<td><a href="../../pop-until/">popUntil</a></td>
+<td>[common]<br>fun <a href="../">Navigator</a>.<a href="../../pop-until/">popUntil</a>(predicate: (<a href="../../-screen/">Screen</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>)<br>Calls <a href="../pop/">Navigator.pop</a> until the given <a href="../../pop-until/">predicate</a> is matched or it pops the root.</td>
 </tr>
 </tbody>
 </table>

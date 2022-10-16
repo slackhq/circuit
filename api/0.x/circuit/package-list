@@ -48,6 +48,12 @@ $dokka.location:com.slack.circuit/Navigator.NoOp/pop/#/PointingToDeclaration/ci
 $dokka.location:com.slack.circuit/Navigator///PointingToDeclaration/circuit/com.slack.circuit/-navigator/index.md
 $dokka.location:com.slack.circuit/Navigator/goTo/#com.slack.circuit.Screen/PointingToDeclaration/circuit/com.slack.circuit/-navigator/go-to.md
 $dokka.location:com.slack.circuit/Navigator/pop/#/PointingToDeclaration/circuit/com.slack.circuit/-navigator/pop.md
+$dokka.location:com.slack.circuit/NavigatorDefaults.DefaultDecoration///PointingToDeclaration/circuit/com.slack.circuit/-navigator-defaults/-default-decoration/index.md
+$dokka.location:com.slack.circuit/NavigatorDefaults.DefaultDecoration/DecoratedContent/#TypeParam(bounds=[kotlin.Any?])#kotlin.Int#androidx.compose.ui.Modifier#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-navigator-defaults/-default-decoration/-decorated-content.md
+$dokka.location:com.slack.circuit/NavigatorDefaults.EmptyDecoration///PointingToDeclaration/circuit/com.slack.circuit/-navigator-defaults/-empty-decoration/index.md
+$dokka.location:com.slack.circuit/NavigatorDefaults.EmptyDecoration/DecoratedContent/#TypeParam(bounds=[kotlin.Any?])#kotlin.Int#androidx.compose.ui.Modifier#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-navigator-defaults/-empty-decoration/-decorated-content.md
+$dokka.location:com.slack.circuit/NavigatorDefaults///PointingToDeclaration/circuit/com.slack.circuit/-navigator-defaults/index.md
+$dokka.location:com.slack.circuit/NavigatorDefaults/UnavailableRoute/#/PointingToDeclaration/circuit/com.slack.circuit/-navigator-defaults/-unavailable-route.md
 $dokka.location:com.slack.circuit/Overlay///PointingToDeclaration/circuit/com.slack.circuit/-overlay/index.md
 $dokka.location:com.slack.circuit/Overlay/Content/#com.slack.circuit.OverlayNavigator[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/circuit/com.slack.circuit/-overlay/-content.md
 $dokka.location:com.slack.circuit/OverlayHost///PointingToDeclaration/circuit/com.slack.circuit/-overlay-host/index.md

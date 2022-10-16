@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#package-comslackcircuittest" class="md-skip">
+        <a href="#package-level-declarations" class="md-skip">
           Skip to content
         </a>
       
@@ -634,7 +634,7 @@
 
 
 <p>//<a href="../../">circuit-test</a>/<a href="./">com.slack.circuit.test</a></p>
-<h1 id="package-comslackcircuittest">Package com.slack.circuit.test<a class="headerlink" href="#package-comslackcircuittest" title="Permanent link">&para;</a></h1>
+<h1 id="package-level-declarations">Package-level declarations<a class="headerlink" href="#package-level-declarations" title="Permanent link">&para;</a></h1>
 <h2 id="types">Types<a class="headerlink" href="#types" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -661,11 +661,11 @@
 <tbody>
 <tr>
 <td><a href="presenter-test-of/">presenterTestOf</a></td>
-<td>[android]<br>suspend fun &lt;<a href="presenter-test-of/">UiState</a> : CircuitUiState&gt; <a href="presenter-test-of/">presenterTestOf</a>(presentFunction: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>() -&gt; <a href="presenter-test-of/">UiState</a>, timeout: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-duration/index.html">Duration</a>? = null, block: suspend ReceiveTurbine&lt;<a href="presenter-test-of/">UiState</a>&gt;.() -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>)<br>Presents this <a href="presenter-test-of/">presentFunction</a> and invokes a <code>suspend</code><a href="presenter-test-of/">ReceiveTurbine</a> that can be used to assert state emissions from it.</td>
+<td>[android]<br>suspend fun &lt;<a href="presenter-test-of/">UiState</a> : CircuitUiState&gt; <a href="presenter-test-of/">presenterTestOf</a>(presentFunction: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>() -&gt; <a href="presenter-test-of/">UiState</a>, timeout: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-duration/index.html">Duration</a>? = null, name: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>? = null, block: suspend ReceiveTurbine&lt;<a href="presenter-test-of/">UiState</a>&gt;.() -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>)<br>Presents this <a href="presenter-test-of/">presentFunction</a> and invokes a <code>suspend</code><a href="presenter-test-of/">ReceiveTurbine</a> that can be used to assert state emissions from it.</td>
 </tr>
 <tr>
 <td><a href="test/">test</a></td>
-<td>[android]<br>suspend fun &lt;<a href="test/">UiState</a> : CircuitUiState&gt; Presenter&lt;<a href="test/">UiState</a>&gt;.<a href="test/">test</a>(timeout: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-duration/index.html">Duration</a>? = null, block: suspend ReceiveTurbine&lt;<a href="test/">UiState</a>&gt;.() -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>)<br>Presents this Presenter and invokes a <code>suspend</code><a href="test/">ReceiveTurbine</a> that can be used to assert state emissions from this presenter.</td>
+<td>[android]<br>suspend fun &lt;<a href="test/">UiState</a> : CircuitUiState&gt; Presenter&lt;<a href="test/">UiState</a>&gt;.<a href="test/">test</a>(timeout: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-duration/index.html">Duration</a>? = null, name: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>? = null, block: suspend ReceiveTurbine&lt;<a href="test/">UiState</a>&gt;.() -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>)<br>Presents this Presenter and invokes a <code>suspend</code><a href="test/">ReceiveTurbine</a> that can be used to assert state emissions from this presenter.</td>
 </tr>
 </tbody>
 </table>

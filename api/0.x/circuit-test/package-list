@@ -1,8 +1,8 @@
 $dokka.format:gfm-v1
 $dokka.linkExtension:md
 $dokka.location:com.slack.circuit.test////PointingToDeclaration/circuit-test/com.slack.circuit.test/index.md
-$dokka.location:com.slack.circuit.test//presenterTestOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]#kotlin.time.Duration?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[com.slack.circuit.CircuitUiState])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/presenter-test-of.md
-$dokka.location:com.slack.circuit.test//test/com.slack.circuit.Presenter[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]#kotlin.time.Duration?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[com.slack.circuit.CircuitUiState])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/test.md
+$dokka.location:com.slack.circuit.test//presenterTestOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]#kotlin.time.Duration?#kotlin.String?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[com.slack.circuit.CircuitUiState])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/presenter-test-of.md
+$dokka.location:com.slack.circuit.test//test/com.slack.circuit.Presenter[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]#kotlin.time.Duration?#kotlin.String?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[com.slack.circuit.CircuitUiState])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/test.md
 $dokka.location:com.slack.circuit.test/FakeNavigator///PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/index.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/FakeNavigator/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/-fake-navigator.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/assertIsEmpty/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/assert-is-empty.md

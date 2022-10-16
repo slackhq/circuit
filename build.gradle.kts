@@ -157,6 +157,8 @@ subprojects {
   configure<DetektExtension> {
     toolVersion = detektVersion
     allRules = true
+    config.from(rootProject.file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
   }
 
   tasks.withType<Detekt>().configureEach {

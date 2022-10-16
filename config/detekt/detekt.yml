@@ -1,0 +1,21 @@
+complexity:
+  LongMethod:
+    threshold: 100
+
+coroutines:
+  InjectDispatcher:
+    excludes: ['**/samples/**']
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'
+      - 'androidx.compose.runtime.Composable'
+
+style:
+  ReturnCount:
+    max: 4
+  UnusedPrivateMember:
+    ignoreAnnotated:
+      - 'Preview'
+      - 'androidx.compose.desktop.ui.tooling.preview.Preview'

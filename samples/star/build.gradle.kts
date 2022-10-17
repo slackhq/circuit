@@ -70,6 +70,7 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
   kapt(libs.dagger.compiler)
   implementation(projects.circuit)
+  implementation(projects.circuitOverlay)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)

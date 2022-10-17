@@ -27,8 +27,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.Overlay
-import com.slack.circuit.OverlayNavigator
+import com.slack.circuit.overlay.Overlay
+import com.slack.circuit.overlay.OverlayNavigator
 import kotlinx.coroutines.launch
 
 class BottomSheetOverlay<Model : Any, Result : Any>(

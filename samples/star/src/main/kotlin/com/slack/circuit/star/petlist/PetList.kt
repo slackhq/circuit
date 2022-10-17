@@ -76,13 +76,13 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.LocalOverlayHost
 import com.slack.circuit.Navigator
-import com.slack.circuit.OverlayHost
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.overlay.LocalOverlayHost
+import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.data.Animal

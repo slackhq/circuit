@@ -149,6 +149,7 @@ rootProject.name = "circuit-root"
 include(
   ":backstack",
   ":circuit",
+  ":circuit-overlay",
   ":circuit-retained",
   ":circuit-test",
   ":samples:star",

@@ -48,6 +48,7 @@ import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import com.slack.circuit.CircuitConfig
@@ -65,6 +66,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
 import kotlin.math.absoluteValue
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -77,14 +80,27 @@ import kotlinx.parcelize.Parcelize
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
 
-// We're using the screen key as the state as it's all static
 @Parcelize
 data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
-  data class State(val input: PetPhotoCarouselScreen) : CircuitUiState
+  data class State(
+    val name: String,
+    val photoUrls: ImmutableList<String>,
+    val photoUrlMemoryCacheKey: String?,
+  ) : CircuitUiState {
+    companion object {
+      operator fun invoke(screen: PetPhotoCarouselScreen): State {
+        return State(
+          name = screen.name,
+          photoUrls = screen.photoUrls.toImmutableList(),
+          photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+        )
+      }
+    }
+  }
 }
 
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
@@ -121,7 +137,7 @@ internal object PetPhotoCarouselTestConstants {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
-  val (name, photoUrls, photoUrlMemoryCacheKey) = state.input
+  val (name, photoUrls, photoUrlMemoryCacheKey) = state
   val context = LocalContext.current
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   // Prefetch images
@@ -137,6 +153,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
+  @Suppress("MagicNumber")
   val columnModifier = if (isLandscape) Modifier.fillMaxWidth(0.5f) else Modifier.fillMaxSize()
   Column(
     columnModifier
@@ -166,48 +183,13 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
         }
       }
   ) {
-    HorizontalPager(
+    PhotoPager(
       count = totalPhotos,
-      state = pagerState,
-      key = photoUrls::get,
-      contentPadding = PaddingValues(16.dp),
-    ) { page ->
-      Card(
-        modifier =
-          Modifier.graphicsLayer {
-            // Calculate the absolute offset for the current page from the
-            // scroll position. We use the absolute value which allows us to mirror
-            // any effects for both directions
-            val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-
-            // We animate the scaleX + scaleY, between 85% and 100%
-            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
-              ->
-              scaleX = scale
-              scaleY = scale
-            }
-
-            // We animate the alpha, between 50% and 100%
-            alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
-          }
-      ) {
-        AsyncImage(
-          modifier = Modifier.fillMaxWidth(),
-          model =
-            ImageRequest.Builder(LocalContext.current)
-              .data(photoUrls[page].takeIf(String::isNotBlank))
-              .apply {
-                if (page == 0) {
-                  placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
-                  crossfade(true)
-                }
-              }
-              .build(),
-          contentDescription = name,
-          contentScale = ContentScale.FillWidth,
-        )
-      }
-    }
+      pagerState = pagerState,
+      photoUrls = photoUrls,
+      name = name,
+      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey
+    )
 
     HorizontalPagerIndicator(
       pagerState = pagerState,
@@ -218,4 +200,57 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
 
   // Focus the pager so we can cycle through it with arrow keys
   LaunchedEffect(Unit) { requester.requestFocus() }
+}
+
+@ExperimentalPagerApi
+@Composable
+private fun PhotoPager(
+  count: Int,
+  pagerState: PagerState,
+  photoUrls: ImmutableList<String>,
+  name: String,
+  photoUrlMemoryCacheKey: String? = null,
+) {
+  HorizontalPager(
+    count = count,
+    state = pagerState,
+    key = photoUrls::get,
+    contentPadding = PaddingValues(16.dp),
+  ) { page ->
+    Card(
+      modifier =
+        Modifier.graphicsLayer {
+          // Calculate the absolute offset for the current page from the
+          // scroll position. We use the absolute value which allows us to mirror
+          // any effects for both directions
+          val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+
+          // We animate the scaleX + scaleY, between 85% and 100%
+          lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
+            ->
+            scaleX = scale
+            scaleY = scale
+          }
+
+          // We animate the alpha, between 50% and 100%
+          alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+        }
+    ) {
+      AsyncImage(
+        modifier = Modifier.fillMaxWidth(),
+        model =
+          ImageRequest.Builder(LocalContext.current)
+            .data(photoUrls[page].takeIf(String::isNotBlank))
+            .apply {
+              if (page == 0) {
+                placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
+                crossfade(true)
+              }
+            }
+            .build(),
+        contentDescription = name,
+        contentScale = ContentScale.FillWidth,
+      )
+    }
+  }
 }

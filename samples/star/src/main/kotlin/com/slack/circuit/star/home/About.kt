@@ -90,9 +90,9 @@ class AboutUiFactory @Inject constructor() : Ui.Factory {
 private fun aboutScreenUi() = ui<AboutScreen.State> { About() }
 
 @Composable
-fun About() {
+fun About(modifier: Modifier = Modifier) {
   Scaffold(
-    modifier = Modifier.fillMaxSize().padding(16.dp),
+    modifier = modifier.fillMaxSize().padding(16.dp),
     content = { padding ->
       Column(
         modifier = Modifier.fillMaxSize().padding(padding),

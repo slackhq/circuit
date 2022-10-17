@@ -44,6 +44,7 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
     return animals.find { it.id == id }
   }
 
+  @Suppress("SwallowedException")
   private suspend fun fetchAnimals() {
     animals =
       try {

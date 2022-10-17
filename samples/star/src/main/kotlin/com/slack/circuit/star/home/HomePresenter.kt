@@ -115,14 +115,14 @@ class HomeUiFactory @Inject constructor() : Ui.Factory {
 private fun homeUi() = ui<HomeScreen.State> { state -> HomeContent(state) }
 
 @Composable
-fun HomeContent(state: HomeScreen.State) {
+fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
 
   val eventSink = state.eventSink
   Scaffold(
-    modifier = Modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
+    modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
     bottomBar = {
       StarTheme(useDarkTheme = true) {
         BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->

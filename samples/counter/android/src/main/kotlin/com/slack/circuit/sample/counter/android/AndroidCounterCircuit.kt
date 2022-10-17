@@ -50,9 +50,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize object AndroidCounterScreen : CounterScreen, Parcelable
 
 @Composable
-fun Counter(state: CounterState) {
+fun Counter(state: CounterState, modifier: Modifier = Modifier) {
   val color = if (state.count >= 0) Color.Unspecified else MaterialTheme.colorScheme.error
-  Box(Modifier.fillMaxSize()) {
+  Box(modifier.fillMaxSize()) {
     Column(Modifier.align(Alignment.Center)) {
       Text(
         modifier = Modifier.align(CenterHorizontally),

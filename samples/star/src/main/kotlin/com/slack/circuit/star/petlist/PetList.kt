@@ -101,6 +101,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 data class PetListAnimal(
@@ -140,7 +142,7 @@ object PetListScreen : Screen {
 
     data class NoAnimals(override val isRefreshing: Boolean) : State
     data class Success(
-      val animals: List<PetListAnimal>,
+      val animals: ImmutableList<PetListAnimal>,
       override val isRefreshing: Boolean,
       val filters: Filters = Filters(),
       val isUpdateFiltersModalShowing: Boolean = false,
@@ -197,7 +199,7 @@ constructor(
       animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
       else ->
         PetListScreen.State.Success(
-          animals = animals.filter { shouldKeep(filters, it) },
+          animals = animals.filter { shouldKeep(filters, it) }.toImmutableList(),
           isRefreshing = isRefreshing,
           filters = filters,
           isUpdateFiltersModalShowing = isUpdateFiltersModalShowing,
@@ -336,7 +338,7 @@ internal fun PetList(
 
 @Composable
 private fun PetListGrid(
-  animals: List<PetListAnimal>,
+  animals: ImmutableList<PetListAnimal>,
   isRefreshing: Boolean,
   modifier: Modifier = Modifier,
   eventSink: (PetListScreen.Event) -> Unit,
@@ -346,6 +348,7 @@ private fun PetListGrid(
     onRefresh = { eventSink(PetListScreen.Event.Refresh) }
   ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    @Suppress("MagicNumber")
     LazyVerticalGrid(
       columns = GridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),
@@ -444,14 +447,17 @@ private fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> 
 @Composable
 private fun GenderFilterOption(
   selected: Gender,
+  modifier: Modifier = Modifier,
   selectedGender: (Gender) -> Unit,
 ) {
-  Box { Text(text = "Gender") }
-  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-    Gender.values().forEach { gender ->
-      Column {
-        Text(text = gender.name)
-        RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+  Column(modifier) {
+    Text(text = "Gender")
+    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Gender.values().forEach { gender ->
+        Column {
+          Text(text = gender.name)
+          RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+        }
       }
     }
   }
@@ -460,14 +466,17 @@ private fun GenderFilterOption(
 @Composable
 private fun SizeFilterOption(
   selected: Size,
+  modifier: Modifier = Modifier,
   selectedSize: (Size) -> Unit,
 ) {
-  Box { Text(text = "Size") }
-  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-    Size.values().forEach { size ->
-      Column {
-        Text(text = size.name)
-        RadioButton(selected = selected == size, onClick = { selectedSize(size) })
+  Column(modifier) {
+    Text(text = "Size")
+    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Size.values().forEach { size ->
+        Column {
+          Text(text = size.name)
+          RadioButton(selected = selected == size, onClick = { selectedSize(size) })
+        }
       }
     }
   }

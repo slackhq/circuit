@@ -21,6 +21,7 @@ import app.cash.paparazzi.Paparazzi
 import coil.Coil
 import com.slack.circuit.star.FakeImageLoader
 import com.slack.circuit.star.ui.StarTheme
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -93,7 +94,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
 
   @Test
   fun petList_show_list_for_success_state() {
-    val animals = listOf(ANIMAL)
+    val animals = persistentListOf(ANIMAL)
     snapshot { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
   }
 

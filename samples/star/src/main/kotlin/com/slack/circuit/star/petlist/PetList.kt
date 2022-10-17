@@ -101,6 +101,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 data class PetListAnimal(
@@ -140,7 +142,7 @@ object PetListScreen : Screen {
 
     data class NoAnimals(override val isRefreshing: Boolean) : State
     data class Success(
-      val animals: List<PetListAnimal>,
+      val animals: ImmutableList<PetListAnimal>,
       override val isRefreshing: Boolean,
       val filters: Filters = Filters(),
       val isUpdateFiltersModalShowing: Boolean = false,
@@ -197,7 +199,7 @@ constructor(
       animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
       else ->
         PetListScreen.State.Success(
-          animals = animals.filter { shouldKeep(filters, it) },
+          animals = animals.filter { shouldKeep(filters, it) }.toImmutableList(),
           isRefreshing = isRefreshing,
           filters = filters,
           isUpdateFiltersModalShowing = isUpdateFiltersModalShowing,
@@ -336,7 +338,7 @@ internal fun PetList(
 
 @Composable
 private fun PetListGrid(
-  animals: List<PetListAnimal>,
+  animals: ImmutableList<PetListAnimal>,
   isRefreshing: Boolean,
   modifier: Modifier = Modifier,
   eventSink: (PetListScreen.Event) -> Unit,

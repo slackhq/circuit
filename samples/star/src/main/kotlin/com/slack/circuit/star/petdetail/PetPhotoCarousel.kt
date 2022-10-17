@@ -66,6 +66,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
 import kotlin.math.absoluteValue
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -78,14 +80,27 @@ import kotlinx.parcelize.Parcelize
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
 
-// We're using the screen key as the state as it's all static
 @Parcelize
 data class PetPhotoCarouselScreen(
   val name: String,
   val photoUrls: List<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
-  data class State(val input: PetPhotoCarouselScreen) : CircuitUiState
+  data class State(
+    val name: String,
+    val photoUrls: ImmutableList<String>,
+    val photoUrlMemoryCacheKey: String?,
+  ) : CircuitUiState {
+    companion object {
+      operator fun invoke(screen: PetPhotoCarouselScreen): State {
+        return State(
+          name = screen.name,
+          photoUrls = screen.photoUrls.toImmutableList(),
+          photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+        )
+      }
+    }
+  }
 }
 
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
@@ -122,7 +137,7 @@ internal object PetPhotoCarouselTestConstants {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
-  val (name, photoUrls, photoUrlMemoryCacheKey) = state.input
+  val (name, photoUrls, photoUrlMemoryCacheKey) = state
   val context = LocalContext.current
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   // Prefetch images
@@ -192,7 +207,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
 private fun PhotoPager(
   count: Int,
   pagerState: PagerState,
-  photoUrls: List<String>,
+  photoUrls: ImmutableList<String>,
   name: String,
   photoUrlMemoryCacheKey: String? = null,
 ) {

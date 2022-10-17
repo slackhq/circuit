@@ -34,6 +34,7 @@ import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -77,7 +78,7 @@ class PetListTest {
 
   @Test
   fun petList_show_list_for_success_state() {
-    val animals = listOf(ANIMAL)
+    val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
       setContent { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
@@ -96,7 +97,7 @@ class PetListTest {
   @Test
   fun petList_emits_event_when_tapping_on_animal() = runTest {
     val channel = Channel<Any>(1)
-    val animals = listOf(ANIMAL)
+    val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
       setContent {

@@ -27,13 +27,13 @@ import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.Coil
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.star.FakeImageLoader
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
+import com.slack.circuit.star.ui.FakeImageLoader
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -46,7 +46,9 @@ class PetListTest {
   @Before
   fun setup() {
     val fakeImageLoader =
-      FakeImageLoader(InstrumentationRegistry.getInstrumentation().targetContext, R.drawable.dog)
+      FakeImageLoader(
+        InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog)!!
+      )
     Coil.setImageLoader(fakeImageLoader)
   }
 

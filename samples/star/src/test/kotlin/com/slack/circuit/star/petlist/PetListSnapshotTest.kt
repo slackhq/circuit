@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
 import coil.Coil
-import com.slack.circuit.star.FakeImageLoader
+import com.slack.circuit.star.ui.FakeImageLoader
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

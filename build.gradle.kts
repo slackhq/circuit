@@ -103,7 +103,7 @@ subprojects {
     configure<JavaPluginExtension> {
       toolchain {
         languageVersion.set(
-          JavaLanguageVersion.of(libs.versions.java.get().removeSuffix("-ea").toInt())
+          JavaLanguageVersion.of(libs.versions.jdk.get().removeSuffix("-ea").toInt())
         )
       }
     }

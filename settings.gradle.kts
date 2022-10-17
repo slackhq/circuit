@@ -141,7 +141,28 @@ pluginManagement {
       }
     }
   }
+  plugins {
+    id("com.gradle.enterprise") version "3.10.2"
+  }
 }
+
+plugins {
+  id("com.gradle.enterprise")
+}
+
+val VERSION_NAME: String by extra.properties
+
+gradleEnterprise {
+  buildScan {
+    publishAlways()
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+
+    tag(if (System.getenv("CI").isNullOrBlank()) "Local" else "CI")
+    tag(VERSION_NAME)
+  }
+}
+
 
 rootProject.name = "circuit-root"
 

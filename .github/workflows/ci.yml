@@ -43,7 +43,7 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug :samples:star:assembleReleaseAndroidTest verifyPaparazzi detektMain detektTest --continue
+          arguments: check :samples:star:apk:assembleDebug :samples:star:assembleReleaseAndroidTest verifyPaparazzi detektMain detektTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
 

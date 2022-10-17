@@ -24,18 +24,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+
+// TODO update comments in this file!!
 
 /**
  * An OverlayHost can be used [show] [overlays][Overlay] with content on top of other content. This
@@ -88,8 +86,6 @@ public interface OverlayHost {
    * This function should only be called from UI contexts and _not_ presenters, as overlays are a UI
    * concern.
    */
-//  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Result
-//  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Flow<Result>
   public fun <Result : Any> show(
       overlay: Overlay<Result>,
       scope: CoroutineScope,
@@ -110,57 +106,28 @@ private class OverlayHostImpl : OverlayHost {
   override var currentOverlayData: OverlayHostData<Any>? by mutableStateOf(null)
     private set
 
-  //  override suspend fun <T : Any> show(overlay: Overlay<T>): T =
-//    mutex.withLock {
-//      try {
-//        return suspendCancellableCoroutine { continuation ->
-//          @Suppress("UNCHECKED_CAST")
-//          currentOverlayData =
-//            OverlayHostDataImpl(
-//              overlay as Overlay<Any>,
-//              continuation as CancellableContinuation<Any>
-//            )
-//        }
-//      } finally {
-//        currentOverlayData = null
-//      }
-//    }
-//  override suspend fun <Result : Any> show(overlay: Overlay<Result>): Flow<Result> {
-//    return mutex.withLock {
-//      flow {
-//        @Suppress("UNCHECKED_CAST")
-//        currentOverlayData = OverlayHostDataImpl(
-//            overlay as Overlay<Any>,
-//            this as FlowCollector<Any>
-//        )
-//      }
-//    }
-//  }
   override fun <Result : Any> show(
-      overlay: Overlay<Result>,
-      scope: CoroutineScope,
-      collector: FlowCollector<Result>
+    overlay: Overlay<Result>,
+    scope: CoroutineScope,
+    collector: FlowCollector<Result>
   ) {
-    val job = Job()
-    scope.launch(job + scope.coroutineContext) {
+    scope.launch {
       mutex.withLock {
-//        val emitter: FlowCollector<Result>.() -> Unit = {
-//          val navigator = OverlayNavigatorImpl(scope, job, this)
-//          @Suppress("UNCHECKED_CAST") val overlayData =
-//              OverlayHostDataImpl(overlay as Overlay<Any>, navigator as OverlayNavigator<Any>)
-//          currentOverlayData = overlayData
-//        }
-//
-//        flow(emitter).collect(collector)
         val channel = Channel<Result>()
-        val navigator = OverlayNavigatorImpl(scope, job, channel)
+        val navigator = OverlayNavigatorImpl(scope, channel)
+
         @Suppress("UNCHECKED_CAST")
         currentOverlayData =
-            OverlayHostDataImpl(overlay as Overlay<Any>, navigator as OverlayNavigator<Any>)
+          OverlayHostDataImpl(overlay as Overlay<Any>, navigator as OverlayNavigator<Any>)
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        channel.invokeOnClose {
+          currentOverlayData = null
+        }
 
         channel
-            .consumeAsFlow()
-            .collect(collector)
+          .consumeAsFlow()
+          .collect(collector)
       }
     }
   }
@@ -170,18 +137,6 @@ private class OverlayHostImpl : OverlayHost {
  * Data managed by an [OverlayHost] to track the current overlay state. This should rarely be
  * implemented by consumers!
  */
-//@Stable
-//public interface OverlayHostData<Result : Any> {
-//  /** The [Overlay] that is currently being shown. Read-only. */
-//  public val overlay: Overlay<Result>
-//
-//  /**
-//   * Invoked to finish the current overlay with the given [result]. This should be called by
-//   * wherever the [OverlayHost] is being managed.
-//   */
-//  public fun finish(result: Result)
-//}
-
 @Stable
 public interface OverlayHostData<Result : Any> {
   /** The [Overlay] that is currently being shown. Read-only. */
@@ -189,33 +144,6 @@ public interface OverlayHostData<Result : Any> {
   public val overlay: Overlay<Result>
   public val navigator: OverlayNavigator<Result>
 }
-
-//private class OverlayHostDataImpl<T : Any>(
-//  override val overlay: Overlay<T>,
-//  private val continuation: CancellableContinuation<T>,
-//) : OverlayHostData<T> {
-//  override fun finish(result: T) {
-//    if (continuation.isActive) continuation.resume(result)
-//  }
-//
-//  override fun equals(other: Any?): Boolean {
-//    if (this === other) return true
-//    if (javaClass != other?.javaClass) return false
-//
-//    other as OverlayHostDataImpl<*>
-//
-//    if (overlay != other.overlay) return false
-//    if (continuation != other.continuation) return false
-//
-//    return true
-//  }
-//
-//  override fun hashCode(): Int {
-//    var result = overlay.hashCode()
-//    result = 31 * result + continuation.hashCode()
-//    return result
-//  }
-//}
 
 private class OverlayHostDataImpl<T : Any>(
     override val overlay: Overlay<T>,
@@ -253,7 +181,6 @@ public interface OverlayNavigator<Result : Any> {
 
 private class OverlayNavigatorImpl<Result : Any>(
     private val scope: CoroutineScope,
-    private val job: Job,
     private val channel: SendChannel<Result>
 ) : OverlayNavigator<Result> {
   override fun emit(value: Result) {
@@ -262,7 +189,7 @@ private class OverlayNavigatorImpl<Result : Any>(
   override fun finish(result: Result?) {
     scope.launch {
       if (result != null) channel.send(result)
-      job.cancelAndJoin()
+      channel.close()
     }
   }
 }

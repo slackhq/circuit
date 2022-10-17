@@ -17,7 +17,6 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.End
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,7 +51,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,7 +78,6 @@ import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.LocalOverlayHost
 import com.slack.circuit.Navigator
-import com.slack.circuit.OverlayHost
 import com.slack.circuit.OverlayNavigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -103,8 +100,6 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
@@ -157,7 +152,7 @@ object PetListScreen : Screen {
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
     object Refresh : Event
-    object UpdateFilters : Event
+    object ToggleFiltersScreen : Event
     data class UpdatedFilters(val newFilters: Filters) : Event
   }
 }
@@ -215,8 +210,8 @@ constructor(
             is PetListScreen.Event.UpdatedFilters -> {
               filters = event.newFilters
             }
-            PetListScreen.Event.UpdateFilters -> {
-              isUpdateFiltersModalShowing = true
+            PetListScreen.Event.ToggleFiltersScreen -> {
+              isUpdateFiltersModalShowing = !isUpdateFiltersModalShowing
             }
             PetListScreen.Event.Refresh -> isRefreshing = true
           }
@@ -284,14 +279,13 @@ internal fun PetList(
 ) {
   if (state is PetListScreen.State.Success && state.isUpdateFiltersModalShowing) {
     val eventSink = state.eventSink
-    val overlayHost = LocalOverlayHost.current
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(state) {
-      overlayHost.updateFilters(scope, state.filters) { filters ->
-        eventSink(
-          PetListScreen.Event.UpdatedFilters(filters)
-        )
-      }
+    UpdateFiltersSheet(
+      currentFilters = state.filters,
+      onFinish = { eventSink(PetListScreen.Event.ToggleFiltersScreen) }
+    ) { filters ->
+      state.eventSink(
+        PetListScreen.Event.UpdatedFilters(filters)
+      )
     }
   }
 
@@ -309,7 +303,7 @@ internal fun PetList(
         actions = {
           if (state is PetListScreen.State.Success) {
             val eventSink = state.eventSink
-            IconButton(onClick = { eventSink(PetListScreen.Event.UpdateFilters) }) {
+            IconButton(onClick = { eventSink(PetListScreen.Event.ToggleFiltersScreen) }) {
               Icon(
                 imageVector = Icons.Default.FilterList,
                 contentDescription = "Filter pet list",
@@ -426,19 +420,21 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
   }
 }
 
-private fun OverlayHost.updateFilters(
-  scope: CoroutineScope,
+@Composable
+private fun UpdateFiltersSheet(
   currentFilters: Filters,
+  onFinish: () -> Unit,
   collector: FlowCollector<Filters>
 ) {
   val overlay = BottomSheetOverlay(
     model = currentFilters,
+    onFinish = onFinish,
     onDismiss = { currentFilters },
   ) { initialFilters, overlayNavigator ->
     UpdateFiltersSheet(initialFilters, overlayNavigator)
   }
 
-  show(overlay, scope, collector)
+  LocalOverlayHost.current.show(overlay, rememberCoroutineScope(), collector)
 }
 
 @Preview

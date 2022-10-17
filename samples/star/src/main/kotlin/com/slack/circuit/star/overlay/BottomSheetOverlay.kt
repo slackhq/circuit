@@ -24,6 +24,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 class BottomSheetOverlay<Model : Any, Result : Any>(
   private val model: Model,
   private val dismissOnTapOutside: Boolean = true,
+  private val onFinish: (() -> Unit)? = null,
   private val onDismiss: (() -> Result)? = null,
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
 ) : Overlay<Result> {
@@ -50,6 +52,7 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
               val result = onDismiss?.invoke() ?: error("no result!")
               navigator.finish(result)
             }
+            onFinish?.invoke()
             true
           } else {
             false
@@ -58,13 +61,17 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
       )
 
     val coroutineScope = rememberCoroutineScope()
-    val localNavigator = object : OverlayNavigator<Result> by navigator {
+    val localNavigator = remember(onFinish, sheetState, navigator) {
+      object : OverlayNavigator<Result> by navigator {
         override fun finish(result: Result?) {
-            coroutineScope.launch {
-                sheetState.hide()
-                navigator.finish(result)
-            }
+          // Delay setting the result until we've finished dismissing
+          coroutineScope.launch {
+            sheetState.hide()
+            navigator.finish(result)
+            onFinish?.invoke()
+          }
         }
+      }
     }
 
     ModalBottomSheetLayout(
@@ -74,15 +81,6 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
         // https://github.com/google/accompanist/issues/910
         Box(Modifier.padding(32.dp)) {
           Box(Modifier.fillMaxSize(0.51f))
-          // Delay setting the result until we've finished dismissing
-//          val coroutineScope = rememberCoroutineScope()
-//          content(model) { result ->
-//            // This is the OverlayNavigator.finish() callback
-//            coroutineScope.launch {
-//              sheetState.hide()
-//              navigator.finish(result)
-//            }
-//          }
           content(model, localNavigator)
         }
       },

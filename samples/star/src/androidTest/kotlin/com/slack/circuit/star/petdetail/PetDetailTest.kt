@@ -28,12 +28,12 @@ import coil.Coil
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
-import com.slack.circuit.star.FakeImageLoader
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.ui.FakeImageLoader
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,7 +44,9 @@ class PetDetailTest {
   @Before
   fun setup() {
     val fakeImageLoader =
-      FakeImageLoader(InstrumentationRegistry.getInstrumentation().targetContext, R.drawable.dog2)
+      FakeImageLoader(
+        InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog2)!!
+      )
     Coil.setImageLoader(fakeImageLoader)
   }
 

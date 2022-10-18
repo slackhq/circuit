@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import app.cash.molecule.RecompositionClock.Immediate
-import app.cash.molecule.moleculeFlow
+import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -50,7 +50,10 @@ class EventListenerTest {
         .eventListenerFactory(eventListenerFactory)
         .build()
 
-    moleculeFlow(Immediate) { CircuitContent(circuitConfig = circuitConfig, screen = TestScreen) }
+    backgroundScope
+      .launchMolecule(Immediate) {
+        CircuitContent(circuitConfig = circuitConfig, screen = TestScreen)
+      }
       .test {
         awaitItem()
         state.value = "State2"
@@ -81,7 +84,7 @@ private class StringUi : Ui<StringState> {
 }
 
 private class RecordingEventListener : EventListener {
-  val states = Turbine<Any>()
+  val states = Turbine<Any>(name = "recording event listener states")
 
   override fun onState(state: Any) {
     states.add(state)

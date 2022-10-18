@@ -16,7 +16,11 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 public fun CircuitContent(
@@ -63,7 +67,9 @@ internal fun CircuitContent(
   val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
 
   if (screenUi != null && presenter != null) {
-    @Suppress("UNCHECKED_CAST") (CircuitContent(presenter, screenUi.ui as Ui<CircuitUiState>))
+    val eventListener = circuitConfig.eventListenerFactory?.create(screen) ?: EventListener.NONE
+    @Suppress("UNCHECKED_CAST")
+    CircuitContent(eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
   } else if (unavailableContent != null) {
     unavailableContent(screen)
   } else {
@@ -73,9 +79,12 @@ internal fun CircuitContent(
 
 @Composable
 private fun <UiState : CircuitUiState> CircuitContent(
+  eventListener: EventListener,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
 ) {
   val state = presenter.present()
+  val stateChanges = remember(presenter, ui) { snapshotFlow { state }.distinctUntilChanged() }
+  LaunchedEffect(stateChanges) { stateChanges.collect { eventListener.onState(it) } }
   ui.Content(state)
 }

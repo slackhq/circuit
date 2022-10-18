@@ -68,6 +68,7 @@ public class CircuitConfig private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? =
     builder.onUnavailableContent
+  internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   public fun presenter(screen: Screen, navigator: Navigator): Presenter<*>? {
     return nextPresenter(null, screen, navigator)
@@ -113,10 +114,13 @@ public class CircuitConfig private constructor(builder: Builder) {
       mutableListOf<Presenter.Factory>()
     public var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
       private set
+    public var eventListenerFactory: EventListener.Factory? = null
+      private set
 
     internal constructor(circuitConfig: CircuitConfig) : this() {
       uiFactories.addAll(circuitConfig.uiFactories)
       presenterFactories.addAll(circuitConfig.presenterFactories)
+      eventListenerFactory = circuitConfig.eventListenerFactory
     }
 
     public fun addUiFactory(factory: Ui.Factory): Builder = apply { uiFactories.add(factory) }
@@ -149,6 +153,10 @@ public class CircuitConfig private constructor(builder: Builder) {
       apply {
         onUnavailableContent = content
       }
+
+    public fun eventListenerFactory(factory: EventListener.Factory): Builder = apply {
+      eventListenerFactory = factory
+    }
 
     public fun build(): CircuitConfig {
       return CircuitConfig(this)

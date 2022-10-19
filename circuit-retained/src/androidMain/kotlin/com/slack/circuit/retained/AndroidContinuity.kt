@@ -16,8 +16,10 @@
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,6 +37,10 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
 
   override fun performSave() {
     delegate.performSave()
+  }
+
+  override fun forgetUnclaimedValues() {
+    delegate.forgetUnclaimedValues()
   }
 
   override fun onCleared() {
@@ -71,6 +77,12 @@ public fun continuityRetainedStateRegistry(
         }
       }
     }
+  }
+  LaunchedEffect(vm) {
+    withFrameNanos {}
+    // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
+    // point can be assumed to be no longer used
+    vm.forgetUnclaimedValues()
   }
   return vm
 }

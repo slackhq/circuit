@@ -57,6 +57,9 @@ public interface RetainedStateRegistry {
    */
   public fun performSave()
 
+  /** Releases all currently unconsumed values. Useful as a GC mechanism for the registry. */
+  public fun forgetUnclaimedValues()
+
   /** The registry entry which you get when you use [registerValue]. */
   public interface Entry {
     /** Unregister previously registered entry. */
@@ -156,12 +159,17 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     valueProviders.clear()
     retained.putAll(map)
   }
+
+  override fun forgetUnclaimedValues() {
+    retained.clear()
+  }
 }
 
 internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
   override fun consumeValue(key: String): Any? = null
   override fun registerValue(key: String, valueProvider: () -> Any?): Entry = NoOpEntry
   override fun performSave() {}
+  override fun forgetUnclaimedValues() {}
 
   private object NoOpEntry : Entry {
     override fun unregister() {}

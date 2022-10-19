@@ -17,11 +17,11 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.test.runTest
@@ -50,20 +50,15 @@ class EventListenerTest {
         .eventListenerFactory(eventListenerFactory)
         .build()
 
-    backgroundScope
-      .launchMolecule(Immediate) {
-        CircuitContent(circuitConfig = circuitConfig, screen = TestScreen)
-      }
-      .test {
-        awaitItem()
-        state.value = "State2"
-        awaitItem()
-        val (screen, listener) = eventListenerFactory.listeners.entries.first()
-        assertThat(screen).isEqualTo(TestScreen)
+    backgroundScope.launchMolecule(Immediate) {
+      CircuitContent(circuitConfig = circuitConfig, screen = TestScreen)
+    }
+    val (screen, listener) = eventListenerFactory.listeners.entries.first()
+    assertThat(screen).isEqualTo(TestScreen)
 
-        assertThat(listener.states.awaitItem()).isEqualTo("State")
-        assertThat(listener.states.awaitItem()).isEqualTo("State2")
-      }
+    assertThat(listener.states.awaitItem()).isEqualTo(StringState("State"))
+    state.value = "State2"
+    assertThat(listener.states.awaitItem()).isEqualTo(StringState("State2"))
   }
 }
 

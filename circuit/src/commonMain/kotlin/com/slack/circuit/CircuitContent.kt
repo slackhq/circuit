@@ -16,11 +16,9 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 public fun CircuitContent(
@@ -84,7 +82,7 @@ private fun <UiState : CircuitUiState> CircuitContent(
   ui: Ui<UiState>,
 ) {
   val state = presenter.present()
-  val stateChanges = remember(presenter, ui) { snapshotFlow { state }.distinctUntilChanged() }
-  LaunchedEffect(stateChanges) { stateChanges.collect { eventListener.onState(it) } }
+  // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
+  SideEffect { eventListener.onState(state) }
   ui.Content(state)
 }

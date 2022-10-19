@@ -38,7 +38,6 @@ import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -97,10 +96,10 @@ class RetainedTest {
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
   }
 
-  @Ignore("This doesn't appear to work from tests")
   @Test
   fun singleWithNoKey() {
-    setActivityContent { KeyContent(null) }
+    val content = @Composable { KeyContent(null) }
+    setActivityContent(content)
     composeTestRule.onNodeWithTag(TAG_REMEMBER).performTextInput("Text_Remember")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained")
     // Check that our input worked
@@ -109,7 +108,7 @@ class RetainedTest {
     // Restart the activity
     scenario.recreate()
     // Compose our content
-    setActivityContent { KeyContent(null) }
+    setActivityContent(content)
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")

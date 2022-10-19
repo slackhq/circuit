@@ -136,6 +136,27 @@ class RetainedTest {
     composeTestRule.onNodeWithTag(TAG_RETAINED_3).assertTextContains("2")
   }
 
+  @Test
+  fun multipleNoKeys() {
+    val content = @Composable { MultipleRetains(useKeys = false) }
+    setActivityContent(content)
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained1")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).performTextInput("Text_Retained2")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_3).performTextInput("2")
+    // Check that our input worked
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertTextContains("Text_Retained2")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_3).assertTextContains("2")
+    // Restart the activity
+    scenario.recreate()
+    // Compose our content
+    setActivityContent(content)
+    // Was the text saved
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertTextContains("Text_Retained2")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_3).assertTextContains("2")
+  }
+
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->
       activity.setContent {

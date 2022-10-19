@@ -16,23 +16,30 @@
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 public class Continuity : ViewModel(), RetainedStateRegistry {
-  private val delegate = RetainedStateRegistryImpl()
+  private val delegate = RetainedStateRegistryImpl(null)
 
   override fun consumeValue(key: String): Any? {
     return delegate.consumeValue(key)
   }
 
-  override fun registerValue(key: String, value: Any?): RetainedStateRegistry.Entry {
-    return delegate.registerValue(key, value)
+  override fun registerValue(key: String, valueProvider: () -> Any?): RetainedStateRegistry.Entry {
+    return delegate.registerValue(key, valueProvider)
+  }
+
+  override fun performSave() {
+    delegate.performSave()
   }
 
   override fun onCleared() {
     delegate.retained.clear()
+    delegate.valueProviders.clear()
   }
 }
 
@@ -46,5 +53,24 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
 public fun continuityRetainedStateRegistry(
   factory: ViewModelProvider.Factory? = null
 ): RetainedStateRegistry {
-  return viewModel<Continuity>(factory = factory)
+  val vm = viewModel<Continuity>(factory = factory)
+  val canRetain = rememberCanRetainChecker()
+  remember(canRetain) {
+    object : RememberObserver {
+      override fun onAbandoned() = unregisterIfNotRetainable()
+
+      override fun onForgotten() = unregisterIfNotRetainable()
+
+      override fun onRemembered() {
+        // Do nothing
+      }
+
+      fun unregisterIfNotRetainable() {
+        if (canRetain()) {
+          vm.performSave()
+        }
+      }
+    }
+  }
+  return vm
 }

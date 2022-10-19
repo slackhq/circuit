@@ -46,10 +46,16 @@ public interface RetainedStateRegistry {
    * consume "1" and the second one "2".
    *
    * @param key Key to use for storing the value
-   * @param value The current value
+   * @param valueProvider The value to provide
    * @return the registry entry which you can use to unregister the provider
    */
-  public fun registerValue(key: String, value: Any?): Entry
+  public fun registerValue(key: String, valueProvider: () -> Any?): Entry
+
+  /**
+   * Executes all the registered value providers and combines these values into a map. We have a
+   * list of values for each key as it is allowed to have multiple providers for the same key.
+   */
+  public fun performSave()
 
   /** The registry entry which you get when you use [registerValue]. */
   public interface Entry {
@@ -59,7 +65,7 @@ public interface RetainedStateRegistry {
 }
 
 internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
-  val retained: MutableMap<String, MutableList<Any?>>
+  val retained: MutableMap<String, List<Any?>>
 }
 
 /**
@@ -93,9 +99,11 @@ public object LocalRetainedStateRegistryOwner {
   }
 }
 
-internal class RetainedStateRegistryImpl(
-  override val retained: MutableMap<String, MutableList<Any?>> = mutableMapOf()
-) : MutableRetainedStateRegistry {
+internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>>?) :
+  MutableRetainedStateRegistry {
+
+  override val retained: MutableMap<String, List<Any?>> = retained?.toMutableMap() ?: mutableMapOf()
+  internal val valueProviders = mutableMapOf<String, MutableList<() -> Any?>>()
 
   override fun consumeValue(key: String): Any? {
     val list = retained.remove(key)
@@ -109,25 +117,51 @@ internal class RetainedStateRegistryImpl(
     }
   }
 
-  override fun registerValue(key: String, value: Any?): Entry {
+  override fun registerValue(key: String, valueProvider: () -> Any?): Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
-    retained.getOrPut(key) { mutableListOf() }.add(value)
+    valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
     return object : Entry {
       override fun unregister() {
-        val list = retained.remove(key)
-        list?.remove(value)
+        val list = valueProviders.remove(key)
+        list?.remove(valueProvider)
         if (!list.isNullOrEmpty()) {
           // if there are other providers for this key return list back to the map
-          retained[key] = list
+          valueProviders[key] = list
         }
       }
     }
+  }
+
+  override fun performSave() {
+    val map = retained.toMutableMap()
+    valueProviders.forEach { (key, list) ->
+      if (list.size == 1) {
+        val value = list[0].invoke()
+        if (value != null) {
+          map[key] = arrayListOf<Any?>(value)
+        }
+      } else {
+        // if we have multiple providers we should store null values as well to preserve
+        // the order in which providers were registered. say there were two providers.
+        // the first provider returned null(nothing to save) and the second one returned
+        // "1". when we will be restoring the first provider would restore null (it is the
+        // same as to have nothing to restore) and the second one restore "1".
+        map[key] =
+          List(list.size) { index ->
+            val value = list[index].invoke()
+            value
+          }
+      }
+    }
+    valueProviders.clear()
+    retained.putAll(map)
   }
 }
 
 internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
   override fun consumeValue(key: String): Any? = null
-  override fun registerValue(key: String, value: Any?): Entry = NoOpEntry
+  override fun registerValue(key: String, valueProvider: () -> Any?): Entry = NoOpEntry
+  override fun performSave() {}
 
   private object NoOpEntry : Entry {
     override fun unregister() {}

@@ -17,6 +17,7 @@ package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 public class Continuity : ViewModel(), RetainedStateRegistry {
@@ -35,7 +36,15 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
   }
 }
 
+/**
+ * Provides a [RetainedStateRegistry].
+ *
+ * @param factory an optional [ViewModelProvider.Factory] to use when creating the [Continuity]
+ * instance.
+ */
 @Composable
-public fun continuityRetainedStateRegistry(): RetainedStateRegistry {
-  return viewModel<Continuity>()
+public fun continuityRetainedStateRegistry(
+  factory: ViewModelProvider.Factory? = null
+): RetainedStateRegistry {
+  return viewModel<Continuity>(factory = factory)
 }

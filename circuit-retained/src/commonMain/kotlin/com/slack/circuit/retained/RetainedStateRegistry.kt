@@ -144,10 +144,10 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
           map[key] = arrayListOf<Any?>(value)
         }
       } else {
-        // if we have multiple providers we should store null values as well to preserve
-        // the order in which providers were registered. say there were two providers.
+        // If we have multiple providers we should store null values as well to preserve
+        // the order in which providers were registered. Say there were two providers.
         // the first provider returned null(nothing to save) and the second one returned
-        // "1". when we will be restoring the first provider would restore null (it is the
+        // "1". When we will be restoring the first provider would restore null (it is the
         // same as to have nothing to restore) and the second one restore "1".
         map[key] =
           List(list.size) { index ->

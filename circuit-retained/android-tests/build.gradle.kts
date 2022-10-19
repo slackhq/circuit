@@ -31,8 +31,6 @@ android {
   testBuildType = "release"
 }
 
-configurations.configureEach { println(name) }
-
 dependencies {
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.activity.ktx)

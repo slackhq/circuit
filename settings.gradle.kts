@@ -166,6 +166,7 @@ include(
   ":backstack",
   ":circuit",
   ":circuit-retained",
+  ":circuit-retained:android-tests",
   ":circuit-test",
   ":samples:star",
   ":samples:star:apk",

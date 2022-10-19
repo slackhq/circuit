@@ -60,12 +60,12 @@ class RetainedTest {
     }
 
   // TODO
-  //  - tests without using keys, but doesn't appear to work right in tests
-  //  - tests with multiple retained state vars
+  //  - clearing after done
 
   @Test
   fun singleWithKey() {
-    setActivityContent { KeyContent("retainedText") }
+    val content = @Composable { KeyContent("retainedText") }
+    setActivityContent(content)
     composeTestRule.onNodeWithTag(TAG_REMEMBER).performTextInput("Text_Remember")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained")
     // Check that our input worked
@@ -74,7 +74,7 @@ class RetainedTest {
     // Restart the activity
     scenario.recreate()
     // Compose our content
-    setActivityContent { KeyContent("retainedText") }
+    setActivityContent(content)
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
@@ -82,7 +82,8 @@ class RetainedTest {
 
   @Test
   fun noRegistryBehavesLikeRegularRemember() {
-    scenario.onActivity { it.setContent { KeyContent("retainedText") } }
+    val content = @Composable { KeyContent("retainedText") }
+    scenario.onActivity { it.setContent(content = content) }
     composeTestRule.onNodeWithTag(TAG_REMEMBER).performTextInput("Text_Remember")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained")
     // Check that our input worked
@@ -91,7 +92,7 @@ class RetainedTest {
     // Restart the activity
     scenario.recreate()
     // Compose our content
-    scenario.onActivity { it.setContent { KeyContent("retainedText") } }
+    scenario.onActivity { it.setContent(content = content) }
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
@@ -194,9 +195,12 @@ private fun KeyContent(key: String?) {
 
 @Composable
 private fun MultipleRetains(useKeys: Boolean) {
-  var retainedInt: Int by rememberRetained(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
-  var retainedText1: String by rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
-  var retainedText2: String by rememberRetained(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
+  var retainedInt: Int by
+    rememberRetained(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
+  var retainedText1: String by
+    rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+  var retainedText2: String by
+    rememberRetained(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
   Column {
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_1),

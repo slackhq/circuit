@@ -44,6 +44,7 @@ import org.junit.Test
 private const val TAG_REMEMBER = "remember"
 private const val TAG_RETAINED_1 = "retained1"
 private const val TAG_RETAINED_2 = "retained2"
+private const val TAG_RETAINED_3 = "retained3"
 
 class RetainedTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -116,19 +117,23 @@ class RetainedTest {
 
   @Test
   fun multipleKeys() {
-    setActivityContent { MultipleRetains() }
+    val content = @Composable { MultipleRetains(useKeys = true) }
+    setActivityContent(content)
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained1")
     composeTestRule.onNodeWithTag(TAG_RETAINED_2).performTextInput("Text_Retained2")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_3).performTextInput("2")
     // Check that our input worked
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
     composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertTextContains("Text_Retained2")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_3).assertTextContains("2")
     // Restart the activity
     scenario.recreate()
     // Compose our content
-    setActivityContent { MultipleRetains() }
+    setActivityContent(content)
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
     composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertTextContains("Text_Retained2")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_3).assertTextContains("2")
   }
 
   private fun setActivityContent(content: @Composable () -> Unit) {
@@ -167,11 +172,10 @@ private fun KeyContent(key: String?) {
 }
 
 @Composable
-private fun MultipleRetains() {
-  // By default rememberSavable uses it's line number as its key, this doesn't seem
-  // to work when testing, instead pass a key
-  var retainedText1: String by rememberRetained(key = "retained1") { mutableStateOf("") }
-  var retainedText2: String by rememberRetained(key = "retained2") { mutableStateOf("") }
+private fun MultipleRetains(useKeys: Boolean) {
+  var retainedInt: Int by rememberRetained(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
+  var retainedText1: String by rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+  var retainedText2: String by rememberRetained(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
   Column {
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_1),
@@ -183,6 +187,12 @@ private fun MultipleRetains() {
       modifier = Modifier.testTag(TAG_RETAINED_2),
       value = retainedText2,
       onValueChange = { retainedText2 = it },
+      label = {}
+    )
+    TextField(
+      modifier = Modifier.testTag(TAG_RETAINED_3),
+      value = retainedInt.toString(),
+      onValueChange = { retainedInt = it.toInt() },
       label = {}
     )
   }

@@ -16,6 +16,8 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 
 @Composable
@@ -63,7 +65,9 @@ internal fun CircuitContent(
   val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
 
   if (screenUi != null && presenter != null) {
-    @Suppress("UNCHECKED_CAST") (CircuitContent(presenter, screenUi.ui as Ui<CircuitUiState>))
+    val eventListener = circuitConfig.eventListenerFactory?.create(screen) ?: EventListener.NONE
+    @Suppress("UNCHECKED_CAST")
+    CircuitContent(eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
   } else if (unavailableContent != null) {
     unavailableContent(screen)
   } else {
@@ -73,9 +77,12 @@ internal fun CircuitContent(
 
 @Composable
 private fun <UiState : CircuitUiState> CircuitContent(
+  eventListener: EventListener,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
 ) {
   val state = presenter.present()
+  // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
+  SideEffect { eventListener.onState(state) }
   ui.Content(state)
 }

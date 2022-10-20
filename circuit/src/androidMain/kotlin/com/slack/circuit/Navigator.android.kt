@@ -18,6 +18,7 @@ package com.slack.circuit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isEmpty
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
@@ -25,37 +26,33 @@ import com.slack.circuit.backstack.SaveableBackStack
  * @see NavigableCircuitContent
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
- * @param onRootPop The callback to handle root [Navigator.pop] calls.
+ * @param onRootPop A callback to handle when the [backstack] is [popped][Navigator.pop] to empty.
  */
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
-  popRootOnEmpty: Boolean = true,
-  onRootPop: (() -> Unit)?
+  onRootPop: (() -> Unit)
 ): Navigator {
-  return remember { NavigatorImpl(backstack, popRootOnEmpty, onRootPop) }
+  return remember { NavigatorImpl(backstack, onRootPop) }
 }
 
 internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
-  private val popRootOnEmpty: Boolean,
-  private val onRootPop: (() -> Unit)?,
+  private val onRootPop: (() -> Unit),
 ) : Navigator {
+
+  init {
+    check(!backstack.isEmpty) { "Backstack size must not be empty." }
+  }
 
   override fun goTo(screen: Screen) {
     backstack.push(screen)
   }
 
   override fun pop(): Screen? {
-    // If we have a size of 0, we're at the root and should call the onRootPop callback.
-    // If we have a size of 1, pop that screen and call onRootPop in that case too since we're now
-    // empty with nothing to show.
-    val initialSize = backstack.size
     val screen = backstack.pop()?.screen
     if (backstack.size == 0) {
-      if (initialSize == 0 || popRootOnEmpty) {
-        onRootPop?.invoke()
-      }
+      onRootPop()
     }
     return screen
   }
@@ -74,7 +71,7 @@ internal class NavigatorImpl(
 
   override fun hashCode(): Int {
     var result = backstack.hashCode()
-    result = 31 * result + (onRootPop?.hashCode() ?: 0)
+    result = 31 * result + onRootPop.hashCode()
     return result
   }
 

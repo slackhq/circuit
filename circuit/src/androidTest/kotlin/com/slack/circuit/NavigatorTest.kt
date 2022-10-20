@@ -19,6 +19,7 @@ import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -37,18 +38,14 @@ private object TestScreen : Screen {
 class NavigatorTest {
 
   @Test
-  fun rootPopWhenEmpty() {
+  fun errorWhenBackstackIsEmpty() {
     val rootPops = AtomicInteger(0)
     val backstack = SaveableBackStack()
-    val navigator =
-      NavigatorImpl(
-        backstack = backstack,
-        popRootOnEmpty = true,
-        onRootPop = { rootPops.incrementAndGet() }
-      )
-    assertThat(backstack).hasSize(0)
-    navigator.pop()
-    assertThat(rootPops.get()).isEqualTo(1)
+    val t =
+      assertFailsWith<IllegalStateException> {
+        NavigatorImpl(backstack = backstack, onRootPop = { rootPops.incrementAndGet() })
+      }
+    assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
   }
 
   @Test
@@ -57,40 +54,11 @@ class NavigatorTest {
     val backstack = SaveableBackStack()
     backstack.push(TestScreen)
     backstack.push(TestScreen)
-    val navigator =
-      NavigatorImpl(
-        backstack = backstack,
-        popRootOnEmpty = true,
-        onRootPop = { rootPops.incrementAndGet() }
-      )
+    val navigator = NavigatorImpl(backstack = backstack, onRootPop = { rootPops.incrementAndGet() })
     assertThat(backstack).hasSize(2)
     navigator.pop()
     assertThat(rootPops.get()).isEqualTo(0)
     assertThat(backstack).hasSize(1)
-    navigator.pop()
-    assertThat(rootPops.get()).isEqualTo(1)
-    assertThat(backstack).hasSize(0)
-  }
-
-  @Test
-  fun rootPopWhenOneNoPopOnempty() {
-    val rootPops = AtomicInteger(0)
-    val backstack = SaveableBackStack()
-    backstack.push(TestScreen)
-    backstack.push(TestScreen)
-    val navigator =
-      NavigatorImpl(
-        backstack = backstack,
-        popRootOnEmpty = false,
-        onRootPop = { rootPops.incrementAndGet() }
-      )
-    assertThat(backstack).hasSize(2)
-    navigator.pop()
-    assertThat(rootPops.get()).isEqualTo(0)
-    assertThat(backstack).hasSize(1)
-    navigator.pop()
-    assertThat(rootPops.get()).isEqualTo(0)
-    assertThat(backstack).hasSize(0)
     navigator.pop()
     assertThat(rootPops.get()).isEqualTo(1)
     assertThat(backstack).hasSize(0)

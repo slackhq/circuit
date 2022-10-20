@@ -30,13 +30,15 @@ import com.slack.circuit.backstack.SaveableBackStack
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
+  popRootOnEmpty: Boolean = true,
   onRootPop: (() -> Unit)?
 ): Navigator {
-  return remember { NavigatorImpl(backstack, onRootPop) }
+  return remember { NavigatorImpl(backstack, popRootOnEmpty, onRootPop) }
 }
 
-private class NavigatorImpl(
+internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
+  private val popRootOnEmpty: Boolean,
   private val onRootPop: (() -> Unit)?,
 ) : Navigator {
 
@@ -45,11 +47,17 @@ private class NavigatorImpl(
   }
 
   override fun pop(): Screen? {
-    backstack.pop()?.screen?.let {
-      return it
+    // If we have a size of 0, we're at the root and should call the onRootPop callback.
+    // If we have a size of 1, pop that screen and call onRootPop in that case too since we're now
+    // empty with nothing to show.
+    val initialSize = backstack.size
+    val screen = backstack.pop()?.screen
+    if (backstack.size == 0) {
+      if (initialSize == 0 || popRootOnEmpty) {
+        onRootPop?.invoke()
+      }
     }
-    onRootPop?.invoke()
-    return null
+    return screen
   }
 
   override fun equals(other: Any?): Boolean {

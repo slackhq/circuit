@@ -18,10 +18,8 @@ package com.slack.circuit.retained
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.RememberObserver
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -69,7 +67,6 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
 public fun continuityRetainedStateRegistry(
   factory: ViewModelProvider.Factory? = null
 ): RetainedStateRegistry {
-  SideEffect { println("ZAC: continuityRetainedStateRegistry") }
   val vm = viewModel<Continuity>(key = Continuity.KEY, factory = factory)
   val canRetain = rememberCanRetainChecker()
   remember(canRetain) {
@@ -89,12 +86,8 @@ public fun continuityRetainedStateRegistry(
       }
     }
   }
-//  val localConfig = LocalConfiguration.current
-  SideEffect { println("ZAC: Launching GC") }
   LaunchedEffect(vm) {
-    println("ZAC: Launched GC withFrameNanos")
     withFrameNanos {}
-    println("ZAC: Frame done, GC-ing")
     // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
     // point can be assumed to be no longer used
     vm.forgetUnclaimedValues()

@@ -122,11 +122,9 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
 
   override fun registerValue(key: String, valueProvider: () -> Any?): Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
-    println("ZAC: registerValue $key")
     valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
     return object : Entry {
       override fun unregister() {
-        println("ZAC: unregister $key")
         val list = valueProviders.remove(key)
         list?.remove(valueProvider)
         if (!list.isNullOrEmpty()) {

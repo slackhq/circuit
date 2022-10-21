@@ -88,7 +88,6 @@ class RetainedTest {
 
   @Test
   fun clearingAfterDone() {
-    println("ZAC: STARTING TEST")
     setActivityContent {
       Column {
         var text2Enabled by rememberRetained { mutableStateOf(true) }
@@ -128,7 +127,6 @@ class RetainedTest {
     assertThat(continuity.peekProviders().values.single()).hasSize(2)
 
     // Recreate the activity
-    println("ZAC: RECREATING")
     scenario.recreate()
 
     // After recreation, our VM now has committed our pending values.
@@ -145,8 +143,8 @@ class RetainedTest {
       }
     }
 
-    // Assert the GC step ran to remove unclaimed values
-    // TODO this isn't running after recreation
+    // Assert the GC step ran to remove unclaimed values. Need to wait for idle first
+    composeTestRule.waitForIdle()
     assertThat(continuity.peekRetained()).hasSize(0)
 
     // We now just have one list with one provider
@@ -155,7 +153,6 @@ class RetainedTest {
     assertThat(continuity.peekProviders().values.single()).hasSize(1)
 
     // Destroy the activity, which should clear the retained values entirely
-    println("ZAC: DESTROYING")
     scenario.moveToState(Lifecycle.State.DESTROYED)
     assertThat(continuity.peekRetained()).hasSize(0)
     assertThat(continuity.peekProviders()).hasSize(0)

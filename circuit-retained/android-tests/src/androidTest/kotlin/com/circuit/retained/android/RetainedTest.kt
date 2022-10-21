@@ -86,6 +86,8 @@ class RetainedTest {
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
   }
 
+  // Suppressions temporary until we can move this back to the circuit-retained module
+  @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
   @Test
   fun clearingAfterDone() {
     setActivityContent {

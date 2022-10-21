@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.retained
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.RememberObserver
@@ -48,9 +49,12 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
     delegate.valueProviders.clear()
   }
 
-  // TODO find a better approach for this
-  public fun peekRetained(): MutableMap<String, List<Any?>> = delegate.retained
-  public fun peekProviders(): MutableMap<String, MutableList<() -> Any?>> = delegate.valueProviders
+  @VisibleForTesting
+  internal fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
+
+  @VisibleForTesting
+  internal fun peekProviders(): Map<String, MutableList<() -> Any?>> =
+    delegate.valueProviders.toMap()
 
   internal companion object {
     const val KEY = "CircuitContinuity"

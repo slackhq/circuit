@@ -16,6 +16,9 @@ setContent {
 }
 ```
 
+!!! warning
+    `SaveableBackStack` _must_ have a size of 1 or more after initialization. It's an error to have a backstack with zero items.
+
 Presenters are then given access to these navigator instances via `Presenter.Factory` (described in TODO link Factories), which they can save if needed to perform navigation.
 
 ```kotlin

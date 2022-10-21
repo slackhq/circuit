@@ -46,6 +46,7 @@ dependencies {
   androidTestImplementation(libs.androidx.compose.foundation)
   androidTestImplementation(libs.androidx.compose.ui.ui)
   androidTestImplementation(libs.androidx.compose.material.material)
+  androidTestImplementation(libs.leakcanary.android.instrumentation)
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.truth)
 }

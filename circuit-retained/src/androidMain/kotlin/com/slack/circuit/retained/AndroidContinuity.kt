@@ -89,12 +89,12 @@ public fun continuityRetainedStateRegistry(
       }
     }
   }
-  val localConfig = LocalConfiguration.current
-  SideEffect { println("ZAC: setting up unclaimed values stuff") }
-  LaunchedEffect(vm, canRetain, localConfig) {
-    println("ZAC: Waiting for frame")
+//  val localConfig = LocalConfiguration.current
+  SideEffect { println("ZAC: Launching GC") }
+  LaunchedEffect(vm) {
+    println("ZAC: Launched GC withFrameNanos")
     withFrameNanos {}
-    println("ZAC: Forgetting unclaimed values")
+    println("ZAC: Frame done, GC-ing")
     // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
     // point can be assumed to be no longer used
     vm.forgetUnclaimedValues()

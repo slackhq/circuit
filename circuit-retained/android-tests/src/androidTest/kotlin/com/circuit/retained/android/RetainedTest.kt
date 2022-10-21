@@ -88,6 +88,7 @@ class RetainedTest {
 
   @Test
   fun clearingAfterDone() {
+    println("ZAC: STARTING TEST")
     setActivityContent {
       Column {
         var text2Enabled by rememberRetained { mutableStateOf(true) }
@@ -127,6 +128,7 @@ class RetainedTest {
     assertThat(continuity.peekProviders().values.single()).hasSize(2)
 
     // Recreate the activity
+    println("ZAC: RECREATING")
     scenario.recreate()
 
     // After recreation, our VM now has committed our pending values.
@@ -153,6 +155,7 @@ class RetainedTest {
     assertThat(continuity.peekProviders().values.single()).hasSize(1)
 
     // Destroy the activity, which should clear the retained values entirely
+    println("ZAC: DESTROYING")
     scenario.moveToState(Lifecycle.State.DESTROYED)
     assertThat(continuity.peekRetained()).hasSize(0)
     assertThat(continuity.peekProviders()).hasSize(0)

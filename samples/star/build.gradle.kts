@@ -107,6 +107,7 @@ dependencies {
   testImplementation(projects.circuitTest)
 
   debugImplementation(libs.androidx.compose.ui.testing.manifest)
+  androidTestImplementation(libs.leakcanary.android.instrumentation)
   androidTestImplementation(libs.androidx.compose.ui.testing.junit)
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)

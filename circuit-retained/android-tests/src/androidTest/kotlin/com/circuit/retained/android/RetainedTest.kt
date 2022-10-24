@@ -38,8 +38,10 @@ import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
 private const val TAG_REMEMBER = "remember"
 private const val TAG_RETAINED_1 = "retained1"
@@ -47,7 +49,13 @@ private const val TAG_RETAINED_2 = "retained2"
 private const val TAG_RETAINED_3 = "retained3"
 
 class RetainedTest {
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+  @get:Rule
+  val rule =
+    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
+      around(composeTestRule)
+    }
 
   private val scenario: ActivityScenario<ComponentActivity>
     get() = composeTestRule.activityRule.scenario

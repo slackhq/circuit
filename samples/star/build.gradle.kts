@@ -23,6 +23,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
   alias(libs.plugins.paparazzi)
+  alias(libs.plugins.ksp)
 }
 
 android {
@@ -69,6 +70,7 @@ tasks.withType<KotlinCompile>().configureEach {
 
 dependencies {
   kapt(libs.dagger.compiler)
+  ksp(projects.circuitCodegen)
   implementation(projects.circuit)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)

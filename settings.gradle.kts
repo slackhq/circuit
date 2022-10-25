@@ -165,6 +165,7 @@ rootProject.name = "circuit-root"
 include(
   ":backstack",
   ":circuit",
+  ":circuit-codegen",
   ":circuit-retained",
   ":circuit-retained:android-tests",
   ":circuit-test",

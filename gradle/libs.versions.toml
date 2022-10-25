@@ -115,6 +115,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.0.1" }
 autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version = "1.0.0" }

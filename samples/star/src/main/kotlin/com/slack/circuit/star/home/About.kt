@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitInject
+import com.slack.circuit.CircuitScope
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
@@ -52,6 +53,7 @@ object AboutScreen : Screen {
   object State : CircuitUiState
 }
 
+@CircuitScope(AppScope::class)
 @CircuitInject<AboutScreen>
 class AboutPresenter : Presenter<AboutScreen.State> {
   @Composable override fun present() = AboutScreen.State

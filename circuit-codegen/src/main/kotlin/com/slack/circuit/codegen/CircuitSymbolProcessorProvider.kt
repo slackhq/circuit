@@ -45,6 +45,7 @@ import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
+import java.util.ServiceLoader
 
 private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
 private val CIRCUIT_PRESENTER = Presenter::class.java.canonicalName
@@ -63,6 +64,10 @@ private class CircuitSymbolProcessor(
   private val codeGenerator: CodeGenerator
 ) : SymbolProcessor {
   override fun process(resolver: Resolver): List<KSAnnotated> {
+    val extensions = ServiceLoader.load(CircuitProcessingExtension::class.java, CircuitProcessingExtension::class.java.classLoader)
+      .iterator()
+      .asSequence()
+      .toSet()
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedClass ->
       check(annotatedClass is KSClassDeclaration)
       val circuitInjectAnnotation =
@@ -93,8 +98,12 @@ private class CircuitSymbolProcessor(
           FactoryType.UI -> buildUiFactory(className, annotatedClass, screenType)
         }
 
-      val fileSpec = FileSpec.get(packageName, typeSpec)
-      fileSpec.writeTo(codeGenerator = codeGenerator, aggregating = false)
+      val finalSpec = extensions.fold(typeSpec) { spec, extension ->
+        extension.process(spec, annotatedClass, factoryType)
+      }
+
+      FileSpec.get(packageName, finalSpec)
+        .writeTo(codeGenerator = codeGenerator, aggregating = false)
     }
     return emptyList()
   }
@@ -164,7 +173,7 @@ private fun buildPresenterFactory(
     .build()
 }
 
-private enum class FactoryType {
+public enum class FactoryType {
   PRESENTER,
   UI
 }

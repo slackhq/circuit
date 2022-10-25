@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2022 Slack Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
@@ -10,69 +25,146 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitInject
+import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
+import com.slack.circuit.Screen
+import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.STAR
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.ksp.writeTo
 
 private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
 private val CIRCUIT_PRESENTER = Presenter::class.java.canonicalName
 private val CIRCUIT_UI = Ui::class.java.canonicalName
+private val FACTORY = "Factory"
 
-@AutoService(CircuitSymbolProcessorProvider::class)
+@AutoService(SymbolProcessorProvider::class)
 public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return CircuitSymbolProcessor(environment.logger, environment.codeGenerator)
-    }
+  override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+    return CircuitSymbolProcessor(environment.logger, environment.codeGenerator)
+  }
 }
 
 private class CircuitSymbolProcessor(
-    private val logger: KSPLogger,
-    private val codeGenerator: CodeGenerator
+  private val logger: KSPLogger,
+  private val codeGenerator: CodeGenerator
 ) : SymbolProcessor {
-    override fun process(resolver: Resolver): List<KSAnnotated> {
-        resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach {
-            check(it is KSClassDeclaration)
-            // @CircuitInject<HomeScreen>
-            // class HomePresenter(..) : Presenter<State>
-            val circuitInjectAnnotation = it.annotations.first {
-                it.annotationType.resolve().declaration.qualifiedName?.asString() == CIRCUIT_INJECT_ANNOTATION
-            }
-            val screenType =
-                circuitInjectAnnotation.annotationType.element!!.typeArguments.get(0).toTypeName()
-
-           val factoryType = it.getAllSuperTypes().mapNotNull{
-                when (it.declaration.qualifiedName?.asString()) {
-                    CIRCUIT_UI -> FactoryType.UI
-                    CIRCUIT_PRESENTER -> FactoryType.PRESENTER
-                    else -> null
-                }
-            }.first()
-
-            val className = it.simpleName.getShortName()
-            val packageName = it.packageName.getShortName()
-
+  override fun process(resolver: Resolver): List<KSAnnotated> {
+    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedClass ->
+      check(annotatedClass is KSClassDeclaration)
+      val circuitInjectAnnotation =
+        annotatedClass.annotations.first {
+          it.annotationType.resolve().declaration.qualifiedName?.asString() ==
+            CIRCUIT_INJECT_ANNOTATION
         }
-        return emptyList()
-    }
+      val screenType =
+        circuitInjectAnnotation.annotationType.element!!.typeArguments.get(0).toTypeName()
 
+      val factoryType =
+        annotatedClass
+          .getAllSuperTypes()
+          .mapNotNull {
+            when (it.declaration.qualifiedName?.asString()) {
+              CIRCUIT_UI -> FactoryType.UI
+              CIRCUIT_PRESENTER -> FactoryType.PRESENTER
+              else -> null
+            }
+          }
+          .first()
+
+      val className = annotatedClass.simpleName.getShortName()
+      val packageName = annotatedClass.packageName.getShortName()
+      val typeSpec =
+        when (factoryType) {
+          FactoryType.PRESENTER -> buildPresenterFactory(className, annotatedClass, screenType)
+          FactoryType.UI -> buildUiFactory(className, annotatedClass, screenType)
+        }
+
+      val fileSpec = FileSpec.get(packageName, typeSpec)
+      fileSpec.writeTo(codeGenerator = codeGenerator, aggregating = false)
+    }
+    return emptyList()
+  }
+}
+
+private fun buildUiFactory(
+  className: String,
+  annotatedClass: KSClassDeclaration,
+  screenType: TypeName
+): TypeSpec {
+  return TypeSpec.classBuilder(className + FACTORY)
+    .addSuperinterface(Ui.Factory::class)
+    .addFunction(
+      FunSpec.builder("create")
+        .addModifiers(KModifier.OVERRIDE)
+        .addParameter("screen", Screen::class)
+        .addParameter("navigator", Navigator::class)
+        .addParameter("circuitConfig", CircuitConfig::class)
+        .returns(ScreenUi::class.asClassName().copy(nullable = true))
+        .beginControlFlow("return when (screen)")
+        .addStatement(
+          "is %T -> %T(%T())",
+          screenType,
+          ScreenUi::class.asTypeName(),
+          annotatedClass.toClassName()
+        )
+        .addStatement("else -> null")
+        .endControlFlow()
+        .build()
+    )
+    .addOriginatingKSFile(annotatedClass.containingFile!!)
+    .build()
+}
+
+private fun buildPresenterFactory(
+  className: String,
+  annotatedClass: KSClassDeclaration,
+  screenType: TypeName
+): TypeSpec {
+  // The TypeSpec below will generate something similar to the following.
+  //  public class AboutPresenterFactory : Presenter.Factory {
+  //    public override fun create(
+  //      screen: Screen,
+  //      navigator: Navigator,
+  //      circuitConfig: CircuitConfig,
+  //    ): Presenter<*>? = when (screen) {
+  //      is AboutScreen -> AboutPresenter()
+  //      else -> null
+  //    }
+  //  }
+  return TypeSpec.classBuilder(className + FACTORY)
+    .addSuperinterface(Presenter.Factory::class)
+    .addFunction(
+      FunSpec.builder("create")
+        .addModifiers(KModifier.OVERRIDE)
+        .addParameter("screen", Screen::class)
+        .addParameter("navigator", Navigator::class)
+        .addParameter("circuitConfig", CircuitConfig::class)
+        .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
+        .beginControlFlow("return when (screen)")
+        .addStatement("is %T -> %T()", screenType, annotatedClass.toClassName())
+        .addStatement("else -> null")
+        .endControlFlow()
+        .build()
+    )
+    .addOriginatingKSFile(annotatedClass.containingFile!!)
+    .build()
 }
 
 private enum class FactoryType {
-    PRESENTER,
-    UI
+  PRESENTER,
+  UI
 }
-
-/**
- * @ContributesTo(AppScope::class)
-class HomeUiFactory @Inject constructor() : UiFactory {
-override fun create(screen: Screen): ScreenView? {
-return when (screen) {
-is HomeScreen -> ScreenView(homeUi())
-else -> null
-}
-}
-}
-
-private fun homeUi() = ui<HomeState, HomeEvent> { state, eventSink -> Home(state, eventSink) |
- */

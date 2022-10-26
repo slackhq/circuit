@@ -17,13 +17,13 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -36,6 +36,7 @@ class EventListenerTest {
   val timeout: Timeout =
     Timeout.builder().withTimeout(10, TimeUnit.SECONDS).withLookingForStuckThread(true).build()
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun basicEventRecording() = runTest {
     val eventListenerFactory = RecordingEventListener.Factory()

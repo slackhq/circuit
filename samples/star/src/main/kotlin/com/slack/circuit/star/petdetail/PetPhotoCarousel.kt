@@ -107,10 +107,7 @@ constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
 
   @Composable override fun present() = PetPhotoCarouselScreen.State(screen)
 
-  @CircuitInject(
-    PetPhotoCarouselScreen::class,
-    AppScope::class
-  )
+  @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter

@@ -45,17 +45,11 @@ object AboutScreen : Screen {
   object State : CircuitUiState
 }
 
-@CircuitInject(
-  screen = AboutScreen::class,
-  scope = AppScope::class
-)
+@CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 
-@CircuitInject(
-  screen = AboutScreen::class,
-  scope = AppScope::class
-)
+@CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun About(modifier: Modifier = Modifier) {
   Scaffold(

@@ -56,10 +56,7 @@ object HomeScreen : Screen {
   }
 }
 
-@CircuitInject(
-  screen = HomeScreen::class,
-  scope = AppScope::class
-)
+@CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomePresenter(navigator: Navigator): HomeScreen.State {
   val homeNavState = HomeNavPresenter()
@@ -71,10 +68,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   }
 }
 
-@CircuitInject(
-  screen = HomeScreen::class,
-  scope = AppScope::class
-)
+@CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val systemUiController = rememberSystemUiController()

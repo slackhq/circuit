@@ -83,6 +83,7 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitConfig = resolver.loadKSType<CircuitConfig>()
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {
+      @Suppress("SwallowedException")
       return try {
         CircuitSymbols(resolver)
       } catch (e: IllegalStateException) {
@@ -143,11 +144,10 @@ private class CircuitSymbolProcessor(
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
-    val (className, packageName, factoryType, constructorParams, codeBlock) =
-      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType)
+    val factoryData = computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType)
 
     val builder =
-      TypeSpec.classBuilder(className + FACTORY)
+      TypeSpec.classBuilder(factoryData.className + FACTORY)
         .addAnnotation(
           AnnotationSpec.builder(ContributesMultibinding::class)
             .addMember("%T::class", scope)
@@ -156,12 +156,12 @@ private class CircuitSymbolProcessor(
         .primaryConstructor(
           FunSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
-            .addParameters(constructorParams)
+            .addParameters(factoryData.constructorParams)
             .build()
         )
         .apply {
-          if (constructorParams.isNotEmpty()) {
-            for (param in constructorParams) {
+          if (factoryData.constructorParams.isNotEmpty()) {
+            for (param in factoryData.constructorParams) {
               addProperty(
                 PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
                   .initializer(param.name)
@@ -177,13 +177,15 @@ private class CircuitSymbolProcessor(
         CodeBlock.of("is·%T", screenType)
       }
     val typeSpec =
-      when (factoryType) {
+      when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenBranch, codeBlock)
-        FactoryType.UI -> builder.buildUiFactory(annotatedElement, screenBranch, codeBlock)
+          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+        FactoryType.UI ->
+          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
       }
 
-    FileSpec.get(packageName, typeSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
+    FileSpec.get(factoryData.packageName, typeSpec)
+      .writeTo(codeGenerator = codeGenerator, aggregating = false)
   }
 
   private data class FactoryData(
@@ -194,6 +196,7 @@ private class CircuitSymbolProcessor(
     val codeBlock: CodeBlock
   )
 
+  /** Computes the data needed to generate a factory. */
   @OptIn(KspExperimental::class)
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,
@@ -318,6 +321,18 @@ private data class AssistedType(
   val name: String,
 )
 
+/**
+ * Returns a [CodeBlock] representation of all named assisted parameters on this
+ * [KSFunctionDeclaration] to be used in generated invocation code.
+ *
+ * Example: this function
+ * ```kotlin
+ * @Composable
+ * fun HomePresenter(screen: Screen, navigator: Navigator)
+ * ```
+ *
+ * Yields this CodeBlock: `screen = screen, navigator = navigator`
+ */
 private fun KSFunctionDeclaration.assistedParameters(
   symbols: CircuitSymbols,
   logger: KSPLogger,

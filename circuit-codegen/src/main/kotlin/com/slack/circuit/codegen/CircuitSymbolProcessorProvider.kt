@@ -127,7 +127,6 @@ private class CircuitSymbolProcessor(
     return emptyList()
   }
 
-  @OptIn(KspExperimental::class)
   private fun generateFactory(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
@@ -144,6 +143,64 @@ private class CircuitSymbolProcessor(
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
+    val (className, packageName, factoryType, constructorParams, codeBlock) =
+      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType)
+
+    val builder =
+      TypeSpec.classBuilder(className + FACTORY)
+        .addAnnotation(
+          AnnotationSpec.builder(ContributesMultibinding::class)
+            .addMember("%T::class", scope)
+            .build()
+        )
+        .primaryConstructor(
+          FunSpec.constructorBuilder()
+            .addAnnotation(Inject::class.java)
+            .addParameters(constructorParams)
+            .build()
+        )
+        .apply {
+          if (constructorParams.isNotEmpty()) {
+            for (param in constructorParams) {
+              addProperty(
+                PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
+                  .initializer(param.name)
+                  .build()
+              )
+            }
+          }
+        }
+    val screenBranch =
+      if (screenIsObject) {
+        CodeBlock.of("%T", screenType)
+      } else {
+        CodeBlock.of("is·%T", screenType)
+      }
+    val typeSpec =
+      when (factoryType) {
+        FactoryType.PRESENTER ->
+          builder.buildPresenterFactory(annotatedElement, screenBranch, codeBlock)
+        FactoryType.UI -> builder.buildUiFactory(annotatedElement, screenBranch, codeBlock)
+      }
+
+    FileSpec.get(packageName, typeSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
+  }
+
+  private data class FactoryData(
+    val className: String,
+    val packageName: String,
+    val factoryType: FactoryType,
+    val constructorParams: List<ParameterSpec>,
+    val codeBlock: CodeBlock
+  )
+
+  @OptIn(KspExperimental::class)
+  private fun computeFactoryData(
+    annotatedElement: KSAnnotated,
+    symbols: CircuitSymbols,
+    screenKSType: KSType,
+    instantiationType: InstantiationType,
+  ): FactoryData {
     val className: String
     val packageName: String
     val factoryType: FactoryType
@@ -251,45 +308,7 @@ private class CircuitSymbolProcessor(
           }
       }
     }
-
-    val builder =
-      TypeSpec.classBuilder(className + FACTORY)
-        .addAnnotation(
-          AnnotationSpec.builder(ContributesMultibinding::class)
-            .addMember("%T::class", scope)
-            .build()
-        )
-        .primaryConstructor(
-          FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class.java)
-            .addParameters(constructorParams)
-            .build()
-        )
-        .apply {
-          if (constructorParams.isNotEmpty()) {
-            for (param in constructorParams) {
-              addProperty(
-                PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
-                  .initializer(param.name)
-                  .build()
-              )
-            }
-          }
-        }
-    val screenBranch =
-      if (screenIsObject) {
-        CodeBlock.of("%T", screenType)
-      } else {
-        CodeBlock.of("is·%T", screenType)
-      }
-    val typeSpec =
-      when (factoryType) {
-        FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenBranch, codeBlock)
-        FactoryType.UI -> builder.buildUiFactory(annotatedElement, screenBranch, codeBlock)
-      }
-
-    FileSpec.get(packageName, typeSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
+    return FactoryData(className, packageName, factoryType, constructorParams, codeBlock)
   }
 }
 

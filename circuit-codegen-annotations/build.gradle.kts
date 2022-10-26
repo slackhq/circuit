@@ -15,18 +15,11 @@
  */
 plugins {
   kotlin("jvm")
-  alias(libs.plugins.ksp)
   alias(libs.plugins.mavenPublish)
 }
 
 dependencies {
-  compileOnly(libs.ksp.api)
-  ksp(libs.autoService.ksp)
-  implementation(libs.autoService.annotations)
-  implementation(libs.dagger)
-  implementation(libs.kotlinpoet)
-  implementation(libs.kotlinpoet.ksp)
-  implementation(projects.circuit)
-  implementation(projects.circuitCodegenAnnotations)
-  implementation(libs.anvil.annotations)
+  api(libs.anvil.annotations)
+  api(libs.dagger)
+  api(projects.circuit)
 }

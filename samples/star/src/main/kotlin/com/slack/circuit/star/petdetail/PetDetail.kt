@@ -56,10 +56,10 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitInject
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.data.Animal
@@ -132,7 +132,7 @@ constructor(
     return state
   }
 
-  @CircuitInject(PetDetailScreen::class, AppScope::class)
+  @com.slack.circuit.codegen.annotations.CircuitInject(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetDetailScreen): PetDetailPresenter
@@ -145,7 +145,7 @@ internal object PetDetailTestConstants {
   const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
 }
 
-@CircuitInject(PetDetailScreen::class, AppScope::class)
+@com.slack.circuit.codegen.annotations.CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()

@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit
+package com.slack.circuit.codegen.annotations
 
+import androidx.compose.runtime.Composable
+import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitUiState
+import com.slack.circuit.Navigator
+import com.slack.circuit.Presenter
+import com.slack.circuit.Screen
+import com.slack.circuit.Ui
+import com.squareup.anvil.annotations.ContributesMultibinding
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlin.reflect.KClass
 
 /**
@@ -22,7 +32,7 @@ import kotlin.reflect.KClass
  * annotated, the type's corresponding factory will be generated and key'd with the defined [screen]
  * .
  *
- * The generated factories are then contributed to Anvil via `@ContributesMultibinding` and scoped
+ * The generated factories are then contributed to Anvil via [ContributesMultibinding] and scoped
  * with the provided [scope] key.
  *
  * ## Classes
@@ -62,7 +72,7 @@ import kotlin.reflect.KClass
  * - UI functions can optionally accept a [CircuitUiState] type as a parameter, but it is not
  * required.
  * - UI functions _must_ return [Unit].
- * - Both presenter and UI functions _must_ be `@Composable`.
+ * - Both presenter and UI functions _must_ be [Composable].
  *
  * **Presenter**
  * ```kotlin
@@ -89,9 +99,8 @@ import kotlin.reflect.KClass
  * ## Assisted injection
  *
  * Any type that is offered in [Presenter.Factory] and [Ui.Factory] can be offered as an assisted
- * injection to types using Dagger `AssistedInject`. For these cases, the
- * `AssistedFactory`-annotated interface should be annotated with [CircuitInject] instead of the
- * enclosing class.
+ * injection to types using Dagger [AssistedInject]. For these cases, the [AssistedFactory]
+ * -annotated interface should be annotated with [CircuitInject] instead of the enclosing class.
  *
  * Types available for assisted injection are:
  * - [Screen] – the screen key used to create the [Presenter] or [Ui].
@@ -99,6 +108,29 @@ import kotlin.reflect.KClass
  * - [CircuitConfig]
  *
  * Each should only be defined at-most once.
+ *
+ * **Examples**
+ * ```kotlin
+ * // Function example
+ * @CircuitInject(HomeScreen::class, AppScope::class)
+ * @Composable
+ * fun HomePresenter(screen: Screen, navigator: Navigator): HomeState { ... }
+ *
+ * // Class example
+ * class HomePresenter @AssistedInject constructor(
+ *   @Assisted screen: Screen,
+ *   @Assisted navigator: Navigator,
+ *   ...
+ * ) : Presenter<HomeState> {
+ *   // ...
+ *
+ *   @CircuitInject(HomeScreen::class, AppScope::class)
+ *   @AssistedFactory
+ *   fun interface Factory {
+ *     fun create(screen: Screen, navigator: Navigator): HomePresenter
+ *   }
+ * }
+ * ```
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 public annotation class CircuitInject(

@@ -21,6 +21,7 @@ plugins {
 
 dependencies {
   implementation(libs.autoService.annotations)
+  implementation(libs.dagger)
   implementation(libs.kotlinpoet)
   implementation(libs.kotlinpoet.ksp)
   implementation(projects.circuit)

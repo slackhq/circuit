@@ -23,8 +23,6 @@ import com.slack.circuit.codegen.CircuitProcessingExtension
 import com.slack.circuit.codegen.FactoryType
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toTypeName
 
@@ -34,7 +32,7 @@ private val CIRCUIT_SCOPE_ANNOTATION = CircuitScope::class.java.canonicalName
 public class AnvilProcessingExtension : CircuitProcessingExtension {
   override fun process(spec: TypeSpec, ksAnnotated: KSAnnotated, type: FactoryType): TypeSpec {
     val circuitScopeAnnotation =
-      ksAnnotated.annotations.firstOrNull() {
+      ksAnnotated.annotations.firstOrNull {
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
           CIRCUIT_SCOPE_ANNOTATION
       }
@@ -49,9 +47,6 @@ public class AnvilProcessingExtension : CircuitProcessingExtension {
       .toBuilder()
       .addAnnotation(
         AnnotationSpec.builder(ContributesMultibinding::class).addMember("%T::class", scope).build()
-      )
-      .primaryConstructor(
-        FunSpec.constructorBuilder().addAnnotation(ClassName("javax.inject", "Inject")).build()
       )
       .build()
   }

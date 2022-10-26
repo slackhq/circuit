@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:Suppress("UnsafeCallOnNullableType")
+
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
@@ -81,9 +82,7 @@ private class CircuitSymbolProcessor(
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val circuitUiState =
       resolver
-        .getClassDeclarationByName(
-          resolver.getKSNameFromString("com.slack.circuit.CircuitUiState")
-        )
+        .getClassDeclarationByName(resolver.getKSNameFromString("com.slack.circuit.CircuitUiState"))
         ?.asType(emptyList())
         ?: return emptyList()
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedElement ->
@@ -114,8 +113,7 @@ private class CircuitSymbolProcessor(
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
           CIRCUIT_INJECT_ANNOTATION
       }
-    val screenType =
-      circuitInjectAnnotation.annotationType.element!!.typeArguments[0].toTypeName()
+    val screenType = circuitInjectAnnotation.annotationType.element!!.typeArguments[0].toTypeName()
 
     val className: String
     val packageName: String
@@ -189,8 +187,7 @@ private class CircuitSymbolProcessor(
       when (factoryType) {
         FactoryType.PRESENTER ->
           buildPresenterFactory(className, annotatedElement, screenType, codeBlock)
-        FactoryType.UI ->
-          buildUiFactory(className, annotatedElement, screenType, codeBlock)
+        FactoryType.UI -> buildUiFactory(className, annotatedElement, screenType, codeBlock)
       }
 
     val finalSpec =

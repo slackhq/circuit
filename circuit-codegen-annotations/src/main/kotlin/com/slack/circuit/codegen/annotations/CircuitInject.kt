@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
 
 /**
  * This annotation is used to mark a UI or presenter class or function for code generation. When
- * annotated, the type's corresponding factory will be generated and key'd with the defined [screen]
+ * annotated, the type's corresponding factory will be generated and keyed with the defined [screen]
  * .
  *
  * The generated factories are then contributed to Anvil via [ContributesMultibinding] and scoped

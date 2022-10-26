@@ -341,34 +341,36 @@ private fun KSFunctionDeclaration.assistedParameters(
 ): CodeBlock {
   return buildSet {
       for (param in parameters) {
-        val type = param.type.resolve()
-        if (symbols.screen.isAssignableFrom(type)) {
-          if (screenType.isAssignableFrom(type)) {
-            val added = add(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
-            if (!added) {
-              logger.error("Multiple parameters of type $type are not allowed.", param)
-            }
-          } else {
-            logger.error("Screen type mismatch. Expected $screenType but found $type", param)
-          }
-        } else if (symbols.navigator.isAssignableFrom(type)) {
-          if (allowNavigator) {
-            val added =
-              add(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
-            if (!added) {
-              logger.error("Multiple parameters of type $type are not allowed.", param)
-            }
-          } else {
-            logger.error(
-              "Navigator type mismatch. Navigators are not injectable on this type.",
-              param
-            )
-          }
-        } else if (symbols.circuitConfig.isAssignableFrom(type)) {
-          val added =
-            add(AssistedType("circuitConfig", type.toTypeName(), param.name!!.getShortName()))
+        fun <E> MutableSet<E>.addOrError(element: E) {
+          val added = add(element)
           if (!added) {
-            logger.error("Multiple parameters of type $type are not allowed.", param)
+            logger.error("Multiple parameters of type $element are not allowed.", param)
+          }
+        }
+
+        val type = param.type.resolve()
+        when {
+          type.isInstanceOf(symbols.screen) -> {
+            if (screenType.isSameDeclarationAs(type)) {
+              addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+            }
+          }
+          type.isInstanceOf(symbols.navigator) -> {
+            if (allowNavigator) {
+              addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error(
+                "Navigator type mismatch. Navigators are not injectable on this type.",
+                param
+              )
+            }
+          }
+          type.isInstanceOf(symbols.circuitConfig) -> {
+            addOrError(
+              AssistedType("circuitConfig", type.toTypeName(), param.name!!.getShortName())
+            )
           }
         }
       }
@@ -376,6 +378,14 @@ private fun KSFunctionDeclaration.assistedParameters(
     .toList()
     .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
     .joinToCode(",·")
+}
+
+private fun KSType.isSameDeclarationAs(type: KSType): Boolean {
+  return this.declaration == type.declaration
+}
+
+private fun KSType.isInstanceOf(type: KSType): Boolean {
+  return type.isAssignableFrom(this)
 }
 
 private fun TypeSpec.Builder.buildUiFactory(

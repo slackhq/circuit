@@ -29,6 +29,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
@@ -139,6 +140,8 @@ private class CircuitSymbolProcessor(
           CIRCUIT_INJECT_ANNOTATION
       }
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
+    val screenIsObject =
+      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
@@ -274,11 +277,17 @@ private class CircuitSymbolProcessor(
             }
           }
         }
+    val screenBranch =
+      if (screenIsObject) {
+        CodeBlock.of("%T", screenType)
+      } else {
+        CodeBlock.of("is·%T", screenType)
+      }
     val typeSpec =
       when (factoryType) {
         FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenType, codeBlock)
-        FactoryType.UI -> builder.buildUiFactory(annotatedElement, screenType, codeBlock)
+          builder.buildPresenterFactory(annotatedElement, screenBranch, codeBlock)
+        FactoryType.UI -> builder.buildUiFactory(annotatedElement, screenBranch, codeBlock)
       }
 
     FileSpec.get(packageName, typeSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
@@ -338,7 +347,7 @@ private fun KSFunctionDeclaration.assistedParameters(
 
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
-  screenType: TypeName,
+  screenBranch: CodeBlock,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   return addSuperinterface(Ui.Factory::class)
@@ -350,8 +359,8 @@ private fun TypeSpec.Builder.buildUiFactory(
         .returns(ScreenUi::class.asClassName().copy(nullable = true))
         .beginControlFlow("return·when·(screen)")
         .addStatement(
-          "is·%T·->·%T(%L)",
-          screenType,
+          "%L·->·%T(%L)",
+          screenBranch,
           ScreenUi::class.asTypeName(),
           instantiationCodeBlock
         )
@@ -365,7 +374,7 @@ private fun TypeSpec.Builder.buildUiFactory(
 
 private fun TypeSpec.Builder.buildPresenterFactory(
   originatingSymbol: KSAnnotated,
-  screenType: TypeName,
+  screenBranch: CodeBlock,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
@@ -390,7 +399,7 @@ private fun TypeSpec.Builder.buildPresenterFactory(
         .addParameter("circuitConfig", CircuitConfig::class)
         .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")
-        .addStatement("is·%T·->·%L", screenType, instantiationCodeBlock)
+        .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
         .addStatement("else·->·null")
         .endControlFlow()
         .build()

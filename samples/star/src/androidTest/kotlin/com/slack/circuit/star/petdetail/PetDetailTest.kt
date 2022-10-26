@@ -34,12 +34,20 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.FakeImageLoader
+import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
 class PetDetailTest {
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+  @get:Rule
+  val rule =
+    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
+      around(composeTestRule)
+    }
 
   @Before
   fun setup() {

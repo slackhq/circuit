@@ -33,20 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitInject
+import com.slack.circuit.CircuitScope
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
-import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
 import com.slack.circuit.star.R
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.ui
-import com.squareup.anvil.annotations.ContributesMultibinding
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -54,41 +46,13 @@ object AboutScreen : Screen {
   object State : CircuitUiState
 }
 
-@ContributesMultibinding(AppScope::class)
-class AboutPresenterFactory
-@Inject
-constructor(private val aboutPresenterFactory: AboutPresenter.Factory) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    circuitConfig: CircuitConfig
-  ): Presenter<*>? {
-    if (screen is AboutScreen) return aboutPresenterFactory.create()
-    return null
-  }
-}
+@CircuitScope(AppScope::class)
+@CircuitInject<AboutScreen>
+@Composable
+fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 
-class AboutPresenter @AssistedInject constructor() : Presenter<AboutScreen.State> {
-  @Composable override fun present() = AboutScreen.State
-
-  @AssistedFactory
-  interface Factory {
-    fun create(): AboutPresenter
-  }
-}
-
-@ContributesMultibinding(AppScope::class)
-class AboutUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
-    if (screen is AboutScreen) {
-      return ScreenUi(aboutScreenUi())
-    }
-    return null
-  }
-}
-
-private fun aboutScreenUi() = ui<AboutScreen.State> { About() }
-
+@CircuitScope(AppScope::class)
+@CircuitInject<AboutScreen>
 @Composable
 fun About(modifier: Modifier = Modifier) {
   Scaffold(

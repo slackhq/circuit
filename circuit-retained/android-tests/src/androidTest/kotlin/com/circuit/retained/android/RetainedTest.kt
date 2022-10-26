@@ -18,6 +18,9 @@ package com.circuit.retained.android
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -30,16 +33,21 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
+import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
 private const val TAG_REMEMBER = "remember"
 private const val TAG_RETAINED_1 = "retained1"
@@ -47,20 +55,26 @@ private const val TAG_RETAINED_2 = "retained2"
 private const val TAG_RETAINED_3 = "retained3"
 
 class RetainedTest {
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+  @get:Rule
+  val rule =
+    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
+      around(composeTestRule)
+    }
 
   private val scenario: ActivityScenario<ComponentActivity>
     get() = composeTestRule.activityRule.scenario
 
-  private val vmFactory =
-    object : ViewModelProvider.Factory {
-      override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        @Suppress("UNCHECKED_CAST") return Continuity() as T
-      }
-    }
+  private class RecordingContinuityVmFactory : ViewModelProvider.Factory {
+    var continuity: Continuity? = null
 
-  // TODO
-  //  - clearing after done
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      @Suppress("UNCHECKED_CAST") return Continuity().also { continuity = it } as T
+    }
+  }
+
+  private val vmFactory = RecordingContinuityVmFactory()
 
   @Test
   fun singleWithKey() {
@@ -78,6 +92,80 @@ class RetainedTest {
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
+  }
+
+  // Suppressions temporary until we can move this back to the circuit-retained module
+  @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+  @Test
+  fun clearingAfterDone() {
+    setActivityContent {
+      Column {
+        var text2Enabled by rememberRetained { mutableStateOf(true) }
+        val text1 by rememberRetained { mutableStateOf("Text") }
+        Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = text1)
+        Button(
+          modifier = Modifier.testTag("TAG_BUTTON"),
+          onClick = { text2Enabled = !text2Enabled }
+        ) {
+          Text("Toggle")
+        }
+        if (text2Enabled) {
+          val text2 by rememberRetained { mutableStateOf("Text") }
+          Text(modifier = Modifier.testTag(TAG_RETAINED_2), text = text2)
+        }
+      }
+    }
+
+    // Hold on to our Continuity instance
+    val continuity = vmFactory.continuity!!
+
+    // We now have one list with three retained values
+    // - text2Enabled
+    // - text1
+    // - text2
+    assertThat(continuity.peekProviders()).hasSize(1)
+    assertThat(continuity.peekProviders().values.single()).hasSize(3)
+
+    // Now disable the second text
+    composeTestRule.onNodeWithTag("TAG_BUTTON").performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertDoesNotExist()
+
+    // text2 is now gone, so we only have two providers left now
+    // - text2Enabled
+    // - text1
+    assertThat(continuity.peekProviders()).hasSize(1)
+    assertThat(continuity.peekProviders().values.single()).hasSize(2)
+
+    // Recreate the activity
+    scenario.recreate()
+
+    // After recreation, our VM now has committed our pending values.
+    // - text2Enabled
+    // - text1
+    assertThat(continuity.peekRetained()).hasSize(1)
+    assertThat(continuity.peekRetained().values.single()).hasSize(2)
+
+    // Set different compose content what wouldn't reuse the previous ones
+    setActivityContent {
+      Row {
+        val text1 by rememberRetained { mutableStateOf("Text") }
+        Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = text1)
+      }
+    }
+
+    // Assert the GC step ran to remove unclaimed values. Need to wait for idle first
+    composeTestRule.waitForIdle()
+    assertThat(continuity.peekRetained()).hasSize(0)
+
+    // We now just have one list with one provider
+    // - text1
+    assertThat(continuity.peekProviders()).hasSize(1)
+    assertThat(continuity.peekProviders().values.single()).hasSize(1)
+
+    // Destroy the activity, which should clear the retained values entirely
+    scenario.moveToState(Lifecycle.State.DESTROYED)
+    assertThat(continuity.peekRetained()).hasSize(0)
+    assertThat(continuity.peekProviders()).hasSize(0)
   }
 
   @Test

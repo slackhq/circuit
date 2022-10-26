@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UnsafeCallOnNullableType")
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
@@ -26,7 +27,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.slack.circuit.CircuitConfig
@@ -56,7 +56,7 @@ import java.util.ServiceLoader
 private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
 private val CIRCUIT_PRESENTER = Presenter::class.java.canonicalName
 private val CIRCUIT_UI = Ui::class.java.canonicalName
-private val FACTORY = "Factory"
+private const val FACTORY = "Factory"
 
 @AutoService(SymbolProcessorProvider::class)
 public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
@@ -83,8 +83,9 @@ private class CircuitSymbolProcessor(
       resolver
         .getClassDeclarationByName(
           resolver.getKSNameFromString("com.slack.circuit.CircuitUiState")
-        )!!
-        .asType(emptyList())
+        )
+        ?.asType(emptyList())
+        ?: return emptyList()
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedElement ->
       when (annotatedElement) {
         is KSClassDeclaration -> {
@@ -114,7 +115,7 @@ private class CircuitSymbolProcessor(
           CIRCUIT_INJECT_ANNOTATION
       }
     val screenType =
-      circuitInjectAnnotation.annotationType.element!!.typeArguments.get(0).toTypeName()
+      circuitInjectAnnotation.annotationType.element!!.typeArguments[0].toTypeName()
 
     val className: String
     val packageName: String
@@ -187,9 +188,9 @@ private class CircuitSymbolProcessor(
     val typeSpec =
       when (factoryType) {
         FactoryType.PRESENTER ->
-          buildPresenterFactory(className, annotatedElement.containingFile!!, screenType, codeBlock)
+          buildPresenterFactory(className, annotatedElement, screenType, codeBlock)
         FactoryType.UI ->
-          buildUiFactory(className, annotatedElement.containingFile!!, screenType, codeBlock)
+          buildUiFactory(className, annotatedElement, screenType, codeBlock)
       }
 
     val finalSpec =
@@ -203,7 +204,7 @@ private class CircuitSymbolProcessor(
 
 private fun buildUiFactory(
   className: String,
-  originatingKSFile: KSFile,
+  originatingSymbol: KSAnnotated,
   screenType: TypeName,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
@@ -226,13 +227,13 @@ private fun buildUiFactory(
         .endControlFlow()
         .build()
     )
-    .addOriginatingKSFile(originatingKSFile)
+    .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
 }
 
 private fun buildPresenterFactory(
   className: String,
-  originatingKSFile: KSFile,
+  originatingSymbol: KSAnnotated,
   screenType: TypeName,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
@@ -264,7 +265,7 @@ private fun buildPresenterFactory(
         .endControlFlow()
         .build()
     )
-    .addOriginatingKSFile(originatingKSFile)
+    .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
 }
 

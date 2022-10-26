@@ -51,20 +51,15 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitInject
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.ui
-import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -112,28 +107,18 @@ constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
 
   @Composable override fun present() = PetPhotoCarouselScreen.State(screen)
 
+  @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter
   }
 }
 
-@ContributesMultibinding(AppScope::class)
-class PetPhotoCarouselUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
-    return when (screen) {
-      is PetPhotoCarouselScreen -> ScreenUi(petPhotoCarousel())
-      else -> null
-    }
-  }
-}
-
-fun petPhotoCarousel(): Ui<PetPhotoCarouselScreen.State> = ui { state -> PetPhotoCarousel(state) }
-
 internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
+@CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {

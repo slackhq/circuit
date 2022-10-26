@@ -18,6 +18,7 @@ package com.slack.circuit
 import kotlin.reflect.KClass
 
 // TODO: doc this
-@Suppress("unused") public annotation class CircuitInject<out Screen>
-
-public annotation class CircuitScope(val scope: KClass<*>)
+public annotation class CircuitInject(
+  val screen: KClass<out Screen>,
+  val scope: KClass<*>,
+)

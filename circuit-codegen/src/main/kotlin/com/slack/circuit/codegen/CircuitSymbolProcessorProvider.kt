@@ -41,6 +41,8 @@ import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.squareup.anvil.annotations.ContributesMultibinding
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -60,7 +62,6 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
-import java.util.ServiceLoader
 import javax.inject.Inject
 
 private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
@@ -76,9 +77,6 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
 }
 
 private class CircuitSymbols private constructor(resolver: Resolver) {
-  val circuitInject = resolver.loadKSType<CircuitInject<*>>()
-  val circuitPresenter = resolver.loadKSType<Presenter<*>>()
-  val circuitUi = resolver.loadKSType<Ui<*>>()
   val circuitUiState = resolver.loadKSType<CircuitUiState>()
   val screen = resolver.loadKSType<Screen>()
   val navigator = resolver.loadKSType<Navigator>()
@@ -108,14 +106,6 @@ private class CircuitSymbolProcessor(
   private val logger: KSPLogger,
   private val codeGenerator: CodeGenerator
 ) : SymbolProcessor {
-  val extensions =
-    ServiceLoader.load(
-        CircuitProcessingExtension::class.java,
-        CircuitProcessingExtension::class.java.classLoader
-      )
-      .iterator()
-      .asSequence()
-      .toSet()
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
@@ -148,9 +138,9 @@ private class CircuitSymbolProcessor(
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
           CIRCUIT_INJECT_ANNOTATION
       }
-    val screenKSType =
-      circuitInjectAnnotation.annotationType.element!!.typeArguments[0].type!!.resolve()
+    val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
     val screenType = screenKSType.toTypeName()
+    val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
     val className: String
     val packageName: String
@@ -262,6 +252,11 @@ private class CircuitSymbolProcessor(
 
     val builder =
       TypeSpec.classBuilder(className + FACTORY)
+        .addAnnotation(
+          AnnotationSpec.builder(ContributesMultibinding::class)
+            .addMember("%T::class", scope)
+            .build()
+        )
         .primaryConstructor(
           FunSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
@@ -286,12 +281,7 @@ private class CircuitSymbolProcessor(
         FactoryType.UI -> builder.buildUiFactory(annotatedElement, screenType, codeBlock)
       }
 
-    val finalSpec =
-      extensions.fold(typeSpec) { spec, extension ->
-        extension.process(spec, annotatedElement, factoryType)
-      }
-
-    FileSpec.get(packageName, finalSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
+    FileSpec.get(packageName, typeSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
   }
 }
 

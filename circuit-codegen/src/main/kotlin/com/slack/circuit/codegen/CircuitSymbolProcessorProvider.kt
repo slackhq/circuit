@@ -16,6 +16,7 @@
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
+import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
@@ -25,16 +26,22 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitInject
+import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeName
@@ -42,7 +49,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
-import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import java.util.ServiceLoader
@@ -63,56 +69,143 @@ private class CircuitSymbolProcessor(
   private val logger: KSPLogger,
   private val codeGenerator: CodeGenerator
 ) : SymbolProcessor {
-  override fun process(resolver: Resolver): List<KSAnnotated> {
-    val extensions = ServiceLoader.load(CircuitProcessingExtension::class.java, CircuitProcessingExtension::class.java.classLoader)
+  val extensions =
+    ServiceLoader.load(
+        CircuitProcessingExtension::class.java,
+        CircuitProcessingExtension::class.java.classLoader
+      )
       .iterator()
       .asSequence()
       .toSet()
-    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedClass ->
-      check(annotatedClass is KSClassDeclaration)
-      val circuitInjectAnnotation =
-        annotatedClass.annotations.first {
-          it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-            CIRCUIT_INJECT_ANNOTATION
+
+  override fun process(resolver: Resolver): List<KSAnnotated> {
+    val circuitUiState =
+      resolver
+        .getClassDeclarationByName(
+          resolver.getKSNameFromString("com.slack.circuit.CircuitUiState")
+        )!!
+        .asType(emptyList())
+    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedElement ->
+      when (annotatedElement) {
+        is KSClassDeclaration -> {
+          generateFactory(annotatedElement, InstantiationType.CLASS, circuitUiState)
         }
-      val screenType =
-        circuitInjectAnnotation.annotationType.element!!.typeArguments.get(0).toTypeName()
-
-      val factoryType =
-        annotatedClass
-          .getAllSuperTypes()
-          .mapNotNull {
-            when (it.declaration.qualifiedName?.asString()) {
-              CIRCUIT_UI -> FactoryType.UI
-              CIRCUIT_PRESENTER -> FactoryType.PRESENTER
-              else -> null
-            }
-          }
-          .first()
-
-      val className = annotatedClass.simpleName.getShortName()
-      val packageName = annotatedClass.packageName.getShortName()
-      val typeSpec =
-        when (factoryType) {
-          FactoryType.PRESENTER -> buildPresenterFactory(className, annotatedClass, screenType)
-          FactoryType.UI -> buildUiFactory(className, annotatedClass, screenType)
+        is KSFunctionDeclaration -> {
+          generateFactory(annotatedElement, InstantiationType.FUNCTION, circuitUiState)
         }
-
-      val finalSpec = extensions.fold(typeSpec) { spec, extension ->
-        extension.process(spec, annotatedClass, factoryType)
+        else ->
+          logger.error(
+            "CircuitInject is only applicable on classes and functions.",
+            annotatedElement
+          )
       }
-
-      FileSpec.get(packageName, finalSpec)
-        .writeTo(codeGenerator = codeGenerator, aggregating = false)
     }
     return emptyList()
+  }
+
+  private fun generateFactory(
+    annotatedElement: KSAnnotated,
+    instantiationType: InstantiationType,
+    circuitUiState: KSType
+  ) {
+    val circuitInjectAnnotation =
+      annotatedElement.annotations.first {
+        it.annotationType.resolve().declaration.qualifiedName?.asString() ==
+          CIRCUIT_INJECT_ANNOTATION
+      }
+    val screenType =
+      circuitInjectAnnotation.annotationType.element!!.typeArguments.get(0).toTypeName()
+
+    val className: String
+    val packageName: String
+    val factoryType: FactoryType
+    val codeBlock: CodeBlock
+
+    when (instantiationType) {
+      InstantiationType.FUNCTION -> {
+        val fd = annotatedElement as KSFunctionDeclaration
+        val name = annotatedElement.simpleName.getShortName()
+        className = name
+        packageName = fd.packageName.asString()
+        factoryType =
+          if (name.endsWith("Presenter")) {
+            FactoryType.PRESENTER
+          } else {
+            FactoryType.UI
+          }
+        codeBlock =
+          when (factoryType) {
+            FactoryType.PRESENTER ->
+              CodeBlock.of(
+                "%M·{·%M()·}",
+                MemberName("com.slack.circuit", "presenterOf"),
+                MemberName(packageName, name)
+              )
+            FactoryType.UI -> {
+              val stateParam =
+                fd.parameters.singleOrNull { parameter ->
+                  parameter.type.resolve().isAssignableFrom(circuitUiState)
+                }
+              if (stateParam == null) {
+                CodeBlock.of(
+                  "%M<%T>·{·%M()·}",
+                  MemberName("com.slack.circuit", "ui"),
+                  CircuitUiState::class.java,
+                  MemberName(packageName, name),
+                )
+              } else {
+                CodeBlock.of(
+                  "%M<%T>·{·state·->·%M(%L·=·state)·}",
+                  MemberName("com.slack.circuit", "ui"),
+                  stateParam.type.resolve().toTypeName(),
+                  MemberName(packageName, name),
+                  stateParam.name!!.getShortName()
+                )
+              }
+            }
+          }
+      }
+      InstantiationType.CLASS -> {
+        val cd = annotatedElement as KSClassDeclaration
+        className = cd.simpleName.getShortName()
+        packageName = cd.packageName.getShortName()
+        factoryType =
+          cd
+            .getAllSuperTypes()
+            .mapNotNull {
+              when (it.declaration.qualifiedName?.asString()) {
+                CIRCUIT_UI -> FactoryType.UI
+                CIRCUIT_PRESENTER -> FactoryType.PRESENTER
+                else -> null
+              }
+            }
+            .first()
+        codeBlock = CodeBlock.of("%T()", className)
+      }
+    }
+
+    val typeSpec =
+      when (factoryType) {
+        FactoryType.PRESENTER ->
+          buildPresenterFactory(className, annotatedElement.containingFile!!, screenType, codeBlock)
+        FactoryType.UI ->
+          buildUiFactory(className, annotatedElement.containingFile!!, screenType, codeBlock)
+      }
+
+    val finalSpec =
+      extensions.fold(typeSpec) { spec, extension ->
+        extension.process(spec, annotatedElement, factoryType)
+      }
+
+    FileSpec.get(packageName, finalSpec).writeTo(codeGenerator = codeGenerator, aggregating = false)
   }
 }
 
 private fun buildUiFactory(
   className: String,
-  annotatedClass: KSClassDeclaration,
-  screenType: TypeName
+  originatingKSFile: KSFile,
+  screenType: TypeName,
+  instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   return TypeSpec.classBuilder(className + FACTORY)
     .addSuperinterface(Ui.Factory::class)
@@ -120,28 +213,28 @@ private fun buildUiFactory(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
         .addParameter("screen", Screen::class)
-        .addParameter("navigator", Navigator::class)
         .addParameter("circuitConfig", CircuitConfig::class)
         .returns(ScreenUi::class.asClassName().copy(nullable = true))
         .beginControlFlow("return when (screen)")
         .addStatement(
-          "is %T -> %T(%T())",
+          "is %T -> %T(%L)",
           screenType,
           ScreenUi::class.asTypeName(),
-          annotatedClass.toClassName()
+          instantiationCodeBlock
         )
         .addStatement("else -> null")
         .endControlFlow()
         .build()
     )
-    .addOriginatingKSFile(annotatedClass.containingFile!!)
+    .addOriginatingKSFile(originatingKSFile)
     .build()
 }
 
 private fun buildPresenterFactory(
   className: String,
-  annotatedClass: KSClassDeclaration,
-  screenType: TypeName
+  originatingKSFile: KSFile,
+  screenType: TypeName,
+  instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
   //  public class AboutPresenterFactory : Presenter.Factory {
@@ -151,9 +244,11 @@ private fun buildPresenterFactory(
   //      circuitConfig: CircuitConfig,
   //    ): Presenter<*>? = when (screen) {
   //      is AboutScreen -> AboutPresenter()
+  //      is AboutScreen -> presenterOf { AboutPresenter() }
   //      else -> null
   //    }
   //  }
+
   return TypeSpec.classBuilder(className + FACTORY)
     .addSuperinterface(Presenter.Factory::class)
     .addFunction(
@@ -164,16 +259,21 @@ private fun buildPresenterFactory(
         .addParameter("circuitConfig", CircuitConfig::class)
         .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")
-        .addStatement("is %T -> %T()", screenType, annotatedClass.toClassName())
+        .addStatement("is %T -> %L", screenType, instantiationCodeBlock)
         .addStatement("else -> null")
         .endControlFlow()
         .build()
     )
-    .addOriginatingKSFile(annotatedClass.containingFile!!)
+    .addOriginatingKSFile(originatingKSFile)
     .build()
 }
 
 public enum class FactoryType {
   PRESENTER,
   UI
+}
+
+public enum class InstantiationType {
+  FUNCTION,
+  CLASS
 }

@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2022 Slack Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.slack.circuit.anvil
 
 import com.google.auto.service.AutoService
@@ -18,30 +33,26 @@ private val CIRCUIT_SCOPE_ANNOTATION = CircuitScope::class.java.canonicalName
 @AutoService(CircuitProcessingExtension::class)
 public class AnvilProcessingExtension : CircuitProcessingExtension {
   override fun process(spec: TypeSpec, ksAnnotated: KSAnnotated, type: FactoryType): TypeSpec {
-    val circuitScopeAnnotation = ksAnnotated.annotations.firstOrNull() {
-      it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-        CIRCUIT_SCOPE_ANNOTATION
-    } ?: return spec
+    val circuitScopeAnnotation =
+      ksAnnotated.annotations.firstOrNull() {
+        it.annotationType.resolve().declaration.qualifiedName?.asString() ==
+          CIRCUIT_SCOPE_ANNOTATION
+      }
+        ?: return spec
     val scope = (circuitScopeAnnotation.arguments.single().value as KSType).toTypeName()
     /**
-     * @CircuitScope(AppScope::class)
-     * generates...
+     * @CircuitScope(AppScope::class) generates...
      *
-     * @ContributesTo(AppScope::class)
-      class HomeUiFactory @Inject constructor() : UiFactory
+     * @ContributesTo(AppScope::class) class HomeUiFactory @Inject constructor() : UiFactory
      */
-    return spec.toBuilder()
+    return spec
+      .toBuilder()
       .addAnnotation(
-        AnnotationSpec.builder(ContributesMultibinding::class)
-          .addMember("%T::class" , scope)
-          .build()
+        AnnotationSpec.builder(ContributesMultibinding::class).addMember("%T::class", scope).build()
       )
       .primaryConstructor(
-        FunSpec.constructorBuilder()
-          .addAnnotation(ClassName("javax.inject", "Inject"))
-          .build()
+        FunSpec.constructorBuilder().addAnnotation(ClassName("javax.inject", "Inject")).build()
       )
       .build()
-
   }
 }

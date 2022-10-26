@@ -132,7 +132,7 @@ constructor(
     return state
   }
 
-  @com.slack.circuit.codegen.annotations.CircuitInject(PetDetailScreen::class, AppScope::class)
+  @CircuitInject(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetDetailScreen): PetDetailPresenter
@@ -145,7 +145,7 @@ internal object PetDetailTestConstants {
   const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
 }
 
-@com.slack.circuit.codegen.annotations.CircuitInject(PetDetailScreen::class, AppScope::class)
+@CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()

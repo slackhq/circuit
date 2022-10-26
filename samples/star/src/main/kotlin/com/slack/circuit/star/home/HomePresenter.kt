@@ -56,7 +56,7 @@ object HomeScreen : Screen {
   }
 }
 
-@com.slack.circuit.codegen.annotations.CircuitInject(
+@CircuitInject(
   screen = HomeScreen::class,
   scope = AppScope::class
 )
@@ -71,7 +71,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   }
 }
 
-@com.slack.circuit.codegen.annotations.CircuitInject(
+@CircuitInject(
   screen = HomeScreen::class,
   scope = AppScope::class
 )

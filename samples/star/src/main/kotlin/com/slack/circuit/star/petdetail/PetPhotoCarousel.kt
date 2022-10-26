@@ -107,7 +107,7 @@ constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
 
   @Composable override fun present() = PetPhotoCarouselScreen.State(screen)
 
-  @com.slack.circuit.codegen.annotations.CircuitInject(
+  @CircuitInject(
     PetPhotoCarouselScreen::class,
     AppScope::class
   )
@@ -121,7 +121,7 @@ internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
-@com.slack.circuit.codegen.annotations.CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
+@CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {

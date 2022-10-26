@@ -215,7 +215,7 @@ constructor(
     return this.name.lowercase() == size.lowercase()
   }
 
-  @com.slack.circuit.codegen.annotations.CircuitInject(PetListScreen::class, AppScope::class)
+  @CircuitInject(PetListScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
@@ -243,7 +243,7 @@ internal object PetListTestConstants {
   const val IMAGE_TAG = "image"
 }
 
-@com.slack.circuit.codegen.annotations.CircuitInject(PetListScreen::class, AppScope::class)
+@CircuitInject(PetListScreen::class, AppScope::class)
 @Composable
 internal fun PetList(
   state: PetListScreen.State,

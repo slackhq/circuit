@@ -45,14 +45,14 @@ object AboutScreen : Screen {
   object State : CircuitUiState
 }
 
-@com.slack.circuit.codegen.annotations.CircuitInject(
+@CircuitInject(
   screen = AboutScreen::class,
   scope = AppScope::class
 )
 @Composable
 fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 
-@com.slack.circuit.codegen.annotations.CircuitInject(
+@CircuitInject(
   screen = AboutScreen::class,
   scope = AppScope::class
 )

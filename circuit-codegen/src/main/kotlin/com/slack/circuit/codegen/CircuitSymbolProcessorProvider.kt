@@ -279,7 +279,7 @@ private class CircuitSymbolProcessor(
             cd
           }
         className = targetClass.simpleName.getShortName()
-        packageName = targetClass.packageName.getShortName()
+        packageName = targetClass.packageName.asString()
         factoryType =
           targetClass
             .getAllSuperTypes()

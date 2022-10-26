@@ -191,16 +191,25 @@ subprojects {
 
     apply(plugin = "com.dropbox.dependency-guard")
     configure<DependencyGuardPluginExtension> {
-      configuration("androidReleaseRuntimeClasspath") {
-        baselineMap = {
-          // Remove the version
-          it.substringBeforeLast(":")
+      if (project.path.contains("codegen")) {
+        configuration("runtimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
         }
-      }
-      configuration("jvmRuntimeClasspath") {
-        baselineMap = {
-          // Remove the version
-          it.substringBeforeLast(":")
+      } else {
+        configuration("androidReleaseRuntimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
+        }
+        configuration("jvmRuntimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
         }
       }
     }

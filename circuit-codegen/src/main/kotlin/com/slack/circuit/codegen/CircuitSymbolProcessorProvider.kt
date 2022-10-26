@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 @file:Suppress("UnsafeCallOnNullableType")
-@file:OptIn(KspExperimental::class)
 
 package com.slack.circuit.codegen
 

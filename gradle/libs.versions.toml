@@ -1,6 +1,6 @@
 [versions]
 accompanist = "0.26.2-beta"
-androidx-activity = "1.6.0"
+androidx-activity = "1.6.1"
 androidx-appcompat = "1.5.1"
 androidx-browser = "1.4.0"
 androidx-lifecycle = "2.5.1"

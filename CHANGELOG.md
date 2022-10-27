@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.1
+-----
+
+_2022-10-27_
+
+**Fix**: Code gen didn't properly handle instantiating simple class types.
+
 0.2.0
 -----
 

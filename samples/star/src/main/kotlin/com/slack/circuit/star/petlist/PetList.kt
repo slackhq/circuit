@@ -375,12 +375,8 @@ private fun PetListGrid(
 
 @Composable
 private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
-  val updatedImageUrl: String = if (animal.imageUrl == null) {
-    // get scooby doo photo
-    "Scooby Doo"
-  } else {
-    animal.imageUrl
-  }
+  val updatedImageUrl: String = animal.imageUrl ?: // get scooby doo photo
+  "Scooby Doo"
   ElevatedCard(
     modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),

@@ -307,7 +307,7 @@ private class CircuitSymbolProcessor(
               assistedParams
             )
           } else {
-            CodeBlock.of("%T(%L)", className, assistedParams)
+            CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
           }
       }
     }

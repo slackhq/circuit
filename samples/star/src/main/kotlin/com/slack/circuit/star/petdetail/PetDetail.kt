@@ -55,14 +55,11 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.data.Animal
@@ -71,12 +68,9 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.ui
-import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -117,26 +111,6 @@ internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetail
   )
 }
 
-@ContributesMultibinding(AppScope::class)
-class PetDetailScreenPresenterFactory
-@Inject
-constructor(
-  private val petDetailPresenterFactory: PetDetailPresenter.Factory,
-  private val petPhotoCarousel: PetPhotoCarouselPresenter.Factory,
-) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    circuitConfig: CircuitConfig
-  ): Presenter<*>? {
-    return when (screen) {
-      is PetDetailScreen -> petDetailPresenterFactory.create(screen)
-      is PetPhotoCarouselScreen -> petPhotoCarousel.create(screen)
-      else -> null
-    }
-  }
-}
-
 class PetDetailPresenter
 @AssistedInject
 constructor(
@@ -158,21 +132,12 @@ constructor(
     return state
   }
 
+  @CircuitInject(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetDetailScreen): PetDetailPresenter
   }
 }
-
-@ContributesMultibinding(AppScope::class)
-class PetDetailUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
-    if (screen is PetDetailScreen) return ScreenUi(petDetailUi())
-    return null
-  }
-}
-
-private fun petDetailUi() = ui<PetDetailScreen.State> { state -> PetDetail(state) }
 
 internal object PetDetailTestConstants {
   const val ANIMAL_CONTAINER_TAG = "animal_container"
@@ -180,6 +145,7 @@ internal object PetDetailTestConstants {
   const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
 }
 
+@CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()

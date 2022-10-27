@@ -1,10 +1,8 @@
-com.google.auto.service:auto-service-annotations
+com.google.dagger:dagger
 com.squareup.anvil:annotations
-com.squareup:kotlinpoet-ksp
-com.squareup:kotlinpoet
+javax.inject:javax.inject
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime
-org.jetbrains.kotlin:kotlin-reflect
 org.jetbrains.kotlin:kotlin-stdlib-common
 org.jetbrains.kotlin:kotlin-stdlib-jdk7
 org.jetbrains.kotlin:kotlin-stdlib-jdk8

@@ -1,6 +1,8 @@
 complexity:
   LongMethod:
-    threshold: 100
+    threshold: 120
+  NestedBlockDepth:
+    threshold: 6
 
 coroutines:
   InjectDispatcher:

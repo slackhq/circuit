@@ -166,7 +166,7 @@ include(
   ":backstack",
   ":circuit",
   ":circuit-codegen",
-  ":circuit-codegen:anvil",
+  ":circuit-codegen-annotations",
   ":circuit-retained",
   ":circuit-retained:android-tests",
   ":circuit-test",

@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.codegen
+plugins {
+  kotlin("jvm")
+  alias(libs.plugins.mavenPublish)
+}
 
-import com.google.devtools.ksp.symbol.KSAnnotated
-import com.squareup.kotlinpoet.TypeSpec
-
-public interface CircuitProcessingExtension {
-  public fun process(spec: TypeSpec, ksAnnotated: KSAnnotated, type: FactoryType): TypeSpec
+dependencies {
+  api(libs.anvil.annotations)
+  api(libs.dagger)
+  api(projects.circuit)
 }

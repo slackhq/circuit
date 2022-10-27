@@ -375,8 +375,8 @@ private fun PetListGrid(
 
 @Composable
 private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
-  val updatedImageUrl: String = animal.imageUrl ?: // get scooby doo photo
-  "Scooby Doo"
+  val updatedImageUrl = animal.imageUrl ?: R.drawable.star_icon
+  val memCacheKey = animal.imageUrl ?: null
   ElevatedCard(
     modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -393,7 +393,7 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
-            .memoryCacheKey(updatedImageUrl)
+            .memoryCacheKey(memCacheKey)
             .crossfade(true)
             .build(),
         contentDescription = animal.name,

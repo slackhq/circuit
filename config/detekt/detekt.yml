@@ -23,4 +23,4 @@ style:
 TwitterCompose:
   ComposableNaming:
     active: true
-    allowedComposableFunctionNames: ['.*Presenter']
+    allowedComposableFunctionNames: .*Presenter

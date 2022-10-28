@@ -21,6 +21,7 @@ import com.google.auto.service.AutoService
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
+import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
@@ -31,8 +32,10 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.Visibility
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -145,7 +148,9 @@ private class CircuitSymbolProcessor(
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
-    val factoryData = computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType)
+    val factoryData =
+      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
+        ?: return
 
     val builder =
       TypeSpec.classBuilder(factoryData.className + FACTORY)
@@ -198,13 +203,16 @@ private class CircuitSymbolProcessor(
   )
 
   /** Computes the data needed to generate a factory. */
+  // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
+  @Suppress("ComplexMethod", "LongMethod")
   @OptIn(KspExperimental::class)
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,
     symbols: CircuitSymbols,
     screenKSType: KSType,
     instantiationType: InstantiationType,
-  ): FactoryData {
+    logger: KSPLogger,
+  ): FactoryData? {
     val className: String
     val packageName: String
     val factoryType: FactoryType
@@ -214,6 +222,9 @@ private class CircuitSymbolProcessor(
     when (instantiationType) {
       InstantiationType.FUNCTION -> {
         val fd = annotatedElement as KSFunctionDeclaration
+        fd.checkVisibility(logger) {
+          return null
+        }
         val name = annotatedElement.simpleName.getShortName()
         className = name
         packageName = fd.packageName.asString()
@@ -268,6 +279,9 @@ private class CircuitSymbolProcessor(
       }
       InstantiationType.CLASS -> {
         val cd = annotatedElement as KSClassDeclaration
+        cd.checkVisibility(logger) {
+          return null
+        }
         val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
@@ -275,6 +289,9 @@ private class CircuitSymbolProcessor(
           val creatorFunction = cd.getAllFunctions().filter { it.isAbstract }.single()
           creatorOrConstructor = creatorFunction
           targetClass = creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
+          targetClass.checkVisibility(logger) {
+            return null
+          }
         } else {
           creatorOrConstructor = cd.primaryConstructor
           targetClass = cd
@@ -471,12 +488,22 @@ private fun TypeSpec.Builder.buildPresenterFactory(
     .build()
 }
 
-public enum class FactoryType {
+private enum class FactoryType {
   PRESENTER,
   UI
 }
 
-public enum class InstantiationType {
+private enum class InstantiationType {
   FUNCTION,
   CLASS
 }
+
+private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: () -> Unit) {
+  if (!getVisibility().isVisible) {
+    logger.error("CircuitInject is not applicable to private or local functions and classes.", this)
+    returnBody()
+  }
+}
+
+private val Visibility.isVisible: Boolean
+  get() = this != Visibility.PRIVATE && this != Visibility.LOCAL

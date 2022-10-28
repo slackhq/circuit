@@ -63,6 +63,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
 import javax.inject.Inject
+import javax.inject.Provider
 
 private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
 private val CIRCUIT_PRESENTER = Presenter::class.java.canonicalName
@@ -269,15 +270,17 @@ private class CircuitSymbolProcessor(
         val cd = annotatedElement as KSClassDeclaration
         val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
         val creatorOrConstructor: KSFunctionDeclaration?
-        val targetClass =
-          if (isAssisted) {
-            val creatorFunction = cd.getAllFunctions().filter { it.isAbstract }.single()
-            creatorOrConstructor = creatorFunction
-            creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
-          } else {
-            creatorOrConstructor = cd.primaryConstructor
-            cd
-          }
+        val targetClass: KSClassDeclaration
+        if (isAssisted) {
+          val creatorFunction = cd.getAllFunctions().filter { it.isAbstract }.single()
+          creatorOrConstructor = creatorFunction
+          targetClass = creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
+        } else {
+          creatorOrConstructor = cd.primaryConstructor
+          targetClass = cd
+        }
+        val useProvider =
+          !isAssisted && creatorOrConstructor?.isAnnotationPresent(Inject::class) == true
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =
@@ -292,14 +295,30 @@ private class CircuitSymbolProcessor(
             }
             .first()
         val assistedParams =
-          creatorOrConstructor?.assistedParameters(
-            symbols,
-            logger,
-            screenKSType,
-            allowNavigator = factoryType == FactoryType.PRESENTER
-          )
+          if (useProvider) {
+            // Nothing to do here, we'll just use the provider directly.
+            CodeBlock.of("")
+          } else {
+            creatorOrConstructor?.assistedParameters(
+              symbols,
+              logger,
+              screenKSType,
+              allowNavigator = factoryType == FactoryType.PRESENTER
+            )
+          }
         codeBlock =
-          if (isAssisted) {
+          if (useProvider) {
+            // Inject a Provider<TargetClass> that we'll call get() on.
+            constructorParams.add(
+              ParameterSpec.builder(
+                  "provider",
+                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName())
+                )
+                .build()
+            )
+            CodeBlock.of("provider.get()")
+          } else if (isAssisted) {
+            // Inject the target class's assisted factory that we'll call its create() on.
             constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
             CodeBlock.of(
               "factory.%L(%L)",
@@ -307,6 +326,7 @@ private class CircuitSymbolProcessor(
               assistedParams
             )
           } else {
+            // Simple constructor call, no injection.
             CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
           }
       }

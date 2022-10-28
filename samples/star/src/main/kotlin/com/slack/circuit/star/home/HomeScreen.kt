@@ -29,27 +29,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
-import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.HomeEvent
 import com.slack.circuit.star.ui.StarTheme
-import com.slack.circuit.ui
-import com.squareup.anvil.annotations.ContributesMultibinding
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -65,55 +56,19 @@ object HomeScreen : Screen {
   }
 }
 
-@ContributesMultibinding(AppScope::class)
-class HomeScreenPresenterFactory
-@Inject
-constructor(private val homePresenterFactory: HomePresenter.Factory) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    circuitConfig: CircuitConfig
-  ): Presenter<*>? {
-    if (screen is HomeScreen) return homePresenterFactory.create(navigator)
-    return null
-  }
-}
-
-class HomePresenter
-@AssistedInject
-constructor(
-  @Assisted private val navigator: Navigator,
-) : Presenter<HomeScreen.State> {
-
-  @Composable
-  override fun present(): HomeScreen.State {
-    val homeNavState = HomeNavPresenter()
-    return HomeScreen.State(homeNavState) { event ->
-      when (event) {
-        is HomeEvent -> homeNavState.eventSink(event.event)
-        is ChildNav -> navigator.onNavEvent(event.navEvent)
-      }
+@CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
+@Composable
+fun HomePresenter(navigator: Navigator): HomeScreen.State {
+  val homeNavState = HomeNavPresenter()
+  return HomeScreen.State(homeNavState) { event ->
+    when (event) {
+      is HomeEvent -> homeNavState.eventSink(event.event)
+      is ChildNav -> navigator.onNavEvent(event.navEvent)
     }
   }
-
-  @AssistedFactory
-  interface Factory {
-    fun create(navigator: Navigator): HomePresenter
-  }
 }
 
-@ContributesMultibinding(AppScope::class)
-class HomeUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
-    if (screen is HomeScreen) {
-      return ScreenUi(homeUi())
-    }
-    return null
-  }
-}
-
-private fun homeUi() = ui<HomeScreen.State> { state -> HomeContent(state) }
-
+@CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val systemUiController = rememberSystemUiController()

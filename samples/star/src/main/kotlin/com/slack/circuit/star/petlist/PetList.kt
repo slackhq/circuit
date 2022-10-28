@@ -17,6 +17,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +25,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -75,7 +75,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.LocalOverlayHost
@@ -83,8 +82,7 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.OverlayHost
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.data.Animal
@@ -97,12 +95,9 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.ui
-import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
@@ -157,22 +152,6 @@ object PetListScreen : Screen {
     object Refresh : Event
     object UpdateFilters : Event
     data class UpdatedFilters(val newFilters: Filters) : Event
-  }
-}
-
-@ContributesMultibinding(AppScope::class)
-class PetListScreenPresenterFactory
-@Inject
-constructor(
-  private val petListPresenterFactory: PetListPresenter.Factory,
-) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    circuitConfig: CircuitConfig
-  ): Presenter<*>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
-    return null
   }
 }
 
@@ -236,6 +215,7 @@ constructor(
     return this.name.lowercase() == size.lowercase()
   }
 
+  @CircuitInject(PetListScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
@@ -255,18 +235,6 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
   )
 }
 
-@ContributesMultibinding(AppScope::class)
-class PetListUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
-    if (screen is PetListScreen) {
-      return ScreenUi(petListUi())
-    }
-    return null
-  }
-}
-
-private fun petListUi() = ui<PetListScreen.State> { state -> PetList(state = state) }
-
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
   const val NO_ANIMALS_TAG = "no_animals"
@@ -275,6 +243,7 @@ internal object PetListTestConstants {
   const val IMAGE_TAG = "image"
 }
 
+@CircuitInject(PetListScreen::class, AppScope::class)
 @Composable
 internal fun PetList(
   state: PetListScreen.State,
@@ -340,6 +309,7 @@ internal fun PetList(
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: ImmutableList<PetListAnimal>,
@@ -353,8 +323,8 @@ private fun PetListGrid(
   ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     @Suppress("MagicNumber")
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(if (isLandscape) 3 else 2),
+    LazyVerticalStaggeredGrid(
+      columns = StaggeredGridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -388,7 +358,7 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
-        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)

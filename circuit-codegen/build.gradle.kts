@@ -20,11 +20,13 @@ plugins {
 }
 
 dependencies {
+  compileOnly(libs.ksp.api)
+  ksp(libs.autoService.ksp)
   implementation(libs.autoService.annotations)
+  implementation(libs.dagger)
   implementation(libs.kotlinpoet)
   implementation(libs.kotlinpoet.ksp)
   implementation(projects.circuit)
-
-  compileOnly(libs.ksp.api)
-  ksp(libs.autoService.ksp)
+  implementation(projects.circuitCodegenAnnotations)
+  implementation(libs.anvil.annotations)
 }

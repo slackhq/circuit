@@ -376,7 +376,6 @@ private fun PetListGrid(
 @Composable
 private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
   val updatedImageUrl = animal.imageUrl ?: R.drawable.star_icon
-  val memCacheKey = animal.imageUrl ?: null
   ElevatedCard(
     modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -393,7 +392,7 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
-            .memoryCacheKey(memCacheKey)
+            .memoryCacheKey(animal.imageUrl)
             .crossfade(true)
             .build(),
         contentDescription = animal.name,

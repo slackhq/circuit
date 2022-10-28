@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("com.android.library")
@@ -62,6 +63,16 @@ kotlin {
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
   }
 }
+
+tasks
+  .withType<KotlinCompile>()
+  .matching { it.name.contains("test", ignoreCase = true) }
+  .configureEach {
+    kotlinOptions {
+      @Suppress("SuspiciousCollectionReassignment")
+      freeCompilerArgs += listOf("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+    }
+  }
 
 android { namespace = "com.slack.circuit.core" }
 

@@ -141,6 +141,22 @@ pluginManagement {
       }
     }
   }
+  plugins { id("com.gradle.enterprise") version "3.11.2" }
+}
+
+plugins { id("com.gradle.enterprise") }
+
+val VERSION_NAME: String by extra.properties
+
+gradleEnterprise {
+  buildScan {
+    publishAlways()
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+
+    tag(if (System.getenv("CI").isNullOrBlank()) "Local" else "CI")
+    tag(VERSION_NAME)
+  }
 }
 
 rootProject.name = "circuit-root"
@@ -149,8 +165,11 @@ rootProject.name = "circuit-root"
 include(
   ":backstack",
   ":circuit",
+  ":circuit-codegen",
+  ":circuit-codegen-annotations",
   ":circuit-overlay",
   ":circuit-retained",
+  ":circuit-retained:android-tests",
   ":circuit-test",
   ":samples:star",
   ":samples:star:apk",

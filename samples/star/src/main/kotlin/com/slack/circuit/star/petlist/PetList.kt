@@ -49,6 +49,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +60,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -73,7 +75,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -81,6 +82,7 @@ import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.retained.produceRetainedState
@@ -95,12 +97,11 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.ui
-import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 data class PetListAnimal(
@@ -140,7 +141,7 @@ object PetListScreen : Screen {
 
     data class NoAnimals(override val isRefreshing: Boolean) : State
     data class Success(
-      val animals: List<PetListAnimal>,
+      val animals: ImmutableList<PetListAnimal>,
       override val isRefreshing: Boolean,
       val filters: Filters = Filters(),
       val isUpdateFiltersModalShowing: Boolean = false,
@@ -153,22 +154,6 @@ object PetListScreen : Screen {
     object Refresh : Event
     object UpdateFilters : Event
     data class UpdatedFilters(val newFilters: Filters) : Event
-  }
-}
-
-@ContributesMultibinding(AppScope::class)
-class PetListScreenPresenterFactory
-@Inject
-constructor(
-  private val petListPresenterFactory: PetListPresenter.Factory,
-) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    circuitConfig: CircuitConfig
-  ): Presenter<*>? {
-    if (screen is PetListScreen) return petListPresenterFactory.create(navigator)
-    return null
   }
 }
 
@@ -197,7 +182,7 @@ constructor(
       animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
       else ->
         PetListScreen.State.Success(
-          animals = animals.filter { shouldKeep(filters, it) },
+          animals = animals.filter { shouldKeep(filters, it) }.toImmutableList(),
           isRefreshing = isRefreshing,
           filters = filters,
           isUpdateFiltersModalShowing = isUpdateFiltersModalShowing,
@@ -232,6 +217,7 @@ constructor(
     return this.name.lowercase() == size.lowercase()
   }
 
+  @CircuitInject(PetListScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
@@ -251,18 +237,6 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
   )
 }
 
-@ContributesMultibinding(AppScope::class)
-class PetListUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
-    if (screen is PetListScreen) {
-      return ScreenUi(petListUi())
-    }
-    return null
-  }
-}
-
-private fun petListUi() = ui<PetListScreen.State> { state -> PetList(state = state) }
-
 internal object PetListTestConstants {
   const val PROGRESS_TAG = "progress"
   const val NO_ANIMALS_TAG = "no_animals"
@@ -271,6 +245,7 @@ internal object PetListTestConstants {
   const val IMAGE_TAG = "image"
 }
 
+@CircuitInject(PetListScreen::class, AppScope::class)
 @Composable
 internal fun PetList(
   state: PetListScreen.State,
@@ -285,8 +260,9 @@ internal fun PetList(
     }
   }
 
+  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   Scaffold(
-    modifier = modifier,
+    modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
@@ -296,6 +272,7 @@ internal fun PetList(
           TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.background
           ),
+        scrollBehavior = scrollBehavior,
         actions = {
           if (state is PetListScreen.State.Success) {
             val eventSink = state.eventSink
@@ -336,7 +313,7 @@ internal fun PetList(
 
 @Composable
 private fun PetListGrid(
-  animals: List<PetListAnimal>,
+  animals: ImmutableList<PetListAnimal>,
   isRefreshing: Boolean,
   modifier: Modifier = Modifier,
   eventSink: (PetListScreen.Event) -> Unit,
@@ -346,6 +323,7 @@ private fun PetListGrid(
     onRefresh = { eventSink(PetListScreen.Event.Refresh) }
   ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    @Suppress("MagicNumber")
     LazyVerticalGrid(
       columns = GridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),
@@ -444,14 +422,17 @@ private fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> 
 @Composable
 private fun GenderFilterOption(
   selected: Gender,
+  modifier: Modifier = Modifier,
   selectedGender: (Gender) -> Unit,
 ) {
-  Box { Text(text = "Gender") }
-  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-    Gender.values().forEach { gender ->
-      Column {
-        Text(text = gender.name)
-        RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+  Column(modifier) {
+    Text(text = "Gender")
+    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Gender.values().forEach { gender ->
+        Column {
+          Text(text = gender.name)
+          RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+        }
       }
     }
   }
@@ -460,14 +441,17 @@ private fun GenderFilterOption(
 @Composable
 private fun SizeFilterOption(
   selected: Size,
+  modifier: Modifier = Modifier,
   selectedSize: (Size) -> Unit,
 ) {
-  Box { Text(text = "Size") }
-  Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-    Size.values().forEach { size ->
-      Column {
-        Text(text = size.name)
-        RadioButton(selected = selected == size, onClick = { selectedSize(size) })
+  Column(modifier) {
+    Text(text = "Size")
+    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Size.values().forEach { size ->
+        Column {
+          Text(text = size.name)
+          RadioButton(selected = selected == size, onClick = { selectedSize(size) })
+        }
       }
     }
   }

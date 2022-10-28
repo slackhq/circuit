@@ -23,6 +23,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
   alias(libs.plugins.paparazzi)
+  alias(libs.plugins.ksp)
 }
 
 android {
@@ -69,6 +70,8 @@ tasks.withType<KotlinCompile>().configureEach {
 
 dependencies {
   kapt(libs.dagger.compiler)
+  ksp(projects.circuitCodegen)
+  implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuit)
   implementation(projects.circuitOverlay)
   implementation(libs.androidx.compose.integration.activity)
@@ -96,6 +99,7 @@ dependencies {
   implementation(libs.leakcanary.android)
   implementation(libs.dagger)
   implementation(libs.androidx.datastore.preferences)
+  implementation(libs.kotlinx.immutable)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)
@@ -107,6 +111,7 @@ dependencies {
   testImplementation(projects.circuitTest)
 
   debugImplementation(libs.androidx.compose.ui.testing.manifest)
+  androidTestImplementation(libs.leakcanary.android.instrumentation)
   androidTestImplementation(libs.androidx.compose.ui.testing.junit)
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)

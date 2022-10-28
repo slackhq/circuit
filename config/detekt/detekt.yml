@@ -1,0 +1,28 @@
+complexity:
+  LongMethod:
+    threshold: 120
+  NestedBlockDepth:
+    threshold: 6
+
+coroutines:
+  InjectDispatcher:
+    excludes: ['**/samples/**']
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'
+      - 'androidx.compose.runtime.Composable'
+
+style:
+  ReturnCount:
+    max: 4
+  UnusedPrivateMember:
+    ignoreAnnotated:
+      - 'Preview'
+      - 'androidx.compose.desktop.ui.tooling.preview.Preview'
+
+TwitterCompose:
+  ComposableNaming:
+    # TODO disabled for now pending https://github.com/twitter/compose-rules/issues/104
+    active: false

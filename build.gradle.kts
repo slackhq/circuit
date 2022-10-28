@@ -39,7 +39,7 @@ buildscript {
 
 plugins {
   alias(libs.plugins.anvil) apply false
-  alias(libs.plugins.detekt)
+  alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka) apply false
@@ -50,20 +50,9 @@ plugins {
   alias(libs.plugins.dependencyGuard) apply false
 }
 
-configure<DetektExtension> {
-  toolVersion = libs.versions.detekt.get()
-  allRules = true
-}
-
-tasks.withType<Detekt>().configureEach {
-  reports {
-    html.required.set(true)
-    xml.required.set(true)
-    txt.required.set(true)
-  }
-}
-
 val ktfmtVersion = libs.versions.ktfmt.get()
+val detektVersion = libs.versions.detekt.get()
+val twitterDetektPlugin = libs.detektPlugins.twitterCompose
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
@@ -93,7 +82,7 @@ allprojects {
     // Apply license formatting separately for kotlin files so we can prevent it from overwriting
     // copied files
     format("license") {
-      licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "package ")
+      licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
       target("src/**/*.kt")
       targetExclude("**/circuit/backstack/**/*.kt")
     }
@@ -114,7 +103,7 @@ subprojects {
     configure<JavaPluginExtension> {
       toolchain {
         languageVersion.set(
-          JavaLanguageVersion.of(libs.versions.java.get().removeSuffix("-ea").toInt())
+          JavaLanguageVersion.of(libs.versions.jdk.get().removeSuffix("-ea").toInt())
         )
       }
     }
@@ -165,7 +154,26 @@ subprojects {
     }
   }
 
-  tasks.withType<Detekt>().configureEach { jvmTarget = "11" }
+  // region Detekt
+  plugins.apply("io.gitlab.arturbosch.detekt")
+  configure<DetektExtension> {
+    toolVersion = detektVersion
+    allRules = true
+    config.from(rootProject.file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+  }
+
+  tasks.withType<Detekt>().configureEach {
+    jvmTarget = "11"
+    reports {
+      html.required.set(true)
+      xml.required.set(true)
+      txt.required.set(true)
+    }
+  }
+
+  dependencies.add("detektPlugins", twitterDetektPlugin)
+  // endregion
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
@@ -183,16 +191,25 @@ subprojects {
 
     apply(plugin = "com.dropbox.dependency-guard")
     configure<DependencyGuardPluginExtension> {
-      configuration("androidReleaseRuntimeClasspath") {
-        baselineMap = {
-          // Remove the version
-          it.substringBeforeLast(":")
+      if (project.path.contains("codegen")) {
+        configuration("runtimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
         }
-      }
-      configuration("jvmRuntimeClasspath") {
-        baselineMap = {
-          // Remove the version
-          it.substringBeforeLast(":")
+      } else {
+        configuration("androidReleaseRuntimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
+        }
+        configuration("jvmRuntimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
         }
       }
     }

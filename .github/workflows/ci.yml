@@ -16,20 +16,11 @@ concurrency:
 
 jobs:
   build:
-    name: JDK ${{ matrix.ci_java_version }} / Kotlin ${{ matrix.ci_kotlin_version }}
     runs-on: macOS-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Test on API 30 because that's the first version with ATDs
-        api-level: ['30']
-        avd-target: ['aosp_atd']
-        ci_java_version: ['17']
-        ci_kotlin_version: ['1.7.20']
     env:
-      DEP_OVERRIDES: 'true'
-      DEP_OVERRIDE_KOTLIN: '${{ matrix.ci_kotlin_version }}'
-      DEP_OVERRIDE_JAVA: '${{ matrix.ci_java_version }}'
+      # Test on API 30 because that's the first version with ATDs
+      API_LEVEL: '30'
+      AVD_TARGET: 'aosp_atd'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,17 +33,17 @@ jobs:
       - name: Check LFS files
         uses: actionsdesk/lfs-warning@v3.2
 
-      - name: Install JDK ${{ matrix.ci_java_version }}
+      - name: Install JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: ${{ matrix.ci_java_version }}
+          java-version: '17'
 
       - name: Build and run tests
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug :samples:star:assembleReleaseAndroidTest dependencyGuard verifyPaparazzi
+          arguments: check :samples:star:apk:assembleDebug :samples:star:assembleReleaseAndroidTest verifyPaparazzi detektMain detektTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
@@ -63,25 +54,25 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-${{ matrix.avd-target }}
+          key: avd-${{ env.API_LEVEL }}-${{ env.AVD_TARGET }}
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ matrix.api-level }}
+          api-level: ${{ env.API_LEVEL }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           disable-spellchecker: true
-          target: ${{ matrix.avd-target }}
+          target: ${{ env.AVD_TARGET }}
           channel: canary # Necessary for ATDs
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ matrix.api-level }}
+          api-level: ${{ env.API_LEVEL }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
@@ -107,5 +98,5 @@ jobs:
           path: build-reports.zip
 
       - name: Publish snapshot (main branch only)
-        if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main' && matrix.api-level == '30' && matrix.avd-target == 'aosp_atd' && matrix.ci_java_version == '18' && matrix.ci_kotlin_version == '1.7.20'
+        if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache

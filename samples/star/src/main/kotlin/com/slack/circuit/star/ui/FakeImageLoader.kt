@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.star
+package com.slack.circuit.star.ui
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import androidx.annotation.VisibleForTesting
 import coil.ComponentRegistry
 import coil.ImageLoader
 import coil.decode.DataSource
@@ -34,8 +35,8 @@ import kotlinx.coroutines.CompletableDeferred
  * Fake Coil ImageLoader based on example found here:
  * https://coil-kt.github.io/coil/image_loaders/#testing
  */
-class FakeImageLoader : ImageLoader {
-  private val drawable by lazy { ColorDrawable(Color.LTGRAY) }
+@VisibleForTesting(otherwise = VisibleForTesting.NONE)
+class FakeImageLoader(private val drawable: Drawable = ColorDrawable(Color.LTGRAY)) : ImageLoader {
 
   override val defaults = DefaultRequestOptions()
   override val components = ComponentRegistry()

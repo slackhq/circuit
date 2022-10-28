@@ -62,7 +62,7 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
         // If this all looks dumb, it's because it is.
         // https://github.com/google/accompanist/issues/910
         Box(Modifier.padding(32.dp)) {
-          Box(Modifier.fillMaxSize(0.51f))
+          @Suppress("MagicNumber") Box(Modifier.fillMaxSize(0.51f))
           // Delay setting the result until we've finished dismissing
           val coroutineScope = rememberCoroutineScope()
           content(model) { result ->

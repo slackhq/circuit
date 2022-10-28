@@ -1,6 +1,44 @@
 Changelog
 =========
 
+0.2.2
+-----
+
+_2022-10-27_
+
+- **Enhancement**: Code gen now supports non-assisted constructor-injected types.
+- **Enhancement**: Code gen checks that functions and classes are visible to generated factories.
+
+0.2.1
+-----
+
+_2022-10-27_
+
+- **Fix**: Code gen didn't properly handle instantiating simple class types.
+
+0.2.0
+-----
+
+_2022-10-26_
+
+- **New**: Code gen artifact. This targets specifically using Dagger + Anvil and will generate `Presenter` and `Ui.Factory` implementations for you. See `CircuitInject` for more details.
+  ```kotlin
+  ksp("com.slack.circuit:circuit-codegen:x.y.z")
+  implementation("com.slack.circuit:circuit-codegen-annotations:x.y.z")
+  ```
+
+- **New**: There is now an `EventListener` API for instrumenting state changes for a given `Screen`. See its docs for more details.
+- **Fix**: Rework `rememberRetained` implementation and support for multiple variables. Previously it only worked with one variable.
+- **Fix**: Clean up some unnecessary transitive dependencies in misc artifacts.
+
+Dependency updates
+
+```
+androidx.activity 1.6.1
+androidx.compose 1.3.0
+Molecule 0.5.0
+```
+
 0.1.2
 -----
 

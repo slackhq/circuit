@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.2
+-----
+
+_2022-10-27_
+
+**Enhancement**: Code gen now supports non-assisted constructor-injected types.
+**Enhancement**: Code gen checks that functions and classes are visible to generated factories.
+
 0.2.1
 -----
 

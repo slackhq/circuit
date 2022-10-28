@@ -17,6 +17,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +25,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -309,6 +309,7 @@ internal fun PetList(
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: ImmutableList<PetListAnimal>,
@@ -322,8 +323,8 @@ private fun PetListGrid(
   ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     @Suppress("MagicNumber")
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(if (isLandscape) 3 else 2),
+    LazyVerticalStaggeredGrid(
+      columns = StaggeredGridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = modifier.testTag(GRID_TAG),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -356,7 +357,7 @@ private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
-        modifier = Modifier.fillMaxWidth().aspectRatio(1f).testTag(IMAGE_TAG),
+        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(animal.imageUrl)

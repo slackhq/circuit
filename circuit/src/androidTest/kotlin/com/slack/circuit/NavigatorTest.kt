@@ -18,7 +18,6 @@ package com.slack.circuit
 import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertFailsWith
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,28 +38,21 @@ class NavigatorTest {
 
   @Test
   fun errorWhenBackstackIsEmpty() {
-    val rootPops = AtomicInteger(0)
     val backstack = SaveableBackStack()
-    val t =
-      assertFailsWith<IllegalStateException> {
-        NavigatorImpl(backstack = backstack, onRootPop = { rootPops.incrementAndGet() })
-      }
+    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backstack = backstack) }
     assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
   }
 
   @Test
-  fun rootPopWhenOne() {
-    val rootPops = AtomicInteger(0)
+  fun popAtRoot() {
     val backstack = SaveableBackStack()
     backstack.push(TestScreen)
     backstack.push(TestScreen)
-    val navigator = NavigatorImpl(backstack = backstack, onRootPop = { rootPops.incrementAndGet() })
+    val navigator = NavigatorImpl(backstack = backstack)
     assertThat(backstack).hasSize(2)
     navigator.pop()
-    assertThat(rootPops.get()).isEqualTo(0)
     assertThat(backstack).hasSize(1)
-    navigator.pop()
-    assertThat(rootPops.get()).isEqualTo(1)
-    assertThat(backstack).hasSize(0)
+    val t = assertFailsWith<IllegalStateException> { navigator.pop() }
+    assertThat(t).hasMessageThat().contains("Cannot pop the root screen.")
   }
 }

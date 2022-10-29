@@ -18,6 +18,7 @@ package com.slack.circuit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 
 /**
@@ -42,7 +43,10 @@ internal class NavigatorImpl(
 
   override fun goTo(screen: Screen) = backstack.push(screen)
 
-  override fun pop() = backstack.pop()?.screen
+  override fun pop(): Screen? {
+    check(!backstack.isAtRoot) { "Cannot pop the root screen." }
+    return backstack.pop()?.screen
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

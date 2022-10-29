@@ -43,48 +43,9 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug :samples:star:assembleReleaseAndroidTest verifyPaparazzi detektMain detektTest --continue --no-configuration-cache
+          arguments: check :samples:star:apk:assembleDebug verifyPaparazzi detektMain detektTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
-
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ env.API_LEVEL }}-${{ env.AVD_TARGET }}
-
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ env.API_LEVEL }}
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          disable-spellchecker: true
-          target: ${{ env.AVD_TARGET }}
-          channel: canary # Necessary for ATDs
-          script: echo "Generated AVD snapshot for caching."
-
-      - name: Run instrumentation tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ env.API_LEVEL }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          disable-spellchecker: true
-          target: 'aosp_atd'
-          channel: canary # Necessary for ATDs
-          script: |
-            adb uninstall com.slack.circuit.star || true
-            adb uninstall com.slack.circuit.star.androidTest || true
-            ./gradlew connectedDebugAndroidTest
-            adb uninstall com.slack.circuit.star || true
-            adb uninstall com.slack.circuit.star.androidTest || true
 
       - name: (Fail-only) Bundle the build report
         if: failure()

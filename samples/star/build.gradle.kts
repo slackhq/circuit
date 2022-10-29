@@ -107,7 +107,12 @@ dependencies {
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
   testImplementation(libs.robolectric)
+  testImplementation(libs.testing.hamcrest)
+  testImplementation(libs.androidx.loader)
   testImplementation(projects.circuitTest)
+  testImplementation(libs.testing.espresso.core)
+  testImplementation(libs.androidx.compose.ui.testing.manifest)
+  testImplementation(libs.leakcanary.android.instrumentation)
 
   debugImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.leakcanary.android.instrumentation)

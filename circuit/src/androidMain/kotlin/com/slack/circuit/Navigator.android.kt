@@ -26,36 +26,23 @@ import com.slack.circuit.backstack.isEmpty
  * @see NavigableCircuitContent
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
- * @param onRootPop A callback to handle when the [backstack] is [popped][Navigator.pop] to empty.
  */
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
-  onRootPop: (() -> Unit)
-): Navigator {
-  return remember { NavigatorImpl(backstack, onRootPop) }
-}
+): Navigator = remember { NavigatorImpl(backstack) }
 
 internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
-  private val onRootPop: (() -> Unit),
 ) : Navigator {
 
   init {
     check(!backstack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goTo(screen: Screen) {
-    backstack.push(screen)
-  }
+  override fun goTo(screen: Screen) = backstack.push(screen)
 
-  override fun pop(): Screen? {
-    val screen = backstack.pop()?.screen
-    if (backstack.size == 0) {
-      onRootPop()
-    }
-    return screen
-  }
+  override fun pop() = backstack.pop()?.screen
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -64,18 +51,11 @@ internal class NavigatorImpl(
     other as NavigatorImpl
 
     if (backstack != other.backstack) return false
-    if (onRootPop != other.onRootPop) return false
 
     return true
   }
 
-  override fun hashCode(): Int {
-    var result = backstack.hashCode()
-    result = 31 * result + onRootPop.hashCode()
-    return result
-  }
+  override fun hashCode() = backstack.hashCode()
 
-  override fun toString(): String {
-    return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
-  }
+  override fun toString() = "NavigatorImpl(backstack=$backstack)"
 }

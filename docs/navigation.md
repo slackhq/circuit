@@ -11,7 +11,7 @@ A new navigable content surface is handled via the `NavigableCircuitContent` fun
 ```kotlin
 setContent {
   val backstack = rememberSaveableBackStack { push(HomeScreen) }
-  val navigator = rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
+  val navigator = rememberCircuitNavigator(backstack)
   NavigableCircuitContent(navigator, backstack)
 }
 ```
@@ -19,7 +19,7 @@ setContent {
 !!! warning
     `SaveableBackStack` _must_ have a size of 1 or more after initialization. It's an error to have a backstack with zero items.
 
-Presenters are then given access to these navigator instances via `Presenter.Factory` (described in TODO link Factories), which they can save if needed to perform navigation.
+Presenters are then given access to these navigator instances via `Presenter.Factory` (described in [Factories](https://slackhq.github.io/circuit/factories/)), which they can save if needed to perform navigation.
 
 ```kotlin
 fun showAddFavorites() {
@@ -28,6 +28,18 @@ fun showAddFavorites() {
       externalId = uuidGenerator.generate()
     )
   )
+}
+```
+
+If you want to have custom behavior for when back is pressed on the root screen (i.e. `backstack.size == 1`), you should implement your own `BackHandler` and use it _before_ creating the backstack.
+
+```kotlin
+setContent {
+  val backstack = rememberSaveableBackStack { push(HomeScreen) }
+  BackHandler(onBack = { /* do something on root */ })
+  // The Navigator's internal BackHandler will take precedence until it is at the root screen.
+  val navigator = rememberCircuitNavigator(backstack)
+  NavigableCircuitContent(navigator, backstack)
 }
 ```
 

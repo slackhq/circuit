@@ -43,7 +43,6 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.providedValuesForBackStack
 
 @Composable
@@ -57,7 +56,7 @@ public fun NavigableCircuitContent(
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
-  BackHandler(enabled = enableBackHandler && !backstack.isAtRoot) { navigator.pop() }
+  BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
 
   BasicNavigableCircuitContent(
     navigator = navigator,

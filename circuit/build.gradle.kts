@@ -61,6 +61,10 @@ kotlin {
         }
       }
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+    maybeCreate("androidTest").apply {
+      dependsOn(commonJvmTest)
+      dependencies { implementation(libs.robolectric) }
+    }
   }
 }
 

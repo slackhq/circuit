@@ -18,6 +18,8 @@ package com.slack.circuit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isAtRoot
+import com.slack.circuit.backstack.isEmpty
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
@@ -25,31 +27,25 @@ import com.slack.circuit.backstack.SaveableBackStack
  * @see NavigableCircuitContent
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
- * @param onRootPop The callback to handle root [Navigator.pop] calls.
  */
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
-  onRootPop: (() -> Unit)?
-): Navigator {
-  return remember { NavigatorImpl(backstack, onRootPop) }
-}
+): Navigator = remember { NavigatorImpl(backstack) }
 
-private class NavigatorImpl(
+internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
-  private val onRootPop: (() -> Unit)?,
 ) : Navigator {
 
-  override fun goTo(screen: Screen) {
-    backstack.push(screen)
+  init {
+    check(!backstack.isEmpty) { "Backstack size must not be empty." }
   }
 
+  override fun goTo(screen: Screen) = backstack.push(screen)
+
   override fun pop(): Screen? {
-    backstack.pop()?.screen?.let {
-      return it
-    }
-    onRootPop?.invoke()
-    return null
+    check(!backstack.isAtRoot) { "Cannot pop the root screen." }
+    return backstack.pop()?.screen
   }
 
   override fun equals(other: Any?): Boolean {
@@ -59,18 +55,11 @@ private class NavigatorImpl(
     other as NavigatorImpl
 
     if (backstack != other.backstack) return false
-    if (onRootPop != other.onRootPop) return false
 
     return true
   }
 
-  override fun hashCode(): Int {
-    var result = backstack.hashCode()
-    result = 31 * result + (onRootPop?.hashCode() ?: 0)
-    return result
-  }
+  override fun hashCode() = backstack.hashCode()
 
-  override fun toString(): String {
-    return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
-  }
+  override fun toString() = "NavigatorImpl(backstack=$backstack)"
 }

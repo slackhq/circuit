@@ -23,7 +23,11 @@ import java.util.UUID
 
 @Composable
 public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack().apply(init) }
+  rememberSaveable(saver = SaveableBackStack.Saver) {
+    SaveableBackStack().apply(init).also {
+      check(!it.isEmpty) { "Backstack must be non-empty after init." }
+    }
+  }
 
 public fun SaveableBackStack.push(route: String, args: Map<String, Any?> = emptyMap()) {
   push(SaveableBackStack.Record(route, args))

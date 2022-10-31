@@ -52,8 +52,7 @@ constructor(
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
           val backstack = rememberSaveableBackStack { push(HomeScreen) }
-          val navigator =
-            rememberCircuitNavigator(backstack, onBackPressedDispatcher::onBackPressed)
+          val navigator = rememberCircuitNavigator(backstack)
           CircuitCompositionLocals(circuitConfig) {
             ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
           }

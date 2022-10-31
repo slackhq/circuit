@@ -141,7 +141,10 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.11.2" }
+  plugins { id("com.gradle.enterprise") version "3.11.2"
+    id("com.android.test") version "7.3.1"
+    id("org.jetbrains.kotlin.android") version "1.7.10"
+  }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -183,3 +186,4 @@ enableFeaturePreview("GROOVY_COMPILATION_AVOIDANCE")
 
 // https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+include(":samples:star:benchmark")

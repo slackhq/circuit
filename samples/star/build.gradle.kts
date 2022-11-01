@@ -95,7 +95,7 @@ dependencies {
   implementation(libs.okio)
   implementation(libs.retrofit)
   implementation(libs.retrofit.converters.moshi)
-  implementation(libs.leakcanary.android)
+  debugImplementation(libs.leakcanary.android)
   implementation(libs.dagger)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.kotlinx.immutable)

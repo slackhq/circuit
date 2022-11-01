@@ -1,10 +1,12 @@
 plugins {
   id("com.android.test")
+  kotlin("android")
 }
 
 android {
   namespace = "com.circuit.samples.star.benchmark"
   defaultConfig {
+    targetSdk = 33
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 

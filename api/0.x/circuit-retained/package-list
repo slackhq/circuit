@@ -2,7 +2,7 @@ $dokka.format:gfm-v1
 $dokka.linkExtension:md
 $dokka.location:com.slack.circuit.retained////PointingToDeclaration/circuit-retained/com.slack.circuit.retained/index.md
 $dokka.location:com.slack.circuit.retained//RetainedStateRegistry/#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.Any?]]?/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry.md
-$dokka.location:com.slack.circuit.retained//continuityRetainedStateRegistry/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/continuity-retained-state-registry.md
+$dokka.location:com.slack.circuit.retained//continuityRetainedStateRegistry/#androidx.lifecycle.ViewModelProvider.Factory?/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/continuity-retained-state-registry.md
 $dokka.location:com.slack.circuit.retained//produceRetainedState/#TypeParam(bounds=[kotlin.Any?])#kotlin.Any?#kotlin.Any?#kotlin.Any?#kotlin.coroutines.SuspendFunction1[androidx.compose.runtime.ProduceStateScope[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/produce-retained-state.md
 $dokka.location:com.slack.circuit.retained//produceRetainedState/#TypeParam(bounds=[kotlin.Any?])#kotlin.Any?#kotlin.Any?#kotlin.coroutines.SuspendFunction1[androidx.compose.runtime.ProduceStateScope[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/produce-retained-state.md
 $dokka.location:com.slack.circuit.retained//produceRetainedState/#TypeParam(bounds=[kotlin.Any?])#kotlin.Any?#kotlin.coroutines.SuspendFunction1[androidx.compose.runtime.ProduceStateScope[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/produce-retained-state.md
@@ -12,7 +12,9 @@ $dokka.location:com.slack.circuit.retained//rememberRetained/#kotlin.Array[kotli
 $dokka.location:com.slack.circuit.retained/Continuity///PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/index.md
 $dokka.location:com.slack.circuit.retained/Continuity/Continuity/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/-continuity.md
 $dokka.location:com.slack.circuit.retained/Continuity/consumeValue/#kotlin.String/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/consume-value.md
-$dokka.location:com.slack.circuit.retained/Continuity/registerValue/#kotlin.String#kotlin.Any?/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/register-value.md
+$dokka.location:com.slack.circuit.retained/Continuity/forgetUnclaimedValues/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/forget-unclaimed-values.md
+$dokka.location:com.slack.circuit.retained/Continuity/performSave/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/perform-save.md
+$dokka.location:com.slack.circuit.retained/Continuity/registerValue/#kotlin.String#kotlin.Function0[kotlin.Any?]/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-continuity/register-value.md
 $dokka.location:com.slack.circuit.retained/LocalRetainedStateRegistryOwner///PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-local-retained-state-registry-owner/index.md
 $dokka.location:com.slack.circuit.retained/LocalRetainedStateRegistryOwner/current/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-local-retained-state-registry-owner/current.md
 $dokka.location:com.slack.circuit.retained/LocalRetainedStateRegistryOwner/provides/#com.slack.circuit.retained.RetainedStateRegistry/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-local-retained-state-registry-owner/provides.md
@@ -20,6 +22,8 @@ $dokka.location:com.slack.circuit.retained/RetainedStateRegistry.Entry///Pointin
 $dokka.location:com.slack.circuit.retained/RetainedStateRegistry.Entry/unregister/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/-entry/unregister.md
 $dokka.location:com.slack.circuit.retained/RetainedStateRegistry///PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/index.md
 $dokka.location:com.slack.circuit.retained/RetainedStateRegistry/consumeValue/#kotlin.String/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/consume-value.md
-$dokka.location:com.slack.circuit.retained/RetainedStateRegistry/registerValue/#kotlin.String#kotlin.Any?/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/register-value.md
+$dokka.location:com.slack.circuit.retained/RetainedStateRegistry/forgetUnclaimedValues/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/forget-unclaimed-values.md
+$dokka.location:com.slack.circuit.retained/RetainedStateRegistry/performSave/#/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/perform-save.md
+$dokka.location:com.slack.circuit.retained/RetainedStateRegistry/registerValue/#kotlin.String#kotlin.Function0[kotlin.Any?]/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/-retained-state-registry/register-value.md
 com.slack.circuit.retained
 

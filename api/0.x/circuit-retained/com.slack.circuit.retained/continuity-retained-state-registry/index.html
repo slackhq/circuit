@@ -545,6 +545,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -565,7 +580,24 @@
 <h1 id="continuityretainedstateregistry">continuityRetainedStateRegistry<a class="headerlink" href="#continuityretainedstateregistry" title="Permanent link">&para;</a></h1>
 <p>[android]\</p>
 <p>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a></p>
-<p>fun <a href="./">continuityRetainedStateRegistry</a>(): RetainedStateRegistry</p>
+<p>fun <a href="./">continuityRetainedStateRegistry</a>(factory: <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModelProvider.Factory.html">ViewModelProvider.Factory</a>? = null): RetainedStateRegistry</p>
+<p>Provides a RetainedStateRegistry.</p>
+<h4 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h4>
+<p>android</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>factory</td>
+<td>an optional <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModelProvider.Factory.html">ViewModelProvider.Factory</a> to use when creating the <a href="../-continuity/">Continuity</a> instance.</td>
+</tr>
+</tbody>
+</table>
 
 
 

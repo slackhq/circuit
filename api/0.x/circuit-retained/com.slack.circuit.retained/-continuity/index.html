@@ -620,8 +620,16 @@ class <a href="./">Continuity</a> : <a href="https://developer.android.com/refer
 <td>[android]<br>open override fun <a href="consume-value/">consumeValue</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?<br>Returns the restored value for the given key. Once being restored the value is cleared, so you can&rsquo;t restore the same key twice.</td>
 </tr>
 <tr>
+<td><a href="forget-unclaimed-values/">forgetUnclaimedValues</a></td>
+<td>[android]<br>open override fun <a href="forget-unclaimed-values/">forgetUnclaimedValues</a>()<br>Releases all currently unconsumed values. Useful as a GC mechanism for the registry.</td>
+</tr>
+<tr>
+<td><a href="perform-save/">performSave</a></td>
+<td>[android]<br>open override fun <a href="perform-save/">performSave</a>()<br>Executes all the registered value providers and combines these values into a map. We have a list of values for each key as it is allowed to have multiple providers for the same key.</td>
+</tr>
+<tr>
 <td><a href="register-value/">registerValue</a></td>
-<td>[android]<br>open override fun <a href="register-value/">registerValue</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, value: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?): RetainedStateRegistry.Entry<br>Registers the value provider.</td>
+<td>[android]<br>open override fun <a href="register-value/">registerValue</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, valueProvider: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?): RetainedStateRegistry.Entry<br>Registers the value provider.</td>
 </tr>
 </tbody>
 </table>

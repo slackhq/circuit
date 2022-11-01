@@ -671,6 +671,10 @@
 <td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html">Immutable</a><br>interface <a href="-circuit-ui-state/">CircuitUiState</a><br>Marker interface for all UiState types.</td>
 </tr>
 <tr>
+<td><a href="-event-listener/">EventListener</a></td>
+<td>[common]<br>interface <a href="-event-listener/">EventListener</a><br>A listener for tracking the state changes of a given <a href="-screen/">Screen</a>. This can be used for instrumentation and other telemetry.</td>
+</tr>
+<tr>
 <td><a href="-local-circuit-owner/">LocalCircuitOwner</a></td>
 <td>[common]<br>object <a href="-local-circuit-owner/">LocalCircuitOwner</a></td>
 </tr>
@@ -685,22 +689,6 @@
 <tr>
 <td><a href="-navigator-defaults/">NavigatorDefaults</a></td>
 <td>[android]<br>object <a href="-navigator-defaults/">NavigatorDefaults</a><br>Default values and common alternatives used by navigable composables.</td>
-</tr>
-<tr>
-<td><a href="-overlay/">Overlay</a></td>
-<td>[common]<br>interface <a href="-overlay/">Overlay</a>&lt;<a href="-overlay/">Result</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<br>An <a href="-overlay/">Overlay</a> is composable content that can be shown on top of other content via an <a href="-overlay-host/">OverlayHost</a> . Overlays are typically used for one-off request/result flows and should not usually attempt to do any sort of external navigation or make any assumptions about the state of the app. They should only emit a <a href="-overlay/">Result</a> to the given <code>OverlayNavigator</code> when they are done.</td>
-</tr>
-<tr>
-<td><a href="-overlay-host/">OverlayHost</a></td>
-<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>interface <a href="-overlay-host/">OverlayHost</a><br>An OverlayHost can be used overlays<a href="-overlay/">Overlay</a> with content on top of other content. This is useful for one-off request/result flows such as:</td>
-</tr>
-<tr>
-<td><a href="-overlay-host-data/">OverlayHostData</a></td>
-<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>interface <a href="-overlay-host-data/">OverlayHostData</a>&lt;<a href="-overlay-host-data/">Result</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<br>Data managed by an <a href="-overlay-host/">OverlayHost</a> to track the current overlay state. This should rarely be implemented by consumers!</td>
-</tr>
-<tr>
-<td><a href="-overlay-navigator/">OverlayNavigator</a></td>
-<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html">Stable</a><br>fun interface <a href="-overlay-navigator/">OverlayNavigator</a>&lt;<a href="-overlay-navigator/">Result</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<br>An <a href="-overlay-navigator/">OverlayNavigator</a> is a simple API offered to <a href="-overlay/">overlays</a> to call <a href="-overlay-navigator/finish/">finish</a> with a result when they are done.</td>
 </tr>
 <tr>
 <td><a href="-presenter/">Presenter</a></td>
@@ -742,10 +730,6 @@
 <td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-circuit-content/">CircuitContent</a>(screen: <a href="-screen/">Screen</a>, circuitConfig: <a href="-circuit-config/">CircuitConfig</a> = LocalCircuitOwner.current, unavailableContent: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(screen: <a href="-screen/">Screen</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>? = circuitConfig.onUnavailableContent)<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-circuit-content/">CircuitContent</a>(screen: <a href="-screen/">Screen</a>, onNavEvent: (event: <a href="-nav-event/">NavEvent</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>, circuitConfig: <a href="-circuit-config/">CircuitConfig</a> = LocalCircuitOwner.current, unavailableContent: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(screen: <a href="-screen/">Screen</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>? = circuitConfig.onUnavailableContent)</td>
 </tr>
 <tr>
-<td><a href="-content-with-overlays/">ContentWithOverlays</a></td>
-<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-content-with-overlays/">ContentWithOverlays</a>(modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a> = Modifier, overlayHost: OverlayHost = rememberOverlayHost(), content: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>() -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>)<br>Renders the given <a href="-content-with-overlays/">content</a> with the ability to show overlays on top of it. This works by exposing an OverlayHost via LocalOverlayHost.</td>
-</tr>
-<tr>
 <td><a href="-navigable-circuit-content/">NavigableCircuitContent</a></td>
 <td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-navigable-circuit-content/">NavigableCircuitContent</a>(navigator: Navigator, backstack: SaveableBackStack, modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a> = Modifier, circuitConfig: CircuitConfig = LocalCircuitOwner.current, enableBackHandler: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a> = true, providedValues: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a>&lt;out BackStack.Record, ProvidedValues&gt; = providedValuesForBackStack(backstack), decoration: NavDecoration = NavigatorDefaults.DefaultDecoration, unavailableRoute: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> = NavigatorDefaults.UnavailableRoute)</td>
 </tr>
@@ -767,11 +751,7 @@
 </tr>
 <tr>
 <td><a href="remember-circuit-navigator/">rememberCircuitNavigator</a></td>
-<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-circuit-navigator/">rememberCircuitNavigator</a>(backstack: SaveableBackStack, onRootPop: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>?): Navigator<br>Returns a new Navigator for navigating within CircuitContents.</td>
-</tr>
-<tr>
-<td><a href="remember-overlay-host/">rememberOverlayHost</a></td>
-<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-overlay-host/">rememberOverlayHost</a>(): <a href="-overlay-host/">OverlayHost</a><br>Returns a remembered an <a href="-overlay-host/">OverlayHost</a> that can be used to show overlays.</td>
+<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-circuit-navigator/">rememberCircuitNavigator</a>(backstack: SaveableBackStack): Navigator<br>Returns a new Navigator for navigating within CircuitContents.</td>
 </tr>
 <tr>
 <td><a href="ui/">ui</a></td>
@@ -788,10 +768,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><a href="-local-overlay-host/">LocalOverlayHost</a></td>
-<td>[common]<br>val <a href="-local-overlay-host/">LocalOverlayHost</a>: <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/ProvidableCompositionLocal.html">ProvidableCompositionLocal</a>&lt;<a href="-overlay-host/">OverlayHost</a>&gt;<br>A <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/ProvidableCompositionLocal.html">ProvidableCompositionLocal</a> to expose the current <a href="-overlay-host/">OverlayHost</a> in the composition tree.</td>
-</tr>
 <tr>
 <td><a href="screen/">screen</a></td>
 <td>[android]<br>val SaveableBackStack.Record.<a href="screen/">screen</a>: <a href="-screen/">Screen</a></td>

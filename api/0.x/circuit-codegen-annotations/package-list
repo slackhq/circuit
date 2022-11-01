@@ -1,0 +1,8 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:com.slack.circuit.codegen.annotations////PointingToDeclaration/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/index.md
+$dokka.location:com.slack.circuit.codegen.annotations/CircuitInject///PointingToDeclaration/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/-circuit-inject/index.md
+$dokka.location:com.slack.circuit.codegen.annotations/CircuitInject/scope/#/PointingToDeclaration/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/-circuit-inject/scope.md
+$dokka.location:com.slack.circuit.codegen.annotations/CircuitInject/screen/#/PointingToDeclaration/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/-circuit-inject/screen.md
+com.slack.circuit.codegen.annotations
+

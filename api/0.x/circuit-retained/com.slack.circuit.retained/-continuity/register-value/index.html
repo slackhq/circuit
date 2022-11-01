@@ -586,7 +586,7 @@
 <p>//<a href="../../../../">circuit-retained</a>/<a href="../../">com.slack.circuit.retained</a>/<a href="../">Continuity</a>/<a href="./">registerValue</a></p>
 <h1 id="registervalue">registerValue<a class="headerlink" href="#registervalue" title="Permanent link">&para;</a></h1>
 <p>[android]\
-open override fun <a href="./">registerValue</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, value: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?): RetainedStateRegistry.Entry</p>
+open override fun <a href="./">registerValue</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, valueProvider: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?): RetainedStateRegistry.Entry</p>
 <p>Registers the value provider.</p>
 <p>There are could be multiple providers registered for the same <a href="./">key</a>. In this case the order in which they were registered matters.</p>
 <p>Say we registered two values for the key. One provides &quot;1&quot;, second provides &quot;2&quot;. this case will have listOf(&quot;1&quot;, &quot;2) as a value for the key in the underlying map. And later, when the registry will be recreated with the previously saved values, the first execution of <a href="../consume-value/">consumeValue</a> would consume &quot;1&quot; and the second one &quot;2&quot;.</p>
@@ -607,8 +607,8 @@ open override fun <a href="./">registerValue</a>(key: <a href="https://kotlinlan
 <td>Key to use for storing the value</td>
 </tr>
 <tr>
-<td>value</td>
-<td>The current value</td>
+<td>valueProvider</td>
+<td>The value to provide</td>
 </tr>
 </tbody>
 </table>

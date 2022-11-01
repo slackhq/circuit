@@ -392,9 +392,68 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Code Generation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Code Generation
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assisted-injection" class="md-nav__link">
+    Assisted injection
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -555,6 +614,49 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assisted-injection" class="md-nav__link">
+    Assisted injection
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -572,13 +674,100 @@
 
 
 <h1 id="code-generation">Code Generation<a class="headerlink" href="#code-generation" title="Permanent link">&para;</a></h1>
-<p>We plan to include code gen tools to cover most of any boilerplate, making the common paths simple while allowing for more complex hand-written structures when needed.</p>
-<p>At a high level using the examples above, we want to generate the following bits of code for users</p>
-<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">FavoritesScreenUiFactory</span><span class="w"></span>
-<span class="kd">class</span><span class="w"> </span><span class="nc">FavoritesScreenPresenterFactory</span><span class="w"></span>
-<span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">favoritesUi</span><span class="p">()</span><span class="w"></span>
+<p>If using Dagger and Anvil, Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories.</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">plugins</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">id</span><span class="p">(</span><span class="s">&quot;com.google.devtools.ksp&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">dependencies</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">api</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen-annotations:&lt;version&gt;&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:&lt;version&gt;&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
-<p>We’re intentionally saving implementing this step last as it makes making API changes more difficult. Follow along progress here: <a href="https://github.com/slackhq/circuit/issues/13">https://github.com/slackhq/circuit/issues/13</a></p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<p>The primary entry point is the <code>CircuitInject</code> annotation.</p>
+<p>This annotation is used to mark a UI or presenter class or function for code generation. When
+annotated, the type&rsquo;s corresponding factory will be generated and keyed with the defined <code>screen</code>.</p>
+<p>The generated factories are then contributed to Anvil via <code>ContributesMultibinding</code> and scoped
+with the provided <code>scope</code> key.</p>
+<h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
+<p><code>Presenter</code> and <code>Ui</code> classes can be annotated and have their corresponding <code>Presenter.Factory</code> or
+<code>Ui.Factory</code> classes generated for them.</p>
+<p><strong>Presenter</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenter</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">HomeState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Generates</span><span class="w"></span>
+<span class="nd">@ContributesMultibinding</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenterFactory</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p><strong>UI</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomeUi</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="o">&lt;</span><span class="n">HomeState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Generates</span><span class="w"></span>
+<span class="nd">@ContributesMultibinding</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomeUiFactory</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
+<p>Simple functions can be annotated and have a corresponding <code>Presenter.Factory</code> generated. This is
+primarily useful for simple cases where a class is just technical tedium.</p>
+<p><strong>Requirements</strong>
+- Presenter function names <em>must</em> end in <code>Presenter</code>, otherwise they will be treated as UI
+functions.
+- Presenter functions <em>must</em> return a <code>CircuitUiState</code> type.
+- UI functions can optionally accept a <code>CircuitUiState</code> type as a parameter, but it is not
+required.
+- UI functions <em>must</em> return <code>Unit</code>.
+- Both presenter and UI functions <em>must</em> be <code>Composable</code>.</p>
+<p><strong>Presenter</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="nd">@Composable</span><span class="w"></span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">HomePresenter</span><span class="p">():</span><span class="w"> </span><span class="n">HomeState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Generates</span><span class="w"></span>
+<span class="nd">@ContributesMultibinding</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenterFactory</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p><strong>UI</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="nd">@Composable</span><span class="w"></span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">Home</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">HomeState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="o">*</span><span class="w"></span>
+<span class="c1">// Generates</span><span class="w"></span>
+<span class="nd">@ContributesMultibinding</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomeUiFactory</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<h2 id="assisted-injection">Assisted injection<a class="headerlink" href="#assisted-injection" title="Permanent link">&para;</a></h2>
+<p>Any type that is offered in <code>Presenter.Factory</code> and <code>Ui.Factory</code> can be offered as an assisted
+injection to types using Dagger <code>AssistedInject</code>. For these cases, the <code>AssistedFactory</code>
+-annotated interface should be annotated with <code>CircuitInject</code> instead of the enclosing class.</p>
+<p>Types available for assisted injection are:
+- <code>Screen</code> – the screen key used to create the <code>Presenter</code> or <code>Ui</code>.
+- <code>Navigator</code> – (presenters only)
+- <code>CircuitConfig</code></p>
+<p>Each should only be defined at-most once.</p>
+<p><strong>Examples</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Function example</span><span class="w"></span>
+<span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="nd">@Composable</span><span class="w"></span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">HomePresenter</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">):</span><span class="w"> </span><span class="n">HomeState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Class example</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenter</span><span class="w"> </span><span class="nd">@AssistedInject</span><span class="w"> </span><span class="k">constructor</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@Assisted</span><span class="w"> </span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@Assisted</span><span class="w"> </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="p">...</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">HomeState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// ...</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@AssistedFactory</span><span class="w"></span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">):</span><span class="w"> </span><span class="n">HomePresenter</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
 
 
 

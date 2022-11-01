@@ -407,9 +407,67 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Interop
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Interop
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#presenter" class="md-nav__link">
+    Presenter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    UI
+  </a>
+  
+    <nav class="md-nav" aria-label="UI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ui-view" class="md-nav__link">
+    Ui -&gt; View
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#view-ui" class="md-nav__link">
+    View -&gt; Ui
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -555,6 +613,48 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#presenter" class="md-nav__link">
+    Presenter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    UI
+  </a>
+  
+    <nav class="md-nav" aria-label="UI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ui-view" class="md-nav__link">
+    Ui -&gt; View
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#view-ui" class="md-nav__link">
+    View -&gt; Ui
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -572,7 +672,30 @@
 
 
 <h1 id="interop">Interop<a class="headerlink" href="#interop" title="Permanent link">&para;</a></h1>
-<p>TODO: <a href="https://github.com/slackhq/circuit/issues/42">https://github.com/slackhq/circuit/issues/42</a></p>
+<p>Circuit can interop anywhere that Compose can interop. This includes common cases like Android 
+<code>Views</code>, RxJava, Kotlin <code>Flow</code>, and more.</p>
+<h2 id="presenter"><code>Presenter</code><a class="headerlink" href="#presenter" title="Permanent link">&para;</a></h2>
+<p>Lean on first-party interop-APIs where possible! See examples of interop with different libraries in the <code>:samples:interop</code> project.</p>
+<h2 id="ui"><code>UI</code><a class="headerlink" href="#ui" title="Permanent link">&para;</a></h2>
+<h3 id="ui-view"><code>Ui</code> -&gt; <code>View</code><a class="headerlink" href="#ui-view" title="Permanent link">&para;</a></h3>
+<p>Just embed the Circuit in a <code>ComposeView</code> like any other Compose UI.</p>
+<h3 id="view-ui"><code>View</code> -&gt; <code>Ui</code><a class="headerlink" href="#view-ui" title="Permanent link">&para;</a></h3>
+<p>You can wrap your view in an <code>AndroidView</code> in a custom <code>Ui</code> implementation. </p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ExistingCustomViewUi</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="o">&lt;</span><span class="n">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@Composable</span><span class="w"></span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">Content</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">State</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">AndroidView</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
+<span class="w">      </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="n">ExistingCustomView</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="n">update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">setState</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">setOnClickListener</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">Event</span><span class="p">.</span><span class="na">Click</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
 
 
 

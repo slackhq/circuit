@@ -626,17 +626,30 @@
 <p>A new navigable content surface is handled via the <code>NavigableCircuitContent</code> functions.</p>
 <div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">push</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backstack</span><span class="p">,</span><span class="w"> </span><span class="n">onBackPressedDispatcher</span><span class="o">::</span><span class="n">onBackPressed</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backstack</span><span class="p">)</span><span class="w"></span>
 <span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backstack</span><span class="p">)</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
-<p>Presenters are then given access to these navigator instances via <code>Presenter.Factory</code> (described in TODO link Factories), which they can save if needed to perform navigation.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code>SaveableBackStack</code> <em>must</em> have a size of 1 or more after initialization. It&rsquo;s an error to have a backstack with zero items.</p>
+</div>
+<p>Presenters are then given access to these navigator instances via <code>Presenter.Factory</code> (described in <a href="https://slackhq.github.io/circuit/factories/">Factories</a>), which they can save if needed to perform navigation.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">showAddFavorites</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="w"></span>
 <span class="w">    </span><span class="n">AddFavorites</span><span class="p">(</span><span class="w"></span>
 <span class="w">      </span><span class="n">externalId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uuidGenerator</span><span class="p">.</span><span class="na">generate</span><span class="p">()</span><span class="w"></span>
 <span class="w">    </span><span class="p">)</span><span class="w"></span>
 <span class="w">  </span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>If you want to have custom behavior for when back is pressed on the root screen (i.e. <code>backstack.size == 1</code>), you should implement your own <code>BackHandler</code> and use it <em>before</em> creating the backstack.</p>
+<div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">push</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">BackHandler</span><span class="p">(</span><span class="n">onBack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* do something on root */</span><span class="w"> </span><span class="p">})</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// The Navigator&#39;s internal BackHandler will take precedence until it is at the root screen.</span><span class="w"></span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backstack</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backstack</span><span class="p">)</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <h2 id="nested-navigation">Nested Navigation<a class="headerlink" href="#nested-navigation" title="Permanent link">&para;</a></h2>

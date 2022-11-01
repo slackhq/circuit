@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 /** An RxJava presenter that exposes an [Observable] of count changes. */
 class RxCounterPresenter {
-  private var count = BehaviorSubject.createDefault(0)
+  private val count = BehaviorSubject.createDefault(0)
 
   fun increment() {
     count.onNext(count.value!! + 1)

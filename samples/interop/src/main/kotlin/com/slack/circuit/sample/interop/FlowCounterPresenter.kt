@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 /** An [Flow] presenter that exposes a [StateFlow] of count changes. */
 class FlowCounterPresenter {
-  private var count = MutableStateFlow(0)
+  private val count = MutableStateFlow(0)
 
   fun increment() {
     count.tryEmit(count.value + 1)

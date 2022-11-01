@@ -75,10 +75,10 @@ constructor(
 
 /** An interop compose function that renders [CounterView] as a Circuit-powered [AndroidView]. */
 @Composable
-fun CounterViewComposable(state: CounterState) {
+fun CounterViewComposable(state: CounterState, modifier: Modifier = Modifier) {
   val eventSink = state.eventSink
   AndroidView(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     factory = { context ->
       CounterView(context).apply {
         setOnIncrementClickListener { eventSink(CounterEvent.Increment) }

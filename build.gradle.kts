@@ -192,7 +192,7 @@ subprojects {
 
     apply(plugin = "com.dropbox.dependency-guard")
     configure<DependencyGuardPluginExtension> {
-      if (project.path.contains("codegen")) {
+      if (project.name == "circuit-codegen") {
         configuration("runtimeClasspath") {
           baselineMap = {
             // Remove the version

@@ -24,7 +24,9 @@ import androidx.compose.material3.Surface
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitContent
 import com.slack.circuit.NavigableCircuitContent
+import com.slack.circuit.Screen
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.push
@@ -32,8 +34,12 @@ import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
+import com.slack.circuit.star.petdetail.PetDetailScreen
+import com.slack.circuit.star.petlist.PetListScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import java.net.URL
 import javax.inject.Inject
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
@@ -47,11 +53,23 @@ constructor(
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    var backStack : List<Screen> = listOf(HomeScreen)
+    if (intent.data != null) {
+      val httpUrl = intent.data.toString().toHttpUrl()
+      val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
+      val petDetailScreen = PetDetailScreen(animalId, null)
+      backStack = listOf(HomeScreen, petDetailScreen)
+    }
+
     setContent {
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
-          val backstack = rememberSaveableBackStack { push(HomeScreen) }
+          val backstack = rememberSaveableBackStack {
+            backStack.forEach { screen ->
+              push(screen)
+            }
+          }
           val navigator = rememberCircuitNavigator(backstack)
           CircuitCompositionLocals(circuitConfig) {
             ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }

@@ -167,6 +167,7 @@ include(
   ":circuit",
   ":circuit-codegen",
   ":circuit-codegen-annotations",
+  ":circuit-overlay",
   ":circuit-retained",
   ":circuit-retained:android-tests",
   ":circuit-test",

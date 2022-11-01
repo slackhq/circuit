@@ -73,6 +73,7 @@ dependencies {
   ksp(projects.circuitCodegen)
   implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuit)
+  implementation(projects.circuitOverlay)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)

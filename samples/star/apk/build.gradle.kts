@@ -24,11 +24,12 @@ android {
     versionName = "1"
   }
   buildTypes {
-    val releaseBuildType = getByName("release") {
-      isMinifyEnabled = true
-      isShrinkResources = true
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-    }
+    val releaseBuildType =
+      getByName("release") {
+        isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+      }
 
     create("benchmark") {
       initWith(releaseBuildType)
@@ -39,4 +40,7 @@ android {
   }
 }
 
-dependencies { api(projects.samples.star) }
+dependencies {
+  api(projects.samples.star)
+  implementation(libs.androidx.profileinstaller)
+}

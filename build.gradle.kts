@@ -263,7 +263,6 @@ subprojects {
     }
   }
 
-
   // Android app config
   pluginManager.withPlugin("com.android.application") {
     with(extensions.getByType<ApplicationExtension>()) {

@@ -13,13 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+
 plugins {
-  kotlin("jvm")
+  id("com.android.library")
+  kotlin("multiplatform")
   alias(libs.plugins.mavenPublish)
 }
 
-dependencies {
-  api(libs.anvil.annotations)
-  api(libs.dagger)
-  api(projects.circuit)
+kotlin {
+  // region KMP Targets
+  android { publishLibraryVariants("release") }
+  jvm()
+  // endregion
+
+  sourceSets {
+    commonMain { dependencies { api(projects.circuit) } }
+    val commonJvm =
+      maybeCreate("commonJvm").apply {
+        dependencies {
+          api(libs.anvil.annotations)
+          api(libs.dagger)
+        }
+      }
+    maybeCreate("androidMain").apply { dependsOn(commonJvm) }
+    maybeCreate("jvmMain").apply { dependsOn(commonJvm) }
+  }
 }
+
+android { namespace = "com.slack.circuit.codegen.annotations" }
+
+dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }

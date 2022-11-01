@@ -12,11 +12,7 @@ class BaselineProfileGenerator {
     fun startup() = baselineProfileRule.collectBaselineProfile(
         packageName = "com.slack.circuit.sample.star.apk",
         packageFilters = listOf(
-            "com.slack.circuit",
-            "com.slack.circuit.retained",
-            "com.slack.circuit.backstack",
-            "com.slack.circuit.codegen",
-            "com.slack.circuit.codegen.annotations"
+            "com.slack.circuit"
         ),
         profileBlock = {
             startActivityAndWait()

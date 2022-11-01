@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit
+package com.slack.circuit.overlay
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

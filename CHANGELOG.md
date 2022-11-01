@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.3.0
+-----
+
+_2022-11-01_
+
+* **New**: The Overlay API is now extracted to a separate, optional `circuit-overlay` artifact.
+* **New**: The `circuit-core` artifact now packages in baseline profiles.
+* **Enhancement**: Simplify backstack root pop handling. There is no more `onRootPop()` option in `rememberCircuitNavigator()`, instead you should install your own `BackHandler()` prior to rendering your circuit content to customize back behavior when the circuit `Navigator` is at root.
+* **Fix**: `circuit-codegen-annotations` is now a multiplatform project and doesn't accidentally impose the compose-desktop dependency.
+
+We've also updated a number of docs around code gen, overlays, and interop (including a new interop sample).
+
 0.2.2
 -----
 

@@ -17,6 +17,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.TestExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
@@ -252,6 +253,13 @@ subprojects {
           builder.enable = false
         }
       }
+    }
+  }
+
+  pluginManager.withPlugin("com.android.test") {
+    with(extensions.getByType<TestExtension>()) {
+      commonAndroidConfig()
+      defaultConfig { minSdk = 28 }
     }
   }
 

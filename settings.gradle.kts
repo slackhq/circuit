@@ -141,7 +141,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.11.2" }
+  plugins { id("com.gradle.enterprise") version "3.11.3" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -176,6 +176,7 @@ include(
   ":samples:counter:android",
   ":samples:counter:desktop",
   ":samples:counter:mosaic",
+  ":samples:interop",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

@@ -1,7 +1,7 @@
 Screen
 ======
 
-Screens are keys for Presenter/UI pairings. In fact, semantically, the pairing of a Presenter and UI
+Screens are keys for Presenter and UI pairings. Semantically, the pairing of a Presenter and UI
 for a given `Screen` key is called a circuit.
 
 The core `Screen` interface is this:
@@ -46,12 +46,7 @@ constructor(
   @Composable
   override fun present() : AddFavoritesScreen.State {
       val favorite = favoritesRepository.getBook(screen.externalId)
-      value =
-        when (favorite) {
-          null ->  {/* return some unknown state */ }
-          else -> {/* return successful state */}
-        }
-    return value
+      // ...
   }
 }
 ```

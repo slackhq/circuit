@@ -58,7 +58,7 @@ object CounterScreen : Screen {
   }
 }
 
-@CircuitInject<CounterScreen>
+@CircuitInject(CounterScreen::class, AppScope::class)
 @Composable
 fun CounterPresenter(): CounterState {
   var count by rememberSaveable { mutableStateOf(0) }
@@ -71,7 +71,7 @@ fun CounterPresenter(): CounterState {
   }
 }
 
-@CircuitInject<CounterScreen>
+@CircuitInject(CounterScreen::class, AppScope::class)
 @Composable
 fun Counter(state: CounterState) {
   Box(Modifier.fillMaxSize()) {

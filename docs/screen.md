@@ -45,7 +45,7 @@ constructor(
 ) : Presenter<AddFavoritesScreen.State> {
   @Composable
   override fun present() : AddFavoritesScreen.State {
-      val favorite = favoritesRepository.getBook(screen.externalId)
+      val favorite = favoritesRepository.getFavorite(screen.externalId)
       // ...
   }
 }

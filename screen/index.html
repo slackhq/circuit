@@ -572,20 +572,41 @@
 
 
 <h1 id="screen">Screen<a class="headerlink" href="#screen" title="Permanent link">&para;</a></h1>
+<p>Screens are keys for Presenter and UI pairings. Semantically, the pairing of a Presenter and UI
+for a given <code>Screen</code> key is called a circuit.</p>
 <p>The core <code>Screen</code> interface is this:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">Screen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Parcelable</span><span class="w"></span>
 </code></pre></div>
-<p>These types are <code>Parcelable</code> for saveability in our backstack and easy deeplinking. A <code>Screen</code> can be a simple marker object type or a data object with information to pass on.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span><span class="w"> </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">AddFavorites</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">externalId</span><span class="p">:</span><span class="w"> </span><span class="n">UUID</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"></span>
+<p>These types are <code>Parcelable</code> for saveability in our backstack and easy deeplinking. A <code>Screen</code> can
+be a simple marker object type or a data object with information to pass on.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span><span class="w"></span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">AddFavoritesScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">externalId</span><span class="p">:</span><span class="w"> </span><span class="n">UUID</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"></span>
 </code></pre></div>
-<p>These are used by <code>Navigator</code>s (when called from presenters) or <code>CircuitContent</code> (when called from UIs) to start a new sub-circuit.</p>
+<p>These are used by <code>Navigator</code>s (when called from presenters) or <code>CircuitContent</code> (when called from
+UIs) to start a new sub-circuit or nested circuit.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// In a presenter class</span><span class="w"></span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">showAddFavorites</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">AddFavorites</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">AddFavoritesScreen</span><span class="p">(</span><span class="w"></span>
 <span class="w">      </span><span class="n">externalId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uuidGenerator</span><span class="p">.</span><span class="na">generate</span><span class="p">()</span><span class="w"></span>
 <span class="w">    </span><span class="p">)</span><span class="w"></span>
 <span class="w">  </span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>The information passed into a screen can also be used to interact with the data layer. In the example here,
+we are getting the <code>externalId</code> from the screen in order to get information back from our repository. </p>
+<div class="highlight"><pre><span></span><code><span class="c1">// In a presenter class</span><span class="w"></span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">AddFavoritesPresenter</span><span class="w"></span>
+<span class="nd">@AssistedInject</span><span class="w"></span>
+<span class="k">constructor</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@Assisted</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">AddFavoritesScreen</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">favoritesRepository</span><span class="p">:</span><span class="w"> </span><span class="n">FavoritesRepository</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">AddFavoritesScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nd">@Composable</span><span class="w"></span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AddFavoritesScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">favorite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">favoritesRepository</span><span class="p">.</span><span class="na">getFavorite</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">externalId</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// ...</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 

@@ -694,7 +694,7 @@
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="nd">@CircuitInject</span><span class="o">&lt;</span><span class="n">CounterScreen</span><span class="o">&gt;</span><span class="w"></span>
+<span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">CounterScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
 <span class="nd">@Composable</span><span class="w"></span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">CounterPresenter</span><span class="p">():</span><span class="w"> </span><span class="n">CounterState</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rememberSaveable</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
@@ -707,7 +707,7 @@
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="nd">@CircuitInject</span><span class="o">&lt;</span><span class="n">CounterScreen</span><span class="o">&gt;</span><span class="w"></span>
+<span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">CounterScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"></span>
 <span class="nd">@Composable</span><span class="w"></span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">Counter</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">CounterState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="n">Box</span><span class="p">(</span><span class="n">Modifier</span><span class="p">.</span><span class="na">fillMaxSize</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>

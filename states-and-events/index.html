@@ -587,6 +587,10 @@
 <li>No internal ceremony around setting up a <code>Channel</code> and multicasting event streams.</li>
 <li>No risk of dropping events (unlike <code>Flow</code>).</li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Due to this <a href="https://issuetracker.google.com/issues/256100927">issue</a>, you need to extract the <code>eventSink</code> into local variables first.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently, while functions are treated as implicitly <code>Stable</code> by the compose compiler, they not skippable when they&rsquo;re non-composable Unit-returning lambdas with equal-but-unstable captures. This may change though, and would be another free benefit for this case.</p>

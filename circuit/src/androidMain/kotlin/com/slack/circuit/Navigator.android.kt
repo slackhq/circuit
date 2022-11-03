@@ -15,6 +15,9 @@
  */
 package com.slack.circuit
 
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
@@ -31,10 +34,15 @@ import com.slack.circuit.backstack.isEmpty
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
-): Navigator = remember { NavigatorImpl(backstack) }
+  onBackPressedDispatcherOwner: OnBackPressedDispatcherOwner? = LocalOnBackPressedDispatcherOwner.current
+): Navigator {
+  val onBackPressedDispatcher = requireNotNull(onBackPressedDispatcherOwner?.onBackPressedDispatcher)
+  return remember { NavigatorImpl(backstack, onBackPressedDispatcher) }
+}
 
 internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
+  private val onBackPressedDispatcher: OnBackPressedDispatcher
 ) : Navigator {
 
   init {
@@ -44,7 +52,11 @@ internal class NavigatorImpl(
   override fun goTo(screen: Screen) = backstack.push(screen)
 
   override fun pop(): Screen? {
-    check(!backstack.isAtRoot) { "Cannot pop the root screen." }
+    if (backstack.isAtRoot) {
+      onBackPressedDispatcher.onBackPressed()
+      return null
+    }
+
     return backstack.pop()?.screen
   }
 

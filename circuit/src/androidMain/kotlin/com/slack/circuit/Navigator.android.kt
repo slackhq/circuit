@@ -30,6 +30,7 @@ import com.slack.circuit.backstack.isEmpty
  * @see NavigableCircuitContent
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
+ * @param onBackPressedDispatcherOwner Used to obtain the [OnBackPressedDispatcher].
  */
 @Composable
 public fun rememberCircuitNavigator(

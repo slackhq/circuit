@@ -38,30 +38,28 @@ class NavigatorTest {
   @Test
   fun errorWhenBackstackIsEmpty() {
     val backstack = SaveableBackStack()
-    val t = assertFailsWith<IllegalStateException> {
-      NavigatorImpl(backstack) { }
-    }
+    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backstack) {} }
     assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
   }
 
   @Test
   fun popAtRoot() {
-  val backstack = SaveableBackStack()
-  backstack.push(TestScreen)
-  backstack.push(TestScreen)
+    val backstack = SaveableBackStack()
+    backstack.push(TestScreen)
+    backstack.push(TestScreen)
 
-  var onRootPop = 0
-  val navigator = NavigatorImpl(backstack) { onRootPop++ }
+    var onRootPop = 0
+    val navigator = NavigatorImpl(backstack) { onRootPop++ }
 
-  assertThat(backstack).hasSize(2)
-  assertThat(onRootPop).isEqualTo(0)
+    assertThat(backstack).hasSize(2)
+    assertThat(onRootPop).isEqualTo(0)
 
-  navigator.pop()
-  assertThat(backstack).hasSize(1)
-  assertThat(onRootPop).isEqualTo(0)
+    navigator.pop()
+    assertThat(backstack).hasSize(1)
+    assertThat(onRootPop).isEqualTo(0)
 
-  navigator.pop()
-  assertThat(backstack).hasSize(1)
-  assertThat(onRootPop).isEqualTo(1)
+    navigator.pop()
+    assertThat(backstack).hasSize(1)
+    assertThat(onRootPop).isEqualTo(1)
   }
 }

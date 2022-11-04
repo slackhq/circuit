@@ -34,9 +34,11 @@ import com.slack.circuit.backstack.isEmpty
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
-  onBackPressedDispatcherOwner: OnBackPressedDispatcherOwner? = LocalOnBackPressedDispatcherOwner.current
+  onBackPressedDispatcherOwner: OnBackPressedDispatcherOwner? =
+    LocalOnBackPressedDispatcherOwner.current
 ): Navigator {
-  val onBackPressedDispatcher = requireNotNull(onBackPressedDispatcherOwner?.onBackPressedDispatcher)
+  val onBackPressedDispatcher =
+    requireNotNull(onBackPressedDispatcherOwner?.onBackPressedDispatcher)
   return remember { NavigatorImpl(backstack, onBackPressedDispatcher) }
 }
 

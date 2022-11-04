@@ -39,12 +39,12 @@ public fun rememberCircuitNavigator(
 ): Navigator {
   val onBackPressedDispatcher =
     requireNotNull(onBackPressedDispatcherOwner?.onBackPressedDispatcher)
-  return remember { NavigatorImpl(backstack, onBackPressedDispatcher) }
+  return remember { NavigatorImpl(backstack, onBackPressedDispatcher::onBackPressed) }
 }
 
 internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
-  private val onBackPressedDispatcher: OnBackPressedDispatcher
+  private val onRootPop: () -> Unit
 ) : Navigator {
 
   init {
@@ -55,7 +55,7 @@ internal class NavigatorImpl(
 
   override fun pop(): Screen? {
     if (backstack.isAtRoot) {
-      onBackPressedDispatcher.onBackPressed()
+      onRootPop()
       return null
     }
 

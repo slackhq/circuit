@@ -22,6 +22,7 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,30 +34,37 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -76,9 +84,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : CircuitUiState {
-    object Loading : State
+    val eventSink: (Event) -> Unit
 
-    object UnknownAnimal : State
+    class Loading(override val eventSink: (Event) -> Unit = {}) : State
+
+    class UnknownAnimal(override val eventSink: (Event) -> Unit = {}) : State
 
     data class Success(
       val url: String,
@@ -87,11 +97,18 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
       val name: String,
       val description: String,
       val tags: List<String>,
+      override val eventSink: (Event) -> Unit = {},
     ) : State
+  }
+  sealed interface Event : CircuitUiEvent {
+    object Close : Event
   }
 }
 
-internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetailScreen.State {
+internal fun Animal.toPetDetailState(
+  photoUrlMemoryCacheKey: String?,
+  eventSink: (PetDetailScreen.Event) -> Unit = {}
+): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
     photoUrls = photos.map { it.large },
@@ -107,7 +124,8 @@ internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetail
         gender,
         size,
         status
-      )
+      ),
+    eventSink = eventSink,
   )
 }
 
@@ -115,17 +133,25 @@ class PetDetailPresenter
 @AssistedInject
 constructor(
   @Assisted private val screen: PetDetailScreen,
+  @Assisted private val navigator: Navigator,
   private val petRepository: PetRepository,
 ) : Presenter<PetDetailScreen.State> {
   @Composable
   override fun present(): PetDetailScreen.State {
+    val eventSink: (PetDetailScreen.Event) -> Unit = remember {
+      { event ->
+        when (event) {
+          PetDetailScreen.Event.Close -> navigator.pop()
+        }
+      }
+    }
     val state by
-      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading(eventSink)) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
-            null -> PetDetailScreen.State.UnknownAnimal
-            else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
+            null -> PetDetailScreen.State.UnknownAnimal(eventSink)
+            else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey, eventSink)
           }
       }
 
@@ -135,7 +161,7 @@ constructor(
   @CircuitInject(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
-    fun create(screen: PetDetailScreen): PetDetailPresenter
+    fun create(screen: PetDetailScreen, navigator: Navigator): PetDetailPresenter
   }
 }
 
@@ -152,14 +178,39 @@ internal fun PetDetail(state: PetDetailScreen.State) {
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
+  val eventSink = state.eventSink
+  Scaffold(
+    modifier = Modifier.systemBarsPadding(),
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          when (state) {
+            is PetDetailScreen.State.Success -> {
+              Text(state.name)
+            }
+            else -> {
+              // Do nothing
+            }
+          }
+        },
+        navigationIcon = {
+          IconButton(onClick = { eventSink(PetDetailScreen.Event.Close) }) {
+            Image(
+              painter = rememberVectorPainter(image = Icons.Filled.Close),
+              contentDescription = "Close",
+            )
+          }
+        }
+      )
+    }
+  ) { padding ->
     when (state) {
-      PetDetailScreen.State.Loading -> {
+      is PetDetailScreen.State.Loading -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
       }
-      PetDetailScreen.State.UnknownAnimal -> {
+      is PetDetailScreen.State.UnknownAnimal -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
@@ -206,14 +257,6 @@ internal fun PetDetail(state: PetDetailScreen.State) {
 }
 
 private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Success) {
-  item(state.name) {
-    Text(
-      modifier = Modifier.fillMaxWidth(),
-      textAlign = TextAlign.Center,
-      text = state.name,
-      style = MaterialTheme.typography.displayLarge
-    )
-  }
   item(state.tags) {
     FlowRow(
       modifier = Modifier.fillMaxWidth(),

@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.1
+-----
+
+_2022-11-07_
+
+* **Enhancement**: Add back the `onRootPop()` parameter in `rememberCircuitNavigator()` but use `LocalOnBackPressedDispatcherOwner` for backpress handling by default.
+
 0.3.0
 -----
 

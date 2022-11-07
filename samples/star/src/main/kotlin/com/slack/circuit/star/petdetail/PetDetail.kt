@@ -22,7 +22,6 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,22 +33,20 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -62,14 +59,13 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
+import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -84,11 +80,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : CircuitUiState {
-    val eventSink: (Event) -> Unit
+    object Loading : State
 
-    class Loading(override val eventSink: (Event) -> Unit = {}) : State
-
-    class UnknownAnimal(override val eventSink: (Event) -> Unit = {}) : State
+    object UnknownAnimal : State
 
     data class Success(
       val url: String,
@@ -97,17 +91,12 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
       val name: String,
       val description: String,
       val tags: List<String>,
-      override val eventSink: (Event) -> Unit = {},
     ) : State
-  }
-  sealed interface Event : CircuitUiEvent {
-    object Close : Event
   }
 }
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
-  eventSink: (PetDetailScreen.Event) -> Unit = {}
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
@@ -125,7 +114,6 @@ internal fun Animal.toPetDetailState(
         size,
         status
       ),
-    eventSink = eventSink,
   )
 }
 
@@ -133,25 +121,21 @@ class PetDetailPresenter
 @AssistedInject
 constructor(
   @Assisted private val screen: PetDetailScreen,
-  @Assisted private val navigator: Navigator,
   private val petRepository: PetRepository,
 ) : Presenter<PetDetailScreen.State> {
   @Composable
   override fun present(): PetDetailScreen.State {
-    val eventSink: (PetDetailScreen.Event) -> Unit = remember {
-      { event ->
-        when (event) {
-          PetDetailScreen.Event.Close -> navigator.pop()
-        }
-      }
-    }
+    var title by remember { mutableStateOf<String?>(null) }
     val state by
-      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading(eventSink)) {
+      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
-            null -> PetDetailScreen.State.UnknownAnimal(eventSink)
-            else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey, eventSink)
+            null -> PetDetailScreen.State.UnknownAnimal
+            else -> {
+              title = animal.name
+              animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
+            }
           }
       }
 
@@ -161,7 +145,7 @@ constructor(
   @CircuitInject(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
-    fun create(screen: PetDetailScreen, navigator: Navigator): PetDetailPresenter
+    fun create(screen: PetDetailScreen): PetDetailPresenter
   }
 }
 
@@ -178,7 +162,6 @@ internal fun PetDetail(state: PetDetailScreen.State) {
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  val eventSink = state.eventSink
   Scaffold(
     modifier = Modifier.systemBarsPadding(),
     topBar = {
@@ -193,14 +176,7 @@ internal fun PetDetail(state: PetDetailScreen.State) {
             }
           }
         },
-        navigationIcon = {
-          IconButton(onClick = { eventSink(PetDetailScreen.Event.Close) }) {
-            Image(
-              painter = rememberVectorPainter(image = Icons.Filled.Close),
-              contentDescription = "Close",
-            )
-          }
-        }
+        navigationIcon = { BackPressNavIcon() }
       )
     }
   ) { padding ->

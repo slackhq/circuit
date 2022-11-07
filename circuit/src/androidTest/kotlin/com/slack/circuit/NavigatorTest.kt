@@ -35,11 +35,10 @@ private object TestScreen : Screen {
 
 @RunWith(RobolectricTestRunner::class)
 class NavigatorTest {
-
   @Test
   fun errorWhenBackstackIsEmpty() {
     val backstack = SaveableBackStack()
-    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backstack = backstack) }
+    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backstack) {} }
     assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
   }
 
@@ -48,11 +47,19 @@ class NavigatorTest {
     val backstack = SaveableBackStack()
     backstack.push(TestScreen)
     backstack.push(TestScreen)
-    val navigator = NavigatorImpl(backstack = backstack)
+
+    var onRootPop = 0
+    val navigator = NavigatorImpl(backstack) { onRootPop++ }
+
     assertThat(backstack).hasSize(2)
+    assertThat(onRootPop).isEqualTo(0)
+
     navigator.pop()
     assertThat(backstack).hasSize(1)
-    val t = assertFailsWith<IllegalStateException> { navigator.pop() }
-    assertThat(t).hasMessageThat().contains("Cannot pop the root screen.")
+    assertThat(onRootPop).isEqualTo(0)
+
+    navigator.pop()
+    assertThat(backstack).hasSize(1)
+    assertThat(onRootPop).isEqualTo(1)
   }
 }

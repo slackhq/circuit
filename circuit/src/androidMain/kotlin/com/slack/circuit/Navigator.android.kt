@@ -15,6 +15,7 @@
  */
 package com.slack.circuit
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
@@ -27,14 +28,28 @@ import com.slack.circuit.backstack.isEmpty
  * @see NavigableCircuitContent
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
+ * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
+ * button. Defaults to delegating to the [LocalOnBackPressedDispatcherOwner].
  */
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
-): Navigator = remember { NavigatorImpl(backstack) }
+  onRootPop: () -> Unit = backDispatcherRootPop()
+): Navigator {
+  return remember { NavigatorImpl(backstack, onRootPop) }
+}
+
+@Composable
+private fun backDispatcherRootPop(): () -> Unit {
+  val onBackPressedDispatcher =
+    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+      ?: error("No OnBackPressedDispatcherOwner found, unable to handle root navigation pops.")
+  return onBackPressedDispatcher::onBackPressed
+}
 
 internal class NavigatorImpl(
   private val backstack: SaveableBackStack,
+  private val onRootPop: () -> Unit
 ) : Navigator {
 
   init {
@@ -44,7 +59,11 @@ internal class NavigatorImpl(
   override fun goTo(screen: Screen) = backstack.push(screen)
 
   override fun pop(): Screen? {
-    check(!backstack.isAtRoot) { "Cannot pop the root screen." }
+    if (backstack.isAtRoot) {
+      onRootPop()
+      return null
+    }
+
     return backstack.pop()?.screen
   }
 
@@ -55,11 +74,18 @@ internal class NavigatorImpl(
     other as NavigatorImpl
 
     if (backstack != other.backstack) return false
+    if (onRootPop != other.onRootPop) return false
 
     return true
   }
 
-  override fun hashCode() = backstack.hashCode()
+  override fun hashCode(): Int {
+    var result = backstack.hashCode()
+    result = 31 * result + onRootPop.hashCode()
+    return result
+  }
 
-  override fun toString() = "NavigatorImpl(backstack=$backstack)"
+  override fun toString(): String {
+    return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
+  }
 }

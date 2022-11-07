@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +42,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -49,7 +53,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
@@ -62,6 +65,7 @@ import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
+import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -91,7 +95,9 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
   }
 }
 
-internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetailScreen.State {
+internal fun Animal.toPetDetailState(
+  photoUrlMemoryCacheKey: String?,
+): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
     photoUrls = photos.map { it.large },
@@ -107,7 +113,7 @@ internal fun Animal.toPetDetailState(photoUrlMemoryCacheKey: String?): PetDetail
         gender,
         size,
         status
-      )
+      ),
   )
 }
 
@@ -119,13 +125,17 @@ constructor(
 ) : Presenter<PetDetailScreen.State> {
   @Composable
   override fun present(): PetDetailScreen.State {
+    var title by remember { mutableStateOf<String?>(null) }
     val state by
       produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {
             null -> PetDetailScreen.State.UnknownAnimal
-            else -> animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
+            else -> {
+              title = animal.name
+              animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
+            }
           }
       }
 
@@ -152,14 +162,31 @@ internal fun PetDetail(state: PetDetailScreen.State) {
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  Scaffold(modifier = Modifier.systemBarsPadding()) { padding ->
+  Scaffold(
+    modifier = Modifier.systemBarsPadding(),
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          when (state) {
+            is PetDetailScreen.State.Success -> {
+              Text(state.name)
+            }
+            else -> {
+              // Do nothing
+            }
+          }
+        },
+        navigationIcon = { BackPressNavIcon() }
+      )
+    }
+  ) { padding ->
     when (state) {
-      PetDetailScreen.State.Loading -> {
+      is PetDetailScreen.State.Loading -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
         }
       }
-      PetDetailScreen.State.UnknownAnimal -> {
+      is PetDetailScreen.State.UnknownAnimal -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
@@ -206,14 +233,6 @@ internal fun PetDetail(state: PetDetailScreen.State) {
 }
 
 private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Success) {
-  item(state.name) {
-    Text(
-      modifier = Modifier.fillMaxWidth(),
-      textAlign = TextAlign.Center,
-      text = state.name,
-      style = MaterialTheme.typography.displayLarge
-    )
-  }
   item(state.tags) {
     FlowRow(
       modifier = Modifier.fillMaxWidth(),

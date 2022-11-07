@@ -46,7 +46,7 @@ class PetDetailPresenterTest {
     val presenter = PetDetailPresenter(screen, repository)
 
     presenter.test {
-      assertThat(PetDetailScreen.State.Loading).isEqualTo(awaitItem())
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
 
       val success = animal.toPetDetailState(animal.photos.first().small)
       assertThat(awaitItem()).isEqualTo(success)

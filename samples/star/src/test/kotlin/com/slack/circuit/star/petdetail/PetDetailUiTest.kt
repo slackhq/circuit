@@ -43,6 +43,21 @@ import org.robolectric.RobolectricTestRunner
 class PetDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()
 
+  // TODO this seems like not the greatest test pattern, maybe something we can offer better
+  //  solutions for via semantics.
+  private var carouselScreen: PetPhotoCarouselScreen? = null
+  private val circuitConfig =
+    CircuitConfig.Builder()
+      .setOnUnavailableContent { screen ->
+        when (screen) {
+          is PetPhotoCarouselScreen -> {
+            PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
+            carouselScreen = screen
+          }
+        }
+      }
+      .build()
+
   @Before
   fun setup() {
     val fakeImageLoader =
@@ -55,7 +70,9 @@ class PetDetailUiTest {
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetDetail(PetDetailScreen.State.Loading) }
+      setContent {
+        CircuitCompositionLocals(circuitConfig) { PetDetail(PetDetailScreen.State.Loading) }
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -66,7 +83,9 @@ class PetDetailUiTest {
   @Test
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
-      setContent { PetDetail(PetDetailScreen.State.UnknownAnimal) }
+      setContent {
+        CircuitCompositionLocals(circuitConfig) { PetDetail(PetDetailScreen.State.UnknownAnimal) }
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
@@ -92,15 +111,6 @@ class PetDetailUiTest {
         description = "Grumpy looking Australian Terrier",
         tags = listOf("dog", "terrier", "male"),
       )
-
-    var carouselScreen: PetPhotoCarouselScreen? = null
-    val circuitConfig =
-      CircuitConfig.Builder()
-        .setOnUnavailableContent { screen ->
-          carouselScreen = screen as PetPhotoCarouselScreen
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
-        }
-        .build()
 
     val expectedScreen =
       PetPhotoCarouselScreen(

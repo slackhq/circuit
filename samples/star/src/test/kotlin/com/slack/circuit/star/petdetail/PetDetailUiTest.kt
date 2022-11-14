@@ -20,6 +20,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
@@ -29,10 +30,13 @@ import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.FakeImageLoader
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -110,6 +114,7 @@ class PetDetailUiTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = listOf("dog", "terrier", "male"),
+        eventSink = {}
       )
 
     val expectedScreen =
@@ -133,6 +138,39 @@ class PetDetailUiTest {
         isNotNull()
         isEqualTo(expectedScreen)
       }
+    }
+  }
+
+  @Test
+  fun petDetail_emits_event_when_tapping_on_full_bio_button() = runTest {
+    val channel = Channel<Any>(1)
+
+    val success =
+      PetDetailScreen.State.Success(
+        url = "url",
+        photoUrls = listOf("http://some.url"),
+        photoUrlMemoryCacheKey = null,
+        name = "Baxter",
+        description = "Grumpy looking Australian Terrier",
+        tags = listOf("dog", "terrier", "male"),
+        eventSink = channel::trySend
+      )
+
+    val circuitConfig =
+      CircuitConfig.Builder()
+        .setOnUnavailableContent { screen ->
+          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen))
+        }
+        .build()
+
+    composeTestRule.run {
+      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+
+      onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
+      onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
+
+      val event = channel.receive()
+      assertThat(event).isEqualTo(PetDetailScreen.Event.ViewFullBio(success.url))
     }
   }
 }

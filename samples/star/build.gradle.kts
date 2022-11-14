@@ -32,7 +32,7 @@ android {
   defaultConfig {
     minSdk = 28
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    testApplicationId = "com.slack.circuit.star.androidTest"
+    testApplicationId = "com.slack.circuit.star.apk.androidTest"
   }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
@@ -115,7 +115,7 @@ dependencies {
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
 
-  debugImplementation(libs.androidx.compose.ui.testing.manifest)
+  androidTestImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.leakcanary.android.instrumentation)
   androidTestImplementation(libs.androidx.compose.ui.testing.junit)
   androidTestImplementation(libs.junit)

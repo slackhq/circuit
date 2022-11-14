@@ -16,8 +16,10 @@
 package com.slack.circuit.star.petdetail
 
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.petlist.PetListPresenterTest
 import com.slack.circuit.star.petlist.TestRepository
+import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -26,11 +28,13 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PetDetailPresenterTest {
+  private val navigator = FakeNavigator()
+
   @Test
   fun `present - emit loading state then no animal state`() = runTest {
     val repository = TestRepository(emptyList())
     val screen = PetDetailScreen(123L, "key")
-    val presenter = PetDetailPresenter(screen, repository)
+    val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
@@ -43,13 +47,36 @@ class PetDetailPresenterTest {
     val animal = PetListPresenterTest.animal
     val repository = TestRepository(listOf(animal))
     val screen = PetDetailScreen(animal.id, animal.photos.first().small)
-    val presenter = PetDetailPresenter(screen, repository)
+    val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
 
-      val success = animal.toPetDetailState(animal.photos.first().small)
-      assertThat(awaitItem()).isEqualTo(success)
+      val success = awaitItem()
+      check(success is PetDetailScreen.State.Success)
+
+      val expected =
+        animal.toPetDetailState(animal.photos.first().small, eventSink = success.eventSink)
+      assertThat(success).isEqualTo(expected)
+    }
+  }
+
+  @Test
+  fun `present - navigate using custom tab intent screen`() = runTest {
+    val animal = PetListPresenterTest.animal
+    val repository = TestRepository(listOf(animal))
+    val screen = PetDetailScreen(animal.id, animal.photos.first().small)
+    val presenter = PetDetailPresenter(screen, navigator, repository)
+
+    presenter.test {
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
+
+      val successState = awaitItem()
+      check(successState is PetDetailScreen.State.Success)
+
+      successState.eventSink(PetDetailScreen.Event.ViewFullBio(animal.url))
+      assertThat(navigator.awaitNextScreen())
+        .isEqualTo(AndroidScreen.CustomTabsIntentScreen(animal.url))
     }
   }
 }

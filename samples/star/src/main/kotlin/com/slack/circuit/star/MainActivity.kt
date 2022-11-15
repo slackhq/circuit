@@ -40,7 +40,7 @@ import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigator.AndroidScreen
-import com.slack.circuit.star.navigator.LegacyNavigator
+import com.slack.circuit.star.navigator.AndroidSupportingNavigator
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
@@ -73,7 +73,7 @@ constructor(
           val backstack = rememberSaveableBackStack { backStack.forEach { screen -> push(screen) } }
           val circuitNavigator = rememberCircuitNavigator(backstack)
           val navigator =
-            remember(circuitNavigator) { LegacyNavigator(circuitNavigator, this::goTo) }
+            remember(circuitNavigator) { AndroidSupportingNavigator(circuitNavigator, this::goTo) }
           CircuitCompositionLocals(circuitConfig) {
             ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
           }

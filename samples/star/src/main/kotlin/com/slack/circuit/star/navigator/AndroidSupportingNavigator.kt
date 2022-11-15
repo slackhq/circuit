@@ -20,7 +20,10 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
 import kotlinx.parcelize.Parcelize
 
-class LegacyNavigator(
+/**
+ * Custom navigator that adds support for initiating navigation in standard Android.
+ */
+class AndroidSupportingNavigator(
   private val navigator: Navigator,
   private val onAndroidScreen: (AndroidScreen) -> Unit
 ) : Navigator by navigator {

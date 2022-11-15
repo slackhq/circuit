@@ -15,13 +15,7 @@
  */
 package com.slack.circuit.star.petdetail
 
-import android.content.Context
 import android.content.res.Configuration
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabColorSchemeParams
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
-import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
@@ -59,7 +52,9 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -68,7 +63,9 @@ import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
@@ -91,12 +88,18 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
       val name: String,
       val description: String,
       val tags: List<String>,
+      val eventSink: (Event) -> Unit
     ) : State
+  }
+
+  sealed interface Event : CircuitUiEvent {
+    data class ViewFullBio(val url: String) : Event
   }
 }
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
+  eventSink: (PetDetailScreen.Event) -> Unit
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
@@ -114,6 +117,7 @@ internal fun Animal.toPetDetailState(
         size,
         status
       ),
+    eventSink
   )
 }
 
@@ -121,6 +125,7 @@ class PetDetailPresenter
 @AssistedInject
 constructor(
   @Assisted private val screen: PetDetailScreen,
+  @Assisted private val navigator: Navigator,
   private val petRepository: PetRepository,
 ) : Presenter<PetDetailScreen.State> {
   @Composable
@@ -134,7 +139,9 @@ constructor(
             null -> PetDetailScreen.State.UnknownAnimal
             else -> {
               title = animal.name
-              animal.toPetDetailState(screen.photoUrlMemoryCacheKey)
+              animal.toPetDetailState(screen.photoUrlMemoryCacheKey) {
+                navigator.goTo(AndroidScreen.CustomTabsIntentScreen(animal.url))
+              }
             }
           }
       }
@@ -145,7 +152,7 @@ constructor(
   @CircuitInject(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
-    fun create(screen: PetDetailScreen): PetDetailPresenter
+    fun create(screen: PetDetailScreen, navigator: Navigator): PetDetailPresenter
   }
 }
 
@@ -153,6 +160,7 @@ internal object PetDetailTestConstants {
   const val ANIMAL_CONTAINER_TAG = "animal_container"
   const val PROGRESS_TAG = "progress"
   const val UNKNOWN_ANIMAL_TAG = "unknown_animal"
+  const val FULL_BIO_TAG = "full_bio"
 }
 
 @CircuitInject(PetDetailScreen::class, AppScope::class)
@@ -161,74 +169,90 @@ internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
-  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-  Scaffold(
-    modifier = Modifier.systemBarsPadding(),
-    topBar = {
-      CenterAlignedTopAppBar(
-        title = {
-          when (state) {
-            is PetDetailScreen.State.Success -> {
-              Text(state.name)
-            }
-            else -> {
-              // Do nothing
-            }
-          }
-        },
-        navigationIcon = { BackPressNavIcon() }
+
+  Scaffold(modifier = Modifier.systemBarsPadding(), topBar = { TopBar(state) }) { padding ->
+    when (state) {
+      is PetDetailScreen.State.Loading -> Loading(padding)
+      is PetDetailScreen.State.UnknownAnimal -> UnknownAnimal(padding)
+      is PetDetailScreen.State.Success -> ShowAnimal(state, padding)
+    }
+  }
+}
+
+@Composable
+private fun TopBar(state: PetDetailScreen.State) {
+  if (state !is PetDetailScreen.State.Success) return
+
+  CenterAlignedTopAppBar(title = { Text(state.name) }, navigationIcon = { BackPressNavIcon() })
+}
+
+@Composable
+private fun Loading(paddingValues: PaddingValues) {
+  Box(
+    modifier = Modifier.padding(paddingValues).fillMaxSize(),
+    contentAlignment = Alignment.Center
+  ) {
+    CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+  }
+}
+
+@Composable
+private fun UnknownAnimal(paddingValues: PaddingValues) {
+  Box(
+    modifier = Modifier.padding(paddingValues).fillMaxSize(),
+    contentAlignment = Alignment.Center
+  ) {
+    Text(
+      modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
+      text = stringResource(id = R.string.unknown_animals)
+    )
+  }
+}
+
+@Composable
+private fun ShowAnimal(
+  state: PetDetailScreen.State.Success,
+  padding: PaddingValues,
+) =
+  when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    true -> ShowAnimalLandscape(state, padding)
+    false -> ShowAnimalPortrait(state, padding)
+  }
+
+@Composable
+private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: PaddingValues) {
+  Row(
+    modifier = Modifier.padding(padding),
+    horizontalArrangement = Arrangement.SpaceEvenly,
+  ) {
+    CircuitContent(
+      PetPhotoCarouselScreen(
+        name = state.name,
+        photoUrls = state.photoUrls,
+        photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+      )
+    )
+    LazyColumn { petDetailDescriptions(state) }
+  }
+}
+
+@Composable
+private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: PaddingValues) {
+  LazyColumn(
+    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
+      CircuitContent(
+        PetPhotoCarouselScreen(
+          name = state.name,
+          photoUrls = state.photoUrls,
+          photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+        )
       )
     }
-  ) { padding ->
-    when (state) {
-      is PetDetailScreen.State.Loading -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
-        }
-      }
-      is PetDetailScreen.State.UnknownAnimal -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-            modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
-            text = stringResource(id = R.string.unknown_animals)
-          )
-        }
-      }
-      is PetDetailScreen.State.Success -> {
-        if (isLandscape) {
-          Row(
-            modifier = Modifier.padding(padding),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-          ) {
-            CircuitContent(
-              PetPhotoCarouselScreen(
-                name = state.name,
-                photoUrls = state.photoUrls,
-                photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-              )
-            )
-            LazyColumn { petDetailDescriptions(state) }
-          }
-        } else {
-          LazyColumn(
-            modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-          ) {
-            item {
-              CircuitContent(
-                PetPhotoCarouselScreen(
-                  name = state.name,
-                  photoUrls = state.photoUrls,
-                  photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-                )
-              )
-            }
-            petDetailDescriptions(state)
-          }
-        }
-      }
-    }
+    petDetailDescriptions(state)
   }
 }
 
@@ -262,20 +286,17 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
       style = MaterialTheme.typography.bodyLarge
     )
   }
+
   item(state.url) {
-    val context = LocalContext.current
-    Button(modifier = Modifier.fillMaxWidth(), onClick = { openTab(context, state.url) }) {
-      Text(text = "Full bio on Petfinder ➡", style = MaterialTheme.typography.headlineSmall)
+    Button(
+      modifier = Modifier.fillMaxWidth(),
+      onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }
+    ) {
+      Text(
+        modifier = Modifier.testTag(FULL_BIO_TAG),
+        text = "Full bio on Petfinder ➡",
+        style = MaterialTheme.typography.headlineSmall
+      )
     }
   }
-}
-
-private fun openTab(context: Context, url: String) {
-  val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
-  CustomTabsIntent.Builder()
-    .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)
-    .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
-    .setShowTitle(true)
-    .build()
-    .launchUrl(context, Uri.parse(url))
 }

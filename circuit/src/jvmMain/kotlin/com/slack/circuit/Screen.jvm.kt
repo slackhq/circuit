@@ -4,6 +4,8 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Immutable
 
-@Immutable public actual interface Screen
+@Immutable public actual interface Screen {
+  public actual fun update(result: ScreenResult): Screen = this
+}
 
 @Immutable public actual interface ScreenResult

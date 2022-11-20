@@ -5,6 +5,8 @@ package com.slack.circuit
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 
-@Immutable public actual interface Screen : Parcelable
+@Immutable public actual interface Screen : Parcelable {
+  public actual fun update(result: ScreenResult): Screen = this
+}
 
 @Immutable public actual interface ScreenResult : Parcelable

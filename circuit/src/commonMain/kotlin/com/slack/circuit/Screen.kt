@@ -29,6 +29,8 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  */
-@Immutable public expect interface Screen
+@Immutable public expect interface Screen {
+  public open fun update(result: ScreenResult): Screen
+}
 
 @Immutable public expect interface ScreenResult

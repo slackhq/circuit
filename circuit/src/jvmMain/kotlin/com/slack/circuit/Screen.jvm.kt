@@ -5,3 +5,5 @@ package com.slack.circuit
 import androidx.compose.runtime.Immutable
 
 @Immutable public actual interface Screen
+
+@Immutable public actual interface ScreenResult

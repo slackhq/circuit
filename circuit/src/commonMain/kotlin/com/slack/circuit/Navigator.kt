@@ -11,9 +11,12 @@ public interface Navigator {
 
   public fun pop(): Screen?
 
+  public fun setScreenResult(result: ScreenResult?)
+
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
+    override fun setScreenResult(result: ScreenResult?) {}
   }
 }
 
@@ -24,6 +27,7 @@ public interface Navigator {
 public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
+    is ScreenResultNavEvent -> setScreenResult(event.result)
     PopNavEvent -> pop()
   }
 }
@@ -32,6 +36,8 @@ public fun Navigator.onNavEvent(event: NavEvent) {
 public sealed interface NavEvent : CircuitUiEvent
 
 internal object PopNavEvent : NavEvent
+
+internal data class ScreenResultNavEvent(val result: ScreenResult?) : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
 

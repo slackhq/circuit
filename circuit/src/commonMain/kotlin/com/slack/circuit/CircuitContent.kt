@@ -35,6 +35,10 @@ public fun CircuitContent(
           onNavEvent(PopNavEvent)
           return null
         }
+
+        override fun setScreenResult(result: ScreenResult?) {
+          onNavEvent(ScreenResultNavEvent(result))
+        }
       }
     }
   CircuitContent(screen, navigator, circuitConfig, unavailableContent)

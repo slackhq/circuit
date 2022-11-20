@@ -53,6 +53,8 @@ internal class NavigatorImpl(
     return backstack.pop()?.screen
   }
 
+  override fun setScreenResult(result: ScreenResult?) = backstack.setScreenResult(result)
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false

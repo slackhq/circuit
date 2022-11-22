@@ -18,6 +18,11 @@
     {
       "matchPackageNames": ["renovatebot/github-action"],
       "extends": ["schedule:monthly"]
+    },
+    {
+      "description": "Disable snapshot versions from updating",
+      "matchCurrentVersion": "!/.*-SNAPSHOT$/",
+      "enabled": false
     }
   ]
 }

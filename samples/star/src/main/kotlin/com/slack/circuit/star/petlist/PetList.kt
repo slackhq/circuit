@@ -233,7 +233,7 @@ internal object PetListTestConstants {
 
 @CircuitUi(PetListScreen::class, AppScope::class)
 @Composable
-internal fun PetList(
+internal fun PetListUi(
   state: PetListScreen.State,
   modifier: Modifier = Modifier,
 ) {

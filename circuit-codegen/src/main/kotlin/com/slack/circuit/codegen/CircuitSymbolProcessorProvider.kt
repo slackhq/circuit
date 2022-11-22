@@ -137,7 +137,7 @@ private class CircuitSymbolProcessor(
     val circuitAnnotation =
       annotatedElement.annotations.first {
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-          CIRCUIT_PRESENTER_ANNOTATION
+            if (isPresenter) CIRCUIT_PRESENTER_ANNOTATION else CIRCUIT_UI_ANNOTATION
       }
     val screenKSType = circuitAnnotation.arguments[0].value as KSType
     val screenIsObject =
@@ -236,14 +236,27 @@ private class CircuitSymbolProcessor(
           fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
         codeBlock =
           when (factoryType) {
-            FactoryType.PRESENTER ->
+            FactoryType.PRESENTER -> {
+              if (!name.endsWith("Presenter")) {
+                logger.error(
+                  "CircuitPresenter class names must end in 'Presenter'.",
+                  annotatedElement
+                )
+              }
               CodeBlock.of(
                 "%M·{·%M(%L)·}",
                 MemberName("com.slack.circuit", "presenterOf"),
                 MemberName(packageName, name),
                 assistedParams
               )
+            }
             FactoryType.UI -> {
+              if (!name.endsWith("Ui")) {
+                logger.error(
+                  "CircuitUi class names must end in 'Ui'.",
+                  annotatedElement
+                )
+              }
               val stateParam =
                 fd.parameters.singleOrNull { parameter ->
                   symbols.circuitUiState.isAssignableFrom(parameter.type.resolve())

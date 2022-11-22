@@ -52,7 +52,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetDetail(PetDetailScreen.State.Loading) }
+      setContent { PetDetailUi(PetDetailScreen.State.Loading) }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -63,7 +63,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
-      setContent { PetDetail(PetDetailScreen.State.UnknownAnimal) }
+      setContent { PetDetailUi(PetDetailScreen.State.UnknownAnimal) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
@@ -92,7 +92,7 @@ class PetDetailTest {
       CircuitConfig.Builder()
         .setOnUnavailableContent { screen ->
           carouselScreen = screen as PetPhotoCarouselScreen
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
+          PetPhotoCarouselUi(PetPhotoCarouselScreen.State(screen))
         }
         .build()
 
@@ -104,7 +104,7 @@ class PetDetailTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuitConfig) { PetDetailUi(success) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -138,12 +138,12 @@ class PetDetailTest {
     val circuitConfig =
       CircuitConfig.Builder()
         .setOnUnavailableContent { screen ->
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen))
+          PetPhotoCarouselUi(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen))
         }
         .build()
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuitConfig) { PetDetailUi(success) } }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()

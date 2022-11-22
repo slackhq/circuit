@@ -58,7 +58,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 
 @CircuitUi(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
-fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
+fun HomeUi(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)

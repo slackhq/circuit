@@ -39,7 +39,7 @@ fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 
 @CircuitUi(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
-fun About(modifier: Modifier = Modifier) {
+fun AboutUi(modifier: Modifier = Modifier) {
   Scaffold(
     modifier = modifier.fillMaxSize().padding(16.dp),
     content = { padding ->

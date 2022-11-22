@@ -45,7 +45,7 @@ class PetListUiTest {
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetList(PetListScreen.State.Loading) }
+      setContent { PetListUi(PetListScreen.State.Loading) }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -56,7 +56,7 @@ class PetListUiTest {
   @Test
   fun petList_show_message_for_no_animals_state() {
     composeTestRule.run {
-      setContent { PetList(PetListScreen.State.NoAnimals(isRefreshing = false)) }
+      setContent { PetListUi(PetListScreen.State.NoAnimals(isRefreshing = false)) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
@@ -74,7 +74,7 @@ class PetListUiTest {
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
+      setContent { PetListUi(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -94,7 +94,7 @@ class PetListUiTest {
 
     composeTestRule.run {
       setContent {
-        PetList(
+        PetListUi(
           PetListScreen.State.Success(animals, isRefreshing = false, eventSink = channel::trySend)
         )
       }

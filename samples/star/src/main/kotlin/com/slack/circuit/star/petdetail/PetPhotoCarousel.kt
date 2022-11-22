@@ -109,7 +109,7 @@ internal object PetPhotoCarouselTestConstants {
 @CircuitUi(PetPhotoCarouselScreen::class, AppScope::class)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
+internal fun PetPhotoCarouselUi(state: PetPhotoCarouselScreen.State) {
   val (name, photoUrls, photoUrlMemoryCacheKey) = state
   val context = LocalContext.current
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE

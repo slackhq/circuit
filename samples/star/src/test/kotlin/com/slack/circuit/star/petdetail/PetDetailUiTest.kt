@@ -42,7 +42,7 @@ class PetDetailUiTest {
       .setOnUnavailableContent { screen ->
         when (screen) {
           is PetPhotoCarouselScreen -> {
-            PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
+            PetPhotoCarouselUi(PetPhotoCarouselScreen.State(screen))
             carouselScreen = screen
           }
         }
@@ -62,7 +62,7 @@ class PetDetailUiTest {
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
       setContent {
-        CircuitCompositionLocals(circuitConfig) { PetDetail(PetDetailScreen.State.Loading) }
+        CircuitCompositionLocals(circuitConfig) { PetDetailUi(PetDetailScreen.State.Loading) }
       }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
@@ -75,7 +75,7 @@ class PetDetailUiTest {
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
       setContent {
-        CircuitCompositionLocals(circuitConfig) { PetDetail(PetDetailScreen.State.UnknownAnimal) }
+        CircuitCompositionLocals(circuitConfig) { PetDetailUi(PetDetailScreen.State.UnknownAnimal) }
       }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
@@ -112,7 +112,7 @@ class PetDetailUiTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuitConfig) { PetDetailUi(success) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -146,12 +146,12 @@ class PetDetailUiTest {
     val circuitConfig =
       CircuitConfig.Builder()
         .setOnUnavailableContent { screen ->
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen))
+          PetPhotoCarouselUi(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen))
         }
         .build()
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuitConfig) { PetDetailUi(success) } }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()

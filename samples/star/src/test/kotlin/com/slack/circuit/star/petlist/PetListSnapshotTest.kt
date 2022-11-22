@@ -71,18 +71,18 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   )
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
-    snapshot { PetList(PetListScreen.State.Loading) }
+    snapshot { PetListUi(PetListScreen.State.Loading) }
   }
 
   @Test
   fun petList_show_message_for_no_animals_state() {
-    snapshot { PetList(PetListScreen.State.NoAnimals(isRefreshing = false)) }
+    snapshot { PetListUi(PetListScreen.State.NoAnimals(isRefreshing = false)) }
   }
 
   @Test
   fun petList_show_list_for_success_state() {
     val animals = persistentListOf(ANIMAL)
-    snapshot { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
+    snapshot { PetListUi(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
   }
 
   @Test

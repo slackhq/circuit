@@ -153,7 +153,7 @@ internal object PetDetailTestConstants {
 
 @CircuitUi(PetDetailScreen::class, AppScope::class)
 @Composable
-internal fun PetDetail(state: PetDetailScreen.State) {
+internal fun PetDetailUi(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)

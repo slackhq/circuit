@@ -22,7 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Screen
-import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.codegen.annotations.CircuitPresenter
+import com.slack.circuit.codegen.annotations.CircuitUi
 import com.slack.circuit.star.R
 import com.slack.circuit.star.di.AppScope
 import kotlinx.parcelize.Parcelize
@@ -32,11 +33,11 @@ object AboutScreen : Screen {
   object State : CircuitUiState
 }
 
-@CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
+@CircuitPresenter(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 
-@CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
+@CircuitUi(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun About(modifier: Modifier = Modifier) {
   Scaffold(

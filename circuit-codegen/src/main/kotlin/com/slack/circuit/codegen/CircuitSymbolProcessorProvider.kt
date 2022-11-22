@@ -30,7 +30,8 @@ import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
-import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.codegen.annotations.CircuitPresenter
+import com.slack.circuit.codegen.annotations.CircuitUi
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.CodeBlock
@@ -55,7 +56,8 @@ import dagger.assisted.AssistedFactory
 import javax.inject.Inject
 import javax.inject.Provider
 
-private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
+private val CIRCUIT_PRESENTER_ANNOTATION = CircuitPresenter::class.java.canonicalName
+private val CIRCUIT_UI_ANNOTATION = CircuitUi::class.java.canonicalName
 private val CIRCUIT_PRESENTER = Presenter::class.java.canonicalName
 private val CIRCUIT_UI = Ui::class.java.canonicalName
 private const val FACTORY = "Factory"
@@ -101,42 +103,50 @@ private class CircuitSymbolProcessor(
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
-    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedElement ->
-      when (annotatedElement) {
-        is KSClassDeclaration -> {
-          generateFactory(annotatedElement, InstantiationType.CLASS, symbols)
-        }
-        is KSFunctionDeclaration -> {
-          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols)
-        }
-        else ->
-          logger.error(
-            "CircuitInject is only applicable on classes and functions.",
-            annotatedElement
-          )
-      }
+    resolver.getSymbolsWithAnnotation(CIRCUIT_PRESENTER_ANNOTATION).forEach { annotatedElement ->
+      process(symbols, annotatedElement)
+    }
+    resolver.getSymbolsWithAnnotation(CIRCUIT_UI_ANNOTATION).forEach { annotatedElement ->
+      process(symbols, annotatedElement, isPresenter = false)
     }
     return emptyList()
+  }
+
+  private fun process(symbols: CircuitSymbols, annotatedElement: KSAnnotated, isPresenter: Boolean = true) {
+    when (annotatedElement) {
+      is KSClassDeclaration -> {
+        generateFactory(annotatedElement, InstantiationType.CLASS, symbols, isPresenter)
+      }
+      is KSFunctionDeclaration -> {
+        generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, isPresenter)
+      }
+      else ->
+        logger.error(
+          "CircuitPresenter/CircuitUi are only applicable on classes and functions.",
+          annotatedElement
+        )
+    }
   }
 
   private fun generateFactory(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
-    symbols: CircuitSymbols
+    symbols: CircuitSymbols,
+    isPresenter: Boolean
   ) {
-    val circuitInjectAnnotation =
+    val circuitAnnotation =
       annotatedElement.annotations.first {
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-          CIRCUIT_INJECT_ANNOTATION
+          CIRCUIT_PRESENTER_ANNOTATION
       }
-    val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
+    val screenKSType = circuitAnnotation.arguments[0].value as KSType
     val screenIsObject =
       screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
-    val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
+    val scope = (circuitAnnotation.arguments[1].value as KSType).toTypeName()
 
     val factoryData =
-      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
+      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger, isPresenter)
         ?: return
 
     val builder =
@@ -199,6 +209,7 @@ private class CircuitSymbolProcessor(
     screenKSType: KSType,
     instantiationType: InstantiationType,
     logger: KSPLogger,
+    isPresenter: Boolean
   ): FactoryData? {
     val className: String
     val packageName: String
@@ -216,7 +227,7 @@ private class CircuitSymbolProcessor(
         className = name
         packageName = fd.packageName.asString()
         factoryType =
-          if (name.endsWith("Presenter")) {
+          if (isPresenter) {
             FactoryType.PRESENTER
           } else {
             FactoryType.UI
@@ -487,7 +498,7 @@ private enum class InstantiationType {
 
 private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: () -> Unit) {
   if (!getVisibility().isVisible) {
-    logger.error("CircuitInject is not applicable to private or local functions and classes.", this)
+    logger.error("CircuitPresenter/CircuitUi are not applicable to private or local functions and classes.", this)
     returnBody()
   }
 }

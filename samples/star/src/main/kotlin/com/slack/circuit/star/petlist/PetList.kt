@@ -67,7 +67,8 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.codegen.annotations.CircuitPresenter
+import com.slack.circuit.codegen.annotations.CircuitUi
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.retained.produceRetainedState
@@ -202,7 +203,7 @@ constructor(
     return this.name.lowercase() == size.lowercase()
   }
 
-  @CircuitInject(PetListScreen::class, AppScope::class)
+  @CircuitPresenter(PetListScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
@@ -230,7 +231,7 @@ internal object PetListTestConstants {
   const val IMAGE_TAG = "image"
 }
 
-@CircuitInject(PetListScreen::class, AppScope::class)
+@CircuitUi(PetListScreen::class, AppScope::class)
 @Composable
 internal fun PetList(
   state: PetListScreen.State,

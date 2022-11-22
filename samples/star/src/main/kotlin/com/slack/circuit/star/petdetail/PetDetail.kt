@@ -44,7 +44,8 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.codegen.annotations.CircuitPresenter
+import com.slack.circuit.codegen.annotations.CircuitUi
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -136,7 +137,7 @@ constructor(
     return state
   }
 
-  @CircuitInject(PetDetailScreen::class, AppScope::class)
+  @CircuitPresenter(PetDetailScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetDetailScreen, navigator: Navigator): PetDetailPresenter
@@ -150,7 +151,7 @@ internal object PetDetailTestConstants {
   const val FULL_BIO_TAG = "full_bio"
 }
 
-@CircuitInject(PetDetailScreen::class, AppScope::class)
+@CircuitUi(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State) {
   val systemUiController = rememberSystemUiController()

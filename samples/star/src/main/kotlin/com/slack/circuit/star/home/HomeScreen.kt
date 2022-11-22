@@ -22,7 +22,8 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
-import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.codegen.annotations.CircuitPresenter
+import com.slack.circuit.codegen.annotations.CircuitUi
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
@@ -43,7 +44,7 @@ object HomeScreen : Screen {
   }
 }
 
-@CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
+@CircuitPresenter(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomePresenter(navigator: Navigator): HomeScreen.State {
   val homeNavState = HomeNavPresenter()
@@ -55,7 +56,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   }
 }
 
-@CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
+@CircuitUi(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val systemUiController = rememberSystemUiController()

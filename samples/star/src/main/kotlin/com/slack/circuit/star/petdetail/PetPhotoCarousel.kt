@@ -41,7 +41,8 @@ import com.google.accompanist.pager.rememberPagerState
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
-import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.codegen.annotations.CircuitPresenter
+import com.slack.circuit.codegen.annotations.CircuitUi
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import dagger.assisted.Assisted
@@ -94,7 +95,7 @@ constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
 
   @Composable override fun present() = PetPhotoCarouselScreen.State(screen)
 
-  @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
+  @CircuitPresenter(PetPhotoCarouselScreen::class, AppScope::class)
   @AssistedFactory
   interface Factory {
     fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter
@@ -105,7 +106,7 @@ internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
-@CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
+@CircuitUi(PetPhotoCarouselScreen::class, AppScope::class)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {

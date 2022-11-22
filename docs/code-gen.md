@@ -18,9 +18,9 @@ dependencies {
 
 ## Usage
 
-The primary entry point is the `CircuitInject` annotation.
+The primary entry point is the `CircuitPresenter` and `CircuitUi` annotations.
 
-This annotation is used to mark a UI or presenter class or function for code generation. When
+These annotations are used to mark a UI or presenter class or function for code generation. When
 annotated, the type's corresponding factory will be generated and keyed with the defined `screen`.
 
 The generated factories are then contributed to Anvil via `ContributesMultibinding` and scoped
@@ -33,7 +33,7 @@ with the provided `scope` key.
 
 **Presenter**
 ```kotlin
-@CircuitInject(HomeScreen::class, AppScope::class)
+@CircuitPresenter(HomeScreen::class, AppScope::class)
 class HomePresenter @Inject constructor(...) : Presenter<HomeState> { ... }
 
 // Generates
@@ -43,7 +43,7 @@ class HomePresenterFactory @Inject constructor() : Presenter.Factory { ... }
 
 **UI**
 ```kotlin
-@CircuitInject(HomeScreen::class, AppScope::class)
+@CircuitUi(HomeScreen::class, AppScope::class)
 class HomeUi @Inject constructor(...) : Ui<HomeState> { ... }
 
 // Generates
@@ -67,7 +67,7 @@ required.
 
 **Presenter**
 ```kotlin
-@CircuitInject(HomeScreen::class, AppScope::class)
+@CircuitPresenter(HomeScreen::class, AppScope::class)
 @Composable
 fun HomePresenter(): HomeState { ... }
 
@@ -78,7 +78,7 @@ class HomePresenterFactory @Inject constructor() : Presenter.Factory { ... }
 
 **UI**
 ```kotlin
-@CircuitInject(HomeScreen::class, AppScope::class)
+@CircuitUi(HomeScreen::class, AppScope::class)
 @Composable
 fun Home(state: HomeState) { ... }
 *
@@ -91,7 +91,8 @@ class HomeUiFactory @Inject constructor() : Ui.Factory { ... }
 
 Any type that is offered in `Presenter.Factory` and `Ui.Factory` can be offered as an assisted
 injection to types using Dagger `AssistedInject`. For these cases, the `AssistedFactory`
--annotated interface should be annotated with `CircuitInject` instead of the enclosing class.
+-annotated interface should be annotated with `CircuitPresenter` or `CircuitUi` instead of the
+enclosing class.
 
 Types available for assisted injection are:
 - `Screen` – the screen key used to create the `Presenter` or `Ui`.
@@ -103,7 +104,7 @@ Each should only be defined at-most once.
 **Examples**
 ```kotlin
 // Function example
-@CircuitInject(HomeScreen::class, AppScope::class)
+@CircuitPresenter(HomeScreen::class, AppScope::class)
 @Composable
 fun HomePresenter(screen: Screen, navigator: Navigator): HomeState { ... }
 
@@ -114,7 +115,7 @@ class HomePresenter @AssistedInject constructor(
   ...
 ) : Presenter<HomeState> {
   // ...
-  @CircuitInject(HomeScreen::class, AppScope::class)
+  @CircuitUi(HomeScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {
     fun create(screen: Screen, navigator: Navigator): HomePresenter

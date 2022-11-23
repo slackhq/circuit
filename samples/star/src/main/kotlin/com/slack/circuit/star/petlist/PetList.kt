@@ -22,6 +22,9 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -60,8 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -304,15 +305,18 @@ private fun PetListGrid(
   modifier: Modifier = Modifier,
   eventSink: (PetListScreen.Event) -> Unit,
 ) {
-  SwipeRefresh(
-    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-    onRefresh = { eventSink(PetListScreen.Event.Refresh) }
-  ) {
+  val pullRefreshState =
+    rememberPullRefreshState(
+      refreshing = isRefreshing,
+      onRefresh = { eventSink(PetListScreen.Event.Refresh) }
+    )
+  Box(modifier = modifier.pullRefresh(pullRefreshState)) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     @Suppress("MagicNumber")
     LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(if (isLandscape) 3 else 2),
-      modifier = modifier.testTag(GRID_TAG),
+      modifier = Modifier.testTag(GRID_TAG),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       contentPadding = PaddingValues(16.dp),
@@ -327,6 +331,11 @@ private fun PetListGrid(
         }
       }
     }
+    PullRefreshIndicator(
+      modifier = Modifier.align(Alignment.TopCenter),
+      refreshing = isRefreshing,
+      state = pullRefreshState
+    )
   }
 }
 

@@ -316,7 +316,7 @@ private fun PetListGrid(
     @Suppress("MagicNumber")
     LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(if (isLandscape) 3 else 2),
-      modifier = Modifier.testTag(GRID_TAG),
+      modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       contentPadding = PaddingValues(16.dp),

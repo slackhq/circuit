@@ -60,20 +60,22 @@ public class CircuitConfig private constructor(builder: Builder) {
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
+    resultHandler: ScreenResultHandler,
     context: CircuitContext = CircuitContext(null, this)
   ): Presenter<*>? {
-    return nextPresenter(null, screen, navigator, context)
+    return nextPresenter(null, screen, navigator, resultHandler, context)
   }
 
   public fun nextPresenter(
     skipPast: Presenter.Factory?,
     screen: Screen,
     navigator: Navigator,
+    resultHandler: ScreenResultHandler,
     context: CircuitContext
   ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
-      val presenter = presenterFactories[i].create(screen, navigator, context)
+      val presenter = presenterFactories[i].create(screen, navigator, resultHandler, context)
       if (presenter != null) {
         return presenter
       }

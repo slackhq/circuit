@@ -35,6 +35,7 @@ import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitContext
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
+import com.slack.circuit.ScreenResultHandler
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     val circuitConfig =
       CircuitConfig.Builder()
-        .addPresenterFactory { screen, _, context ->
+        .addPresenterFactory { screen, _, _, context ->
           when (screen) {
             is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, context)
             else -> null
@@ -175,7 +176,7 @@ private enum class PresenterSource {
       screen: InteropCounterScreen,
       context: CircuitContext,
     ): Presenter<CounterState> {
-      return CounterPresenterFactory().create(screen, Navigator.NoOp, context)
+      return CounterPresenterFactory().create(screen, Navigator.NoOp, ScreenResultHandler.NoOp, context)
         as Presenter<CounterState>
     }
   },

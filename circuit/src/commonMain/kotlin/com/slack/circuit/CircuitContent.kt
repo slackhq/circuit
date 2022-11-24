@@ -20,28 +20,28 @@ public fun CircuitContent(
 @Composable
 public fun CircuitContent(
   screen: Screen,
-  onNavEvent: (event: NavEvent) -> Unit,
+  onChildEvent: (event: ChildScreenEvent) -> Unit,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
 ) {
   val navigator =
-    remember(onNavEvent) {
+    remember(onChildEvent) {
       object : Navigator {
         override fun goTo(screen: Screen) {
-          onNavEvent(GoToNavEvent(screen))
+          onChildEvent(GoToNavEvent(screen))
         }
 
         override fun pop(): Screen? {
-          onNavEvent(PopNavEvent)
+          onChildEvent(PopNavEvent)
           return null
         }
 
         override fun setScreenResult(result: ScreenResult?) {
-          onNavEvent(ScreenResultNavEvent(result))
+          onChildEvent(ScreenResultEvent(result))
         }
       }
     }
-  val resultHandler = ScreenResultHandler { result -> onNavEvent(ScreenResultNavEvent(result)) }
+  val resultHandler = ScreenResultHandler { result -> onChildEvent(ScreenResultEvent(result)) }
 
   CircuitContent(screen, navigator, resultHandler, circuitConfig, unavailableContent)
 }

@@ -71,6 +71,7 @@ nav:
   - 'Interop': interop.md
   - 'API':
       - 'circuit': api/0.x/circuit/com.slack.circuit/index.md
+      - 'circuit-overlay': api/0.x/circuit-overlay/com.slack.circuit.overlay/index.md
       - 'circuit-retained': api/0.x/circuit-retained/com.slack.circuit.retained/index.md
       - 'circuit-test': api/0.x/circuit-test/com.slack.circuit.test/index.md
       - 'circuit-codegen-annotations': api/0.x/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/index.md

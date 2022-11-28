@@ -76,7 +76,7 @@ nav:
       - 'circuit-test': api/0.x/circuit-test/com.slack.circuit.test/index.md
       - 'circuit-codegen-annotations': api/0.x/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/index.md
       - 'backstack': api/0.x/backstack/com.slack.circuit.backstack/index.md
-#  - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
-#  - 'Change Log': changelog.md
+  - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
+  - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'CoC': code-of-conduct.md

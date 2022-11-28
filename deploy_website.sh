@@ -29,7 +29,7 @@ if ! [[ ${local} ]]; then
 fi
 
 # Copy in special files that GitHub wants in the project root.
-#cp CHANGELOG.md docs/changelog.md
+cp CHANGELOG.md docs/changelog.md
 cp .github/CONTRIBUTING.md docs/contributing.md
 cp .github/CODE_OF_CONDUCT.md docs/code-of-conduct.md
 

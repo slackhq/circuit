@@ -10,7 +10,7 @@ $dokka.location:com.slack.circuit//onNavEvent/com.slack.circuit.Navigator#com.sl
 $dokka.location:com.slack.circuit//popUntil/com.slack.circuit.Navigator#kotlin.Function1[com.slack.circuit.Screen,kotlin.Boolean]/PointingToDeclaration/circuit/com.slack.circuit/pop-until.md
 $dokka.location:com.slack.circuit//presenterOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]/PointingToDeclaration/circuit/com.slack.circuit/presenter-of.md
 $dokka.location:com.slack.circuit//push/com.slack.circuit.backstack.SaveableBackStack#com.slack.circuit.Screen/PointingToDeclaration/circuit/com.slack.circuit/push.md
-$dokka.location:com.slack.circuit//rememberCircuitNavigator/#com.slack.circuit.backstack.SaveableBackStack/PointingToDeclaration/circuit/com.slack.circuit/remember-circuit-navigator.md
+$dokka.location:com.slack.circuit//rememberCircuitNavigator/#com.slack.circuit.backstack.SaveableBackStack#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/remember-circuit-navigator.md
 $dokka.location:com.slack.circuit//screen/com.slack.circuit.backstack.SaveableBackStack.Record#/PointingToDeclaration/circuit/com.slack.circuit/screen.md
 $dokka.location:com.slack.circuit//ui/#kotlin.Function1[TypeParam(bounds=[com.slack.circuit.CircuitUiState]),kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/ui.md
 $dokka.location:com.slack.circuit/CircuitConfig.Builder///PointingToDeclaration/circuit/com.slack.circuit/-circuit-config/-builder/index.md

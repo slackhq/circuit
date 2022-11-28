@@ -20,9 +20,9 @@
       "extends": ["schedule:monthly"]
     },
     {
-      "description": "Disable snapshot versions from updating",
-      "matchCurrentVersion": "!/.*-SNAPSHOT$/",
-      "enabled": false
+      "matchManagers": ["maven"],
+      "description": "Disable snapshot versions",
+      "allowedVersions": "!/.*-SNAPSHOT$/"
     }
   ]
 }

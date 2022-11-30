@@ -11,10 +11,10 @@ public interface EventListener {
   /** Called when there is a new [state] returned by the [Presenter]. */
   public fun onState(state: Any) {}
 
-  /** Called when a new screen is being composed for the first time */
+  /** Called when a new [Screen] is being composed for the first time */
   public fun onScreenInit(screen: Screen) {}
 
-  /** Called when a screen is leaving the composition */
+  /** Called when a [Screen] is leaving the composition */
   public fun onScreenDispose(screen: Screen) {}
 
   public fun interface Factory {

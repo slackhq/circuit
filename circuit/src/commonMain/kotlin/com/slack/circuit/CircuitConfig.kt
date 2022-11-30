@@ -17,7 +17,7 @@ import androidx.compose.runtime.Immutable
  * ```kotlin
  * val circuitConfig = CircuitConfig.Builder()
  *     .addUiFactory(AddFavoritesUiFactory()
- *     .addPresenterFactory(AddFavoritesPresenterFactory()
+ *     .addPresenterFactory(AddFavoritesPresenterFactory())
  *     .build()
  * ```
  *
@@ -45,9 +45,9 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  *
- * @see rememberCircuitNavigator
  * @see CircuitContent
- * @see NavigableCircuitContent
+ * @see `rememberCircuitNavigator`
+ * @see `NavigableCircuitContent`
  */
 @Immutable
 public class CircuitConfig private constructor(builder: Builder) {

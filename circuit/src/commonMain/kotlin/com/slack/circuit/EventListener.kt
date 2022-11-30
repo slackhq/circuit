@@ -12,7 +12,7 @@ public interface EventListener {
   public fun onState(state: Any) {}
 
   public fun interface Factory {
-    public fun create(screen: Screen): EventListener
+    public fun create(screen: Screen, circuitConfig: CircuitConfig): EventListener
   }
 
   public companion object {

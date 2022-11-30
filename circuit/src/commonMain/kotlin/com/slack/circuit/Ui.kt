@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
  * 2. Ensuring separation of [Ui] instance from [Screen] specific ui composables allows for and
- * encourages easy UI previews via Compose's [@Preview][Preview] annotations.
+ * encourages easy UI previews via Compose's `@Preview` annotations.
  *
  * Usage:
  * ```

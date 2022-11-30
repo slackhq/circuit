@@ -79,6 +79,6 @@ private class RecordingEventListener : EventListener {
     fun get(screen: Screen): RecordingEventListener =
       listeners[screen] ?: (RecordingEventListener().also { listeners[screen] = it })
 
-    override fun create(screen: Screen): EventListener = get(screen)
+    override fun create(screen: Screen, circuitConfig: CircuitConfig): EventListener = get(screen)
   }
 }

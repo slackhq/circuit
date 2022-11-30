@@ -51,7 +51,8 @@ internal fun CircuitContent(
   val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
 
   if (screenUi != null && presenter != null) {
-    val eventListener = circuitConfig.eventListenerFactory?.create(screen) ?: EventListener.NONE
+    val eventListener =
+      circuitConfig.eventListenerFactory?.create(screen, circuitConfig) ?: EventListener.NONE
     @Suppress("UNCHECKED_CAST")
     CircuitContent(eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
   } else if (unavailableContent != null) {

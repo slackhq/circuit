@@ -28,6 +28,7 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
+import com.slack.circuit.ScreenRequest
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -70,6 +71,7 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
 private class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitUiState = resolver.loadKSType<CircuitUiState>()
   val screen = resolver.loadKSType<Screen>()
+  val screenRequest = resolver.loadKSType<ScreenRequest>()
   val navigator = resolver.loadKSType<Navigator>()
   val circuitConfig = resolver.loadKSType<CircuitConfig>()
   companion object {
@@ -172,9 +174,19 @@ private class CircuitSymbolProcessor(
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+          builder.buildPresenterFactory(
+            annotatedElement,
+            screenBranch,
+            factoryData.hasAssistedScreenParam,
+            factoryData.codeBlock
+          )
         FactoryType.UI ->
-          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+          builder.buildUiFactory(
+            annotatedElement,
+            screenBranch,
+            factoryData.hasAssistedScreenParam,
+            factoryData.codeBlock
+          )
       }
 
     FileSpec.get(factoryData.packageName, typeSpec)
@@ -186,6 +198,7 @@ private class CircuitSymbolProcessor(
     val packageName: String,
     val factoryType: FactoryType,
     val constructorParams: List<ParameterSpec>,
+    val hasAssistedScreenParam: Boolean,
     val codeBlock: CodeBlock
   )
 
@@ -204,6 +217,7 @@ private class CircuitSymbolProcessor(
     val packageName: String
     val factoryType: FactoryType
     val constructorParams = mutableListOf<ParameterSpec>()
+    val hasAssistedScreenParam: Boolean
     val codeBlock: CodeBlock
 
     when (instantiationType) {
@@ -221,8 +235,9 @@ private class CircuitSymbolProcessor(
           } else {
             FactoryType.UI
           }
-        val assistedParams =
+        val (hasAssistedScreen, assistedParams) =
           fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
+        hasAssistedScreenParam = hasAssistedScreen
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
@@ -301,7 +316,7 @@ private class CircuitSymbolProcessor(
         val assistedParams =
           if (useProvider) {
             // Nothing to do here, we'll just use the provider directly.
-            CodeBlock.of("")
+            AssistedParameters.EMPTY
           } else {
             creatorOrConstructor?.assistedParameters(
               symbols,
@@ -309,7 +324,9 @@ private class CircuitSymbolProcessor(
               screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER
             )
+              ?: AssistedParameters.EMPTY
           }
+        hasAssistedScreenParam = assistedParams.hasAssistedScreen
         codeBlock =
           if (useProvider) {
             // Inject a Provider<TargetClass> that we'll call get() on.
@@ -327,15 +344,22 @@ private class CircuitSymbolProcessor(
             CodeBlock.of(
               "factory.%L(%L)",
               creatorOrConstructor!!.simpleName.getShortName(),
-              assistedParams
+              assistedParams.codeBlock
             )
           } else {
             // Simple constructor call, no injection.
-            CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
+            CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams.codeBlock)
           }
       }
     }
-    return FactoryData(className, packageName, factoryType, constructorParams, codeBlock)
+    return FactoryData(
+      className,
+      packageName,
+      factoryType,
+      constructorParams,
+      hasAssistedScreenParam,
+      codeBlock
+    )
   }
 }
 
@@ -344,6 +368,12 @@ private data class AssistedType(
   val type: TypeName,
   val name: String,
 )
+
+private data class AssistedParameters(val hasAssistedScreen: Boolean, val codeBlock: CodeBlock) {
+  companion object {
+    val EMPTY = AssistedParameters(false, CodeBlock.of(""))
+  }
+}
 
 /**
  * Returns a [CodeBlock] representation of all named assisted parameters on this
@@ -362,46 +392,53 @@ private fun KSFunctionDeclaration.assistedParameters(
   logger: KSPLogger,
   screenType: KSType,
   allowNavigator: Boolean
-): CodeBlock {
-  return buildSet {
-      for (param in parameters) {
-        fun <E> MutableSet<E>.addOrError(element: E) {
-          val added = add(element)
-          if (!added) {
-            logger.error("Multiple parameters of type $element are not allowed.", param)
-          }
-        }
-
-        val type = param.type.resolve()
-        when {
-          type.isInstanceOf(symbols.screen) -> {
-            if (screenType.isSameDeclarationAs(type)) {
-              addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
-            } else {
-              logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+): AssistedParameters {
+  var hasAssistedScreenParam = false
+  val codeBlock =
+    buildSet {
+        for (param in parameters) {
+          fun <E> MutableSet<E>.addOrError(element: E) {
+            val added = add(element)
+            if (!added) {
+              logger.error("Multiple parameters of type $element are not allowed.", param)
             }
           }
-          type.isInstanceOf(symbols.navigator) -> {
-            if (allowNavigator) {
-              addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
-            } else {
-              logger.error(
-                "Navigator type mismatch. Navigators are not injectable on this type.",
-                param
+
+          val type = param.type.resolve()
+          when {
+            type.isInstanceOf(symbols.screen) -> {
+              if (screenType.isSameDeclarationAs(type)) {
+                hasAssistedScreenParam = true
+                addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
+              } else {
+                logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+              }
+            }
+            type.isInstanceOf(symbols.navigator) -> {
+              if (allowNavigator) {
+                addOrError(
+                  AssistedType("navigator", type.toTypeName(), param.name!!.getShortName())
+                )
+              } else {
+                logger.error(
+                  "Navigator type mismatch. Navigators are not injectable on this type.",
+                  param
+                )
+              }
+            }
+            type.isInstanceOf(symbols.circuitConfig) -> {
+              addOrError(
+                AssistedType("circuitConfig", type.toTypeName(), param.name!!.getShortName())
               )
             }
           }
-          type.isInstanceOf(symbols.circuitConfig) -> {
-            addOrError(
-              AssistedType("circuitConfig", type.toTypeName(), param.name!!.getShortName())
-            )
-          }
         }
       }
-    }
-    .toList()
-    .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
-    .joinToCode(",·")
+      .toList()
+      .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
+      .joinToCode(",·")
+
+  return AssistedParameters(hasAssistedScreenParam, codeBlock)
 }
 
 private fun KSType.isSameDeclarationAs(type: KSType): Boolean {
@@ -415,16 +452,25 @@ private fun KSType.isInstanceOf(type: KSType): Boolean {
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
+  hasAssistedScreenParam: Boolean,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   return addSuperinterface(Ui.Factory::class)
     .addFunction(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", Screen::class)
+        .addParameter("request", ScreenRequest::class)
         .addParameter("circuitConfig", CircuitConfig::class)
         .returns(ScreenUi::class.asClassName().copy(nullable = true))
-        .beginControlFlow("return·when·(screen)")
+        .run {
+          val screenPrefix =
+            if (hasAssistedScreenParam) {
+              "val·screen·=·"
+            } else {
+              ""
+            }
+          beginControlFlow("return·when·(${screenPrefix}request.screen)")
+        }
         .addStatement(
           "%L·->·%T(%L)",
           screenBranch,
@@ -442,12 +488,13 @@ private fun TypeSpec.Builder.buildUiFactory(
 private fun TypeSpec.Builder.buildPresenterFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
+  hasAssistedScreenParam: Boolean,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
   //  public class AboutPresenterFactory : Presenter.Factory {
   //    public override fun create(
-  //      screen: Screen,
+  //      request: ScreenRequest,
   //      navigator: Navigator,
   //      circuitConfig: CircuitConfig,
   //    ): Presenter<*>? = when (screen) {
@@ -461,11 +508,19 @@ private fun TypeSpec.Builder.buildPresenterFactory(
     .addFunction(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", Screen::class)
+        .addParameter("request", ScreenRequest::class)
         .addParameter("navigator", Navigator::class)
         .addParameter("circuitConfig", CircuitConfig::class)
         .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
-        .beginControlFlow("return when (screen)")
+        .run {
+          val screenPrefix =
+            if (hasAssistedScreenParam) {
+              "val·screen·=·"
+            } else {
+              ""
+            }
+          beginControlFlow("return·when·(${screenPrefix}request.screen)")
+        }
         .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
         .addStatement("else·->·null")
         .endControlFlow()

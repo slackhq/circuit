@@ -17,7 +17,7 @@ import androidx.compose.runtime.Immutable
  * ```kotlin
  * val circuitConfig = CircuitConfig.Builder()
  *     .addUiFactory(AddFavoritesUiFactory()
- *     .addPresenterFactory(AddFavoritesPresenterFactory()
+ *     .addPresenterFactory(AddFavoritesPresenterFactory())
  *     .build()
  * ```
  *
@@ -45,9 +45,9 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  *
- * @see rememberCircuitNavigator
  * @see CircuitContent
- * @see NavigableCircuitContent
+ * @see `rememberCircuitNavigator`
+ * @see `NavigableCircuitContent`
  */
 @Immutable
 public class CircuitConfig private constructor(builder: Builder) {
@@ -58,7 +58,11 @@ public class CircuitConfig private constructor(builder: Builder) {
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   public fun presenter(screen: Screen, navigator: Navigator): Presenter<*>? {
-    return nextPresenter(null, screen, navigator)
+    return presenter(ScreenRequest.Builder(screen).build(), navigator)
+  }
+
+  public fun presenter(request: ScreenRequest, navigator: Navigator): Presenter<*>? {
+    return nextPresenter(null, request, navigator)
   }
 
   public fun nextPresenter(
@@ -66,9 +70,17 @@ public class CircuitConfig private constructor(builder: Builder) {
     screen: Screen,
     navigator: Navigator
   ): Presenter<*>? {
+    return nextPresenter(skipPast, ScreenRequest.Builder(screen).build(), navigator)
+  }
+
+  public fun nextPresenter(
+    skipPast: Presenter.Factory?,
+    request: ScreenRequest,
+    navigator: Navigator
+  ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
-      val presenter = presenterFactories[i].create(screen, navigator, this)
+      val presenter = presenterFactories[i].create(request, navigator, this)
       if (presenter != null) {
         return presenter
       }
@@ -78,13 +90,21 @@ public class CircuitConfig private constructor(builder: Builder) {
   }
 
   public fun ui(screen: Screen): ScreenUi? {
-    return nextUi(null, screen)
+    return ui(ScreenRequest.Builder(screen).build())
+  }
+
+  public fun ui(request: ScreenRequest): ScreenUi? {
+    return nextUi(null, request)
   }
 
   public fun nextUi(skipPast: Ui.Factory?, screen: Screen): ScreenUi? {
+    return nextUi(skipPast, ScreenRequest.Builder(screen).build())
+  }
+
+  public fun nextUi(skipPast: Ui.Factory?, request: ScreenRequest): ScreenUi? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
-      val ui = uiFactories[i].create(screen, this)
+      val ui = uiFactories[i].create(request, this)
       if (ui != null) {
         return ui
       }
@@ -96,9 +116,8 @@ public class CircuitConfig private constructor(builder: Builder) {
   public fun newBuilder(): Builder = Builder(this)
 
   public class Builder constructor() {
-    public val uiFactories: MutableList<Ui.Factory> = mutableListOf<Ui.Factory>()
-    public val presenterFactories: MutableList<Presenter.Factory> =
-      mutableListOf<Presenter.Factory>()
+    public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
+    public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
     public var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
       private set
     public var eventListenerFactory: EventListener.Factory? = null

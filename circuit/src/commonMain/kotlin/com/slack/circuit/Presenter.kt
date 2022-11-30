@@ -132,8 +132,8 @@ public interface Presenter<UiState : CircuitUiState> {
    *   val detailsPresenter: ProfilerDetailsPresenter.Factory,
    *   val callScreenRouter: CallScreenRouter.Factory
    * ) : Presenter.Factory {
-   *   override fun create(screen: Screen, navigator: Navigator, circuitConfig: CircuitConfig): Presenter<*, *>? {
-   *     return when (screen) {
+   *   override fun create(request: ScreenRequest, navigator: Navigator, circuitConfig: CircuitConfig): Presenter<*, *>? {
+   *     return when (val screen = request.screen) {
    *       is ProfileHeader -> headerPresenter.create(screen)
    *       is ProfileActions -> actionsPresenter.create(screen, callScreenRouter.create(navigator))
    *       is ProfileDetails -> detailsPresenter.create(screen)
@@ -146,11 +146,11 @@ public interface Presenter<UiState : CircuitUiState> {
   // Diagram generated from asciiflow: https://shorturl.at/fgjtA
   public fun interface Factory {
     /**
-     * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it
-     * cannot handle the given [screen].
+     * Creates a [Presenter] for the given [request] if it can handle it, or returns null if it
+     * cannot handle the given [request].
      */
     public fun create(
-      screen: Screen,
+      request: ScreenRequest,
       navigator: Navigator,
       circuitConfig: CircuitConfig
     ): Presenter<*>?

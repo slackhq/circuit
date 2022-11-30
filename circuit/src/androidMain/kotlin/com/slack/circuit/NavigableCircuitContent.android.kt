@@ -70,11 +70,9 @@ public fun BasicNavigableCircuitContent(
     for (record in backstack) {
       val provider =
         key(record.key) {
-          val routeName = record.route
-          val screen = record.screen
-
-          val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator, circuitConfig) { unavailableRoute(routeName) }
+          val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = { record ->
+            val request = remember(record) { ScreenRequest.Builder(record.screen).build() }
+            CircuitContent(request, navigator, circuitConfig) { unavailableRoute(record.route) }
           }
 
           val currentRouteContent by rememberUpdatedState(currentContent)

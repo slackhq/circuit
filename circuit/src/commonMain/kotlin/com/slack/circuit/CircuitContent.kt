@@ -12,12 +12,36 @@ public fun CircuitContent(
   circuitConfig: CircuitConfig = LocalCircuitOwner.current,
   unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
 ) {
-  CircuitContent(screen, Navigator.NoOp, circuitConfig, unavailableContent)
+  return CircuitContent(ScreenRequest.Builder(screen).build(), circuitConfig, unavailableContent)
+}
+
+@Composable
+public fun CircuitContent(
+  request: ScreenRequest,
+  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
+) {
+  CircuitContent(request, Navigator.NoOp, circuitConfig, unavailableContent)
 }
 
 @Composable
 public fun CircuitContent(
   screen: Screen,
+  onNavEvent: (event: NavEvent) -> Unit,
+  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
+) {
+  CircuitContent(
+    ScreenRequest.Builder(screen).build(),
+    onNavEvent,
+    circuitConfig,
+    unavailableContent
+  )
+}
+
+@Composable
+public fun CircuitContent(
+  request: ScreenRequest,
   onNavEvent: (event: NavEvent) -> Unit,
   circuitConfig: CircuitConfig = LocalCircuitOwner.current,
   unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
@@ -35,29 +59,29 @@ public fun CircuitContent(
         }
       }
     }
-  CircuitContent(screen, navigator, circuitConfig, unavailableContent)
+  CircuitContent(request, navigator, circuitConfig, unavailableContent)
 }
 
 @Composable
 internal fun CircuitContent(
-  screen: Screen,
+  request: ScreenRequest,
   navigator: Navigator,
   circuitConfig: CircuitConfig,
   unavailableContent: (@Composable (screen: Screen) -> Unit)?,
 ) {
-  val screenUi = circuitConfig.ui(screen)
+  val screenUi = circuitConfig.ui(request)
 
   @Suppress("UNCHECKED_CAST")
-  val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
+  val presenter = circuitConfig.presenter(request, navigator) as Presenter<CircuitUiState>?
 
   if (screenUi != null && presenter != null) {
-    val eventListener = circuitConfig.eventListenerFactory?.create(screen) ?: EventListener.NONE
+    val eventListener = circuitConfig.eventListenerFactory?.create(request) ?: EventListener.NONE
     @Suppress("UNCHECKED_CAST")
     CircuitContent(eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
   } else if (unavailableContent != null) {
-    unavailableContent(screen)
+    unavailableContent(request.screen)
   } else {
-    error("Could not render screen $screen")
+    error("Could not render screen $request")
   }
 }
 

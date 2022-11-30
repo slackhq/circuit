@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
  * This has two main benefits:
  * 1. Discouraging properties and general non-composable state that writing a class may invite.
  * 2. Ensuring separation of [Ui] instance from [Screen] specific ui composables allows for and
- * encourages easy UI previews via Compose's [@Preview][Preview] annotations.
+ * encourages easy UI previews via Compose's `@Preview` annotations.
  *
  * Usage:
  * ```
@@ -50,10 +50,10 @@ public interface Ui<UiState : CircuitUiState> {
    * ```
    * class FavoritesUiFactory @Inject constructor() : Ui.Factory {
    *  override fun create(
-   *    screen: Screen,
+   *    request: ScreenRequest,
    *    circuitConfig: CircuitConfig
    *  ): ScreenUi? {
-   *    val ui = when (screen) {
+   *    val ui = when (request.screen) {
    *      is AddFavorites -> {
    *        addFavoritesUi()
    *      }
@@ -72,7 +72,7 @@ public interface Ui<UiState : CircuitUiState> {
    * ```
    */
   public fun interface Factory {
-    public fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi?
+    public fun create(request: ScreenRequest, circuitConfig: CircuitConfig): ScreenUi?
   }
 }
 

@@ -29,3 +29,14 @@ public interface EventListener {
     public val NONE: EventListener = object : EventListener {}
   }
 }
+
+@Composable
+internal fun rememberEventListener(screen: Screen, factory: EventListener.Factory): EventListener {
+  val listener = remember(screen) { factory.create(screen) }
+  DisposableEffect(screen) {
+    listener.onScreenInit(screen)
+    onDispose { listener.onScreenDispose(screen) }
+  }
+
+  return listener
+}

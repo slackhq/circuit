@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
-
 /**
  * A listener for tracking the state changes of a given [Screen]. This can be used for
  * instrumentation and other telemetry.
@@ -28,15 +24,4 @@ public interface EventListener {
   public companion object {
     public val NONE: EventListener = object : EventListener {}
   }
-}
-
-@Composable
-internal fun rememberEventListener(screen: Screen, factory: EventListener.Factory): EventListener {
-  val listener = remember(screen) { factory.create(screen) }
-  DisposableEffect(screen) {
-    listener.onScreenInit(screen)
-    onDispose { listener.onScreenDispose(screen) }
-  }
-
-  return listener
 }

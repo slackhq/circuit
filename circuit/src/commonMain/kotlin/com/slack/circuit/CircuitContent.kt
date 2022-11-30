@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 
@@ -73,4 +74,15 @@ private fun <UiState : CircuitUiState> CircuitContent(
   // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
   SideEffect { eventListener.onState(state) }
   ui.Content(state)
+}
+
+@Composable
+private fun rememberEventListener(screen: Screen, factory: EventListener.Factory): EventListener {
+  val listener = remember(screen) { factory.create(screen) }
+  DisposableEffect(screen) {
+    listener.onScreenInit(screen)
+    onDispose { listener.onScreenDispose(screen) }
+  }
+
+  return listener
 }

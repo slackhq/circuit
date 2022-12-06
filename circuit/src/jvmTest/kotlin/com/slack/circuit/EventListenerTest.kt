@@ -68,12 +68,8 @@ private class StringUi : Ui<StringState> {
   @Composable override fun Content(state: StringState) {}
 }
 
-private class RecordingEventListener : EventListener {
+private class RecordingEventListener(private val onDispose: () -> Unit) : EventListener {
   val states = Turbine<Any>(name = "recording event listener states")
-
-  private fun log(message: String) {
-    println("${LocalTime.now(UTC).toString().replace("T"," ")}: $message")
-  }
 
   override fun onState(state: Any) {
     log("onState: $state")
@@ -130,12 +126,29 @@ private class RecordingEventListener : EventListener {
     log("onDisposeContent")
   }
 
+  override fun dispose() {
+    log("dispose")
+    onDispose()
+  }
+
   class Factory : EventListener.Factory {
     val listeners = mutableMapOf<Screen, RecordingEventListener>()
 
     fun get(screen: Screen): RecordingEventListener =
-      listeners[screen] ?: (RecordingEventListener().also { listeners[screen] = it })
+      listeners[screen]
+        ?: run {
+          log("Creating new RecordingEventListener for $screen")
+          RecordingEventListener {
+              log("Removing RecordingEventListener for $screen")
+              listeners.remove(screen)
+            }
+            .also { listeners[screen] = it }
+        }
 
     override fun create(screen: Screen, context: CircuitContext) = get(screen)
   }
+}
+
+private fun log(message: String) {
+  println("${LocalTime.now(UTC).toString().replace("T"," ")}: $message")
 }

@@ -51,13 +51,21 @@ public interface EventListener {
 
   /** Called once before the initial [Presenter.present] call. */
   public fun onStartPresent() {}
+
   /** Called once after the [Presenter.present] composition is disposed. */
   public fun onDisposePresent() {}
 
   /** Called once before the initial [Ui.Content] call. */
   public fun onStartContent() {}
+
   /** Called once after the [Ui.Content] composition is disposed. */
   public fun onDisposeContent() {}
+
+  /**
+   * Called once when this [EventListener] should be disposed and the corresponding circuit is
+   * disposed.
+   */
+  public fun dispose() {}
 
   public fun interface Factory {
     public fun create(screen: Screen, context: CircuitContext): EventListener

@@ -23,7 +23,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitContext
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
@@ -71,7 +71,6 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitUiState = resolver.loadKSType<CircuitUiState>()
   val screen = resolver.loadKSType<Screen>()
   val navigator = resolver.loadKSType<Navigator>()
-  val circuitConfig = resolver.loadKSType<CircuitConfig>()
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {
       @Suppress("SwallowedException")
@@ -391,11 +390,6 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             }
           }
-          type.isInstanceOf(symbols.circuitConfig) -> {
-            addOrError(
-              AssistedType("circuitConfig", type.toTypeName(), param.name!!.getShortName())
-            )
-          }
         }
       }
     }
@@ -422,7 +416,7 @@ private fun TypeSpec.Builder.buildUiFactory(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
         .addParameter("screen", Screen::class)
-        .addParameter("circuitConfig", CircuitConfig::class)
+        .addParameter("context", CircuitContext::class)
         .returns(ScreenUi::class.asClassName().copy(nullable = true))
         .beginControlFlow("return·when·(screen)")
         .addStatement(
@@ -449,7 +443,7 @@ private fun TypeSpec.Builder.buildPresenterFactory(
   //    public override fun create(
   //      screen: Screen,
   //      navigator: Navigator,
-  //      circuitConfig: CircuitConfig,
+  //      context: CircuitContext,
   //    ): Presenter<*>? = when (screen) {
   //      is AboutScreen -> AboutPresenter()
   //      is AboutScreen -> presenterOf { AboutPresenter() }
@@ -463,7 +457,7 @@ private fun TypeSpec.Builder.buildPresenterFactory(
         .addModifiers(KModifier.OVERRIDE)
         .addParameter("screen", Screen::class)
         .addParameter("navigator", Navigator::class)
-        .addParameter("circuitConfig", CircuitConfig::class)
+        .addParameter("context", CircuitContext::class)
         .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")
         .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)

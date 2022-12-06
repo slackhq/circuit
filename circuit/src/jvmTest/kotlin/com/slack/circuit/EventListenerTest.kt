@@ -9,6 +9,8 @@ import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat
+import java.time.LocalTime
+import java.time.ZoneOffset.UTC
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -69,8 +71,63 @@ private class StringUi : Ui<StringState> {
 private class RecordingEventListener : EventListener {
   val states = Turbine<Any>(name = "recording event listener states")
 
+  private fun log(message: String) {
+    println("${LocalTime.now(UTC).toString().replace("T"," ")}: $message")
+  }
+
   override fun onState(state: Any) {
+    log("onState: $state")
     states.add(state)
+  }
+
+  override fun onBeforeCreatePresenter(
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext,
+  ) {
+    log("onBeforeCreatePresenter: $screen")
+  }
+
+  override fun onAfterCreatePresenter(
+    screen: Screen,
+    navigator: Navigator,
+    presenter: Presenter<*>?,
+    context: CircuitContext,
+  ) {
+    log("onAfterCreatePresenter: $screen, $presenter")
+  }
+
+  override fun onBeforeCreateUi(screen: Screen, context: CircuitContext) {
+    log("onBeforeCreateUi: $screen")
+  }
+
+  override fun onAfterCreateUi(screen: Screen, screenUi: ScreenUi?, context: CircuitContext) {
+    log("onAfterCreateUi: $screen, $screenUi")
+  }
+
+  override fun onUnavailableContent(
+    screen: Screen,
+    presenter: Presenter<*>?,
+    screenUi: ScreenUi?,
+    context: CircuitContext,
+  ) {
+    error("onUnavailableContent: $screen, $presenter, $screenUi")
+  }
+
+  override fun onStartPresent() {
+    log("onStartPresent")
+  }
+
+  override fun onDisposePresent() {
+    log("onDisposePresent")
+  }
+
+  override fun onStartContent() {
+    log("onStartContent")
+  }
+
+  override fun onDisposeContent() {
+    log("onDisposeContent")
   }
 
   class Factory : EventListener.Factory {
@@ -79,6 +136,6 @@ private class RecordingEventListener : EventListener {
     fun get(screen: Screen): RecordingEventListener =
       listeners[screen] ?: (RecordingEventListener().also { listeners[screen] = it })
 
-    override fun create(screen: Screen): EventListener = get(screen)
+    override fun create(screen: Screen, context: CircuitContext) = get(screen)
   }
 }

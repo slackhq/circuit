@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitContext
 import com.slack.circuit.Screen
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
@@ -66,7 +66,7 @@ fun Counter(state: CounterState, modifier: Modifier = Modifier) {
 }
 
 class CounterUiFactory : Ui.Factory {
-  override fun create(screen: Screen, circuitConfig: CircuitConfig): ScreenUi? {
+  override fun create(screen: Screen, context: CircuitContext): ScreenUi? {
     return when (screen) {
       is CounterScreen -> ScreenUi(ui<CounterState> { state -> Counter(state) })
       else -> null

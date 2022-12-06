@@ -52,14 +52,14 @@ internal fun CircuitContent(
       circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
     }
 
-  eventListener.onBeforeCreateUi(screen, context)
-  val screenUi = circuitConfig.ui(screen)
-  eventListener.onAfterCreateUi(screen, screenUi, context)
-
   eventListener.onBeforeCreatePresenter(screen, navigator, context)
   @Suppress("UNCHECKED_CAST")
   val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
   eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
+
+  eventListener.onBeforeCreateUi(screen, context)
+  val screenUi = circuitConfig.ui(screen)
+  eventListener.onAfterCreateUi(screen, screenUi, context)
 
   if (screenUi != null && presenter != null) {
     @Suppress("UNCHECKED_CAST")

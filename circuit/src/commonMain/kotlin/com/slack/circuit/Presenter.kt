@@ -132,7 +132,7 @@ public interface Presenter<UiState : CircuitUiState> {
    *   val detailsPresenter: ProfilerDetailsPresenter.Factory,
    *   val callScreenRouter: CallScreenRouter.Factory
    * ) : Presenter.Factory {
-   *   override fun create(screen: Screen, navigator: Navigator, circuitConfig: CircuitConfig): Presenter<*, *>? {
+   *   override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*, *>? {
    *     return when (screen) {
    *       is ProfileHeader -> headerPresenter.create(screen)
    *       is ProfileActions -> actionsPresenter.create(screen, callScreenRouter.create(navigator))
@@ -149,11 +149,7 @@ public interface Presenter<UiState : CircuitUiState> {
      * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it
      * cannot handle the given [screen].
      */
-    public fun create(
-      screen: Screen,
-      navigator: Navigator,
-      circuitConfig: CircuitConfig
-    ): Presenter<*>?
+    public fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>?
   }
 }
 

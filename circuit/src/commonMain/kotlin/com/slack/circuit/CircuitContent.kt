@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 
@@ -45,15 +46,24 @@ internal fun CircuitContent(
   circuitConfig: CircuitConfig,
   unavailableContent: (@Composable (screen: Screen) -> Unit)?,
 ) {
-  val screenUi = circuitConfig.ui(screen)
+  val context = remember(screen, navigator, circuitConfig) { CircuitContext(circuitConfig) }
+  val eventListener =
+    remember(screen, context) {
+      circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
+    }
 
+  eventListener.onBeforeCreateUi(screen, context)
+  val screenUi = circuitConfig.ui(screen)
+  eventListener.onAfterCreateUi(screen, screenUi, context)
+
+  eventListener.onBeforeCreatePresenter(screen, navigator, context)
   @Suppress("UNCHECKED_CAST")
   val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
+  eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
 
   if (screenUi != null && presenter != null) {
-    val eventListener = circuitConfig.eventListenerFactory?.create(screen) ?: EventListener.NONE
     @Suppress("UNCHECKED_CAST")
-    CircuitContent(eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
+    CircuitContent(screen, eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
   } else if (unavailableContent != null) {
     unavailableContent(screen)
   } else {
@@ -63,12 +73,23 @@ internal fun CircuitContent(
 
 @Composable
 private fun <UiState : CircuitUiState> CircuitContent(
+  screen: Screen,
   eventListener: EventListener,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
 ) {
+  DisposableEffect(screen) {
+    eventListener.onStartPresent()
+
+    onDispose { eventListener.onDisposePresent() }
+  }
   val state = presenter.present()
   // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
   SideEffect { eventListener.onState(state) }
+  DisposableEffect(screen) {
+    eventListener.onStartContent()
+
+    onDispose { eventListener.onDisposeContent() }
+  }
   ui.Content(state)
 }

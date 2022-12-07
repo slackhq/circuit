@@ -10,7 +10,7 @@ class BaselineProfileGenerator {
   @get:Rule val baselineProfileRule = BaselineProfileRule()
 
   @Test
-  fun startup() =
+  fun startupBaselineProfile() =
     baselineProfileRule.collectBaselineProfile(
       packageName = "com.slack.circuit.sample.star.apk",
       filterPredicate = { rule ->

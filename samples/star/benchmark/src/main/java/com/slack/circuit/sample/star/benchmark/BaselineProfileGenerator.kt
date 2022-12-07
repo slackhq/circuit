@@ -13,7 +13,11 @@ class BaselineProfileGenerator {
   fun startup() =
     baselineProfileRule.collectBaselineProfile(
       packageName = "com.slack.circuit.sample.star.apk",
-      packageFilters = listOf("com.slack.circuit"),
+      filterPredicate = { rule ->
+        rule.contains("com/slack/circuit") &&
+          !rule.contains("com/slack/circuit/sample") &&
+          !rule.contains("com/slack/circuit/star")
+      },
       profileBlock = { startActivityAndWait() }
     )
 }

@@ -1,6 +1,28 @@
 Changelog
 =========
 
+0.4.0
+-----
+
+_2022-12-07_
+
+* **Breaking API Change**: `Presenter` and `Ui` factories' `create()` functions now offer a `CircuitContext` parameter in place of a `CircuitConfig` parameter. This class contains a `CircuitConfig`, a tagging API, and access to parent contexts. This allows for plumbing your own metadata through Circuit's internals such as tracing tools, logging, etc.
+* **Enhancement**: New lifecycle functions added to `EventListener`.
+  * `onBeforeCreatePresenter`
+  * `onAfterCreatePresenter`
+  * `onBeforeCreateUi`
+  * `onAfterCreateUi`
+  * `onUnavailableContent`
+  * `onStartPresent`
+  * `onDisposePresent`
+  * `onStartContent`
+  * `onDisposeContent`
+  * `dispose`
+* Update Compose to `1.3.1`.
+* Update Compose (JB) to `1.2.1`.
+* Update Molecule to `0.6.1`.
+* Added a demo to the STAR sample that shows how to navigate to standard Android components ([#275](https://github.com/slackhq/circuit/pull/275)).
+
 0.3.1
 -----
 

@@ -66,6 +66,7 @@ internal fun CircuitContent(
     @Suppress("UNCHECKED_CAST")
     CircuitContent(screen, eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
   } else if (unavailableContent != null) {
+    eventListener.onUnavailableContent(screen, presenter, screenUi, context)
     unavailableContent(screen)
   } else {
     error("Could not render screen $screen")

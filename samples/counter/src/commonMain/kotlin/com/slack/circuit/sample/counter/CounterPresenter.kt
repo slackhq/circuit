@@ -7,7 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitContext
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
@@ -45,7 +45,7 @@ class CounterPresenterFactory : Presenter.Factory {
   override fun create(
     screen: Screen,
     navigator: Navigator,
-    circuitConfig: CircuitConfig,
+    context: CircuitContext,
   ): Presenter<*>? {
     return when (screen) {
       is CounterScreen -> presenterOf { CounterPresenter() }

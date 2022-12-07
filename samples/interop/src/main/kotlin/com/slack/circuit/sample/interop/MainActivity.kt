@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.CircuitContext
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.ScreenUi
@@ -49,9 +50,9 @@ class MainActivity : AppCompatActivity() {
 
     val circuitConfig =
       CircuitConfig.Builder()
-        .addPresenterFactory { screen, _, circuitConfig ->
+        .addPresenterFactory { screen, _, context ->
           when (screen) {
-            is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, circuitConfig)
+            is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, context)
             else -> null
           }
         }
@@ -172,16 +173,16 @@ private enum class PresenterSource {
   Circuit {
     override fun createPresenter(
       screen: InteropCounterScreen,
-      config: CircuitConfig
+      context: CircuitContext,
     ): Presenter<CounterState> {
-      return CounterPresenterFactory().create(screen, Navigator.NoOp, config)
+      return CounterPresenterFactory().create(screen, Navigator.NoOp, context)
         as Presenter<CounterState>
     }
   },
   Flow {
     override fun createPresenter(
       screen: InteropCounterScreen,
-      config: CircuitConfig
+      context: CircuitContext,
     ): Presenter<CounterState> {
       return FlowCounterPresenter().asCircuitPresenter()
     }
@@ -189,7 +190,7 @@ private enum class PresenterSource {
   RxJava {
     override fun createPresenter(
       screen: InteropCounterScreen,
-      config: CircuitConfig
+      context: CircuitContext,
     ): Presenter<CounterState> {
       return RxCounterPresenter().asCircuitPresenter()
     }
@@ -197,7 +198,7 @@ private enum class PresenterSource {
   Simple {
     override fun createPresenter(
       screen: InteropCounterScreen,
-      config: CircuitConfig
+      context: CircuitContext,
     ): Presenter<CounterState> {
       return SimpleCounterPresenter().asCircuitPresenter()
     }
@@ -205,7 +206,7 @@ private enum class PresenterSource {
 
   abstract fun createPresenter(
     screen: InteropCounterScreen,
-    config: CircuitConfig
+    context: CircuitContext,
   ): Presenter<CounterState>
 }
 

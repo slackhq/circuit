@@ -9,12 +9,15 @@ import kotlin.reflect.KClass
  * respective [Presenter] and [Ui] instances.
  *
  * Available information includes:
- * - [CircuitConfig]
+ * - [parent]
+ * - the parent [CircuitContext] or null if this is the root context.
+ * - [config]
  * - the [CircuitConfig] used in this [CircuitContext].
  * - [tag] – a tag API to plumb arbitrary metadata through the [CircuitConfig].
  */
 public class CircuitContext
 internal constructor(
+  public val parent: CircuitContext?,
   /** The [CircuitConfig] used in this context. */
   public var config: CircuitConfig
 ) {

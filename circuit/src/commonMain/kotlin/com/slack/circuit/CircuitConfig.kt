@@ -60,7 +60,7 @@ public class CircuitConfig private constructor(builder: Builder) {
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
-    context: CircuitContext = CircuitContext(this)
+    context: CircuitContext = CircuitContext(null, this)
   ): Presenter<*>? {
     return nextPresenter(null, screen, navigator, context)
   }
@@ -82,7 +82,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(this)): ScreenUi? {
+  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null, this)): ScreenUi? {
     return nextUi(null, screen, context)
   }
 

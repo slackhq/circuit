@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 
 @Composable internal expect fun PlatformCompositionLocals(content: @Composable () -> Unit)
@@ -22,6 +23,8 @@ public fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Comp
     PlatformCompositionLocals(content)
   }
 }
+
+internal val LocalCircuitContext = compositionLocalOf<CircuitContext?> { null }
 
 public object LocalCircuitOwner {
   private val LocalCircuitConfig = staticCompositionLocalOf<CircuitConfig?> { null }

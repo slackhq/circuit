@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
@@ -46,7 +47,22 @@ internal fun CircuitContent(
   circuitConfig: CircuitConfig,
   unavailableContent: (@Composable (screen: Screen) -> Unit)?,
 ) {
-  val context = remember(screen, navigator, circuitConfig) { CircuitContext(circuitConfig) }
+  val parent = LocalCircuitContext.current
+  val context =
+    remember(screen, navigator, circuitConfig, parent) { CircuitContext(parent, circuitConfig) }
+  CompositionLocalProvider(LocalCircuitContext provides context) {
+    CircuitContent(screen, navigator, circuitConfig, unavailableContent, context)
+  }
+}
+
+@Composable
+internal fun CircuitContent(
+  screen: Screen,
+  navigator: Navigator,
+  circuitConfig: CircuitConfig,
+  unavailableContent: (@Composable (screen: Screen) -> Unit)?,
+  context: CircuitContext,
+) {
   val eventListener =
     remember(screen, context) {
       circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE

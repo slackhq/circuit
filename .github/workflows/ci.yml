@@ -38,6 +38,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+          check-latest: true
 
       - name: Build and run tests
         id: gradle

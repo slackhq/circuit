@@ -675,8 +675,48 @@ interface <a href="./">EventListener</a></p>
 </thead>
 <tbody>
 <tr>
+<td><a href="dispose/">dispose</a></td>
+<td>[common]<br>open fun <a href="dispose/">dispose</a>()<br>Called once when this <a href="./">EventListener</a> should be disposed and the corresponding circuit is disposed.</td>
+</tr>
+<tr>
+<td><a href="on-after-create-presenter/">onAfterCreatePresenter</a></td>
+<td>[common]<br>open fun <a href="on-after-create-presenter/">onAfterCreatePresenter</a>(screen: <a href="../-screen/">Screen</a>, navigator: <a href="../-navigator/">Navigator</a>, presenter: <a href="../-presenter/">Presenter</a>&lt;*&gt;?, context: <a href="../-circuit-context/">CircuitContext</a>)<br>Called just after creating a <a href="on-after-create-presenter/">presenter</a> for a given <a href="on-after-create-presenter/">screen</a>. The presenter may be null if none was found.</td>
+</tr>
+<tr>
+<td><a href="on-after-create-ui/">onAfterCreateUi</a></td>
+<td>[common]<br>open fun <a href="on-after-create-ui/">onAfterCreateUi</a>(screen: <a href="../-screen/">Screen</a>, screenUi: <a href="../-screen-ui/">ScreenUi</a>?, context: <a href="../-circuit-context/">CircuitContext</a>)<br>Called just after creating a <a href="on-after-create-ui/">screenUi</a> for a given <a href="on-after-create-ui/">screen</a>. The ui may be null if none was found.</td>
+</tr>
+<tr>
+<td><a href="on-before-create-presenter/">onBeforeCreatePresenter</a></td>
+<td>[common]<br>open fun <a href="on-before-create-presenter/">onBeforeCreatePresenter</a>(screen: <a href="../-screen/">Screen</a>, navigator: <a href="../-navigator/">Navigator</a>, context: <a href="../-circuit-context/">CircuitContext</a>)<br>Called just before creating a <a href="../-presenter/">Presenter</a> for a given <a href="on-before-create-presenter/">screen</a>.</td>
+</tr>
+<tr>
+<td><a href="on-before-create-ui/">onBeforeCreateUi</a></td>
+<td>[common]<br>open fun <a href="on-before-create-ui/">onBeforeCreateUi</a>(screen: <a href="../-screen/">Screen</a>, context: <a href="../-circuit-context/">CircuitContext</a>)<br>Called just before creating a <a href="../-ui/">Ui</a> for a given <a href="on-before-create-ui/">screen</a>.</td>
+</tr>
+<tr>
+<td><a href="on-dispose-content/">onDisposeContent</a></td>
+<td>[common]<br>open fun <a href="on-dispose-content/">onDisposeContent</a>()<br>Called once after the <a href="../-ui/-content/">Ui.Content</a> composition is disposed.</td>
+</tr>
+<tr>
+<td><a href="on-dispose-present/">onDisposePresent</a></td>
+<td>[common]<br>open fun <a href="on-dispose-present/">onDisposePresent</a>()<br>Called once after the <a href="../-presenter/present/">Presenter.present</a> composition is disposed.</td>
+</tr>
+<tr>
+<td><a href="on-start-content/">onStartContent</a></td>
+<td>[common]<br>open fun <a href="on-start-content/">onStartContent</a>()<br>Called once before the initial <a href="../-ui/-content/">Ui.Content</a> call.</td>
+</tr>
+<tr>
+<td><a href="on-start-present/">onStartPresent</a></td>
+<td>[common]<br>open fun <a href="on-start-present/">onStartPresent</a>()<br>Called once before the initial <a href="../-presenter/present/">Presenter.present</a> call.</td>
+</tr>
+<tr>
 <td><a href="on-state/">onState</a></td>
-<td>[common]<br>open fun <a href="on-state/">onState</a>(state: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>)<br>Called when there is a new <a href="on-state/">state</a> returned by the <a href="../-presenter/">Presenter</a>.</td>
+<td>[common]<br>open fun <a href="on-state/">onState</a>(state: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>)<br>Called when there is a new <a href="on-state/">state</a> returned by the <a href="../-presenter/">Presenter</a>. This is called every time state is recomposed.</td>
+</tr>
+<tr>
+<td><a href="on-unavailable-content/">onUnavailableContent</a></td>
+<td>[common]<br>open fun <a href="on-unavailable-content/">onUnavailableContent</a>(screen: <a href="../-screen/">Screen</a>, presenter: <a href="../-presenter/">Presenter</a>&lt;*&gt;?, screenUi: <a href="../-screen-ui/">ScreenUi</a>?, context: <a href="../-circuit-context/">CircuitContext</a>)<br>Called when no content was found and one or both of <a href="on-unavailable-content/">presenter</a> and <a href="on-unavailable-content/">screenUi</a> are null.</td>
 </tr>
 </tbody>
 </table>

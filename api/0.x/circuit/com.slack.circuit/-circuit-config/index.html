@@ -685,7 +685,7 @@
 <p>Construction of <a href="./">CircuitConfig</a> instances is done using <a href="-builder/">the Builder</a>.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuitConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CircuitConfig</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span><span class="w"></span>
 <span class="w">    </span><span class="p">.</span><span class="na">addUiFactory</span><span class="p">(</span><span class="n">AddFavoritesUiFactory</span><span class="p">()</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">AddFavoritesPresenterFactory</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">AddFavoritesPresenterFactory</span><span class="p">())</span><span class="w"></span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span><span class="w"></span>
 </code></pre></div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
@@ -712,13 +712,10 @@
 </thead>
 <tbody>
 <tr>
-<td>rememberCircuitNavigator</td>
-</tr>
-<tr>
 <td><a href="../-circuit-content/">CircuitContent</a></td>
 </tr>
 <tr>
-<td>NavigableCircuitContent</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -752,19 +749,19 @@
 </tr>
 <tr>
 <td><a href="next-presenter/">nextPresenter</a></td>
-<td>[common]<br>fun <a href="next-presenter/">nextPresenter</a>(skipPast: <a href="../-presenter/-factory/">Presenter.Factory</a>?, screen: <a href="../-screen/">Screen</a>, navigator: <a href="../-navigator/">Navigator</a>): <a href="../-presenter/">Presenter</a>&lt;*&gt;?</td>
+<td>[common]<br>fun <a href="next-presenter/">nextPresenter</a>(skipPast: <a href="../-presenter/-factory/">Presenter.Factory</a>?, screen: <a href="../-screen/">Screen</a>, navigator: <a href="../-navigator/">Navigator</a>, context: <a href="../-circuit-context/">CircuitContext</a>): <a href="../-presenter/">Presenter</a>&lt;*&gt;?</td>
 </tr>
 <tr>
 <td><a href="next-ui/">nextUi</a></td>
-<td>[common]<br>fun <a href="next-ui/">nextUi</a>(skipPast: <a href="../-ui/-factory/">Ui.Factory</a>?, screen: <a href="../-screen/">Screen</a>): <a href="../-screen-ui/">ScreenUi</a>?</td>
+<td>[common]<br>fun <a href="next-ui/">nextUi</a>(skipPast: <a href="../-ui/-factory/">Ui.Factory</a>?, screen: <a href="../-screen/">Screen</a>, context: <a href="../-circuit-context/">CircuitContext</a>): <a href="../-screen-ui/">ScreenUi</a>?</td>
 </tr>
 <tr>
 <td><a href="presenter/">presenter</a></td>
-<td>[common]<br>fun <a href="presenter/">presenter</a>(screen: <a href="../-screen/">Screen</a>, navigator: <a href="../-navigator/">Navigator</a>): <a href="../-presenter/">Presenter</a>&lt;*&gt;?</td>
+<td>[common]<br>fun <a href="presenter/">presenter</a>(screen: <a href="../-screen/">Screen</a>, navigator: <a href="../-navigator/">Navigator</a>, context: <a href="../-circuit-context/">CircuitContext</a> = CircuitContext(null, this)): <a href="../-presenter/">Presenter</a>&lt;*&gt;?</td>
 </tr>
 <tr>
 <td><a href="ui/">ui</a></td>
-<td>[common]<br>fun <a href="ui/">ui</a>(screen: <a href="../-screen/">Screen</a>): <a href="../-screen-ui/">ScreenUi</a>?</td>
+<td>[common]<br>fun <a href="ui/">ui</a>(screen: <a href="../-screen/">Screen</a>, context: <a href="../-circuit-context/">CircuitContext</a> = CircuitContext(null, this)): <a href="../-screen-ui/">ScreenUi</a>?</td>
 </tr>
 </tbody>
 </table>

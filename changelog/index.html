@@ -580,6 +580,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    0.4.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#031" class="md-nav__link">
     0.3.1
   </a>
@@ -700,6 +707,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    0.4.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#031" class="md-nav__link">
     0.3.1
   </a>
@@ -774,6 +788,26 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link">&para;</a></h2>
+<p><em>2022-12-07</em></p>
+<ul>
+<li><strong>Breaking API Change</strong>: <code>Presenter</code> and <code>Ui</code> factories&rsquo; <code>create()</code> functions now offer a <code>CircuitContext</code> parameter in place of a <code>CircuitConfig</code> parameter. This class contains a <code>CircuitConfig</code>, a tagging API, and access to parent contexts. This allows for plumbing your own metadata through Circuit&rsquo;s internals such as tracing tools, logging, etc.</li>
+<li><strong>Enhancement</strong>: New lifecycle functions added to <code>EventListener</code>.</li>
+<li><code>onBeforeCreatePresenter</code></li>
+<li><code>onAfterCreatePresenter</code></li>
+<li><code>onBeforeCreateUi</code></li>
+<li><code>onAfterCreateUi</code></li>
+<li><code>onUnavailableContent</code></li>
+<li><code>onStartPresent</code></li>
+<li><code>onDisposePresent</code></li>
+<li><code>onStartContent</code></li>
+<li><code>onDisposeContent</code></li>
+<li><code>dispose</code></li>
+<li>Update Compose to <code>1.3.1</code>.</li>
+<li>Update Compose (JB) to <code>1.2.1</code>.</li>
+<li>Update Molecule to <code>0.6.1</code>.</li>
+<li>Added a demo to the STAR sample that shows how to navigate to standard Android components (<a href="https://github.com/slackhq/circuit/pull/275">#275</a>).</li>
+</ul>
 <h2 id="031">0.3.1<a class="headerlink" href="#031" title="Permanent link">&para;</a></h2>
 <p><em>2022-11-07</em></p>
 <ul>

@@ -656,7 +656,7 @@ interface <a href="./">Ui</a>&lt;<a href="./">UiState</a> : <a href="../-circuit
 <p>This has two main benefits:</p>
 <ol>
 <li>Discouraging properties and general non-composable state that writing a class may invite.</li>
-<li>Ensuring separation of <a href="./">Ui</a> instance from <a href="../-screen/">Screen</a> specific ui composables allows for and encourages easy UI previews via Compose&rsquo;s Preview annotations.</li>
+<li>Ensuring separation of <a href="./">Ui</a> instance from <a href="../-screen/">Screen</a> specific ui composables allows for and encourages easy UI previews via Compose&rsquo;s <code>@Preview</code> annotations.</li>
 </ol>
 <p>Usage:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">internal</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">tacoUi</span><span class="p">():</span><span class="w"> </span><span class="n">Ui</span><span class="o">&lt;</span><span class="n">State</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ui</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>

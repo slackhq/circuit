@@ -643,7 +643,7 @@ fun interface <a href="./">Factory</a></p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">FavoritesUiFactory</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w"> </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="w"></span>
 <span class="w">   </span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">circuitConfig</span><span class="p">:</span><span class="w"> </span><span class="n">CircuitConfig</span><span class="w"></span>
+<span class="w">   </span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">CircuitContext</span><span class="w"></span>
 <span class="w"> </span><span class="p">):</span><span class="w"> </span><span class="n">ScreenUi? </span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="kd">val</span><span class="w"> </span><span class="nv">ui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">     </span><span class="k">is</span><span class="w"> </span><span class="n">AddFavorites</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -673,7 +673,7 @@ fun interface <a href="./">Factory</a></p>
 <tbody>
 <tr>
 <td><a href="create/">create</a></td>
-<td>[common]<br>abstract fun <a href="create/">create</a>(screen: <a href="../../-screen/">Screen</a>, circuitConfig: <a href="../../-circuit-config/">CircuitConfig</a>): <a href="../../-screen-ui/">ScreenUi</a>?</td>
+<td>[common]<br>abstract fun <a href="create/">create</a>(screen: <a href="../../-screen/">Screen</a>, context: <a href="../../-circuit-context/">CircuitContext</a>): <a href="../../-screen-ui/">ScreenUi</a>?</td>
 </tr>
 </tbody>
 </table>

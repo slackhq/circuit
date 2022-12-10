@@ -44,3 +44,19 @@ public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
     }
   }
 }
+
+/** A delegating navigator that calls [EventListener.onGoTo] and [EventListener.onPop]. */
+internal class EventListenerNavigator(
+  private val delegate: Navigator,
+  private val eventListener: EventListener
+) : Navigator {
+  override fun goTo(screen: Screen) {
+    eventListener.onGoTo(screen)
+    delegate.goTo(screen)
+  }
+
+  override fun pop(): Screen? {
+    eventListener.onPop()
+    return delegate.pop()
+  }
+}

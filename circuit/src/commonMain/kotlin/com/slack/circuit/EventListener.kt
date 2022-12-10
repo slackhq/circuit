@@ -61,6 +61,12 @@ public interface EventListener {
   /** Called once after the [Ui.Content] composition is disposed. */
   public fun onDisposeContent() {}
 
+  /** Called whenever [Navigator.goTo] is called. */
+  public fun onGoTo(screen: Screen) {}
+
+  /** Called whenever [Navigator.pop] is called. */
+  public fun onPop() {}
+
   /**
    * Called once when this [EventListener] should be disposed and the corresponding circuit is
    * disposed.

@@ -69,10 +69,13 @@ internal fun CircuitContent(
     }
   DisposableEffect(screen, context) { onDispose { eventListener.dispose() } }
 
-  eventListener.onBeforeCreatePresenter(screen, navigator, context)
+  val eventListenerNavigator =
+    remember(eventListener) { EventListenerNavigator(navigator, eventListener) }
+
+  eventListener.onBeforeCreatePresenter(screen, eventListenerNavigator, context)
   @Suppress("UNCHECKED_CAST")
-  val presenter = circuitConfig.presenter(screen, navigator) as Presenter<CircuitUiState>?
-  eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
+  val presenter = circuitConfig.presenter(screen, eventListenerNavigator) as Presenter<CircuitUiState>?
+  eventListener.onAfterCreatePresenter(screen, eventListenerNavigator, presenter, context)
 
   eventListener.onBeforeCreateUi(screen, context)
   val screenUi = circuitConfig.ui(screen)

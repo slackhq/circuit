@@ -220,8 +220,8 @@ private class CircuitSymbolProcessor(
           } else {
             FactoryType.UI
           }
-        val assistedParams =
-          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
+        val (_, assistedParams) =
+          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER, false)
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
@@ -297,17 +297,19 @@ private class CircuitSymbolProcessor(
               }
             }
             .first()
-        val assistedParams =
+        val empty = CodeBlock.of("") to CodeBlock.of("")
+        val (args, assistedParams) =
           if (useProvider) {
             // Nothing to do here, we'll just use the provider directly.
-            CodeBlock.of("")
+            empty
           } else {
             creatorOrConstructor?.assistedParameters(
               symbols,
               logger,
               screenKSType,
-              allowNavigator = factoryType == FactoryType.PRESENTER
-            )
+              allowNavigator = factoryType == FactoryType.PRESENTER,
+              allowNonCircuitDeps = true
+            ) ?: empty
           }
         codeBlock =
           if (useProvider) {
@@ -323,11 +325,7 @@ private class CircuitSymbolProcessor(
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
             constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
-            CodeBlock.of(
-              "factory.%L(%L)",
-              creatorOrConstructor!!.simpleName.getShortName(),
-              assistedParams
-            )
+            buildAssistedFactoryCall(creatorOrConstructor!!.simpleName.getShortName(), args, assistedParams)
           } else {
             // Simple constructor call, no injection.
             CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
@@ -338,10 +336,25 @@ private class CircuitSymbolProcessor(
   }
 }
 
+private fun buildAssistedFactoryCall(methodName: String, args: CodeBlock, assistedParams: CodeBlock): CodeBlock {
+  val call = CodeBlock.of(
+    "factory.%L(%L)",
+    methodName,
+    assistedParams
+  )
+  if (args.isEmpty()) return call
+
+  return CodeBlock.builder()
+    .add(args)
+    .add(call)
+    .build()
+}
+
 private data class AssistedType(
   val factoryName: String,
   val type: TypeName,
   val name: String,
+  val codeBlock: CodeBlock = CodeBlock.of("$name = $factoryName")
 )
 
 /**
@@ -360,9 +373,10 @@ private fun KSFunctionDeclaration.assistedParameters(
   symbols: CircuitSymbols,
   logger: KSPLogger,
   screenType: KSType,
-  allowNavigator: Boolean
-): CodeBlock {
-  return buildSet {
+  allowNavigator: Boolean,
+  allowNonCircuitDeps: Boolean
+): Pair<CodeBlock, CodeBlock> {
+  val params = buildSet {
       for (param in parameters) {
         fun <E> MutableSet<E>.addOrError(element: E) {
           val added = add(element)
@@ -390,12 +404,38 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             }
           }
+          allowNonCircuitDeps -> {
+            val name = param.name!!.getShortName()
+            val factoryName = "context"
+            addOrError(
+              AssistedType(
+                factoryName,
+                type.toTypeName(),
+                name,
+                buildNonCircuitDep(name, factoryName, type)
+              )
+            )
+          }
         }
       }
     }
     .toList()
-    .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
+    .map { it.codeBlock }
     .joinToCode(",·")
+
+  return CodeBlock.of("") to params
+}
+
+private fun buildNonCircuitDep(name: String, factoryName: String, type: KSType): CodeBlock {
+  val className = type.declaration.simpleName.asString()
+  val retrieval = "$factoryName.tag($className::class)"
+    .let { retrieval ->
+      when {
+        type.isMarkedNullable -> retrieval
+        else -> """checkNotNull($retrieval) { "CircuitContext.tag(Class) returned a null value for required type '$className'" }"""
+      }
+    }
+  return CodeBlock.of("$name = $retrieval")
 }
 
 private fun KSType.isSameDeclarationAs(type: KSType): Boolean {

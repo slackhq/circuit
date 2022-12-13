@@ -33,6 +33,7 @@ import com.slack.circuit.Ui
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -171,9 +172,9 @@ private class CircuitSymbolProcessor(
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.tagsRetrieval, factoryData.codeBlock)
         FactoryType.UI ->
-          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.tagsRetrieval, factoryData.codeBlock)
       }
 
     FileSpec.get(factoryData.packageName, typeSpec)
@@ -185,6 +186,7 @@ private class CircuitSymbolProcessor(
     val packageName: String,
     val factoryType: FactoryType,
     val constructorParams: List<ParameterSpec>,
+    val tagsRetrieval: CodeBlock,
     val codeBlock: CodeBlock
   )
 
@@ -204,6 +206,7 @@ private class CircuitSymbolProcessor(
     val factoryType: FactoryType
     val constructorParams = mutableListOf<ParameterSpec>()
     val codeBlock: CodeBlock
+    var tagsRetrieval = CodeBlock.of("")
 
     when (instantiationType) {
       InstantiationType.FUNCTION -> {
@@ -220,8 +223,8 @@ private class CircuitSymbolProcessor(
           } else {
             FactoryType.UI
           }
-        val (_, assistedParams) =
-          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER, false)
+        val assistedParams =
+          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
@@ -298,19 +301,19 @@ private class CircuitSymbolProcessor(
             }
             .first()
         val empty = CodeBlock.of("") to CodeBlock.of("")
-        val (args, assistedParams) =
+        val assistedParams =
           if (useProvider) {
             // Nothing to do here, we'll just use the provider directly.
             empty
           } else {
             creatorOrConstructor?.assistedParameters(
+              screenKSType,
               symbols,
               logger,
-              screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
-              allowNonCircuitDeps = true
             ) ?: empty
           }
+        tagsRetrieval = assistedParams.first
         codeBlock =
           if (useProvider) {
             // Inject a Provider<TargetClass> that we'll call get() on.
@@ -325,36 +328,61 @@ private class CircuitSymbolProcessor(
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
             constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
-            buildAssistedFactoryCall(creatorOrConstructor!!.simpleName.getShortName(), args, assistedParams)
+            CodeBlock.of(
+              "factory.%L(%L)",
+              creatorOrConstructor!!.simpleName.getShortName(),
+              assistedParams.second
+            )
           } else {
             // Simple constructor call, no injection.
             CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
           }
       }
     }
-    return FactoryData(className, packageName, factoryType, constructorParams, codeBlock)
+    return FactoryData(className, packageName, factoryType, constructorParams, tagsRetrieval, codeBlock)
   }
 }
 
-private fun buildAssistedFactoryCall(methodName: String, args: CodeBlock, assistedParams: CodeBlock): CodeBlock {
-  val call = CodeBlock.of(
-    "factory.%L(%L)",
-    methodName,
-    assistedParams
-  )
-  if (args.isEmpty()) return call
+private fun KSFunctionDeclaration.assistedParameters(
+  screenType: KSType,
+  symbols: CircuitSymbols,
+  logger: KSPLogger,
+  allowNavigator: Boolean,
+): Pair<CodeBlock, CodeBlock> {
+  val tagDeps = mutableSetOf<KSType>()
+  val tagCodeBlock = with(CodeBlock.builder()) {
+    for (param in parameters) {
+      val type = param.type.resolve()
+      if (type.isInstanceOf(symbols.screen) || type.isInstanceOf(symbols.navigator)) continue
 
-  return CodeBlock.builder()
-    .add(args)
-    .add(call)
-    .build()
+      val name = param.name!!.getShortName()
+      val tagClass = type.toClassName().run { ClassName(packageName, simpleName) }
+      val retrieval = CodeBlock.of("context.tag(%T::class)", tagClass)
+      val stmt = with(CodeBlock.builder()) {
+        when {
+          type.isMarkedNullable -> addStatement("val·%L·=·%L", name, retrieval)
+          else -> {
+            beginControlFlow("val·%L·=·checkNotNull(%L)", name, retrieval)
+            addStatement("\"CircuitContext.tag(Class) returned a null value for required type '%T'\"", tagClass)
+            endControlFlow()
+          }
+        }
+        build()
+      }
+
+      tagDeps.add(type)
+      add(stmt)
+    }
+    build()
+  }
+
+  return tagCodeBlock to assistedParameters(symbols, logger, screenType, allowNavigator, tagDeps)
 }
 
 private data class AssistedType(
   val factoryName: String,
-  val type: TypeName,
+  val type: TypeName, // Is this used/needed??
   val name: String,
-  val codeBlock: CodeBlock = CodeBlock.of("$name = $factoryName")
 )
 
 /**
@@ -374,9 +402,9 @@ private fun KSFunctionDeclaration.assistedParameters(
   logger: KSPLogger,
   screenType: KSType,
   allowNavigator: Boolean,
-  allowNonCircuitDeps: Boolean
-): Pair<CodeBlock, CodeBlock> {
-  val params = buildSet {
+  tagDeps: Set<KSType> = emptySet()
+): CodeBlock {
+  return buildSet {
       for (param in parameters) {
         fun <E> MutableSet<E>.addOrError(element: E) {
           val added = add(element)
@@ -404,15 +432,13 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             }
           }
-          allowNonCircuitDeps -> {
+          tagDeps.contains(type) -> {
             val name = param.name!!.getShortName()
-            val factoryName = "context"
             addOrError(
               AssistedType(
-                factoryName,
-                type.toTypeName(),
                 name,
-                buildNonCircuitDep(name, factoryName, type)
+                type.toTypeName(),
+                name
               )
             )
           }
@@ -420,22 +446,8 @@ private fun KSFunctionDeclaration.assistedParameters(
       }
     }
     .toList()
-    .map { it.codeBlock }
+    .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
     .joinToCode(",·")
-
-  return CodeBlock.of("") to params
-}
-
-private fun buildNonCircuitDep(name: String, factoryName: String, type: KSType): CodeBlock {
-  val className = type.declaration.simpleName.asString()
-  val retrieval = "$factoryName.tag($className::class)"
-    .let { retrieval ->
-      when {
-        type.isMarkedNullable -> retrieval
-        else -> """checkNotNull($retrieval) { "CircuitContext.tag(Class) returned a null value for required type '$className'" }"""
-      }
-    }
-  return CodeBlock.of("$name = $retrieval")
 }
 
 private fun KSType.isSameDeclarationAs(type: KSType): Boolean {
@@ -449,26 +461,36 @@ private fun KSType.isInstanceOf(type: KSType): Boolean {
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
+  tagsRetrieval: CodeBlock,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
-  return addSuperinterface(Ui.Factory::class)
-    .addFunction(
-      FunSpec.builder("create")
-        .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", Screen::class)
-        .addParameter("context", CircuitContext::class)
-        .returns(ScreenUi::class.asClassName().copy(nullable = true))
-        .beginControlFlow("return·when·(screen)")
-        .addStatement(
+  val createFunction =
+    with(FunSpec.builder("create")) {
+      addModifiers(KModifier.OVERRIDE)
+      addParameter("screen", Screen::class)
+      addParameter("context", CircuitContext::class)
+      returns(ScreenUi::class.asClassName().copy(nullable = true))
+      beginControlFlow("return·when·(screen)")
+      if (tagsRetrieval.isEmpty()) {
+        addStatement(
           "%L·->·%T(%L)",
           screenBranch,
           ScreenUi::class.asTypeName(),
           instantiationCodeBlock
         )
-        .addStatement("else·->·null")
-        .endControlFlow()
-        .build()
-    )
+      } else {
+        beginControlFlow("%L·->·", screenBranch)
+        addCode(tagsRetrieval)
+        addStatement("%T(%L)", ScreenUi::class.asTypeName(), instantiationCodeBlock)
+        endControlFlow()
+      }
+      addStatement("else·->·null")
+      endControlFlow()
+      build()
+    }
+
+  return addSuperinterface(Ui.Factory::class)
+    .addFunction(createFunction)
     .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
 }
@@ -476,6 +498,7 @@ private fun TypeSpec.Builder.buildUiFactory(
 private fun TypeSpec.Builder.buildPresenterFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
+  tagsRetrieval: CodeBlock,
   instantiationCodeBlock: CodeBlock
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
@@ -485,26 +508,33 @@ private fun TypeSpec.Builder.buildPresenterFactory(
   //      navigator: Navigator,
   //      context: CircuitContext,
   //    ): Presenter<*>? = when (screen) {
-  //      is AboutScreen -> AboutPresenter()
   //      is AboutScreen -> presenterOf { AboutPresenter() }
   //      else -> null
   //    }
   //  }
+  val createFunction =
+    with(FunSpec.builder("create")) {
+      addModifiers(KModifier.OVERRIDE)
+      addParameter("screen", Screen::class)
+      addParameter("navigator", Navigator::class)
+      addParameter("context", CircuitContext::class)
+      returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
+      beginControlFlow("return when (screen)")
+      if (tagsRetrieval.isEmpty()) {
+        addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
+      } else {
+        beginControlFlow("%L·->·", screenBranch)
+        addCode(tagsRetrieval)
+        addStatement("%L", instantiationCodeBlock)
+        endControlFlow()
+      }
+      addStatement("else·->·null")
+      endControlFlow()
+      build()
+    }
 
   return addSuperinterface(Presenter.Factory::class)
-    .addFunction(
-      FunSpec.builder("create")
-        .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", Screen::class)
-        .addParameter("navigator", Navigator::class)
-        .addParameter("context", CircuitContext::class)
-        .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
-        .beginControlFlow("return when (screen)")
-        .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
-        .addStatement("else·->·null")
-        .endControlFlow()
-        .build()
-    )
+    .addFunction(createFunction)
     .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
 }

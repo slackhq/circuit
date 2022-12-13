@@ -213,7 +213,7 @@ subprojects {
     compileSdk = 33
 
     buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
+    composeOptions { kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get() }
 
     compileOptions {
       sourceCompatibility = JavaVersion.VERSION_11

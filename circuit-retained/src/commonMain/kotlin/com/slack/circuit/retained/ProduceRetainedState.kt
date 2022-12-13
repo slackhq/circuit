@@ -39,7 +39,6 @@ private class ProduceRetainedStateScopeImpl<T>(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
@@ -77,7 +76,6 @@ public fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
@@ -116,7 +114,6 @@ public fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
@@ -147,8 +144,8 @@ public fun <T> produceRetainedState(
  *
  * [producer] is launched when [produceRetainedState] enters the composition and is cancelled when
  * [produceRetainedState] leaves the composition. If [key1], [key2] or [key3] change, a running
- * [producer] will be cancelled and re-launched for the new source. [producer should use
- * [ProduceStateScope.value] to set new values on the returned [State].
+ * [producer] will be cancelled and re-launched for the new source.
+ * [producer should use [ProduceStateScope.value] to set new values on the returned [State].
  *
  * The returned [State] conflates values; no change will be observable if [ProduceStateScope.value]
  * is used to set a value that is [equal][Any.equals] to its old value, and observers may only see
@@ -156,7 +153,6 @@ public fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {
@@ -199,7 +195,6 @@ public fun <T> produceRetainedState(
  *
  * [produceRetainedState] may be used to observe either suspending or non-suspending sources of
  * external data, for example:
- *
  * ```
  * @Composable
  * fun FavoritesPresenter(favoritesRepository: FavoritesRepository): State {

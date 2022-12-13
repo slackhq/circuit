@@ -86,6 +86,28 @@ allprojects {
   }
 }
 
+val knownBomConfigurations =
+  setOf(
+    "implementation",
+    "testImplementation",
+    "androidTestImplementation",
+    "compileOnly",
+    "testCompileOnly",
+    "kapt",
+    "ksp",
+  )
+
+fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
+  dependencyHandler.apply {
+    val composeBom = platform(libs.androidx.compose.bom)
+    configurations
+      .matching { configuration ->
+        knownBomConfigurations.any { configuration.name.contains(it, ignoreCase = true) }
+      }
+      .configureEach { add(name, composeBom) }
+  }
+}
+
 subprojects {
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
@@ -97,6 +119,9 @@ subprojects {
     }
 
     tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
+
+    // This is the default base plugin applied on all projects, so safe to add this hook here
+    configureComposeBom(dependencies)
   }
 
   plugins.withType<KotlinBasePlugin> {
@@ -140,28 +165,28 @@ subprojects {
     if (!project.path.startsWith(":samples")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }
     }
-  }
 
-  // region Detekt
-  plugins.apply("io.gitlab.arturbosch.detekt")
-  configure<DetektExtension> {
-    toolVersion = detektVersion
-    allRules = true
-    config.from(rootProject.file("config/detekt/detekt.yml"))
-    buildUponDefaultConfig = true
-  }
-
-  tasks.withType<Detekt>().configureEach {
-    jvmTarget = "11"
-    reports {
-      html.required.set(true)
-      xml.required.set(true)
-      txt.required.set(true)
+    // region Detekt
+    plugins.apply("io.gitlab.arturbosch.detekt")
+    configure<DetektExtension> {
+      toolVersion = detektVersion
+      allRules = true
+      config.from(rootProject.file("config/detekt/detekt.yml"))
+      buildUponDefaultConfig = true
     }
-  }
 
-  dependencies.add("detektPlugins", twitterDetektPlugin)
-  // endregion
+    tasks.withType<Detekt>().configureEach {
+      jvmTarget = "11"
+      reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+      }
+    }
+
+    dependencies.add("detektPlugins", twitterDetektPlugin)
+    // endregion
+  }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")

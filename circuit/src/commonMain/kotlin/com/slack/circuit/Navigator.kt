@@ -17,6 +17,7 @@ public interface Navigator {
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
+    override fun reset(newRoot: Screen): Screen? = null
   }
 }
 

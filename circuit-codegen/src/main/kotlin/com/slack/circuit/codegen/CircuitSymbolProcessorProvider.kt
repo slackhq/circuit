@@ -172,9 +172,9 @@ private class CircuitSymbolProcessor(
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.tagsRetrieval, factoryData.codeBlock)
+          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.tagRetrievalProps, factoryData.objectCreator)
         FactoryType.UI ->
-          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.tagsRetrieval, factoryData.codeBlock)
+          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.tagRetrievalProps, factoryData.objectCreator)
       }
 
     FileSpec.get(factoryData.packageName, typeSpec)
@@ -186,8 +186,8 @@ private class CircuitSymbolProcessor(
     val packageName: String,
     val factoryType: FactoryType,
     val constructorParams: List<ParameterSpec>,
-    val tagsRetrieval: CodeBlock,
-    val codeBlock: CodeBlock
+    val tagRetrievalProps: CodeBlock,
+    val objectCreator: CodeBlock
   )
 
   /** Computes the data needed to generate a factory. */
@@ -461,8 +461,8 @@ private fun KSType.isInstanceOf(type: KSType): Boolean {
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
-  tagsRetrieval: CodeBlock,
-  instantiationCodeBlock: CodeBlock
+  tagRetrievalProps: CodeBlock,
+  createUI: CodeBlock
 ): TypeSpec {
   val createFunction =
     with(FunSpec.builder("create")) {
@@ -471,19 +471,10 @@ private fun TypeSpec.Builder.buildUiFactory(
       addParameter("context", CircuitContext::class)
       returns(ScreenUi::class.asClassName().copy(nullable = true))
       beginControlFlow("return·when·(screen)")
-      if (tagsRetrieval.isEmpty()) {
-        addStatement(
-          "%L·->·%T(%L)",
-          screenBranch,
-          ScreenUi::class.asTypeName(),
-          instantiationCodeBlock
-        )
-      } else {
-        beginControlFlow("%L·->·", screenBranch)
-        addCode(tagsRetrieval)
-        addStatement("%T(%L)", ScreenUi::class.asTypeName(), instantiationCodeBlock)
-        endControlFlow()
-      }
+      beginControlFlow("%L·->·", screenBranch)
+      if (tagRetrievalProps.isNotEmpty()) addCode(tagRetrievalProps)
+      addStatement("%T(%L)", ScreenUi::class.asTypeName(), createUI)
+      endControlFlow()
       addStatement("else·->·null")
       endControlFlow()
       build()
@@ -498,8 +489,8 @@ private fun TypeSpec.Builder.buildUiFactory(
 private fun TypeSpec.Builder.buildPresenterFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
-  tagsRetrieval: CodeBlock,
-  instantiationCodeBlock: CodeBlock
+  tagRetrievalProps: CodeBlock,
+  createPresenter: CodeBlock
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
   //  public class AboutPresenterFactory : Presenter.Factory {
@@ -520,14 +511,10 @@ private fun TypeSpec.Builder.buildPresenterFactory(
       addParameter("context", CircuitContext::class)
       returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
       beginControlFlow("return when (screen)")
-      if (tagsRetrieval.isEmpty()) {
-        addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
-      } else {
-        beginControlFlow("%L·->·", screenBranch)
-        addCode(tagsRetrieval)
-        addStatement("%L", instantiationCodeBlock)
-        endControlFlow()
-      }
+      beginControlFlow("%L·->·", screenBranch)
+      if (tagRetrievalProps.isNotEmpty()) addCode(tagRetrievalProps)
+      addStatement("%L", createPresenter)
+      endControlFlow()
       addStatement("else·->·null")
       endControlFlow()
       build()

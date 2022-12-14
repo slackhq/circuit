@@ -343,6 +343,29 @@ private class CircuitSymbolProcessor(
   }
 }
 
+/**
+ * Returns a [Pair] of [CodeBlocks][CodeBlock] representing all assisted parameters on this
+ * [KSFunctionDeclaration] to be used in generated invocation code.
+ *
+ * Note: this method will attempt to locate any non-Circuit assisted parameters by generating code
+ * that calls [CircuitContext.tag] with the appropriate [KSType].
+ *
+ * Example: this function
+ * ```kotlin
+ * @Composable
+ * fun HomePresenter(screen: Screen, navigator: Navigator, someObject: SomeObject)
+ * ```
+ *
+ * Yields a pair of CodeBlocks:
+ *
+ *   first:
+ *     val someObject = checkNotNull(context.tag(SomeObject::class)) {
+ *       "CircuitContext.tag(Class) returned a null value for required type 'SomeClass'"
+ *     }
+ *
+ *   second:
+ *     screen = screen, navigator = navigator, someObject = someObject
+ */
 private fun KSFunctionDeclaration.assistedParameters(
   screenType: KSType,
   symbols: CircuitSymbols,

@@ -9,6 +9,7 @@ import kotlin.test.assertFailsWith
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.fail
 
 private object TestScreen : Screen {
   override fun describeContents(): Int {
@@ -19,6 +20,9 @@ private object TestScreen : Screen {
     throw NotImplementedError()
   }
 }
+
+private object TestScreen2 : Screen by TestScreen
+private object TestScreen3 : Screen by TestScreen
 
 @RunWith(RobolectricTestRunner::class)
 class NavigatorTest {
@@ -48,5 +52,21 @@ class NavigatorTest {
     navigator.pop()
     assertThat(backstack).hasSize(1)
     assertThat(onRootPop).isEqualTo(1)
+  }
+
+  @Test
+  fun resetAndSetNewRoot() {
+    val backStack = SaveableBackStack()
+    backStack.push(TestScreen)
+    backStack.push(TestScreen2)
+
+    val navigator = NavigatorImpl(backStack) { fail() }
+
+    assertThat(backStack).hasSize(2)
+
+    navigator.reset(TestScreen3)
+
+    assertThat(backStack).hasSize(1)
+    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen3)
   }
 }

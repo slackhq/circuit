@@ -56,7 +56,8 @@ internal class EventListenerNavigator(
   }
 
   override fun pop(): Screen? {
-    eventListener.onPop()
-    return delegate.pop()
+    val screen = delegate.pop()
+    eventListener.onPop(screen)
+    return screen
   }
 }

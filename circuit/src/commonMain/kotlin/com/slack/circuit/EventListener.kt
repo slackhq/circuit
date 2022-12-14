@@ -65,7 +65,7 @@ public interface EventListener {
   public fun onGoTo(screen: Screen) {}
 
   /** Called whenever [Navigator.pop] is called. */
-  public fun onPop() {}
+  public fun onPop(screen: Screen?) {}
 
   /**
    * Called once when this [EventListener] should be disposed and the corresponding circuit is

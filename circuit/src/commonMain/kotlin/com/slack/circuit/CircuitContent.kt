@@ -31,6 +31,11 @@ public fun CircuitContent(
           onNavEvent(GoToNavEvent(screen))
         }
 
+        override fun reset(newRoot: Screen): Screen? {
+          onNavEvent(ResetNavEvent(newRoot))
+          return null
+        }
+
         override fun pop(): Screen? {
           onNavEvent(PopNavEvent)
           return null

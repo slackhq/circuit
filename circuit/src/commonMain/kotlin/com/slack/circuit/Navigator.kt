@@ -28,6 +28,7 @@ public interface Navigator {
 public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
+    is ResetNavEvent -> reset(event.newRoot)
     PopNavEvent -> pop()
   }
 }
@@ -38,6 +39,8 @@ public sealed interface NavEvent : CircuitUiEvent
 internal object PopNavEvent : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
+
+internal data class ResetNavEvent(internal val newRoot: Screen) : NavEvent
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {

@@ -136,7 +136,7 @@ private class CircuitSymbolProcessor(
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
     val factoryData =
-      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
+      computeFactoryData(instantiationType, annotatedElement, symbols, screenKSType)
         ?: return
 
     val builder =
@@ -185,161 +185,189 @@ private class CircuitSymbolProcessor(
     val className: String,
     val packageName: String,
     val factoryType: FactoryType,
-    val constructorParams: List<ParameterSpec>,
-    val tagRetrievalProps: CodeBlock,
-    val objectCreator: CodeBlock
+    val objectCreator: CodeBlock,
+    val constructorParams: List<ParameterSpec> = emptyList(),
+    val tagRetrievalProps: CodeBlock = CodeBlock.of(""),
   )
 
   /** Computes the data needed to generate a factory. */
   // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
   @Suppress("ComplexMethod", "LongMethod")
-  @OptIn(KspExperimental::class)
   private fun computeFactoryData(
+    instantiationType: InstantiationType,
     annotatedElement: KSAnnotated,
     symbols: CircuitSymbols,
     screenKSType: KSType,
-    instantiationType: InstantiationType,
-    logger: KSPLogger,
-  ): FactoryData? {
-    val className: String
-    val packageName: String
-    val factoryType: FactoryType
-    val constructorParams = mutableListOf<ParameterSpec>()
-    val codeBlock: CodeBlock
-    var tagsRetrieval = CodeBlock.of("")
+  ): FactoryData? = when (instantiationType) {
+    InstantiationType.FUNCTION ->
+      computeFunctionFactoryData(annotatedElement, symbols, screenKSType)
+    InstantiationType.CLASS ->
+      computeClassFactoryData(annotatedElement, symbols, screenKSType)
+  }
 
-    when (instantiationType) {
-      InstantiationType.FUNCTION -> {
-        val fd = annotatedElement as KSFunctionDeclaration
-        fd.checkVisibility(logger) {
-          return null
-        }
-        val name = annotatedElement.simpleName.getShortName()
-        className = name
-        packageName = fd.packageName.asString()
-        factoryType =
-          if (name.endsWith("Presenter")) {
-            FactoryType.PRESENTER
-          } else {
-            FactoryType.UI
-          }
-        val assistedParams =
-          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
-        codeBlock =
-          when (factoryType) {
-            FactoryType.PRESENTER ->
-              CodeBlock.of(
-                "%M·{·%M(%L)·}",
-                MemberName("com.slack.circuit", "presenterOf"),
-                MemberName(packageName, name),
-                assistedParams
-              )
-            FactoryType.UI -> {
-              val stateParam =
-                fd.parameters.singleOrNull { parameter ->
-                  symbols.circuitUiState.isAssignableFrom(parameter.type.resolve())
-                }
-              if (stateParam == null) {
-                CodeBlock.of(
-                  "%M<%T>·{·%M(%L)·}",
-                  MemberName("com.slack.circuit", "ui"),
-                  CircuitUiState::class.java,
-                  MemberName(packageName, name),
-                  assistedParams
-                )
-              } else {
-                val block =
-                  if (assistedParams.isEmpty()) {
-                    CodeBlock.of("")
-                  } else {
-                    CodeBlock.of(",·%L", assistedParams)
-                  }
-                CodeBlock.of(
-                  "%M<%T>·{·state·->·%M(%L·=·state%L)·}",
-                  MemberName("com.slack.circuit", "ui"),
-                  stateParam.type.resolve().toTypeName(),
-                  MemberName(packageName, name),
-                  stateParam.name!!.getShortName(),
-                  block
-                )
-              }
-            }
-          }
+  /** Computes the data needed to generate a function factory. */
+  private fun computeFunctionFactoryData(
+    annotatedElement: KSAnnotated,
+    symbols: CircuitSymbols,
+    screenKSType: KSType,
+  ): FactoryData? {
+    val fd = annotatedElement as KSFunctionDeclaration
+    fd.checkVisibility(logger) { return null }
+
+    val className = annotatedElement.simpleName.getShortName()
+    val factoryType =
+      if (className.endsWith("Presenter"))  FactoryType.PRESENTER  else FactoryType.UI
+    val assistedParams =
+      fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
+
+    return when (factoryType) {
+        FactoryType.PRESENTER ->
+          computePresenterFunctionFactoryData(fd.packageName.asString(), className, assistedParams)
+        FactoryType.UI ->
+          computeUiFunctionFactoryData(fd, symbols, className, assistedParams)
       }
-      InstantiationType.CLASS -> {
-        val cd = annotatedElement as KSClassDeclaration
-        cd.checkVisibility(logger) {
-          return null
-        }
-        val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
-        val creatorOrConstructor: KSFunctionDeclaration?
-        val targetClass: KSClassDeclaration
-        if (isAssisted) {
-          val creatorFunction = cd.getAllFunctions().filter { it.isAbstract }.single()
-          creatorOrConstructor = creatorFunction
-          targetClass = creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
-          targetClass.checkVisibility(logger) {
-            return null
-          }
+  }
+
+  /** Computes the data needed to generate a presenter function factory. */
+  private fun computePresenterFunctionFactoryData(
+    packageName: String,
+    className: String,
+    assistedParams: CodeBlock
+  ): FactoryData {
+    val codeBlock = CodeBlock.of(
+      "%M·{·%M(%L)·}",
+      MemberName("com.slack.circuit", "presenterOf"),
+      MemberName(packageName, className),
+      assistedParams
+    )
+
+    return FactoryData(className, packageName, FactoryType.PRESENTER, codeBlock)
+  }
+
+  /** Computes the data needed to generate a UI function factory. */
+  private fun computeUiFunctionFactoryData(
+    fd: KSFunctionDeclaration,
+    symbols: CircuitSymbols,
+    className: String,
+    assistedParams: CodeBlock
+  ): FactoryData {
+    val packageName = fd.packageName.asString()
+    val stateParam =
+      fd.parameters.singleOrNull { parameter ->
+        symbols.circuitUiState.isAssignableFrom(parameter.type.resolve())
+      }
+
+    val codeBlock = if (stateParam == null) {
+      CodeBlock.of(
+        "%M<%T>·{·%M(%L)·}",
+        MemberName("com.slack.circuit", "ui"),
+        CircuitUiState::class.java,
+        MemberName(packageName, className),
+        assistedParams
+      )
+    } else {
+      val block =
+        if (assistedParams.isEmpty()) {
+          CodeBlock.of("")
         } else {
-          creatorOrConstructor = cd.primaryConstructor
-          targetClass = cd
+          CodeBlock.of(",·%L", assistedParams)
         }
-        val useProvider =
-          !isAssisted && creatorOrConstructor?.isAnnotationPresent(Inject::class) == true
-        className = targetClass.simpleName.getShortName()
-        packageName = targetClass.packageName.asString()
-        factoryType =
-          targetClass
-            .getAllSuperTypes()
-            .mapNotNull {
-              when (it.declaration.qualifiedName?.asString()) {
-                CIRCUIT_UI -> FactoryType.UI
-                CIRCUIT_PRESENTER -> FactoryType.PRESENTER
-                else -> null
-              }
-            }
-            .first()
-        val empty = CodeBlock.of("") to CodeBlock.of("")
-        val assistedParams =
-          if (useProvider) {
-            // Nothing to do here, we'll just use the provider directly.
-            empty
-          } else {
-            creatorOrConstructor?.assistedParameters(
-              screenKSType,
-              symbols,
-              logger,
-              allowNavigator = factoryType == FactoryType.PRESENTER,
-            ) ?: empty
-          }
-        tagsRetrieval = assistedParams.first
-        codeBlock =
-          if (useProvider) {
-            // Inject a Provider<TargetClass> that we'll call get() on.
-            constructorParams.add(
-              ParameterSpec.builder(
-                  "provider",
-                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName())
-                )
-                .build()
-            )
-            CodeBlock.of("provider.get()")
-          } else if (isAssisted) {
-            // Inject the target class's assisted factory that we'll call its create() on.
-            constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
-            CodeBlock.of(
-              "factory.%L(%L)",
-              creatorOrConstructor!!.simpleName.getShortName(),
-              assistedParams.second
-            )
-          } else {
-            // Simple constructor call, no injection.
-            CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
-          }
-      }
+      CodeBlock.of(
+        "%M<%T>·{·state·->·%M(%L·=·state%L)·}",
+        MemberName("com.slack.circuit", "ui"),
+        stateParam.type.resolve().toTypeName(),
+        MemberName(packageName, className),
+        stateParam.name!!.getShortName(),
+        block
+      )
     }
-    return FactoryData(className, packageName, factoryType, constructorParams, tagsRetrieval, codeBlock)
+
+    return FactoryData(className, packageName, FactoryType.UI, codeBlock)
+  }
+
+  /** Computes the data needed to generate a class (Presenter or UI) factory. */
+  @OptIn(KspExperimental::class)
+  private fun computeClassFactoryData(
+    annotatedElement: KSAnnotated,
+    symbols: CircuitSymbols,
+    screenKSType: KSType,
+  ): FactoryData? {
+    val cd = annotatedElement as KSClassDeclaration
+    val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
+
+    val creatorOrConstructor: KSFunctionDeclaration?
+    val targetClass: KSClassDeclaration
+    if (isAssisted) {
+      creatorOrConstructor = cd.getAllFunctions().filter { it.isAbstract }.single()
+      targetClass = creatorOrConstructor.returnType!!.resolve().declaration as KSClassDeclaration
+    } else {
+      creatorOrConstructor = cd.primaryConstructor
+      targetClass = cd
+    }
+    targetClass.checkVisibility(logger) { return null }
+
+    val useProvider =
+      !isAssisted && creatorOrConstructor?.isAnnotationPresent(Inject::class) == true
+
+    val factoryType =
+      targetClass
+        .getAllSuperTypes()
+        .mapNotNull {
+          when (it.declaration.qualifiedName?.asString()) {
+            CIRCUIT_UI -> FactoryType.UI
+            CIRCUIT_PRESENTER -> FactoryType.PRESENTER
+            else -> null
+          }
+        }
+        .first()
+
+    val empty = CodeBlock.of("") to CodeBlock.of("")
+    val (tagRetrievalProps, assistedParams) =
+      if (useProvider) {
+        // Nothing to do here, we'll just use the provider directly.
+        empty
+      } else {
+        creatorOrConstructor?.assistedParameters(
+          screenKSType,
+          symbols,
+          logger,
+          allowNavigator = factoryType == FactoryType.PRESENTER,
+        ) ?: empty
+      }
+
+    val constructorParams = mutableListOf<ParameterSpec>()
+    val objectCreator =
+      if (useProvider) {
+        // Inject a Provider<TargetClass> that we'll call get() on.
+        constructorParams.add(
+          ParameterSpec.builder(
+            "provider",
+            Provider::class.asClassName().parameterizedBy(targetClass.toClassName())
+          )
+            .build()
+        )
+        CodeBlock.of("provider.get()")
+      } else if (isAssisted) {
+        // Inject the target class's assisted factory that we'll call its create() on.
+        constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
+        CodeBlock.of(
+          "factory.%L(%L)",
+          creatorOrConstructor!!.simpleName.getShortName(),
+          assistedParams
+        )
+      } else {
+        // Simple constructor call, no injection.
+        CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
+      }
+
+    return FactoryData(
+      targetClass.simpleName.getShortName(),
+      targetClass.packageName.asString(),
+      factoryType,
+      objectCreator,
+      constructorParams,
+      tagRetrievalProps
+    )
   }
 }
 
@@ -425,7 +453,7 @@ private fun KSFunctionDeclaration.assistedParameters(
   logger: KSPLogger,
   screenType: KSType,
   allowNavigator: Boolean,
-  tagDeps: Set<KSType> = emptySet()
+  parametersFromTags: Set<KSType> = emptySet()
 ): CodeBlock {
   return buildSet {
       for (param in parameters) {
@@ -455,7 +483,7 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             }
           }
-          tagDeps.contains(type) -> {
+          parametersFromTags.contains(type) -> {
             val name = param.name!!.getShortName()
             addOrError(
               AssistedType(

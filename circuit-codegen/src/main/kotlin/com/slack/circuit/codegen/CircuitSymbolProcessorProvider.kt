@@ -72,6 +72,8 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitUiState = resolver.loadKSType<CircuitUiState>()
   val screen = resolver.loadKSType<Screen>()
   val navigator = resolver.loadKSType<Navigator>()
+  val context = resolver.loadKSType<CircuitContext>()
+  val state = resolver.loadKSType<CircuitUiState>()
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {
       @Suppress("SwallowedException")
@@ -217,47 +219,46 @@ private class CircuitSymbolProcessor(
     val className = annotatedElement.simpleName.getShortName()
     val factoryType =
       if (className.endsWith("Presenter"))  FactoryType.PRESENTER  else FactoryType.UI
-    val assistedParams =
-      fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
+    val (tagRetrievalProps, assistedParams) =
+      fd.tagRetrievalPropsAndAssistedParameters(screenKSType, symbols, logger, factoryType == FactoryType.PRESENTER)
 
-    return when (factoryType) {
+    val packageName = fd.packageName.asString()
+    val objectCreator = when (factoryType) {
         FactoryType.PRESENTER ->
-          computePresenterFunctionFactoryData(fd.packageName.asString(), className, assistedParams)
+          createPresenterFunctionObjectWrapper(packageName, className, assistedParams)
         FactoryType.UI ->
-          computeUiFunctionFactoryData(fd, symbols, className, assistedParams)
+          createUiFunctionObjectWrapper(fd, symbols, className, assistedParams)
       }
+
+    return FactoryData(className, packageName, factoryType, objectCreator, tagRetrievalProps = tagRetrievalProps)
   }
 
-  /** Computes the data needed to generate a presenter function factory. */
-  private fun computePresenterFunctionFactoryData(
+  /** Returns a [CodeBlock] that wraps a call to the presenter function in an object. */
+  private fun createPresenterFunctionObjectWrapper(
     packageName: String,
     className: String,
     assistedParams: CodeBlock
-  ): FactoryData {
-    val codeBlock = CodeBlock.of(
+  ) = CodeBlock.of(
       "%M·{·%M(%L)·}",
       MemberName("com.slack.circuit", "presenterOf"),
       MemberName(packageName, className),
       assistedParams
     )
 
-    return FactoryData(className, packageName, FactoryType.PRESENTER, codeBlock)
-  }
-
-  /** Computes the data needed to generate a UI function factory. */
-  private fun computeUiFunctionFactoryData(
+  /** Returns a [CodeBlock] that wraps a call to the content function in an object. */
+  private fun createUiFunctionObjectWrapper(
     fd: KSFunctionDeclaration,
     symbols: CircuitSymbols,
     className: String,
     assistedParams: CodeBlock
-  ): FactoryData {
+  ): CodeBlock {
     val packageName = fd.packageName.asString()
     val stateParam =
       fd.parameters.singleOrNull { parameter ->
         symbols.circuitUiState.isAssignableFrom(parameter.type.resolve())
       }
 
-    val codeBlock = if (stateParam == null) {
+    return if (stateParam == null) {
       CodeBlock.of(
         "%M<%T>·{·%M(%L)·}",
         MemberName("com.slack.circuit", "ui"),
@@ -281,8 +282,6 @@ private class CircuitSymbolProcessor(
         block
       )
     }
-
-    return FactoryData(className, packageName, FactoryType.UI, codeBlock)
   }
 
   /** Computes the data needed to generate a class (Presenter or UI) factory. */
@@ -327,7 +326,7 @@ private class CircuitSymbolProcessor(
         // Nothing to do here, we'll just use the provider directly.
         empty
       } else {
-        creatorOrConstructor?.assistedParameters(
+        creatorOrConstructor?.tagRetrievalPropsAndAssistedParameters(
           screenKSType,
           symbols,
           logger,
@@ -394,17 +393,23 @@ private class CircuitSymbolProcessor(
  *   second:
  *     screen = screen, navigator = navigator, someObject = someObject
  */
-private fun KSFunctionDeclaration.assistedParameters(
+private fun KSFunctionDeclaration.tagRetrievalPropsAndAssistedParameters(
   screenType: KSType,
   symbols: CircuitSymbols,
   logger: KSPLogger,
   allowNavigator: Boolean,
 ): Pair<CodeBlock, CodeBlock> {
-  val tagDeps = mutableSetOf<KSType>()
+  val parametersFromTags = mutableSetOf<KSType>()
   val tagCodeBlock = with(CodeBlock.builder()) {
     for (param in parameters) {
+      if (param.hasDefault) continue // ie. Compose Modifier
+
       val type = param.type.resolve()
-      if (type.isInstanceOf(symbols.screen) || type.isInstanceOf(symbols.navigator)) continue
+      if (type.isInstanceOf(symbols.screen)
+        || type.isInstanceOf(symbols.navigator)
+        || type.isInstanceOf(symbols.context) // not eligible for Circuit injection
+        || type.isInstanceOf(symbols.state) // handled elsewhere (for UI function factory only!)
+      ) continue
 
       val name = param.name!!.getShortName()
       val tagClass = type.toClassName().run { ClassName(packageName, simpleName) }
@@ -421,13 +426,13 @@ private fun KSFunctionDeclaration.assistedParameters(
         build()
       }
 
-      tagDeps.add(type)
+      parametersFromTags.add(type)
       add(stmt)
     }
     build()
   }
 
-  return tagCodeBlock to assistedParameters(symbols, logger, screenType, allowNavigator, tagDeps)
+  return tagCodeBlock to assistedParameters(symbols, logger, screenType, allowNavigator, parametersFromTags)
 }
 
 private data class AssistedType(

@@ -124,7 +124,6 @@ public interface Presenter<UiState : CircuitUiState> {
    * ```
    *
    * This would be represented by the following factory implementation:
-   *
    * ```kotlin
    * class ProfilePresenter.Factory @Inject constructor(
    *   val headerPresenter: ProfilerHeaderPresenter.Factory,

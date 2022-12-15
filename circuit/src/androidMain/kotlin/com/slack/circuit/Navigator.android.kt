@@ -12,11 +12,10 @@ import com.slack.circuit.backstack.isEmpty
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
- * @see NavigableCircuitContent
- *
  * @param backstack The backing [SaveableBackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
- * button. Defaults to delegating to the [LocalOnBackPressedDispatcherOwner].
+ *   button. Defaults to delegating to the [LocalOnBackPressedDispatcherOwner].
+ * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(

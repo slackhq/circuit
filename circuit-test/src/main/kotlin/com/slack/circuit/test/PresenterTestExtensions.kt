@@ -15,11 +15,10 @@ import kotlin.time.Duration
  * Presents this [Presenter] and invokes a `suspend` [ReceiveTurbine] [block] that can be used to
  * assert state emissions from this presenter.
  *
- * @see moleculeFlow
- * @see test
- *
  * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
  * @param block the block to invoke.
+ * @see moleculeFlow
+ * @see test
  */
 public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   timeout: Duration? = null,
@@ -33,12 +32,11 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
  * Presents this [presentFunction] and invokes a `suspend` [ReceiveTurbine] [block] that can be used
  * to assert state emissions from it.
  *
- * @see moleculeFlow
- * @see test
- *
  * @param presentFunction the [Composable] present function being tested.
  * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
  * @param block the block to invoke.
+ * @see moleculeFlow
+ * @see test
  */
 public suspend fun <UiState : CircuitUiState> presenterTestOf(
   presentFunction: @Composable () -> UiState,

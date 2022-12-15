@@ -349,6 +349,7 @@ private data class AssistedType(
  * [KSFunctionDeclaration] to be used in generated invocation code.
  *
  * Example: this function
+ *
  * ```kotlin
  * @Composable
  * fun HomePresenter(screen: Screen, navigator: Navigator)

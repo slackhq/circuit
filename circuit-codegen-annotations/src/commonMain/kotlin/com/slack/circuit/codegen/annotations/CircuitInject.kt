@@ -28,6 +28,7 @@ import kotlin.reflect.KClass
  * [Ui.Factory] classes generated for them.
  *
  * **Presenter**
+ *
  * ```kotlin
  * @CircuitInject(HomeScreen::class, AppScope::class)
  * class HomePresenter @Inject constructor(...) : Presenter<HomeState> { ... }
@@ -38,6 +39,7 @@ import kotlin.reflect.KClass
  * ```
  *
  * **UI**
+ *
  * ```kotlin
  * @CircuitInject(HomeScreen::class, AppScope::class)
  * class HomeUi @Inject constructor(...) : Ui<HomeState> { ... }
@@ -54,14 +56,15 @@ import kotlin.reflect.KClass
  *
  * **Requirements**
  * - Presenter function names _must_ end in `Presenter`, otherwise they will be treated as UI
- * functions.
+ *   functions.
  * - Presenter functions _must_ return a [CircuitUiState] type.
  * - UI functions can optionally accept a [CircuitUiState] type as a parameter, but it is not
- * required.
+ *   required.
  * - UI functions _must_ return [Unit].
  * - Both presenter and UI functions _must_ be [Composable].
  *
  * **Presenter**
+ *
  * ```kotlin
  * @CircuitInject(HomeScreen::class, AppScope::class)
  * @Composable
@@ -73,6 +76,7 @@ import kotlin.reflect.KClass
  * ```
  *
  * **UI**
+ *
  * ```kotlin
  * @CircuitInject(HomeScreen::class, AppScope::class)
  * @Composable
@@ -97,6 +101,7 @@ import kotlin.reflect.KClass
  * Each should only be defined at-most once.
  *
  * **Examples**
+ *
  * ```kotlin
  * // Function example
  * @CircuitInject(HomeScreen::class, AppScope::class)

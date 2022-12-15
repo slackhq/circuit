@@ -52,7 +52,7 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
  * Provides a [RetainedStateRegistry].
  *
  * @param factory an optional [ViewModelProvider.Factory] to use when creating the [Continuity]
- * instance.
+ *   instance.
  */
 @Composable
 public fun continuityRetainedStateRegistry(

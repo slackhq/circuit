@@ -10,6 +10,7 @@ import com.slack.circuit.Screen
  * A fake [Navigator] that can be used in tests to record and assert navigation events.
  *
  * Example
+ *
  * ```kotlin
  * val navigator = FakeNavigator()
  * val presenter = FavoritesPresenter(navigator)

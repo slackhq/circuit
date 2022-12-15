@@ -11,6 +11,7 @@ import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
@@ -270,7 +271,7 @@ subprojects {
 
   // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
-    configure<org.jetbrains.compose.ComposeExtension> {
+    configure<ComposeExtension> {
       kotlinCompilerPlugin.set(
         dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
       )

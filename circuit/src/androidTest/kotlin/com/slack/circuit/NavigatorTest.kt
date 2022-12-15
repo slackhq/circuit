@@ -6,10 +6,10 @@ import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import kotlin.test.assertFailsWith
+import kotlin.test.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.fail
 
 private object TestScreen : Screen {
   override fun describeContents(): Int {
@@ -22,6 +22,7 @@ private object TestScreen : Screen {
 }
 
 private object TestScreen2 : Screen by TestScreen
+
 private object TestScreen3 : Screen by TestScreen
 
 @RunWith(RobolectricTestRunner::class)

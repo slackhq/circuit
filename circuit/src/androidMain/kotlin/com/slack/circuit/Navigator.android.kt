@@ -56,8 +56,7 @@ internal class NavigatorImpl(
 
   override fun reset(newRoot: Screen): Screen? {
     while (backstack.size > 1) pop()
-    return backstack.pop()?.screen
-      ?.also { backstack.push(newRoot) }
+    return backstack.pop()?.screen?.also { backstack.push(newRoot) }
   }
 
   override fun equals(other: Any?): Boolean {

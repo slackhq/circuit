@@ -36,6 +36,7 @@ plugins {
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
+  alias(libs.plugins.compose) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
@@ -265,6 +266,18 @@ subprojects {
       compileOptions { isCoreLibraryDesugaringEnabled = true }
     }
     dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
+  }
+
+  // Disable compose-jb Compose version checks
+  pluginManager.withPlugin("org.jetbrains.compose") {
+    configure<org.jetbrains.compose.ComposeExtension> {
+      kotlinCompilerPlugin.set(
+        dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
+      )
+      kotlinCompilerPluginArgs.add(
+        "suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}"
+      )
+    }
   }
 }
 

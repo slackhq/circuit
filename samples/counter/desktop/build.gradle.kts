@@ -1,7 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 
 plugins {
   kotlin("jvm")
@@ -21,5 +20,4 @@ dependencies {
   implementation(compose.desktop.currentOs)
   implementation(projects.samples.counter)
   implementation(projects.circuit)
-  add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
 }

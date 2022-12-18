@@ -58,10 +58,7 @@ tasks
   .withType<KotlinCompile>()
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
-    kotlinOptions {
-      @Suppress("SuspiciousCollectionReassignment")
-      freeCompilerArgs += listOf("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-    }
+    compilerOptions { freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi") }
   }
 
 android { namespace = "com.slack.circuit.core" }

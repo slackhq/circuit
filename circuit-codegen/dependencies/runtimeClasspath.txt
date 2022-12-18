@@ -1,3 +1,4 @@
+androidx.compose:compose-bom
 com.google.auto.service:auto-service-annotations
 com.google.dagger:dagger
 com.squareup.anvil:annotations

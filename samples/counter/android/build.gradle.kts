@@ -18,6 +18,7 @@ android {
 dependencies {
   implementation(projects.samples.counter)
   implementation(projects.circuit)
+  implementation(libs.androidx.appCompat)
   implementation(libs.bundles.compose.ui)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.integration.materialThemeAdapter)

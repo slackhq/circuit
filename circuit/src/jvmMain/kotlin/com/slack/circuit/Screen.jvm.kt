@@ -2,4 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
-public actual interface Screen
+import androidx.compose.runtime.Immutable
+
+@Immutable public actual interface Screen

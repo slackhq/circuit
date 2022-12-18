@@ -11,9 +11,12 @@ import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -36,11 +39,20 @@ plugins {
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
+  alias(libs.plugins.compose) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
 val detektVersion = libs.versions.detekt.get()
 val twitterDetektPlugin = libs.detektPlugins.twitterCompose
+
+// Flag to disable Compose's kotlin version check because they're often behind
+// Or ahead
+// Or if they're the same, do nothing
+// It's basically just very noisy.
+val composeCompilerKotlinVersion = libs.versions.composeCompilerKotlinVersion.get()
+val kotlinVersion = libs.versions.kotlin.get()
+val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
@@ -125,41 +137,56 @@ subprojects {
   }
 
   plugins.withType<KotlinBasePlugin> {
-    tasks.withType<KotlinCompile>().configureEach {
-      kotlinOptions {
-        allWarningsAsErrors = true
-        jvmTarget = "11"
-        // We use class SAM conversions because lambdas compiled into invokedynamic are not
-        // Serializable, which causes accidental headaches with Gradle configuration caching. It's
-        // easier for us to just use the previous anonymous classes behavior
-        @Suppress("SuspiciousCollectionReassignment")
-        freeCompilerArgs +=
-          listOf(
-            "-progressive",
-            "-Xinline-classes",
-            "-Xjsr305=strict",
-            "-opt-in=kotlin.contracts.ExperimentalContracts",
-            "-opt-in=kotlin.experimental.ExperimentalTypeInference",
-            "-opt-in=kotlin.ExperimentalStdlibApi",
-            "-opt-in=kotlin.time.ExperimentalTime",
-            // We should be able to remove this in Kotlin 1.7, yet for some reason it still warns
-            // about its use
-            // https://youtrack.jetbrains.com/issue/KT-52720
-            "-opt-in=kotlin.RequiresOptIn",
-            // Match JVM assertion behavior:
-            // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
-            "-Xassertions=jvm",
-            // Potentially useful for static analysis tools or annotation processors.
-            "-Xemit-jvm-type-annotations",
-            "-Xproper-ieee754-comparisons",
-            // Enable new jvm-default behavior
-            // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-            "-Xjvm-default=all",
-            // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-            "-Xtype-enhancement-improvements-strict-mode",
-            "-Xjspecify-annotations=strict",
-          )
+    val hasCompose = !project.hasProperty("circuit.noCompose")
+    tasks
+      .withType<KotlinCompile>()
+      // Stub gen copies args from the parent compilation
+      .matching { it !is KaptGenerateStubsTask }
+      .configureEach {
+        kotlinOptions {
+          allWarningsAsErrors = true
+          jvmTarget = "11"
+          @Suppress("SuspiciousCollectionReassignment")
+          freeCompilerArgs +=
+            listOf(
+              "-progressive",
+              "-Xinline-classes",
+              "-Xjsr305=strict",
+              "-opt-in=kotlin.contracts.ExperimentalContracts",
+              "-opt-in=kotlin.experimental.ExperimentalTypeInference",
+              "-opt-in=kotlin.ExperimentalStdlibApi",
+              "-opt-in=kotlin.time.ExperimentalTime",
+              // We should be able to remove this in Kotlin 1.7, yet for some reason it still warns
+              // about its use
+              // https://youtrack.jetbrains.com/issue/KT-52720
+              "-opt-in=kotlin.RequiresOptIn",
+              // Match JVM assertion behavior:
+              // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
+              "-Xassertions=jvm",
+              // Potentially useful for static analysis tools or annotation processors.
+              "-Xemit-jvm-type-annotations",
+              "-Xproper-ieee754-comparisons",
+              // Enable new jvm-default behavior
+              // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+              "-Xjvm-default=all",
+              // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
+              "-Xtype-enhancement-improvements-strict-mode",
+              "-Xjspecify-annotations=strict",
+            )
+
+          if (hasCompose && suppressComposeKotlinVersion) {
+            @Suppress("SuspiciousCollectionReassignment")
+            freeCompilerArgs +=
+              listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+              )
+          }
+        }
       }
+
+    if (hasCompose) {
+      dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }
     }
 
     if (!project.path.startsWith(":samples")) {
@@ -290,6 +317,15 @@ subprojects {
       compileOptions { isCoreLibraryDesugaringEnabled = true }
     }
     dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
+  }
+
+  // Disable compose-jb Compose version checks
+  pluginManager.withPlugin("org.jetbrains.compose") {
+    configure<ComposeExtension> {
+      kotlinCompilerPlugin.set(
+        dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
+      )
+    }
   }
 }
 

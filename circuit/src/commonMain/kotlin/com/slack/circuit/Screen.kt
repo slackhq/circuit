@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Represents an individual screen, used as a key for [Presenter.Factory] and [Ui.Factory].
  *
@@ -27,4 +29,5 @@ package com.slack.circuit
  * }
  * ```
  */
+@Immutable
 public expect interface Screen

@@ -3,5 +3,7 @@
 package com.slack.circuit
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 
+@Immutable
 public actual interface Screen : Parcelable

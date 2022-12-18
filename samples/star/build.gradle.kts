@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -26,34 +27,37 @@ android {
   testBuildType = "release"
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-  @Suppress("SuspiciousCollectionReassignment")
-  kotlinOptions {
-    freeCompilerArgs +=
-      listOf(
-        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-      )
+tasks
+  .withType<KotlinCompile>()
+  .matching { it !is KaptGenerateStubsTask }
+  .configureEach {
+    @Suppress("SuspiciousCollectionReassignment")
+    kotlinOptions {
+      freeCompilerArgs +=
+        listOf(
+          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        )
 
-    if (project.hasProperty("circuit.enableComposeCompilerReports")) {
-      freeCompilerArgs +=
-        listOf(
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-            project.buildDir.absolutePath +
-            "/compose_metrics"
-        )
-      freeCompilerArgs +=
-        listOf(
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-            project.buildDir.absolutePath +
-            "/compose_metrics"
-        )
+      if (project.hasProperty("circuit.enableComposeCompilerReports")) {
+        freeCompilerArgs +=
+          listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+              project.buildDir.absolutePath +
+              "/compose_metrics"
+          )
+        freeCompilerArgs +=
+          listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+              project.buildDir.absolutePath +
+              "/compose_metrics"
+          )
+      }
     }
   }
-}
 
 dependencies {
   kapt(libs.dagger.compiler)

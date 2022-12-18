@@ -137,6 +137,7 @@ subprojects {
   }
 
   plugins.withType<KotlinBasePlugin> {
+    val hasCompose = !project.hasProperty("circuit.noCompose")
     tasks
       .withType<KotlinCompile>()
       // Stub gen copies args from the parent compilation
@@ -173,21 +174,20 @@ subprojects {
               "-Xjspecify-annotations=strict",
             )
 
-          if (!project.hasProperty("circuit.noCompose")) {
-            if (suppressComposeKotlinVersion) {
-              @Suppress("SuspiciousCollectionReassignment")
-              freeCompilerArgs +=
-                listOf(
-                  "-P",
-                  "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
-                )
-            }
-            dependencies {
-              add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
-            }
+          if (hasCompose && suppressComposeKotlinVersion) {
+            @Suppress("SuspiciousCollectionReassignment")
+            freeCompilerArgs +=
+              listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+              )
           }
         }
       }
+
+    if (hasCompose) {
+      dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }
+    }
 
     if (!project.path.startsWith(":samples")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }

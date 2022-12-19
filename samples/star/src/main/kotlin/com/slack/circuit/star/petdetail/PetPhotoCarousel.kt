@@ -42,6 +42,7 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import dagger.assisted.Assisted
@@ -52,6 +53,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.TypeParceler
 
 /*
  * This is a trivial example of a photo carousel used in the pet detail screen. We'd normally likely
@@ -65,7 +67,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PetPhotoCarouselScreen(
   val name: String,
-  val photoUrls: List<String>,
+  @TypeParceler<ImmutableList<String>, ImmutableListParceler> val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
   data class State(

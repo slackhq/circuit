@@ -32,6 +32,8 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
@@ -45,12 +47,12 @@ constructor(
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    var backStack: List<Screen> = listOf(HomeScreen)
+    var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
     if (intent.data != null) {
       val httpUrl = intent.data.toString().toHttpUrl()
       val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
       val petDetailScreen = PetDetailScreen(animalId, null)
-      backStack = listOf(HomeScreen, petDetailScreen)
+      backStack = persistentListOf(HomeScreen, petDetailScreen)
     }
 
     setContent {

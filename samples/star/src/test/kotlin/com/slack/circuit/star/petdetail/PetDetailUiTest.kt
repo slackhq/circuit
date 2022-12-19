@@ -22,6 +22,7 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.FakeImageLoader
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -96,11 +97,11 @@ class PetDetailUiTest {
     val success =
       PetDetailScreen.State.Success(
         url = "url",
-        photoUrls = listOf("http://some.url"),
+        photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
-        tags = listOf("dog", "terrier", "male"),
+        tags = persistentListOf("dog", "terrier", "male"),
         eventSink = {}
       )
 
@@ -135,11 +136,11 @@ class PetDetailUiTest {
     val success =
       PetDetailScreen.State.Success(
         url = "url",
-        photoUrls = listOf("http://some.url"),
+        photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
-        tags = listOf("dog", "terrier", "male"),
+        tags = persistentListOf("dog", "terrier", "male"),
         eventSink = channel::trySend
       )
 

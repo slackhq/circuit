@@ -10,15 +10,17 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize
 
-private val HOME_NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
+private val HOME_NAV_ITEMS = persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About)
 
 @Parcelize
 object HomeNavScreen : Screen {
   data class State(
     val index: Int,
-    val bottomNavItems: List<BottomNavItem>,
+    val bottomNavItems: ImmutableList<BottomNavItem>,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 

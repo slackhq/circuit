@@ -59,6 +59,8 @@ import com.slack.circuit.star.repo.PetRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -70,11 +72,11 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
 
     data class Success(
       val url: String,
-      val photoUrls: List<String>,
+      val photoUrls: ImmutableList<String>,
       val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
-      val tags: List<String>,
+      val tags: ImmutableList<String>,
       val eventSink: (Event) -> Unit
     ) : State
   }
@@ -90,20 +92,21 @@ internal fun Animal.toPetDetailState(
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
-    photoUrls = photos.map { it.large },
+    photoUrls = photos.map { it.large }.toImmutableList(),
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
     description = description,
     tags =
       listOfNotNull(
-        colors.primary,
-        colors.secondary,
-        breeds.primary,
-        breeds.secondary,
-        gender,
-        size,
-        status
-      ),
+          colors.primary,
+          colors.secondary,
+          breeds.primary,
+          breeds.secondary,
+          gender,
+          size,
+          status
+        )
+        .toImmutableList(),
     eventSink
   )
 }
@@ -244,7 +247,8 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
 }
 
 private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Success) {
-  item(state.tags) {
+  // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
+  item(state.tags.hashCode()) {
     FlowRow(
       modifier = Modifier.fillMaxWidth(),
       mainAxisSpacing = 8.dp,

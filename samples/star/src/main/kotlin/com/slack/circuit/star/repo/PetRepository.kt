@@ -13,6 +13,7 @@ import retrofit2.HttpException
 interface PetRepository {
   suspend fun getAnimals(forceRefresh: Boolean): List<Animal>
   suspend fun getAnimal(id: Long): Animal?
+  suspend fun getAnimalBio(id: Long): String?
 }
 
 @SingleIn(AppScope::class)
@@ -40,5 +41,10 @@ class PetRepositoryImpl @Inject constructor(private val petFinderApi: PetfinderA
         // Sometimes petfinder's API throws 429s for no reason.
         emptyList()
       }
+  }
+
+  override suspend fun getAnimalBio(id: Long): String? {
+    val animal = getAnimal(id) ?: return null
+    return petFinderApi.animalBio(animal.url)
   }
 }

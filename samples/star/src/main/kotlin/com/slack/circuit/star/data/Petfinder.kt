@@ -44,9 +44,7 @@ interface PetfinderApi {
 
   @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): Animal
 
-  @JSoupEndpoint
-  @GET("")
-  suspend fun animalBio(@Url url: String): String
+  @JSoupEndpoint @GET("") suspend fun animalBio(@Url url: String): String
 }
 
 @JsonClass(generateAdapter = true)

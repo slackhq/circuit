@@ -1,3 +1,5 @@
+// Copyright (C) 2022 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.ui
 
 import androidx.compose.animation.animateContentSize
@@ -44,32 +46,28 @@ fun ExpandableText(
   var isExpanded by remember { mutableStateOf(false) }
   var clickable by remember { mutableStateOf(false) }
   var lastCharIndex by remember { mutableStateOf(0) }
-  Box(modifier = Modifier
-    .clickable(clickable) {
-      isExpanded = !isExpanded
-    }
-    .then(modifier)
-  ) {
+  Box(modifier = Modifier.clickable(clickable) { isExpanded = !isExpanded }.then(modifier)) {
     Text(
-      modifier = textModifier
-        .fillMaxWidth()
-        .animateContentSize(),
-      text = buildAnnotatedString {
-        if (clickable) {
-          if (isExpanded) {
-            append(text)
-            withStyle(style = showLessStyle) { append(showLessText) }
+      modifier = textModifier.fillMaxWidth().animateContentSize(),
+      text =
+        buildAnnotatedString {
+          if (clickable) {
+            if (isExpanded) {
+              append(text)
+              withStyle(style = showLessStyle) { append(showLessText) }
+            } else {
+              val adjustText =
+                text
+                  .substring(startIndex = 0, endIndex = lastCharIndex)
+                  .dropLast(showMoreText.length)
+                  .dropLastWhile { Character.isWhitespace(it) || it == '.' }
+              append(adjustText)
+              withStyle(style = showMoreStyle) { append(showMoreText) }
+            }
           } else {
-            val adjustText = text.substring(startIndex = 0, endIndex = lastCharIndex)
-              .dropLast(showMoreText.length)
-              .dropLastWhile { Character.isWhitespace(it) || it == '.' }
-            append(adjustText)
-            withStyle(style = showMoreStyle) { append(showMoreText) }
+            append(text)
           }
-        } else {
-          append(text)
-        }
-      },
+        },
       maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
       fontStyle = fontStyle,
       onTextLayout = { textLayoutResult ->
@@ -82,5 +80,4 @@ fun ExpandableText(
       textAlign = textAlign
     )
   }
-
 }

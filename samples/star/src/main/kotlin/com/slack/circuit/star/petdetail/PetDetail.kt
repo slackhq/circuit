@@ -72,13 +72,13 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
     object UnknownAnimal : State
 
     data class Success(
-        val url: String,
-        val photoUrls: ImmutableList<String>,
-        val photoUrlMemoryCacheKey: String?,
-        val name: String,
-        val description: String,
-        val tags: ImmutableList<String>,
-        val eventSink: (Event) -> Unit
+      val url: String,
+      val photoUrls: ImmutableList<String>,
+      val photoUrlMemoryCacheKey: String?,
+      val name: String,
+      val description: String,
+      val tags: ImmutableList<String>,
+      val eventSink: (Event) -> Unit
     ) : State
   }
 
@@ -88,55 +88,59 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
 }
 
 internal fun Animal.toPetDetailState(
-    photoUrlMemoryCacheKey: String?,
-    description: String,
-    eventSink: (PetDetailScreen.Event) -> Unit
+  photoUrlMemoryCacheKey: String?,
+  description: String,
+  eventSink: (PetDetailScreen.Event) -> Unit
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
-      url = url,
-      photoUrls = photos.map { it.large }.toImmutableList(),
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
-      name = name,
-      description = description,
-      tags =
-          listOfNotNull(
-                  colors.primary,
-                  colors.secondary,
-                  breeds.primary,
-                  breeds.secondary,
-                  gender,
-                  size,
-                  status)
-              .toImmutableList(),
-      eventSink)
+    url = url,
+    photoUrls = photos.map { it.large }.toImmutableList(),
+    photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+    name = name,
+    description = description,
+    tags =
+      listOfNotNull(
+          colors.primary,
+          colors.secondary,
+          breeds.primary,
+          breeds.secondary,
+          gender,
+          size,
+          status
+        )
+        .toImmutableList(),
+    eventSink
+  )
 }
 
 class PetDetailPresenter
 @AssistedInject
 constructor(
-    @Assisted private val screen: PetDetailScreen,
-    @Assisted private val navigator: Navigator,
-    private val petRepository: PetRepository,
+  @Assisted private val screen: PetDetailScreen,
+  @Assisted private val navigator: Navigator,
+  private val petRepository: PetRepository,
 ) : Presenter<PetDetailScreen.State> {
   @Composable
   override fun present(): PetDetailScreen.State {
     var title by remember { mutableStateOf<String?>(null) }
     val state by
-        produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
-          val animal = petRepository.getAnimal(screen.petId)
-          val bioText = petRepository.getAnimalBio(screen.petId)
-          value =
-              when (animal) {
-                null -> PetDetailScreen.State.UnknownAnimal
-                else -> {
-                  title = animal.name
-                  animal.toPetDetailState(
-                      screen.photoUrlMemoryCacheKey, bioText ?: animal.description) {
-                        navigator.goTo(AndroidScreen.CustomTabsIntentScreen(animal.url))
-                      }
-                }
+      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+        val animal = petRepository.getAnimal(screen.petId)
+        val bioText = petRepository.getAnimalBio(screen.petId)
+        value =
+          when (animal) {
+            null -> PetDetailScreen.State.UnknownAnimal
+            else -> {
+              title = animal.name
+              animal.toPetDetailState(
+                screen.photoUrlMemoryCacheKey,
+                bioText ?: animal.description
+              ) {
+                navigator.goTo(AndroidScreen.CustomTabsIntentScreen(animal.url))
               }
-        }
+            }
+          }
+      }
 
     return state
   }
@@ -181,45 +185,49 @@ private fun TopBar(state: PetDetailScreen.State) {
 @Composable
 private fun Loading(paddingValues: PaddingValues) {
   Box(
-      modifier = Modifier.padding(paddingValues).fillMaxSize(),
-      contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
-      }
+    modifier = Modifier.padding(paddingValues).fillMaxSize(),
+    contentAlignment = Alignment.Center
+  ) {
+    CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+  }
 }
 
 @Composable
 private fun UnknownAnimal(paddingValues: PaddingValues) {
   Box(
-      modifier = Modifier.padding(paddingValues).fillMaxSize(),
-      contentAlignment = Alignment.Center) {
-        Text(
-            modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
-            text = stringResource(id = R.string.unknown_animals))
-      }
+    modifier = Modifier.padding(paddingValues).fillMaxSize(),
+    contentAlignment = Alignment.Center
+  ) {
+    Text(
+      modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
+      text = stringResource(id = R.string.unknown_animals)
+    )
+  }
 }
 
 @Composable
 private fun ShowAnimal(
-    state: PetDetailScreen.State.Success,
-    padding: PaddingValues,
+  state: PetDetailScreen.State.Success,
+  padding: PaddingValues,
 ) =
-    when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      true -> ShowAnimalLandscape(state, padding)
-      false -> ShowAnimalPortrait(state, padding)
-    }
+  when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    true -> ShowAnimalLandscape(state, padding)
+    false -> ShowAnimalPortrait(state, padding)
+  }
 
 @Composable
 private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: PaddingValues) {
   Row(
-      modifier = Modifier.padding(padding),
-      horizontalArrangement = Arrangement.SpaceEvenly,
+    modifier = Modifier.padding(padding),
+    horizontalArrangement = Arrangement.SpaceEvenly,
   ) {
     CircuitContent(
-        PetPhotoCarouselScreen(
-            name = state.name,
-            photoUrls = state.photoUrls,
-            photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-        ))
+      PetPhotoCarouselScreen(
+        name = state.name,
+        photoUrls = state.photoUrls,
+        photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+      )
+    )
     LazyColumn { petDetailDescriptions(state) }
   }
 }
@@ -227,17 +235,18 @@ private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: P
 @Composable
 private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: PaddingValues) {
   LazyColumn(
-      modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
-      contentPadding = PaddingValues(16.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
       CircuitContent(
-          PetPhotoCarouselScreen(
-              name = state.name,
-              photoUrls = state.photoUrls,
-              photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-          ))
+        PetPhotoCarouselScreen(
+          name = state.name,
+          photoUrls = state.photoUrls,
+          photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+        )
+      )
     }
     petDetailDescriptions(state)
   }
@@ -247,22 +256,23 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
   item(state.tags.hashCode()) {
     FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        mainAxisSpacing = 8.dp,
-        crossAxisSpacing = 8.dp,
-        mainAxisAlignment = FlowMainAxisAlignment.Center,
-        crossAxisAlignment = FlowCrossAxisAlignment.Center,
+      modifier = Modifier.fillMaxWidth(),
+      mainAxisSpacing = 8.dp,
+      crossAxisSpacing = 8.dp,
+      mainAxisAlignment = FlowMainAxisAlignment.Center,
+      crossAxisAlignment = FlowCrossAxisAlignment.Center,
     ) {
       state.tags.forEach { tag ->
         Surface(
-            color = MaterialTheme.colorScheme.tertiary,
-            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+          color = MaterialTheme.colorScheme.tertiary,
+          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
         ) {
           Text(
-              modifier = Modifier.padding(12.dp),
-              text = tag.capitalize(LocaleList.current),
-              color = MaterialTheme.colorScheme.onTertiary,
-              style = MaterialTheme.typography.labelLarge)
+            modifier = Modifier.padding(12.dp),
+            text = tag.capitalize(LocaleList.current),
+            color = MaterialTheme.colorScheme.onTertiary,
+            style = MaterialTheme.typography.labelLarge
+          )
         }
       }
     }
@@ -273,12 +283,14 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
 
   item(state.url) {
     Button(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }) {
-          Text(
-              modifier = Modifier.testTag(FULL_BIO_TAG),
-              text = "Full bio on Petfinder ➡",
-              style = MaterialTheme.typography.headlineSmall)
-        }
+      modifier = Modifier.fillMaxWidth(),
+      onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }
+    ) {
+      Text(
+        modifier = Modifier.testTag(FULL_BIO_TAG),
+        text = "Full bio on Petfinder ➡",
+        style = MaterialTheme.typography.headlineSmall
+      )
+    }
   }
 }

@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,7 +46,6 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.data.Animal
@@ -122,7 +122,7 @@ constructor(
   override fun present(): PetDetailScreen.State {
     var title by remember { mutableStateOf<String?>(null) }
     val state by
-      produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
+      produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
         value =
           when (animal) {

@@ -21,6 +21,7 @@
     <application>
         <activity
             android:name="com.slack.circuit.star.MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

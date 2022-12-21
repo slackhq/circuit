@@ -188,7 +188,10 @@ private fun Loading(paddingValues: PaddingValues) {
     modifier = Modifier.padding(paddingValues).fillMaxSize(),
     contentAlignment = Alignment.Center
   ) {
-    CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+    CircularProgressIndicator(
+      modifier = Modifier.testTag(PROGRESS_TAG),
+      color = MaterialTheme.colorScheme.onSurface
+    )
   }
 }
 

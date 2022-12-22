@@ -9,8 +9,6 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 
-@Composable internal expect fun PlatformCompositionLocals(content: @Composable () -> Unit)
-
 /**
  * Provides the given [circuitConfig] as a [CompositionLocal] to all composables within [content].
  * Also adds any other composition locals that Circuit needs.
@@ -20,7 +18,7 @@ public fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Comp
   CompositionLocalProvider(
     LocalCircuitConfig provides circuitConfig,
   ) {
-    PlatformCompositionLocals(content)
+    content()
   }
 }
 

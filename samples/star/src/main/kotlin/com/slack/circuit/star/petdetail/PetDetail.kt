@@ -89,7 +89,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
-  description: String,
+  description: String = this.description,
   eventSink: (PetDetailScreen.Event) -> Unit
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(

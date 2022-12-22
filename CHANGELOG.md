@@ -1,6 +1,32 @@
 Changelog
 =========
 
+0.5.0
+-----
+
+_2022-12-22_
+
+* **Enhancement**: Circuit no longer requires manual provisioning of its internal backing `ViewModel`s. This is now done automatically by the Circuit itself.
+* **Enhancement**: `circuit-retained` is now fully optional and not included as a transitive dependency of circuit-core. If you want to use it, see its installation instructions in its [README](https://github.com/slackhq/circuit/tree/main/circuit-retained).
+* **Enhancement**: Mark `Screen` as `@Immutable`.
+* **Breaking API Change**: `LocalCircuitOwner` is now just `LocalCircuitConfig` to be more idiomatic.
+* **Breaking API Change**: `LocalRetainedStateRegistryOwner` is now just `LocalRetainedStateRegistry` to be more idiomatic.
+* **Breaking API Change**: `Continuity` is now `internal` and not publicly exposed since it no longer needs to be manually provided
+* **Breaking API Change**: `ViewModelBackStackRecordLocalProvider` is now `internal` and not publicly exposed since it no longer needs to be manually provided
+* Dependency updates
+  ```toml
+  [versions]
+  anvil = "2.4.3"
+  compose-jb = "1.2.2"
+  compose-animation = "1.3.2"
+  compose-compiler = "1.3.2"
+  compose-foundation = "1.3.1"
+  compose-material = "1.3.1"
+  compose-material3 = "1.0.1"
+  compose-runtime = "1.3.2"
+  compose-ui = "1.3.2"
+  ```
+
 0.4.0
 -----
 

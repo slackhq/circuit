@@ -11,8 +11,8 @@ _2022-12-22_
 * **Enhancement**: Mark `Screen` as `@Immutable`.
 * **Breaking API Change**: `LocalCircuitOwner` is now just `LocalCircuitConfig` to be more idiomatic.
 * **Breaking API Change**: `LocalRetainedStateRegistryOwner` is now just `LocalRetainedStateRegistry` to be more idiomatic.
-* **Breaking API Change**: `Continuity` is now `internal` and not publicly exposed since it no longer needs to be manually provided
-* **Breaking API Change**: `ViewModelBackStackRecordLocalProvider` is now `internal` and not publicly exposed since it no longer needs to be manually provided
+* **Breaking API Change**: `Continuity` is now `internal` and not publicly exposed since it no longer needs to be manually provided.
+* **Breaking API Change**: `ViewModelBackStackRecordLocalProvider` is now `internal` and not publicly exposed since it no longer needs to be manually provided.
 * Dependency updates
   ```toml
   [versions]
@@ -25,6 +25,7 @@ _2022-12-22_
   compose-material3 = "1.0.1"
   compose-runtime = "1.3.2"
   compose-ui = "1.3.2"
+  kotlin = "1.7.22"
   ```
 
 0.4.0

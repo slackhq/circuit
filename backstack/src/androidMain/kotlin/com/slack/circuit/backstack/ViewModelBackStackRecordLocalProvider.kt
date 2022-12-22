@@ -24,8 +24,10 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -47,7 +49,10 @@ internal object ViewModelBackStackRecordLocalProvider :
     // back stack entry is present, which makes it safe for us to use composition
     // forget/abandon to clear the associated ViewModelStore if the host activity
     // isn't in the process of changing configurations.
-    val containerViewModel = viewModel<BackStackRecordLocalProviderViewModel>()
+    val containerViewModel =
+      viewModel<BackStackRecordLocalProviderViewModel>(
+        factory = BackStackRecordLocalProviderViewModel.Factory
+      )
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
     val activity = LocalContext.current.findActivity()
     remember(record, viewModelStore) {
@@ -82,7 +87,7 @@ internal object ViewModelBackStackRecordLocalProvider :
   }
 }
 
-public class BackStackRecordLocalProviderViewModel : ViewModel() {
+internal class BackStackRecordLocalProviderViewModel : ViewModel() {
   private val owners = mutableMapOf<String, ViewModelStore>()
 
   internal fun viewModelStoreForKey(key: String): ViewModelStore =
@@ -92,5 +97,15 @@ public class BackStackRecordLocalProviderViewModel : ViewModel() {
 
   override fun onCleared() {
     owners.forEach { (_, store) -> store.clear() }
+  }
+
+  object Factory : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      @Suppress("UNCHECKED_CAST") return BackStackRecordLocalProviderViewModel() as T
+    }
+
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+      return create(modelClass)
+    }
   }
 }

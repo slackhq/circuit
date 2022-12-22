@@ -67,7 +67,7 @@ import androidx.compose.runtime.rememberUpdatedState
  */
 @Composable
 public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: () -> T): T {
-  val registry = LocalRetainedStateRegistryOwner.current
+  val registry = LocalRetainedStateRegistry.current
   // Short-circuit no-ops
   if (registry === NoOpRetainedStateRegistry) {
     return when (inputs.size) {

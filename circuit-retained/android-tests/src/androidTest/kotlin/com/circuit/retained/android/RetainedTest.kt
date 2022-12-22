@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package com.circuit.retained.android
 
 import androidx.activity.ComponentActivity
@@ -28,7 +30,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
+import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
@@ -237,7 +239,7 @@ class RetainedTest {
     scenario.onActivity { activity ->
       activity.setContent {
         CompositionLocalProvider(
-          LocalRetainedStateRegistryOwner provides continuityRetainedStateRegistry(vmFactory),
+          LocalRetainedStateRegistry provides continuityRetainedStateRegistry(vmFactory),
         ) {
           content()
         }

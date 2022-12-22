@@ -17,6 +17,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 private const val API_KEY = "SYWzK0sDRY8UMNjHM1IC3WDM8qLO6vCjCSfwf6aY5QlISE65kJ"
 private const val SECRET = "aA4VMgoPSReox5Ve67cNHI9M06JEgh68fjkG46Ee"
@@ -42,6 +43,8 @@ interface PetfinderApi {
   ): AnimalsResponse
 
   @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): Animal
+
+  @JSoupEndpoint @GET("") suspend fun animalBio(@Url url: String): String
 }
 
 @JsonClass(generateAdapter = true)

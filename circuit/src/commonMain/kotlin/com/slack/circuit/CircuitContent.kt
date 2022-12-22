@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 @Composable
 public fun CircuitContent(
   screen: Screen,
-  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
+  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
 ) {
   CircuitContent(screen, Navigator.NoOp, circuitConfig, unavailableContent)
@@ -21,7 +21,7 @@ public fun CircuitContent(
 public fun CircuitContent(
   screen: Screen,
   onNavEvent: (event: NavEvent) -> Unit,
-  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
+  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
 ) {
   val navigator =

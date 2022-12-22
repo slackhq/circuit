@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.retained
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.slack.circuit.retained.RetainedStateRegistry.Entry
 
@@ -69,25 +67,10 @@ public fun RetainedStateRegistry(values: Map<String, List<Any?>>?): RetainedStat
   )
 
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
-public object LocalRetainedStateRegistryOwner {
-  private val LocalRetainedStateRegistry =
-    staticCompositionLocalOf<RetainedStateRegistry> { NoOpRetainedStateRegistry }
-
-  /**
-   * Returns current composition local value for the owner or errors if one has not been provided.
-   */
-  public val current: RetainedStateRegistry
-    @Composable get() = LocalRetainedStateRegistry.current
-
-  /**
-   * Associates a [LocalRetainedStateRegistry] key to a value in a call to
-   * [CompositionLocalProvider].
-   */
-  @Composable
-  public infix fun provides(registry: RetainedStateRegistry): ProvidedValue<RetainedStateRegistry> {
-    return LocalRetainedStateRegistry.provides(registry)
+public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateRegistry> =
+  staticCompositionLocalOf {
+    NoOpRetainedStateRegistry
   }
-}
 
 internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>>?) :
   MutableRetainedStateRegistry {

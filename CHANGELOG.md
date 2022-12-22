@@ -13,6 +13,7 @@ _2022-12-22_
 * **Breaking API Change**: `LocalRetainedStateRegistryOwner` is now just `LocalRetainedStateRegistry` to be more idiomatic.
 * **Breaking API Change**: `Continuity` is now `internal` and not publicly exposed since it no longer needs to be manually provided.
 * **Breaking API Change**: `ViewModelBackStackRecordLocalProvider` is now `internal` and not publicly exposed since it no longer needs to be manually provided.
+* **Fix**: Add missing license info to pom.
 * Dependency updates
   ```toml
   [versions]

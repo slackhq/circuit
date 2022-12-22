@@ -20,7 +20,6 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(projects.backstack)
-        api(projects.circuitRetained)
       }
     }
     maybeCreate("androidMain").apply {

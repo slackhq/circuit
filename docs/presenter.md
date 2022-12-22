@@ -72,7 +72,7 @@ Presenters can present other presenters by injecting their assisted factories/pr
 There are three types of composable retention functions used in Circuit.
 
 1. `remember` – from Compose, remembers a value across recompositions. Can be any type.
-2. `rememberRetained` – custom, remembers a value across recompositions and configuration changes. Can be any type, but should not retain leak-able things like `Navigator` instances or `Context` instances. Backed by a hidden `ViewModel` on Android.
+2. `rememberRetained` – custom, remembers a value across recompositions and configuration changes. Can be any type, but should not retain leak-able things like `Navigator` instances or `Context` instances. Backed by a hidden `ViewModel` on Android. Note that this is not necessary in most cases if handling configuration changes yourself via `android:configChanges`.
 3. `rememberSaveable` – from Compose, remembers a value across recompositions, configuration changes, and process death. Must be `Parcelable` or implement a custom `Saver`, should not retain leakable things like `Navigator` instances or `Context` instances. Backed by the framework saved instance state system.
 
 Developers should use the right tool accordingly depending on their use case. Consider these three examples.

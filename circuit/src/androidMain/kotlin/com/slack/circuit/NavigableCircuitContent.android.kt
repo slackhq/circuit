@@ -37,7 +37,7 @@ public fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
-  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
+  circuitConfig: CircuitConfig = LocalCircuitConfig.current,
   enableBackHandler: Boolean = true,
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
@@ -62,7 +62,7 @@ public fun BasicNavigableCircuitContent(
   backstack: SaveableBackStack,
   providedValues: Map<out BackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
-  circuitConfig: CircuitConfig = LocalCircuitOwner.current,
+  circuitConfig: CircuitConfig = LocalCircuitConfig.current,
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {

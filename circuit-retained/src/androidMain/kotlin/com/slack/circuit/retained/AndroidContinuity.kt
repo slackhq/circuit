@@ -10,9 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-public class Continuity : ViewModel(), RetainedStateRegistry {
+internal class Continuity : ViewModel(), RetainedStateRegistry {
   private val delegate = RetainedStateRegistryImpl(null)
 
   override fun consumeValue(key: String): Any? {
@@ -36,14 +37,22 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
     delegate.valueProviders.clear()
   }
 
-  @VisibleForTesting
-  internal fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
+  @VisibleForTesting fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
 
   @VisibleForTesting
-  internal fun peekProviders(): Map<String, MutableList<() -> Any?>> =
-    delegate.valueProviders.toMap()
+  fun peekProviders(): Map<String, MutableList<() -> Any?>> = delegate.valueProviders.toMap()
 
-  internal companion object {
+  object Factory : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      @Suppress("UNCHECKED_CAST") return Continuity() as T
+    }
+
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+      return create(modelClass)
+    }
+  }
+
+  companion object {
     const val KEY = "CircuitContinuity"
   }
 }
@@ -56,7 +65,7 @@ public class Continuity : ViewModel(), RetainedStateRegistry {
  */
 @Composable
 public fun continuityRetainedStateRegistry(
-  factory: ViewModelProvider.Factory? = null
+  factory: ViewModelProvider.Factory = Continuity.Factory
 ): RetainedStateRegistry {
   val vm = viewModel<Continuity>(key = Continuity.KEY, factory = factory)
   val canRetain = rememberCanRetainChecker()

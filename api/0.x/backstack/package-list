@@ -15,8 +15,6 @@ $dokka.location:com.slack.circuit.backstack/BackStack/pop/#/PointingToDeclaratio
 $dokka.location:com.slack.circuit.backstack/BackStack/size/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/size.md
 $dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProvider///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/index.md
 $dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProvider/providedValuesFor/#TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/provided-values-for.md
-$dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProviderViewModel///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider-view-model/index.md
-$dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProviderViewModel/BackStackRecordLocalProviderViewModel/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider-view-model/-back-stack-record-local-provider-view-model.md
 $dokka.location:com.slack.circuit.backstack/NavDecoration///PointingToDeclaration/backstack/com.slack.circuit.backstack/-nav-decoration/index.md
 $dokka.location:com.slack.circuit.backstack/NavDecoration/DecoratedContent/#TypeParam(bounds=[kotlin.Any?])#kotlin.Int#androidx.compose.ui.Modifier#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/backstack/com.slack.circuit.backstack/-nav-decoration/-decorated-content.md
 $dokka.location:com.slack.circuit.backstack/ProvidedValues///PointingToDeclaration/backstack/com.slack.circuit.backstack/-provided-values/index.md

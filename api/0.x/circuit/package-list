@@ -5,6 +5,7 @@ $dokka.location:com.slack.circuit//BasicNavigableCircuitContent/#com.slack.circu
 $dokka.location:com.slack.circuit//CircuitCompositionLocals/#com.slack.circuit.CircuitConfig#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-circuit-composition-locals.md
 $dokka.location:com.slack.circuit//CircuitContent/#com.slack.circuit.Screen#com.slack.circuit.CircuitConfig#kotlin.Function1[com.slack.circuit.Screen,kotlin.Unit]?/PointingToDeclaration/circuit/com.slack.circuit/-circuit-content.md
 $dokka.location:com.slack.circuit//CircuitContent/#com.slack.circuit.Screen#kotlin.Function1[com.slack.circuit.NavEvent,kotlin.Unit]#com.slack.circuit.CircuitConfig#kotlin.Function1[com.slack.circuit.Screen,kotlin.Unit]?/PointingToDeclaration/circuit/com.slack.circuit/-circuit-content.md
+$dokka.location:com.slack.circuit//LocalCircuitConfig/#/PointingToDeclaration/circuit/com.slack.circuit/-local-circuit-config.md
 $dokka.location:com.slack.circuit//NavigableCircuitContent/#com.slack.circuit.Navigator#com.slack.circuit.backstack.SaveableBackStack#androidx.compose.ui.Modifier#com.slack.circuit.CircuitConfig#kotlin.Boolean#kotlin.collections.Map[com.slack.circuit.backstack.BackStack.Record,com.slack.circuit.backstack.ProvidedValues]#com.slack.circuit.backstack.NavDecoration#kotlin.Function1[kotlin.String,kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-navigable-circuit-content.md
 $dokka.location:com.slack.circuit//onNavEvent/com.slack.circuit.Navigator#com.slack.circuit.NavEvent/PointingToDeclaration/circuit/com.slack.circuit/on-nav-event.md
 $dokka.location:com.slack.circuit//popUntil/com.slack.circuit.Navigator#kotlin.Function1[com.slack.circuit.Screen,kotlin.Boolean]/PointingToDeclaration/circuit/com.slack.circuit/pop-until.md
@@ -61,9 +62,6 @@ $dokka.location:com.slack.circuit/EventListener/onStartContent/#/PointingToDecla
 $dokka.location:com.slack.circuit/EventListener/onStartPresent/#/PointingToDeclaration/circuit/com.slack.circuit/-event-listener/on-start-present.md
 $dokka.location:com.slack.circuit/EventListener/onState/#kotlin.Any/PointingToDeclaration/circuit/com.slack.circuit/-event-listener/on-state.md
 $dokka.location:com.slack.circuit/EventListener/onUnavailableContent/#com.slack.circuit.Screen#com.slack.circuit.Presenter[*]?#com.slack.circuit.ScreenUi?#com.slack.circuit.CircuitContext/PointingToDeclaration/circuit/com.slack.circuit/-event-listener/on-unavailable-content.md
-$dokka.location:com.slack.circuit/LocalCircuitOwner///PointingToDeclaration/circuit/com.slack.circuit/-local-circuit-owner/index.md
-$dokka.location:com.slack.circuit/LocalCircuitOwner/current/#/PointingToDeclaration/circuit/com.slack.circuit/-local-circuit-owner/current.md
-$dokka.location:com.slack.circuit/LocalCircuitOwner/provides/#com.slack.circuit.CircuitConfig/PointingToDeclaration/circuit/com.slack.circuit/-local-circuit-owner/provides.md
 $dokka.location:com.slack.circuit/NavEvent///PointingToDeclaration/circuit/com.slack.circuit/-nav-event/index.md
 $dokka.location:com.slack.circuit/Navigator.NoOp///PointingToDeclaration/circuit/com.slack.circuit/-navigator/-no-op/index.md
 $dokka.location:com.slack.circuit/Navigator.NoOp/goTo/#com.slack.circuit.Screen/PointingToDeclaration/circuit/com.slack.circuit/-navigator/-no-op/go-to.md

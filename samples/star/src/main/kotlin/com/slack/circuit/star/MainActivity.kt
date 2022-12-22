@@ -24,7 +24,7 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
-import com.slack.circuit.retained.LocalRetainedStateRegistryOwner
+import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -69,7 +69,7 @@ constructor(
           CircuitCompositionLocals(circuitConfig) {
             ContentWithOverlays {
               CompositionLocalProvider(
-                LocalRetainedStateRegistryOwner provides continuityRetainedStateRegistry(),
+                LocalRetainedStateRegistry provides continuityRetainedStateRegistry(),
               ) {
                 NavigableCircuitContent(navigator, backstack)
               }

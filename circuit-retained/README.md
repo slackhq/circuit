@@ -11,11 +11,11 @@ to hold values. If you're not running this on Android, you shouldn't need this a
 
 ## Installation
 
-Simply provide the `LocalRetainedStateRegistryOwner` composition local using `continuityRetainedStateRegistry()`.
+Simply provide the `LocalRetainedStateRegistry` composition local using `continuityRetainedStateRegistry()`.
 
 ```kotlin
 CompositionLocalProvider(
-  LocalRetainedStateRegistryOwner provides continuityRetainedStateRegistry(),
+  LocalRetainedStateRegistry provides continuityRetainedStateRegistry(),
 ) {
   // Content
 }

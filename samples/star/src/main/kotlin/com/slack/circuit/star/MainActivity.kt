@@ -13,7 +13,6 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.CircuitCompositionLocals
@@ -24,8 +23,6 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
@@ -67,13 +64,7 @@ constructor(
           val navigator =
             remember(circuitNavigator) { AndroidSupportingNavigator(circuitNavigator, this::goTo) }
           CircuitCompositionLocals(circuitConfig) {
-            ContentWithOverlays {
-              CompositionLocalProvider(
-                LocalRetainedStateRegistry provides continuityRetainedStateRegistry(),
-              ) {
-                NavigableCircuitContent(navigator, backstack)
-              }
-            }
+            ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
           }
         }
       }

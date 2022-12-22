@@ -98,4 +98,5 @@ class PetListPresenterTest {
 class TestRepository(private val animals: List<Animal>) : PetRepository {
   override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> = animals
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
+  override suspend fun getAnimalBio(id: Long): String? = getAnimal(id)?.description
 }

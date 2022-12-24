@@ -66,7 +66,7 @@ public fun BasicNavigableCircuitContent(
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
-  backstack.processPendingScreenResult()
+  backstack.processPendingScreenResult(circuitConfig)
 
   val activeContentProviders = buildList {
     for (record in backstack) {

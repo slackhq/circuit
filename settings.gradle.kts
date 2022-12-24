@@ -166,6 +166,7 @@ include(
   ":samples:counter:desktop",
   ":samples:counter:mosaic",
   ":samples:interop",
+  ":samples:navigation",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

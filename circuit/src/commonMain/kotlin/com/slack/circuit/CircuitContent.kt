@@ -35,10 +35,6 @@ public fun CircuitContent(
           onChildEvent(PopNavEvent)
           return null
         }
-
-        override fun setScreenResult(result: ScreenResult?) {
-          onChildEvent(ScreenResultEvent(result))
-        }
       }
     }
   val resultHandler = ScreenResultHandler { result -> onChildEvent(ScreenResultEvent(result)) }

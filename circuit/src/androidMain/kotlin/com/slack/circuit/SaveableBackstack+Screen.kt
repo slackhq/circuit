@@ -15,7 +15,7 @@ public fun SaveableBackStack.push(screen: Screen) {
 }
 
 public fun SaveableBackStack.setScreenResult(result: ScreenResult?) {
-  if (size == 1) return // TODO should we throw here instead??
+  if (size == 1) return
 
   val ancestor = get(1)
   val newArgs = ancestor.args.plus("result" to result)

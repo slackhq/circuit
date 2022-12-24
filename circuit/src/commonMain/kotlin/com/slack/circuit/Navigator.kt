@@ -11,12 +11,9 @@ public interface Navigator {
 
   public fun pop(): Screen?
 
-  public fun setScreenResult(result: ScreenResult?)
-
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
-    override fun setScreenResult(result: ScreenResult?) {}
   }
 }
 
@@ -24,10 +21,9 @@ public interface Navigator {
  * A Circuit call back to help navigate to different screens. Intended to be used when forwarding
  * [ChildScreenEvent]s from nested [Presenter]s.
  */
-public fun Navigator.onNavEvent(event: ChildScreenEvent) {
+public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
-    is ScreenResultEvent -> setScreenResult(event.result)
     PopNavEvent -> pop()
   }
 }

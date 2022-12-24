@@ -158,6 +158,7 @@ include(
   ":circuit-retained",
   ":circuit-retained:android-tests",
   ":circuit-test",
+  ":samples:star:benchmark",
   ":samples:star",
   ":samples:star:apk",
   ":samples:counter",
@@ -173,4 +174,3 @@ enableFeaturePreview("GROOVY_COMPILATION_AVOIDANCE")
 // https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include(":samples:star:benchmark")

@@ -1,43 +1,43 @@
 package com.slack.circuit.sample.navigation
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.slack.circuit.sample.navigation.ui.theme.CircuitrootTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.slack.circuit.CircuitCompositionLocals
+import com.slack.circuit.CircuitConfig
+import com.slack.circuit.CircuitContent
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+  private val circuitConfig: CircuitConfig =
+    CircuitConfig.Builder()
+      .addPresenterFactory(ParentPresenterFactory)
+      .addUiFactory(ParentUiFactory)
+      .build()
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
     setContent {
-      CircuitrootTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          Greeting("Android")
+      val context = LocalContext.current
+      val colorScheme =
+        if (isSystemInDarkTheme()) {
+          dynamicDarkColorScheme(context)
+        } else {
+          dynamicLightColorScheme(context)
         }
+
+      val systemUiController = rememberSystemUiController()
+      systemUiController.setSystemBarsColor(color = colorScheme.primaryContainer)
+
+      MaterialTheme(colorScheme = colorScheme) {
+        CircuitCompositionLocals(circuitConfig) { CircuitContent(ParentScreen()) }
       }
     }
-  }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-  Text(
-    text = "Hello $name!",
-    modifier = modifier
-  )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-  CircuitrootTheme {
-    Greeting("Android")
   }
 }

@@ -11,13 +11,23 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitContent
+import com.slack.circuit.NavigableCircuitContent
+import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.push
+import com.slack.circuit.rememberCircuitNavigator
 
 class MainActivity : AppCompatActivity() {
   private val circuitConfig: CircuitConfig =
     CircuitConfig.Builder()
-      .addPresenterFactory(ParentPresenterFactory)
-      .addUiFactory(ParentUiFactory)
+      .addPresenterFactory(ParentPresenterFactory, ChildPresenterFactory)
+      .addUiFactory(ParentUiFactory, ChildUiFactory)
+      .addScreenReducer { oldScreen, result ->
+        when {
+          oldScreen is ParentScreen && result is ParentScreen.ChildResult ->
+            ParentScreen(name = result.name)
+          else -> null
+        }
+      }
       .build()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +45,11 @@ class MainActivity : AppCompatActivity() {
       val systemUiController = rememberSystemUiController()
       systemUiController.setSystemBarsColor(color = colorScheme.primaryContainer)
 
+      val backstack = rememberSaveableBackStack { push(ParentScreen()) }
+      val navigator = rememberCircuitNavigator(backstack)
+
       MaterialTheme(colorScheme = colorScheme) {
-        CircuitCompositionLocals(circuitConfig) { CircuitContent(ParentScreen()) }
+        CircuitCompositionLocals(circuitConfig) { NavigableCircuitContent(navigator, backstack) }
       }
     }
   }

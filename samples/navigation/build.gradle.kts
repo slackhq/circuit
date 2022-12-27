@@ -22,5 +22,6 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.bundles.compose.ui)
+  implementation(libs.material)
   debugImplementation(libs.androidx.compose.ui.tooling)
 }

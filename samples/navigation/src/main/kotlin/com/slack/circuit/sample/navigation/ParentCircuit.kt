@@ -36,8 +36,7 @@ import kotlinx.parcelize.Parcelize
 
 @Composable
 fun parentPresenter(screen: ParentScreen, navigator: Navigator): ParentScreen.State {
-  val name = screen.name.ifBlank { "" }
-  return ParentScreen.State(name) {
+  return ParentScreen.State(screen.name) {
     navigator.goTo(ChildScreen)
   }
 }

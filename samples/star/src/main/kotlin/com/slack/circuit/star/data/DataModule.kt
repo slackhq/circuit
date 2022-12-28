@@ -4,6 +4,7 @@ package com.slack.circuit.star.data
 
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.SingleIn
+import com.slack.circuit.star.petdetail.PetBioParser
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.moshi.Moshi
 import dagger.Module
@@ -47,6 +48,7 @@ object DataModule {
     okHttpClientLazy: dagger.Lazy<OkHttpClient>,
   ): Retrofit {
     return Retrofit.Builder()
+      .addConverterFactory(JsoupConverter.newFactory(PetBioParser::parse))
       .addConverterFactory(MoshiConverterFactory.create(moshi))
       .baseUrl("https://api.petfinder.com/v2/")
       .callFactory { okHttpClientLazy.get().newCall(it) }

@@ -277,7 +277,10 @@ internal fun PetList(
     when (state) {
       PetListScreen.State.Loading ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+          CircularProgressIndicator(
+            modifier = Modifier.testTag(PROGRESS_TAG),
+            color = MaterialTheme.colorScheme.onSurface
+          )
         }
       is PetListScreen.State.NoAnimals ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

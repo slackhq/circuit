@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.CircuitCompositionLocals
@@ -23,6 +24,8 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
+import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
@@ -32,6 +35,8 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
@@ -45,12 +50,12 @@ constructor(
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    var backStack: List<Screen> = listOf(HomeScreen)
+    var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
     if (intent.data != null) {
       val httpUrl = intent.data.toString().toHttpUrl()
       val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
       val petDetailScreen = PetDetailScreen(animalId, null)
-      backStack = listOf(HomeScreen, petDetailScreen)
+      backStack = persistentListOf(HomeScreen, petDetailScreen)
     }
 
     setContent {
@@ -62,7 +67,13 @@ constructor(
           val navigator =
             remember(circuitNavigator) { AndroidSupportingNavigator(circuitNavigator, this::goTo) }
           CircuitCompositionLocals(circuitConfig) {
-            ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
+            ContentWithOverlays {
+              CompositionLocalProvider(
+                LocalRetainedStateRegistry provides continuityRetainedStateRegistry(),
+              ) {
+                NavigableCircuitContent(navigator, backstack)
+              }
+            }
           }
         }
       }

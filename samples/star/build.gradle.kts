@@ -61,6 +61,7 @@ dependencies {
   implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuit)
   implementation(projects.circuitOverlay)
+  implementation(projects.circuitRetained)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)
@@ -87,6 +88,7 @@ dependencies {
   implementation(libs.dagger)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.kotlinx.immutable)
+  implementation(libs.jsoup)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)

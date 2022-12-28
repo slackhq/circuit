@@ -56,9 +56,12 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.ui.ExpandableText
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -70,11 +73,11 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
 
     data class Success(
       val url: String,
-      val photoUrls: List<String>,
+      val photoUrls: ImmutableList<String>,
       val photoUrlMemoryCacheKey: String?,
       val name: String,
       val description: String,
-      val tags: List<String>,
+      val tags: ImmutableList<String>,
       val eventSink: (Event) -> Unit
     ) : State
   }
@@ -86,24 +89,26 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
+  description: String = this.description,
   eventSink: (PetDetailScreen.Event) -> Unit
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
-    photoUrls = photos.map { it.large },
+    photoUrls = photos.map { it.large }.toImmutableList(),
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
     description = description,
     tags =
       listOfNotNull(
-        colors.primary,
-        colors.secondary,
-        breeds.primary,
-        breeds.secondary,
-        gender,
-        size,
-        status
-      ),
+          colors.primary,
+          colors.secondary,
+          breeds.primary,
+          breeds.secondary,
+          gender,
+          size,
+          status
+        )
+        .toImmutableList(),
     eventSink
   )
 }
@@ -121,12 +126,16 @@ constructor(
     val state by
       produceRetainedState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
+        val bioText = petRepository.getAnimalBio(screen.petId)
         value =
           when (animal) {
             null -> PetDetailScreen.State.UnknownAnimal
             else -> {
               title = animal.name
-              animal.toPetDetailState(screen.photoUrlMemoryCacheKey) {
+              animal.toPetDetailState(
+                screen.photoUrlMemoryCacheKey,
+                bioText ?: animal.description
+              ) {
                 navigator.goTo(AndroidScreen.CustomTabsIntentScreen(animal.url))
               }
             }
@@ -179,7 +188,10 @@ private fun Loading(paddingValues: PaddingValues) {
     modifier = Modifier.padding(paddingValues).fillMaxSize(),
     contentAlignment = Alignment.Center
   ) {
-    CircularProgressIndicator(modifier = Modifier.testTag(PROGRESS_TAG))
+    CircularProgressIndicator(
+      modifier = Modifier.testTag(PROGRESS_TAG),
+      color = MaterialTheme.colorScheme.onSurface
+    )
   }
 }
 
@@ -244,7 +256,8 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
 }
 
 private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Success) {
-  item(state.tags) {
+  // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
+  item(state.tags.hashCode()) {
     FlowRow(
       modifier = Modifier.fillMaxWidth(),
       mainAxisSpacing = 8.dp,
@@ -268,10 +281,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
     }
   }
   item(state.description) {
-    Text(
-      text = state.description.lineSequence().first(),
-      style = MaterialTheme.typography.bodyLarge
-    )
+    ExpandableText(text = state.description, style = MaterialTheme.typography.bodyLarge)
   }
 
   item(state.url) {

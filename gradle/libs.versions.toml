@@ -135,7 +135,7 @@ anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.0.1" }
 autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version = "1.0.0" }
 
-clikt = "com.github.ajalt.clikt:clikt:3.5.0"
+clikt = "com.github.ajalt.clikt:clikt:3.5.1"
 
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }

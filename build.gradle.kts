@@ -14,6 +14,7 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
@@ -315,6 +316,28 @@ subprojects {
       kotlinCompilerPlugin.set(
         dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
       )
+    }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+    // Enforce Kotlin BOM
+    dependencies { add("implementation", platform(libs.kotlin.bom)) }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+    // Enforce Kotlin BOM
+    dependencies { add("implementation", platform(libs.kotlin.bom)) }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+    // Enforce Kotlin BOM
+    configure<KotlinMultiplatformExtension> {
+      sourceSets {
+        maybeCreate("commonMain").dependencies {
+          // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
+          implementation(platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"))
+        }
+      }
     }
   }
 }

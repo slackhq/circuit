@@ -20,16 +20,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-  dependencies {
-    // We have to declare this here in order for kotlin-facets to be generated in iml files
-    // https://youtrack.jetbrains.com/issue/KT-36331
-    classpath(kotlin("gradle-plugin", libs.versions.kotlin.get()))
-    classpath(libs.agp)
-  }
-}
-
 plugins {
+  alias(libs.plugins.kotlin.jvm) apply false
+  alias(libs.plugins.agp.application) apply false
   alias(libs.plugins.anvil) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)

@@ -48,6 +48,7 @@ turbine = "0.12.1"
 versionsPlugin = "0.44.0"
 
 [plugins]
+agp-application = { id = "com.android.application", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }

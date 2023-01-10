@@ -16,6 +16,11 @@ public interface Navigator {
    *
    * This is useful in preventing the user from returning to a completed workflow, such as a
    * tutorial, wizard, or authentication flow.
+   *
+   * Example
+   * ```kotlin
+   * foo
+   * ```
    */
   public fun newRoot(newRoot: Screen): List<Screen>
 

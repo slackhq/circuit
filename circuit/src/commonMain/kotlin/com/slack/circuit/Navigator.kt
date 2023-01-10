@@ -11,7 +11,23 @@ public interface Navigator {
 
   public fun pop(): Screen?
 
-  /** Clear the existing backstack of [Screens][Screen] and navigate to [newRoot]. */
+  /**
+   * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
+   *
+   * This is useful in preventing the user from returning to a completed workflow, such as a
+   * tutorial, wizard, or authentication flow.
+   *
+   * Example
+   *
+   * ```kotlin
+   * val navigator = Navigator()
+   * navigator.push(LoginScreen1)
+   * navigator.push(LoginScreen2)
+   *
+   * // Login flow is complete. Wipe backstack and set new root screen
+   * val loginScreens = navigator.newRoot(HomeScreen)
+   * ```
+   */
   public fun newRoot(newRoot: Screen): List<Screen>
 
   public object NoOp : Navigator {

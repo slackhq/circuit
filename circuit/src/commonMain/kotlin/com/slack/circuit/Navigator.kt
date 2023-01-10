@@ -20,8 +20,8 @@ public interface Navigator {
    * Example
    * ```kotlin
    * val navigator = Navigator()
-   * navigator.push(UnAuthedScreen1) // [UnAuthedScreen1]
-   * navigator.push(UnAuthedScreen2) // [UnAuthedScreen1, UnAuthedScreen2]
+   * navigator.push(UnAuthedScreen1)
+   * navigator.push(UnAuthedScreen2)
    * ...
    * // UnAuthed flow is complete. Wipe backstack and set new root screen
    * val unAuthedScreens = navigator.newRoot(AuthedScreen)

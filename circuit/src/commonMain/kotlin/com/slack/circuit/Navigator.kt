@@ -23,6 +23,9 @@ public interface Navigator {
    * val navigator = Navigator()
    * navigator.push(LoginScreen1)
    * navigator.push(LoginScreen2)
+   *
+   * // Login flow is complete. Wipe backstack and set new root screen
+   * val loginScreens = navigator.newRoot(HomeScreen)
    * ```
    */
   public fun newRoot(newRoot: Screen): List<Screen>

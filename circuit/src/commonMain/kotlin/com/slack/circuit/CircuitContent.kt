@@ -31,8 +31,8 @@ public fun CircuitContent(
           onNavEvent(GoToNavEvent(screen))
         }
 
-        override fun reset(newRoot: Screen): List<Screen> {
-          onNavEvent(ResetNavEvent(newRoot))
+        override fun newRoot(newRoot: Screen): List<Screen> {
+          onNavEvent(NewRootNavEvent(newRoot))
           return emptyList()
         }
 

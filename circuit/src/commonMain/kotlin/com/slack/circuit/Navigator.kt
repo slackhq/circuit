@@ -15,9 +15,7 @@ public interface Navigator {
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
    *
    * This is useful in preventing the user from returning to a completed workflow, such as a
-   * tutorial, wizard, or authentication flow.
-   *
-   * Example:
+   * tutorial, wizard, or authentication flow. For example:
    *
    * ```kotlin
    * val navigator = Navigator()

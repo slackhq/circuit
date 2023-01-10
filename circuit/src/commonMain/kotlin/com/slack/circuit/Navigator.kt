@@ -17,14 +17,15 @@ public interface Navigator {
    * This is useful in preventing the user from returning to a completed workflow, such as a
    * tutorial, wizard, or authentication flow.
    *
-   * Example
+   * Example:
+   *
    * ```kotlin
    * val navigator = Navigator()
-   * navigator.push(UnAuthedScreen1)
-   * navigator.push(UnAuthedScreen2)
+   * navigator.push(LoginScreen1)
+   * navigator.push(LoginScreen2)
    * ...
-   * // UnAuthed flow is complete. Wipe backstack and set new root screen
-   * val unAuthedScreens = navigator.newRoot(AuthedScreen)
+   * // Login flow is complete. Wipe backstack and set new root screen
+   * val loginScreens = navigator.newRoot(HomeScreen)
    * ```
    */
   public fun newRoot(newRoot: Screen): List<Screen>

@@ -65,10 +65,11 @@ class NavigatorTest {
 
     assertThat(backStack).hasSize(2)
 
-    val oldRoot = navigator.reset(TestScreen3)
+    val oldScreens = navigator.reset(TestScreen3)
 
     assertThat(backStack).hasSize(1)
     assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen3)
-    assertThat(oldRoot).isEqualTo(TestScreen)
+    assertThat(oldScreens).hasSize(2)
+    assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen))
   }
 }

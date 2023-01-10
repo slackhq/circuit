@@ -36,7 +36,7 @@ public class FakeNavigator : Navigator {
     return null
   }
 
-  override fun reset(newRoot: Screen): Screen? {
+  override fun reset(newRoot: Screen): List<Screen> {
     resets.add(newRoot)
     return null
   }

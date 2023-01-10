@@ -12,12 +12,12 @@ public interface Navigator {
   public fun pop(): Screen?
 
   /** Clear the existing backstack of [Screens][Screen] and navigate to [newRoot]. */
-  public fun reset(newRoot: Screen): Screen?
+  public fun reset(newRoot: Screen): List<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
-    override fun reset(newRoot: Screen): Screen? = null
+    override fun reset(newRoot: Screen): List<Screen> = emptyList()
   }
 }
 

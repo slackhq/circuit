@@ -18,6 +18,7 @@ public interface Navigator {
    * tutorial, wizard, or authentication flow.
    *
    * Example
+   *
    * ```kotlin
    * foo
    * ```

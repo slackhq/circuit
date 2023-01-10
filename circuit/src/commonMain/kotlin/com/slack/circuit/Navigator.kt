@@ -20,7 +20,9 @@ public interface Navigator {
    * Example
    *
    * ```kotlin
-   * foo
+   * val navigator = Navigator()
+   * navigator.push(LoginScreen1)
+   * navigator.push(LoginScreen2)
    * ```
    */
   public fun newRoot(newRoot: Screen): List<Screen>

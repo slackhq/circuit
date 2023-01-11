@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
+import com.slack.circuit.backstack.popUntil
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
@@ -51,6 +52,16 @@ internal class NavigatorImpl(
     }
 
     return backstack.pop()?.screen
+  }
+
+  override fun resetRoot(newRoot: Screen): List<Screen> {
+    return buildList(backstack.size) {
+      backstack.popUntil { record ->
+        add(record.screen)
+        false
+      }
+      backstack.push(newRoot)
+    }
   }
 
   override fun equals(other: Any?): Boolean {

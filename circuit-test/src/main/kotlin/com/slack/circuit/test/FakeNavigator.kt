@@ -25,6 +25,7 @@ import com.slack.circuit.Screen
  */
 public class FakeNavigator : Navigator {
   private val navigatedScreens = Turbine<Screen>()
+  private val newRoots = Turbine<Screen>()
   private val pops = Turbine<Unit>()
 
   override fun goTo(screen: Screen) {
@@ -36,6 +37,22 @@ public class FakeNavigator : Navigator {
     return null
   }
 
+  override fun resetRoot(newRoot: Screen): List<Screen> {
+    newRoots.add(newRoot)
+    val oldScreens = buildList {
+      val channel = navigatedScreens.asChannel()
+      while (true) {
+        val screen = channel.tryReceive().getOrNull() ?: break
+        add(screen)
+      }
+    }
+
+    // Note: to simulate popping off the backstack, screens should be returned in the reverse
+    // order that they were added. As the channel returns them in the order they were added, we
+    // need to reverse here before returning.
+    return oldScreens.reversed()
+  }
+
   /**
    * Returns the next [Screen] that was navigated to or throws if no screens were navigated to.
    *
@@ -45,6 +62,9 @@ public class FakeNavigator : Navigator {
 
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
   public suspend fun awaitNextScreen(): Screen = navigatedScreens.awaitItem()
+
+  /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
+  public suspend fun awaitResetRoot(): Screen = newRoots.awaitItem()
 
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
   public suspend fun awaitPop(): Unit = pops.awaitItem()

@@ -13,6 +13,7 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
+import com.slack.circuit.ScreenResultHandler
 import com.slack.circuit.presenterOf
 
 data class CounterState(
@@ -45,6 +46,7 @@ class CounterPresenterFactory : Presenter.Factory {
   override fun create(
     screen: Screen,
     navigator: Navigator,
+    resultHandler: ScreenResultHandler,
     context: CircuitContext,
   ): Presenter<*>? {
     return when (screen) {

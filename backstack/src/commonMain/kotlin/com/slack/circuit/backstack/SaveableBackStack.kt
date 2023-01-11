@@ -57,6 +57,9 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
     entryList.add(0, record)
   }
 
+  public operator fun get(index: Int): Record = entryList[index]
+  public operator fun set(index: Int, record: Record): Record = entryList.set(index, record)
+
   override fun pop(): Record? = entryList.removeFirstOrNull()
 
   public data class Record(

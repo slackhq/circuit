@@ -53,6 +53,7 @@ import androidx.compose.runtime.Immutable
 public class CircuitConfig private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
+  private val screenReducers: List<ScreenReducer> = builder.screenReducers.toList()
   public val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? =
     builder.onUnavailableContent
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
@@ -60,20 +61,22 @@ public class CircuitConfig private constructor(builder: Builder) {
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
+    resultHandler: ScreenResultHandler,
     context: CircuitContext = CircuitContext(null, this)
   ): Presenter<*>? {
-    return nextPresenter(null, screen, navigator, context)
+    return nextPresenter(null, screen, navigator, resultHandler, context)
   }
 
   public fun nextPresenter(
     skipPast: Presenter.Factory?,
     screen: Screen,
     navigator: Navigator,
+    resultHandler: ScreenResultHandler,
     context: CircuitContext
   ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
-      val presenter = presenterFactories[i].create(screen, navigator, context)
+      val presenter = presenterFactories[i].create(screen, navigator, resultHandler, context)
       if (presenter != null) {
         return presenter
       }
@@ -98,11 +101,21 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
+  public fun reduce(oldScreen: Screen, result: ScreenResult): Screen? {
+    for (reducer in screenReducers) {
+      val newScreen = reducer(oldScreen, result)
+      if (newScreen != null) return newScreen
+    }
+
+    return null
+  }
+
   public fun newBuilder(): Builder = Builder(this)
 
   public class Builder constructor() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
+    public val screenReducers: MutableList<ScreenReducer> = mutableListOf()
     public var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
       private set
     public var eventListenerFactory: EventListener.Factory? = null
@@ -138,6 +151,20 @@ public class CircuitConfig private constructor(builder: Builder) {
 
     public fun addPresenterFactories(factories: Iterable<Presenter.Factory>): Builder = apply {
       presenterFactories.addAll(factories)
+    }
+
+    public fun addScreenReducer(reducer: ScreenReducer): Builder = apply {
+      screenReducers.add(reducer)
+    }
+
+    public fun addScreenReducer(vararg reducer: ScreenReducer): Builder = apply {
+      for (r in reducer) {
+        screenReducers.add(r)
+      }
+    }
+
+    public fun addScreenReducers(reducers: Iterable<ScreenReducer>): Builder = apply {
+      screenReducers.addAll(reducers)
     }
 
     public fun setOnUnavailableContent(content: @Composable (screen: Screen) -> Unit): Builder =

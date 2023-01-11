@@ -30,3 +30,5 @@ import androidx.compose.runtime.Immutable
  * ```
  */
 @Immutable public expect interface Screen
+
+@Immutable public expect interface ScreenResult

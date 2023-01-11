@@ -19,6 +19,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.ChildScreenEvent
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
@@ -39,7 +40,7 @@ object HomeScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     class HomeEvent(val event: HomeNavScreen.Event) : Event
-    class ChildNav(val navEvent: NavEvent) : Event
+    class ChildNav(val childScreenEvent: ChildScreenEvent) : Event
   }
 }
 
@@ -50,9 +51,13 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   return HomeScreen.State(homeNavState) { event ->
     when (event) {
       is HomeEvent -> homeNavState.eventSink(event.event)
-      is ChildNav -> navigator.onNavEvent(event.navEvent)
+      is ChildNav -> processChildScreenEvent(event.childScreenEvent, navigator)
     }
   }
+}
+
+private fun processChildScreenEvent(event: ChildScreenEvent, navigator: Navigator) {
+  if (event is NavEvent) navigator.onNavEvent(event)
 }
 
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)

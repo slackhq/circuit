@@ -14,5 +14,34 @@ public fun SaveableBackStack.push(screen: Screen) {
   )
 }
 
+public fun SaveableBackStack.setScreenResult(result: ScreenResult?) {
+  if (size == 1) return
+
+  val ancestor = get(1)
+  val newArgs = ancestor.args.plus("result" to result)
+
+  set(1, ancestor.copy(args = newArgs))
+}
+
+public fun SaveableBackStack.processPendingScreenResult(config: CircuitConfig) {
+  val curRecord = topRecord ?: return
+  val pendingResult = curRecord.screenResult ?: return
+  val newScreen = config.reduce(curRecord.screen, pendingResult) ?: return
+
+  val newArgs = curRecord.args
+    .toMutableMap()
+    .apply {
+      remove("result")
+      put("screen", newScreen)
+    }
+  val newRecord = curRecord.copy(args = newArgs)
+
+  // replace the current top with the updated record
+  set(0, newRecord)
+}
+
 public val SaveableBackStack.Record.screen: Screen
   get() = args.getValue("screen") as Screen
+
+private val SaveableBackStack.Record.screenResult: ScreenResult?
+  get() = args["result"] as ScreenResult?

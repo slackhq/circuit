@@ -28,6 +28,7 @@ import com.slack.circuit.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
+import com.slack.circuit.ScreenResultHandler
 import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -71,6 +72,7 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitUiState = resolver.loadKSType<CircuitUiState>()
   val screen = resolver.loadKSType<Screen>()
   val navigator = resolver.loadKSType<Navigator>()
+  val resultHandler = resolver.loadKSType<ScreenResultHandler>()
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {
       @Suppress("SwallowedException")
@@ -391,6 +393,16 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             }
           }
+          type.isInstanceOf(symbols.resultHandler) -> {
+            if (allowNavigator) {
+              addOrError(AssistedType("resultHandler", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error(
+                "ScreenResultHandler type mismatch. ScreenResultHandler is not injectable on this type.",
+                param
+              )
+            }
+          }
         }
       }
     }
@@ -458,6 +470,7 @@ private fun TypeSpec.Builder.buildPresenterFactory(
         .addModifiers(KModifier.OVERRIDE)
         .addParameter("screen", Screen::class)
         .addParameter("navigator", Navigator::class)
+        .addParameter("resultHandler", ScreenResultHandler::class)
         .addParameter("context", CircuitContext::class)
         .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")

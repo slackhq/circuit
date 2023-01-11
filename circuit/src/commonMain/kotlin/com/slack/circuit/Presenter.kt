@@ -148,7 +148,7 @@ public interface Presenter<UiState : CircuitUiState> {
      * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it
      * cannot handle the given [screen].
      */
-    public fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>?
+    public fun create(screen: Screen, navigator: Navigator, resultHandler: ScreenResultHandler, context: CircuitContext): Presenter<*>?
   }
 }
 

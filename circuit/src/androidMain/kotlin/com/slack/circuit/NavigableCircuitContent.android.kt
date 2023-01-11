@@ -41,6 +41,7 @@ public fun NavigableCircuitContent(
   enableBackHandler: Boolean = true,
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
+  screenResultInterceptor: ScreenResultInterceptor = ScreenResultInterceptor { _, _ -> false },
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
   BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
@@ -52,6 +53,7 @@ public fun NavigableCircuitContent(
     modifier = modifier,
     circuitConfig = circuitConfig,
     decoration = decoration,
+    screenResultInterceptor = screenResultInterceptor,
     unavailableRoute = unavailableRoute,
   )
 }
@@ -64,8 +66,11 @@ public fun BasicNavigableCircuitContent(
   modifier: Modifier = Modifier,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
+  screenResultInterceptor: ScreenResultInterceptor = ScreenResultInterceptor { _, _ -> false },
   unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
 ) {
+  backstack.processPendingScreenResult(circuitConfig)
+
   val activeContentProviders = buildList {
     for (record in backstack) {
       val provider =
@@ -73,8 +78,12 @@ public fun BasicNavigableCircuitContent(
           val routeName = record.route
           val screen = record.screen
 
+          val screenResultHandler = ScreenResultHandler { result ->
+            if (!screenResultInterceptor(screen, result)) backstack.setScreenResult(result)
+          }
+
           val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator, circuitConfig) { unavailableRoute(routeName) }
+            CircuitContent(screen, navigator, screenResultHandler, circuitConfig) { unavailableRoute(routeName) }
           }
 
           val currentRouteContent by rememberUpdatedState(currentContent)

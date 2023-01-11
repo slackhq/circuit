@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.test
 
 import android.os.Parcel
@@ -41,5 +43,7 @@ private object TestScreen1 : Screen {
     throw NotImplementedError()
   }
 }
+
 private object TestScreen2 : Screen by TestScreen1
+
 private object TestScreen3 : Screen by TestScreen2

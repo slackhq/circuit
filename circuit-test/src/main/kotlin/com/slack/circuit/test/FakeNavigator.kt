@@ -63,7 +63,7 @@ public class FakeNavigator : Navigator {
   public suspend fun awaitNextScreen(): Screen = navigatedScreens.awaitItem()
 
   /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
-  public suspend fun awaitReset(): Screen = newRoots.awaitItem()
+  public suspend fun awaitResetRoot(): Screen = newRoots.awaitItem()
 
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
   public suspend fun awaitPop(): Unit = pops.awaitItem()

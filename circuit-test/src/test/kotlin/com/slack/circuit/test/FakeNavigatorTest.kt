@@ -18,7 +18,7 @@ class FakeNavigatorTest {
     val oldScreens = navigator.resetRoot(TestScreen3)
 
     assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen1))
-    assertThat(navigator.awaitReset()).isEqualTo(TestScreen3)
+    assertThat(navigator.awaitResetRoot()).isEqualTo(TestScreen3)
   }
 
   @Test
@@ -28,7 +28,7 @@ class FakeNavigatorTest {
     val oldScreens = navigator.resetRoot(TestScreen1)
 
     assertThat(oldScreens).isEmpty()
-    assertThat(navigator.awaitReset()).isEqualTo(TestScreen1)
+    assertThat(navigator.awaitResetRoot()).isEqualTo(TestScreen1)
   }
 }
 

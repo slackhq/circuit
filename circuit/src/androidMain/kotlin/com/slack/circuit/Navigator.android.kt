@@ -56,7 +56,7 @@ internal class NavigatorImpl(
   }
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
-    return buildList {
+    return buildList(backstack.size) {
       backstack.popUntil { record ->
         add(record.screen)
         false

@@ -24,11 +24,14 @@ kotlin {
         api(libs.molecule.runtime)
       }
     }
-    //    maybeCreate("androidMain").apply {
-    //      dependencies {
-    //        api(libs.androidx.compose.runtime)
-    //      }
-    //    }
+
+    commonTest {
+      dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.junit)
+        implementation(libs.truth)
+      }
+    }
   }
 }
 

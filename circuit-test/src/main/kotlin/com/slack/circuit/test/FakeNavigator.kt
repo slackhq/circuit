@@ -38,7 +38,18 @@ public class FakeNavigator : Navigator {
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
     newRoots.add(newRoot)
-    return emptyList()
+    val oldScreens = buildList {
+      val channel = navigatedScreens.asChannel()
+      while (true) {
+        val screen = channel.tryReceive().getOrNull() ?: break
+        add(screen)
+      }
+    }
+
+    // Note: to simulate popping off the backstack, screens should be returned in the reverse
+    // order that they were added. As the channel returns them in the order they were added, we
+    // need to reverse here before returning.
+    return oldScreens.reversed()
   }
 
   /**

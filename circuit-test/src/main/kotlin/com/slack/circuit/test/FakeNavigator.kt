@@ -36,7 +36,7 @@ public class FakeNavigator : Navigator {
     return null
   }
 
-  override fun newRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: Screen): List<Screen> {
     newRoots.add(newRoot)
     return emptyList()
   }
@@ -51,7 +51,7 @@ public class FakeNavigator : Navigator {
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
   public suspend fun awaitNextScreen(): Screen = navigatedScreens.awaitItem()
 
-  /** Awaits the next navigation [newRoot] or throws if no resets were performed. */
+  /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
   public suspend fun awaitReset(): Screen = newRoots.awaitItem()
 
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */

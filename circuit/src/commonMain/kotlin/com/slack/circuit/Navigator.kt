@@ -25,15 +25,15 @@ public interface Navigator {
    * navigator.push(LoginScreen2)
    *
    * // Login flow is complete. Wipe backstack and set new root screen
-   * val loginScreens = navigator.newRoot(HomeScreen)
+   * val loginScreens = navigator.resetRoot(HomeScreen)
    * ```
    */
-  public fun newRoot(newRoot: Screen): List<Screen>
+  public fun resetRoot(newRoot: Screen): List<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
     override fun pop(): Screen? = null
-    override fun newRoot(newRoot: Screen): List<Screen> = emptyList()
+    override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }
 }
 
@@ -44,7 +44,7 @@ public interface Navigator {
 public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is GoToNavEvent -> goTo(event.screen)
-    is NewRootNavEvent -> newRoot(event.newRoot)
+    is ResetRootNavEvent -> resetRoot(event.newRoot)
     PopNavEvent -> pop()
   }
 }
@@ -56,7 +56,7 @@ internal object PopNavEvent : NavEvent
 
 internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
 
-internal data class NewRootNavEvent(internal val newRoot: Screen) : NavEvent
+internal data class ResetRootNavEvent(internal val newRoot: Screen) : NavEvent
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {

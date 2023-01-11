@@ -56,7 +56,7 @@ class NavigatorTest {
   }
 
   @Test
-  fun newRoot() {
+  fun resetRoot() {
     val backStack = SaveableBackStack()
     backStack.push(TestScreen)
     backStack.push(TestScreen2)
@@ -65,7 +65,7 @@ class NavigatorTest {
 
     assertThat(backStack).hasSize(2)
 
-    val oldScreens = navigator.newRoot(TestScreen3)
+    val oldScreens = navigator.resetRoot(TestScreen3)
 
     assertThat(backStack).hasSize(1)
     assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen3)

@@ -3,6 +3,8 @@ app.cash.molecule:molecule-runtime
 app.cash.turbine:turbine-jvm
 app.cash.turbine:turbine
 org.jetbrains.compose.runtime:runtime-desktop
+org.jetbrains.compose.runtime:runtime-saveable-desktop
+org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-stdlib-jdk7
 org.jetbrains.kotlin:kotlin-stdlib-jdk8

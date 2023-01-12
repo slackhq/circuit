@@ -45,6 +45,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -71,7 +72,6 @@ import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.OverlayHost
-import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.star.R
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.di.AppScope
@@ -153,7 +153,7 @@ constructor(
   override fun present(): PetListScreen.State {
     var isRefreshing by remember { mutableStateOf(false) }
     val animalState by
-      produceRetainedState<List<PetListAnimal>?>(null, isRefreshing) {
+      produceState<List<PetListAnimal>?>(null, isRefreshing) {
         val animals = petRepo.getAnimals(isRefreshing)
         isRefreshing = false
         value = animals.map { it.toPetListAnimal() }

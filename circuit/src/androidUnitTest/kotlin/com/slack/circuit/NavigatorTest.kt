@@ -6,6 +6,7 @@ import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import kotlin.test.assertFailsWith
+import kotlin.test.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -19,6 +20,10 @@ private object TestScreen : Screen {
     throw NotImplementedError()
   }
 }
+
+private object TestScreen2 : Screen by TestScreen
+
+private object TestScreen3 : Screen by TestScreen
 
 @RunWith(RobolectricTestRunner::class)
 class NavigatorTest {
@@ -48,5 +53,23 @@ class NavigatorTest {
     navigator.pop()
     assertThat(backstack).hasSize(1)
     assertThat(onRootPop).isEqualTo(1)
+  }
+
+  @Test
+  fun resetRoot() {
+    val backStack = SaveableBackStack()
+    backStack.push(TestScreen)
+    backStack.push(TestScreen2)
+
+    val navigator = NavigatorImpl(backStack) { fail() }
+
+    assertThat(backStack).hasSize(2)
+
+    val oldScreens = navigator.resetRoot(TestScreen3)
+
+    assertThat(backStack).hasSize(1)
+    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen3)
+    assertThat(oldScreens).hasSize(2)
+    assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen))
   }
 }

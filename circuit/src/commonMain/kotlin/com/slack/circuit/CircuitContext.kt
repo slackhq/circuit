@@ -39,7 +39,7 @@ internal constructor(
    * Use this API to attach metadata, debugging, or other application data to a spec so that you may
    * read it in other APIs or callbacks.
    */
-  public inline fun <reified T : Any> putTag(tag: Any?): Unit = putTag(T::class, tag)
+  public inline fun <reified T : Any> putTag(tag: T?): Unit = putTag(T::class, tag)
 
   /**
    * Attaches [tag] to the request using [type] as a key. Tags can be read from a request using
@@ -48,7 +48,7 @@ internal constructor(
    * Use this API to attach metadata, debugging, or other application data to a spec so that you may
    * read it in other APIs or callbacks.
    */
-  public fun putTag(type: KClass<*>, tag: Any?): Unit {
+  public fun <S : Any, T : S> putTag(type: KClass<S>, tag: T?): Unit {
     if (tag == null) {
       this.tags.remove(type)
     } else {

@@ -30,3 +30,15 @@ import androidx.compose.runtime.Immutable
  * ```
  */
 @Immutable public expect interface Screen
+
+/**
+ * Represents an individual screen with additional routing information.
+ *
+ * [Routing][route] can be useful when constructing rich navigation and/or routing DSLs (ex. Deep
+ * linking).
+ *
+ * @see Screen
+ */
+@Immutable public expect interface RoutableScreen : Screen {
+  public val route: String
+}

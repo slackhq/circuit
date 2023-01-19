@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Immutable
+import com.slack.circuit.backstack.SaveableBackStack
 
 /**
  * Represents an individual screen, used as a key for [Presenter.Factory] and [Ui.Factory].
@@ -34,10 +35,14 @@ import androidx.compose.runtime.Immutable
 /**
  * Represents an individual screen with additional routing information.
  *
- * [Routing][route] can be useful when constructing rich navigation and/or routing DSLs (ex. Deep
+ * Instances of this interface are required when using [Navigator] with a [SaveableBackStack].
+ *
+ * [Routing][route] can be useful when constructing rich navigation and/or routing DSLs (eg. Deep
  * linking).
  *
  * @see Screen
+ * @see Navigator
+ * @see SaveableBackStack
  */
 @Immutable
 public expect interface NavigableScreen : Screen {

@@ -177,7 +177,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-converters-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 retrofit-converters-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref="robolectric" }
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.5"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.6"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 # Robolectric/Espresso ship with an old and totally borked version of hamcrest dependency, force a newer one
 testing-hamcrest = "org.hamcrest:hamcrest:2.2"

@@ -4,15 +4,15 @@ package com.slack.circuit
 
 import com.slack.circuit.backstack.SaveableBackStack
 
-public fun SaveableBackStack.push(screen: Screen) {
+public fun SaveableBackStack.push(screen: NavigableScreen) {
   push(
     SaveableBackStack.Record(
-      route = (screen as? NavigableScreen)?.route ?: "",
+      route = screen.route,
       args = mapOf("screen" to screen),
       key = screen.hashCode().toString()
     )
   )
 }
 
-public val SaveableBackStack.Record.screen: Screen
-  get() = args.getValue("screen") as Screen
+public val SaveableBackStack.Record.screen: NavigableScreen
+  get() = args.getValue("screen") as NavigableScreen

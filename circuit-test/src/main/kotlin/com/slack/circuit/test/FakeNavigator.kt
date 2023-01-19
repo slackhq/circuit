@@ -3,8 +3,8 @@
 package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
+import com.slack.circuit.NavigableScreen
 import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
 
 /**
  * A fake [Navigator] that can be used in tests to record and assert navigation events.
@@ -24,20 +24,20 @@ import com.slack.circuit.Screen
  * ```
  */
 public class FakeNavigator : Navigator {
-  private val navigatedScreens = Turbine<Screen>()
-  private val newRoots = Turbine<Screen>()
+  private val navigatedScreens = Turbine<NavigableScreen>()
+  private val newRoots = Turbine<NavigableScreen>()
   private val pops = Turbine<Unit>()
 
-  override fun goTo(screen: Screen) {
+  override fun goTo(screen: NavigableScreen) {
     navigatedScreens.add(screen)
   }
 
-  override fun pop(): Screen? {
+  override fun pop(): NavigableScreen? {
     pops.add(Unit)
     return null
   }
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: NavigableScreen): List<NavigableScreen> {
     newRoots.add(newRoot)
     val oldScreens = buildList {
       val channel = navigatedScreens.asChannel()
@@ -58,13 +58,13 @@ public class FakeNavigator : Navigator {
    *
    * For non-coroutines users only.
    */
-  public fun takeNextScreen(): Screen = navigatedScreens.takeItem()
+  public fun takeNextScreen(): NavigableScreen = navigatedScreens.takeItem()
 
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
-  public suspend fun awaitNextScreen(): Screen = navigatedScreens.awaitItem()
+  public suspend fun awaitNextScreen(): NavigableScreen = navigatedScreens.awaitItem()
 
   /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
-  public suspend fun awaitResetRoot(): Screen = newRoots.awaitItem()
+  public suspend fun awaitResetRoot(): NavigableScreen = newRoots.awaitItem()
 
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
   public suspend fun awaitPop(): Unit = pops.awaitItem()

@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.NavigableCircuitContent
-import com.slack.circuit.Screen
+import com.slack.circuit.NavigableScreen
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.push
@@ -47,7 +47,7 @@ constructor(
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
+    var backStack: ImmutableList<NavigableScreen> = persistentListOf(HomeScreen)
     if (intent.data != null) {
       val httpUrl = intent.data.toString().toHttpUrl()
       val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()

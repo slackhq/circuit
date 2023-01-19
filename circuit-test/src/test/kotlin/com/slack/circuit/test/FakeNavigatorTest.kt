@@ -4,7 +4,7 @@ package com.slack.circuit.test
 
 import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.Screen
+import com.slack.circuit.NavigableScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -34,7 +34,10 @@ class FakeNavigatorTest {
   }
 }
 
-private object TestScreen1 : Screen {
+private object TestScreen1 : NavigableScreen {
+  override val route: String
+    get() = "test1"
+
   override fun describeContents(): Int {
     throw NotImplementedError()
   }
@@ -44,6 +47,12 @@ private object TestScreen1 : Screen {
   }
 }
 
-private object TestScreen2 : Screen by TestScreen1
+private object TestScreen2 : NavigableScreen by TestScreen1 {
+  override val route: String
+    get() = "test2"
+}
 
-private object TestScreen3 : Screen by TestScreen2
+private object TestScreen3 : NavigableScreen by TestScreen1 {
+  override val route: String
+    get() = "test3"
+}

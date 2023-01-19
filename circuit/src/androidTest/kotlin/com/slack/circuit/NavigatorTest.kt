@@ -11,7 +11,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-private object TestScreen : Screen {
+private object TestScreen1 : NavigableScreen {
+  override val route: String
+    get() = "test1"
+
   override fun describeContents(): Int {
     throw NotImplementedError()
   }
@@ -21,9 +24,15 @@ private object TestScreen : Screen {
   }
 }
 
-private object TestScreen2 : Screen by TestScreen
+private object TestScreen2 : NavigableScreen by TestScreen1 {
+  override val route: String
+    get() = "test2"
+}
 
-private object TestScreen3 : Screen by TestScreen
+private object TestScreen3 : NavigableScreen by TestScreen1 {
+  override val route: String
+    get() = "test2"
+}
 
 @RunWith(RobolectricTestRunner::class)
 class NavigatorTest {
@@ -37,8 +46,8 @@ class NavigatorTest {
   @Test
   fun popAtRoot() {
     val backstack = SaveableBackStack()
-    backstack.push(TestScreen)
-    backstack.push(TestScreen)
+    backstack.push(TestScreen1)
+    backstack.push(TestScreen1)
 
     var onRootPop = 0
     val navigator = NavigatorImpl(backstack) { onRootPop++ }
@@ -58,7 +67,7 @@ class NavigatorTest {
   @Test
   fun resetRoot() {
     val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    backStack.push(TestScreen1)
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }
@@ -70,6 +79,6 @@ class NavigatorTest {
     assertThat(backStack).hasSize(1)
     assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen3)
     assertThat(oldScreens).hasSize(2)
-    assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen))
+    assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen1))
   }
 }

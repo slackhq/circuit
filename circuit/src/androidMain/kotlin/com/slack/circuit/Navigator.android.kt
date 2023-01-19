@@ -43,9 +43,9 @@ internal class NavigatorImpl(
     check(!backstack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goTo(screen: Screen) = backstack.push(screen)
+  override fun goTo(screen: NavigableScreen) = backstack.push(screen)
 
-  override fun pop(): Screen? {
+  override fun pop(): NavigableScreen? {
     if (backstack.isAtRoot) {
       onRootPop()
       return null
@@ -54,7 +54,7 @@ internal class NavigatorImpl(
     return backstack.pop()?.screen
   }
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: NavigableScreen): List<NavigableScreen> {
     return buildList(backstack.size) {
       backstack.popUntil { record ->
         add(record.screen)

@@ -42,9 +42,9 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.NavigableScreen
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -65,7 +65,10 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : NavigableScreen {
+  override val route: String
+    get() = "pet-detail"
+
   sealed interface State : CircuitUiState {
     object Loading : State
 

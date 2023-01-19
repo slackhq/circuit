@@ -66,9 +66,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.NavigableScreen
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.OverlayHost
@@ -117,7 +117,10 @@ enum class Size {
 data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
 
 @Parcelize
-object PetListScreen : Screen {
+object PetListScreen : NavigableScreen {
+  override val route: String
+    get() = "pet-list"
+
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean
 

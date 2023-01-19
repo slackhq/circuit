@@ -20,8 +20,8 @@ import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
 import com.slack.circuit.NavEvent
+import com.slack.circuit.NavigableScreen
 import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.star.di.AppScope
@@ -31,7 +31,10 @@ import com.slack.circuit.star.ui.StarTheme
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object HomeScreen : Screen {
+object HomeScreen : NavigableScreen {
+  override val route: String
+    get() = "home"
+
   data class State(
     val homeNavState: HomeNavScreen.State,
     val eventSink: (Event) -> Unit,

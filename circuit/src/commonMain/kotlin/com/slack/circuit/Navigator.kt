@@ -4,15 +4,15 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Stable
 
-/** A basic navigation interface for navigating between [screens][Screen]. */
+/** A basic navigation interface for navigating between [screens][NavigableScreen]. */
 @Stable
 public interface Navigator {
-  public fun goTo(screen: Screen)
+  public fun goTo(screen: NavigableScreen)
 
-  public fun pop(): Screen?
+  public fun pop(): NavigableScreen?
 
   /**
-   * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
+   * Clear the existing backstack of [screens][NavigableScreen] and navigate to [newRoot].
    *
    * This is useful in preventing the user from returning to a completed workflow, such as a
    * tutorial, wizard, or authentication flow.
@@ -28,12 +28,12 @@ public interface Navigator {
    * val loginScreens = navigator.resetRoot(HomeScreen)
    * ```
    */
-  public fun resetRoot(newRoot: Screen): List<Screen>
+  public fun resetRoot(newRoot: NavigableScreen): List<Screen>
 
   public object NoOp : Navigator {
-    override fun goTo(screen: Screen) {}
-    override fun pop(): Screen? = null
-    override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
+    override fun goTo(screen: NavigableScreen) {}
+    override fun pop(): NavigableScreen? = null
+    override fun resetRoot(newRoot: NavigableScreen): List<NavigableScreen> = emptyList()
   }
 }
 
@@ -54,12 +54,12 @@ public sealed interface NavEvent : CircuitUiEvent
 
 internal object PopNavEvent : NavEvent
 
-internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
+internal data class GoToNavEvent(internal val screen: NavigableScreen) : NavEvent
 
-internal data class ResetRootNavEvent(internal val newRoot: Screen) : NavEvent
+internal data class ResetRootNavEvent(internal val newRoot: NavigableScreen) : NavEvent
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
-public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
+public fun Navigator.popUntil(predicate: (NavigableScreen) -> Boolean) {
   while (true) {
     val screen = pop() ?: break
     if (predicate(screen)) {

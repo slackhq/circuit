@@ -8,6 +8,6 @@ import androidx.compose.runtime.Immutable
 @Immutable public actual interface Screen : Parcelable
 
 @Immutable
-public actual interface RoutableScreen : Screen {
+public actual interface NavigableScreen : Screen {
   public actual val route: String
 }

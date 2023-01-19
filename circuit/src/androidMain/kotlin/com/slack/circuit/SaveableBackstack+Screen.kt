@@ -7,7 +7,7 @@ import com.slack.circuit.backstack.SaveableBackStack
 public fun SaveableBackStack.push(screen: Screen) {
   push(
     SaveableBackStack.Record(
-      route = (screen as? RoutableScreen)?.route ?: "",
+      route = (screen as? NavigableScreen)?.route ?: "",
       args = mapOf("screen" to screen),
       key = screen.hashCode().toString()
     )

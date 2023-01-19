@@ -39,6 +39,7 @@ import androidx.compose.runtime.Immutable
  *
  * @see Screen
  */
-@Immutable public expect interface RoutableScreen : Screen {
+@Immutable
+public expect interface NavigableScreen : Screen {
   public val route: String
 }

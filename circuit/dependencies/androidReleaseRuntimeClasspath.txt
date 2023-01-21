@@ -41,6 +41,7 @@ androidx.versionedparcelable:versionedparcelable
 com.google.guava:listenablefuture
 org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
+org.jetbrains.compose.ui:ui
 org.jetbrains.kotlin:kotlin-stdlib-jdk7
 org.jetbrains.kotlin:kotlin-stdlib-jdk8
 org.jetbrains.kotlin:kotlin-stdlib

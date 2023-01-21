@@ -14,6 +14,7 @@ androidx.compose.ui:ui-util
 androidx.compose.ui:ui
 androidx.core:core-ktx
 androidx.core:core
+androidx.customview:customview-poolingcontainer
 androidx.lifecycle:lifecycle-common-java8
 androidx.lifecycle:lifecycle-common
 androidx.lifecycle:lifecycle-livedata-core
@@ -23,12 +24,14 @@ androidx.lifecycle:lifecycle-viewmodel-ktx
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.profileinstaller:profileinstaller
+androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
 androidx.tracing:tracing
 androidx.versionedparcelable:versionedparcelable
 org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
+org.jetbrains.compose.ui:ui
 org.jetbrains.kotlin:kotlin-stdlib-jdk7
 org.jetbrains.kotlin:kotlin-stdlib-jdk8
 org.jetbrains.kotlin:kotlin-stdlib

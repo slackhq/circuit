@@ -40,7 +40,7 @@ mosaic = "0.2.0"
 moshi = "1.14.0"
 moshix = "0.20.0"
 okhttp = "5.0.0-alpha.10"
-paparazzi = "1.1.0-sdk33-alpha04"
+paparazzi = "1.2.0"
 retrofit = "2.9.0"
 robolectric = "4.9.2"
 spotless = "6.13.0"
@@ -61,7 +61,7 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublis
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 moshiGradlePlugin = { id = "dev.zacsweers.moshix", version.ref = "moshix" }
 # Using an early cut of this until a new version with API 33 is released
-paparazzi = { id = "dev.chrisbanes.paparazzi", version.ref = "paparazzi" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 

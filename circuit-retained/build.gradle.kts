@@ -26,6 +26,7 @@ kotlin {
           api(libs.androidx.lifecycle.viewModel.compose)
           api(libs.androidx.lifecycle.viewModel)
           api(libs.androidx.compose.runtime)
+          implementation(libs.androidx.compose.ui.ui)
         }
       }
     maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }

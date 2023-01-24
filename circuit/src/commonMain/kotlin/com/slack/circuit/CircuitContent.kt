@@ -72,7 +72,10 @@ internal fun CircuitContent(
     remember(screen, context) {
       circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
     }
-  DisposableEffect(screen, context) { onDispose { eventListener.dispose() } }
+  DisposableEffect(screen, context) {
+    eventListener.start()
+    onDispose { eventListener.dispose() }
+  }
 
   eventListener.onBeforeCreatePresenter(screen, navigator, context)
   @Suppress("UNCHECKED_CAST")

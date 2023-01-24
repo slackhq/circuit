@@ -61,6 +61,9 @@ public interface EventListener {
   /** Called once after the [Ui.Content] composition is disposed. */
   public fun onDisposeContent() {}
 
+  /** Called once before doing any processing for the requested circuit. */
+  public fun start() {}
+
   /**
    * Called once when this [EventListener] should be disposed and the corresponding circuit is
    * disposed.

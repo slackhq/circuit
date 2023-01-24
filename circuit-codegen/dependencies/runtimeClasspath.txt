@@ -9,6 +9,7 @@ org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime-saveable-desktop
 org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
+org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-reflect
 org.jetbrains.kotlin:kotlin-stdlib-common
 org.jetbrains.kotlin:kotlin-stdlib-jdk7

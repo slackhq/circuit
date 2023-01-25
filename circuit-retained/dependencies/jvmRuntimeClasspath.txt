@@ -1,5 +1,6 @@
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime
+org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-stdlib-jdk7
 org.jetbrains.kotlin:kotlin-stdlib-jdk8
 org.jetbrains.kotlin:kotlin-stdlib

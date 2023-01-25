@@ -31,30 +31,26 @@ tasks
   .withType<KotlinCompile>()
   .matching { it !is KaptGenerateStubsTask }
   .configureEach {
-    @Suppress("SuspiciousCollectionReassignment")
-    kotlinOptions {
-      freeCompilerArgs +=
-        listOf(
-          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-        )
+    compilerOptions {
+      freeCompilerArgs.addAll(
+        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+      )
 
       if (project.hasProperty("circuit.enableComposeCompilerReports")) {
-        freeCompilerArgs +=
-          listOf(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-              project.buildDir.absolutePath +
-              "/compose_metrics"
-          )
-        freeCompilerArgs +=
-          listOf(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-              project.buildDir.absolutePath +
-              "/compose_metrics"
-          )
+        freeCompilerArgs.addAll(
+          "-P",
+          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+            project.buildDir.absolutePath +
+            "/compose_metrics"
+        )
+        freeCompilerArgs.addAll(
+          "-P",
+          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+            project.buildDir.absolutePath +
+            "/compose_metrics"
+        )
       }
     }
   }

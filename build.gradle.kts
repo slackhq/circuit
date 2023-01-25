@@ -13,22 +13,17 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-  dependencies {
-    // We have to declare this here in order for kotlin-facets to be generated in iml files
-    // https://youtrack.jetbrains.com/issue/KT-36331
-    classpath(kotlin("gradle-plugin", libs.versions.kotlin.get()))
-    classpath(libs.agp)
-  }
-}
-
 plugins {
+  alias(libs.plugins.kotlin.jvm) apply false
+  alias(libs.plugins.agp.application) apply false
   alias(libs.plugins.anvil) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)
@@ -138,52 +133,48 @@ subprojects {
 
   plugins.withType<KotlinBasePlugin> {
     val hasCompose = !project.hasProperty("circuit.noCompose")
-    tasks
-      .withType<KotlinCompile>()
-      // Stub gen copies args from the parent compilation
-      .matching { it !is KaptGenerateStubsTask }
-      .configureEach {
-        kotlinOptions {
-          allWarningsAsErrors = true
-          jvmTarget = "11"
-          @Suppress("SuspiciousCollectionReassignment")
-          freeCompilerArgs +=
-            listOf(
-              "-progressive",
-              "-Xinline-classes",
-              "-Xjsr305=strict",
-              "-opt-in=kotlin.contracts.ExperimentalContracts",
-              "-opt-in=kotlin.experimental.ExperimentalTypeInference",
-              "-opt-in=kotlin.ExperimentalStdlibApi",
-              "-opt-in=kotlin.time.ExperimentalTime",
-              // We should be able to remove this in Kotlin 1.7, yet for some reason it still warns
-              // about its use
-              // https://youtrack.jetbrains.com/issue/KT-52720
-              "-opt-in=kotlin.RequiresOptIn",
-              // Match JVM assertion behavior:
-              // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
-              "-Xassertions=jvm",
-              // Potentially useful for static analysis tools or annotation processors.
-              "-Xemit-jvm-type-annotations",
-              "-Xproper-ieee754-comparisons",
-              // Enable new jvm-default behavior
-              // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-              "-Xjvm-default=all",
-              // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-              "-Xtype-enhancement-improvements-strict-mode",
-              "-Xjspecify-annotations=strict",
-            )
+    tasks.withType<KotlinCompile>().configureEach {
+      compilerOptions {
+        allWarningsAsErrors.set(true)
+        jvmTarget.set(JVM_11)
+
+        // Stub gen copies args from the parent compilation
+        if (this !is KaptGenerateStubsTask) {
+          freeCompilerArgs.addAll(
+            "-progressive",
+            "-Xinline-classes",
+            "-Xjsr305=strict",
+            "-opt-in=kotlin.contracts.ExperimentalContracts",
+            "-opt-in=kotlin.experimental.ExperimentalTypeInference",
+            "-opt-in=kotlin.ExperimentalStdlibApi",
+            "-opt-in=kotlin.time.ExperimentalTime",
+            // We should be able to remove this in Kotlin 1.7, yet for some reason it still warns
+            // about its use
+            // https://youtrack.jetbrains.com/issue/KT-52720
+            "-opt-in=kotlin.RequiresOptIn",
+            // Match JVM assertion behavior:
+            // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
+            "-Xassertions=jvm",
+            // Potentially useful for static analysis tools or annotation processors.
+            "-Xemit-jvm-type-annotations",
+            "-Xproper-ieee754-comparisons",
+            // Enable new jvm-default behavior
+            // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+            "-Xjvm-default=all",
+            // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
+            "-Xtype-enhancement-improvements-strict-mode",
+            "-Xjspecify-annotations=strict",
+          )
 
           if (hasCompose && suppressComposeKotlinVersion) {
-            @Suppress("SuspiciousCollectionReassignment")
-            freeCompilerArgs +=
-              listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
-              )
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+            )
           }
         }
       }
+    }
 
     if (hasCompose) {
       dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }
@@ -325,6 +316,28 @@ subprojects {
       kotlinCompilerPlugin.set(
         dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
       )
+    }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+    // Enforce Kotlin BOM
+    dependencies { add("implementation", platform(libs.kotlin.bom)) }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+    // Enforce Kotlin BOM
+    dependencies { add("implementation", platform(libs.kotlin.bom)) }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+    // Enforce Kotlin BOM
+    configure<KotlinMultiplatformExtension> {
+      sourceSets {
+        maybeCreate("commonMain").dependencies {
+          // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
+          implementation(platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"))
+        }
+      }
     }
   }
 }

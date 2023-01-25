@@ -47,7 +47,7 @@ public interface EventListener {
    * Called when there is a new [state] returned by the [Presenter]. This is called every time state
    * is recomposed.
    */
-  public fun onState(state: Any) {}
+  public fun onState(state: CircuitUiState) {}
 
   /** Called once before the initial [Presenter.present] call. */
   public fun onStartPresent() {}

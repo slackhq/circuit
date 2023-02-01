@@ -23,16 +23,9 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
-import com.slack.circuit.CircuitContext
-import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
-import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
-import com.slack.circuit.Ui
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -45,7 +38,6 @@ import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -55,9 +47,17 @@ import dagger.assisted.AssistedFactory
 import javax.inject.Inject
 import javax.inject.Provider
 
-private val CIRCUIT_INJECT_ANNOTATION = CircuitInject::class.java.canonicalName
-private val CIRCUIT_PRESENTER = Presenter::class.java.canonicalName
-private val CIRCUIT_UI = Ui::class.java.canonicalName
+private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
+private val CIRCUIT_INJECT_ANNOTATION =
+  ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
+private val CIRCUIT_PRESENTER = ClassName("com.slack.circuit", "Presenter")
+private val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
+private val CIRCUIT_UI = ClassName("com.slack.circuit", "Ui")
+private val CIRCUIT_UI_FACTORY = CIRCUIT_UI.nestedClass("Factory")
+private val CIRCUIT_UI_STATE = ClassName("com.slack.circuit", "CircuitUiState")
+private val SCREEN = ClassName("com.slack.circuit", "Screen")
+private val NAVIGATOR = ClassName("com.slack.circuit", "Navigator")
+private val CIRCUIT_CONTEXT = ClassName("com.slack.circuit", "CircuitContext")
 private const val FACTORY = "Factory"
 
 @AutoService(SymbolProcessorProvider::class)
@@ -68,9 +68,11 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
 }
 
 private class CircuitSymbols private constructor(resolver: Resolver) {
-  val circuitUiState = resolver.loadKSType<CircuitUiState>()
-  val screen = resolver.loadKSType<Screen>()
-  val navigator = resolver.loadKSType<Navigator>()
+  val modifier = resolver.loadKSType(MODIFIER.canonicalName)
+  val circuitUiState = resolver.loadKSType(CIRCUIT_UI_STATE.canonicalName)
+  val screen = resolver.loadKSType(SCREEN.canonicalName)
+  val navigator = resolver.loadKSType(NAVIGATOR.canonicalName)
+
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {
       @Suppress("SwallowedException")
@@ -83,24 +85,29 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   }
 }
 
-private inline fun <reified T> Resolver.loadKSType(): KSType {
-  return loadOptionalKSType<T>()
-    ?: error("Could not find ${T::class.java.canonicalName} in classpath")
-}
+private inline fun <reified T> Resolver.loadKSType(): KSType =
+  loadKSType(T::class.java.canonicalName)
 
-private inline fun <reified T> Resolver.loadOptionalKSType(): KSType? {
-  return getClassDeclarationByName(getKSNameFromString(T::class.java.canonicalName))
-    ?.asType(emptyList())
+private fun Resolver.loadKSType(name: String?): KSType =
+  loadOptionalKSType(name) ?: error("Could not find $name in classpath")
+
+private inline fun <reified T> Resolver.loadOptionalKSType(): KSType? =
+  loadOptionalKSType(T::class.java.canonicalName)
+
+internal fun Resolver.loadOptionalKSType(name: String?): KSType? {
+  if (name == null) return null
+  return getClassDeclarationByName(getKSNameFromString(name))?.asType(emptyList())
 }
 
 private class CircuitSymbolProcessor(
   private val logger: KSPLogger,
-  private val codeGenerator: CodeGenerator
+  private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
-    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION).forEach { annotatedElement ->
+    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
+      annotatedElement ->
       when (annotatedElement) {
         is KSClassDeclaration -> {
           generateFactory(annotatedElement, InstantiationType.CLASS, symbols)
@@ -121,12 +128,12 @@ private class CircuitSymbolProcessor(
   private fun generateFactory(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
-    symbols: CircuitSymbols
+    symbols: CircuitSymbols,
   ) {
     val circuitInjectAnnotation =
       annotatedElement.annotations.first {
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-          CIRCUIT_INJECT_ANNOTATION
+          CIRCUIT_INJECT_ANNOTATION.canonicalName
       }
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
     val screenIsObject =
@@ -185,7 +192,7 @@ private class CircuitSymbolProcessor(
     val packageName: String,
     val factoryType: FactoryType,
     val constructorParams: List<ParameterSpec>,
-    val codeBlock: CodeBlock
+    val codeBlock: CodeBlock,
   )
 
   /** Computes the data needed to generate a factory. */
@@ -232,34 +239,72 @@ private class CircuitSymbolProcessor(
                 assistedParams
               )
             FactoryType.UI -> {
+              // State param is optional
               val stateParam =
                 fd.parameters.singleOrNull { parameter ->
                   symbols.circuitUiState.isAssignableFrom(parameter.type.resolve())
                 }
-              if (stateParam == null) {
-                CodeBlock.of(
-                  "%M<%T>·{·%M(%L)·}",
-                  MemberName("com.slack.circuit", "ui"),
-                  CircuitUiState::class.java,
-                  MemberName(packageName, name),
-                  assistedParams
-                )
-              } else {
-                val block =
-                  if (assistedParams.isEmpty()) {
-                    CodeBlock.of("")
-                  } else {
-                    CodeBlock.of(",·%L", assistedParams)
+
+              // Modifier param is required
+              val modifierParam =
+                fd.parameters.singleOrNull { parameter ->
+                  symbols.modifier.isAssignableFrom(parameter.type.resolve())
+                }
+                  ?: run {
+                    logger.error("UI composable functions must have a Modifier parameter!", fd)
+                    return null
                   }
-                CodeBlock.of(
-                  "%M<%T>·{·state·->·%M(%L·=·state%L)·}",
-                  MemberName("com.slack.circuit", "ui"),
-                  stateParam.type.resolve().toTypeName(),
-                  MemberName(packageName, name),
-                  stateParam.name!!.getShortName(),
-                  block
-                )
-              }
+
+              /*
+              Diagram of what goes into generating a function!
+              - State parameter is _optional_ and can be omitted if it's static state.
+                - When omitted, the argument becomes _ and the param is omitted entirely.
+              - <StateType> is either the State or CircuitUiState if no state param is used.
+              - Modifier parameter is required.
+              - Assisted parameters can be 0 or more extra supported assisted parameters.
+
+                                                           Optional state param
+                            Optional state arg                   │
+                                │                                │       Required modifier param
+                                │      Req modifier arg          │               │
+              ┌─── ui function  │       │                        │               │            Any assisted params
+              │                 │       │       Composable       │               │                    │
+              │   State type    │       │          │             │               │                    │
+              │      │          │       │          │             │               │                    │
+              │      │          │       │          │             │               │                    │
+              └──────┴─────   ──┴──  ───┴────    ──┴───── ───────┴─────  ────────┴──────────  ────────┴────────
+              ui<StateType> { state, modifier -> Function(state = state, modifier = modifier, <assisted params>) }
+              ────────────────────────────────────────────────────────────────────────────────────────────────────
+
+              Diagram generated with asciiflow. You can make new ones or edit with this link.
+              https://asciiflow.com/#/share/eJzVVM1KxDAQfpVhTgr1IizLlt2CCF4F9ZhLdGclkKbd%2FMCW0rfwcXwan8SsWW27sd0qXixzmDTffN83bSY1Kp4TpspJmaDkFWlMsWa4Y5guZvOEYeWzy%2FnCZ5Z21i8Ywg%2Be29KKQnEJxnJLUHLNc8bUKIjr55jo7eXVR1R62Dplo4Xc0dYJTWvIi7XYCNIDnnpVvqjF9%2BzF2sFlsBvCCdg49bTvsVcx4vtb2u7ySlXAjRHG%2BlY%2BOjBBdYSqza6LvCwMf5Q0VS%2FqDjq%2FzVYlDfV1zPMrpWHSf6w1JeDz4HfejGCH9ybrTQT%2BUan%2FEk4s7%2Fdj%2F%2BAPUQZ1uAOSdtwuMrg5TM9ZuB9WEWb1lSawPBqL7Bwahg027%2Byjz8s%3D)
+              */
+
+              @Suppress("IfThenToElvis") // The elvis is less readable here
+              val stateType =
+                if (stateParam == null) CIRCUIT_UI_STATE else stateParam.type.resolve().toTypeName()
+              val stateArg = if (stateParam == null) "_" else "state"
+              val stateParamBlock =
+                if (stateParam == null) CodeBlock.of("")
+                else CodeBlock.of("%L·=·state,·", stateParam.name!!.getShortName())
+              val modifierParamBlock =
+                CodeBlock.of("%L·=·modifier", modifierParam.name!!.getShortName())
+              val assistedParamsBlock =
+                if (assistedParams.isEmpty()) {
+                  CodeBlock.of("")
+                } else {
+                  CodeBlock.of(",·%L", assistedParams)
+                }
+              CodeBlock.of(
+                "%M<%T>·{·%L,·modifier·->·%M(%L%L%L)·}",
+                MemberName("com.slack.circuit", "ui"),
+                stateType,
+                stateArg,
+                MemberName(packageName, name),
+                stateParamBlock,
+                modifierParamBlock,
+                assistedParamsBlock
+              )
             }
           }
       }
@@ -291,8 +336,8 @@ private class CircuitSymbolProcessor(
             .getAllSuperTypes()
             .mapNotNull {
               when (it.declaration.qualifiedName?.asString()) {
-                CIRCUIT_UI -> FactoryType.UI
-                CIRCUIT_PRESENTER -> FactoryType.PRESENTER
+                CIRCUIT_UI.canonicalName -> FactoryType.UI
+                CIRCUIT_PRESENTER.canonicalName -> FactoryType.PRESENTER
                 else -> null
               }
             }
@@ -361,7 +406,7 @@ private fun KSFunctionDeclaration.assistedParameters(
   symbols: CircuitSymbols,
   logger: KSPLogger,
   screenType: KSType,
-  allowNavigator: Boolean
+  allowNavigator: Boolean,
 ): CodeBlock {
   return buildSet {
       for (param in parameters) {
@@ -410,22 +455,17 @@ private fun KSType.isInstanceOf(type: KSType): Boolean {
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
-  instantiationCodeBlock: CodeBlock
+  instantiationCodeBlock: CodeBlock,
 ): TypeSpec {
-  return addSuperinterface(Ui.Factory::class)
+  return addSuperinterface(CIRCUIT_UI_FACTORY)
     .addFunction(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", Screen::class)
-        .addParameter("context", CircuitContext::class)
-        .returns(ScreenUi::class.asClassName().copy(nullable = true))
+        .addParameter("screen", SCREEN)
+        .addParameter("context", CIRCUIT_CONTEXT)
+        .returns(CIRCUIT_UI.parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return·when·(screen)")
-        .addStatement(
-          "%L·->·%T(%L)",
-          screenBranch,
-          ScreenUi::class.asTypeName(),
-          instantiationCodeBlock
-        )
+        .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
         .addStatement("else·->·null")
         .endControlFlow()
         .build()
@@ -437,7 +477,7 @@ private fun TypeSpec.Builder.buildUiFactory(
 private fun TypeSpec.Builder.buildPresenterFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
-  instantiationCodeBlock: CodeBlock
+  instantiationCodeBlock: CodeBlock,
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
   //  public class AboutPresenterFactory : Presenter.Factory {
@@ -452,14 +492,14 @@ private fun TypeSpec.Builder.buildPresenterFactory(
   //    }
   //  }
 
-  return addSuperinterface(Presenter.Factory::class)
+  return addSuperinterface(CIRCUIT_PRESENTER_FACTORY)
     .addFunction(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", Screen::class)
-        .addParameter("navigator", Navigator::class)
-        .addParameter("context", CircuitContext::class)
-        .returns(Presenter::class.asClassName().parameterizedBy(STAR).copy(nullable = true))
+        .addParameter("screen", SCREEN)
+        .addParameter("navigator", NAVIGATOR)
+        .addParameter("context", CIRCUIT_CONTEXT)
+        .returns(CIRCUIT_PRESENTER.parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")
         .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
         .addStatement("else·->·null")

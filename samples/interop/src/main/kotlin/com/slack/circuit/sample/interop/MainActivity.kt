@@ -7,7 +7,6 @@ import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -88,12 +87,12 @@ class MainActivity : AppCompatActivity() {
             }
           },
         ) { paddingValues ->
-          Box(Modifier.padding(paddingValues)) {
-            // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
-            //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
-            //  them live enough to support this, but also sort of orthogonal to the point of this
-            //  sample.
-            key(circuitScreen) { CircuitContent(screen = circuitScreen) }
+          // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
+          //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
+          //  them live enough to support this, but also sort of orthogonal to the point of this
+          //  sample.
+          key(circuitScreen) {
+            CircuitContent(screen = circuitScreen, modifier = Modifier.padding(paddingValues))
           }
         }
       }

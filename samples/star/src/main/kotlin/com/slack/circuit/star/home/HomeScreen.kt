@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -73,10 +72,12 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       }
     }
   ) { paddingValues ->
-    Box(modifier = Modifier.padding(paddingValues)) {
-      val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
-      CircuitContent(screen, onNavEvent = { event -> eventSink(ChildNav(event)) })
-    }
+    val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
+    CircuitContent(
+      screen,
+      modifier = Modifier.padding(paddingValues),
+      onNavEvent = { event -> eventSink(ChildNav(event)) }
+    )
   }
 }
 

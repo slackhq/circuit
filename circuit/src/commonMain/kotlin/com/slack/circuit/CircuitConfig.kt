@@ -2,8 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 
 /**
  * [CircuitConfig] adapts [presenter factories][Presenter.Factory] to their corresponding renderable
@@ -53,7 +58,7 @@ import androidx.compose.runtime.Immutable
 public class CircuitConfig private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
-  public val onUnavailableContent: (@Composable (screen: Screen) -> Unit)? =
+  public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
@@ -82,11 +87,11 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null, this)): ScreenUi? {
+  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null, this)): Ui<*>? {
     return nextUi(null, screen, context)
   }
 
-  public fun nextUi(skipPast: Ui.Factory?, screen: Screen, context: CircuitContext): ScreenUi? {
+  public fun nextUi(skipPast: Ui.Factory?, screen: Screen, context: CircuitContext): Ui<*>? {
     val start = uiFactories.indexOf(skipPast) + 1
     for (i in start until uiFactories.size) {
       val ui = uiFactories[i].create(screen, context)
@@ -103,7 +108,8 @@ public class CircuitConfig private constructor(builder: Builder) {
   public class Builder constructor() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
-    public var onUnavailableContent: (@Composable (screen: Screen) -> Unit)? = null
+    public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+      UnavailableContent
       private set
     public var eventListenerFactory: EventListener.Factory? = null
       private set
@@ -140,10 +146,9 @@ public class CircuitConfig private constructor(builder: Builder) {
       presenterFactories.addAll(factories)
     }
 
-    public fun setOnUnavailableContent(content: @Composable (screen: Screen) -> Unit): Builder =
-      apply {
-        onUnavailableContent = content
-      }
+    public fun setOnUnavailableContent(
+      content: @Composable (screen: Screen, modifier: Modifier) -> Unit
+    ): Builder = apply { onUnavailableContent = content }
 
     public fun eventListenerFactory(factory: EventListener.Factory): Builder = apply {
       eventListenerFactory = factory
@@ -154,3 +159,12 @@ public class CircuitConfig private constructor(builder: Builder) {
     }
   }
 }
+
+private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier) -> Unit =
+  { screen, modifier ->
+    BasicText(
+      "Route not available: ${screen.javaClass.name}",
+      modifier.background(Color.Red),
+      style = TextStyle(color = Color.Yellow)
+    )
+  }

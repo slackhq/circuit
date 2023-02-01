@@ -20,8 +20,10 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(projects.backstack)
+        api(libs.compose.ui)
       }
     }
+    maybeCreate("jvmMain").apply { dependencies { api(libs.compose.foundation) } }
     maybeCreate("androidMain").apply {
       dependencies {
         api(libs.androidx.compose.runtime)

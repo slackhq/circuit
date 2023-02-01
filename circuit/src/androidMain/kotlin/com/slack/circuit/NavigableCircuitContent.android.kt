@@ -12,8 +12,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
-import androidx.compose.foundation.background
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -24,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
@@ -41,7 +37,8 @@ public fun NavigableCircuitContent(
   enableBackHandler: Boolean = true,
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
-  unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
+  unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
 ) {
   BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
 
@@ -64,17 +61,17 @@ public fun BasicNavigableCircuitContent(
   modifier: Modifier = Modifier,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
-  unavailableRoute: @Composable (String) -> Unit = NavigatorDefaults.UnavailableRoute,
+  unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
 ) {
   val activeContentProviders = buildList {
     for (record in backstack) {
       val provider =
         key(record.key) {
-          val routeName = record.route
           val screen = record.screen
 
           val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator, circuitConfig) { unavailableRoute(routeName) }
+            CircuitContent(screen, modifier, navigator, circuitConfig, unavailableRoute)
           }
 
           val currentRouteContent by rememberUpdatedState(currentContent)
@@ -156,17 +153,5 @@ public object NavigatorDefaults {
     ) {
       content(arg)
     }
-  }
-
-  /**
-   * Bright ugly error text telling a developer they didn't provide a route that a [BackStack] asked
-   * for.
-   */
-  public val UnavailableRoute: @Composable (String) -> Unit = { route ->
-    BasicText(
-      "Route not available: $route",
-      Modifier.background(Color.Red),
-      style = TextStyle(color = Color.Yellow)
-    )
   }
 }

@@ -35,7 +35,6 @@ import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitContext
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
         .addUiFactory { screen, _ ->
           when (screen) {
-            is InteropCounterScreen -> ScreenUi(screen.uiSource.createUi())
+            is InteropCounterScreen -> screen.uiSource.createUi()
             else -> null
           }
         }
@@ -213,12 +212,12 @@ private enum class PresenterSource {
 enum class UiSource {
   Circuit {
     override fun createUi(): Ui<CounterState> {
-      return ui { state -> Counter(state) }
+      return ui { state, modifier -> Counter(state, modifier) }
     }
   },
   View {
     override fun createUi(): Ui<CounterState> {
-      return ui { state -> CounterViewComposable(state) }
+      return ui { state, modifier -> CounterViewComposable(state, modifier) }
     }
   };
 

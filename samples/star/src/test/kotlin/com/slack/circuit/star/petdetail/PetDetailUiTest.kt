@@ -40,10 +40,10 @@ class PetDetailUiTest {
   private var carouselScreen: PetPhotoCarouselScreen? = null
   private val circuitConfig =
     CircuitConfig.Builder()
-      .setOnUnavailableContent { screen ->
+      .setOnUnavailableContent { screen, modifier ->
         when (screen) {
           is PetPhotoCarouselScreen -> {
-            PetPhotoCarousel(PetPhotoCarouselScreen.State(screen))
+            PetPhotoCarousel(PetPhotoCarouselScreen.State(screen), modifier)
             carouselScreen = screen
           }
         }
@@ -146,8 +146,8 @@ class PetDetailUiTest {
 
     val circuitConfig =
       CircuitConfig.Builder()
-        .setOnUnavailableContent { screen ->
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen))
+        .setOnUnavailableContent { screen, modifier ->
+          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen), modifier)
         }
         .build()
 

@@ -75,7 +75,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   ) { paddingValues ->
     Box(modifier = Modifier.padding(paddingValues)) {
       val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
-      CircuitContent(screen, { event -> eventSink(ChildNav(event)) })
+      CircuitContent(screen, onNavEvent = { event -> eventSink(ChildNav(event)) })
     }
   }
 }

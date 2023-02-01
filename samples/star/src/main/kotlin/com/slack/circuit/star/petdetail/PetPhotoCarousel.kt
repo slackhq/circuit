@@ -110,7 +110,7 @@ internal object PetPhotoCarouselTestConstants {
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
+internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Modifier = Modifier) {
   val (name, photoUrls, photoUrlMemoryCacheKey) = state
   val context = LocalContext.current
   val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -128,7 +128,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State) {
   val scope = rememberCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
-  val columnModifier = if (isLandscape) Modifier.fillMaxWidth(0.5f) else Modifier.fillMaxSize()
+  val columnModifier = if (isLandscape) modifier.fillMaxWidth(0.5f) else modifier.fillMaxSize()
   Column(
     columnModifier
       .testTag(CAROUSEL_TAG)

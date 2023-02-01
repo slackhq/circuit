@@ -161,12 +161,12 @@ internal object PetDetailTestConstants {
 
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
-internal fun PetDetail(state: PetDetailScreen.State) {
+internal fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifier) {
   val systemUiController = rememberSystemUiController()
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
 
-  Scaffold(modifier = Modifier.systemBarsPadding(), topBar = { TopBar(state) }) { padding ->
+  Scaffold(modifier = modifier.systemBarsPadding(), topBar = { TopBar(state) }) { padding ->
     when (state) {
       is PetDetailScreen.State.Loading -> Loading(padding)
       is PetDetailScreen.State.UnknownAnimal -> UnknownAnimal(padding)

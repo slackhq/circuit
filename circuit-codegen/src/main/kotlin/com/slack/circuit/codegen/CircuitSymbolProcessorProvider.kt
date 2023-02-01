@@ -85,14 +85,8 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   }
 }
 
-private inline fun <reified T> Resolver.loadKSType(): KSType =
-  loadKSType(T::class.java.canonicalName)
-
 private fun Resolver.loadKSType(name: String?): KSType =
   loadOptionalKSType(name) ?: error("Could not find $name in classpath")
-
-private inline fun <reified T> Resolver.loadOptionalKSType(): KSType? =
-  loadOptionalKSType(T::class.java.canonicalName)
 
 internal fun Resolver.loadOptionalKSType(name: String?): KSType? {
   if (name == null) return null
@@ -197,7 +191,7 @@ private class CircuitSymbolProcessor(
 
   /** Computes the data needed to generate a factory. */
   // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
-  @Suppress("ComplexMethod", "LongMethod")
+  @Suppress("ComplexMethod", "LongMethod", "ReturnCount")
   @OptIn(KspExperimental::class)
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,

@@ -3,13 +3,7 @@
   "extends": [
     "config:base"
   ],
-  "reviewers": [
-    "ZacSweers",
-    "kierse",
-    "iamritav",
-    "jpetote"
-  ],
-  "branchPrefix": "test-renovate/",
+  "branchPrefix": "renovate/",
   "gitAuthor": "OSS-Bot <svc-oss-bot@slack-corp.com>",
   "repositories": [
     "slackhq/circuit"

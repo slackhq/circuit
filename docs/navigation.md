@@ -48,8 +48,8 @@ setContent {
 Navigation carries special semantic value in `CircuitContent` as well, where it’s common for UIs to want to curry navigation events emitted by nested UIs. For this case, there’s a `CircuitContent` overload that accepts an optional onNavEvent callback that you must then forward to a Navigator instance.
 
 ```kotlin
-@Composable fun ParentUi(state: ParentState) {
-  CircuitContent(NestedScreen, onNavEvent = { navEvent -> state.eventSink(NestedNav(navEvent)) })
+@Composable fun ParentUi(state: ParentState, modifier: Modifier = Modifier) {
+  CircuitContent(NestedScreen, modifier = modifier, onNavEvent = { navEvent -> state.eventSink(NestedNav(navEvent)) })
 }
 
 @Composable fun ParentPresenter(navigator: Navigator): ParentState {

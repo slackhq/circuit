@@ -5,7 +5,7 @@ The core Ui interface is simply this:
 
 ```kotlin
 interface Ui<UiState : CircuitUiState> {
-  @Composable fun Content(state: UiState)
+  @Composable fun Content(state: UiState, modifier: Modifier)
 }
 ```
 
@@ -14,7 +14,7 @@ Like presenters, simple UIs can also skip the class all together for use in othe
 ```kotlin
 @CircuitInject<FavoritesScreen> // Relevant DI wiring is generated
 @Composable
-private fun Favorites(state: FavoritesState) {
+private fun Favorites(state: FavoritesState, modifier: Modifier = Modifier) {
   // ...
 }
 ```
@@ -31,11 +31,11 @@ Let’s look a little more closely at the last bullet point about preview functi
 ```kotlin
 @Preview
 @Composable
-private fun PreviewFavorites() = Favorites(FavoritesState(listOf("Reeses", "Lola"))
+private fun PreviewFavorites() = Favorites(FavoritesState(listOf("Reeses", "Lola")))
 
 @Preview
 @Composable
-private fun PreviewEmptyFavorites() = Favorites(FavoritesState(listOf())
+private fun PreviewEmptyFavorites() = Favorites(FavoritesState(listOf()))
 ```
 
 TODO image sample of IDE preview

@@ -52,7 +52,7 @@ public interface Ui<UiState : CircuitUiState> {
    *  override fun create(
    *    screen: Screen,
    *    context: CircuitContext
-   *  ): ScreenUi? {
+   *  ): Ui<*>? {
    *    return when (screen) {
    *      is AddFavorites -> addFavoritesUi()
    *      else -> null

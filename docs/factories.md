@@ -31,19 +31,19 @@ class FavoritesScreenPresenterFactory @Inject constructor(
 UI factories are similar, but generally should not aggregate other UIs unless there’s a DI-specific reason to do so (which there usually isn’t!).
 
 ```kotlin
-class FavoritesScreenUiFactory : @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): ScreenUi? {
+class FavoritesScreenUiFactory @Inject constructor() : Ui.Factory {
+  override fun create(screen: Screen): Ui<*>? {
     return when (screen) {
-      is FavoritesScreen -> ScreenUi(favoritesUi())
-      else null ->
+      is FavoritesScreen -> favoritesUi()
+      else -> null
     }
   }
 }
 
-private fun favoritesUi() = ui<State> { state -> Favorites(state) }
+private fun favoritesUi() = ui<State> { state, modifier -> Favorites(state, modifier) }
 ```
 
 !!! info
-    Note how these return a `ScreenUi` class that holds the Ui instance. We are using this indirection as a toe-hold for possible other future UI metadata, such as `Modifier` instances.
+    Note how these include a `Modifier`. You should pass on these modifiers to your UI. [Always provide a modifier!](https://chris.banes.me/posts/always-provide-a-modifier/)
 
-We canonically write these out as a separate function (`favoritesUi()`) that returns a `Ui`, which in turn calls through to the real (basic) Compose UI function (`Favorites()`). This ensures our basic compose functions are top-level and accessible by tests, and also discourages storing anything in class members rather than idiomatic composable state vars.
+We canonically write these out as a separate function (`favoritesUi()`) that returns a `Ui`, which in turn calls through to the real (basic) Compose UI function (`Favorites()`). This ensures our basic compose functions are top-level and accessible by tests, and also discourages storing anything in class members rather than idiomatic composable state vars. If you use code gen, it handles the intermediate function for you.

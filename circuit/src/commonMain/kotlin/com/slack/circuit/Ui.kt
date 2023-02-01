@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 /**
  * Represents a composable UI for the given [UiState]. Conventionally, this should just be the
@@ -15,11 +16,11 @@ import androidx.compose.runtime.Composable
  *
  * Usage:
  * ```
- * internal fun tacoUi(): Ui<State> = ui { state ->
- *   Tacos(state)
+ * internal fun tacoUi(): Ui<State> = ui { state, modifier ->
+ *   Tacos(state, modifier)
  * }
  *
- * @Composable private fun Tacos(state: State) {...}
+ * @Composable private fun Tacos(state: State, modifier: Modifier = Modifier) {...}
  *
  * @Preview
  * @Composable
@@ -38,11 +39,10 @@ import androidx.compose.runtime.Composable
  * @see ui
  */
 public interface Ui<UiState : CircuitUiState> {
-  @Composable public fun Content(state: UiState)
+  @Composable public fun Content(state: UiState, modifier: Modifier)
 
   /**
-   * A factory that creates [ScreenUis][ScreenUi], which in turn contain the desired [Ui] for a
-   * given [Screen].
+   * A factory that creates [Ui's][Ui] for a given [Screen].
    *
    * Note that individual UIs should just be top-level [ui] function calls that factories simply
    * call into. This allows easily standing up composable preview functions.
@@ -53,30 +53,23 @@ public interface Ui<UiState : CircuitUiState> {
    *    screen: Screen,
    *    context: CircuitContext
    *  ): ScreenUi? {
-   *    val ui = when (screen) {
-   *      is AddFavorites -> {
-   *        addFavoritesUi()
-   *      }
-   *      else -> return null
+   *    return when (screen) {
+   *      is AddFavorites -> addFavoritesUi()
+   *      else -> null
    *    }
-   *    return ScreenUi(
-   *      ui = ui as Ui<*, *>,
-   *    )
    *   }
    * }
    *
    * private fun addFavoritesUi() =
-   *   ui<AddFavorites.State> { state -> Favorites(state) }
+   *   ui<AddFavorites.State> { state, modifier -> Favorites(state, modifier) }
    *
-   * @Composable private fun Favorites(state: State) {...}
+   * @Composable private fun Favorites(state: State, modifier: Modifier = Modifier) {...}
    * ```
    */
   public fun interface Factory {
-    public fun create(screen: Screen, context: CircuitContext): ScreenUi?
+    public fun create(screen: Screen, context: CircuitContext): Ui<*>?
   }
 }
-
-public data class ScreenUi(val ui: Ui<*>)
 
 /**
  * Due to this bug in Studio, we can't write lambda impls of [Ui] directly. This works around it by
@@ -88,12 +81,12 @@ public data class ScreenUi(val ui: Ui<*>)
  * @see [Ui] for main docs.
  */
 public inline fun <UiState : CircuitUiState> ui(
-  crossinline body: @Composable (state: UiState) -> Unit
+  crossinline body: @Composable (state: UiState, modifier: Modifier) -> Unit
 ): Ui<UiState> {
   return object : Ui<UiState> {
     @Composable
-    override fun Content(state: UiState) {
-      body(state)
+    override fun Content(state: UiState, modifier: Modifier) {
+      body(state, modifier)
     }
   }
 }

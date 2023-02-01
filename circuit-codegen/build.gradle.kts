@@ -13,7 +13,5 @@ dependencies {
   implementation(libs.dagger)
   implementation(libs.kotlinpoet)
   implementation(libs.kotlinpoet.ksp)
-  implementation(projects.circuit)
-  implementation(projects.circuitCodegenAnnotations)
   implementation(libs.anvil.annotations)
 }

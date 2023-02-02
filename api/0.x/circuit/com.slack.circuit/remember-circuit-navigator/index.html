@@ -623,6 +623,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#see-also_1" class="md-nav__link">
+    See also
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters_1" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -645,8 +659,8 @@
 <h1 id="remembercircuitnavigator">rememberCircuitNavigator<a class="headerlink" href="#remembercircuitnavigator" title="Permanent link">&para;</a></h1>
 <p>[android]\</p>
 <p>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a></p>
-<p>fun <a href="./">rememberCircuitNavigator</a>(backstack: SaveableBackStack, onRootPop: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> = backDispatcherRootPop()): Navigator</p>
-<p>Returns a new Navigator for navigating within CircuitContents.</p>
+<p>fun <a href="./">rememberCircuitNavigator</a>(backstack: SaveableBackStack): Navigator</p>
+<p>Returns a new Navigator for navigating within CircuitContents. Delegates onRootPop to the <a href="https://developer.android.com/reference/kotlin/androidx/activity/compose/LocalOnBackPressedDispatcherOwner.html">LocalOnBackPressedDispatcherOwner</a>.</p>
 <h4 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h4>
 <p>android</p>
 <table>
@@ -675,9 +689,43 @@
 <td>backstack</td>
 <td>The backing SaveableBackStack to navigate.</td>
 </tr>
+</tbody>
+</table>
+<p>[common]\</p>
+<p>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a></p>
+<p>fun <a href="./">rememberCircuitNavigator</a>(backstack: &lt;Error class: unknown class&gt;, onRootPop: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>): <a href="../-navigator/">Navigator</a></p>
+<p>Returns a new <a href="../-navigator/">Navigator</a> for navigating within <a href="../-circuit-content/">CircuitContents</a>.</p>
+<h4 id="see-also_1">See also<a class="headerlink" href="#see-also_1" title="Permanent link">&para;</a></h4>
+<p>common</p>
+<table>
+<thead>
+<tr>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../-basic-navigable-circuit-content/">BasicNavigableCircuitContent</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h4>
+<p>common</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>backstack</td>
+<td>The backing SaveableBackStack to navigate.</td>
+</tr>
 <tr>
 <td>onRootPop</td>
-<td>Invoked when the backstack is at root (size 1) and the user presses the back button. Defaults to delegating to the <a href="https://developer.android.com/reference/kotlin/androidx/activity/compose/LocalOnBackPressedDispatcherOwner.html">LocalOnBackPressedDispatcherOwner</a>.</td>
+<td>Invoked when the backstack is at root (size 1) and the user presses the back button.</td>
 </tr>
 </tbody>
 </table>

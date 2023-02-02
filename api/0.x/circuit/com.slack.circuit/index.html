@@ -746,7 +746,7 @@
 </tr>
 <tr>
 <td><a href="-navigator-defaults/">NavigatorDefaults</a></td>
-<td>[android]<br>object <a href="-navigator-defaults/">NavigatorDefaults</a><br>Default values and common alternatives used by navigable composables.</td>
+<td>[common]<br>object <a href="-navigator-defaults/">NavigatorDefaults</a><br>Default values and common alternatives used by navigable composables.</td>
 </tr>
 <tr>
 <td><a href="-presenter/">Presenter</a></td>
@@ -773,7 +773,7 @@
 <tbody>
 <tr>
 <td><a href="-basic-navigable-circuit-content/">BasicNavigableCircuitContent</a></td>
-<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-basic-navigable-circuit-content/">BasicNavigableCircuitContent</a>(navigator: Navigator, backstack: SaveableBackStack, providedValues: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a>&lt;out BackStack.Record, ProvidedValues&gt;, modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a> = Modifier, circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current), decoration: NavDecoration = NavigatorDefaults.EmptyDecoration, unavailableRoute: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(screen: <a href="-screen/">Screen</a>, modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> = circuitConfig.onUnavailableContent)</td>
+<td>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="-basic-navigable-circuit-content/">BasicNavigableCircuitContent</a>(navigator: <a href="-navigator/">Navigator</a>, backstack: &lt;Error class: unknown class&gt;, providedValues: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a>&lt;out &lt;Error class: unknown class&gt;, &lt;Error class: unknown class&gt;&gt;, modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a> = Modifier, circuitConfig: <a href="-circuit-config/">CircuitConfig</a> = requireNotNull(LocalCircuitConfig.current), decoration: &lt;Error class: unknown class&gt; = NavigatorDefaults.EmptyDecoration, unavailableRoute: @<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a>(screen: <a href="-screen/">Screen</a>, modifier: <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> = circuitConfig.onUnavailableContent)</td>
 </tr>
 <tr>
 <td><a href="-circuit-composition-locals/">CircuitCompositionLocals</a></td>
@@ -801,11 +801,11 @@
 </tr>
 <tr>
 <td><a href="push/">push</a></td>
-<td>[android]<br>fun SaveableBackStack.<a href="push/">push</a>(screen: <a href="-screen/">Screen</a>)</td>
+<td>[common]<br>fun &lt;Error class: unknown class&gt;.<a href="push/">push</a>(screen: <a href="-screen/">Screen</a>)</td>
 </tr>
 <tr>
 <td><a href="remember-circuit-navigator/">rememberCircuitNavigator</a></td>
-<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-circuit-navigator/">rememberCircuitNavigator</a>(backstack: SaveableBackStack, onRootPop: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a> = backDispatcherRootPop()): Navigator<br>Returns a new Navigator for navigating within CircuitContents.</td>
+<td>[android]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-circuit-navigator/">rememberCircuitNavigator</a>(backstack: SaveableBackStack): Navigator<br>Returns a new Navigator for navigating within CircuitContents. Delegates onRootPop to the <a href="https://developer.android.com/reference/kotlin/androidx/activity/compose/LocalOnBackPressedDispatcherOwner.html">LocalOnBackPressedDispatcherOwner</a>.<br>[common]<br>@<a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html">Composable</a><br>fun <a href="remember-circuit-navigator/">rememberCircuitNavigator</a>(backstack: &lt;Error class: unknown class&gt;, onRootPop: () -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>): <a href="-navigator/">Navigator</a><br>Returns a new <a href="-navigator/">Navigator</a> for navigating within <a href="-circuit-content/">CircuitContents</a>.</td>
 </tr>
 <tr>
 <td><a href="ui/">ui</a></td>
@@ -828,7 +828,7 @@
 </tr>
 <tr>
 <td><a href="screen/">screen</a></td>
-<td>[android]<br>val SaveableBackStack.Record.<a href="screen/">screen</a>: <a href="-screen/">Screen</a></td>
+<td>[common]<br>val &lt;Error class: unknown class&gt;.<a href="screen/">screen</a>: <a href="-screen/">Screen</a></td>
 </tr>
 </tbody>
 </table>

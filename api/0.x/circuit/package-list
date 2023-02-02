@@ -1,7 +1,7 @@
 $dokka.format:gfm-v1
 $dokka.linkExtension:md
 $dokka.location:com.slack.circuit////PointingToDeclaration/circuit/com.slack.circuit/index.md
-$dokka.location:com.slack.circuit//BasicNavigableCircuitContent/#com.slack.circuit.Navigator#com.slack.circuit.backstack.SaveableBackStack#kotlin.collections.Map[com.slack.circuit.backstack.BackStack.Record,com.slack.circuit.backstack.ProvidedValues]#androidx.compose.ui.Modifier#com.slack.circuit.CircuitConfig#com.slack.circuit.backstack.NavDecoration#kotlin.Function2[com.slack.circuit.Screen,androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-basic-navigable-circuit-content.md
+$dokka.location:com.slack.circuit//BasicNavigableCircuitContent/#com.slack.circuit.Navigator#[Error type: Unresolved type for SaveableBackStack]#kotlin.collections.Map[[Error type: Unresolved type for BackStack.Record],[Error type: Unresolved type for ProvidedValues]]#androidx.compose.ui.Modifier#com.slack.circuit.CircuitConfig#[Error type: Unresolved type for NavDecoration]#kotlin.Function2[com.slack.circuit.Screen,androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-basic-navigable-circuit-content.md
 $dokka.location:com.slack.circuit//CircuitCompositionLocals/#com.slack.circuit.CircuitConfig#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-circuit-composition-locals.md
 $dokka.location:com.slack.circuit//CircuitContent/#com.slack.circuit.Screen#androidx.compose.ui.Modifier#com.slack.circuit.CircuitConfig#kotlin.Function2[com.slack.circuit.Screen,androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-circuit-content.md
 $dokka.location:com.slack.circuit//CircuitContent/#com.slack.circuit.Screen#androidx.compose.ui.Modifier#kotlin.Function1[com.slack.circuit.NavEvent,kotlin.Unit]#com.slack.circuit.CircuitConfig#kotlin.Function2[com.slack.circuit.Screen,androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/-circuit-content.md
@@ -10,9 +10,10 @@ $dokka.location:com.slack.circuit//NavigableCircuitContent/#com.slack.circuit.Na
 $dokka.location:com.slack.circuit//onNavEvent/com.slack.circuit.Navigator#com.slack.circuit.NavEvent/PointingToDeclaration/circuit/com.slack.circuit/on-nav-event.md
 $dokka.location:com.slack.circuit//popUntil/com.slack.circuit.Navigator#kotlin.Function1[com.slack.circuit.Screen,kotlin.Boolean]/PointingToDeclaration/circuit/com.slack.circuit/pop-until.md
 $dokka.location:com.slack.circuit//presenterOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]/PointingToDeclaration/circuit/com.slack.circuit/presenter-of.md
-$dokka.location:com.slack.circuit//push/com.slack.circuit.backstack.SaveableBackStack#com.slack.circuit.Screen/PointingToDeclaration/circuit/com.slack.circuit/push.md
-$dokka.location:com.slack.circuit//rememberCircuitNavigator/#com.slack.circuit.backstack.SaveableBackStack#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/remember-circuit-navigator.md
-$dokka.location:com.slack.circuit//screen/com.slack.circuit.backstack.SaveableBackStack.Record#/PointingToDeclaration/circuit/com.slack.circuit/screen.md
+$dokka.location:com.slack.circuit//push/[Error type: Unresolved type for SaveableBackStack]#com.slack.circuit.Screen/PointingToDeclaration/circuit/com.slack.circuit/push.md
+$dokka.location:com.slack.circuit//rememberCircuitNavigator/#[Error type: Unresolved type for SaveableBackStack]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/remember-circuit-navigator.md
+$dokka.location:com.slack.circuit//rememberCircuitNavigator/#com.slack.circuit.backstack.SaveableBackStack/PointingToDeclaration/circuit/com.slack.circuit/remember-circuit-navigator.md
+$dokka.location:com.slack.circuit//screen/[Error type: Unresolved type for SaveableBackStack.Record]#/PointingToDeclaration/circuit/com.slack.circuit/screen.md
 $dokka.location:com.slack.circuit//ui/#kotlin.Function2[TypeParam(bounds=[com.slack.circuit.CircuitUiState]),androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit/com.slack.circuit/ui.md
 $dokka.location:com.slack.circuit/CircuitConfig.Builder///PointingToDeclaration/circuit/com.slack.circuit/-circuit-config/-builder/index.md
 $dokka.location:com.slack.circuit/CircuitConfig.Builder/Builder/#/PointingToDeclaration/circuit/com.slack.circuit/-circuit-config/-builder/-builder.md

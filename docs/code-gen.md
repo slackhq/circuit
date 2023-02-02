@@ -117,7 +117,7 @@ class HomePresenter @AssistedInject constructor(
   @CircuitInject(HomeScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {
-    fun create(screen: Screen, navigator: Navigator): HomePresenter
+    fun create(screen: Screen, navigator: Navigator, context: CircuitContext): HomePresenter
   }
 }
 ```

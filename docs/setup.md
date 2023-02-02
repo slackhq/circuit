@@ -41,13 +41,13 @@ Circuit is a multiplatform library, but not all features are available on all pl
 - ❌ Not available
 - – Not applicable
 
-| Feature                   | Android | JVM |
-|---------------------------| ------- |--|
-| `Backstack`               | ✅ | ✅ |
-| `CircuitContent`          | ✅ | ✅ |
-| `ContentWithOverlays` | ✅ | ✅ |
-| `NavigableCircuitContent` | ✅ | ❌ |
-| `Navigator`               | ✅ | ✅ |
-| `SaveableBackstack`       | ✅ | – |
-| `rememberCircuitNavigator` | ✅ | ❌ |
-| `rememberRetained` | ✅ | ✅ |
+| Feature                   | Android | JVM | Notes |
+|---------------------------| ------- |--| |
+| `Backstack`               | ✅ | ✅ | |
+| `CircuitContent`          | ✅ | ✅ | |
+| `ContentWithOverlays` | ✅ | ✅ | |
+| `NavigableCircuitContent` | ✅ | ✅ | `BasicNavigableCircuitContent` is multiplatform. |
+| `Navigator`               | ✅ | ✅ | |
+| `SaveableBackstack`       | ✅ | ✅ | Saveable is a no-op on desktop. |
+| `rememberCircuitNavigator` | ✅ | ✅ | |
+| `rememberRetained` | ✅ | ✅ | |

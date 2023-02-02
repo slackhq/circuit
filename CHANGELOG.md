@@ -1,6 +1,43 @@
 Changelog
 =========
 
+0.6.0
+-----
+
+_2023-02-02_
+
+Happy groundhog day!
+
+* **Breaking API change**: `Ui.Content()` now contains a `Modifier` parameter.
+
+This allows you to pass modifiers on to UIs directly.
+
+```diff
+ public interface Ui<UiState : CircuitUiState> {
+-  @Composable public fun Content(state: UiState)
++  @Composable public fun Content(state: UiState, modifier: Modifier)
+ }
+```
+
+* **New:** Add `Navigator.resetRoot(Screen)` function to reset the backstack root with a new root screen. There is a corresponding `awaitResetRoot()` function added to `FakeNavigator`.
+* **New:** Add `EventListener.start` callback function.
+* **New:** Add Compose UI dependency to circuit-core (to support `Modifier` in the API).
+* **Fix:** Fix `CircuitContext.putTag` generics.
+* **Fix:** Fix KSP code gen artifact to just be a pure JVM artifact.
+* **Fix:** `EventListener.onState`'s type is now `CircuitUiState` instead of `Any`.
+* **Removed:** `ScreenUi` is now removed and `Ui.Factory` simply returns `Ui` instances now.
+* **API Change:** `CircuitConfig.onUnavailableContent` is now no longer nullable. By default it displays a big ugly error text. If you want the previous behavior of erroring, replace it with a composable function that just throws an exception.
+
+* Dependency updates
+```
+Kotlin 1.8.0
+Compose-JB 1.3.0
+KSP 1.8.0-1.0.9
+Compose Runtime 1.3.3
+Compose UI 1.3.3
+Compose Animation 1.3.3
+```
+
 0.5.0
 -----
 

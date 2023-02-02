@@ -47,17 +47,18 @@ import dagger.assisted.AssistedFactory
 import javax.inject.Inject
 import javax.inject.Provider
 
+private const val CIRCUIT_BASE_PACKAGE = "com.slack.circuit"
 private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
 private val CIRCUIT_INJECT_ANNOTATION =
-  ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
-private val CIRCUIT_PRESENTER = ClassName("com.slack.circuit", "Presenter")
+  ClassName("$CIRCUIT_BASE_PACKAGE.codegen.annotations", "CircuitInject")
+private val CIRCUIT_PRESENTER = ClassName(CIRCUIT_BASE_PACKAGE, "Presenter")
 private val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
-private val CIRCUIT_UI = ClassName("com.slack.circuit", "Ui")
+private val CIRCUIT_UI = ClassName(CIRCUIT_BASE_PACKAGE, "Ui")
 private val CIRCUIT_UI_FACTORY = CIRCUIT_UI.nestedClass("Factory")
-private val CIRCUIT_UI_STATE = ClassName("com.slack.circuit", "CircuitUiState")
-private val SCREEN = ClassName("com.slack.circuit", "Screen")
-private val NAVIGATOR = ClassName("com.slack.circuit", "Navigator")
-private val CIRCUIT_CONTEXT = ClassName("com.slack.circuit", "CircuitContext")
+private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_BASE_PACKAGE, "CircuitUiState")
+private val SCREEN = ClassName(CIRCUIT_BASE_PACKAGE, "Screen")
+private val NAVIGATOR = ClassName(CIRCUIT_BASE_PACKAGE, "Navigator")
+private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_BASE_PACKAGE, "CircuitContext")
 private const val FACTORY = "Factory"
 
 @AutoService(SymbolProcessorProvider::class)

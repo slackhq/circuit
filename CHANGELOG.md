@@ -10,14 +10,14 @@ Happy groundhog day!
 
 * **Breaking API change**: `Ui.Content()` now contains a `Modifier` parameter.
 
-This allows you to pass modifiers on to UIs directly.
+  This allows you to pass modifiers on to UIs directly.
 
-```diff
- public interface Ui<UiState : CircuitUiState> {
--  @Composable public fun Content(state: UiState)
-+  @Composable public fun Content(state: UiState, modifier: Modifier)
- }
-```
+  ```diff
+   public interface Ui<UiState : CircuitUiState> {
+  -  @Composable public fun Content(state: UiState)
+  +  @Composable public fun Content(state: UiState, modifier: Modifier)
+   }
+  ```
 
 * **New:** Add `Navigator.resetRoot(Screen)` function to reset the backstack root with a new root screen. There is a corresponding `awaitResetRoot()` function added to `FakeNavigator`.
 * **New:** Add `EventListener.start` callback function.

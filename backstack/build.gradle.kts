@@ -16,8 +16,9 @@ kotlin {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
-        api(libs.compose.runtime.saveable)
+        api(libs.compose.ui)
         api(libs.coroutines)
+        implementation(libs.compose.runtime.saveable)
       }
     }
     maybeCreate("androidMain").apply {

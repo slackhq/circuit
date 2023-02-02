@@ -1,16 +1,18 @@
 $dokka.format:gfm-v1
 $dokka.linkExtension:md
 $dokka.location:com.slack.circuit.test////PointingToDeclaration/circuit-test/com.slack.circuit.test/index.md
-$dokka.location:com.slack.circuit.test//presenterTestOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]#kotlin.time.Duration?#kotlin.String?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[com.slack.circuit.CircuitUiState])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/presenter-test-of.md
-$dokka.location:com.slack.circuit.test//test/com.slack.circuit.Presenter[TypeParam(bounds=[com.slack.circuit.CircuitUiState])]#kotlin.time.Duration?#kotlin.String?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[com.slack.circuit.CircuitUiState])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/test.md
+$dokka.location:com.slack.circuit.test//presenterTestOf/#kotlin.Function0[TypeParam(bounds=[kotlin.Any?])]#kotlin.time.Duration?#kotlin.String?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/presenter-test-of.md
+$dokka.location:com.slack.circuit.test//test/[Error type: Unresolved type for Presenter<UiState>][TypeParam(bounds=[kotlin.Any?])]#kotlin.time.Duration?#kotlin.String?#kotlin.coroutines.SuspendFunction1[app.cash.turbine.ReceiveTurbine[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/circuit-test/com.slack.circuit.test/test.md
 $dokka.location:com.slack.circuit.test/FakeNavigator///PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/index.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/FakeNavigator/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/-fake-navigator.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/assertIsEmpty/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/assert-is-empty.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/awaitNextScreen/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/await-next-screen.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/awaitPop/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/await-pop.md
+$dokka.location:com.slack.circuit.test/FakeNavigator/awaitResetRoot/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/await-reset-root.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/expectNoEvents/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/expect-no-events.md
-$dokka.location:com.slack.circuit.test/FakeNavigator/goTo/#com.slack.circuit.Screen/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/go-to.md
+$dokka.location:com.slack.circuit.test/FakeNavigator/goTo/#[Error type: Unresolved type for Screen]/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/go-to.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/pop/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/pop.md
+$dokka.location:com.slack.circuit.test/FakeNavigator/resetRoot/#[Error type: Unresolved type for Screen]/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/reset-root.md
 $dokka.location:com.slack.circuit.test/FakeNavigator/takeNextScreen/#/PointingToDeclaration/circuit-test/com.slack.circuit.test/-fake-navigator/take-next-screen.md
 com.slack.circuit.test
 

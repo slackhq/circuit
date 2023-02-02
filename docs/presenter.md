@@ -38,7 +38,7 @@ class FavoritesPresenter @AssistedInject constructor(
   }
   @AssistedFactory
   fun interface Factory {
-    fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+    fun create(screen: FavoritesScreen, navigator: Navigator, context: CircuitContext): FavoritesPresenter
   }
 }
 ```

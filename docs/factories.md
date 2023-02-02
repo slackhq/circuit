@@ -19,9 +19,9 @@ Presenter factories can be generated or hand-written, depending on if they aggre
 class FavoritesScreenPresenterFactory @Inject constructor(
   private val favoritesPresenterFactory: FavoritesPresenter.Factory,
 ) : Presenter.Factory {
-  override fun create(screen: Screen, navigator: Navigator): Presenter<*>? {
+  override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>? {
     return when (screen) {
-      is FavoritesScreen -> favoritesPresenterFactory.create(screen, navigator)
+      is FavoritesScreen -> favoritesPresenterFactory.create(screen, navigator, context)
       else -> null
     }
   }
@@ -32,7 +32,7 @@ UI factories are similar, but generally should not aggregate other UIs unless th
 
 ```kotlin
 class FavoritesScreenUiFactory @Inject constructor() : Ui.Factory {
-  override fun create(screen: Screen): Ui<*>? {
+  override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
       is FavoritesScreen -> favoritesUi()
       else -> null

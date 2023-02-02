@@ -21,7 +21,7 @@ You can wrap your view in an `AndroidView` in a custom `Ui` implementation.
 ```kotlin
 class ExistingCustomViewUi : Ui<State> {
   @Composable
-  fun Content(state: State) {
+  fun Content(state: State, modifier: Modifier = Modifier) {
     AndroidView(
       modifier = ...
       factory = { context ->

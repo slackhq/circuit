@@ -7,7 +7,6 @@ import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,7 +34,6 @@ import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitContext
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
@@ -58,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
         .addUiFactory { screen, _ ->
           when (screen) {
-            is InteropCounterScreen -> ScreenUi(screen.uiSource.createUi())
+            is InteropCounterScreen -> screen.uiSource.createUi()
             else -> null
           }
         }
@@ -89,12 +87,12 @@ class MainActivity : AppCompatActivity() {
             }
           },
         ) { paddingValues ->
-          Box(Modifier.padding(paddingValues)) {
-            // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
-            //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
-            //  them live enough to support this, but also sort of orthogonal to the point of this
-            //  sample.
-            key(circuitScreen) { CircuitContent(screen = circuitScreen) }
+          // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
+          //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
+          //  them live enough to support this, but also sort of orthogonal to the point of this
+          //  sample.
+          key(circuitScreen) {
+            CircuitContent(screen = circuitScreen, modifier = Modifier.padding(paddingValues))
           }
         }
       }
@@ -213,12 +211,12 @@ private enum class PresenterSource {
 enum class UiSource {
   Circuit {
     override fun createUi(): Ui<CounterState> {
-      return ui { state -> Counter(state) }
+      return ui { state, modifier -> Counter(state, modifier) }
     }
   },
   View {
     override fun createUi(): Ui<CounterState> {
-      return ui { state -> CounterViewComposable(state) }
+      return ui { state, modifier -> CounterViewComposable(state, modifier) }
     }
   };
 

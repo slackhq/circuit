@@ -19,7 +19,6 @@ import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitContext
 import com.slack.circuit.Screen
-import com.slack.circuit.ScreenUi
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
@@ -53,15 +52,15 @@ fun main(args: Array<String>) = MosaicCounterCommand().main(args)
 object MosaicCounterScreen : CounterScreen
 
 class CounterUiFactory : Ui.Factory {
-  override fun create(screen: Screen, context: CircuitContext): ScreenUi? {
+  override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
-      MosaicCounterScreen -> ScreenUi(counterUi())
+      MosaicCounterScreen -> counterUi()
       else -> null
     }
   }
 }
 
-private fun counterUi(): Ui<CounterState> = ui { state -> Counter(state) }
+private fun counterUi(): Ui<CounterState> = ui { state, _ -> Counter(state) }
 
 @Composable
 private fun Counter(state: CounterState) {

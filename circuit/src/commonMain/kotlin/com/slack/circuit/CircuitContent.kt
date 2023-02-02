@@ -7,22 +7,27 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 
 @Composable
 public fun CircuitContent(
   screen: Screen,
+  modifier: Modifier = Modifier,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
-  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
 ) {
-  CircuitContent(screen, Navigator.NoOp, circuitConfig, unavailableContent)
+  CircuitContent(screen, modifier, Navigator.NoOp, circuitConfig, unavailableContent)
 }
 
 @Composable
 public fun CircuitContent(
   screen: Screen,
+  modifier: Modifier = Modifier,
   onNavEvent: (event: NavEvent) -> Unit,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
-  unavailableContent: (@Composable (screen: Screen) -> Unit)? = circuitConfig.onUnavailableContent,
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
 ) {
   val navigator =
     remember(onNavEvent) {
@@ -42,30 +47,32 @@ public fun CircuitContent(
         }
       }
     }
-  CircuitContent(screen, navigator, circuitConfig, unavailableContent)
+  CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent)
 }
 
 @Composable
 internal fun CircuitContent(
   screen: Screen,
+  modifier: Modifier,
   navigator: Navigator,
   circuitConfig: CircuitConfig,
-  unavailableContent: (@Composable (screen: Screen) -> Unit)?,
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
 ) {
   val parent = LocalCircuitContext.current
   val context =
     remember(screen, navigator, circuitConfig, parent) { CircuitContext(parent, circuitConfig) }
   CompositionLocalProvider(LocalCircuitContext provides context) {
-    CircuitContent(screen, navigator, circuitConfig, unavailableContent, context)
+    CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent, context)
   }
 }
 
 @Composable
 internal fun CircuitContent(
   screen: Screen,
+  modifier: Modifier,
   navigator: Navigator,
   circuitConfig: CircuitConfig,
-  unavailableContent: (@Composable (screen: Screen) -> Unit)?,
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
   context: CircuitContext,
 ) {
   val eventListener =
@@ -83,23 +90,22 @@ internal fun CircuitContent(
   eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
 
   eventListener.onBeforeCreateUi(screen, context)
-  val screenUi = circuitConfig.ui(screen, context)
-  eventListener.onAfterCreateUi(screen, screenUi, context)
+  val ui = circuitConfig.ui(screen, context)
+  eventListener.onAfterCreateUi(screen, ui, context)
 
-  if (screenUi != null && presenter != null) {
+  if (ui != null && presenter != null) {
     @Suppress("UNCHECKED_CAST")
-    CircuitContent(screen, eventListener, presenter, screenUi.ui as Ui<CircuitUiState>)
-  } else if (unavailableContent != null) {
-    eventListener.onUnavailableContent(screen, presenter, screenUi, context)
-    unavailableContent(screen)
+    CircuitContent(screen, modifier, eventListener, presenter, ui as Ui<CircuitUiState>)
   } else {
-    error("Could not render screen $screen")
+    eventListener.onUnavailableContent(screen, presenter, ui, context)
+    unavailableContent(screen, modifier)
   }
 }
 
 @Composable
 private fun <UiState : CircuitUiState> CircuitContent(
   screen: Screen,
+  modifier: Modifier,
   eventListener: EventListener,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
@@ -117,5 +123,5 @@ private fun <UiState : CircuitUiState> CircuitContent(
 
     onDispose { eventListener.onDisposeContent() }
   }
-  ui.Content(state)
+  ui.Content(state, modifier)
 }

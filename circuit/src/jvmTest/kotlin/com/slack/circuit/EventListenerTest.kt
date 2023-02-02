@@ -5,6 +5,7 @@ package com.slack.circuit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
@@ -36,7 +37,7 @@ class EventListenerTest {
     val circuitConfig =
       CircuitConfig.Builder()
         .addPresenterFactory { _, _, _ -> presenter }
-        .addUiFactory { _, _ -> ScreenUi(ui) }
+        .addUiFactory { _, _ -> ui }
         .eventListenerFactory(eventListenerFactory)
         .build()
 
@@ -65,7 +66,7 @@ private class StringPresenter(val state: State<String>) : Presenter<StringState>
 
 private class StringUi : Ui<StringState> {
 
-  @Composable override fun Content(state: StringState) {}
+  @Composable override fun Content(state: StringState, modifier: Modifier) {}
 }
 
 private class RecordingEventListener(private val onDispose: () -> Unit) : EventListener {
@@ -97,17 +98,17 @@ private class RecordingEventListener(private val onDispose: () -> Unit) : EventL
     log("onBeforeCreateUi: $screen")
   }
 
-  override fun onAfterCreateUi(screen: Screen, screenUi: ScreenUi?, context: CircuitContext) {
-    log("onAfterCreateUi: $screen, $screenUi")
+  override fun onAfterCreateUi(screen: Screen, ui: Ui<*>?, context: CircuitContext) {
+    log("onAfterCreateUi: $screen, $ui")
   }
 
   override fun onUnavailableContent(
     screen: Screen,
     presenter: Presenter<*>?,
-    screenUi: ScreenUi?,
+    ui: Ui<*>?,
     context: CircuitContext,
   ) {
-    error("onUnavailableContent: $screen, $presenter, $screenUi")
+    error("onUnavailableContent: $screen, $presenter, $ui")
   }
 
   override fun onStartPresent() {

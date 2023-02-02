@@ -30,16 +30,15 @@ public interface EventListener {
   public fun onBeforeCreateUi(screen: Screen, context: CircuitContext) {}
 
   /**
-   * Called just after creating a [screenUi] for a given [screen]. The ui may be null if none was
-   * found.
+   * Called just after creating a [ui] for a given [screen]. The ui may be null if none was found.
    */
-  public fun onAfterCreateUi(screen: Screen, screenUi: ScreenUi?, context: CircuitContext) {}
+  public fun onAfterCreateUi(screen: Screen, ui: Ui<*>?, context: CircuitContext) {}
 
-  /** Called when no content was found and one or both of [presenter] and [screenUi] are null. */
+  /** Called when no content was found and one or both of [presenter] and [ui] are null. */
   public fun onUnavailableContent(
     screen: Screen,
     presenter: Presenter<*>?,
-    screenUi: ScreenUi?,
+    ui: Ui<*>?,
     context: CircuitContext
   ) {}
 

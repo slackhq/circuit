@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.SaveableBackStack
 
 /**
- * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
- * Delegates onRootPop to the [LocalOnBackPressedDispatcherOwner].
+ * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent]. Delegates
+ * onRootPop to the [LocalOnBackPressedDispatcherOwner].
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
  * @see NavigableCircuitContent

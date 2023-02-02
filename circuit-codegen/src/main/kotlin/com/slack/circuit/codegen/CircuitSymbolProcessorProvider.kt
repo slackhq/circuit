@@ -85,7 +85,7 @@ private class CircuitSymbols private constructor(resolver: Resolver) {
   }
 }
 
-private fun Resolver.loadKSType(name: String?): KSType =
+private fun Resolver.loadKSType(name: String): KSType =
   loadOptionalKSType(name) ?: error("Could not find $name in classpath")
 
 internal fun Resolver.loadOptionalKSType(name: String?): KSType? {

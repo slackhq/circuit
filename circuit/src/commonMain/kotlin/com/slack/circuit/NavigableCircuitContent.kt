@@ -25,15 +25,16 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.providedValuesForBackStack
 
 @Composable
-public fun BasicNavigableCircuitContent(
+public fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
-  providedValues: Map<out BackStack.Record, ProvidedValues>,
   modifier: Modifier = Modifier,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
-  decoration: NavDecoration = NavigatorDefaults.EmptyDecoration,
+  providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
+  decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuitConfig.onUnavailableContent,
 ) {

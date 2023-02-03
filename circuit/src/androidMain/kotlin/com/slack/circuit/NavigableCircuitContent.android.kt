@@ -25,7 +25,7 @@ public fun NavigableCircuitContent(
 ) {
   BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
 
-  BasicNavigableCircuitContent(
+  NavigableCircuitContent(
     navigator = navigator,
     backstack = backstack,
     providedValues = providedValues,

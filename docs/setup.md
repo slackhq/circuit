@@ -46,7 +46,7 @@ Circuit is a multiplatform library, but not all features are available on all pl
 | `Backstack`               | ✅ | ✅ | |
 | `CircuitContent`          | ✅ | ✅ | |
 | `ContentWithOverlays` | ✅ | ✅ | |
-| `NavigableCircuitContent` | ✅ | ✅ | `BasicNavigableCircuitContent` is multiplatform. |
+| `NavigableCircuitContent` | ✅ | ✅ | |
 | `Navigator`               | ✅ | ✅ | |
 | `SaveableBackstack`       | ✅ | ✅ | Saveable is a no-op on desktop. |
 | `rememberCircuitNavigator` | ✅ | ✅ | |

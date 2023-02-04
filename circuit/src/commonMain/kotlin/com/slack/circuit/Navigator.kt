@@ -80,7 +80,7 @@ public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
  * @param backstack The backing [SaveableBackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
- * @see BasicNavigableCircuitContent
+ * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(

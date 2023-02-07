@@ -156,7 +156,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.6"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.2.2"
 jline = "org.jline:jline:3.22.0"
 jsoup = "org.jsoup:jsoup:1.15.3"
 junit = "junit:junit:4.13.2"

@@ -1,6 +1,20 @@
 Changelog
 =========
 
+0.7.0
+-----
+
+_2023-02-10_
+
+- **New**: Multiplatform support for `NavigableCircuitContent`! Special thanks to [@ashdavies](https://github.com/ashdavies) for contributions to make this possible.
+- **Fix**: `circuit-retained` minSdk is now 21 again. We accidentally bumped it to 28 when merging in its instrumentation tests.
+- **Enhancement**: embedded baseline profiles are now embedded per-artifact instead of in the root `circuit-core` artifact.
+- **Enhancement**: `circuit-retained` is now covered in embedded baseline profiles.
+- [Code Gen] Update Dagger to `2.45`.
+- [Code Gen] Update KSP to `1.8.10-1.0.9`.
+- Update to compose-compiler `1.4.2`.
+- Update to Kotlin `1.8.10`.
+
 0.6.0
 -----
 

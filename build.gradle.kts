@@ -139,7 +139,7 @@ subprojects {
         jvmTarget.set(JVM_11)
 
         // Stub gen copies args from the parent compilation
-        if (this !is KaptGenerateStubsTask) {
+        if (this@configureEach !is KaptGenerateStubsTask) {
           freeCompilerArgs.addAll(
             "-progressive",
             "-Xinline-classes",

@@ -5,11 +5,12 @@ on:
   push:
     branches:
       - main
-      # TODO replace with merge_group: once it's fixed
-      #  https://github.com/community/community/discussions/46757#discussioncomment-4909983
-      - gh-readonly-queue/main/*
+    ignore_paths:
+      - '**/*.md'
   # Always run on PRs
   pull_request:
+    branches: [ main ]
+  merge_group:
     branches: [ main ]
 
 concurrency:

@@ -64,7 +64,6 @@ android {
   namespace = "com.slack.circuit.retained"
 
   defaultConfig {
-    minSdk = 28
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 

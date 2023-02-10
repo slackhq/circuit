@@ -63,9 +63,7 @@ kotlin {
 android {
   namespace = "com.slack.circuit.retained"
 
-  defaultConfig {
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-  }
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
   testBuildType = "release"

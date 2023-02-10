@@ -23,6 +23,7 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.onNavEvent
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.HomeEvent
@@ -32,8 +33,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object HomeScreen : Screen {
   data class State(
-    val homeNavState: HomeNavScreen.State,
-    val eventSink: (Event) -> Unit,
+      val homeNavState: HomeNavScreen.State,
+      val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
@@ -63,39 +64,40 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
 
   val eventSink = state.eventSink
   Scaffold(
-    modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
-    bottomBar = {
-      StarTheme(useDarkTheme = true) {
-        BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-          eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
+      modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
+      bottomBar = {
+        StarTheme(useDarkTheme = true) {
+          BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
+            eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
+          }
         }
+      }) { paddingValues ->
+        val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
+        CircuitContent(
+            screen,
+            modifier = Modifier.padding(paddingValues),
+            onNavEvent = { event -> eventSink(ChildNav(event)) })
       }
-    }
-  ) { paddingValues ->
-    val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
-    CircuitContent(
-      screen,
-      modifier = Modifier.padding(paddingValues),
-      onNavEvent = { event -> eventSink(ChildNav(event)) }
-    )
-  }
 }
 
 @Composable
 private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
-  // These are the buttons on the NavBar, they dictate where we navigate too.
-  val items = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
+  // These are the buttons on the NavBar, they dictate where we navigate too
+  // NOTE: we wouldn't normally use rememberRetained here, but we want to have it in the sample for our baseline profile generation
+  val items =
+      rememberRetained {
+        listOf(BottomNavItem.Adoptables, BottomNavItem.About)
+      }
   NavigationBar(
-    containerColor = MaterialTheme.colorScheme.primaryContainer,
+      containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {
     items.forEachIndexed { index, item ->
       NavigationBarItem(
-        icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
-        label = { Text(text = item.title) },
-        alwaysShowLabel = true,
-        selected = selectedIndex == index,
-        onClick = { onSelectedIndex(index) }
-      )
+          icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+          label = { Text(text = item.title) },
+          alwaysShowLabel = true,
+          selected = selectedIndex == index,
+          onClick = { onSelectedIndex(index) })
     }
   }
 }

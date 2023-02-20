@@ -158,7 +158,7 @@ detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.2"
 jline = "org.jline:jline:3.22.0"
-jsoup = "org.jsoup:jsoup:1.15.3"
+jsoup = "org.jsoup:jsoup:1.15.4"
 junit = "junit:junit:4.13.2"
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}

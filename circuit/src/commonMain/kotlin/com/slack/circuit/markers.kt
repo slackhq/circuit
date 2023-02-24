@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
 /**
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Stable
  * Events in Circuit should generally reflect user interactions with the UI. They are mediated by
  * [presenters][Presenter] and may or may not influence the current [state][CircuitUiState].
  *
- * **Circuit event types are annotated as [@Stable][Stable] and should only use stable properties.**
+ * **Circuit event types are annotated as [@Immutable][Immutable] and should only use immutable
+ * properties.**
  */
-@Stable public interface CircuitUiEvent
+@Immutable public interface CircuitUiEvent

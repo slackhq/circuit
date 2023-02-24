@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -45,6 +44,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.ui.rememberStableCoroutineScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -125,7 +125,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
 
   val totalPhotos = photoUrls.size
   val pagerState = rememberPagerState()
-  val scope = rememberCoroutineScope()
+  val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
   val columnModifier = if (isLandscape) modifier.fillMaxWidth(0.5f) else modifier.fillMaxSize()

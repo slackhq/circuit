@@ -11,11 +11,11 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuit.star.ui.rememberStableCoroutineScope
 import kotlinx.coroutines.launch
 
 class BottomSheetOverlay<Model : Any, Result : Any>(
@@ -51,7 +51,7 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
         Box(Modifier.padding(32.dp)) {
           @Suppress("MagicNumber") Box(Modifier.fillMaxSize(0.51f))
           // Delay setting the result until we've finished dismissing
-          val coroutineScope = rememberCoroutineScope()
+          val coroutineScope = rememberStableCoroutineScope()
           content(model) { result ->
             // This is the OverlayNavigator.finish() callback
             coroutineScope.launch {

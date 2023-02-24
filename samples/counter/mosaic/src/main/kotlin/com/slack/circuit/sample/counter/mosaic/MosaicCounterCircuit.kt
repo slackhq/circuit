@@ -26,6 +26,7 @@ import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.CounterState
 import com.slack.circuit.ui
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jline.terminal.TerminalBuilder
 
@@ -37,11 +38,13 @@ private class MosaicCounterCommand : CliktCommand() {
       .flag(default = false)
 
   override fun run() {
-    runMosaic {
-      if (useCircuit) {
-        runCounterCircuit()
-      } else {
-        runWithoutCircuit()
+    runBlocking {
+      runMosaic {
+        if (useCircuit) {
+          runCounterCircuit()
+        } else {
+          runWithoutCircuit()
+        }
       }
     }
   }
@@ -102,7 +105,7 @@ private fun Counter(state: CounterState) {
   }
 }
 
-private fun runCounterCircuit() = runMosaic {
+private suspend fun runCounterCircuit() = runMosaic {
   setContent {
     val circuitConfig =
       CircuitConfig.Builder()

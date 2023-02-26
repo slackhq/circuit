@@ -19,9 +19,11 @@ class MainActivity : ComponentActivity() {
 
     val circuitConfig =
       CircuitConfig.Builder()
+        .addPresenterFactory(mainPresenterFactory())
+        .addUiFactory(MainUiFactory())
         .build()
 
-    val screens: ImmutableList<Screen> = persistentListOf()
+    val screens: ImmutableList<Screen> = persistentListOf(MainScreen)
 
     setContent {
       val backStack = rememberSaveableBackStack { screens.forEach { screen -> push(screen) } }

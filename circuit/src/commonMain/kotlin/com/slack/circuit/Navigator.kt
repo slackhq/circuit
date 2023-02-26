@@ -58,11 +58,11 @@ public fun Navigator.onNavEvent(event: NavEvent) {
 /** A sealed navigation interface intended to be used when making a navigation call back. */
 public sealed interface NavEvent : CircuitUiEvent
 
-internal object PopNavEvent : NavEvent
+public object PopNavEvent : NavEvent
 
-internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
+public data class GoToNavEvent(val screen: Screen) : NavEvent
 
-internal data class ResetRootNavEvent(internal val newRoot: Screen) : NavEvent
+public data class ResetRootNavEvent(val newRoot: Screen) : NavEvent
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {

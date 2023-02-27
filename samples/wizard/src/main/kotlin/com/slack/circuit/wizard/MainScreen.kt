@@ -37,7 +37,7 @@ private fun getChildScreen(id: Int): Screen = when (id) {
 fun MainUi(state: MainScreen.State, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     Text(
-      text = "Parent manages children",
+      text = "Parent manages nested screens",
       modifier = Modifier.clickable { state.eventSink(MainScreen.ClickEvent(1)) }
     )
   }

@@ -16,6 +16,10 @@ import com.slack.circuit.wizard.managed.ManagingUiFactory
 import com.slack.circuit.wizard.managed.managedChildScreen01PresenterFactory
 import com.slack.circuit.wizard.managed.managedChildScreen02PresenterFactory
 import com.slack.circuit.wizard.managed.managingPresenterFactory
+import com.slack.circuit.wizard.siblings.ChildScreen01UiFactory
+import com.slack.circuit.wizard.siblings.ChildScreen02UiFactory
+import com.slack.circuit.wizard.siblings.childScreen01PresenterFactory
+import com.slack.circuit.wizard.siblings.childScreen02PresenterFactory
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -34,12 +38,23 @@ class MainActivity : ComponentActivity() {
       ManagedChildScreen02UiFactory(),
     )
 
+    val siblingPresenterFactories = listOf(
+      childScreen01PresenterFactory(),
+      childScreen02PresenterFactory()
+    )
+    val siblingUiFactories = listOf(
+      ChildScreen01UiFactory(),
+      ChildScreen02UiFactory()
+    )
+
     val circuitConfig =
       CircuitConfig.Builder()
         .addPresenterFactory(mainPresenterFactory())
         .addPresenterFactories(managedPresenterFactories)
+        .addPresenterFactories(siblingPresenterFactories)
         .addUiFactory(MainUiFactory())
         .addUiFactories(managedUiFactories)
+        .addUiFactories(siblingUiFactories)
         .build()
 
     val screens: ImmutableList<Screen> = persistentListOf(MainScreen)

@@ -141,12 +141,11 @@ private class CircuitSymbolProcessor(
       computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
         ?: return
 
-    val className = factoryData.className.replaceFirstChar { char ->
-      char
-        .takeIf { char.isLowerCase() }
-        ?.run { uppercase(Locale.getDefault()) }
-        ?: char.toString()
-    }
+    val className =
+      factoryData.className.replaceFirstChar { char ->
+        char.takeIf { char.isLowerCase() }?.run { uppercase(Locale.getDefault()) }
+          ?: char.toString()
+      }
 
     val builder =
       TypeSpec.classBuilder(className + FACTORY)

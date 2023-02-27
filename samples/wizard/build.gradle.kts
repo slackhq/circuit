@@ -28,6 +28,7 @@ dependencies {
 
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.androidx.compose.material.material3)
   implementation(libs.bundles.compose.ui)
   implementation(libs.dagger)

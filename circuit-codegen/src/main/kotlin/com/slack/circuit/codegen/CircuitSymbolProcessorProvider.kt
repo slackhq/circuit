@@ -44,6 +44,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -140,8 +141,15 @@ private class CircuitSymbolProcessor(
       computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
         ?: return
 
+    val className = factoryData.className.replaceFirstChar { char ->
+      char
+        .takeIf { char.isLowerCase() }
+        ?.run { uppercase(Locale.getDefault()) }
+        ?: char.toString()
+    }
+
     val builder =
-      TypeSpec.classBuilder(factoryData.className + FACTORY)
+      TypeSpec.classBuilder(className + FACTORY)
         .addAnnotation(
           AnnotationSpec.builder(ContributesMultibinding::class)
             .addMember("%T::class", scope)

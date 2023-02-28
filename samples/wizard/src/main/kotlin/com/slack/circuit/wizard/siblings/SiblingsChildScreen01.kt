@@ -22,7 +22,7 @@ import com.slack.circuit.wizard.AppScope
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object ChildScreen01 : Screen {
+object SiblingsChildScreen01 : Screen {
   data class State(val count: Int, val eventSink: (Event) -> Unit) : CircuitUiState
   sealed interface Event : CircuitUiEvent {
     object NextScreen : Event
@@ -31,35 +31,35 @@ object ChildScreen01 : Screen {
   }
 }
 
-@CircuitInject(ChildScreen01::class, AppScope::class)
+@CircuitInject(SiblingsChildScreen01::class, AppScope::class)
 @Composable
-fun childScreen01Presenter(navigator: Navigator): ChildScreen01.State {
+fun siblingsChildScreen01Presenter(navigator: Navigator): SiblingsChildScreen01.State {
   var count by rememberSaveable { mutableStateOf(0) }
-  return ChildScreen01.State(count) { event ->
+  return SiblingsChildScreen01.State(count) { event ->
     when (event) {
-      is ChildScreen01.Event.NextScreen -> navigator.goTo(ChildScreen02)
-      is ChildScreen01.Event.Button -> count++
-      is ChildScreen01.Event.Back -> navigator.pop()
+      is SiblingsChildScreen01.Event.NextScreen -> navigator.goTo(SiblingsChildScreen02)
+      is SiblingsChildScreen01.Event.Button -> count++
+      is SiblingsChildScreen01.Event.Back -> navigator.pop()
     }
   }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@CircuitInject(ChildScreen01::class, AppScope::class)
+@CircuitInject(SiblingsChildScreen01::class, AppScope::class)
 @Composable
-fun ChildScreen01Ui(state: ChildScreen01.State, modifier: Modifier) {
+fun SiblingsChildScreen01Ui(state: SiblingsChildScreen01.State, modifier: Modifier) {
   Scaffold(
     modifier = modifier,
-    topBar = { ChildTopBar("Wizard: Child 01") { state.eventSink(ChildScreen01.Event.Back) } }
+    topBar = { SiblingsTopBar("Wizard: Child 01") { state.eventSink(SiblingsChildScreen01.Event.Back) } }
   ) { padding ->
     Column {
       Text(
         text = "Child 01 content: ${state.count}",
         modifier = modifier
           .padding(padding)
-          .clickable { state.eventSink(ChildScreen01.Event.NextScreen) }
+          .clickable { state.eventSink(SiblingsChildScreen01.Event.NextScreen) }
       )
-      Button(onClick = { state.eventSink(ChildScreen01.Event.Button) }) {
+      Button(onClick = { state.eventSink(SiblingsChildScreen01.Event.Button) }) {
         Text("click me!")
       }
     }

@@ -17,10 +17,10 @@ import com.slack.circuit.wizard.managed.ManagingUiFactory
 import com.slack.circuit.wizard.managed.ManagedChildScreen01PresenterFactory
 import com.slack.circuit.wizard.managed.ManagedChildScreen02PresenterFactory
 import com.slack.circuit.wizard.managed.ManagingPresenterFactory
-import com.slack.circuit.wizard.siblings.ChildScreen01UiFactory
-import com.slack.circuit.wizard.siblings.ChildScreen02UiFactory
-import com.slack.circuit.wizard.siblings.ChildScreen01PresenterFactory
-import com.slack.circuit.wizard.siblings.ChildScreen02PresenterFactory
+import com.slack.circuit.wizard.siblings.SiblingsChildScreen01UiFactory
+import com.slack.circuit.wizard.siblings.SiblingsChildScreen02UiFactory
+import com.slack.circuit.wizard.siblings.SiblingsChildScreen01PresenterFactory
+import com.slack.circuit.wizard.siblings.SiblingsChildScreen02PresenterFactory
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -40,12 +40,12 @@ class MainActivity : ComponentActivity() {
     )
 
     val siblingPresenterFactories = listOf(
-      ChildScreen01PresenterFactory(),
-      ChildScreen02PresenterFactory()
+      SiblingsChildScreen01PresenterFactory(),
+      SiblingsChildScreen02PresenterFactory()
     )
     val siblingUiFactories = listOf(
-      ChildScreen01UiFactory(),
-      ChildScreen02UiFactory()
+      SiblingsChildScreen01UiFactory(),
+      SiblingsChildScreen02UiFactory()
     )
 
     val circuitConfig =

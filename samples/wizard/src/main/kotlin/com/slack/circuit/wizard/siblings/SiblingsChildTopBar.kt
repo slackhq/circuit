@@ -9,7 +9,7 @@ import com.slack.circuit.wizard.common.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChildTopBar(title: String, modifier: Modifier = Modifier, onBack: () -> Unit) {
+fun SiblingsTopBar(title: String, modifier: Modifier = Modifier, onBack: () -> Unit) {
   CenterAlignedTopAppBar(
     title = { Text(title) },
     modifier = modifier,

@@ -11,7 +11,7 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.wizard.managed.ManagingScreen
-import com.slack.circuit.wizard.siblings.ChildScreen01
+import com.slack.circuit.wizard.siblings.SiblingsChildScreen01
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -30,7 +30,7 @@ fun mainPresenter(navigator: Navigator): MainScreen.State {
 
 private fun getChildScreen(id: Int): Screen = when (id) {
   1 -> ManagingScreen
-  2 -> ChildScreen01
+  2 -> SiblingsChildScreen01
   else -> error("Unknown child ID: $id")
 }
 

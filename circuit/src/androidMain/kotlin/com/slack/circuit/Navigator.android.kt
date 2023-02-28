@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.SaveableBackStack
@@ -11,16 +12,23 @@ import com.slack.circuit.backstack.SaveableBackStack
  * onRootPop to the [LocalOnBackPressedDispatcherOwner].
  *
  * @param backstack The backing [SaveableBackStack] to navigate.
+ * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
+ *   back handler. Defaults to true.
  * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
+  enableBackHandler: Boolean = true,
 ): Navigator {
-  return rememberCircuitNavigator(
-    backstack = backstack,
-    onRootPop = backDispatcherRootPop(),
-  )
+  val navigator =
+    rememberCircuitNavigator(
+      backstack = backstack,
+      onRootPop = backDispatcherRootPop(),
+    )
+  BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
+
+  return navigator
 }
 
 @Composable

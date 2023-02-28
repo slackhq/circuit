@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.NavigableCircuitContent
+import com.slack.circuit.NavigatorDefaults
 import com.slack.circuit.Screen
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.push
@@ -64,7 +65,11 @@ class MainActivity : ComponentActivity() {
       val navigator = rememberCircuitNavigator(backStack)
 
       CircuitCompositionLocals(circuitConfig) {
-        NavigableCircuitContent(navigator, backStack)
+        NavigableCircuitContent(
+          navigator = navigator,
+          backstack = backStack,
+          decoration = NavigatorDefaults.EmptyDecoration
+        )
       }
     }
   }

@@ -14,13 +14,13 @@ import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.wizard.managed.ManagedChildScreen01UiFactory
 import com.slack.circuit.wizard.managed.ManagedChildScreen02UiFactory
 import com.slack.circuit.wizard.managed.ManagingUiFactory
-import com.slack.circuit.wizard.managed.managedChildScreen01PresenterFactory
-import com.slack.circuit.wizard.managed.managedChildScreen02PresenterFactory
-import com.slack.circuit.wizard.managed.managingPresenterFactory
+import com.slack.circuit.wizard.managed.ManagedChildScreen01PresenterFactory
+import com.slack.circuit.wizard.managed.ManagedChildScreen02PresenterFactory
+import com.slack.circuit.wizard.managed.ManagingPresenterFactory
 import com.slack.circuit.wizard.siblings.ChildScreen01UiFactory
 import com.slack.circuit.wizard.siblings.ChildScreen02UiFactory
-import com.slack.circuit.wizard.siblings.childScreen01PresenterFactory
-import com.slack.circuit.wizard.siblings.childScreen02PresenterFactory
+import com.slack.circuit.wizard.siblings.ChildScreen01PresenterFactory
+import com.slack.circuit.wizard.siblings.ChildScreen02PresenterFactory
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -29,9 +29,9 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     val managedPresenterFactories = listOf(
-      managingPresenterFactory(),
-      managedChildScreen01PresenterFactory(),
-      managedChildScreen02PresenterFactory(),
+      ManagingPresenterFactory(),
+      ManagedChildScreen01PresenterFactory(),
+      ManagedChildScreen02PresenterFactory(),
     )
     val managedUiFactories = listOf(
       ManagingUiFactory(),
@@ -40,8 +40,8 @@ class MainActivity : ComponentActivity() {
     )
 
     val siblingPresenterFactories = listOf(
-      childScreen01PresenterFactory(),
-      childScreen02PresenterFactory()
+      ChildScreen01PresenterFactory(),
+      ChildScreen02PresenterFactory()
     )
     val siblingUiFactories = listOf(
       ChildScreen01UiFactory(),
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
 
     val circuitConfig =
       CircuitConfig.Builder()
-        .addPresenterFactory(mainPresenterFactory())
+        .addPresenterFactory(MainPresenterFactory())
         .addPresenterFactories(managedPresenterFactories)
         .addPresenterFactories(siblingPresenterFactories)
         .addUiFactory(MainUiFactory())

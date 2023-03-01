@@ -5,7 +5,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.slack.circuit.wizard.common.BackButton
+import com.slack.circuit.wizard.common.Direction
+import com.slack.circuit.wizard.common.NavigationButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -13,6 +14,6 @@ fun SiblingsTopBar(title: String, modifier: Modifier = Modifier, onBack: () -> U
   CenterAlignedTopAppBar(
     title = { Text(title) },
     modifier = modifier,
-    navigationIcon = { BackButton(onBack = onBack) }
+    navigationIcon = { NavigationButton(Direction.LEFT, onClick = onBack) }
   )
 }

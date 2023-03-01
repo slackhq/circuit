@@ -19,7 +19,8 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.wizard.AppScope
-import com.slack.circuit.wizard.common.BackButton
+import com.slack.circuit.wizard.common.Direction
+import com.slack.circuit.wizard.common.NavigationButton
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -85,7 +86,7 @@ fun ManagingTopBar(modifier: Modifier = Modifier, onBack: () -> Unit) {
   CenterAlignedTopAppBar(
     title = { Text("Managed Wizard") },
     modifier = modifier,
-    navigationIcon = { BackButton(onBack = onBack) }
+    navigationIcon = { NavigationButton(Direction.LEFT, onClick = onBack) }
   )
 }
 

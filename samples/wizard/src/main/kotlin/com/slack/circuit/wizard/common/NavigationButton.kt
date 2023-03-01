@@ -14,12 +14,17 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 enum class Direction { LEFT, RIGHT }
 
 @Composable
-fun NavigationButton(direction: Direction, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun NavigationButton(
+  direction: Direction,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  onClick: () -> Unit
+) {
   val (icon, description) = when (direction) {
     Direction.LEFT -> Icons.Filled.ArrowBack to "Back"
     Direction.RIGHT -> Icons.Filled.ArrowForward to "Forward"
   }
-  IconButton(modifier = modifier, onClick = onClick) {
+  IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
     Image(
       modifier = modifier,
       painter = rememberVectorPainter(image = icon),

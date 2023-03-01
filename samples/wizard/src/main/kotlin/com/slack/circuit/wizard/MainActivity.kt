@@ -11,6 +11,10 @@ import com.slack.circuit.Screen
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.push
 import com.slack.circuit.rememberCircuitNavigator
+import com.slack.circuit.wizard.composite.CompositeScreenPresenterFactory_Factory
+import com.slack.circuit.wizard.composite.CompositeScreenPresenter_Factory
+import com.slack.circuit.wizard.composite.CompositeScreenPresenter_Factory_Impl
+import com.slack.circuit.wizard.composite.CompositeScreenUiFactory
 import com.slack.circuit.wizard.managed.ManagedChildScreen01UiFactory
 import com.slack.circuit.wizard.managed.ManagedChildScreen02UiFactory
 import com.slack.circuit.wizard.managed.ManagingUiFactory
@@ -48,14 +52,20 @@ class MainActivity : ComponentActivity() {
       SiblingsChildScreen02UiFactory()
     )
 
+    val delegateFactory = CompositeScreenPresenter_Factory()
+    val factoryProvider = CompositeScreenPresenter_Factory_Impl.create(delegateFactory)
+    val compositePresenterfactory = CompositeScreenPresenterFactory_Factory(factoryProvider)
+
     val circuitConfig =
       CircuitConfig.Builder()
         .addPresenterFactory(MainPresenterFactory())
         .addPresenterFactories(managedPresenterFactories)
         .addPresenterFactories(siblingPresenterFactories)
+        .addPresenterFactory(compositePresenterfactory.get())
         .addUiFactory(MainUiFactory())
         .addUiFactories(managedUiFactories)
         .addUiFactories(siblingUiFactories)
+        .addUiFactory(CompositeScreenUiFactory())
         .build()
 
     val screens: ImmutableList<Screen> = persistentListOf(MainScreen)

@@ -18,14 +18,11 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.HomeEvent
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.parcelize.Parcelize
@@ -39,18 +36,16 @@ object HomeScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     class HomeEvent(val event: HomeNavScreen.Event) : Event
-    class ChildNav(val navEvent: NavEvent) : Event
   }
 }
 
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
-fun HomePresenter(navigator: Navigator): HomeScreen.State {
+fun HomePresenter(): HomeScreen.State {
   val homeNavState = HomeNavPresenter()
   return HomeScreen.State(homeNavState) { event ->
     when (event) {
       is HomeEvent -> homeNavState.eventSink(event.event)
-      is ChildNav -> navigator.onNavEvent(event.navEvent)
     }
   }
 }
@@ -74,11 +69,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
     }
   ) { paddingValues ->
     val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
-    CircuitContent(
-      screen,
-      modifier = Modifier.padding(paddingValues),
-      onNavEvent = { event -> eventSink(ChildNav(event)) }
-    )
+    CircuitContent(screen, Modifier.padding(paddingValues))
   }
 }
 

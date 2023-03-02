@@ -41,7 +41,6 @@ import com.slack.circuit.backstack.providedValuesForBackStack
  * @param providedValues Mapping of [BackStack.Record] to [ProvidedValues].
  * @param decoration Used when determining how to transition between screens when navigating.
  * @param unavailableContent Fallback composable used to recover from failed navigation attempts.
- *
  * @see CircuitCompositionLocals
  */
 @Composable
@@ -77,12 +76,11 @@ public fun NavigableCircuitContent(
     }
 
     decoration.DecoratedContent(activeContentProviders.first(), backstack.size, modifier) {
-        (record, provider) ->
+      (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
-      @Suppress("SpreadOperator")
-      CompositionLocalProvider(*providedLocals) { provider() }
+      @Suppress("SpreadOperator") CompositionLocalProvider(*providedLocals) { provider() }
     }
   }
 }
@@ -99,7 +97,6 @@ public fun NavigableCircuitContent(
  *   bootstrapping the Circuit environment.
  * @param navigator The [Navigator] that will be used by this Circuit environment.
  * @param unavailableContent Fallback composable used to recover from failed navigation attempts.
- *
  * @see CircuitCompositionLocals
  * @see CircuitContent
  */

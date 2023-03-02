@@ -25,6 +25,7 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
 
 @Composable
@@ -38,30 +39,33 @@ public fun NavigableCircuitContent(
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuitConfig.onUnavailableContent,
 ) {
-  val activeContentProviders = buildList {
-    for (record in backstack) {
-      val provider =
-        key(record.key) {
-          val screen = record.screen
+  if (backstack.isEmpty) return
 
-          val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, modifier, navigator, circuitConfig, unavailableRoute)
+  CompositionLocalProvider(LocalCircuitNavigator provides navigator) {
+    val activeContentProviders = buildList {
+      for (record in backstack) {
+        val provider =
+          key(record.key) {
+            val screen = record.screen
+
+            val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
+              CircuitContent(screen, modifier, navigator, circuitConfig, unavailableRoute)
+            }
+
+            val currentRouteContent by rememberUpdatedState(currentContent)
+            val currentRecord by rememberUpdatedState(record)
+            remember { movableContentOf { currentRouteContent(currentRecord) } }
           }
-
-          val currentRouteContent by rememberUpdatedState(currentContent)
-          val currentRecord by rememberUpdatedState(record)
-          remember { movableContentOf { currentRouteContent(currentRecord) } }
-        }
-      add(record to provider)
+        add(record to provider)
+      }
     }
-  }
 
-  if (backstack.size > 0) {
-    @Suppress("SpreadOperator")
     decoration.DecoratedContent(activeContentProviders.first(), backstack.size, modifier) {
-      (record, provider) ->
+        (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+
+      @Suppress("SpreadOperator")
       CompositionLocalProvider(*providedLocals) { provider() }
     }
   }

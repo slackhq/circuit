@@ -29,3 +29,5 @@ public val LocalCircuitConfig: ProvidableCompositionLocal<CircuitConfig?> =
   staticCompositionLocalOf {
     null
   }
+
+internal val LocalCircuitNavigator = compositionLocalOf<Navigator?> { null }

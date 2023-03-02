@@ -21,36 +21,6 @@ public fun CircuitContent(
 }
 
 @Composable
-public fun CircuitContent(
-  screen: Screen,
-  modifier: Modifier = Modifier,
-  onNavEvent: (event: NavEvent) -> Unit,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
-  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
-) {
-  val navigator =
-    remember(onNavEvent) {
-      object : Navigator {
-        override fun goTo(screen: Screen) {
-          onNavEvent(GoToNavEvent(screen))
-        }
-
-        override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(ResetRootNavEvent(newRoot))
-          return emptyList()
-        }
-
-        override fun pop(): Screen? {
-          onNavEvent(PopNavEvent)
-          return null
-        }
-      }
-    }
-  CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent)
-}
-
-@Composable
 internal fun CircuitContent(
   screen: Screen,
   modifier: Modifier,
@@ -67,7 +37,7 @@ internal fun CircuitContent(
 }
 
 @Composable
-internal fun CircuitContent(
+private fun CircuitContent(
   screen: Screen,
   modifier: Modifier,
   navigator: Navigator,

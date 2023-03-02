@@ -67,6 +67,24 @@ public fun NavigableCircuitContent(
   }
 }
 
+@Composable
+public fun NavigableCircuitContent(
+  screen: Screen,
+  modifier: Modifier = Modifier,
+  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  navigator: Navigator = requireNotNull(LocalCircuitNavigator.current),
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
+) {
+  CircuitContent(
+    screen = screen,
+    modifier = modifier,
+    navigator = navigator,
+    circuitConfig = circuitConfig,
+    unavailableContent = unavailableContent
+  )
+}
+
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {
 

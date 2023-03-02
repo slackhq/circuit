@@ -15,10 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.slack.circuit.CircuitContent
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
+import com.slack.circuit.NavigableCircuitContent
 import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.rememberRetained
@@ -69,7 +68,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
     }
   ) { paddingValues ->
     val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
-    CircuitContent(screen, Modifier.padding(paddingValues))
+    NavigableCircuitContent(screen, Modifier.padding(paddingValues))
   }
 }
 

@@ -9,6 +9,22 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
+/**
+ * Composable for bootstrapping a limited Circuit environment. Circuits started with this method
+ * are will be unable to navigate.
+ *
+ * Use cases requiring a functional Circuit [Navigator] should use [NavigableCircuitContent]
+ * instead.
+ *
+ * @param screen The [Screen] to be displayed.
+ * @param modifier Compose [Modifier].
+ * @param circuitConfig The [CircuitConfig] needed to construct a Circuit for the given [Screen].
+ *   If bootstrapping a standalone Circuit environment, this should be provided as a composition
+ *   local via [CircuitCompositionLocals].
+ * @param unavailableContent Fallback composable used to recover from failed navigation attempts.
+ *
+ * @see CircuitCompositionLocals
+ */
 @Composable
 public fun CircuitContent(
   screen: Screen,

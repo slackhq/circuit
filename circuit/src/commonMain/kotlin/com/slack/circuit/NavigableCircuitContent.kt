@@ -28,6 +28,22 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
 
+/**
+ * Top-level composable for bootstrapping a navigable Circuit environment. Circuits running within
+ * this environment will be able to navigate using [navigator].
+ *
+ * @param navigator The [Navigator] that will be used by this Circuit environment.
+ * @param backstack The [SaveableBackStack] used to enable navigation inside this Circuit
+ *   environment.
+ * @param modifier Compose [Modifier].
+ * @param circuitConfig The [CircuitConfig] needed to construct a Circuit for the given [Screen].
+ *   This should be provided as a composition local via [CircuitCompositionLocals].
+ * @param providedValues Mapping of [BackStack.Record] to [ProvidedValues].
+ * @param decoration Used when determining how to transition between screens when navigating.
+ * @param unavailableContent Fallback composable used to recover from failed navigation attempts.
+ *
+ * @see CircuitCompositionLocals
+ */
 @Composable
 public fun NavigableCircuitContent(
   navigator: Navigator,
@@ -36,7 +52,7 @@ public fun NavigableCircuitContent(
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
-  unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuitConfig.onUnavailableContent,
 ) {
   if (backstack.isEmpty) return
@@ -49,7 +65,7 @@ public fun NavigableCircuitContent(
             val screen = record.screen
 
             val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-              CircuitContent(screen, modifier, navigator, circuitConfig, unavailableRoute)
+              CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent)
             }
 
             val currentRouteContent by rememberUpdatedState(currentContent)
@@ -71,6 +87,22 @@ public fun NavigableCircuitContent(
   }
 }
 
+/**
+ * A composable for nesting the indicated [screen] within a running Circuit. [Screens][screen]
+ * initiated using this method (as opposed to [CircuitContent]) can be injected with a functional
+ * [Navigator].
+ *
+ * @param screen The [Screen] to be displayed.
+ * @param modifier Compose [Modifier].
+ * @param circuitConfig The [CircuitConfig] needed to construct a Circuit for the given [Screen].
+ *   This should be provided as a composition local (via [CircuitCompositionLocals]) when
+ *   bootstrapping the Circuit environment.
+ * @param navigator The [Navigator] that will be used by this Circuit environment.
+ * @param unavailableContent Fallback composable used to recover from failed navigation attempts.
+ *
+ * @see CircuitCompositionLocals
+ * @see CircuitContent
+ */
 @Composable
 public fun NavigableCircuitContent(
   screen: Screen,

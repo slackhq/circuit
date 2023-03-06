@@ -37,8 +37,9 @@ import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.parcelize.Parcelize
 
 @Parcelize object OrderTacosScreen : Screen {
@@ -58,8 +59,8 @@ import kotlinx.parcelize.Parcelize
 }
 
 data class OrderDetails(
-  val fillings: List<Ingredient> = emptyList(),
-  val toppings: List<Ingredient> = emptyList(),
+  val fillings: ImmutableSet<Ingredient> = persistentSetOf(),
+  val toppings: ImmutableSet<Ingredient> = persistentSetOf(),
   val cost: Cents = 0
 )
 
@@ -125,8 +126,8 @@ private fun processNavigation(
 
 private fun updateOrder(
   event: OrderStep.UpdateOrder,
-  onNewFillings: (ImmutableList<Ingredient>) -> OrderDetails,
-  onNewToppings: (ImmutableList<Ingredient>) -> OrderDetails,
+  onNewFillings: (ImmutableSet<Ingredient>) -> OrderDetails,
+  onNewToppings: (ImmutableSet<Ingredient>) -> OrderDetails,
 ): OrderDetails =
   when (event) {
     is OrderStep.UpdateOrder.Fillings -> onNewFillings(event.ingredients)
@@ -160,9 +161,9 @@ fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
     when (state.orderState) {
-      is FillingsProducer.State -> FillingsUi(state.orderState, stepModifier)
-      is ToppingsProducer.State -> ToppingsUi(state.orderState, stepModifier)
-      is SummaryProducer.State -> SummaryUi(state.orderState, stepModifier)
+      is FillingsOrderStep.State -> FillingsUi(state.orderState, stepModifier)
+      is ToppingsOrderStep.State -> ToppingsUi(state.orderState, stepModifier)
+      is SummaryOrderStep.State -> SummaryUi(state.orderState, stepModifier)
     }
   }
 }

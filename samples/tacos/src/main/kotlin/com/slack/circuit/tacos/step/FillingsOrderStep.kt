@@ -69,6 +69,6 @@ private fun updateOrder(
 }
 
 @Composable
-fun FillingsUi(state: FillingsProducer.State, modifier: Modifier = Modifier) {
+fun FillingsUi(state: FillingsOrderStep.State, modifier: Modifier = Modifier) {
 
 }

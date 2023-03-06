@@ -5,9 +5,11 @@ import androidx.compose.ui.Modifier
 
 object ToppingsOrderStep : OrderStep {
   override val number = 1
+
+  sealed interface State : OrderStep.State
 }
 
 @Composable
-fun ToppingsUi(state: ToppingsProducer.State, modifier: Modifier = Modifier) {
+fun ToppingsUi(state: ToppingsOrderStep.State, modifier: Modifier = Modifier) {
 
 }

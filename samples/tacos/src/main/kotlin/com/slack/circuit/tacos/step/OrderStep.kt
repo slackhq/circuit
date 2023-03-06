@@ -31,10 +31,6 @@ sealed interface OrderStep {
 
 interface FillingsProducer : OrderStep.StateProducer<OrderStep.State>
 
-interface ToppingsProducer : OrderStep.StateProducer<ToppingsProducer.State> {
-  object State : OrderStep.State
-}
+interface ToppingsProducer : OrderStep.StateProducer<OrderStep.State>
 
-interface SummaryProducer : OrderStep.StateProducer<SummaryProducer.State> {
-  object State : OrderStep.State
-}
+interface SummaryProducer : OrderStep.StateProducer<OrderStep.State>

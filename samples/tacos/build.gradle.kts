@@ -63,7 +63,14 @@ dependencies {
   implementation(projects.circuit)
   implementation(projects.circuitCodegenAnnotations)
 
+  testImplementation(libs.androidx.compose.ui.testing.junit)
+  testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.molecule.runtime)
+  testImplementation(libs.robolectric)
+  testImplementation(libs.testing.hamcrest)
+  testImplementation(libs.truth)
+  testImplementation(libs.turbine)
 
   androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.testing.espresso.core)

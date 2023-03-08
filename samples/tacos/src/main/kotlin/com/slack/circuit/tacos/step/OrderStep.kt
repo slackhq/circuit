@@ -18,9 +18,8 @@ sealed interface OrderStep {
   }
 
   sealed interface UpdateOrder : Event {
-    val ingredients: ImmutableSet<Ingredient>
-    data class Fillings(override val ingredients: ImmutableSet<Ingredient>) : UpdateOrder
-    data class Toppings(override val ingredients: ImmutableSet<Ingredient>) : UpdateOrder
+    data class Filling(val ingredient: Ingredient) : UpdateOrder
+    data class Toppings(val ingredients: ImmutableSet<Ingredient>) : UpdateOrder
   }
 
   interface StateProducer<T : State> {

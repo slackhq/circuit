@@ -42,7 +42,7 @@ class FillingsProducerImpl(private val repository: IngredientsRepository) : Fill
     orderDetails: OrderDetails,
     eventSink: (OrderStep.Event) -> Unit
   ): FillingsOrderStep.State {
-    var selected by remember { mutableStateOf<Ingredient?>(null) }
+    var selected by remember { mutableStateOf(orderDetails.filling) }
     val ingredients by produceState<ImmutableList<Ingredient>?>(null) {
       value = repository.getFillings()
     }
@@ -52,15 +52,19 @@ class FillingsProducerImpl(private val repository: IngredientsRepository) : Fill
         eventSink(OrderStep.Validation.Invalid)
         FillingsOrderStep.State.Loading
       }
-      else -> FillingsOrderStep.State.AvailableFillings(orderDetails.filling, list) { event ->
-        when (event) {
-          is FillingsOrderStep.Event.SelectFilling -> {
-            selected = event.ingredient
-            eventSink(OrderStep.UpdateOrder.Filling(event.ingredient))
-            eventSink(OrderStep.Validation.Valid)
+      else ->
+        FillingsOrderStep.State.AvailableFillings(
+          selected,
+          list
+        ) { event ->
+          when (event) {
+            is FillingsOrderStep.Event.SelectFilling -> {
+              selected = event.ingredient
+              eventSink(OrderStep.UpdateOrder.Filling(event.ingredient))
+              eventSink(OrderStep.Validation.Valid)
+            }
           }
         }
-      }
     }
   }
 }

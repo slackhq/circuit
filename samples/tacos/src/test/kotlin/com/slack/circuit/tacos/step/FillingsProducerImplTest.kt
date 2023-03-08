@@ -86,5 +86,5 @@ class FillingsProducerImplTest {
   }
 }
 
-private inline fun <reified T : Any> FillingsOrderStep.State.isInstanceOf(): T =
+internal inline fun <reified T : Any> OrderStep.State.isInstanceOf(): T =
   (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")

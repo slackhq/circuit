@@ -16,6 +16,8 @@ android {
     minSdk = 33
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
+
+  testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
 tasks

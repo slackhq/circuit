@@ -6,8 +6,6 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
-import com.slack.circuit.tacos.repository.IngredientsRepository
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -24,8 +22,8 @@ class FillingsProducerImplTest {
       Ingredient("orange"),
       Ingredient("pear"),
     )
-    val testRepop = TestRepo(expected)
-    val producer = FillingsProducerImpl(testRepop)
+    val repo = TestIngredientsRepository(expected)
+    val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
       producer(
@@ -55,8 +53,8 @@ class FillingsProducerImplTest {
       Ingredient("orange"),
       pear,
     )
-    val testRepo = TestRepo(expected)
-    val producer = FillingsProducerImpl(testRepo)
+    val repo = TestIngredientsRepository(expected)
+    val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
       producer(
@@ -90,8 +88,3 @@ class FillingsProducerImplTest {
 
 private inline fun <reified T : Any> FillingsOrderStep.State.isInstanceOf(): T =
   (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")
-
-private class TestRepo(private val fillings: ImmutableList<Ingredient>) : IngredientsRepository {
-  override suspend fun getFillings(): ImmutableList<Ingredient> = fillings
-  override suspend fun getToppings(): ImmutableList<Ingredient> = TODO("Not yet implemented")
-}

@@ -59,7 +59,7 @@ import kotlinx.parcelize.Parcelize
 }
 
 data class OrderDetails(
-  val fillings: ImmutableSet<Ingredient> = persistentSetOf(),
+  val filling: Ingredient? = null,
   val toppings: ImmutableSet<Ingredient> = persistentSetOf(),
   val cost: Cents = 0
 )
@@ -87,7 +87,7 @@ class OrderTacosPresenter constructor(
         is OrderStep.UpdateOrder ->
           orderDetails = updateOrder(
             event = event,
-            onNewFillings = { orderDetails.copy(fillings = it) },
+            onNewFilling = { orderDetails.copy(filling = it) },
             onNewToppings = { orderDetails.copy(toppings = it) }
           )
       }
@@ -126,11 +126,11 @@ private fun processNavigation(
 
 private fun updateOrder(
   event: OrderStep.UpdateOrder,
-  onNewFillings: (ImmutableSet<Ingredient>) -> OrderDetails,
+  onNewFilling: (Ingredient) -> OrderDetails,
   onNewToppings: (ImmutableSet<Ingredient>) -> OrderDetails,
 ): OrderDetails =
   when (event) {
-    is OrderStep.UpdateOrder.Fillings -> onNewFillings(event.ingredients)
+    is OrderStep.UpdateOrder.Filling -> onNewFilling(event.ingredient)
     is OrderStep.UpdateOrder.Toppings -> onNewToppings(event.ingredients)
   }
 

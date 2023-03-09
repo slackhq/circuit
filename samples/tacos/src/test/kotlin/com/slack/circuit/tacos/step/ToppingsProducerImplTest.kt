@@ -17,18 +17,18 @@ import org.robolectric.RobolectricTestRunner
 class ToppingsProducerImplTest {
   @Test
   fun `invoke - emit loading then AvailableToppings`() = runTest {
-    val actualEvents = ArrayDeque<OrderStep.Event>()
+    val parent = FakeOrderStepParent()
     val repo = TestIngredientsRepository(toppings)
     val producer = ToppingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
       producer(
-        orderDetails = OrderDetails(),
-        eventSink = { actualEvents.addLast(it) }
+        orderDetails = parent.orderDetails,
+        eventSink = parent::childEvent
       )
     }.test {
       assertThat(awaitItem()).isEqualTo(ToppingsOrderStep.State.Loading)
-      assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Invalid)
+      parent.assertValidation(OrderStep.Validation.Invalid)
 
       awaitItem()
         .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
@@ -36,31 +36,31 @@ class ToppingsProducerImplTest {
           assertThat(selected).isEmpty()
           assertThat(list).isEqualTo(toppings)
         }
-      assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Invalid)
+      parent.assertValidation(OrderStep.Validation.Invalid)
     }
   }
 
   @Test
   fun `invoke - emit Valid validation event after adding minimum toppings`() = runTest {
-    val actualEvents = ArrayDeque<OrderStep.Event>()
+    val parent = FakeOrderStepParent()
     val repo = TestIngredientsRepository(toppings)
     val producer = ToppingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
       producer(
-        orderDetails = OrderDetails(),
+        orderDetails = parent.orderDetails,
         minimumToppings = 1,
-        eventSink = { actualEvents.addLast(it) }
+        eventSink = parent::childEvent
       )
     }.test {
       // Loading
       awaitItem()
-      assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Invalid)
+      parent.assertValidation(OrderStep.Validation.Invalid)
 
       // Initial AvailableToppings
       awaitItem()
         .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-        .also { assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Invalid) }
+        .also { parent.assertValidation(OrderStep.Validation.Invalid) }
         .run {
           assertThat(selected).isEmpty()
 
@@ -74,34 +74,32 @@ class ToppingsProducerImplTest {
         .run {
           assertThat(selected).isEqualTo(persistentSetOf(toppings[0]))
         }
-      assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Valid)
+      parent.assertValidation(OrderStep.Validation.Valid)
     }
   }
 
   @Test
   fun `invoke - emit Invalid validation event after removing topping and falling below minimum`() =
     runTest {
-      val actualEvents = ArrayDeque<OrderStep.Event>()
+      val parent = FakeOrderStepParent(toppings = persistentSetOf(toppings[0]))
       val repo = TestIngredientsRepository(toppings)
       val producer = ToppingsProducerImpl(repo)
 
       moleculeFlow(RecompositionClock.Immediate) {
         producer(
-          orderDetails = OrderDetails(
-            toppings = persistentSetOf(toppings[0]),
-          ),
+          orderDetails = parent.orderDetails,
           minimumToppings = 1,
-          eventSink = { actualEvents.addLast(it) }
+          eventSink = parent::childEvent
         )
       }.test {
         // Loading
         awaitItem()
-        assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Invalid)
+        parent.assertValidation(OrderStep.Validation.Valid)
 
         // Initial AvailableToppings containing toppings[0]
         awaitItem()
           .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-          .also { assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Valid) }
+          .also { parent.assertValidation(OrderStep.Validation.Valid) }
           .run {
             assertThat(selected).isEqualTo(persistentSetOf(toppings[0]))
 
@@ -111,7 +109,7 @@ class ToppingsProducerImplTest {
         // New AvailableToppings with topping count below minimum
         awaitItem()
           .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-          .also { assertThat(actualEvents.removeFirst()).isEqualTo(OrderStep.Validation.Invalid) }
+          .also { parent.assertValidation(OrderStep.Validation.Invalid) }
           .run {
             assertThat(selected).isEmpty()
           }

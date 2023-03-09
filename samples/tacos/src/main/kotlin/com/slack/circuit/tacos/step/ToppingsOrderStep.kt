@@ -3,8 +3,6 @@ package com.slack.circuit.tacos.step
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
@@ -46,52 +44,40 @@ class ToppingsProducerImpl(private val repository: IngredientsRepository) : Topp
     minimumToppings: Int,
     eventSink: (OrderStep.Event) -> Unit
   ): OrderStep.State {
-    val selected = remember {
-      orderDetails.toppings.map { it to Unit }.toMutableStateMap()
-    }
     val ingredients by produceState<ImmutableList<Ingredient>?>(null) {
       value = repository.getToppings()
     }
 
+    validateToppings(orderDetails.toppings.size, minimumToppings, eventSink)
     return when (val list = ingredients) {
-      null -> {
-        eventSink(OrderStep.Validation.Invalid)
-        ToppingsOrderStep.State.Loading
-      }
-      else -> {
-        validateToppings(selected.size, minimumToppings, eventSink)
+      null -> ToppingsOrderStep.State.Loading
+      else ->
         ToppingsOrderStep.State.AvailableToppings(
-          selected.keys.toImmutableSet(),
+          orderDetails.toppings,
           list
         ) { event ->
           updateToppings(
             event = event,
-            addTopping = { selected[it] = Unit },
-            removeTopping = { selected.remove(it) },
-            selected = { selected.keys.toImmutableSet() },
+            plusTopping = { orderDetails.toppings.plus(it) },
+            minusTopping = { orderDetails.toppings.minus(it) },
             eventSink = eventSink
           )
-
-          validateToppings(selected.size, minimumToppings, eventSink)
         }
-      }
     }
   }
 }
 
 private fun updateToppings(
   event: ToppingsOrderStep.Event,
-  addTopping: (Ingredient) -> Unit,
-  removeTopping: (Ingredient) -> Unit,
-  selected: () -> ImmutableSet<Ingredient>,
+  plusTopping: (Ingredient) -> Set<Ingredient>,
+  minusTopping: (Ingredient) -> Set<Ingredient>,
   eventSink: (OrderStep.Event) -> Unit
 ) {
-  when (event) {
-    is ToppingsOrderStep.Event.AddTopping -> addTopping(event.ingredient)
-    is ToppingsOrderStep.Event.RemoveTopping -> removeTopping(event.ingredient)
+  val updatedToppings = when (event) {
+    is ToppingsOrderStep.Event.AddTopping -> plusTopping(event.ingredient)
+    is ToppingsOrderStep.Event.RemoveTopping -> minusTopping(event.ingredient)
   }
-  val toppings = selected()
-  eventSink(OrderStep.UpdateOrder.Toppings(toppings))
+  eventSink(OrderStep.UpdateOrder.Toppings(updatedToppings.toImmutableSet()))
 }
 
 private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.Event) -> Unit) {

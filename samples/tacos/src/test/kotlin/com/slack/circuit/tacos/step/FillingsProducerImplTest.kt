@@ -34,7 +34,7 @@ class FillingsProducerImplTest {
       assertThat(awaitItem()).isEqualTo(FillingsOrderStep.State.Loading)
 
       awaitItem()
-        .isInstanceOf<FillingsOrderStep.State.AvailableFillings>()
+        .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run {
           assertThat(selected).isNull()
           assertThat(list).isEqualTo(expected)
@@ -66,12 +66,12 @@ class FillingsProducerImplTest {
 
       // select a filling
       awaitItem()
-        .isInstanceOf<FillingsOrderStep.State.AvailableFillings>()
+        .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run { eventSink(FillingsOrderStep.Event.SelectFilling(pear)) }
 
       // verify filling is selected
       awaitItem()
-        .isInstanceOf<FillingsOrderStep.State.AvailableFillings>()
+        .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run {
           assertThat(selected).isEqualTo(pear)
         }
@@ -86,5 +86,3 @@ class FillingsProducerImplTest {
   }
 }
 
-internal inline fun <reified T : Any> OrderStep.State.isInstanceOf(): T =
-  (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")

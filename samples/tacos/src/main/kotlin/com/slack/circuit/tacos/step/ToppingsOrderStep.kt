@@ -31,10 +31,19 @@ object ToppingsOrderStep : OrderStep {
   }
 }
 
+private const val MINIMUM_TOPPINGS = 3
+
 class ToppingsProducerImpl(private val repository: IngredientsRepository) : ToppingsProducer {
   @Composable
   override fun invoke(
     orderDetails: OrderDetails,
+    eventSink: (OrderStep.Event) -> Unit
+  ) = invoke(orderDetails, MINIMUM_TOPPINGS, eventSink)
+
+  @Composable
+  internal operator fun invoke(
+    orderDetails: OrderDetails,
+    minimumToppings: Int,
     eventSink: (OrderStep.Event) -> Unit
   ): OrderStep.State {
     val selected = remember {
@@ -49,24 +58,28 @@ class ToppingsProducerImpl(private val repository: IngredientsRepository) : Topp
         eventSink(OrderStep.Validation.Invalid)
         ToppingsOrderStep.State.Loading
       }
-      else ->
+      else -> {
+        validateToppings(selected.size, minimumToppings, eventSink)
         ToppingsOrderStep.State.AvailableToppings(
           selected.keys.toImmutableSet(),
           list
         ) { event ->
-          processToppingChange(
+          updateToppings(
             event = event,
             addTopping = { selected[it] = Unit },
             removeTopping = { selected.remove(it) },
             selected = { selected.keys.toImmutableSet() },
             eventSink = eventSink
           )
+
+          validateToppings(selected.size, minimumToppings, eventSink)
         }
+      }
     }
   }
 }
 
-private fun processToppingChange(
+private fun updateToppings(
   event: ToppingsOrderStep.Event,
   addTopping: (Ingredient) -> Unit,
   removeTopping: (Ingredient) -> Unit,
@@ -77,13 +90,15 @@ private fun processToppingChange(
     is ToppingsOrderStep.Event.AddTopping -> addTopping(event.ingredient)
     is ToppingsOrderStep.Event.RemoveTopping -> removeTopping(event.ingredient)
   }
-  val set = selected()
+  val toppings = selected()
+  eventSink(OrderStep.UpdateOrder.Toppings(toppings))
+}
+
+private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.Event) -> Unit) {
   val validation = when {
-    set.size >= 3 -> OrderStep.Validation.Valid
+    selected >= minimum -> OrderStep.Validation.Valid
     else -> OrderStep.Validation.Invalid
   }
-
-  eventSink(OrderStep.UpdateOrder.Toppings(set))
   eventSink(validation)
 }
 

@@ -17,12 +17,7 @@ class FillingsProducerImplTest {
   @Test
   fun `invoke - emit Loading then AvailableFillings`() = runTest {
     val actualValidationEvents = mutableListOf<OrderStep.Event>()
-    val expected = persistentListOf(
-      Ingredient("apple"),
-      Ingredient("orange"),
-      Ingredient("pear"),
-    )
-    val repo = TestIngredientsRepository(expected)
+    val repo = TestIngredientsRepository(fillings)
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -37,7 +32,7 @@ class FillingsProducerImplTest {
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run {
           assertThat(selected).isNull()
-          assertThat(list).isEqualTo(expected)
+          assertThat(list).isEqualTo(fillings)
         }
     }
 
@@ -47,13 +42,8 @@ class FillingsProducerImplTest {
   @Test
   fun `invoke - emit Valid validation event after selecting filling`() = runTest {
     val actualEvents = mutableListOf<OrderStep.Event>()
-    val pear = Ingredient("pear")
-    val expected = persistentListOf(
-      Ingredient("apple"),
-      Ingredient("orange"),
-      pear,
-    )
-    val repo = TestIngredientsRepository(expected)
+    val expectedFilling = fillings[0]
+    val repo = TestIngredientsRepository(fillings)
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -67,22 +57,28 @@ class FillingsProducerImplTest {
       // select a filling
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
-        .run { eventSink(FillingsOrderStep.Event.SelectFilling(pear)) }
+        .run { eventSink(FillingsOrderStep.Event.SelectFilling(expectedFilling)) }
 
       // verify filling is selected
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run {
-          assertThat(selected).isEqualTo(pear)
+          assertThat(selected).isEqualTo(expectedFilling)
         }
     }
 
     val expectedEvents = listOf(
       OrderStep.Validation.Invalid,
-      OrderStep.UpdateOrder.Filling(pear),
+      OrderStep.UpdateOrder.Filling(expectedFilling),
       OrderStep.Validation.Valid
     )
     assertThat(actualEvents).isEqualTo(expectedEvents)
   }
 }
+
+private val fillings = persistentListOf(
+  Ingredient("apple"),
+  Ingredient("orange"),
+  Ingredient("pear"),
+)
 

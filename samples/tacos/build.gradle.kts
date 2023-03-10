@@ -71,6 +71,7 @@ dependencies {
   testImplementation(libs.testing.hamcrest)
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
+  testImplementation(projects.circuitTest)
 
   androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.testing.espresso.core)

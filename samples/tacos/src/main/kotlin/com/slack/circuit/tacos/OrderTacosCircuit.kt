@@ -53,8 +53,8 @@ import kotlinx.parcelize.Parcelize
 
   sealed interface Event : CircuitUiEvent {
     val value: Int
-    object Back : Event { override val value: Int = -1 }
-    object Forward : Event { override val value: Int = 1 }
+    object Previous : Event { override val value: Int = -1 }
+    object Next : Event { override val value: Int = 1 }
   }
 }
 
@@ -76,9 +76,15 @@ class OrderTacosPresenter constructor(
   private val summaryProducer: SummaryProducer,
 ) : Presenter<OrderTacosScreen.State> {
   @Composable
-  override fun present(): OrderTacosScreen.State {
-    val currentStep = rememberSaveable { mutableStateOf<OrderStep>(FillingsOrderStep) }
-    var orderDetails by rememberSaveable { mutableStateOf(OrderDetails()) }
+  override fun present(): OrderTacosScreen.State = presentInternal()
+
+  @Composable
+  internal fun presentInternal(
+    initialStep: OrderStep = FillingsOrderStep,
+    initialOrderDetails: OrderDetails = OrderDetails(),
+  ): OrderTacosScreen.State {
+    val currentStep = rememberSaveable { mutableStateOf(initialStep) }
+    var orderDetails by rememberSaveable { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }
 
     val stepState = currentStep.produceState(orderDetails) { event ->
@@ -121,7 +127,7 @@ private fun processNavigation(
   onNavEvent: (OrderStep) -> Unit
 ) {
   val newIndex = currentStep.number + navEvent.value
-  onNavEvent(orderSteps[newIndex])
+  onNavEvent(orderSteps.getOrElse(newIndex) { currentStep })
 }
 
 private fun updateOrder(
@@ -147,14 +153,14 @@ fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
           NavigationButton(
             direction = Direction.LEFT,
             visible = state.isPreviousVisible,
-          ) { sink(OrderTacosScreen.Event.Back) }
+          ) { sink(OrderTacosScreen.Event.Previous) }
         },
         actions = {
           NavigationButton(
             direction = Direction.RIGHT,
             enabled = state.isNextEnabled,
             visible = state.isNextVisible,
-          ) { sink(OrderTacosScreen.Event.Forward) }
+          ) { sink(OrderTacosScreen.Event.Next) }
         }
       )
     }

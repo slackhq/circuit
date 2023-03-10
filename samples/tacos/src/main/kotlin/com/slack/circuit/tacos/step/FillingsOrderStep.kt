@@ -6,10 +6,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Cents
@@ -42,31 +39,33 @@ class FillingsProducerImpl(private val repository: IngredientsRepository) : Fill
     orderDetails: OrderDetails,
     eventSink: (OrderStep.Event) -> Unit
   ): FillingsOrderStep.State {
-    var selected by remember { mutableStateOf(orderDetails.filling) }
     val ingredients by produceState<ImmutableList<Ingredient>?>(null) {
       value = repository.getFillings()
     }
 
+    validateFilling(orderDetails.filling, eventSink)
     return when (val list = ingredients) {
-      null -> {
-        eventSink(OrderStep.Validation.Invalid)
-        FillingsOrderStep.State.Loading
-      }
+      null -> FillingsOrderStep.State.Loading
       else ->
         FillingsOrderStep.State.AvailableFillings(
-          selected,
+          orderDetails.filling,
           list
         ) { event ->
           when (event) {
-            is FillingsOrderStep.Event.SelectFilling -> {
-              selected = event.ingredient
+            is FillingsOrderStep.Event.SelectFilling ->
               eventSink(OrderStep.UpdateOrder.Filling(event.ingredient))
-              eventSink(OrderStep.Validation.Valid)
-            }
           }
         }
     }
   }
+}
+
+private fun validateFilling(filling: Ingredient?, eventSink: (OrderStep.Event) -> Unit) {
+  val validation = when(filling) {
+    null -> OrderStep.Validation.Invalid
+    else -> OrderStep.Validation.Valid
+  }
+  eventSink(validation)
 }
 
 @Composable

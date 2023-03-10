@@ -4,7 +4,6 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -16,17 +15,18 @@ import org.robolectric.RobolectricTestRunner
 class FillingsProducerImplTest {
   @Test
   fun `invoke - emit Loading then AvailableFillings`() = runTest {
-    val actualValidationEvents = mutableListOf<OrderStep.Event>()
+    val parent = FakeOrderStepParent()
     val repo = TestIngredientsRepository(fillings)
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
       producer(
-        orderDetails = OrderDetails(),
-        eventSink = { actualValidationEvents.add(it) }
+        orderDetails = parent.orderDetails,
+        eventSink = parent::childEvent
       )
     }.test {
       assertThat(awaitItem()).isEqualTo(FillingsOrderStep.State.Loading)
+      parent.assertValidation(OrderStep.Validation.Invalid)
 
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
@@ -34,45 +34,44 @@ class FillingsProducerImplTest {
           assertThat(selected).isNull()
           assertThat(list).isEqualTo(fillings)
         }
+      parent.assertValidation(OrderStep.Validation.Invalid)
     }
 
-    assertThat(actualValidationEvents).isEqualTo(listOf(OrderStep.Validation.Invalid))
   }
 
   @Test
   fun `invoke - emit Valid validation event after selecting filling`() = runTest {
-    val actualEvents = mutableListOf<OrderStep.Event>()
-    val expectedFilling = fillings[0]
+    val parent = FakeOrderStepParent()
     val repo = TestIngredientsRepository(fillings)
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
       producer(
-        orderDetails = OrderDetails(),
-        eventSink = { actualEvents.add(it) }
+        orderDetails = parent.orderDetails,
+        eventSink = parent::childEvent
       )
     }.test {
       awaitItem() // Loading
+      parent.assertValidation(OrderStep.Validation.Invalid)
 
       // select a filling
+      val expectedFilling = fillings[0]
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
-        .run { eventSink(FillingsOrderStep.Event.SelectFilling(expectedFilling)) }
+        .also { parent.assertValidation(OrderStep.Validation.Invalid) }
+        .run {
+          assertThat(selected).isNull()
+          eventSink(FillingsOrderStep.Event.SelectFilling(expectedFilling))
+        }
 
       // verify filling is selected
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
+        .also { parent.assertValidation(OrderStep.Validation.Valid) }
         .run {
           assertThat(selected).isEqualTo(expectedFilling)
         }
     }
-
-    val expectedEvents = listOf(
-      OrderStep.Validation.Invalid,
-      OrderStep.UpdateOrder.Filling(expectedFilling),
-      OrderStep.Validation.Valid
-    )
-    assertThat(actualEvents).isEqualTo(expectedEvents)
   }
 }
 

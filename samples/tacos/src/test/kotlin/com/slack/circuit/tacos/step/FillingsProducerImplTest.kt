@@ -34,7 +34,9 @@ class FillingsProducerImplTest {
           assertThat(selected).isNull()
           assertThat(list).isEqualTo(fillings)
         }
-      parent.assertValidation(OrderStep.Validation.Invalid)
+      parent
+        .assertValidation(OrderStep.Validation.Invalid)
+        .assertNoUnconsumedValidation()
     }
 
   }
@@ -67,7 +69,11 @@ class FillingsProducerImplTest {
       // verify filling is selected
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
-        .also { parent.assertValidation(OrderStep.Validation.Valid) }
+        .also {
+          parent
+            .assertValidation(OrderStep.Validation.Valid)
+            .assertNoUnconsumedValidation()
+        }
         .run {
           assertThat(selected).isEqualTo(expectedFilling)
         }

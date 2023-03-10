@@ -35,7 +35,9 @@ class ToppingsProducerImplTest {
           assertThat(selected).isEmpty()
           assertThat(list).isEqualTo(toppings)
         }
-      parent.assertValidation(OrderStep.Validation.Invalid)
+      parent
+        .assertValidation(OrderStep.Validation.Invalid)
+        .assertNoUnconsumedValidation()
     }
   }
 
@@ -73,7 +75,9 @@ class ToppingsProducerImplTest {
         .run {
           assertThat(selected).isEqualTo(persistentSetOf(toppings[0]))
         }
-      parent.assertValidation(OrderStep.Validation.Valid)
+      parent
+        .assertValidation(OrderStep.Validation.Valid)
+        .assertNoUnconsumedValidation()
     }
   }
 
@@ -108,7 +112,11 @@ class ToppingsProducerImplTest {
         // New AvailableToppings with topping count below minimum
         awaitItem()
           .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-          .also { parent.assertValidation(OrderStep.Validation.Invalid) }
+          .also {
+            parent
+              .assertValidation(OrderStep.Validation.Invalid)
+              .assertNoUnconsumedValidation()
+          }
           .run {
             assertThat(selected).isEmpty()
           }

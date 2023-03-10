@@ -35,9 +35,13 @@ internal class FakeOrderStepParent(
     }
   }
 
-  fun assertValidation(expected: OrderStep.Validation) {
+  fun assertValidation(expected: OrderStep.Validation): FakeOrderStepParent = apply {
     validations.isNotEmpty() || error("No unprocessed validations!")
     assertThat(validations.removeFirst()).isEqualTo(expected)
+  }
+
+  fun assertNoUnconsumedValidation(): FakeOrderStepParent = apply {
+    assertThat(validations).isEmpty()
   }
 }
 

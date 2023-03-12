@@ -10,6 +10,7 @@ import app.cash.molecule.RecompositionClock.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 import java.time.LocalTime

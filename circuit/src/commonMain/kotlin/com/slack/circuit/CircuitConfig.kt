@@ -9,6 +9,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Screen
 
 /**
@@ -63,6 +64,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     builder.onUnavailableContent
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
+  @Suppress("invisible_member") // Accessing internal API across module boundaries
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
@@ -88,6 +90,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
+  @Suppress("invisible_member") // Accessing internal API across module boundaries
   public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null).also { it.config = this }): Ui<*>? {
     return nextUi(null, screen, context)
   }

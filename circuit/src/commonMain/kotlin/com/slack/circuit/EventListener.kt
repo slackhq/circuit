@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
+import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 

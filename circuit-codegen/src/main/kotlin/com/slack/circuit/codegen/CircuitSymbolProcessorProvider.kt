@@ -60,7 +60,7 @@ private val CIRCUIT_UI_FACTORY = CIRCUIT_UI.nestedClass("Factory")
 private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitUiState")
 private val SCREEN = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Screen")
 private val NAVIGATOR = ClassName(CIRCUIT_BASE_PACKAGE, "Navigator")
-private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_BASE_PACKAGE, "CircuitContext")
+private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
 private const val FACTORY = "Factory"
 
 @AutoService(SymbolProcessorProvider::class)

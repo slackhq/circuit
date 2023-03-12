@@ -1,19 +1,16 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit
+package com.slack.circuit.runtime
 
 import kotlin.reflect.KClass
 
 /**
- * A [CircuitContext] is used in [Presenter.Factory] and [Ui.Factory] to inform creation of their
- * respective [Presenter] and [Ui] instances.
+ * A [CircuitContext] is used in `Presenter.Factory` and `Ui.Factory` to inform creation of their
+ * respective `Presenter` and `Ui` instances.
  *
  * Available information includes:
- * - [parent]
- * - the parent [CircuitContext] or null if this is the root context.
- * - [config]
- * - the [CircuitConfig] used in this [CircuitContext].
- * - [tag] – a tag API to plumb arbitrary metadata through the [CircuitConfig].
+ * - [parent] – the parent [CircuitContext] or null if this is the root context.
+ * - [tag] – a tag API to plumb arbitrary metadata through the [CircuitContext].
  */
 public class CircuitContext
 internal constructor(

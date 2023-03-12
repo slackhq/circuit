@@ -8,6 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.slack.circuit.runtime.CircuitContext
 
 /**
  * Provides the given [circuitConfig] as a [CompositionLocal] to all composables within [content].

@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiState
+import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
 import com.slack.circuit.Screen

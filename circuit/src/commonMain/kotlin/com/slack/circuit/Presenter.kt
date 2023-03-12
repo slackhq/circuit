@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import androidx.compose.runtime.Composable
+import com.slack.circuit.runtime.CircuitUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**

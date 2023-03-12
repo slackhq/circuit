@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
+import com.slack.circuit.runtime.CircuitUiState
+
 /**
  * A listener for tracking the state changes of a given [Screen]. This can be used for
  * instrumentation and other telemetry.

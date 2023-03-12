@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.slack.circuit.CircuitContext
-import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiState
+import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen

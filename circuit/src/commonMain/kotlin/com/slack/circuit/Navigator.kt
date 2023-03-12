@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.runtime.CircuitUiEvent
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable

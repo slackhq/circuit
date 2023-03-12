@@ -40,8 +40,8 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiState
+import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen

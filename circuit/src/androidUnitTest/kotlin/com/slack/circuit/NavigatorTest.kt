@@ -5,6 +5,7 @@ package com.slack.circuit
 import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.runtime.Screen
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
 import org.junit.Test

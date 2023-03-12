@@ -20,7 +20,7 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.NavEvent
 import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.onNavEvent
 import com.slack.circuit.retained.rememberRetained

@@ -1,11 +1,9 @@
-// Copyright (C) 2022 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit
+package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Immutable
 
 /**
- * Represents an individual screen, used as a key for [Presenter.Factory] and [Ui.Factory].
+ * Represents an individual screen, used as a key for `Presenter.Factory` and `Ui.Factory`.
  *
  * Screens can be simple sentinel `object` types or data classes with information to share. Screens
  * with information should contain the minimum amount of data needed for the target presenter to
@@ -17,7 +15,7 @@ import androidx.compose.runtime.Immutable
  * ) : Screen
  * ```
  *
- * Screens are then passed into [Navigators][Navigator] to navigate to them.
+ * Screens are then passed into a `Navigator` to navigate to them.
  *
  * ```
  * fun showAddFavorites() {
@@ -29,4 +27,5 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  */
-@Immutable public expect interface Screen
+@Immutable
+public expect interface Screen

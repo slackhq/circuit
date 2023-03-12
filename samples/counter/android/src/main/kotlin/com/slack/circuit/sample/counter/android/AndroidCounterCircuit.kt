@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitContext
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 import com.slack.circuit.Ui
 import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterScreen

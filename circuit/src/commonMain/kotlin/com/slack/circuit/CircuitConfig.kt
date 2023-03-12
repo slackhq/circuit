@@ -9,6 +9,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import com.slack.circuit.runtime.Screen
 
 /**
  * [CircuitConfig] adapts [presenter factories][Presenter.Factory] to their corresponding renderable

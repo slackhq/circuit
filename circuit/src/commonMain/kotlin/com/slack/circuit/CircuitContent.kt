@@ -9,6 +9,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.Screen
 
 @Composable
 public fun CircuitContent(

@@ -4,6 +4,7 @@ package com.slack.circuit
 
 import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.Screen
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable

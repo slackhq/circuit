@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.Screen
 
 /**
  * A listener for tracking the state changes of a given [Screen]. This can be used for

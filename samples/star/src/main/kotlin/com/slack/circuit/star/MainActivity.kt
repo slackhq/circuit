@@ -17,7 +17,7 @@ import androidx.compose.runtime.remember
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.NavigableCircuitContent
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.push

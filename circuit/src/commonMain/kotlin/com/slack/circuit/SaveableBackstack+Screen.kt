@@ -3,6 +3,7 @@
 package com.slack.circuit
 
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.runtime.Screen
 
 public fun SaveableBackStack.push(screen: Screen) {
   push(

@@ -7,7 +7,7 @@ import com.slack.circuit.CircuitConfig
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 import com.slack.circuit.Ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.AssistedFactory

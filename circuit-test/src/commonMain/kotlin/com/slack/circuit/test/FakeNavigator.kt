@@ -4,7 +4,7 @@ package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
 import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 
 /**
  * A fake [Navigator] that can be used in tests to record and assert navigation events.

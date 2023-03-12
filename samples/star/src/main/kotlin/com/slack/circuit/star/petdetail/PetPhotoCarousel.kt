@@ -39,7 +39,7 @@ import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope

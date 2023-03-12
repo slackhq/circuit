@@ -6,6 +6,7 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.popUntil
+import com.slack.circuit.runtime.Screen
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].

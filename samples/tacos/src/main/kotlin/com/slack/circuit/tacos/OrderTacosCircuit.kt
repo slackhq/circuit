@@ -21,10 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import com.slack.circuit.CircuitContext
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
+import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
+import com.slack.circuit.Ui
 import com.slack.circuit.tacos.model.Cents
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.step.FillingsOrderStep
@@ -200,4 +203,31 @@ private fun NavigationButton(
       contentDescription = direction.description,
     )
   }
+}
+
+internal class OrderTacosPresenterFactory(
+  private val fillingsProducer: FillingsProducer,
+  private val toppingsProducer: ToppingsProducer,
+  private val summaryProducer: SummaryProducer,
+) : Presenter.Factory {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext
+  ): Presenter<*>? =
+    when (screen) {
+      is OrderTacosScreen ->
+        OrderTacosPresenter(fillingsProducer, toppingsProducer, summaryProducer)
+      else -> null
+    }
+}
+
+internal class OrderTacosUiFactory : Ui.Factory {
+  override fun create(screen: Screen, context: CircuitContext): Ui<*>? =
+    when (screen) {
+      is OrderTacosScreen -> ui<OrderTacosScreen.State> { state, modifier ->
+        OrderTacosUi(state, modifier)
+      }
+      else -> null
+    }
 }

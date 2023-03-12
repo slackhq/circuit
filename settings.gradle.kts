@@ -156,6 +156,7 @@ include(
   ":circuit-codegen-annotations",
   ":circuit-overlay",
   ":circuit-retained",
+  ":circuit-runtime",
   ":circuit-test",
   ":samples:counter",
   ":samples:counter:android",

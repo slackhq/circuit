@@ -1,5 +1,6 @@
 package com.slack.circuit.tacos
 
+import android.os.Parcelable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -61,11 +62,11 @@ import kotlinx.parcelize.Parcelize
   }
 }
 
+@Parcelize
 data class OrderDetails(
   val filling: Ingredient? = null,
   val toppings: ImmutableSet<Ingredient> = persistentSetOf(),
-  val cost: Cents = 0
-)
+): Parcelable
 
 private val orderSteps = persistentListOf(
   FillingsOrderStep,

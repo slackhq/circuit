@@ -1,11 +1,12 @@
 package com.slack.circuit.tacos.step
 
+import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.OrderDetails
 import kotlinx.collections.immutable.ImmutableSet
 
-sealed interface OrderStep {
+sealed interface OrderStep : Parcelable {
   val number: Int
 
   sealed interface State // TODO CircuitUiState?

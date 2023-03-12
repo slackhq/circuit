@@ -14,9 +14,14 @@ import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
+import javax.inject.Inject
 
+@Parcelize
 object FillingsOrderStep : OrderStep {
+  @IgnoredOnParcel
   override val number = 0
 
   sealed interface State : OrderStep.State {

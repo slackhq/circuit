@@ -10,8 +10,12 @@ import com.slack.circuit.tacos.repository.IngredientsRepository
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 object ToppingsOrderStep : OrderStep {
+  @IgnoredOnParcel
   override val number = 1
 
   sealed interface State : OrderStep.State {

@@ -135,28 +135,3 @@ private fun Filling(
     }
   }
 }
-
-@Composable
-private fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
-  if (diet == Diet.NONE) return
-  Text(diet.name.lowercase(), modifier)
-}
-
-@Composable
-private fun AdditionalCharge(charge: Cents, modifier: Modifier = Modifier) {
-  if (charge <= 0) return
-  val dollarAmount = BigDecimal(charge).movePointLeft(2)
-  Text("$$dollarAmount", modifier)
-}
-
-@Composable
-private fun Calories(calories: Int, modifier: Modifier = Modifier) {
-  if (calories <= 0) return
-  Text("$calories cals", modifier)
-}
-
-@Composable
-private fun Spacer(charge: Cents, calories: Int, modifier: Modifier = Modifier) {
-  if (charge <= 0 || calories <= 0) return
-  Text(" | ", modifier)
-}

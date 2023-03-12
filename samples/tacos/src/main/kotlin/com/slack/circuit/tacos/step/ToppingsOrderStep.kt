@@ -1,8 +1,17 @@
 package com.slack.circuit.tacos.step
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
@@ -94,5 +103,65 @@ private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.
 
 @Composable
 internal fun ToppingsUi(state: ToppingsOrderStep.State, modifier: Modifier = Modifier) {
+  when (state) {
+    is ToppingsOrderStep.State.Loading -> Loading(modifier)
+    is ToppingsOrderStep.State.AvailableToppings -> ToppingsList(state, modifier)
+  }
+}
 
+@Composable
+private fun Loading(modifier: Modifier = Modifier) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    CircularProgressIndicator(
+      color = MaterialTheme.colorScheme.onSurface
+    )
+  }
+}
+
+@Composable
+private fun ToppingsList(
+  state: ToppingsOrderStep.State.AvailableToppings,
+  modifier: Modifier = Modifier
+) {
+  val sink = state.eventSink
+  Column(modifier = modifier) {
+    state.list.forEach { ingredient ->
+      Topping(
+        ingredient = ingredient,
+        isSelected = state.selected.contains(ingredient),
+        onSelect = { selected ->
+          val event = when {
+            selected -> ToppingsOrderStep.Event::AddTopping
+            else -> ToppingsOrderStep.Event::RemoveTopping
+          }
+          sink(event(ingredient))
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun Topping(
+  ingredient: Ingredient,
+  isSelected: Boolean,
+  modifier: Modifier = Modifier,
+  onSelect: (Boolean) -> Unit
+) {
+  Row(modifier = modifier) {
+    Checkbox(checked = isSelected, modifier = modifier, onCheckedChange = onSelect)
+    Column {
+      with(ingredient) {
+        Row {
+          Text(name)
+          DietBadge(diet)
+        }
+        Row {
+          AdditionalCharge(charge)
+          Spacer(charge, calories)
+          Calories(calories)
+        }
+      }
+    }
+  }
 }

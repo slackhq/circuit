@@ -14,14 +14,11 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.tacos.OrderDetails
-import com.slack.circuit.tacos.model.Cents
-import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 
 @Parcelize
 object FillingsOrderStep : OrderStep {

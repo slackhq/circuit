@@ -2,6 +2,8 @@ package com.slack.circuit.tacos
 
 import android.os.Parcelable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,10 +50,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 @Parcelize object OrderTacosScreen : Screen {
   data class State(
     val headerText: String,
+    val orderCost: Cents,
     val orderState: OrderStep.State,
     val isPreviousVisible: Boolean,
     val isNextEnabled: Boolean,
@@ -70,7 +75,7 @@ import kotlinx.parcelize.Parcelize
 data class OrderDetails(
   val filling: Ingredient? = null,
   val toppings: Set<Ingredient> = persistentSetOf(),
-  val cost: Cents = 0
+  val cost: Cents = 999 // Default taco price
 ): Parcelable
 
 private val orderSteps = persistentListOf(
@@ -110,6 +115,7 @@ internal class OrderTacosPresenter(
 
     return OrderTacosScreen.State(
       headerText = currentStep.value.headerText,
+      orderCost = orderDetails.cost,
       orderState = stepState,
       isPreviousVisible = currentStep.value.number > 0,
       isNextEnabled = isNextEnabled,
@@ -173,7 +179,8 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
           ) { sink(OrderTacosScreen.Event.Next) }
         }
       )
-    }
+    },
+    bottomBar = { OrderTotal(state.orderCost) }
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
     when (state.orderState) {
@@ -184,7 +191,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
   }
 }
 
-enum class Direction(
+internal enum class Direction(
   val icon: ImageVector,
   val description: String
 ) {
@@ -209,6 +216,17 @@ private fun NavigationButton(
       colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
       contentDescription = direction.description,
     )
+  }
+}
+
+@Composable
+private fun OrderTotal(
+  orderCost: Cents,
+  modifier: Modifier = Modifier,
+) {
+  val dollarAmount = BigDecimal(orderCost).movePointLeft(2)
+  Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+    Text("$$dollarAmount")
   }
 }
 

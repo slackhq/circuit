@@ -11,8 +11,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object SummaryOrderStep : OrderStep {
-  @IgnoredOnParcel
-  override val number = 2
+  @IgnoredOnParcel override val number = 2
+  @IgnoredOnParcel override val headerText = "Order Summary"
 
   data class Order(
     val filling: Ingredient?,

@@ -7,6 +7,7 @@ import com.slack.circuit.tacos.OrderDetails
 
 sealed interface OrderStep : Parcelable {
   val number: Int
+  val headerText: String
 
   sealed interface State // TODO CircuitUiState?
 

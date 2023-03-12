@@ -20,8 +20,8 @@ import java.math.BigDecimal
 
 @Parcelize
 object FillingsOrderStep : OrderStep {
-  @IgnoredOnParcel
-  override val number = 0
+  @IgnoredOnParcel override val number = 0
+  @IgnoredOnParcel override val headerText = "Fillings"
 
   sealed interface State : OrderStep.State {
     object Loading : State

@@ -50,6 +50,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize object OrderTacosScreen : Screen {
   data class State(
+    val headerText: String,
     val orderState: OrderStep.State,
     val isPreviousVisible: Boolean,
     val isNextEnabled: Boolean,
@@ -108,6 +109,7 @@ internal class OrderTacosPresenter(
     }
 
     return OrderTacosScreen.State(
+      headerText = currentStep.value.headerText,
       orderState = stepState,
       isPreviousVisible = currentStep.value.number > 0,
       isNextEnabled = isNextEnabled,
@@ -155,7 +157,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
     modifier = modifier,
     topBar = {
       CenterAlignedTopAppBar(
-        title = { Text("TODO") },
+        title = { Text(state.headerText) },
         modifier = modifier,
         navigationIcon = {
           NavigationButton(

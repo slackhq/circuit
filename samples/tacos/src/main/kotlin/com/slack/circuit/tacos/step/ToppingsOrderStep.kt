@@ -15,8 +15,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object ToppingsOrderStep : OrderStep {
-  @IgnoredOnParcel
-  override val number = 1
+  @IgnoredOnParcel override val number = 1
+  @IgnoredOnParcel override val headerText = "Toppings"
 
   sealed interface State : OrderStep.State {
     object Loading : State

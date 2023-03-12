@@ -5,7 +5,7 @@ import androidx.compose.runtime.Stable
 /**
  * Marker interface for all UiState types.
  *
- * States in Circuit should be minimal data models that [UIs][Ui] can render. They are produced by a
+ * States in Circuit should be minimal data models that a `Ui` can render. They are produced by a
  * `Presenter` that interpret the underlying data layer and mediate input user/nav
  * [events][CircuitUiEvent].
  *

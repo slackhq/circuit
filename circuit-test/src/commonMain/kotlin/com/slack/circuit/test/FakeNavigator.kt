@@ -3,7 +3,7 @@
 package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
-import com.slack.circuit.Navigator
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 
 /**

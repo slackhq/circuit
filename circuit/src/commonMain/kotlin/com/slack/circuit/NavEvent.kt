@@ -1,6 +1,7 @@
 package com.slack.circuit
 
 import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 
 

@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.runtime.Navigator
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent]. Delegates

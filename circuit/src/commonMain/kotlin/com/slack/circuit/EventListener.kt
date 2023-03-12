@@ -4,6 +4,7 @@ package com.slack.circuit
 
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 
 /**

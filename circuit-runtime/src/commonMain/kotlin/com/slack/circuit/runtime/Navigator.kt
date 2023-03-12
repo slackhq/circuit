@@ -1,10 +1,8 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit
+package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
-import com.slack.circuit.runtime.CircuitUiEvent
-import com.slack.circuit.runtime.Screen
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable

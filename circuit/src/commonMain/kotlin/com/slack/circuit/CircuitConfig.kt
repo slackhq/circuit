@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 
 /**

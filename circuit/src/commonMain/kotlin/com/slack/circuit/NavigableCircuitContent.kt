@@ -26,6 +26,7 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 
 @Composable

@@ -42,7 +42,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.Navigator
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject

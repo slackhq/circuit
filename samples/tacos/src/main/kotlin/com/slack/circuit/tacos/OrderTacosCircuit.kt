@@ -169,7 +169,7 @@ fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
     when (state.orderState) {
       is FillingsOrderStep.State -> FillingsUi(state.orderState, stepModifier)
       is ToppingsOrderStep.State -> ToppingsUi(state.orderState, stepModifier)
-      is SummaryOrderStep.State -> SummaryUi(state.orderState, stepModifier)
+      is SummaryOrderStep.Order -> SummaryUi(state.orderState, stepModifier)
     }
   }
 }

@@ -17,9 +17,9 @@ import com.jakewharton.mosaic.runMosaic
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
+import com.slack.circuit.Ui
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Screen
-import com.slack.circuit.Ui
 import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen

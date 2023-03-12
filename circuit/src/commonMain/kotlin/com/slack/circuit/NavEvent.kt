@@ -1,9 +1,10 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
-
 
 /**
  * A Circuit call back to help navigate to different screens. Intended to be used when forwarding

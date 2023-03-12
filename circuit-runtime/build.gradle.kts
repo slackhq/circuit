@@ -12,13 +12,7 @@ kotlin {
   jvm()
   // endregion
 
-  sourceSets {
-    commonMain {
-      dependencies {
-        api(libs.compose.runtime)
-      }
-    }
-  }
+  sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
 }
 
 android { namespace = "com.slack.circuit.runtime" }

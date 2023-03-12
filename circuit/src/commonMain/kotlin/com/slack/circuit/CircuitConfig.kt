@@ -92,7 +92,10 @@ public class CircuitConfig private constructor(builder: Builder) {
   }
 
   @Suppress("invisible_member") // Accessing internal API across module boundaries
-  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null).also { it.config = this }): Ui<*>? {
+  public fun ui(
+    screen: Screen,
+    context: CircuitContext = CircuitContext(null).also { it.config = this }
+  ): Ui<*>? {
     return nextUi(null, screen, context)
   }
 

@@ -4,11 +4,11 @@ package com.slack.circuit.codegen.annotations
 
 import androidx.compose.runtime.Composable
 import com.slack.circuit.CircuitConfig
+import com.slack.circuit.Presenter
+import com.slack.circuit.Ui
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.Presenter
 import com.slack.circuit.runtime.Screen
-import com.slack.circuit.Ui
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

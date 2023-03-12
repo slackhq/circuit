@@ -65,7 +65,9 @@ internal fun CircuitContent(
   val parent = LocalCircuitContext.current
   @Suppress("invisible_member")
   val context =
-    remember(screen, navigator, circuitConfig, parent) { CircuitContext(parent).also { it.config = circuitConfig } }
+    remember(screen, navigator, circuitConfig, parent) {
+      CircuitContext(parent).also { it.config = circuitConfig }
+    }
   CompositionLocalProvider(LocalCircuitContext provides context) {
     CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent, context)
   }

@@ -17,7 +17,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
-import javax.inject.Inject
 
 @Parcelize
 object FillingsOrderStep : OrderStep {

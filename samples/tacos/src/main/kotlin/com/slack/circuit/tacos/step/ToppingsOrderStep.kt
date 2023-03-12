@@ -57,7 +57,7 @@ class ToppingsProducerImpl(private val repository: IngredientsRepository) : Topp
       null -> ToppingsOrderStep.State.Loading
       else ->
         ToppingsOrderStep.State.AvailableToppings(
-          orderDetails.toppings,
+          orderDetails.toppings.toImmutableSet(),
           list
         ) { event ->
           updateToppings(
@@ -81,7 +81,7 @@ private fun updateToppings(
     is ToppingsOrderStep.Event.AddTopping -> plusTopping(event.ingredient)
     is ToppingsOrderStep.Event.RemoveTopping -> minusTopping(event.ingredient)
   }
-  eventSink(OrderStep.UpdateOrder.Toppings(updatedToppings.toImmutableSet()))
+  eventSink(OrderStep.UpdateOrder.Toppings(updatedToppings))
 }
 
 private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.Event) -> Unit) {

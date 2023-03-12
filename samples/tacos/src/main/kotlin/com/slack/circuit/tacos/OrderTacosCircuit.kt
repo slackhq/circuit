@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,9 +42,10 @@ import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
-import kotlinx.collections.immutable.ImmutableSet
+import com.slack.circuit.ui
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
 
 @Parcelize object OrderTacosScreen : Screen {
@@ -63,9 +65,11 @@ import kotlinx.parcelize.Parcelize
 }
 
 @Parcelize
+@Immutable
 data class OrderDetails(
   val filling: Ingredient? = null,
-  val toppings: ImmutableSet<Ingredient> = persistentSetOf(),
+  val toppings: Set<Ingredient> = persistentSetOf(),
+  val cost: Cents = 0
 ): Parcelable
 
 private val orderSteps = persistentListOf(
@@ -74,7 +78,7 @@ private val orderSteps = persistentListOf(
   SummaryOrderStep,
 )
 
-class OrderTacosPresenter constructor(
+internal class OrderTacosPresenter(
   private val fillingsProducer: FillingsProducer,
   private val toppingsProducer: ToppingsProducer,
   private val summaryProducer: SummaryProducer,
@@ -98,7 +102,7 @@ class OrderTacosPresenter constructor(
           orderDetails = updateOrder(
             event = event,
             onNewFilling = { orderDetails.copy(filling = it) },
-            onNewToppings = { orderDetails.copy(toppings = it) }
+            onNewToppings = { orderDetails.copy(toppings = it.toImmutableSet()) }
           )
       }
     }
@@ -137,7 +141,7 @@ private fun processNavigation(
 private fun updateOrder(
   event: OrderStep.UpdateOrder,
   onNewFilling: (Ingredient) -> OrderDetails,
-  onNewToppings: (ImmutableSet<Ingredient>) -> OrderDetails,
+  onNewToppings: (Set<Ingredient>) -> OrderDetails,
 ): OrderDetails =
   when (event) {
     is OrderStep.UpdateOrder.Filling -> onNewFilling(event.ingredient)
@@ -145,7 +149,7 @@ private fun updateOrder(
   }
 
 @Composable
-fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
+private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
   val sink = state.eventSink
   Scaffold(
     modifier = modifier,

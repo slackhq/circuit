@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.OrderDetails
-import kotlinx.collections.immutable.ImmutableSet
 
 sealed interface OrderStep : Parcelable {
   val number: Int
@@ -20,7 +19,7 @@ sealed interface OrderStep : Parcelable {
 
   sealed interface UpdateOrder : Event {
     data class Filling(val ingredient: Ingredient) : UpdateOrder
-    data class Toppings(val ingredients: ImmutableSet<Ingredient>) : UpdateOrder
+    data class Toppings(val ingredients: Set<Ingredient>) : UpdateOrder
   }
 
   interface StateProducer<T : State> {

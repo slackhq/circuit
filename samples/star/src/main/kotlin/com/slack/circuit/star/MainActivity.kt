@@ -14,7 +14,6 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModelProvider
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.NavigableCircuitContent
@@ -38,12 +37,8 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
 @ActivityKey(MainActivity::class)
-class MainActivity
-@Inject
-constructor(
-  private val viewModelProviderFactory: ViewModelProvider.Factory,
-  private val circuitConfig: CircuitConfig
-) : AppCompatActivity() {
+class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig) :
+  AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -69,10 +64,6 @@ constructor(
         }
       }
     }
-  }
-
-  override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-    return viewModelProviderFactory
   }
 
   private fun goTo(screen: AndroidScreen) =

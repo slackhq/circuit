@@ -77,9 +77,10 @@ internal object ViewModelBackStackRecordLocalProvider :
     return remember(viewModelStore) {
       val list =
         listOf<ProvidedValue<*>>(
-          LocalViewModelStoreOwner provides object : ViewModelStoreOwner {
-            override val viewModelStore: ViewModelStore = viewModelStore
-          }
+          LocalViewModelStoreOwner provides
+            object : ViewModelStoreOwner {
+              override val viewModelStore: ViewModelStore = viewModelStore
+            }
         )
       @Suppress("ObjectLiteralToLambda")
       object : ProvidedValues {

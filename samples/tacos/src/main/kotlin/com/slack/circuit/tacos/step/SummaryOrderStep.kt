@@ -21,7 +21,7 @@ object SummaryOrderStep : OrderStep {
 }
 
 @Composable
-fun summaryProducer(orderDetails: OrderDetails): SummaryOrderStep.Order {
+internal fun summaryProducer(orderDetails: OrderDetails): SummaryOrderStep.Order {
   return SummaryOrderStep.Order(
     filling = orderDetails.filling,
     toppings = orderDetails.toppings.toImmutableSet(),
@@ -29,6 +29,6 @@ fun summaryProducer(orderDetails: OrderDetails): SummaryOrderStep.Order {
 }
 
 @Composable
-fun SummaryUi(state: SummaryOrderStep.Order, modifier: Modifier = Modifier) {
+internal fun SummaryUi(state: SummaryOrderStep.Order, modifier: Modifier = Modifier) {
 
 }

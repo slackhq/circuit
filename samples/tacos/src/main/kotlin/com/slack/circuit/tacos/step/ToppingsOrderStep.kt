@@ -35,7 +35,7 @@ object ToppingsOrderStep : OrderStep {
 
 private const val MINIMUM_TOPPINGS = 3
 
-class ToppingsProducerImpl(private val repository: IngredientsRepository) : ToppingsProducer {
+internal class ToppingsProducerImpl(private val repository: IngredientsRepository) : ToppingsProducer {
   @Composable
   override fun invoke(
     orderDetails: OrderDetails,
@@ -93,6 +93,6 @@ private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.
 }
 
 @Composable
-fun ToppingsUi(state: ToppingsOrderStep.State, modifier: Modifier = Modifier) {
+internal fun ToppingsUi(state: ToppingsOrderStep.State, modifier: Modifier = Modifier) {
 
 }

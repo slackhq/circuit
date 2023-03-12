@@ -37,7 +37,7 @@ object FillingsOrderStep : OrderStep {
   }
 }
 
-class FillingsProducerImpl(private val repository: IngredientsRepository) : FillingsProducer {
+internal class FillingsProducerImpl(private val repository: IngredientsRepository) : FillingsProducer {
   @Composable
   override fun invoke(
     orderDetails: OrderDetails,
@@ -73,7 +73,7 @@ private fun validateFilling(filling: Ingredient?, eventSink: (OrderStep.Event) -
 }
 
 @Composable
-fun FillingsUi(state: FillingsOrderStep.State, modifier: Modifier = Modifier) {
+internal fun FillingsUi(state: FillingsOrderStep.State, modifier: Modifier = Modifier) {
   when (state) {
     is FillingsOrderStep.State.Loading -> Text("loading...", modifier)
     is FillingsOrderStep.State.AvailableFillings -> FillingsList(state, modifier)

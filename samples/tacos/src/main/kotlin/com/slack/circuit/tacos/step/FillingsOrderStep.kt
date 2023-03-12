@@ -1,12 +1,17 @@
 package com.slack.circuit.tacos.step
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Cents
@@ -75,8 +80,17 @@ private fun validateFilling(filling: Ingredient?, eventSink: (OrderStep.Event) -
 @Composable
 internal fun FillingsUi(state: FillingsOrderStep.State, modifier: Modifier = Modifier) {
   when (state) {
-    is FillingsOrderStep.State.Loading -> Text("loading...", modifier)
+    is FillingsOrderStep.State.Loading -> Loading(modifier)
     is FillingsOrderStep.State.AvailableFillings -> FillingsList(state, modifier)
+  }
+}
+
+@Composable
+private fun Loading(modifier: Modifier = Modifier) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    CircularProgressIndicator(
+      color = MaterialTheme.colorScheme.onSurface
+    )
   }
 }
 
@@ -112,9 +126,11 @@ private fun Filling(
           Text(name)
           DietBadge(diet)
         }
-        AdditionalCharge(charge)
-        Spacer(charge, calories)
-        Calories(calories)
+        Row {
+          AdditionalCharge(charge)
+          Spacer(charge, calories)
+          Calories(calories)
+        }
       }
     }
   }

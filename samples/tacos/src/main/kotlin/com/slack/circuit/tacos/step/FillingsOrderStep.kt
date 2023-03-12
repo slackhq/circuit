@@ -129,7 +129,7 @@ private fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
 @Composable
 private fun AdditionalCharge(charge: Cents, modifier: Modifier = Modifier) {
   if (charge <= 0) return
-  val dollarAmount = BigDecimal(charge) / BigDecimal(100)
+  val dollarAmount = BigDecimal(charge).movePointLeft(2)
   Text("$$dollarAmount", modifier)
 }
 

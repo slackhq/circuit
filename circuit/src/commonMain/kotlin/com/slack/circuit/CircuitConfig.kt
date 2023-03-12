@@ -66,7 +66,7 @@ public class CircuitConfig private constructor(builder: Builder) {
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
-    context: CircuitContext = CircuitContext(null, this)
+    context: CircuitContext = CircuitContext(null).also { it.config = this }
   ): Presenter<*>? {
     return nextPresenter(null, screen, navigator, context)
   }
@@ -88,7 +88,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null, this)): Ui<*>? {
+  public fun ui(screen: Screen, context: CircuitContext = CircuitContext(null).also { it.config = this }): Ui<*>? {
     return nextUi(null, screen, context)
   }
 
@@ -168,4 +168,11 @@ private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier)
       modifier.background(Color.Red),
       style = TextStyle(color = Color.Yellow)
     )
+  }
+
+/** The [CircuitConfig] used in this context. */
+public var CircuitContext.config: CircuitConfig
+  get() = checkNotNull(tag())
+  set(value) {
+    putTag(value)
   }

@@ -18,8 +18,6 @@ import kotlin.reflect.KClass
 public class CircuitContext
 internal constructor(
   public val parent: CircuitContext?,
-  /** The [CircuitConfig] used in this context. */
-  public var config: CircuitConfig
 ) {
   // Don't expose the raw map.
   private val tags = mutableMapOf<KClass<*>, Any>()

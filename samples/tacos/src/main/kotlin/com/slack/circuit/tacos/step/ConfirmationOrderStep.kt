@@ -28,9 +28,9 @@ import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 @Parcelize
-object SummaryOrderStep : OrderStep {
+object ConfirmationOrderStep : OrderStep {
   @IgnoredOnParcel override val number = 2
-  @IgnoredOnParcel override val headerText = "Order Summary"
+  @IgnoredOnParcel override val headerText = "Confirm Order"
 
   data class Order(
     val calories: Int,
@@ -43,9 +43,9 @@ object SummaryOrderStep : OrderStep {
 }
 
 @Composable
-internal fun summaryProducer(orderDetails: OrderDetails): SummaryOrderStep.Order {
+internal fun confirmationProducer(orderDetails: OrderDetails): ConfirmationOrderStep.Order {
   val toppings = orderDetails.toppings.sortedBy { it.name }.toImmutableList()
-  return SummaryOrderStep.Order(
+  return ConfirmationOrderStep.Order(
     calories = calculateCalories(orderDetails.filling, orderDetails.toppings),
     baseCost = orderDetails.baseCost,
     ingredientsCost = orderDetails.ingredientsCost,
@@ -73,7 +73,7 @@ private fun determineDiet(filling: Ingredient, toppings: Set<Ingredient>): Diet 
 }
 
 @Composable
-internal fun SummaryUi(state: SummaryOrderStep.Order, modifier: Modifier = Modifier) {
+internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifier = Modifier) {
   with(state) {
     val summary = buildSummary(filling)
     val extra = buildExtras(diet, calories)

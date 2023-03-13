@@ -15,7 +15,7 @@ import com.slack.circuit.rememberCircuitNavigator
 import com.slack.circuit.tacos.repository.IngredientsRepositoryImpl
 import com.slack.circuit.tacos.step.FillingsProducerImpl
 import com.slack.circuit.tacos.step.ToppingsProducerImpl
-import com.slack.circuit.tacos.step.summaryProducer
+import com.slack.circuit.tacos.step.confirmationProducer
 
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +44,6 @@ private fun buildPresenterFactory(): Presenter.Factory {
   return OrderTacosPresenterFactory(
     fillingsProducer = fillingsProducer,
     toppingsProducer = toppingsProducer,
-    summaryProducer = { details, _ -> summaryProducer(details) }
+    confirmationProducer = { details, _ -> confirmationProducer(details) }
   )
 }

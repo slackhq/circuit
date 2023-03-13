@@ -45,9 +45,9 @@ import com.slack.circuit.tacos.step.FillingsOrderStep
 import com.slack.circuit.tacos.step.FillingsProducer
 import com.slack.circuit.tacos.step.FillingsUi
 import com.slack.circuit.tacos.step.OrderStep
-import com.slack.circuit.tacos.step.SummaryOrderStep
-import com.slack.circuit.tacos.step.SummaryProducer
-import com.slack.circuit.tacos.step.SummaryUi
+import com.slack.circuit.tacos.step.ConfirmationOrderStep
+import com.slack.circuit.tacos.step.ConfirmationProducer
+import com.slack.circuit.tacos.step.ConfirmationUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
@@ -91,13 +91,13 @@ data class OrderDetails(
 private val orderSteps = persistentListOf(
   FillingsOrderStep,
   ToppingsOrderStep,
-  SummaryOrderStep,
+  ConfirmationOrderStep,
 )
 
 internal class OrderTacosPresenter(
   private val fillingsProducer: FillingsProducer,
   private val toppingsProducer: ToppingsProducer,
-  private val summaryProducer: SummaryProducer,
+  private val confirmationProducer: ConfirmationProducer,
 ) : Presenter<OrderTacosScreen.State> {
   @Composable
   override fun present(): OrderTacosScreen.State = presentInternal()
@@ -138,7 +138,7 @@ internal class OrderTacosPresenter(
     when (value) {
       is FillingsOrderStep -> fillingsProducer(orderDetails, eventSink)
       is ToppingsOrderStep -> toppingsProducer(orderDetails, eventSink)
-      is SummaryOrderStep -> summaryProducer(orderDetails, eventSink)
+      is ConfirmationOrderStep -> confirmationProducer(orderDetails, eventSink)
     }
 }
 
@@ -208,7 +208,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
       )
     },
     bottomBar = {
-      OrderTotal(state.orderCost, state.orderState is SummaryOrderStep.Order) {
+      OrderTotal(state.orderCost, state.orderState is ConfirmationOrderStep.Order) {
         state.eventSink(OrderTacosScreen.Event.ProcessOrder)
       }
     }
@@ -217,7 +217,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
     when (state.orderState) {
       is FillingsOrderStep.State -> FillingsUi(state.orderState, stepModifier)
       is ToppingsOrderStep.State -> ToppingsUi(state.orderState, stepModifier)
-      is SummaryOrderStep.Order -> SummaryUi(state.orderState, stepModifier)
+      is ConfirmationOrderStep.Order -> ConfirmationUi(state.orderState, stepModifier)
     }
   }
 }
@@ -258,21 +258,21 @@ private fun NavigationButton(
 @Composable
 private fun OrderTotal(
   orderCost: BigDecimal,
-  onSummary: Boolean,
+  onConfirmationStep: Boolean,
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
 ) {
-  val color = if (onSummary) Color.Red else Color.Blue
+  val color = if (onConfirmationStep) Color.Red else Color.Blue
   var boxModifier = modifier
     .fillMaxWidth()
     .defaultMinSize(minHeight = 30.dp)
     .padding(horizontal = 5.dp)
     .clip(RoundedCornerShape(5.dp))
     .background(color)
-  if (onSummary) boxModifier = boxModifier.clickable(onClick = onClick)
+  if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
   Box(modifier = boxModifier) {
-    if (onSummary) {
+    if (onConfirmationStep) {
       Text(
         text = "Place Order",
         modifier = Modifier
@@ -313,7 +313,7 @@ private fun OrderTotal(
 internal class OrderTacosPresenterFactory(
   private val fillingsProducer: FillingsProducer,
   private val toppingsProducer: ToppingsProducer,
-  private val summaryProducer: SummaryProducer,
+  private val confirmationProducer: ConfirmationProducer,
 ) : Presenter.Factory {
   override fun create(
     screen: Screen,
@@ -322,7 +322,7 @@ internal class OrderTacosPresenterFactory(
   ): Presenter<*>? =
     when (screen) {
       is OrderTacosScreen ->
-        OrderTacosPresenter(fillingsProducer, toppingsProducer, summaryProducer)
+        OrderTacosPresenter(fillingsProducer, toppingsProducer, confirmationProducer)
       else -> null
     }
 }

@@ -33,4 +33,5 @@ fun interface FillingsProducer : OrderStep.StateProducer<OrderStep.State>
 
 fun interface ToppingsProducer : OrderStep.StateProducer<OrderStep.State>
 
-fun interface SummaryProducer : OrderStep.StateProducer<OrderStep.State>
+fun interface ConfirmationProducer : OrderStep.StateProducer<OrderStep.State>
+

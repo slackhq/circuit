@@ -22,7 +22,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      summaryProducer = { _, _ -> TODO() }
+      confirmationProducer = { _, _ -> TODO() }
     )
 
     presenter.test {
@@ -40,7 +40,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      summaryProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> TODO() },
     )
 
     presenter.test {
@@ -57,7 +57,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      summaryProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> TODO() },
     )
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -76,7 +76,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      summaryProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> TODO() },
     )
 
     presenter.test {
@@ -99,7 +99,7 @@ class OrderTacosPresenterTest {
         FillingsOrderStep.State.Loading
       },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      summaryProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> TODO() },
     )
 
     presenter.test {
@@ -123,7 +123,7 @@ class OrderTacosPresenterTest {
         FillingsOrderStep.State.Loading
       },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      summaryProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> TODO() },
     )
 
     presenter.test {
@@ -150,7 +150,7 @@ class OrderTacosPresenterTest {
         sink = eventSink
         ToppingsOrderStep.State.Loading
       },
-      summaryProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> TODO() },
     )
 
     moleculeFlow(RecompositionClock.Immediate) {

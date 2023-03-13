@@ -49,8 +49,8 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
-private const val CIRCUIT_RUNTIME_UI_PACKAGE = "com.slack.circuit.ui"
-private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "com.slack.circuit.presenter"
+private const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
+private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
 private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
 private val CIRCUIT_INJECT_ANNOTATION =
   ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
@@ -238,7 +238,7 @@ private class CircuitSymbolProcessor(
             FactoryType.PRESENTER ->
               CodeBlock.of(
                 "%M·{·%M(%L)·}",
-                MemberName("com.slack.circuit", "presenterOf"),
+                MemberName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "presenterOf"),
                 MemberName(packageName, name),
                 assistedParams
               )
@@ -301,7 +301,7 @@ private class CircuitSymbolProcessor(
                 }
               CodeBlock.of(
                 "%M<%T>·{·%L,·modifier·->·%M(%L%L%L)·}",
-                MemberName("com.slack.circuit", "ui"),
+                MemberName(CIRCUIT_RUNTIME_UI_PACKAGE, "ui"),
                 stateType,
                 stateArg,
                 MemberName(packageName, name),
@@ -345,7 +345,14 @@ private class CircuitSymbolProcessor(
                 else -> null
               }
             }
-            .first()
+            .firstOrNull()
+            ?: run {
+              logger.error(
+                "Factory must be for a UI or Presenter class, but was ${targetClass.qualifiedName?.asString()}. Supertypes: ${targetClass.getAllSuperTypes().toList()}",
+                targetClass
+              )
+              return null
+            }
         val assistedParams =
           if (useProvider) {
             // Nothing to do here, we'll just use the provider directly.

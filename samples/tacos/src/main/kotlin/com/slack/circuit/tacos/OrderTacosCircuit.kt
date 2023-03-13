@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -241,11 +240,16 @@ private fun NavigationButton(
 ) {
   if (!visible) return
 
+  val tintColour = when (enabled) {
+    true -> Color.Black
+    false -> Color.LightGray
+  }
+
   IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
     Image(
       modifier = modifier,
       painter = rememberVectorPainter(image = direction.icon),
-      colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+      colorFilter = ColorFilter.tint(tintColour),
       contentDescription = direction.description,
     )
   }

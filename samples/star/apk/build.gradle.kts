@@ -1,6 +1,9 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-plugins { id("com.android.application") }
+plugins {
+  id("com.android.application")
+  kotlin("android")
+}
 
 android {
   namespace = "com.slack.circuit.sample.star.apk"

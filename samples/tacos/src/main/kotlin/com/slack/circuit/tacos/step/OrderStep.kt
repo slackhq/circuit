@@ -9,9 +9,9 @@ sealed interface OrderStep : Parcelable {
   val number: Int
   val headerText: String
 
-  sealed interface State // TODO CircuitUiState?
+  sealed interface State
 
-  sealed interface Event // TODO CircuitUiEvent?
+  sealed interface Event
   sealed interface Validation : Event {
     val enabled: Boolean
     object Invalid : Validation { override val enabled = false }

@@ -131,7 +131,7 @@ private fun Filling(
         }
         Row {
           AdditionalCharge(charge)
-          Spacer(charge, calories)
+          ExtrasDivider(charge, calories)
           Calories(calories)
         }
       }

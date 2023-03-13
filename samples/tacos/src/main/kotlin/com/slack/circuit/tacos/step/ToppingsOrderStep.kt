@@ -164,7 +164,7 @@ private fun Topping(
         }
         Row {
           AdditionalCharge(charge)
-          Spacer(charge, calories)
+          ExtrasDivider(charge, calories)
           Calories(calories)
         }
       }

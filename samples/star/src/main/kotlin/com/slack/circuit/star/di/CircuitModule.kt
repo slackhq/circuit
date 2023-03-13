@@ -3,7 +3,7 @@
 package com.slack.circuit.star.di
 
 import com.slack.circuit.CircuitConfig
-import com.slack.circuit.Presenter
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module

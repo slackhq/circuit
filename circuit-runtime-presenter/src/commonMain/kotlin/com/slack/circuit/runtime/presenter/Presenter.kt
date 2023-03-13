@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit
+package com.slack.circuit.runtime.presenter
 
 import androidx.compose.runtime.Composable
 import com.slack.circuit.runtime.CircuitContext
@@ -96,7 +96,7 @@ public interface Presenter<UiState : CircuitUiState> {
   @Composable public fun present(): UiState
 
   /**
-   * A factory that produces [presenters][Presenter] for a given [Screen]. [CircuitConfig] instances
+   * A factory that produces [presenters][Presenter] for a given [Screen]. `CircuitConfig` instances
    * use the created presenter and connects it to a given `Ui` for the same [Screen].
    *
    * Factories should be simple aggregate multiple presenters for a canonical "whole screen". That

@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.Presenter
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator

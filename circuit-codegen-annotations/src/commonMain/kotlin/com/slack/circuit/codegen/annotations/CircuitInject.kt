@@ -4,7 +4,7 @@ package com.slack.circuit.codegen.annotations
 
 import androidx.compose.runtime.Composable
 import com.slack.circuit.CircuitConfig
-import com.slack.circuit.Presenter
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator

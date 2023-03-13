@@ -7,8 +7,8 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
-import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.presenter.Presenter
 import kotlin.time.Duration
 
 /**

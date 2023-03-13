@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitCompositionLocals
 import com.slack.circuit.CircuitConfig
 import com.slack.circuit.CircuitContent
-import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.CounterState
-import com.slack.circuit.runtime.ui.ui
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {

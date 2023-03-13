@@ -33,7 +33,6 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.Ui
-import com.slack.circuit.tacos.model.Cents
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.step.FillingsOrderStep
 import com.slack.circuit.tacos.step.FillingsProducer
@@ -55,7 +54,7 @@ import java.math.BigDecimal
 @Parcelize object OrderTacosScreen : Screen {
   data class State(
     val headerText: String,
-    val orderCost: Cents,
+    val orderCost: BigDecimal,
     val orderState: OrderStep.State,
     val isPreviousVisible: Boolean,
     val isNextEnabled: Boolean,
@@ -75,8 +74,8 @@ import java.math.BigDecimal
 data class OrderDetails(
   val filling: Ingredient? = null,
   val toppings: Set<Ingredient> = persistentSetOf(),
-  val baseCost: Cents = 999, // Default taco price
-  val ingredientsCost: Cents = 0
+  val baseCost: BigDecimal = BigDecimal("9.99"), // Default taco price
+  val ingredientsCost: BigDecimal = BigDecimal.ZERO
 ): Parcelable
 
 private val orderSteps = persistentListOf(
@@ -168,8 +167,8 @@ private fun updateOrder(
 private fun calculateIngredientsCost(
   filling: Ingredient?,
   toppings: Set<Ingredient>
-): Cents {
-  var cost = filling?.charge ?: 0
+): BigDecimal {
+  var cost = filling?.charge ?: BigDecimal.ZERO
   toppings.forEach { topping -> cost += topping.charge }
   return cost
 }
@@ -239,12 +238,11 @@ private fun NavigationButton(
 
 @Composable
 private fun OrderTotal(
-  orderCost: Cents,
+  orderCost: BigDecimal,
   modifier: Modifier = Modifier,
 ) {
-  val dollarAmount = BigDecimal(orderCost).movePointLeft(2)
   Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-    Text("$$dollarAmount")
+    Text("$$orderCost")
   }
 }
 

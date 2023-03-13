@@ -3,7 +3,6 @@ package com.slack.circuit.tacos.step
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.slack.circuit.tacos.model.Cents
 import com.slack.circuit.tacos.model.Diet
 import java.math.BigDecimal
 
@@ -14,10 +13,9 @@ internal fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun AdditionalCharge(charge: Cents, modifier: Modifier = Modifier) {
-  if (charge <= 0) return
-  val dollarAmount = BigDecimal(charge).movePointLeft(2)
-  Text("$$dollarAmount", modifier)
+internal fun AdditionalCharge(charge: BigDecimal, modifier: Modifier = Modifier) {
+  if (charge <= BigDecimal.ZERO) return
+  Text("$$charge", modifier)
 }
 
 @Composable
@@ -27,7 +25,7 @@ internal fun Calories(calories: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun Spacer(charge: Cents, calories: Int, modifier: Modifier = Modifier) {
-  if (charge <= 0 || calories <= 0) return
+internal fun Spacer(charge: BigDecimal, calories: Int, modifier: Modifier = Modifier) {
+  if (charge <= BigDecimal.ZERO || calories <= 0) return
   Text(" | ", modifier)
 }

@@ -3,8 +3,7 @@ package com.slack.circuit.tacos.model
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
-
-typealias Cents = Int
+import java.math.BigDecimal
 
 @Parcelize
 @Immutable
@@ -12,7 +11,7 @@ data class Ingredient(
   val name: String,
   val calories: Int = 0,
   val diet: Diet = Diet.NONE,
-  val charge: Cents = 0
+  val charge: BigDecimal = BigDecimal.ZERO
 ) : Parcelable
 
 enum class Diet { VEGETARIAN, VEGAN, NONE }

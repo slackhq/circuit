@@ -5,6 +5,7 @@ import com.slack.circuit.tacos.model.Ingredient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
 import kotlin.random.Random
 
 interface IngredientsRepository {
@@ -33,12 +34,12 @@ private val fillings = persistentListOf(
   Ingredient(
     name = "Steak",
     calories = 150,
-    charge = 50,
+    charge = BigDecimal("0.75"),
   ),
   Ingredient(
     name = "Barbacoa",
     calories = 170,
-    charge = 50,
+    charge = BigDecimal("0.50"),
   ),
   Ingredient(
     name = "Carnitas",
@@ -60,13 +61,13 @@ private val toppings = persistentListOf(
     name = "Guacamole",
     calories = 230,
     diet = Diet.VEGAN,
-    charge = 295,
+    charge = BigDecimal("2.95"),
   ),
   Ingredient(
     name = "Queso Blanco",
     calories = 120,
     diet = Diet.VEGETARIAN,
-    charge = 175,
+    charge = BigDecimal("1.75"),
   ),
   Ingredient(
     name = "Fajita Veggies",

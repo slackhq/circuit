@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
@@ -149,13 +151,16 @@ private fun Topping(
   modifier: Modifier = Modifier,
   onSelect: (Boolean) -> Unit
 ) {
-  Row(modifier = modifier.clickable { onSelect(!isSelected) }) {
+  Row(
+    modifier = modifier.clickable { onSelect(!isSelected) },
+    verticalAlignment = Alignment.CenterVertically
+  ) {
     Checkbox(checked = isSelected, modifier = modifier, onCheckedChange = onSelect)
     Column {
       with(ingredient) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
           Text(name)
-          DietBadge(diet)
+          DietBadge(diet, Modifier.padding(5.dp))
         }
         Row {
           AdditionalCharge(charge)

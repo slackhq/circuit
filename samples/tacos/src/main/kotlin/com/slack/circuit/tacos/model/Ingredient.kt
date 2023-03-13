@@ -14,4 +14,4 @@ data class Ingredient(
   val charge: BigDecimal = BigDecimal.ZERO
 ) : Parcelable
 
-enum class Diet { VEGETARIAN, VEGAN, NONE }
+enum class Diet(val code: String) { NONE(""), VEGETARIAN("vt"), VEGAN("vg") }

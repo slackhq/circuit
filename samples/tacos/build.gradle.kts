@@ -57,6 +57,7 @@ dependencies {
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.androidx.compose.material.material3)
+  debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.compose.ui)
   implementation(libs.dagger)
   implementation(libs.kotlinx.immutable)

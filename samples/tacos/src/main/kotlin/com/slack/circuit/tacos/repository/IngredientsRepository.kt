@@ -4,9 +4,7 @@ import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.delay
 import java.math.BigDecimal
-import kotlin.random.Random
 
 interface IngredientsRepository {
   suspend fun getFillings(): ImmutableList<Ingredient>
@@ -15,12 +13,10 @@ interface IngredientsRepository {
 
 object IngredientsRepositoryImpl : IngredientsRepository {
   override suspend fun getFillings(): ImmutableList<Ingredient> {
-    delay(Random.nextLong(0, 5000))
     return fillings
   }
 
   override suspend fun getToppings(): ImmutableList<Ingredient> {
-    delay(Random.nextLong(0, 5000))
     return toppings
   }
 }
@@ -46,13 +42,14 @@ private val fillings = persistentListOf(
     calories = 170,
   ),
   Ingredient(
-    name = "Tofu based",
+    name = "Tofu",
     calories = 150,
     diet = Diet.VEGAN,
   ),
   Ingredient(
     name = "Veggies",
     diet = Diet.VEGETARIAN,
+    calories = 130,
   ),
 )
 

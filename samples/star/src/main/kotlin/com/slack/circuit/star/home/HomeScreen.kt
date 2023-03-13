@@ -15,10 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.slack.circuit.CircuitContent
-import com.slack.circuit.NavEvent
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.onNavEvent
+import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.foundation.NavEvent
+import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState

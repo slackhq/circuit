@@ -10,7 +10,7 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(projects.circuit)
+        api(projects.circuitFoundation)
         api(libs.coroutines)
       }
     }

@@ -13,7 +13,7 @@ kotlin {
   // endregion
 
   sourceSets {
-    commonMain { dependencies { api(projects.circuit) } }
+    commonMain { dependencies { api(projects.circuitFoundation) } }
     val commonJvm =
       maybeCreate("commonJvm").apply {
         dependencies {

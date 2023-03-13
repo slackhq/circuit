@@ -48,13 +48,12 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Provider
 
-private const val CIRCUIT_BASE_PACKAGE = "com.slack.circuit"
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
 private const val CIRCUIT_RUNTIME_UI_PACKAGE = "com.slack.circuit.ui"
 private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "com.slack.circuit.presenter"
 private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
 private val CIRCUIT_INJECT_ANNOTATION =
-  ClassName("$CIRCUIT_BASE_PACKAGE.codegen.annotations", "CircuitInject")
+  ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
 private val CIRCUIT_PRESENTER = ClassName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "Presenter")
 private val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
 private val CIRCUIT_UI = ClassName(CIRCUIT_RUNTIME_UI_PACKAGE, "Ui")

@@ -75,7 +75,8 @@ import java.math.BigDecimal
 data class OrderDetails(
   val filling: Ingredient? = null,
   val toppings: Set<Ingredient> = persistentSetOf(),
-  val cost: Cents = 999 // Default taco price
+  val baseCost: Cents = 999, // Default taco price
+  val ingredientsCost: Cents = 0
 ): Parcelable
 
 private val orderSteps = persistentListOf(
@@ -104,18 +105,13 @@ internal class OrderTacosPresenter(
     val stepState = currentStep.produceState(orderDetails) { event ->
       when (event) {
         is OrderStep.Validation -> isNextEnabled = event.enabled
-        is OrderStep.UpdateOrder ->
-          orderDetails = updateOrder(
-            event = event,
-            onNewFilling = { orderDetails.copy(filling = it) },
-            onNewToppings = { orderDetails.copy(toppings = it.toImmutableSet()) }
-          )
+        is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
       }
     }
 
     return OrderTacosScreen.State(
       headerText = currentStep.value.headerText,
-      orderCost = orderDetails.cost,
+      orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
       orderState = stepState,
       isPreviousVisible = currentStep.value.number > 0,
       isNextEnabled = isNextEnabled,
@@ -148,13 +144,35 @@ private fun processNavigation(
 
 private fun updateOrder(
   event: OrderStep.UpdateOrder,
-  onNewFilling: (Ingredient) -> OrderDetails,
-  onNewToppings: (Set<Ingredient>) -> OrderDetails,
-): OrderDetails =
-  when (event) {
-    is OrderStep.UpdateOrder.Filling -> onNewFilling(event.ingredient)
-    is OrderStep.UpdateOrder.Toppings -> onNewToppings(event.ingredients)
+  currentOrder: OrderDetails,
+): OrderDetails {
+  val newFilling = when (event) {
+    is OrderStep.UpdateOrder.Filling -> event.ingredient
+    else -> currentOrder.filling
   }
+  val newToppings = when (event) {
+    is OrderStep.UpdateOrder.Toppings -> event.ingredients
+    else -> currentOrder.toppings
+  }
+
+  val newIngredientsCost = calculateIngredientsCost(newFilling, newToppings)
+
+  return OrderDetails(
+    baseCost = currentOrder.baseCost,
+    ingredientsCost = newIngredientsCost,
+    filling = newFilling,
+    toppings = newToppings.toImmutableSet()
+  )
+}
+
+private fun calculateIngredientsCost(
+  filling: Ingredient?,
+  toppings: Set<Ingredient>
+): Cents {
+  var cost = filling?.charge ?: 0
+  toppings.forEach { topping -> cost += topping.charge }
+  return cost
+}
 
 @Composable
 private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {

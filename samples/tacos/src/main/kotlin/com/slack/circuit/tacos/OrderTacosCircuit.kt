@@ -2,9 +2,13 @@ package com.slack.circuit.tacos
 
 import android.os.Parcelable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -23,9 +27,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitContext
 import com.slack.circuit.CircuitUiEvent
 import com.slack.circuit.CircuitUiState
@@ -64,15 +72,18 @@ import java.math.BigDecimal
 
   sealed interface Event : CircuitUiEvent {
     val value: Int
+      get() = 0
+
     object Previous : Event { override val value: Int = -1 }
     object Next : Event { override val value: Int = 1 }
+    object ProcessOrder : Event
   }
 }
 
 @Parcelize
 @Immutable
 data class OrderDetails(
-  val filling: Ingredient? = null,
+  val filling: Ingredient = Ingredient(""),
   val toppings: Set<Ingredient> = persistentSetOf(),
   val baseCost: BigDecimal = BigDecimal("9.99"), // Default taco price
   val ingredientsCost: BigDecimal = BigDecimal.ZERO
@@ -177,7 +188,7 @@ private fun calculateIngredientsCost(
 private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
   val sink = state.eventSink
   Scaffold(
-    modifier = modifier,
+    modifier = modifier.padding(5.dp),
     topBar = {
       CenterAlignedTopAppBar(
         title = { Text(state.headerText) },
@@ -197,7 +208,11 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
         }
       )
     },
-    bottomBar = { OrderTotal(state.orderCost) }
+    bottomBar = {
+      OrderTotal(state.orderCost, state.orderState is SummaryOrderStep.Order) {
+        state.eventSink(OrderTacosScreen.Event.ProcessOrder)
+      }
+    }
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
     when (state.orderState) {
@@ -239,10 +254,55 @@ private fun NavigationButton(
 @Composable
 private fun OrderTotal(
   orderCost: BigDecimal,
+  onSummary: Boolean,
   modifier: Modifier = Modifier,
+  onClick: () -> Unit,
 ) {
-  Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-    Text("$$orderCost")
+  val color = if (onSummary) Color.Red else Color.Blue
+  var boxModifier = modifier
+    .fillMaxWidth()
+    .defaultMinSize(minHeight = 30.dp)
+    .padding(horizontal = 5.dp)
+    .clip(RoundedCornerShape(5.dp))
+    .background(color)
+  if (onSummary) boxModifier = boxModifier.clickable(onClick = onClick)
+
+  Box(modifier = boxModifier) {
+    if (onSummary) {
+      Text(
+        text = "Place Order",
+        modifier = Modifier
+          .align(Alignment.CenterStart)
+          .padding(start = 5.dp),
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+      )
+      Text(
+        text = "$$orderCost",
+        modifier = Modifier
+          .align(Alignment.CenterEnd)
+          .padding(end = 5.dp),
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+      )
+    } else {
+      Text(
+        text = "Order Total",
+        modifier = Modifier
+          .align(Alignment.CenterStart)
+          .padding(start = 5.dp),
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+      )
+      Text(
+        text = "$$orderCost",
+        modifier = Modifier
+          .align(Alignment.CenterEnd)
+          .padding(end = 5.dp),
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+      )
+    }
   }
 }
 

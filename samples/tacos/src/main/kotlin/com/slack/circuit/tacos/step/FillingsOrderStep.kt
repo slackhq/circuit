@@ -1,5 +1,6 @@
 package com.slack.circuit.tacos.step
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -115,7 +116,7 @@ private fun Filling(
   modifier: Modifier = Modifier,
   onSelect: () -> Unit
 ) {
-  Row(modifier = modifier) {
+  Row(modifier = modifier.clickable(onClick = onSelect)) {
     RadioButton(selected = isSelected, modifier = modifier, onClick = onSelect)
     Column {
       with(ingredient) {

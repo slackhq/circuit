@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit
 
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.SaveableBackStack
@@ -16,19 +15,34 @@ import com.slack.circuit.backstack.SaveableBackStack
  *   back handler. Defaults to true.
  * @see NavigableCircuitContent
  */
+@Deprecated(
+  message = "Back handling is enabled by default in NavigableCircuitContent",
+  replaceWith = ReplaceWith("rememberCircuitNavigator(backstack)")
+)
 @Composable
+@Suppress("UNUSED_PARAMETER")
 public fun rememberCircuitNavigator(
   backstack: SaveableBackStack,
   enableBackHandler: Boolean = true,
 ): Navigator {
-  val navigator =
-    rememberCircuitNavigator(
-      backstack = backstack,
-      onRootPop = backDispatcherRootPop(),
-    )
-  BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
+  return rememberCircuitNavigator(backstack)
+}
 
-  return navigator
+/**
+ * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent]. Delegates
+ * onRootPop to the [LocalOnBackPressedDispatcherOwner].
+ *
+ * @param backstack The backing [SaveableBackStack] to navigate.
+ * @see NavigableCircuitContent
+ */
+@Composable
+public fun rememberCircuitNavigator(
+  backstack: SaveableBackStack,
+): Navigator {
+  return rememberCircuitNavigator(
+    backstack = backstack,
+    onRootPop = backDispatcherRootPop(),
+  )
 }
 
 @Composable

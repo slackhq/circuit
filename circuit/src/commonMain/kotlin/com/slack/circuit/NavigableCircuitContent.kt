@@ -62,7 +62,7 @@ public fun NavigableCircuitContent(
       (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider() }
+      CompositionLocalProvider(*providedLocals) { BackHandler(navigator, backstack, provider) }
     }
   }
 }

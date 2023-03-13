@@ -348,7 +348,9 @@ private class CircuitSymbolProcessor(
             .firstOrNull()
             ?: run {
               logger.error(
-                "Factory must be for a UI or Presenter class, but was ${targetClass.qualifiedName?.asString()}. Supertypes: ${targetClass.getAllSuperTypes().toList()}",
+                "Factory must be for a UI or Presenter class, but was " +
+                  "${targetClass.qualifiedName?.asString()}. " +
+                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}",
                 targetClass
               )
               return null

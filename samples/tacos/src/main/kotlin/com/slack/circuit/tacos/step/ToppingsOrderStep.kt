@@ -128,6 +128,7 @@ private fun ToppingsList(
 ) {
   val sink = state.eventSink
   Column(modifier = modifier) {
+    Instructions(instructions = "Pick 3 or more toppings:")
     state.list.forEach { ingredient ->
       Topping(
         ingredient = ingredient,

@@ -101,6 +101,7 @@ private fun FillingsList(
 ) {
   val sink = state.eventSink
   Column(modifier = modifier) {
+    Instructions(instructions = "Pick a filling:")
     state.list.forEach { ingredient ->
       Filling(
         ingredient = ingredient,

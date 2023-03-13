@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,15 @@ import com.slack.circuit.tacos.model.Diet
 import java.math.BigDecimal
 
 private val fontSize = 8.sp
+
+@Composable
+internal fun Instructions(instructions: String, modifier: Modifier = Modifier) {
+  Text(
+    text = instructions,
+    modifier = modifier.padding(start = 15.dp, bottom = 10.dp),
+    fontStyle = FontStyle.Italic
+  )
+}
 
 @Composable
 internal fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {

@@ -21,6 +21,8 @@ kotlin {
         api(libs.coroutines)
         api(projects.backstack)
         api(projects.circuitRuntime)
+        api(projects.circuitRuntimePresenter)
+        api(projects.circuitRuntimeUi)
         api(libs.compose.ui)
       }
     }

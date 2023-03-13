@@ -12,6 +12,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.ui.Ui
 
 @Composable
 public fun CircuitContent(

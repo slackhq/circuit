@@ -12,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.ui.Ui
 
 /**
  * [CircuitConfig] adapts [presenter factories][Presenter.Factory] to their corresponding renderable

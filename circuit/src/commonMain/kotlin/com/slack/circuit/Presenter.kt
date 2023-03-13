@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 public interface Presenter<UiState : CircuitUiState> {
   /**
    * The primary [Composable] entry point to present a [UiState]. In production, a [Navigator] is
-   * used to automatically connect this with a corresponding [Ui] to render the state returned by
+   * used to automatically connect this with a corresponding `Ui` to render the state returned by
    * this function.
    *
    * When handling events, embed a `eventSink: (Event) -> Unit` property in the state as needed.
@@ -97,7 +97,7 @@ public interface Presenter<UiState : CircuitUiState> {
 
   /**
    * A factory that produces [presenters][Presenter] for a given [Screen]. [CircuitConfig] instances
-   * use the created presenter and connects it to a given [Ui] for the same [Screen].
+   * use the created presenter and connects it to a given `Ui` for the same [Screen].
    *
    * Factories should be simple aggregate multiple presenters for a canonical "whole screen". That
    * is to say, they should be hand-written and aggregate all the presenters responsible for the UI

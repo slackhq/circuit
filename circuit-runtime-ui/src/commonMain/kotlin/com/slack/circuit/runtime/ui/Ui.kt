@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit
+package com.slack.circuit.runtime.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,7 +34,7 @@ import com.slack.circuit.runtime.Screen
  * don't use dependency injection at all however, unless maybe getting assisted injections of things
  * like image loaders.
  *
- * If a given [Presenter] only ever emits the same state, you can define a single value-less
+ * If a given `Presenter` only ever emits the same state, you can define a single value-less
  * `object` type for the state.
  *
  * Note that due to a bug in studio, we can't make this a `fun interface` _yet_. Instead, use [ui].

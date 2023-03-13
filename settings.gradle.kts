@@ -157,6 +157,8 @@ include(
   ":circuit-overlay",
   ":circuit-retained",
   ":circuit-runtime",
+  ":circuit-runtime-presenter",
+  ":circuit-runtime-ui",
   ":circuit-test",
   ":samples:counter",
   ":samples:counter:android",

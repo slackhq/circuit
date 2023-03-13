@@ -31,7 +31,7 @@ class FillingsProducerImplTest {
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run {
-          assertThat(selected).isNull()
+          assertThat(selected).isEqualTo(Ingredient(""))
           assertThat(list).isEqualTo(fillings)
         }
       parent
@@ -62,7 +62,7 @@ class FillingsProducerImplTest {
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .also { parent.assertValidation(OrderStep.Validation.Invalid) }
         .run {
-          assertThat(selected).isNull()
+          assertThat(selected).isEqualTo(Ingredient(""))
           eventSink(FillingsOrderStep.Event.SelectFilling(expectedFilling))
         }
 

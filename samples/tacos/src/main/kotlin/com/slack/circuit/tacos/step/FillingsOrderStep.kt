@@ -70,8 +70,8 @@ internal class FillingsProducerImpl(private val repository: IngredientsRepositor
 }
 
 private fun validateFilling(filling: Ingredient?, eventSink: (OrderStep.Event) -> Unit) {
-  val validation = when(filling) {
-    null -> OrderStep.Validation.Invalid
+  val validation = when (filling) {
+    Ingredient("") -> OrderStep.Validation.Invalid
     else -> OrderStep.Validation.Valid
   }
   eventSink(validation)

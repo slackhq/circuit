@@ -13,7 +13,7 @@ internal inline fun <reified T : Any> OrderStep.State.asInstanceOf(): T =
   (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")
 
 internal class FakeOrderStepParent(
-  filling: Ingredient? = null,
+  filling: Ingredient = Ingredient(""),
   toppings: ImmutableSet<Ingredient> = persistentSetOf(),
 ) {
   private val validations = ArrayDeque<OrderStep.Validation>()

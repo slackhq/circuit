@@ -6,28 +6,29 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class HomeNavPresenterTest {
+class HomePresenterTest {
   @Test
   fun changeIndices() = runTest {
-    moleculeFlow(RecompositionClock.Immediate) { HomeNavPresenter() }
+    moleculeFlow(RecompositionClock.Immediate) { HomePresenter(FakeNavigator()) }
       .test {
         // Initial index is 0.
         val firstState = awaitItem()
-        assertThat(firstState.index).isEqualTo(0)
+        assertThat(firstState.selectedIndex).isEqualTo(0)
 
         // Clicking the same index does nothing.
-        firstState.eventSink(HomeNavScreen.Event.ClickNavItem(0))
+        firstState.eventSink(HomeScreen.Event.ClickNavItem(0))
         expectNoEvents()
 
         // Changing the index emits a new state.
-        firstState.eventSink(HomeNavScreen.Event.ClickNavItem(1))
-        assertThat(awaitItem().index).isEqualTo(1)
+        firstState.eventSink(HomeScreen.Event.ClickNavItem(1))
+        assertThat(awaitItem().selectedIndex).isEqualTo(1)
       }
   }
 }

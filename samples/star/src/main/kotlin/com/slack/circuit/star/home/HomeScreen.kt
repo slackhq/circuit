@@ -13,6 +13,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.CircuitContent
@@ -26,19 +30,23 @@ import com.slack.circuit.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
-import com.slack.circuit.star.home.HomeScreen.Event.HomeEvent
+import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.ui.StarTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object HomeScreen : Screen {
   data class State(
-    val homeNavState: HomeNavScreen.State,
+    val navItems: ImmutableList<BottomNavItem> =
+      persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),
+    val selectedIndex: Int = 0,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    class HomeEvent(val event: HomeNavScreen.Event) : Event
+    class ClickNavItem(val index: Int) : Event
     class ChildNav(val navEvent: NavEvent) : Event
   }
 }
@@ -46,10 +54,12 @@ object HomeScreen : Screen {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomePresenter(navigator: Navigator): HomeScreen.State {
-  val homeNavState = HomeNavPresenter()
-  return HomeScreen.State(homeNavState) { event ->
+  var selectedIndex by remember { mutableStateOf(0) }
+  return HomeScreen.State(selectedIndex = selectedIndex) { event ->
     when (event) {
-      is HomeEvent -> homeNavState.eventSink(event.event)
+      is ClickNavItem -> {
+        selectedIndex = event.index
+      }
       is ChildNav -> navigator.onNavEvent(event.navEvent)
     }
   }
@@ -67,13 +77,13 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
     modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
     bottomBar = {
       StarTheme(useDarkTheme = true) {
-        BottomNavigationBar(selectedIndex = state.homeNavState.index) { index ->
-          eventSink(HomeEvent(HomeNavScreen.Event.ClickNavItem(index)))
+        BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->
+          eventSink(ClickNavItem(index))
         }
       }
     }
   ) { paddingValues ->
-    val screen = state.homeNavState.bottomNavItems[state.homeNavState.index].screen
+    val screen = state.navItems[state.selectedIndex].screen
     CircuitContent(
       screen,
       modifier = Modifier.padding(paddingValues),

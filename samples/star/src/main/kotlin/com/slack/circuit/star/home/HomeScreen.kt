@@ -41,7 +41,7 @@ object HomeScreen : Screen {
   data class State(
     val navItems: ImmutableList<BottomNavItem> =
       persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),
-    val index: Int = 0,
+    val selectedIndex: Int = 0,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
@@ -55,7 +55,7 @@ object HomeScreen : Screen {
 @Composable
 fun HomePresenter(navigator: Navigator): HomeScreen.State {
   var selectedIndex by remember { mutableStateOf(0) }
-  return HomeScreen.State(index = selectedIndex) { event ->
+  return HomeScreen.State(selectedIndex = selectedIndex) { event ->
     when (event) {
       is ClickNavItem -> {
         selectedIndex = event.index
@@ -77,11 +77,13 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
     modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
     bottomBar = {
       StarTheme(useDarkTheme = true) {
-        BottomNavigationBar(selectedIndex = state.index) { index -> eventSink(ClickNavItem(index)) }
+        BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->
+          eventSink(ClickNavItem(index))
+        }
       }
     }
   ) { paddingValues ->
-    val screen = state.navItems[state.index].screen
+    val screen = state.navItems[state.selectedIndex].screen
     CircuitContent(
       screen,
       modifier = Modifier.padding(paddingValues),

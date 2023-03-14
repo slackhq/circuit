@@ -20,7 +20,7 @@ class HomePresenterTest {
       .test {
         // Initial index is 0.
         val firstState = awaitItem()
-        assertThat(firstState.index).isEqualTo(0)
+        assertThat(firstState.selectedIndex).isEqualTo(0)
 
         // Clicking the same index does nothing.
         firstState.eventSink(HomeScreen.Event.ClickNavItem(0))
@@ -28,7 +28,7 @@ class HomePresenterTest {
 
         // Changing the index emits a new state.
         firstState.eventSink(HomeScreen.Event.ClickNavItem(1))
-        assertThat(awaitItem().index).isEqualTo(1)
+        assertThat(awaitItem().selectedIndex).isEqualTo(1)
       }
   }
 }

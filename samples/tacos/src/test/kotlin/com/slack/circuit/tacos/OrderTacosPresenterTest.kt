@@ -21,8 +21,8 @@ class OrderTacosPresenterTest {
   fun `present - emits FillingsOrderStep state on initial composition`() = runTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
-      toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> TODO() }
+      toppingsProducer = { _, _ -> error("wrong step") },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     presenter.test {
@@ -40,7 +40,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     presenter.test {
@@ -57,7 +57,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -76,7 +76,7 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     presenter.test {
@@ -99,7 +99,7 @@ class OrderTacosPresenterTest {
         FillingsOrderStep.State.Loading
       },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     presenter.test {
@@ -123,7 +123,7 @@ class OrderTacosPresenterTest {
         FillingsOrderStep.State.Loading
       },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     presenter.test {
@@ -150,7 +150,7 @@ class OrderTacosPresenterTest {
         sink = eventSink
         ToppingsOrderStep.State.Loading
       },
-      confirmationProducer = { _, _ -> TODO() },
+      confirmationProducer = { _, _ -> error("wrong step") }
     )
 
     moleculeFlow(RecompositionClock.Immediate) {

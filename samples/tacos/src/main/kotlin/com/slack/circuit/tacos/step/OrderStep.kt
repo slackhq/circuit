@@ -23,6 +23,8 @@ sealed interface OrderStep : Parcelable {
     data class Toppings(val ingredients: Set<Ingredient>) : UpdateOrder
   }
 
+  object Restart : Event
+
   interface StateProducer<T : State> {
     @Composable
     operator fun invoke(orderDetails: OrderDetails, eventSink: (Event) -> Unit): T
@@ -34,4 +36,9 @@ fun interface FillingsProducer : OrderStep.StateProducer<OrderStep.State>
 fun interface ToppingsProducer : OrderStep.StateProducer<OrderStep.State>
 
 fun interface ConfirmationProducer : OrderStep.StateProducer<OrderStep.State>
+
+fun interface SummaryProducer {
+  @Composable
+  operator fun invoke(eventSink: (OrderStep.Event) -> Unit): OrderStep.State
+}
 

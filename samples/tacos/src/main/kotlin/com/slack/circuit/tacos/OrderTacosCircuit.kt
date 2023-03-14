@@ -48,9 +48,12 @@ import com.slack.circuit.tacos.step.OrderStep
 import com.slack.circuit.tacos.step.ConfirmationOrderStep
 import com.slack.circuit.tacos.step.ConfirmationProducer
 import com.slack.circuit.tacos.step.ConfirmationUi
+import com.slack.circuit.tacos.step.SummaryOrderStep
+import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
+import com.slack.circuit.tacos.step.summaryProducer
 import com.slack.circuit.ui
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -66,6 +69,7 @@ import java.math.BigDecimal
     val isPreviousVisible: Boolean,
     val isNextEnabled: Boolean,
     val isNextVisible: Boolean,
+    val isFooterVisible: Boolean,
     val eventSink: (Event) -> Unit
   ): CircuitUiState
 
@@ -75,7 +79,7 @@ import java.math.BigDecimal
 
     object Previous : Event { override val value: Int = -1 }
     object Next : Event { override val value: Int = 1 }
-    object ProcessOrder : Event
+    object ProcessOrder : Event { override val value: Int = 1 }
   }
 }
 
@@ -92,6 +96,7 @@ private val orderSteps = persistentListOf(
   FillingsOrderStep,
   ToppingsOrderStep,
   ConfirmationOrderStep,
+  SummaryOrderStep
 )
 
 internal class OrderTacosPresenter(
@@ -115,6 +120,11 @@ internal class OrderTacosPresenter(
       when (event) {
         is OrderStep.Validation -> isNextEnabled = event.enabled
         is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
+        is OrderStep.Restart -> {
+          currentStep.value = initialStep
+          orderDetails = initialOrderDetails
+          isNextEnabled = false
+        }
       }
     }
 
@@ -122,9 +132,10 @@ internal class OrderTacosPresenter(
       headerText = currentStep.value.headerText,
       orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
       orderState = stepState,
-      isPreviousVisible = currentStep.value.number > 0,
+      isPreviousVisible = currentStep.value.number.let { it in 1..2 } ,
       isNextEnabled = isNextEnabled,
       isNextVisible = currentStep.value.number < 2,
+      isFooterVisible = currentStep.value != SummaryOrderStep
     ) { navEvent ->
       processNavigation(currentStep.value, navEvent) { currentStep.value = it }
     }
@@ -139,6 +150,7 @@ internal class OrderTacosPresenter(
       is FillingsOrderStep -> fillingsProducer(orderDetails, eventSink)
       is ToppingsOrderStep -> toppingsProducer(orderDetails, eventSink)
       is ConfirmationOrderStep -> confirmationProducer(orderDetails, eventSink)
+      is SummaryOrderStep -> summaryProducer(eventSink)
     }
 }
 
@@ -208,7 +220,11 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
       )
     },
     bottomBar = {
-      OrderTotal(state.orderCost, state.orderState is ConfirmationOrderStep.Order) {
+      OrderTotal(
+        orderCost = state.orderCost,
+        onConfirmationStep = state.orderState is ConfirmationOrderStep.Order,
+        isVisible = state.isFooterVisible
+      ) {
         state.eventSink(OrderTacosScreen.Event.ProcessOrder)
       }
     }
@@ -218,6 +234,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
       is FillingsOrderStep.State -> FillingsUi(state.orderState, stepModifier)
       is ToppingsOrderStep.State -> ToppingsUi(state.orderState, stepModifier)
       is ConfirmationOrderStep.Order -> ConfirmationUi(state.orderState, stepModifier)
+      is SummaryOrderStep.SummaryState -> SummaryUi(state.orderState, stepModifier)
     }
   }
 }
@@ -259,9 +276,12 @@ private fun NavigationButton(
 private fun OrderTotal(
   orderCost: BigDecimal,
   onConfirmationStep: Boolean,
+  isVisible: Boolean,
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
 ) {
+  if (!isVisible) return
+
   val color = if (onConfirmationStep) Color.Red else Color.Blue
   var boxModifier = modifier
     .fillMaxWidth()

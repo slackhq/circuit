@@ -32,6 +32,7 @@ internal class FakeOrderStepParent(
         orderDetails = orderDetails.copy(filling = event.ingredient)
       is OrderStep.UpdateOrder.Toppings ->
         orderDetails = orderDetails.copy(toppings = event.ingredients)
+      is OrderStep.Restart -> orderDetails = OrderDetails()
     }
   }
 

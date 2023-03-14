@@ -13,7 +13,8 @@ import kotlin.reflect.KClass
  * - [tag] – a tag API to plumb arbitrary metadata through the [CircuitContext].
  */
 public class CircuitContext
-internal constructor(
+@InternalCircuitApi
+public constructor(
   public val parent: CircuitContext?,
 ) {
   // Don't expose the raw map.

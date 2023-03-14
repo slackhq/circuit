@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
@@ -65,7 +66,7 @@ internal fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
 ) {
   val parent = LocalCircuitContext.current
-  @Suppress("invisible_member")
+  @OptIn(InternalCircuitApi::class)
   val context =
     remember(screen, navigator, circuitConfig, parent) {
       CircuitContext(parent).also { it.config = circuitConfig }

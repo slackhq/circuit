@@ -29,11 +29,11 @@ internal actual fun BackHandler(
     val focusRequester = remember { FocusRequester() }
     val modifier =
       Modifier.onPreviewKeyEvent {
-        if (it.key == Key.Escape && it.type == KeyEventType.KeyDown) {
-          navigator.pop()
-          true
-        } else false
-      }
+          if (it.key == Key.Escape && it.type == KeyEventType.KeyDown) {
+            navigator.pop()
+            true
+          } else false
+        }
         .focusRequester(focusRequester)
         .focusable()
 

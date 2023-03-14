@@ -13,6 +13,10 @@ removeLines() (
   mv "$tmp_file" "$all_lines"
 )
 
+# First copy the baseline generated in the star sample to runtime
+# Only keep non-sample/non-star lines
+awk '!/com\/slack\/circuit\/(sample|star).*/&&/com\/slack\/circuit\/.*/ {print}' samples/star/apk/baseline-prof.txt >circuit-runtime/src/androidMain/baseline-prof.txt
+
 # Only look at the package before the '->' arrow
 # We do this by just replacing any text after an -> with nothing when doing the matching
 awk '{line = $0; sub(/->.*/, "", line); if (match(line, /circuit\/backstack.*/) > 0) print}' circuit-runtime/src/androidMain/baseline-prof.txt >backstack/src/androidMain/baseline-prof.txt

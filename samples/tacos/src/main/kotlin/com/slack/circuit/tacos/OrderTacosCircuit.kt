@@ -223,10 +223,8 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
       OrderTotal(
         orderCost = state.orderCost,
         onConfirmationStep = state.orderState is ConfirmationOrderStep.Order,
-        isVisible = state.isFooterVisible
-      ) {
-        state.eventSink(OrderTacosScreen.Event.ProcessOrder)
-      }
+        isVisible = state.isFooterVisible,
+      ) { sink(OrderTacosScreen.Event.ProcessOrder) }
     }
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
@@ -292,41 +290,22 @@ private fun OrderTotal(
   if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
   Box(modifier = boxModifier) {
-    if (onConfirmationStep) {
-      Text(
-        text = "Place Order",
-        modifier = Modifier
-          .align(Alignment.CenterStart)
-          .padding(start = 5.dp),
-        color = Color.White,
-        fontWeight = FontWeight.Bold,
-      )
-      Text(
-        text = "$$orderCost",
-        modifier = Modifier
-          .align(Alignment.CenterEnd)
-          .padding(end = 5.dp),
-        color = Color.White,
-        fontWeight = FontWeight.Bold,
-      )
-    } else {
-      Text(
-        text = "Order Total",
-        modifier = Modifier
-          .align(Alignment.CenterStart)
-          .padding(start = 5.dp),
-        color = Color.White,
-        fontWeight = FontWeight.Bold,
-      )
-      Text(
-        text = "$$orderCost",
-        modifier = Modifier
-          .align(Alignment.CenterEnd)
-          .padding(end = 5.dp),
-        color = Color.White,
-        fontWeight = FontWeight.Bold,
-      )
-    }
+    Text(
+      text = if (onConfirmationStep) "Place Order" else "Order Total",
+      modifier = Modifier
+        .align(Alignment.CenterStart)
+        .padding(start = 5.dp),
+      color = Color.White,
+      fontWeight = FontWeight.Bold,
+    )
+    Text(
+      text = if (onConfirmationStep) "$$orderCost" else "$$orderCost",
+      modifier = Modifier
+        .align(Alignment.CenterEnd)
+        .padding(end = 5.dp),
+      color = Color.White,
+      fontWeight = FontWeight.Bold,
+    )
   }
 }
 

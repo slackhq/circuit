@@ -19,7 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -112,16 +111,16 @@ internal class OrderTacosPresenter(
     initialStep: OrderStep = FillingsOrderStep,
     initialOrderDetails: OrderDetails = OrderDetails(),
   ): OrderTacosScreen.State {
-    val currentStep = rememberSaveable { mutableStateOf(initialStep) }
+    var currentStep by rememberSaveable { mutableStateOf(initialStep) }
     var orderDetails by rememberSaveable { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }
 
-    val stepState = currentStep.produceState(orderDetails) { event ->
+    val stepState = produceState(currentStep, orderDetails) { event ->
       when (event) {
         is OrderStep.Validation -> isNextEnabled = event.enabled
         is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
         is OrderStep.Restart -> {
-          currentStep.value = initialStep
+          currentStep = initialStep
           orderDetails = initialOrderDetails
           isNextEnabled = false
         }
@@ -129,24 +128,25 @@ internal class OrderTacosPresenter(
     }
 
     return OrderTacosScreen.State(
-      headerText = currentStep.value.headerText,
+      headerText = currentStep.headerText,
       orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
       orderState = stepState,
-      isPreviousVisible = currentStep.value.number.let { it in 1..2 } ,
+      isPreviousVisible = currentStep.number in 1..2,
       isNextEnabled = isNextEnabled,
-      isNextVisible = currentStep.value.number < 2,
-      isFooterVisible = currentStep.value != SummaryOrderStep
+      isNextVisible = currentStep.number < 2,
+      isFooterVisible = currentStep != SummaryOrderStep
     ) { navEvent ->
-      processNavigation(currentStep.value, navEvent) { currentStep.value = it }
+      processNavigation(currentStep, navEvent) { currentStep = it }
     }
   }
 
   @Composable
-  private fun MutableState<OrderStep>.produceState(
+  private fun produceState(
+    orderStep: OrderStep,
     orderDetails: OrderDetails,
     eventSink: (OrderStep.Event) -> Unit
   ): OrderStep.State =
-    when (value) {
+    when (orderStep) {
       is FillingsOrderStep -> fillingsProducer(orderDetails, eventSink)
       is ToppingsOrderStep -> toppingsProducer(orderDetails, eventSink)
       is ConfirmationOrderStep -> confirmationProducer(orderDetails, eventSink)

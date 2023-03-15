@@ -27,7 +27,7 @@ class OrderTacosPresenterTest {
 
     presenter.test {
       awaitItem().run {
-        assertThat(orderState).isEqualTo(FillingsOrderStep.State.Loading)
+        assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
         assertThat(isPreviousVisible).isFalse()
         assertThat(isNextEnabled).isFalse()
         assertThat(isNextVisible).isTrue()
@@ -45,10 +45,10 @@ class OrderTacosPresenterTest {
 
     presenter.test {
       awaitItem().run {
-        assertThat(orderState).isEqualTo(FillingsOrderStep.State.Loading)
+        assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
         eventSink(OrderTacosScreen.Event.Next)
       }
-      assertThat(awaitItem().orderState).isEqualTo(ToppingsOrderStep.State.Loading)
+      assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
     }
   }
 
@@ -64,10 +64,10 @@ class OrderTacosPresenterTest {
       presenter.presentInternal(ToppingsOrderStep)
     }.test {
       awaitItem().run {
-        assertThat(orderState).isEqualTo(ToppingsOrderStep.State.Loading)
+        assertThat(stepState).isEqualTo(ToppingsOrderStep.State.Loading)
         eventSink(OrderTacosScreen.Event.Previous)
       }
-      assertThat(awaitItem().orderState).isEqualTo(FillingsOrderStep.State.Loading)
+      assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
     }
   }
 
@@ -81,7 +81,7 @@ class OrderTacosPresenterTest {
 
     presenter.test {
       awaitItem().run {
-        assertThat(orderState).isEqualTo(FillingsOrderStep.State.Loading)
+        assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
         eventSink(OrderTacosScreen.Event.Previous)
       }
 
@@ -127,13 +127,13 @@ class OrderTacosPresenterTest {
     )
 
     presenter.test {
-      assertThat(awaitItem().orderState).isEqualTo(FillingsOrderStep.State.Loading)
+      assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
       assertThat(details).isEqualTo(OrderDetails())
 
       val filling = Ingredient("apple")
       sink(OrderStep.UpdateOrder.Filling(filling))
 
-      assertThat(awaitItem().orderState).isEqualTo(FillingsOrderStep.State.Loading)
+      assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
       assertThat(details).isEqualTo(OrderDetails(filling = filling))
     }
   }
@@ -156,13 +156,13 @@ class OrderTacosPresenterTest {
     moleculeFlow(RecompositionClock.Immediate) {
       presenter.presentInternal(ToppingsOrderStep)
     }.test {
-      assertThat(awaitItem().orderState).isEqualTo(ToppingsOrderStep.State.Loading)
+      assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
       assertThat(details).isEqualTo(OrderDetails())
 
       val toppings = persistentSetOf(Ingredient("apple"))
       sink(OrderStep.UpdateOrder.Toppings(toppings))
 
-      assertThat(awaitItem().orderState).isEqualTo(ToppingsOrderStep.State.Loading)
+      assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
       assertThat(details).isEqualTo(OrderDetails(toppings = toppings))
     }
   }

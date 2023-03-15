@@ -66,7 +66,7 @@ import java.math.BigDecimal
   data class State(
     @StringRes val headerResId: Int,
     val orderCost: BigDecimal,
-    val orderState: OrderStep.State,
+    val stepState: OrderStep.State,
     val isPreviousVisible: Boolean,
     val isNextEnabled: Boolean,
     val isNextVisible: Boolean,
@@ -132,7 +132,7 @@ internal class OrderTacosPresenter(
     return OrderTacosScreen.State(
       headerResId = currentStep.headerResId,
       orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
-      orderState = stepState,
+      stepState = stepState,
       isPreviousVisible = currentStep.number in 1..2,
       isNextEnabled = isNextEnabled,
       isNextVisible = currentStep.number < 2,
@@ -224,17 +224,17 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
     bottomBar = {
       OrderTotal(
         orderCost = state.orderCost,
-        onConfirmationStep = state.orderState is ConfirmationOrderStep.Order,
+        onConfirmationStep = state.stepState is ConfirmationOrderStep.Order,
         isVisible = state.isFooterVisible,
       ) { sink(OrderTacosScreen.Event.ProcessOrder) }
     }
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
-    when (state.orderState) {
-      is FillingsOrderStep.State -> FillingsUi(state.orderState, stepModifier)
-      is ToppingsOrderStep.State -> ToppingsUi(state.orderState, stepModifier)
-      is ConfirmationOrderStep.Order -> ConfirmationUi(state.orderState, stepModifier)
-      is SummaryOrderStep.SummaryState -> SummaryUi(state.orderState, stepModifier)
+    when (state.stepState) {
+      is FillingsOrderStep.State -> FillingsUi(state.stepState, stepModifier)
+      is ToppingsOrderStep.State -> ToppingsUi(state.stepState, stepModifier)
+      is ConfirmationOrderStep.Order -> ConfirmationUi(state.stepState, stepModifier)
+      is SummaryOrderStep.SummaryState -> SummaryUi(state.stepState, stepModifier)
     }
   }
 }

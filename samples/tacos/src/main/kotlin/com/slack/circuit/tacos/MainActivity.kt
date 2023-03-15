@@ -13,6 +13,7 @@ import com.slack.circuit.tacos.repository.IngredientsRepositoryImpl
 import com.slack.circuit.tacos.step.FillingsProducerImpl
 import com.slack.circuit.tacos.step.ToppingsProducerImpl
 import com.slack.circuit.tacos.step.confirmationProducer
+import com.slack.circuit.tacos.ui.theme.TacoTheme
 
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,8 +26,10 @@ class MainActivity : AppCompatActivity() {
       .build()
 
     setContent {
-      CircuitCompositionLocals(circuitConfig) {
-        CircuitContent(OrderTacosScreen)
+      TacoTheme {
+        CircuitCompositionLocals(circuitConfig) {
+          CircuitContent(OrderTacosScreen)
+        }
       }
     }
   }

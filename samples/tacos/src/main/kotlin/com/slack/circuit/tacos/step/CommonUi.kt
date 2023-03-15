@@ -38,7 +38,7 @@ internal fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
     modifier = modifier.background(MaterialTheme.colorScheme.surfaceTint, RoundedCornerShape(3.dp))
   ) {
     Text(
-      text = diet.code.uppercase(),
+      text = diet.codeResId?.let { stringResource(it).uppercase() } ?: "",
       modifier = Modifier.padding(3.dp),
       fontSize = 6.sp,
       fontWeight = FontWeight.Bold,

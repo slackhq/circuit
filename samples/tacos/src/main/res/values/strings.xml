@@ -4,6 +4,8 @@
     <!-- OrderTacosCircuit -->
     <string name="bottom_bar_place_order">Place Order</string>
     <string name="bottom_bar_order_total">Order Total</string>
+    <string name="top_bar_back">Back</string>
+    <string name="top_bar_forward">Forward</string>
 
     <!-- FillingsOrderStep -->
     <string name="fillings_step_header">Fillings</string>
@@ -26,4 +28,6 @@
 
     <!-- CommonUi -->
     <string name="common_calories">%d cals</string>
+    <string name="common_vegetarian">vt</string>
+    <string name="common_vegan">vg</string>
 </resources>

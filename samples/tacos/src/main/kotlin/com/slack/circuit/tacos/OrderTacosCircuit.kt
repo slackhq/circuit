@@ -241,10 +241,10 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
 
 internal enum class Direction(
   val icon: ImageVector,
-  val description: String
+  @StringRes val descriptionResId: Int
 ) {
-  LEFT(Icons.Filled.ArrowBack, "Back"),
-  RIGHT(Icons.Filled.ArrowForward,"Forward")
+  LEFT(Icons.Filled.ArrowBack, R.string.top_bar_back),
+  RIGHT(Icons.Filled.ArrowForward,R.string.top_bar_forward)
 }
 
 @Composable
@@ -267,7 +267,7 @@ private fun NavigationButton(
       modifier = modifier,
       painter = rememberVectorPainter(image = direction.icon),
       colorFilter = ColorFilter.tint(tintColour),
-      contentDescription = direction.description,
+      contentDescription = stringResource(direction.descriptionResId),
     )
   }
 }

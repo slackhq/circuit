@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,14 +32,14 @@ internal fun Instructions(instructions: String, modifier: Modifier = Modifier) {
 internal fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
   if (diet == Diet.NONE) return
   Box(
-    modifier = modifier.background(Color.Gray, shape = RoundedCornerShape(3.dp))
+    modifier = modifier.background(MaterialTheme.colorScheme.surfaceTint, shape = RoundedCornerShape(3.dp))
   ) {
     Text(
       text = diet.code.uppercase(),
       modifier = Modifier.padding(3.dp),
       fontSize = 6.sp,
       fontWeight = FontWeight.Bold,
-      color = Color.White
+      color = MaterialTheme.colorScheme.surface
     )
   }
 }

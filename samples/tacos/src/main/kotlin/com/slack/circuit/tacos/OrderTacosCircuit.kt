@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -256,8 +256,8 @@ private fun NavigationButton(
   if (!visible) return
 
   val tintColour = when (enabled) {
-    true -> Color.Black
-    false -> Color.LightGray
+    true -> MaterialTheme.colorScheme.onSurface
+    false -> MaterialTheme.colorScheme.outline
   }
 
   IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
@@ -280,7 +280,10 @@ private fun OrderTotal(
 ) {
   if (!isVisible) return
 
-  val color = if (onConfirmationStep) Color.Red else Color.Blue
+  val color = when {
+    onConfirmationStep -> MaterialTheme.colorScheme.onTertiaryContainer
+    else -> MaterialTheme.colorScheme.tertiaryContainer
+  }
   var boxModifier = modifier
     .fillMaxWidth()
     .defaultMinSize(minHeight = 30.dp)
@@ -295,7 +298,7 @@ private fun OrderTotal(
       modifier = Modifier
         .align(Alignment.CenterStart)
         .padding(start = 5.dp),
-      color = Color.White,
+      color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )
     Text(
@@ -303,7 +306,7 @@ private fun OrderTotal(
       modifier = Modifier
         .align(Alignment.CenterEnd)
         .padding(end = 5.dp),
-      color = Color.White,
+      color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )
   }

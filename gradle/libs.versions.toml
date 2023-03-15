@@ -52,7 +52,7 @@ agp-application = { id = "com.android.application", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }
-dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.2" }
+dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ## Here to trigger Renovate updates

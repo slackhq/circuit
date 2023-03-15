@@ -1,6 +1,7 @@
 package com.slack.circuit.tacos
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.CircuitContext
@@ -62,7 +64,7 @@ import java.math.BigDecimal
 
 @Parcelize object OrderTacosScreen : Screen {
   data class State(
-    val headerText: String,
+    @StringRes val headerResId: Int,
     val orderCost: BigDecimal,
     val orderState: OrderStep.State,
     val isPreviousVisible: Boolean,
@@ -128,7 +130,7 @@ internal class OrderTacosPresenter(
     }
 
     return OrderTacosScreen.State(
-      headerText = currentStep.headerText,
+      headerResId = currentStep.headerResId,
       orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
       orderState = stepState,
       isPreviousVisible = currentStep.number in 1..2,
@@ -202,7 +204,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
     modifier = modifier.padding(5.dp),
     topBar = {
       CenterAlignedTopAppBar(
-        title = { Text(state.headerText) },
+        title = { Text(stringResource(state.headerResId)) },
         modifier = modifier,
         navigationIcon = {
           NavigationButton(
@@ -292,9 +294,13 @@ private fun OrderTotal(
     .background(color)
   if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
+  val label = when (onConfirmationStep) {
+    true -> stringResource(R.string.bottom_bar_place_order)
+    false -> stringResource(R.string.bottom_bar_order_total)
+  }
   Box(modifier = boxModifier) {
     Text(
-      text = if (onConfirmationStep) "Place Order" else "Order Total",
+      text = label,
       modifier = Modifier
         .align(Alignment.CenterStart)
         .padding(start = 5.dp),

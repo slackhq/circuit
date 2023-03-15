@@ -21,7 +21,6 @@ object IngredientsRepositoryImpl : IngredientsRepository {
   }
 }
 
-// TODO move strings to resources
 private val fillings = persistentListOf(
   Ingredient(
     name = "Chicken",

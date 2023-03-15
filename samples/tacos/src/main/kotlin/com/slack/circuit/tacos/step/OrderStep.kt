@@ -1,13 +1,15 @@
 package com.slack.circuit.tacos.step
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.OrderDetails
 
 sealed interface OrderStep : Parcelable {
   val number: Int
-  val headerText: String
+  @get:StringRes
+  val headerResId: Int
 
   sealed interface State
 

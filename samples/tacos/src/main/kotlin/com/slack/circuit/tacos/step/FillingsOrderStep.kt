@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.tacos.OrderDetails
+import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
 import kotlinx.collections.immutable.ImmutableList
@@ -28,7 +29,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object FillingsOrderStep : OrderStep {
   @IgnoredOnParcel override val number = 0
-  @IgnoredOnParcel override val headerText = "Fillings"
+  @IgnoredOnParcel override val headerResId = R.string.fillings_step_header
 
   sealed interface State : OrderStep.State {
     object Loading : State
@@ -104,7 +105,7 @@ private fun FillingsList(
   val sink = state.eventSink
   val scrollState = rememberScrollState()
   Column(modifier = modifier.verticalScroll(scrollState)) {
-    Instructions(instructions = "Pick a filling:")
+    Instructions(resId = R.string.fillings_step_instructions)
     state.list.forEach { ingredient ->
       Filling(
         ingredient = ingredient,

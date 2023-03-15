@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slack.circuit.tacos.OrderDetails
+import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import kotlinx.collections.immutable.ImmutableList
@@ -30,7 +32,7 @@ import java.math.BigDecimal
 @Parcelize
 object ConfirmationOrderStep : OrderStep {
   @IgnoredOnParcel override val number = 2
-  @IgnoredOnParcel override val headerText = "Confirm Order"
+  @IgnoredOnParcel override val headerResId = R.string.confirm_step_header
 
   data class Order(
     val calories: Int,
@@ -80,7 +82,7 @@ internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifi
 
     Column(modifier = modifier.padding(5.dp)) {
       Text(
-        text = "Details",
+        text = stringResource(R.string.confirm_step_details),
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         modifier = Modifier.padding(bottom = 10.dp)
@@ -121,7 +123,7 @@ internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifi
             .align(Alignment.BottomEnd)
         ) {
           Text(
-            text = "Charge Breakdown",
+            text = stringResource(R.string.confirm_step_charge_breakdown),
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 5.dp)
           )
@@ -132,7 +134,7 @@ internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifi
               .fillMaxWidth()
           ) {
             Text(
-              text = "Taco:",
+              text = stringResource(R.string.confirm_step_taco),
               modifier = Modifier.align(Alignment.CenterStart)
             )
             Text(
@@ -147,7 +149,7 @@ internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifi
               .fillMaxWidth()
           ) {
             Text(
-              text = "Extras:",
+              text = stringResource(R.string.confirm_step_extras),
               modifier = Modifier.align(Alignment.CenterStart)
             )
             Text(

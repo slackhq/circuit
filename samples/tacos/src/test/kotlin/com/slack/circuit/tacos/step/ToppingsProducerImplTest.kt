@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import app.cash.molecule.RecompositionClock
@@ -19,24 +21,18 @@ class ToppingsProducerImplTest {
     val producer = ToppingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
-      producer(
-        orderDetails = parent.orderDetails,
-        eventSink = parent::childEvent
-      )
-    }.test {
-      assertThat(awaitItem()).isEqualTo(ToppingsOrderStep.State.Loading)
-      parent.assertValidation(OrderStep.Validation.Invalid)
+        producer(orderDetails = parent.orderDetails, eventSink = parent::childEvent)
+      }
+      .test {
+        assertThat(awaitItem()).isEqualTo(ToppingsOrderStep.State.Loading)
+        parent.assertValidation(OrderStep.Validation.Invalid)
 
-      awaitItem()
-        .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-        .run {
+        awaitItem().asInstanceOf<ToppingsOrderStep.State.AvailableToppings>().run {
           assertThat(selected).isEmpty()
           assertThat(list).isEqualTo(testToppings)
         }
-      parent
-        .assertValidation(OrderStep.Validation.Invalid)
-        .assertNoUnconsumedValidation()
-    }
+        parent.assertValidation(OrderStep.Validation.Invalid).assertNoUnconsumedValidation()
+      }
   }
 
   @Test
@@ -46,37 +42,34 @@ class ToppingsProducerImplTest {
     val producer = ToppingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
-      producer(
-        orderDetails = parent.orderDetails,
-        minimumToppings = 1,
-        eventSink = parent::childEvent
-      )
-    }.test {
-      // Loading
-      awaitItem()
-      parent.assertValidation(OrderStep.Validation.Invalid)
+        producer(
+          orderDetails = parent.orderDetails,
+          minimumToppings = 1,
+          eventSink = parent::childEvent
+        )
+      }
+      .test {
+        // Loading
+        awaitItem()
+        parent.assertValidation(OrderStep.Validation.Invalid)
 
-      // Initial AvailableToppings
-      awaitItem()
-        .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-        .also { parent.assertValidation(OrderStep.Validation.Invalid) }
-        .run {
-          assertThat(selected).isEmpty()
+        // Initial AvailableToppings
+        awaitItem()
+          .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
+          .also { parent.assertValidation(OrderStep.Validation.Invalid) }
+          .run {
+            assertThat(selected).isEmpty()
 
-          // select first topping
-          eventSink(ToppingsOrderStep.Event.AddTopping(testToppings[0]))
-        }
+            // select first topping
+            eventSink(ToppingsOrderStep.Event.AddTopping(testToppings[0]))
+          }
 
-      // New AvailableToppings containing toppings[0]
-      awaitItem()
-        .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-        .run {
+        // New AvailableToppings containing toppings[0]
+        awaitItem().asInstanceOf<ToppingsOrderStep.State.AvailableToppings>().run {
           assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
         }
-      parent
-        .assertValidation(OrderStep.Validation.Valid)
-        .assertNoUnconsumedValidation()
-    }
+        parent.assertValidation(OrderStep.Validation.Valid).assertNoUnconsumedValidation()
+      }
   }
 
   @Test
@@ -87,37 +80,34 @@ class ToppingsProducerImplTest {
       val producer = ToppingsProducerImpl(repo)
 
       moleculeFlow(RecompositionClock.Immediate) {
-        producer(
-          orderDetails = parent.orderDetails,
-          minimumToppings = 1,
-          eventSink = parent::childEvent
-        )
-      }.test {
-        // Loading
-        awaitItem()
-        parent.assertValidation(OrderStep.Validation.Valid)
+          producer(
+            orderDetails = parent.orderDetails,
+            minimumToppings = 1,
+            eventSink = parent::childEvent
+          )
+        }
+        .test {
+          // Loading
+          awaitItem()
+          parent.assertValidation(OrderStep.Validation.Valid)
 
-        // Initial AvailableToppings containing toppings[0]
-        awaitItem()
-          .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-          .also { parent.assertValidation(OrderStep.Validation.Valid) }
-          .run {
-            assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
+          // Initial AvailableToppings containing toppings[0]
+          awaitItem()
+            .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
+            .also { parent.assertValidation(OrderStep.Validation.Valid) }
+            .run {
+              assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
 
-            eventSink(ToppingsOrderStep.Event.RemoveTopping(testToppings[0]))
-          }
+              eventSink(ToppingsOrderStep.Event.RemoveTopping(testToppings[0]))
+            }
 
-        // New AvailableToppings with topping count below minimum
-        awaitItem()
-          .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
-          .also {
-            parent
-              .assertValidation(OrderStep.Validation.Invalid)
-              .assertNoUnconsumedValidation()
-          }
-          .run {
-            assertThat(selected).isEmpty()
-          }
-      }
+          // New AvailableToppings with topping count below minimum
+          awaitItem()
+            .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
+            .also {
+              parent.assertValidation(OrderStep.Validation.Invalid).assertNoUnconsumedValidation()
+            }
+            .run { assertThat(selected).isEmpty() }
+        }
     }
 }

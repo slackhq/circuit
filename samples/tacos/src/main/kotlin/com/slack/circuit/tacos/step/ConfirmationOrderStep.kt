@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import androidx.compose.foundation.layout.Box
@@ -23,11 +25,11 @@ import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
+import java.math.BigDecimal
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 
 @Parcelize
 object ConfirmationOrderStep : OrderStep {
@@ -91,75 +93,42 @@ internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifi
         fontSize = 20.sp,
         modifier = Modifier.padding(bottom = 10.dp)
       )
-      Text(
-        text = summary,
-        modifier = Modifier.padding(bottom = 5.dp)
-      )
+      Text(text = summary, modifier = Modifier.padding(bottom = 5.dp))
       toppings.forEachIndexed { i, topping ->
-        Row(
-          modifier = Modifier.padding(start = 10.dp)
-        ) {
-          Text(
-            text = "${i+1}.",
-            modifier = Modifier.padding(end = 5.dp)
-          )
+        Row(modifier = Modifier.padding(start = 10.dp)) {
+          Text(text = "${i+1}.", modifier = Modifier.padding(end = 5.dp))
           Text(
             text = topping,
             fontWeight = FontWeight.Bold,
           )
         }
       }
-      Text(
-        text = extra,
-        modifier = Modifier.padding(top = 5.dp)
-      )
+      Text(text = extra, modifier = Modifier.padding(top = 5.dp))
 
       Spacer(modifier = Modifier.height(10.dp))
 
-      Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(end = 5.dp)
-      ) {
-        Column(
-          modifier = Modifier
-            .fillMaxWidth(fraction = 0.5f)
-            .align(Alignment.BottomEnd)
-        ) {
+      Box(modifier = Modifier.fillMaxSize().padding(end = 5.dp)) {
+        Column(modifier = Modifier.fillMaxWidth(fraction = 0.5f).align(Alignment.BottomEnd)) {
           Text(
             text = stringResource(R.string.confirm_step_charge_breakdown),
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 5.dp)
           )
 
-          Box(
-            modifier = Modifier
-              .align(Alignment.End)
-              .fillMaxWidth()
-          ) {
+          Box(modifier = Modifier.align(Alignment.End).fillMaxWidth()) {
             Text(
               text = stringResource(R.string.confirm_step_taco),
               modifier = Modifier.align(Alignment.CenterStart)
             )
-            Text(
-              text = "$$baseCost",
-              modifier = Modifier.align(Alignment.CenterEnd)
-            )
+            Text(text = "$$baseCost", modifier = Modifier.align(Alignment.CenterEnd))
           }
 
-          Box(
-            modifier = Modifier
-              .align(Alignment.End)
-              .fillMaxWidth()
-          ) {
+          Box(modifier = Modifier.align(Alignment.End).fillMaxWidth()) {
             Text(
               text = stringResource(R.string.confirm_step_extras),
               modifier = Modifier.align(Alignment.CenterStart)
             )
-            Text(
-              text = "$$ingredientsCost",
-              modifier = Modifier.align(Alignment.CenterEnd)
-            )
+            Text(text = "$$ingredientsCost", modifier = Modifier.align(Alignment.CenterEnd))
           }
         }
       }
@@ -167,28 +136,22 @@ internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifi
   }
 }
 
-private fun buildSummary(filling: String) =
-  buildAnnotatedString {
-    append("Your ")
-    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-      append("$filling ")
-    }
-    append("taco will be topped with: ")
-  }
+private fun buildSummary(filling: String) = buildAnnotatedString {
+  append("Your ")
+  withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) { append("$filling ") }
+  append("taco will be topped with: ")
+}
 
-private fun buildExtras(diet: Diet, calories: Int) =
-  buildAnnotatedString {
-    append("This taco ")
-    if (diet != Diet.NONE) {
-      append("is ")
-      withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-        append("${diet.name.lowercase()} ")
-      }
-      append("and ")
-    }
-    append("has approximately ")
+private fun buildExtras(diet: Diet, calories: Int) = buildAnnotatedString {
+  append("This taco ")
+  if (diet != Diet.NONE) {
+    append("is ")
     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-      append("$calories ")
+      append("${diet.name.lowercase()} ")
     }
-    append("calories.")
+    append("and ")
   }
+  append("has approximately ")
+  withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) { append("$calories ") }
+  append("calories.")
+}

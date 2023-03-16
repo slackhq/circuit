@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import androidx.annotation.StringRes
@@ -50,11 +52,7 @@ internal fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
 @Composable
 internal fun AdditionalCharge(charge: BigDecimal, modifier: Modifier = Modifier) {
   if (charge <= BigDecimal.ZERO) return
-  Text(
-    text = "$$charge",
-    modifier = modifier,
-    fontSize = fontSize
-  )
+  Text(text = "$$charge", modifier = modifier, fontSize = fontSize)
 }
 
 @Composable
@@ -70,11 +68,7 @@ internal fun Calories(calories: Int, modifier: Modifier = Modifier) {
 @Composable
 internal fun ExtrasDivider(charge: BigDecimal, calories: Int, modifier: Modifier = Modifier) {
   if (charge <= BigDecimal.ZERO || calories <= 0) return
-  Text(
-    text = " | ",
-    modifier = modifier,
-    fontSize = 8.sp
-  )
+  Text(text = " | ", modifier = modifier, fontSize = 8.sp)
 }
 
 @Preview

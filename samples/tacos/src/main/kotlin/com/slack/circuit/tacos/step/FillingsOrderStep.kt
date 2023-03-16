@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import androidx.compose.foundation.clickable
@@ -45,24 +47,21 @@ object FillingsOrderStep : OrderStep {
   }
 }
 
-internal class FillingsProducerImpl(private val repository: IngredientsRepository) : FillingsProducer {
+internal class FillingsProducerImpl(private val repository: IngredientsRepository) :
+  FillingsProducer {
   @Composable
   override fun invoke(
     orderDetails: OrderDetails,
     eventSink: (OrderStep.Event) -> Unit
   ): FillingsOrderStep.State {
-    val ingredients by produceState<ImmutableList<Ingredient>?>(null) {
-      value = repository.getFillings()
-    }
+    val ingredients by
+      produceState<ImmutableList<Ingredient>?>(null) { value = repository.getFillings() }
 
     validateFilling(orderDetails.filling, eventSink)
     return when (val list = ingredients) {
       null -> FillingsOrderStep.State.Loading
       else ->
-        FillingsOrderStep.State.AvailableFillings(
-          orderDetails.filling,
-          list
-        ) { event ->
+        FillingsOrderStep.State.AvailableFillings(orderDetails.filling, list) { event ->
           when (event) {
             is FillingsOrderStep.Event.SelectFilling ->
               eventSink(OrderStep.UpdateOrder.Filling(event.ingredient))
@@ -73,10 +72,11 @@ internal class FillingsProducerImpl(private val repository: IngredientsRepositor
 }
 
 private fun validateFilling(filling: Ingredient?, eventSink: (OrderStep.Event) -> Unit) {
-  val validation = when (filling) {
-    Ingredient("") -> OrderStep.Validation.Invalid
-    else -> OrderStep.Validation.Valid
-  }
+  val validation =
+    when (filling) {
+      Ingredient("") -> OrderStep.Validation.Invalid
+      else -> OrderStep.Validation.Valid
+    }
   eventSink(validation)
 }
 
@@ -91,9 +91,7 @@ internal fun FillingsUi(state: FillingsOrderStep.State, modifier: Modifier = Mod
 @Composable
 private fun Loading(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(
-      color = MaterialTheme.colorScheme.onSurface
-    )
+    CircularProgressIndicator(color = MaterialTheme.colorScheme.onSurface)
   }
 }
 

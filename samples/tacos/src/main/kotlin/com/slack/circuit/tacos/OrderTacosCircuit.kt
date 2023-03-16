@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos
 
 import android.os.Parcelable
@@ -43,13 +45,13 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.tacos.model.Ingredient
+import com.slack.circuit.tacos.step.ConfirmationOrderStep
+import com.slack.circuit.tacos.step.ConfirmationProducer
+import com.slack.circuit.tacos.step.ConfirmationUi
 import com.slack.circuit.tacos.step.FillingsOrderStep
 import com.slack.circuit.tacos.step.FillingsProducer
 import com.slack.circuit.tacos.step.FillingsUi
 import com.slack.circuit.tacos.step.OrderStep
-import com.slack.circuit.tacos.step.ConfirmationOrderStep
-import com.slack.circuit.tacos.step.ConfirmationProducer
-import com.slack.circuit.tacos.step.ConfirmationUi
 import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.SummaryProducer
 import com.slack.circuit.tacos.step.SummaryUi
@@ -57,13 +59,14 @@ import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
 import com.slack.circuit.tacos.step.summaryProducer
+import java.math.BigDecimal
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 
-@Parcelize object OrderTacosScreen : Screen {
+@Parcelize
+object OrderTacosScreen : Screen {
   data class State(
     @StringRes val headerResId: Int,
     val orderCost: BigDecimal,
@@ -73,15 +76,21 @@ import java.math.BigDecimal
     val isNextVisible: Boolean,
     val isFooterVisible: Boolean,
     val eventSink: (Event) -> Unit
-  ): CircuitUiState
+  ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     val value: Int
       get() = 0
 
-    object Previous : Event { override val value: Int = -1 }
-    object Next : Event { override val value: Int = 1 }
-    object ProcessOrder : Event { override val value: Int = 1 }
+    object Previous : Event {
+      override val value: Int = -1
+    }
+    object Next : Event {
+      override val value: Int = 1
+    }
+    object ProcessOrder : Event {
+      override val value: Int = 1
+    }
   }
 }
 
@@ -92,14 +101,10 @@ data class OrderDetails(
   val toppings: Set<Ingredient> = persistentSetOf(),
   val baseCost: BigDecimal = BigDecimal("9.99"), // Default taco price
   val ingredientsCost: BigDecimal = BigDecimal.ZERO
-): Parcelable
+) : Parcelable
 
-private val orderSteps = persistentListOf(
-  FillingsOrderStep,
-  ToppingsOrderStep,
-  ConfirmationOrderStep,
-  SummaryOrderStep
-)
+private val orderSteps =
+  persistentListOf(FillingsOrderStep, ToppingsOrderStep, ConfirmationOrderStep, SummaryOrderStep)
 
 internal class OrderTacosPresenter(
   private val fillingsProducer: FillingsProducer,
@@ -107,8 +112,7 @@ internal class OrderTacosPresenter(
   private val confirmationProducer: ConfirmationProducer,
   private val summaryProducer: SummaryProducer,
 ) : Presenter<OrderTacosScreen.State> {
-  @Composable
-  override fun present(): OrderTacosScreen.State = presentInternal()
+  @Composable override fun present(): OrderTacosScreen.State = presentInternal()
 
   @Composable
   internal fun presentInternal(
@@ -119,17 +123,18 @@ internal class OrderTacosPresenter(
     var orderDetails by rememberSaveable { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }
 
-    val stepState = produceState(currentStep, orderDetails) { event ->
-      when (event) {
-        is OrderStep.Validation -> isNextEnabled = event.enabled
-        is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
-        is OrderStep.Restart -> {
-          currentStep = FillingsOrderStep
-          orderDetails = OrderDetails()
-          isNextEnabled = false
+    val stepState =
+      produceState(currentStep, orderDetails) { event ->
+        when (event) {
+          is OrderStep.Validation -> isNextEnabled = event.enabled
+          is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
+          is OrderStep.Restart -> {
+            currentStep = FillingsOrderStep
+            orderDetails = OrderDetails()
+            isNextEnabled = false
+          }
         }
       }
-    }
 
     return OrderTacosScreen.State(
       headerResId = currentStep.headerResId,
@@ -171,14 +176,16 @@ private fun updateOrder(
   event: OrderStep.UpdateOrder,
   currentOrder: OrderDetails,
 ): OrderDetails {
-  val newFilling = when (event) {
-    is OrderStep.UpdateOrder.Filling -> event.ingredient
-    else -> currentOrder.filling
-  }
-  val newToppings = when (event) {
-    is OrderStep.UpdateOrder.Toppings -> event.ingredients
-    else -> currentOrder.toppings
-  }
+  val newFilling =
+    when (event) {
+      is OrderStep.UpdateOrder.Filling -> event.ingredient
+      else -> currentOrder.filling
+    }
+  val newToppings =
+    when (event) {
+      is OrderStep.UpdateOrder.Toppings -> event.ingredients
+      else -> currentOrder.toppings
+    }
 
   val newIngredientsCost = calculateIngredientsCost(newFilling, newToppings)
 
@@ -190,10 +197,7 @@ private fun updateOrder(
   )
 }
 
-private fun calculateIngredientsCost(
-  filling: Ingredient?,
-  toppings: Set<Ingredient>
-): BigDecimal {
+private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredient>): BigDecimal {
   var cost = filling?.charge ?: BigDecimal.ZERO
   toppings.forEach { topping -> cost += topping.charge }
   return cost
@@ -212,14 +216,18 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
           NavigationButton(
             direction = Direction.LEFT,
             visible = state.isPreviousVisible,
-          ) { sink(OrderTacosScreen.Event.Previous) }
+          ) {
+            sink(OrderTacosScreen.Event.Previous)
+          }
         },
         actions = {
           NavigationButton(
             direction = Direction.RIGHT,
             enabled = state.isNextEnabled,
             visible = state.isNextVisible,
-          ) { sink(OrderTacosScreen.Event.Next) }
+          ) {
+            sink(OrderTacosScreen.Event.Next)
+          }
         }
       )
     },
@@ -228,7 +236,9 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
         orderCost = state.orderCost,
         onConfirmationStep = state.stepState is ConfirmationOrderStep.Order,
         isVisible = state.isFooterVisible,
-      ) { sink(OrderTacosScreen.Event.ProcessOrder) }
+      ) {
+        sink(OrderTacosScreen.Event.ProcessOrder)
+      }
     }
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
@@ -241,12 +251,9 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
   }
 }
 
-internal enum class Direction(
-  val icon: ImageVector,
-  @StringRes val descriptionResId: Int
-) {
+internal enum class Direction(val icon: ImageVector, @StringRes val descriptionResId: Int) {
   LEFT(Icons.Filled.ArrowBack, R.string.top_bar_back),
-  RIGHT(Icons.Filled.ArrowForward,R.string.top_bar_forward)
+  RIGHT(Icons.Filled.ArrowForward, R.string.top_bar_forward)
 }
 
 @Composable
@@ -259,10 +266,11 @@ private fun NavigationButton(
 ) {
   if (!visible) return
 
-  val tintColour = when (enabled) {
-    true -> MaterialTheme.colorScheme.onSurface
-    false -> MaterialTheme.colorScheme.outline
-  }
+  val tintColour =
+    when (enabled) {
+      true -> MaterialTheme.colorScheme.onSurface
+      false -> MaterialTheme.colorScheme.outline
+    }
 
   IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
     Image(
@@ -284,36 +292,35 @@ private fun OrderTotal(
 ) {
   if (!isVisible) return
 
-  val color = when {
-    onConfirmationStep -> MaterialTheme.colorScheme.onTertiaryContainer
-    else -> MaterialTheme.colorScheme.tertiaryContainer
-  }
-  var boxModifier = modifier
-    .fillMaxWidth()
-    .defaultMinSize(minHeight = 30.dp)
-    .padding(horizontal = 5.dp)
-    .clip(RoundedCornerShape(5.dp))
-    .background(color)
+  val color =
+    when {
+      onConfirmationStep -> MaterialTheme.colorScheme.onTertiaryContainer
+      else -> MaterialTheme.colorScheme.tertiaryContainer
+    }
+  var boxModifier =
+    modifier
+      .fillMaxWidth()
+      .defaultMinSize(minHeight = 30.dp)
+      .padding(horizontal = 5.dp)
+      .clip(RoundedCornerShape(5.dp))
+      .background(color)
   if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
-  val label = when (onConfirmationStep) {
-    true -> stringResource(R.string.bottom_bar_place_order)
-    false -> stringResource(R.string.bottom_bar_order_total)
-  }
+  val label =
+    when (onConfirmationStep) {
+      true -> stringResource(R.string.bottom_bar_place_order)
+      false -> stringResource(R.string.bottom_bar_order_total)
+    }
   Box(modifier = boxModifier) {
     Text(
       text = label,
-      modifier = Modifier
-        .align(Alignment.CenterStart)
-        .padding(start = 5.dp),
+      modifier = Modifier.align(Alignment.CenterStart).padding(start = 5.dp),
       color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )
     Text(
       text = if (onConfirmationStep) "$$orderCost" else "$$orderCost",
-      modifier = Modifier
-        .align(Alignment.CenterEnd)
-        .padding(end = 5.dp),
+      modifier = Modifier.align(Alignment.CenterEnd).padding(end = 5.dp),
       color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )
@@ -333,7 +340,12 @@ internal class OrderTacosPresenterFactory(
   ): Presenter<*>? =
     when (screen) {
       is OrderTacosScreen ->
-        OrderTacosPresenter(fillingsProducer, toppingsProducer, confirmationProducer, summaryProducer)
+        OrderTacosPresenter(
+          fillingsProducer,
+          toppingsProducer,
+          confirmationProducer,
+          summaryProducer
+        )
       else -> null
     }
 }
@@ -341,9 +353,8 @@ internal class OrderTacosPresenterFactory(
 internal class OrderTacosUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? =
     when (screen) {
-      is OrderTacosScreen -> ui<OrderTacosScreen.State> { state, modifier ->
-        OrderTacosUi(state, modifier)
-      }
+      is OrderTacosScreen ->
+        ui<OrderTacosScreen.State> { state, modifier -> OrderTacosUi(state, modifier) }
       else -> null
     }
 }

@@ -7,8 +7,8 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import kotlinx.collections.immutable.persistentListOf
 import java.math.BigDecimal
+import kotlinx.collections.immutable.persistentListOf
 
 internal inline fun <reified T : Any> OrderStep.State.asInstanceOf(): T =
   (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")
@@ -18,12 +18,13 @@ internal class FakeOrderStepParent(
   toppings: Set<Ingredient> = emptySet(),
 ) {
   private val validations = ArrayDeque<OrderStep.Validation>()
-  var orderDetails by mutableStateOf(
-    OrderDetails(
-      filling = filling,
-      toppings = toppings,
+  var orderDetails by
+    mutableStateOf(
+      OrderDetails(
+        filling = filling,
+        toppings = toppings,
+      )
     )
-  )
     private set
 
   fun childEvent(event: OrderStep.Event) {
@@ -47,14 +48,16 @@ internal class FakeOrderStepParent(
   }
 }
 
-internal val testFillings = persistentListOf(
-  Ingredient("apple", calories = 10, charge = BigDecimal("1.99"), diet = Diet.VEGAN),
-  Ingredient("orange", diet = Diet.VEGETARIAN),
-  Ingredient("pear", diet = Diet.NONE),
-)
+internal val testFillings =
+  persistentListOf(
+    Ingredient("apple", calories = 10, charge = BigDecimal("1.99"), diet = Diet.VEGAN),
+    Ingredient("orange", diet = Diet.VEGETARIAN),
+    Ingredient("pear", diet = Diet.NONE),
+  )
 
-internal val testToppings = persistentListOf(
-  Ingredient("carrot", calories = 15, charge = BigDecimal("0.75"), diet = Diet.VEGAN),
-  Ingredient("onion", diet = Diet.VEGETARIAN),
-  Ingredient("potato", diet = Diet.NONE),
-)
+internal val testToppings =
+  persistentListOf(
+    Ingredient("carrot", calories = 15, charge = BigDecimal("0.75"), diet = Diet.VEGAN),
+    Ingredient("onion", diet = Diet.VEGETARIAN),
+    Ingredient("potato", diet = Diet.NONE),
+  )

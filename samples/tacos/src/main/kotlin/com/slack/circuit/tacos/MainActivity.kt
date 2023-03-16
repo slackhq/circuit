@@ -22,21 +22,17 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val circuitConfig: CircuitConfig = CircuitConfig
-      .Builder()
-      .addPresenterFactory(buildPresenterFactory())
-      .addUiFactory(OrderTacosUiFactory())
-      .build()
+    val circuitConfig: CircuitConfig =
+      CircuitConfig.Builder()
+        .addPresenterFactory(buildPresenterFactory())
+        .addUiFactory(OrderTacosUiFactory())
+        .build()
 
     setContent {
       TacoTheme {
-        rememberSystemUiController().run {
-          setStatusBarColor(MaterialTheme.colorScheme.background)
-        }
+        rememberSystemUiController().run { setStatusBarColor(MaterialTheme.colorScheme.background) }
 
-        CircuitCompositionLocals(circuitConfig) {
-          CircuitContent(OrderTacosScreen)
-        }
+        CircuitCompositionLocals(circuitConfig) { CircuitContent(OrderTacosScreen) }
       }
     }
   }

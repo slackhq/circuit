@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import app.cash.molecule.RecompositionClock
@@ -19,25 +21,18 @@ class FillingsProducerImplTest {
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
-      producer(
-        orderDetails = parent.orderDetails,
-        eventSink = parent::childEvent
-      )
-    }.test {
-      assertThat(awaitItem()).isEqualTo(FillingsOrderStep.State.Loading)
-      parent.assertValidation(OrderStep.Validation.Invalid)
+        producer(orderDetails = parent.orderDetails, eventSink = parent::childEvent)
+      }
+      .test {
+        assertThat(awaitItem()).isEqualTo(FillingsOrderStep.State.Loading)
+        parent.assertValidation(OrderStep.Validation.Invalid)
 
-      awaitItem()
-        .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
-        .run {
+        awaitItem().asInstanceOf<FillingsOrderStep.State.AvailableFillings>().run {
           assertThat(selected).isEqualTo(Ingredient(""))
           assertThat(list).isEqualTo(testFillings)
         }
-      parent
-        .assertValidation(OrderStep.Validation.Invalid)
-        .assertNoUnconsumedValidation()
-    }
-
+        parent.assertValidation(OrderStep.Validation.Invalid).assertNoUnconsumedValidation()
+      }
   }
 
   @Test
@@ -47,35 +42,29 @@ class FillingsProducerImplTest {
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
-      producer(
-        orderDetails = parent.orderDetails,
-        eventSink = parent::childEvent
-      )
-    }.test {
-      awaitItem() // Loading
-      parent.assertValidation(OrderStep.Validation.Invalid)
+        producer(orderDetails = parent.orderDetails, eventSink = parent::childEvent)
+      }
+      .test {
+        awaitItem() // Loading
+        parent.assertValidation(OrderStep.Validation.Invalid)
 
-      // select a filling
-      val expectedFilling = testFillings[0]
-      awaitItem()
-        .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
-        .also { parent.assertValidation(OrderStep.Validation.Invalid) }
-        .run {
-          assertThat(selected).isEqualTo(Ingredient(""))
-          eventSink(FillingsOrderStep.Event.SelectFilling(expectedFilling))
-        }
+        // select a filling
+        val expectedFilling = testFillings[0]
+        awaitItem()
+          .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
+          .also { parent.assertValidation(OrderStep.Validation.Invalid) }
+          .run {
+            assertThat(selected).isEqualTo(Ingredient(""))
+            eventSink(FillingsOrderStep.Event.SelectFilling(expectedFilling))
+          }
 
-      // verify filling is selected
-      awaitItem()
-        .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
-        .also {
-          parent
-            .assertValidation(OrderStep.Validation.Valid)
-            .assertNoUnconsumedValidation()
-        }
-        .run {
-          assertThat(selected).isEqualTo(expectedFilling)
-        }
-    }
+        // verify filling is selected
+        awaitItem()
+          .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
+          .also {
+            parent.assertValidation(OrderStep.Validation.Valid).assertNoUnconsumedValidation()
+          }
+          .run { assertThat(selected).isEqualTo(expectedFilling) }
+      }
   }
 }

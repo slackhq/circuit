@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import androidx.compose.foundation.layout.Box
@@ -27,12 +29,7 @@ internal fun summaryProducer(eventSink: (OrderStep.Event) -> Unit) =
 @Composable
 internal fun SummaryUi(state: SummaryOrderStep.SummaryState, modifier: Modifier) {
   val sink = state.eventSink
-  Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center
-  ) {
-    Button(onClick = sink) {
-      Text(stringResource(R.string.summary_step_order_again))
-    }
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Button(onClick = sink) { Text(stringResource(R.string.summary_step_order_again)) }
   }
 }

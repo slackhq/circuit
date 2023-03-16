@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import androidx.compose.foundation.clickable
@@ -50,12 +52,11 @@ object ToppingsOrderStep : OrderStep {
 
 private const val MINIMUM_TOPPINGS = 3
 
-internal class ToppingsProducerImpl(private val repository: IngredientsRepository) : ToppingsProducer {
+internal class ToppingsProducerImpl(private val repository: IngredientsRepository) :
+  ToppingsProducer {
   @Composable
-  override fun invoke(
-    orderDetails: OrderDetails,
-    eventSink: (OrderStep.Event) -> Unit
-  ) = invoke(orderDetails, MINIMUM_TOPPINGS, eventSink)
+  override fun invoke(orderDetails: OrderDetails, eventSink: (OrderStep.Event) -> Unit) =
+    invoke(orderDetails, MINIMUM_TOPPINGS, eventSink)
 
   @Composable
   internal operator fun invoke(
@@ -63,18 +64,15 @@ internal class ToppingsProducerImpl(private val repository: IngredientsRepositor
     minimumToppings: Int,
     eventSink: (OrderStep.Event) -> Unit
   ): OrderStep.State {
-    val ingredients by produceState<ImmutableList<Ingredient>?>(null) {
-      value = repository.getToppings()
-    }
+    val ingredients by
+      produceState<ImmutableList<Ingredient>?>(null) { value = repository.getToppings() }
 
     validateToppings(orderDetails.toppings.size, minimumToppings, eventSink)
     return when (val list = ingredients) {
       null -> ToppingsOrderStep.State.Loading
       else ->
-        ToppingsOrderStep.State.AvailableToppings(
-          orderDetails.toppings.toImmutableSet(),
-          list
-        ) { event ->
+        ToppingsOrderStep.State.AvailableToppings(orderDetails.toppings.toImmutableSet(), list) {
+          event ->
           updateToppings(
             event = event,
             plusTopping = { orderDetails.toppings.plus(it) },
@@ -92,18 +90,20 @@ private fun updateToppings(
   minusTopping: (Ingredient) -> Set<Ingredient>,
   eventSink: (OrderStep.Event) -> Unit
 ) {
-  val updatedToppings = when (event) {
-    is ToppingsOrderStep.Event.AddTopping -> plusTopping(event.ingredient)
-    is ToppingsOrderStep.Event.RemoveTopping -> minusTopping(event.ingredient)
-  }
+  val updatedToppings =
+    when (event) {
+      is ToppingsOrderStep.Event.AddTopping -> plusTopping(event.ingredient)
+      is ToppingsOrderStep.Event.RemoveTopping -> minusTopping(event.ingredient)
+    }
   eventSink(OrderStep.UpdateOrder.Toppings(updatedToppings))
 }
 
 private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.Event) -> Unit) {
-  val validation = when {
-    selected >= minimum -> OrderStep.Validation.Valid
-    else -> OrderStep.Validation.Invalid
-  }
+  val validation =
+    when {
+      selected >= minimum -> OrderStep.Validation.Valid
+      else -> OrderStep.Validation.Invalid
+    }
   eventSink(validation)
 }
 
@@ -118,9 +118,7 @@ internal fun ToppingsUi(state: ToppingsOrderStep.State, modifier: Modifier = Mod
 @Composable
 private fun Loading(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(
-      color = MaterialTheme.colorScheme.onSurface
-    )
+    CircularProgressIndicator(color = MaterialTheme.colorScheme.onSurface)
   }
 }
 
@@ -138,10 +136,11 @@ private fun ToppingsList(
         ingredient = ingredient,
         isSelected = state.selected.contains(ingredient),
         onSelect = { selected ->
-          val event = when {
-            selected -> ToppingsOrderStep.Event::AddTopping
-            else -> ToppingsOrderStep.Event::RemoveTopping
-          }
+          val event =
+            when {
+              selected -> ToppingsOrderStep.Event::AddTopping
+              else -> ToppingsOrderStep.Event::RemoveTopping
+            }
           sink(event(ingredient))
         },
       )

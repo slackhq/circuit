@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import app.cash.molecule.RecompositionClock
@@ -13,42 +15,31 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.RobolectricTestRunner
-import java.math.BigDecimal
 
 @RunWith(RobolectricTestRunner::class)
 class ConfirmationProducerTest {
   @Test
   fun `confirmationProducer - emitted state contains sorted toppings`() = runTest {
-    val details = OrderDetails(
-      toppings = testToppings.reversed().toImmutableSet()
-    )
+    val details = OrderDetails(toppings = testToppings.reversed().toImmutableSet())
     val expectedToppings = testToppings.map { it.name }
 
-    moleculeFlow(RecompositionClock.Immediate) {
-      confirmationProducer(details)
-    }.test {
-      awaitItem().run {
-        assertThat(toppings).isEqualTo(expectedToppings)
-      }
-    }
+    moleculeFlow(RecompositionClock.Immediate) { confirmationProducer(details) }
+      .test { awaitItem().run { assertThat(toppings).isEqualTo(expectedToppings) } }
   }
 
   @Test
   fun `confirmationProducer - emitted state contains expected calorie count`() = runTest {
     val filling = testFillings.first()
-    val details = OrderDetails(
-      filling = filling,
-      toppings = testToppings.toSet(),
-    )
-    val expectedCalorieCount = filling.calories + testToppings.fold(0) { acc, topping -> acc + topping.calories }
+    val details =
+      OrderDetails(
+        filling = filling,
+        toppings = testToppings.toSet(),
+      )
+    val expectedCalorieCount =
+      filling.calories + testToppings.fold(0) { acc, topping -> acc + topping.calories }
 
-    moleculeFlow(RecompositionClock.Immediate) {
-      confirmationProducer(details)
-    }.test {
-      awaitItem().run {
-        assertThat(calories).isEqualTo(expectedCalorieCount)
-      }
-    }
+    moleculeFlow(RecompositionClock.Immediate) { confirmationProducer(details) }
+      .test { awaitItem().run { assertThat(calories).isEqualTo(expectedCalorieCount) } }
   }
 }
 
@@ -58,30 +49,27 @@ class ConfirmationProducerDietTest(
   private val filling: Ingredient,
   private val toppings: List<Ingredient>
 ) {
-    @Test
+  @Test
   fun `confirmationProducer - emitted state contains expected diet`() = runTest {
-    val details = OrderDetails(
-      filling = filling,
-      toppings = toppings.toSet(),
-    )
+    val details =
+      OrderDetails(
+        filling = filling,
+        toppings = toppings.toSet(),
+      )
 
-    moleculeFlow(RecompositionClock.Immediate) {
-      confirmationProducer(details)
-    }.test {
-      awaitItem().run {
-        assertThat(diet).isEqualTo(expectedDiet)
-      }
-    }
+    moleculeFlow(RecompositionClock.Immediate) { confirmationProducer(details) }
+      .test { awaitItem().run { assertThat(diet).isEqualTo(expectedDiet) } }
   }
 
   companion object {
     @JvmStatic
     @ParameterizedRobolectricTestRunner.Parameters
-    fun data() = listOf(
-      arrayOf(Diet.VEGAN, testFillings.first(), listOf(testToppings.first())),
-      arrayOf(Diet.VEGETARIAN, testFillings.first(), testToppings.subList(0,2)),
-      arrayOf(Diet.NONE, testFillings.first(), testToppings),
-      arrayOf(Diet.NONE, testFillings.last(), testToppings.subList(0,2)),
-    )
+    fun data() =
+      listOf(
+        arrayOf(Diet.VEGAN, testFillings.first(), listOf(testToppings.first())),
+        arrayOf(Diet.VEGETARIAN, testFillings.first(), testToppings.subList(0, 2)),
+        arrayOf(Diet.NONE, testFillings.first(), testToppings),
+        arrayOf(Diet.NONE, testFillings.last(), testToppings.subList(0, 2)),
+      )
   }
 }

@@ -4,7 +4,7 @@ package com.slack.circuit.test
 
 import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Screen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test

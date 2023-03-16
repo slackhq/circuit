@@ -14,18 +14,19 @@ import com.jakewharton.mosaic.Column
 import com.jakewharton.mosaic.MosaicScope
 import com.jakewharton.mosaic.Text
 import com.jakewharton.mosaic.runMosaic
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitContext
-import com.slack.circuit.Screen
-import com.slack.circuit.Ui
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.CounterState
-import com.slack.circuit.ui
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jline.terminal.TerminalBuilder
 
@@ -37,11 +38,13 @@ private class MosaicCounterCommand : CliktCommand() {
       .flag(default = false)
 
   override fun run() {
-    runMosaic {
-      if (useCircuit) {
-        runCounterCircuit()
-      } else {
-        runWithoutCircuit()
+    runBlocking {
+      runMosaic {
+        if (useCircuit) {
+          runCounterCircuit()
+        } else {
+          runWithoutCircuit()
+        }
       }
     }
   }
@@ -102,7 +105,7 @@ private fun Counter(state: CounterState) {
   }
 }
 
-private fun runCounterCircuit() = runMosaic {
+private suspend fun runCounterCircuit() = runMosaic {
   setContent {
     val circuitConfig =
       CircuitConfig.Builder()

@@ -4,8 +4,8 @@ package com.slack.circuit.sample.interop
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.slack.circuit.Presenter
-import com.slack.circuit.presenterOf
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterState
 import kotlinx.coroutines.flow.Flow

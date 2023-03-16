@@ -19,5 +19,5 @@ tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
 dependencies {
   implementation(compose.desktop.currentOs)
   implementation(projects.samples.counter)
-  implementation(projects.circuit)
+  implementation(projects.circuitFoundation)
 }

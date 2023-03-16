@@ -128,7 +128,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.12.3" }
+  plugins { id("com.gradle.enterprise") version "3.12.4" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -151,19 +151,23 @@ rootProject.name = "circuit-root"
 // Please keep these in alphabetical order!
 include(
   ":backstack",
-  ":circuit",
   ":circuit-codegen",
   ":circuit-codegen-annotations",
+  ":circuit-foundation",
   ":circuit-overlay",
   ":circuit-retained",
+  ":circuit-runtime",
+  ":circuit-runtime-presenter",
+  ":circuit-runtime-ui",
   ":circuit-test",
-  ":samples:star",
-  ":samples:star:apk",
   ":samples:counter",
   ":samples:counter:android",
   ":samples:counter:desktop",
   ":samples:counter:mosaic",
   ":samples:interop",
+  ":samples:star",
+  ":samples:star:apk",
+  ":samples:star:benchmark",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance
@@ -171,5 +175,3 @@ enableFeaturePreview("GROOVY_COMPILATION_AVOIDANCE")
 
 // https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-include(":samples:star:benchmark")

@@ -18,11 +18,6 @@ class BaselineProfileGenerator {
       // Iteration values recommended by AndroidX folks
       maxIterations = 15,
       stableIterations = 3,
-      filterPredicate = { rule ->
-        rule.contains("com/slack/circuit") &&
-          !rule.contains("com/slack/circuit/sample") &&
-          !rule.contains("com/slack/circuit/star")
-      },
       profileBlock = { startActivityAndWait() }
     )
 }

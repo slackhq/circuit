@@ -44,21 +44,24 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Provider
 
-private const val CIRCUIT_BASE_PACKAGE = "com.slack.circuit"
+private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
+private const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
+private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
 private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
 private val CIRCUIT_INJECT_ANNOTATION =
-  ClassName("$CIRCUIT_BASE_PACKAGE.codegen.annotations", "CircuitInject")
-private val CIRCUIT_PRESENTER = ClassName(CIRCUIT_BASE_PACKAGE, "Presenter")
+  ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
+private val CIRCUIT_PRESENTER = ClassName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "Presenter")
 private val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
-private val CIRCUIT_UI = ClassName(CIRCUIT_BASE_PACKAGE, "Ui")
+private val CIRCUIT_UI = ClassName(CIRCUIT_RUNTIME_UI_PACKAGE, "Ui")
 private val CIRCUIT_UI_FACTORY = CIRCUIT_UI.nestedClass("Factory")
-private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_BASE_PACKAGE, "CircuitUiState")
-private val SCREEN = ClassName(CIRCUIT_BASE_PACKAGE, "Screen")
-private val NAVIGATOR = ClassName(CIRCUIT_BASE_PACKAGE, "Navigator")
-private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_BASE_PACKAGE, "CircuitContext")
+private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitUiState")
+private val SCREEN = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Screen")
+private val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
+private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
 private const val FACTORY = "Factory"
 
 @AutoService(SymbolProcessorProvider::class)
@@ -140,8 +143,14 @@ private class CircuitSymbolProcessor(
       computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
         ?: return
 
+    val className =
+      factoryData.className.replaceFirstChar { char ->
+        char.takeIf { char.isLowerCase() }?.run { uppercase(Locale.getDefault()) }
+          ?: char.toString()
+      }
+
     val builder =
-      TypeSpec.classBuilder(factoryData.className + FACTORY)
+      TypeSpec.classBuilder(className + FACTORY)
         .addAnnotation(
           AnnotationSpec.builder(ContributesMultibinding::class)
             .addMember("%T::class", scope)
@@ -229,7 +238,7 @@ private class CircuitSymbolProcessor(
             FactoryType.PRESENTER ->
               CodeBlock.of(
                 "%M·{·%M(%L)·}",
-                MemberName("com.slack.circuit", "presenterOf"),
+                MemberName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "presenterOf"),
                 MemberName(packageName, name),
                 assistedParams
               )
@@ -292,7 +301,7 @@ private class CircuitSymbolProcessor(
                 }
               CodeBlock.of(
                 "%M<%T>·{·%L,·modifier·->·%M(%L%L%L)·}",
-                MemberName("com.slack.circuit", "ui"),
+                MemberName(CIRCUIT_RUNTIME_UI_PACKAGE, "ui"),
                 stateType,
                 stateArg,
                 MemberName(packageName, name),
@@ -336,7 +345,16 @@ private class CircuitSymbolProcessor(
                 else -> null
               }
             }
-            .first()
+            .firstOrNull()
+            ?: run {
+              logger.error(
+                "Factory must be for a UI or Presenter class, but was " +
+                  "${targetClass.qualifiedName?.asString()}. " +
+                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}",
+                targetClass
+              )
+              return null
+            }
         val assistedParams =
           if (useProvider) {
             // Nothing to do here, we'll just use the provider directly.

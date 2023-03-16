@@ -22,17 +22,17 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitContext
-import com.slack.circuit.Screen
-import com.slack.circuit.Ui
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.CounterState
-import com.slack.circuit.ui
 
 object DesktopCounterScreen : CounterScreen
 

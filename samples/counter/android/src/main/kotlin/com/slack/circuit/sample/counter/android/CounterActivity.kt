@@ -11,9 +11,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitContent
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 
 class CounterActivity : AppCompatActivity() {

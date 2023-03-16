@@ -13,8 +13,8 @@ import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.Coil
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG

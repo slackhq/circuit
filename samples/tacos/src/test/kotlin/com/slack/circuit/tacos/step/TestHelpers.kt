@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
 import androidx.compose.runtime.getValue

@@ -5,10 +5,10 @@ package com.slack.circuit.tacos
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitContent
-import com.slack.circuit.Presenter
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.tacos.repository.IngredientsRepositoryImpl
 import com.slack.circuit.tacos.step.FillingsProducerImpl
 import com.slack.circuit.tacos.step.ToppingsProducerImpl

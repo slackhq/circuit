@@ -61,7 +61,7 @@ dependencies {
   implementation(libs.bundles.compose.ui)
   implementation(libs.dagger)
   implementation(libs.kotlinx.immutable)
-  implementation(projects.circuit)
+  implementation(projects.circuitFoundation)
   implementation(projects.circuitCodegenAnnotations)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)

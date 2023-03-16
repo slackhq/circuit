@@ -6,15 +6,13 @@ import androidx.compose.runtime.setValue
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
 
 internal inline fun <reified T : Any> OrderStep.State.asInstanceOf(): T =
   (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")
 
 internal class FakeOrderStepParent(
   filling: Ingredient = Ingredient(""),
-  toppings: ImmutableSet<Ingredient> = persistentSetOf(),
+  toppings: Set<Ingredient> = emptySet(),
 ) {
   private val validations = ArrayDeque<OrderStep.Validation>()
   var orderDetails by mutableStateOf(

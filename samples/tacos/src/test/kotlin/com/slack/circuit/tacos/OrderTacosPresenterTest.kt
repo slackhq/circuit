@@ -7,6 +7,7 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.step.FillingsOrderStep
 import com.slack.circuit.tacos.step.OrderStep
+import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.test.test
 import kotlinx.collections.immutable.persistentSetOf
@@ -14,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.math.BigDecimal
 
 @RunWith(RobolectricTestRunner::class)
 class OrderTacosPresenterTest {
@@ -22,7 +24,8 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> error("wrong step") },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
     )
 
     presenter.test {
@@ -40,7 +43,8 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
     )
 
     presenter.test {
@@ -57,14 +61,14 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
     )
 
     moleculeFlow(RecompositionClock.Immediate) {
       presenter.presentInternal(ToppingsOrderStep)
     }.test {
       awaitItem().run {
-        assertThat(stepState).isEqualTo(ToppingsOrderStep.State.Loading)
         eventSink(OrderTacosScreen.Event.Previous)
       }
       assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
@@ -76,12 +80,12 @@ class OrderTacosPresenterTest {
     val presenter = OrderTacosPresenter(
       fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
     )
 
     presenter.test {
       awaitItem().run {
-        assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
         eventSink(OrderTacosScreen.Event.Previous)
       }
 
@@ -99,7 +103,8 @@ class OrderTacosPresenterTest {
         FillingsOrderStep.State.Loading
       },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
     )
 
     presenter.test {
@@ -123,17 +128,18 @@ class OrderTacosPresenterTest {
         FillingsOrderStep.State.Loading
       },
       toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
     )
 
     presenter.test {
-      assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
+      awaitItem()
       assertThat(details).isEqualTo(OrderDetails())
 
       val filling = Ingredient("apple")
       sink(OrderStep.UpdateOrder.Filling(filling))
 
-      assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
+      awaitItem()
       assertThat(details).isEqualTo(OrderDetails(filling = filling))
     }
   }
@@ -150,13 +156,14 @@ class OrderTacosPresenterTest {
         sink = eventSink
         ToppingsOrderStep.State.Loading
       },
-      confirmationProducer = { _, _ -> error("wrong step") }
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") }
     )
 
     moleculeFlow(RecompositionClock.Immediate) {
       presenter.presentInternal(ToppingsOrderStep)
     }.test {
-      assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
+      awaitItem()
       assertThat(details).isEqualTo(OrderDetails())
 
       val toppings = persistentSetOf(Ingredient("apple"))
@@ -164,6 +171,63 @@ class OrderTacosPresenterTest {
 
       assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
       assertThat(details).isEqualTo(OrderDetails(toppings = toppings))
+    }
+  }
+
+  @Test
+  fun `present - resets all state after receiving restart event`() = runTest {
+    lateinit var sink: (OrderStep.Event) -> Unit
+    lateinit var details: OrderDetails
+
+    val presenter = OrderTacosPresenter(
+      fillingsProducer = { orderDetails, _ ->
+        details = orderDetails
+        FillingsOrderStep.State.Loading
+      },
+      toppingsProducer = { _, _ -> error("wrong step") },
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { eventSink ->
+        sink = eventSink
+        SummaryOrderStep.SummaryState { }
+      },
+    )
+
+    moleculeFlow(RecompositionClock.Immediate) {
+      presenter.presentInternal(SummaryOrderStep)
+    }.test {
+      assertThat(awaitItem().stepState).isInstanceOf(SummaryOrderStep.SummaryState::class.java)
+
+      sink(OrderStep.Restart)
+
+      awaitItem().run {
+        assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
+        assertThat(isNextEnabled).isFalse()
+      }
+
+      assertThat(details).isEqualTo(OrderDetails())
+    }
+  }
+
+  @Test
+  fun `present - update order cost when ingredients change`() = runTest {
+    val initialData = OrderDetails(
+      ingredientsCost = BigDecimal("1.99")
+    )
+    val expectedCost = initialData.run { baseCost + ingredientsCost }
+
+    val presenter = OrderTacosPresenter(
+      fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
+      toppingsProducer = { _, _ -> error("wrong step") },
+      confirmationProducer = { _, _ -> error("wrong step") },
+      summaryProducer = { _ -> error("wrong step") },
+    )
+
+    moleculeFlow(RecompositionClock.Immediate) {
+      presenter.presentInternal(initialOrderDetails = initialData)
+    }.test {
+      awaitItem().run {
+        assertThat(orderCost).isEqualTo(expectedCost)
+      }
     }
   }
 }

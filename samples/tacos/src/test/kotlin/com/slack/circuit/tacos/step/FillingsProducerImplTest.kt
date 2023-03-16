@@ -4,19 +4,21 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.math.BigDecimal
 
 @RunWith(RobolectricTestRunner::class)
 class FillingsProducerImplTest {
   @Test
   fun `invoke - emit Loading then AvailableFillings`() = runTest {
     val parent = FakeOrderStepParent()
-    val repo = TestIngredientsRepository(fillings)
+    val repo = TestIngredientsRepository(testFillings)
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -32,7 +34,7 @@ class FillingsProducerImplTest {
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .run {
           assertThat(selected).isEqualTo(Ingredient(""))
-          assertThat(list).isEqualTo(fillings)
+          assertThat(list).isEqualTo(testFillings)
         }
       parent
         .assertValidation(OrderStep.Validation.Invalid)
@@ -44,7 +46,7 @@ class FillingsProducerImplTest {
   @Test
   fun `invoke - emit Valid validation event after selecting filling`() = runTest {
     val parent = FakeOrderStepParent()
-    val repo = TestIngredientsRepository(fillings)
+    val repo = TestIngredientsRepository(testFillings)
     val producer = FillingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -57,7 +59,7 @@ class FillingsProducerImplTest {
       parent.assertValidation(OrderStep.Validation.Invalid)
 
       // select a filling
-      val expectedFilling = fillings[0]
+      val expectedFilling = testFillings[0]
       awaitItem()
         .asInstanceOf<FillingsOrderStep.State.AvailableFillings>()
         .also { parent.assertValidation(OrderStep.Validation.Invalid) }
@@ -81,9 +83,9 @@ class FillingsProducerImplTest {
   }
 }
 
-private val fillings = persistentListOf(
-  Ingredient("apple"),
-  Ingredient("orange"),
-  Ingredient("pear"),
+internal val testFillings = persistentListOf(
+  Ingredient("apple", calories = 10, charge = BigDecimal("1.99"), diet = Diet.VEGAN),
+  Ingredient("orange", diet = Diet.VEGETARIAN),
+  Ingredient("pear", diet = Diet.NONE),
 )
 

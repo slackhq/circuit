@@ -4,6 +4,7 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -11,13 +12,14 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.math.BigDecimal
 
 @RunWith(RobolectricTestRunner::class)
 class ToppingsProducerImplTest {
   @Test
   fun `invoke - emit loading then AvailableToppings`() = runTest {
     val parent = FakeOrderStepParent()
-    val repo = TestIngredientsRepository(toppings)
+    val repo = TestIngredientsRepository(testToppings)
     val producer = ToppingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -33,7 +35,7 @@ class ToppingsProducerImplTest {
         .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
         .run {
           assertThat(selected).isEmpty()
-          assertThat(list).isEqualTo(toppings)
+          assertThat(list).isEqualTo(testToppings)
         }
       parent
         .assertValidation(OrderStep.Validation.Invalid)
@@ -44,7 +46,7 @@ class ToppingsProducerImplTest {
   @Test
   fun `invoke - emit Valid validation event after adding minimum toppings`() = runTest {
     val parent = FakeOrderStepParent()
-    val repo = TestIngredientsRepository(toppings)
+    val repo = TestIngredientsRepository(testToppings)
     val producer = ToppingsProducerImpl(repo)
 
     moleculeFlow(RecompositionClock.Immediate) {
@@ -66,14 +68,14 @@ class ToppingsProducerImplTest {
           assertThat(selected).isEmpty()
 
           // select first topping
-          eventSink(ToppingsOrderStep.Event.AddTopping(toppings[0]))
+          eventSink(ToppingsOrderStep.Event.AddTopping(testToppings[0]))
         }
 
       // New AvailableToppings containing toppings[0]
       awaitItem()
         .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
         .run {
-          assertThat(selected).isEqualTo(persistentSetOf(toppings[0]))
+          assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
         }
       parent
         .assertValidation(OrderStep.Validation.Valid)
@@ -84,8 +86,8 @@ class ToppingsProducerImplTest {
   @Test
   fun `invoke - emit Invalid validation event after removing topping and falling below minimum`() =
     runTest {
-      val parent = FakeOrderStepParent(toppings = persistentSetOf(toppings[0]))
-      val repo = TestIngredientsRepository(toppings)
+      val parent = FakeOrderStepParent(toppings = persistentSetOf(testToppings[0]))
+      val repo = TestIngredientsRepository(testToppings)
       val producer = ToppingsProducerImpl(repo)
 
       moleculeFlow(RecompositionClock.Immediate) {
@@ -104,9 +106,9 @@ class ToppingsProducerImplTest {
           .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
           .also { parent.assertValidation(OrderStep.Validation.Valid) }
           .run {
-            assertThat(selected).isEqualTo(persistentSetOf(toppings[0]))
+            assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
 
-            eventSink(ToppingsOrderStep.Event.RemoveTopping(toppings[0]))
+            eventSink(ToppingsOrderStep.Event.RemoveTopping(testToppings[0]))
           }
 
         // New AvailableToppings with topping count below minimum
@@ -124,9 +126,9 @@ class ToppingsProducerImplTest {
     }
 }
 
-private val toppings = persistentListOf(
-  Ingredient("carrot"),
-  Ingredient("onion"),
-  Ingredient("potato"),
+internal val testToppings = persistentListOf(
+  Ingredient("carrot", calories = 15, charge = BigDecimal("0.75"), diet = Diet.VEGAN),
+  Ingredient("onion", diet = Diet.VEGETARIAN),
+  Ingredient("potato", diet = Diet.NONE),
 )
 

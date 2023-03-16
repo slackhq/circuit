@@ -59,7 +59,7 @@ dependencies {
   kapt(libs.dagger.compiler)
   ksp(projects.circuitCodegen)
   implementation(projects.circuitCodegenAnnotations)
-  implementation(projects.circuit)
+  implementation(projects.circuitFoundation)
   implementation(projects.circuitOverlay)
   implementation(projects.circuitRetained)
   implementation(libs.androidx.compose.integration.activity)

@@ -3,8 +3,8 @@
 package com.slack.circuit.star.navigator
 
 import android.content.Intent
-import com.slack.circuit.Navigator
-import com.slack.circuit.Screen
+import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Screen
 import kotlinx.parcelize.Parcelize
 
 /** Custom navigator that adds support for initiating navigation in standard Android. */

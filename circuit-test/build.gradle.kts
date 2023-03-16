@@ -15,7 +15,7 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(projects.circuit)
+        api(projects.circuitFoundation)
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(libs.turbine)

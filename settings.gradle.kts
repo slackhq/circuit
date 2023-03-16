@@ -151,11 +151,14 @@ rootProject.name = "circuit-root"
 // Please keep these in alphabetical order!
 include(
   ":backstack",
-  ":circuit",
   ":circuit-codegen",
   ":circuit-codegen-annotations",
+  ":circuit-foundation",
   ":circuit-overlay",
   ":circuit-retained",
+  ":circuit-runtime",
+  ":circuit-runtime-presenter",
+  ":circuit-runtime-ui",
   ":circuit-test",
   ":samples:counter",
   ":samples:counter:android",

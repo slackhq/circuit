@@ -11,7 +11,7 @@ application { mainClass.set("com.slack.circuit.sample.counter.mosaic.MosaicCount
 
 dependencies {
   implementation(projects.samples.counter)
-  implementation(projects.circuit)
+  implementation(projects.circuitFoundation)
   implementation(libs.clikt)
   implementation(libs.jline)
 }

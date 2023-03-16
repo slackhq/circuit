@@ -17,7 +17,7 @@ android {
 
 dependencies {
   implementation(projects.samples.counter)
-  implementation(projects.circuit)
+  implementation(projects.circuitFoundation)
   implementation(libs.androidx.appCompat)
   implementation(libs.bundles.compose.ui)
   implementation(libs.androidx.compose.integration.activity)

@@ -13,6 +13,7 @@ import com.slack.circuit.tacos.repository.IngredientsRepositoryImpl
 import com.slack.circuit.tacos.step.FillingsProducerImpl
 import com.slack.circuit.tacos.step.ToppingsProducerImpl
 import com.slack.circuit.tacos.step.confirmationProducer
+import com.slack.circuit.tacos.step.summaryProducer
 import com.slack.circuit.tacos.ui.theme.TacoTheme
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +43,7 @@ private fun buildPresenterFactory(): Presenter.Factory {
   return OrderTacosPresenterFactory(
     fillingsProducer = fillingsProducer,
     toppingsProducer = toppingsProducer,
-    confirmationProducer = { details, _ -> confirmationProducer(details) }
+    confirmationProducer = { details, _ -> confirmationProducer(details) },
+    summaryProducer = { sink -> summaryProducer(sink) }
   )
 }

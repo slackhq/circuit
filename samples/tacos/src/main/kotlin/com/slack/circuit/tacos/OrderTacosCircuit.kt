@@ -50,6 +50,7 @@ import com.slack.circuit.tacos.step.ConfirmationOrderStep
 import com.slack.circuit.tacos.step.ConfirmationProducer
 import com.slack.circuit.tacos.step.ConfirmationUi
 import com.slack.circuit.tacos.step.SummaryOrderStep
+import com.slack.circuit.tacos.step.SummaryProducer
 import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
@@ -104,6 +105,7 @@ internal class OrderTacosPresenter(
   private val fillingsProducer: FillingsProducer,
   private val toppingsProducer: ToppingsProducer,
   private val confirmationProducer: ConfirmationProducer,
+  private val summaryProducer: SummaryProducer,
 ) : Presenter<OrderTacosScreen.State> {
   @Composable
   override fun present(): OrderTacosScreen.State = presentInternal()
@@ -322,6 +324,7 @@ internal class OrderTacosPresenterFactory(
   private val fillingsProducer: FillingsProducer,
   private val toppingsProducer: ToppingsProducer,
   private val confirmationProducer: ConfirmationProducer,
+  private val summaryProducer: SummaryProducer,
 ) : Presenter.Factory {
   override fun create(
     screen: Screen,
@@ -330,7 +333,7 @@ internal class OrderTacosPresenterFactory(
   ): Presenter<*>? =
     when (screen) {
       is OrderTacosScreen ->
-        OrderTacosPresenter(fillingsProducer, toppingsProducer, confirmationProducer)
+        OrderTacosPresenter(fillingsProducer, toppingsProducer, confirmationProducer, summaryProducer)
       else -> null
     }
 }

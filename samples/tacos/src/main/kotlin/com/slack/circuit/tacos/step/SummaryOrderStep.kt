@@ -16,8 +16,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object SummaryOrderStep : OrderStep {
-  @Suppress("MagicNumber")
-  @IgnoredOnParcel override val number = 3
+  @Suppress("MagicNumber") @IgnoredOnParcel override val number = 3
   @IgnoredOnParcel override val headerResId = R.string.summary_step_header
 
   data class SummaryState(val eventSink: () -> Unit) : OrderStep.State

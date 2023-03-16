@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
-import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
 
-sealed interface OrderStep : Parcelable {
+sealed interface OrderStep {
   val number: Int
   @get:StringRes val headerResId: Int
 

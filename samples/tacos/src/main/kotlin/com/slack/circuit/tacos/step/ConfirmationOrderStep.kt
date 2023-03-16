@@ -28,13 +28,10 @@ import com.slack.circuit.tacos.model.Ingredient
 import java.math.BigDecimal
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 object ConfirmationOrderStep : OrderStep {
-  @IgnoredOnParcel override val number = 2
-  @IgnoredOnParcel override val headerResId = R.string.confirm_step_header
+  override val number = 2
+  override val headerResId = R.string.confirm_step_header
 
   data class Order(
     val calories: Int,

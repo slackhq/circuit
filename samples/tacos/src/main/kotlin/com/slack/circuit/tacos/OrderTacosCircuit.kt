@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos
 
-import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,7 +24,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +56,6 @@ import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
-import com.slack.circuit.tacos.step.summaryProducer
 import java.math.BigDecimal
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -94,14 +91,13 @@ object OrderTacosScreen : Screen {
   }
 }
 
-@Parcelize
 @Immutable
 data class OrderDetails(
   val filling: Ingredient = Ingredient(""),
   val toppings: Set<Ingredient> = persistentSetOf(),
   val baseCost: BigDecimal = BigDecimal("9.99"), // Default taco price
   val ingredientsCost: BigDecimal = BigDecimal.ZERO
-) : Parcelable
+)
 
 private val orderSteps =
   persistentListOf(FillingsOrderStep, ToppingsOrderStep, ConfirmationOrderStep, SummaryOrderStep)
@@ -119,8 +115,8 @@ internal class OrderTacosPresenter(
     initialStep: OrderStep = FillingsOrderStep,
     initialOrderDetails: OrderDetails = OrderDetails(),
   ): OrderTacosScreen.State {
-    var currentStep by rememberSaveable { mutableStateOf(initialStep) }
-    var orderDetails by rememberSaveable { mutableStateOf(initialOrderDetails) }
+    var currentStep by remember { mutableStateOf(initialStep) }
+    var orderDetails by remember { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }
 
     val stepState =

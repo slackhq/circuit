@@ -11,13 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.slack.circuit.tacos.R
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 object SummaryOrderStep : OrderStep {
-  @Suppress("MagicNumber") @IgnoredOnParcel override val number = 3
-  @IgnoredOnParcel override val headerResId = R.string.summary_step_header
+  @Suppress("MagicNumber") override val number = 3
+  override val headerResId = R.string.summary_step_header
 
   data class SummaryState(val eventSink: () -> Unit) : OrderStep.State
 }

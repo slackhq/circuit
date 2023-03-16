@@ -5,6 +5,8 @@ package com.slack.circuit.tacos
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.MaterialTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
@@ -28,6 +30,10 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       TacoTheme {
+        rememberSystemUiController().run {
+          setStatusBarColor(MaterialTheme.colorScheme.background)
+        }
+
         CircuitCompositionLocals(circuitConfig) {
           CircuitContent(OrderTacosScreen)
         }

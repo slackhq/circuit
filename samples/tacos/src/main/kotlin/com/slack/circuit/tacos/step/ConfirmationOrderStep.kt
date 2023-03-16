@@ -70,7 +70,11 @@ private fun determineDiet(filling: Ingredient, toppings: Set<Ingredient>): Diet 
     }
   }
 
+  // Iterate over the list of toppings and determine the highest common dietary level
+  // VEGAN being the highest, NONE being the lowest
   val diet = toppings.fold(Diet.values().last(), updater)
+
+  // Check if the filling impacts the dietary level...
   return updater(diet, filling)
 }
 

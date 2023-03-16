@@ -124,8 +124,8 @@ internal class OrderTacosPresenter(
         is OrderStep.Validation -> isNextEnabled = event.enabled
         is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
         is OrderStep.Restart -> {
-          currentStep = initialStep
-          orderDetails = initialOrderDetails
+          currentStep = FillingsOrderStep
+          orderDetails = OrderDetails()
           isNextEnabled = false
         }
       }

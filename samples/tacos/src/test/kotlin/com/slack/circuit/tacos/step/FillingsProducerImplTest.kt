@@ -4,14 +4,11 @@ import app.cash.molecule.RecompositionClock
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.math.BigDecimal
 
 @RunWith(RobolectricTestRunner::class)
 class FillingsProducerImplTest {
@@ -82,10 +79,3 @@ class FillingsProducerImplTest {
     }
   }
 }
-
-internal val testFillings = persistentListOf(
-  Ingredient("apple", calories = 10, charge = BigDecimal("1.99"), diet = Diet.VEGAN),
-  Ingredient("orange", diet = Diet.VEGETARIAN),
-  Ingredient("pear", diet = Diet.NONE),
-)
-

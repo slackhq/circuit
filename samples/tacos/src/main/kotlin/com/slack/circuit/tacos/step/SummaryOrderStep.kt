@@ -16,6 +16,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 object SummaryOrderStep : OrderStep {
+  @Suppress("MagicNumber")
   @IgnoredOnParcel override val number = 3
   @IgnoredOnParcel override val headerResId = R.string.summary_step_header
 
@@ -27,7 +28,7 @@ internal fun summaryProducer(eventSink: (OrderStep.Event) -> Unit) =
   SummaryOrderStep.SummaryState { eventSink(OrderStep.Restart) }
 
 @Composable
-internal fun SummaryUi(state: SummaryOrderStep.SummaryState, modifier: Modifier) {
+internal fun SummaryUi(state: SummaryOrderStep.SummaryState, modifier: Modifier = Modifier) {
   val sink = state.eventSink
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     Button(onClick = sink) { Text(stringResource(R.string.summary_step_order_again)) }

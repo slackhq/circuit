@@ -211,7 +211,7 @@ private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mod
     topBar = {
       CenterAlignedTopAppBar(
         title = { Text(stringResource(state.headerResId)) },
-        modifier = modifier,
+        modifier = Modifier,
         navigationIcon = {
           NavigationButton(
             direction = Direction.LEFT,
@@ -274,7 +274,7 @@ private fun NavigationButton(
 
   IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
     Image(
-      modifier = modifier,
+      modifier = Modifier,
       painter = rememberVectorPainter(image = direction.icon),
       colorFilter = ColorFilter.tint(tintColour),
       contentDescription = stringResource(direction.descriptionResId),

@@ -40,7 +40,7 @@ internal fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
     modifier = modifier.background(MaterialTheme.colorScheme.surfaceTint, RoundedCornerShape(3.dp))
   ) {
     Text(
-      text = diet.codeResId?.let { stringResource(it).uppercase() } ?: "",
+      text = diet.codeResId?.let { stringResource(it).uppercase() }.orEmpty(),
       modifier = Modifier.padding(3.dp),
       fontSize = 6.sp,
       fontWeight = FontWeight.Bold,
@@ -85,6 +85,7 @@ internal fun PreviewDietBadge() {
 
 @Preview
 @Composable
+@Suppress("MagicNumber")
 internal fun PreviewCalories() {
   Surface { Calories(150) }
 }

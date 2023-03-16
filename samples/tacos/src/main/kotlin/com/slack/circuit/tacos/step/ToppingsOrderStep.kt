@@ -159,7 +159,7 @@ private fun Topping(
     modifier = modifier.clickable { onSelect(!isSelected) },
     verticalAlignment = Alignment.CenterVertically
   ) {
-    Checkbox(checked = isSelected, modifier = modifier, onCheckedChange = onSelect)
+    Checkbox(checked = isSelected, modifier = Modifier, onCheckedChange = onSelect)
     Column {
       with(ingredient) {
         Row(verticalAlignment = Alignment.CenterVertically) {

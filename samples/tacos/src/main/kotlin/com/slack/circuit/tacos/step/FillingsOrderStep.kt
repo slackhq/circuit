@@ -125,7 +125,7 @@ private fun Filling(
     modifier = modifier.clickable(onClick = onSelect),
     verticalAlignment = Alignment.CenterVertically
   ) {
-    RadioButton(selected = isSelected, modifier = modifier, onClick = onSelect)
+    RadioButton(selected = isSelected, modifier = Modifier, onClick = onSelect)
     Column {
       with(ingredient) {
         Row(verticalAlignment = Alignment.CenterVertically) {

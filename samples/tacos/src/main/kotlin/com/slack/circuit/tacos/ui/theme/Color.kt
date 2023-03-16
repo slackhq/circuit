@@ -1,5 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("MagicNumber")
+
 package com.slack.circuit.tacos.ui.theme
 
 import androidx.compose.ui.graphics.Color

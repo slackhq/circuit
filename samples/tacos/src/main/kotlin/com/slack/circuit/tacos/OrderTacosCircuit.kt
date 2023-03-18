@@ -34,14 +34,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.step.ConfirmationOrderStep
 import com.slack.circuit.tacos.step.ConfirmationProducer
@@ -200,7 +196,7 @@ private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredi
 }
 
 @Composable
-private fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
+internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
   val sink = state.eventSink
   Scaffold(
     modifier = modifier.padding(5.dp),
@@ -321,36 +317,4 @@ private fun OrderTotal(
       fontWeight = FontWeight.Bold,
     )
   }
-}
-
-internal class OrderTacosPresenterFactory(
-  private val fillingsProducer: FillingsProducer,
-  private val toppingsProducer: ToppingsProducer,
-  private val confirmationProducer: ConfirmationProducer,
-  private val summaryProducer: SummaryProducer,
-) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    context: CircuitContext
-  ): Presenter<*>? =
-    when (screen) {
-      is OrderTacosScreen ->
-        OrderTacosPresenter(
-          fillingsProducer,
-          toppingsProducer,
-          confirmationProducer,
-          summaryProducer
-        )
-      else -> null
-    }
-}
-
-internal class OrderTacosUiFactory : Ui.Factory {
-  override fun create(screen: Screen, context: CircuitContext): Ui<*>? =
-    when (screen) {
-      is OrderTacosScreen ->
-        ui<OrderTacosScreen.State> { state, modifier -> OrderTacosUi(state, modifier) }
-      else -> null
-    }
 }

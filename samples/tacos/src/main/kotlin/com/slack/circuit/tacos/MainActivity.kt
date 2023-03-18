@@ -11,6 +11,8 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.tacos.repository.IngredientsRepositoryImpl
 import com.slack.circuit.tacos.step.FillingsProducerImpl
 import com.slack.circuit.tacos.step.ToppingsProducerImpl
@@ -25,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     val circuitConfig: CircuitConfig =
       CircuitConfig.Builder()
         .addPresenterFactory(buildPresenterFactory())
-        .addUiFactory(OrderTacosUiFactory())
+        .addUiFactory(buildUiFactory())
         .build()
 
     setContent {
@@ -38,14 +40,17 @@ class MainActivity : AppCompatActivity() {
   }
 }
 
-private fun buildPresenterFactory(): Presenter.Factory {
-  val fillingsProducer = FillingsProducerImpl(IngredientsRepositoryImpl)
-  val toppingsProducer = ToppingsProducerImpl(IngredientsRepositoryImpl)
+private fun buildPresenterFactory(): Presenter.Factory =
+  Presenter.Factory { _, _, _ ->
+    OrderTacosPresenter(
+      fillingsProducer = FillingsProducerImpl(IngredientsRepositoryImpl),
+      toppingsProducer = ToppingsProducerImpl(IngredientsRepositoryImpl),
+      confirmationProducer = { details, _ -> confirmationProducer(details) },
+      summaryProducer = { sink -> summaryProducer(sink) }
+    )
+  }
 
-  return OrderTacosPresenterFactory(
-    fillingsProducer = fillingsProducer,
-    toppingsProducer = toppingsProducer,
-    confirmationProducer = { details, _ -> confirmationProducer(details) },
-    summaryProducer = { sink -> summaryProducer(sink) }
-  )
-}
+private fun buildUiFactory(): Ui.Factory =
+  Ui.Factory { _, _ ->
+    ui<OrderTacosScreen.State> { state, modifier -> OrderTacosUi(state, modifier) }
+  }

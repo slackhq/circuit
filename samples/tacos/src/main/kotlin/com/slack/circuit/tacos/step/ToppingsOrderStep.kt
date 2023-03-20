@@ -92,7 +92,7 @@ private fun updateToppings(
       is ToppingsOrderStep.Event.AddTopping -> plusTopping(event.ingredient)
       is ToppingsOrderStep.Event.RemoveTopping -> minusTopping(event.ingredient)
     }
-  eventSink(OrderStep.UpdateOrder.Toppings(updatedToppings))
+  eventSink(OrderStep.UpdateOrder.SetToppings(updatedToppings))
 }
 
 private fun validateToppings(selected: Int, minimum: Int, eventSink: (OrderStep.Event) -> Unit) {

@@ -25,8 +25,8 @@ sealed interface OrderStep {
   }
 
   sealed interface UpdateOrder : Event {
-    data class Filling(val ingredient: Ingredient) : UpdateOrder
-    data class Toppings(val ingredients: Set<Ingredient>) : UpdateOrder
+    data class SetFilling(val ingredient: Ingredient) : UpdateOrder
+    data class SetToppings(val ingredients: Set<Ingredient>) : UpdateOrder
   }
 
   object Restart : Event

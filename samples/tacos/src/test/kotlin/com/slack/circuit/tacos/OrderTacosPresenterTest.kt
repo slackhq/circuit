@@ -140,7 +140,7 @@ class OrderTacosPresenterTest {
       assertThat(details).isEqualTo(OrderDetails())
 
       val filling = Ingredient("apple")
-      sink(OrderStep.UpdateOrder.Filling(filling))
+      sink(OrderStep.UpdateOrder.SetFilling(filling))
 
       awaitItem()
       assertThat(details).isEqualTo(OrderDetails(filling = filling))
@@ -170,7 +170,7 @@ class OrderTacosPresenterTest {
         assertThat(details).isEqualTo(OrderDetails())
 
         val toppings = persistentSetOf(Ingredient("apple"))
-        sink(OrderStep.UpdateOrder.Toppings(toppings))
+        sink(OrderStep.UpdateOrder.SetToppings(toppings))
 
         assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
         assertThat(details).isEqualTo(OrderDetails(toppings = toppings))

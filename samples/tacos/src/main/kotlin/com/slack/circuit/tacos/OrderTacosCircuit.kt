@@ -170,12 +170,12 @@ private fun updateOrder(
 ): OrderDetails {
   val newFilling =
     when (event) {
-      is OrderStep.UpdateOrder.Filling -> event.ingredient
+      is OrderStep.UpdateOrder.SetFilling -> event.ingredient
       else -> currentOrder.filling
     }
   val newToppings =
     when (event) {
-      is OrderStep.UpdateOrder.Toppings -> event.ingredients
+      is OrderStep.UpdateOrder.SetToppings -> event.ingredients
       else -> currentOrder.toppings
     }
 

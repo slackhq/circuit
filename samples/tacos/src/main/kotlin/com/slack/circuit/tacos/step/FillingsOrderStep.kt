@@ -61,7 +61,7 @@ internal class FillingsProducerImpl(private val repository: IngredientsRepositor
         FillingsOrderStep.State.AvailableFillings(orderDetails.filling, list) { event ->
           when (event) {
             is FillingsOrderStep.Event.SelectFilling ->
-              eventSink(OrderStep.UpdateOrder.Filling(event.ingredient))
+              eventSink(OrderStep.UpdateOrder.SetFilling(event.ingredient))
           }
         }
     }

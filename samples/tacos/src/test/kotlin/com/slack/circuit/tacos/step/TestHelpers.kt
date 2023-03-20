@@ -32,9 +32,9 @@ internal class FakeOrderStepParent(
   fun childEvent(event: OrderStep.Event) {
     when (event) {
       is OrderStep.Validation -> validations.addLast(event)
-      is OrderStep.UpdateOrder.Filling ->
+      is OrderStep.UpdateOrder.SetFilling ->
         orderDetails = orderDetails.copy(filling = event.ingredient)
-      is OrderStep.UpdateOrder.Toppings ->
+      is OrderStep.UpdateOrder.SetToppings ->
         orderDetails = orderDetails.copy(toppings = event.ingredients)
       is OrderStep.Restart -> orderDetails = OrderDetails()
     }

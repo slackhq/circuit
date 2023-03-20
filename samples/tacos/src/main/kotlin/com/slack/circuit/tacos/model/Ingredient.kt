@@ -7,6 +7,7 @@ import androidx.compose.runtime.Immutable
 import com.slack.circuit.tacos.R
 import java.math.BigDecimal
 
+/** Order ingredient. Used to represent both fillings and toppings */
 @Immutable
 data class Ingredient(
   val name: String,
@@ -15,6 +16,7 @@ data class Ingredient(
   val charge: BigDecimal = BigDecimal.ZERO
 )
 
+/** Dietary label. Used to mark an ingredient with the most strict diet that it satisfies. */
 enum class Diet(@StringRes val codeResId: Int? = null) {
   NONE,
   VEGETARIAN(R.string.common_vegetarian),

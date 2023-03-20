@@ -76,7 +76,7 @@ private fun AdditionalCharge(charge: BigDecimal, modifier: Modifier = Modifier) 
   Text(text = "$$charge", modifier = modifier, fontSize = fontSize)
 }
 
-/** Display calorie count.  */
+/** Display calorie count. */
 @Composable
 private fun Calories(calories: Int, modifier: Modifier = Modifier) {
   if (calories <= 0) return

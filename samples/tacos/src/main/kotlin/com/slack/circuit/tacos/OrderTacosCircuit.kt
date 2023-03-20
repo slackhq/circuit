@@ -95,6 +95,7 @@ data class OrderDetails(
   val ingredientsCost: BigDecimal = BigDecimal.ZERO
 )
 
+/** List of wizard steps (in order!) */
 private val orderSteps =
   persistentListOf(FillingsOrderStep, ToppingsOrderStep, ConfirmationOrderStep, SummaryOrderStep)
 
@@ -115,6 +116,7 @@ internal class OrderTacosPresenter(
     var orderDetails by remember { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }
 
+    // Generate state for the current order step
     val stepState =
       produceState(currentStep, orderDetails) { event ->
         when (event) {
@@ -137,6 +139,7 @@ internal class OrderTacosPresenter(
       isNextVisible = currentStep.index < 2,
       isFooterVisible = currentStep != SummaryOrderStep
     ) { navEvent ->
+      // process navigation event from child order step
       processNavigation(currentStep, navEvent) { currentStep = it }
     }
   }

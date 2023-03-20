@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   kotlin("jvm")
   alias(libs.plugins.compose)

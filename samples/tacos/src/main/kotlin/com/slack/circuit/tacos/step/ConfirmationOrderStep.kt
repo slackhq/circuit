@@ -30,7 +30,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 object ConfirmationOrderStep : OrderStep {
-  override val number = 2
+  override val index = 2
   override val headerResId = R.string.confirm_step_header
 
   data class Order(

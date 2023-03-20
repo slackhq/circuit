@@ -27,7 +27,7 @@ import com.slack.circuit.tacos.repository.IngredientsRepository
 import kotlinx.collections.immutable.ImmutableList
 
 object FillingsOrderStep : OrderStep {
-  override val number = 0
+  override val index = 0
   override val headerResId = R.string.fillings_step_header
 
   sealed interface State : OrderStep.State {

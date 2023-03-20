@@ -8,7 +8,7 @@ import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
 
 sealed interface OrderStep {
-  val number: Int
+  val index: Int
   @get:StringRes val headerResId: Int
 
   sealed interface State

@@ -29,7 +29,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
 
 object ToppingsOrderStep : OrderStep {
-  override val number = 1
+  override val index = 1
   override val headerResId = R.string.toppings_step_header
 
   sealed interface State : OrderStep.State {

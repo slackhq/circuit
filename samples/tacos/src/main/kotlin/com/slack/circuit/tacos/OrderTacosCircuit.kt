@@ -72,17 +72,17 @@ object OrderTacosScreen : Screen {
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    val value: Int
+    val indexModifier: Int
       get() = 0
 
     object Previous : Event {
-      override val value: Int = -1
+      override val indexModifier: Int = -1
     }
     object Next : Event {
-      override val value: Int = 1
+      override val indexModifier: Int = 1
     }
     object ProcessOrder : Event {
-      override val value: Int = 1
+      override val indexModifier: Int = 1
     }
   }
 }
@@ -132,9 +132,9 @@ internal class OrderTacosPresenter(
       headerResId = currentStep.headerResId,
       orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
       stepState = stepState,
-      isPreviousVisible = currentStep.number in 1..2,
+      isPreviousVisible = currentStep.index in 1..2,
       isNextEnabled = isNextEnabled,
-      isNextVisible = currentStep.number < 2,
+      isNextVisible = currentStep.index < 2,
       isFooterVisible = currentStep != SummaryOrderStep
     ) { navEvent ->
       processNavigation(currentStep, navEvent) { currentStep = it }
@@ -160,7 +160,7 @@ private fun processNavigation(
   navEvent: OrderTacosScreen.Event,
   onNavEvent: (OrderStep) -> Unit
 ) {
-  val newIndex = currentStep.number + navEvent.value
+  val newIndex = currentStep.index + navEvent.indexModifier
   onNavEvent(orderSteps.getOrElse(newIndex) { currentStep })
 }
 

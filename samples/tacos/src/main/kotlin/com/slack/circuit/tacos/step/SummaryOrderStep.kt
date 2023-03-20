@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import com.slack.circuit.tacos.R
 
 object SummaryOrderStep : OrderStep {
-  @Suppress("MagicNumber") override val number = 3
+  @Suppress("MagicNumber") override val index = 3
   override val headerResId = R.string.summary_step_header
 
   data class SummaryState(val eventSink: () -> Unit) : OrderStep.State

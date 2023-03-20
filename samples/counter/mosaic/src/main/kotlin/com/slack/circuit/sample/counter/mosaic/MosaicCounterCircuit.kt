@@ -21,10 +21,8 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
-import com.slack.circuit.sample.counter.CounterState
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -63,10 +61,10 @@ class CounterUiFactory : Ui.Factory {
   }
 }
 
-private fun counterUi(): Ui<CounterState> = ui { state, _ -> Counter(state) }
+private fun counterUi(): Ui<CounterScreen.State> = ui { state, _ -> Counter(state) }
 
 @Composable
-private fun Counter(state: CounterState) {
+private fun Counter(state: CounterScreen.State) {
   Column {
     Text("Use arrow keys to increment or decrement the count. Press “q” to exit.")
     Text("Count: ${state.count}")
@@ -93,8 +91,8 @@ private fun Counter(state: CounterState) {
             when (reader.read()) {
               91 -> {
                 when (reader.read()) {
-                  65 -> eventSink(CounterEvent.Increment)
-                  66 -> eventSink(CounterEvent.Decrement)
+                  65 -> eventSink(CounterScreen.Event.Increment)
+                  66 -> eventSink(CounterScreen.Event.Decrement)
                 }
               }
             }

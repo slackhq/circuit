@@ -33,7 +33,7 @@ object ConfirmationOrderStep : OrderStep {
   override val index = 2
   override val headerResId = R.string.confirm_step_header
 
-  data class Order(
+  data class OrderState(
     val calories: Int,
     val baseCost: BigDecimal,
     val ingredientsCost: BigDecimal,
@@ -44,9 +44,9 @@ object ConfirmationOrderStep : OrderStep {
 }
 
 @Composable
-internal fun confirmationProducer(orderDetails: OrderDetails): ConfirmationOrderStep.Order {
+internal fun confirmationProducer(orderDetails: OrderDetails): ConfirmationOrderStep.OrderState {
   val toppings = orderDetails.toppings.sortedBy { it.name }.toImmutableList()
-  return ConfirmationOrderStep.Order(
+  return ConfirmationOrderStep.OrderState(
     calories = calculateCalories(orderDetails.filling, orderDetails.toppings),
     baseCost = orderDetails.baseCost,
     ingredientsCost = orderDetails.ingredientsCost,
@@ -78,7 +78,10 @@ private fun determineDiet(filling: Ingredient, toppings: Set<Ingredient>): Diet 
 }
 
 @Composable
-internal fun ConfirmationUi(state: ConfirmationOrderStep.Order, modifier: Modifier = Modifier) {
+internal fun ConfirmationUi(
+  state: ConfirmationOrderStep.OrderState,
+  modifier: Modifier = Modifier
+) {
   with(state) {
     val summary = buildSummary(filling)
     val extra = buildExtras(diet, calories)

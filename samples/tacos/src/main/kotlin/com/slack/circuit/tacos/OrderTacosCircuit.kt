@@ -226,7 +226,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
     bottomBar = {
       OrderTotal(
         orderCost = state.orderCost,
-        onConfirmationStep = state.stepState is ConfirmationOrderStep.Order,
+        onConfirmationStep = state.stepState is ConfirmationOrderStep.OrderState,
         isVisible = state.isFooterVisible,
       ) {
         sink(OrderTacosScreen.Event.ProcessOrder)
@@ -237,7 +237,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
     when (state.stepState) {
       is FillingsOrderStep.State -> FillingsUi(state.stepState, stepModifier)
       is ToppingsOrderStep.State -> ToppingsUi(state.stepState, stepModifier)
-      is ConfirmationOrderStep.Order -> ConfirmationUi(state.stepState, stepModifier)
+      is ConfirmationOrderStep.OrderState -> ConfirmationUi(state.stepState, stepModifier)
       is SummaryOrderStep.SummaryState -> SummaryUi(state.stepState, stepModifier)
     }
   }

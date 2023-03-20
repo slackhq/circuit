@@ -95,6 +95,21 @@ private fun ExtrasDivider(charge: BigDecimal, calories: Int, modifier: Modifier 
 
 @Preview
 @Composable
+internal fun PreviewOrderIngredient() {
+  Surface {
+    OrderIngredient(
+      Ingredient(
+        name = "Apple",
+        calories = 99,
+        diet = Diet.VEGAN,
+        charge = BigDecimal("1.99"),
+      )
+    )
+  }
+}
+
+@Preview
+@Composable
 internal fun PreviewAdditionalCharge() {
   Surface { AdditionalCharge(BigDecimal("1.25")) }
 }

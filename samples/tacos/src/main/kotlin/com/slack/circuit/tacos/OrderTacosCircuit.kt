@@ -18,6 +18,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -33,11 +34,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.step.ConfirmationOrderStep
 import com.slack.circuit.tacos.step.ConfirmationUi
@@ -48,6 +51,7 @@ import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsUi
+import com.slack.circuit.tacos.ui.theme.TacoTheme
 import java.math.BigDecimal
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -312,5 +316,38 @@ private fun OrderTotal(
       color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )
+  }
+}
+
+@Preview
+@Composable
+internal fun PreviewOrderTacosUi() {
+  val toppings =
+    persistentListOf(
+      Ingredient("apple", calories = 10, diet = Diet.VEGAN),
+      Ingredient("orange", calories = 15, diet = Diet.VEGETARIAN, charge = BigDecimal("1.99")),
+      Ingredient("pear", diet = Diet.NONE),
+    )
+  val stepState =
+    ToppingsOrderStep.State.AvailableToppings(
+      selected = persistentSetOf(toppings.first()),
+      list = toppings,
+      eventSink = {}
+    )
+  Surface {
+    TacoTheme {
+      OrderTacosUi(
+        OrderTacosScreen.State(
+          headerResId = R.string.toppings_step_header,
+          orderCost = BigDecimal("1.99"),
+          stepState = stepState,
+          isPreviousVisible = true,
+          isNextVisible = true,
+          isNextEnabled = false,
+          isFooterVisible = true,
+          eventSink = {}
+        )
+      )
+    }
   }
 }

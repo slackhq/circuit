@@ -15,12 +15,12 @@ sealed interface OrderStep {
 
   sealed interface Event
   sealed interface Validation : Event {
-    val enabled: Boolean
+    val isOrderValid: Boolean
     object Invalid : Validation {
-      override val enabled = false
+      override val isOrderValid = false
     }
     object Valid : Validation {
-      override val enabled = true
+      override val isOrderValid = true
     }
   }
 

@@ -118,7 +118,7 @@ internal class OrderTacosPresenter(
     val stepState =
       produceState(currentStep, orderDetails) { event ->
         when (event) {
-          is OrderStep.Validation -> isNextEnabled = event.enabled
+          is OrderStep.Validation -> isNextEnabled = event.isOrderValid
           is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
           is OrderStep.Restart -> {
             currentStep = FillingsOrderStep

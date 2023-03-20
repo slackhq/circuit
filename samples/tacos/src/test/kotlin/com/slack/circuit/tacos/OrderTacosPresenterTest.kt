@@ -28,7 +28,7 @@ class OrderTacosPresenterTest {
         fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
         toppingsProducer = { _, _ -> error("wrong step") },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     presenter.test {
@@ -48,7 +48,7 @@ class OrderTacosPresenterTest {
         fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     presenter.test {
@@ -67,7 +67,7 @@ class OrderTacosPresenterTest {
         fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     moleculeFlow(RecompositionClock.Immediate) { presenter.presentInternal(ToppingsOrderStep) }
@@ -84,7 +84,7 @@ class OrderTacosPresenterTest {
         fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     presenter.test {
@@ -106,7 +106,7 @@ class OrderTacosPresenterTest {
         },
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     presenter.test {
@@ -132,7 +132,7 @@ class OrderTacosPresenterTest {
         },
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     presenter.test {
@@ -161,7 +161,7 @@ class OrderTacosPresenterTest {
           ToppingsOrderStep.State.Loading
         },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") }
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     moleculeFlow(RecompositionClock.Immediate) { presenter.presentInternal(ToppingsOrderStep) }
@@ -190,7 +190,7 @@ class OrderTacosPresenterTest {
         },
         toppingsProducer = { _, _ -> error("wrong step") },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { eventSink ->
+        summaryProducer = { _, eventSink ->
           sink = eventSink
           SummaryOrderStep.SummaryState {}
         },
@@ -221,7 +221,7 @@ class OrderTacosPresenterTest {
         fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
         toppingsProducer = { _, _ -> error("wrong step") },
         confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _ -> error("wrong step") },
+        summaryProducer = { _, _ -> error("wrong step") },
       )
 
     moleculeFlow(RecompositionClock.Immediate) {

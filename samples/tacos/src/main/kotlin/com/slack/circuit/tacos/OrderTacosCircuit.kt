@@ -151,7 +151,7 @@ internal class OrderTacosPresenter(
       is FillingsOrderStep -> fillingsProducer(orderDetails, eventSink)
       is ToppingsOrderStep -> toppingsProducer(orderDetails, eventSink)
       is ConfirmationOrderStep -> confirmationProducer(orderDetails, eventSink)
-      is SummaryOrderStep -> summaryProducer(eventSink)
+      is SummaryOrderStep -> summaryProducer(orderDetails, eventSink)
     }
 }
 

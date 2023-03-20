@@ -42,6 +42,4 @@ fun interface ToppingsProducer : OrderStep.StateProducer<OrderStep.State>
 
 fun interface ConfirmationProducer : OrderStep.StateProducer<OrderStep.State>
 
-fun interface SummaryProducer {
-  @Composable operator fun invoke(eventSink: (OrderStep.Event) -> Unit): OrderStep.State
-}
+fun interface SummaryProducer : OrderStep.StateProducer<OrderStep.State>

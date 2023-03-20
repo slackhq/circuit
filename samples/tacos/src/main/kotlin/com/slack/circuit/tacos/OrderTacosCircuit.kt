@@ -40,17 +40,13 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.step.ConfirmationOrderStep
-import com.slack.circuit.tacos.step.ConfirmationProducer
 import com.slack.circuit.tacos.step.ConfirmationUi
 import com.slack.circuit.tacos.step.FillingsOrderStep
-import com.slack.circuit.tacos.step.FillingsProducer
 import com.slack.circuit.tacos.step.FillingsUi
 import com.slack.circuit.tacos.step.OrderStep
 import com.slack.circuit.tacos.step.SummaryOrderStep
-import com.slack.circuit.tacos.step.SummaryProducer
 import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
-import com.slack.circuit.tacos.step.ToppingsProducer
 import com.slack.circuit.tacos.step.ToppingsUi
 import java.math.BigDecimal
 import kotlinx.collections.immutable.persistentListOf
@@ -99,10 +95,10 @@ private val orderSteps =
   persistentListOf(FillingsOrderStep, ToppingsOrderStep, ConfirmationOrderStep, SummaryOrderStep)
 
 internal class OrderTacosPresenter(
-  private val fillingsProducer: FillingsProducer,
-  private val toppingsProducer: ToppingsProducer,
-  private val confirmationProducer: ConfirmationProducer,
-  private val summaryProducer: SummaryProducer,
+  private val fillingsProducer: OrderStep.StateProducer<FillingsOrderStep.State>,
+  private val toppingsProducer: OrderStep.StateProducer<ToppingsOrderStep.State>,
+  private val confirmationProducer: OrderStep.StateProducer<ConfirmationOrderStep.OrderState>,
+  private val summaryProducer: OrderStep.StateProducer<SummaryOrderStep.SummaryState>,
 ) : Presenter<OrderTacosScreen.State> {
   @Composable override fun present(): OrderTacosScreen.State = presentInternal()
 

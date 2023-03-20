@@ -31,15 +31,7 @@ sealed interface OrderStep {
 
   object Restart : Event
 
-  interface StateProducer<T : State> {
+  fun interface StateProducer<T : State> {
     @Composable operator fun invoke(orderDetails: OrderDetails, eventSink: (Event) -> Unit): T
   }
 }
-
-fun interface FillingsProducer : OrderStep.StateProducer<OrderStep.State>
-
-fun interface ToppingsProducer : OrderStep.StateProducer<OrderStep.State>
-
-fun interface ConfirmationProducer : OrderStep.StateProducer<OrderStep.State>
-
-fun interface SummaryProducer : OrderStep.StateProducer<OrderStep.State>

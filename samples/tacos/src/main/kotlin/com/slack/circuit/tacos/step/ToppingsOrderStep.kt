@@ -50,7 +50,7 @@ object ToppingsOrderStep : OrderStep {
 private const val MINIMUM_TOPPINGS = 3
 
 internal class ToppingsProducerImpl(private val repository: IngredientsRepository) :
-  ToppingsProducer {
+  OrderStep.StateProducer<ToppingsOrderStep.State> {
   @Composable
   override fun invoke(orderDetails: OrderDetails, eventSink: (OrderStep.Event) -> Unit) =
     invoke(orderDetails, MINIMUM_TOPPINGS, eventSink)
@@ -60,7 +60,7 @@ internal class ToppingsProducerImpl(private val repository: IngredientsRepositor
     orderDetails: OrderDetails,
     minimumToppings: Int,
     eventSink: (OrderStep.Event) -> Unit
-  ): OrderStep.State {
+  ): ToppingsOrderStep.State {
     val ingredients by
       produceState<ImmutableList<Ingredient>?>(null) { value = repository.getToppings() }
 

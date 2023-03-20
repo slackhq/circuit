@@ -45,7 +45,7 @@ object FillingsOrderStep : OrderStep {
 }
 
 internal class FillingsProducerImpl(private val repository: IngredientsRepository) :
-  FillingsProducer {
+  OrderStep.StateProducer<FillingsOrderStep.State> {
   @Composable
   override fun invoke(
     orderDetails: OrderDetails,

@@ -14,10 +14,7 @@ plugins {
 android {
   namespace = "com.slack.circuit.tacos"
 
-  defaultConfig {
-    minSdk = 33
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-  }
+  defaultConfig { minSdk = 33 }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
@@ -28,7 +25,6 @@ tasks
   .configureEach {
     compilerOptions {
       freeCompilerArgs.addAll(
-        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
       )

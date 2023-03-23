@@ -3,12 +3,13 @@
 package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
-import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,9 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -30,11 +31,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,6 +50,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -58,6 +60,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.decapitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,7 +90,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
 
 data class PetListAnimal(
@@ -95,26 +100,26 @@ data class PetListAnimal(
   val name: String,
   val imageUrl: String?,
   val breed: String?,
-  val gender: String,
-  val size: String,
+  val gender: Gender,
+  val size: Size,
   val age: String,
 )
 
 enum class Gender {
-  ALL,
   MALE,
   FEMALE
 }
 
 enum class Size {
-  ALL,
   SMALL,
   MEDIUM,
   LARGE
 }
 
-@Parcelize
-data class Filters(val gender: Gender = Gender.ALL, val size: Size = Size.ALL) : Parcelable
+data class Filters(
+  val genders: ImmutableSet<Gender> = Gender.values().toSet().toImmutableSet(),
+  val sizes: ImmutableSet<Size> = Size.values().toSet().toImmutableSet()
+)
 
 @Parcelize
 object PetListScreen : Screen {
@@ -190,17 +195,7 @@ constructor(
   }
 
   private fun shouldKeep(filters: Filters, animal: PetListAnimal): Boolean {
-    return filters.gender.shouldKeep(animal.gender) && filters.size.shouldKeep(animal.size)
-  }
-
-  private fun Gender.shouldKeep(gender: String): Boolean {
-    if (this == Gender.ALL) return true
-    return this.name.lowercase() == gender.lowercase()
-  }
-
-  private fun Size.shouldKeep(size: String): Boolean {
-    if (this == Size.ALL) return true
-    return this.name.lowercase() == size.lowercase()
+    return animal.gender in filters.genders && animal.size in filters.sizes
   }
 
   @CircuitInject(PetListScreen::class, AppScope::class)
@@ -217,8 +212,8 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     name = name.lowercase().capitalize(Locale.current),
     imageUrl = photos.firstOrNull()?.medium,
     breed = breeds.primary,
-    gender = gender,
-    size = size,
+    gender = Gender.valueOf(gender.lowercase()),
+    size = Size.valueOf(size.lowercase()),
     age = age
   )
 }
@@ -405,52 +400,63 @@ internal fun PreviewUpdateFiltersSheet() {
 
 @Composable
 private fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> Unit = {}) {
-  var filters by remember { mutableStateOf(initialFilters) }
   Column(Modifier.fillMaxWidth()) {
-    GenderFilterOption(filters.gender) { filters = filters.copy(gender = it) }
-    SizeFilterOption(filters.size) { filters = filters.copy(size = it) }
+    val genderOptions = remember {
+      SnapshotStateMap<Gender, Boolean>().apply {
+        for (gender in Gender.values()) {
+          put(gender, gender in initialFilters.genders)
+        }
+      }
+    }
+    FilterOptions("Gender", genderOptions)
+
+    val sizeOptions = remember {
+      SnapshotStateMap<Size, Boolean>().apply {
+        for (size in Size.values()) {
+          put(size, size in initialFilters.sizes)
+        }
+      }
+    }
+    FilterOptions("Size", sizeOptions)
 
     Row(Modifier.align(Alignment.End)) {
       Button(onClick = { onDismiss(initialFilters) }) { Text("Cancel") }
       Spacer(Modifier.width(16.dp))
-      Button(onClick = { onDismiss(filters) }) { Text("Save") }
-    }
-  }
-}
-
-@Composable
-private fun GenderFilterOption(
-  selected: Gender,
-  modifier: Modifier = Modifier,
-  selectedGender: (Gender) -> Unit,
-) {
-  Column(modifier) {
-    Text(text = "Gender")
-    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-      Gender.values().forEach { gender ->
-        Column {
-          Text(text = gender.name)
-          RadioButton(selected = selected == gender, onClick = { selectedGender(gender) })
+      Button(
+        onClick = {
+          val newFilters =
+            Filters(
+              genders = genderOptions.filterValues { it }.keys.toImmutableSet(),
+              sizes = sizeOptions.filterValues { it }.keys.toImmutableSet(),
+            )
+          onDismiss(newFilters)
         }
+      ) {
+        Text("Save")
       }
     }
   }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SizeFilterOption(
-  selected: Size,
+private fun <T : Enum<T>> FilterOptions(
+  name: String,
+  options: SnapshotStateMap<T, Boolean>,
   modifier: Modifier = Modifier,
-  selectedSize: (Size) -> Unit,
 ) {
   Column(modifier) {
-    Text(text = "Size")
-    Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.SpaceEvenly) {
-      Size.values().forEach { size ->
-        Column {
-          Text(text = size.name)
-          RadioButton(selected = selected == size, onClick = { selectedSize(size) })
-        }
+    Text(name)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      options.keys.forEach { key ->
+        val selected = options.getValue(key)
+        val leadingIcon: @Composable () -> Unit = { Icon(Icons.Default.Check, null) }
+        FilterChip(
+          selected,
+          onClick = { options[key] = !selected },
+          label = { Text(key.name.decapitalize(Locale.current)) },
+          leadingIcon = if (selected) leadingIcon else null
+        )
       }
     }
   }

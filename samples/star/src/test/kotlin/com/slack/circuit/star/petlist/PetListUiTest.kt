@@ -113,8 +113,8 @@ class PetListUiTest {
         name = "Baxter",
         imageUrl = "http://some.url",
         breed = "Australian Terrier",
-        gender = "male",
-        size = "small",
+        gender = Gender.MALE,
+        size = Size.SMALL,
         age = "12"
       )
   }

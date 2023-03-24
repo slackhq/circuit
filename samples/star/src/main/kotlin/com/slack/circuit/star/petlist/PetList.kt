@@ -7,6 +7,7 @@ import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -322,7 +323,7 @@ private fun PetListGrid(
       columns = StaggeredGridCells.Fixed(if (isLandscape) 3 else 2),
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = 16.dp,
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      horizontalArrangement = spacedBy(16.dp),
       contentPadding = PaddingValues(16.dp),
     ) {
       items(
@@ -400,7 +401,11 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
       onDismiss = { currentFilters },
     ) { initialFilters, overlayNavigator ->
       Surface(Modifier.fillMaxWidth()) {
-        UpdateFiltersSheet(initialFilters, Modifier.padding(32.dp), overlayNavigator::finish)
+        UpdateFiltersSheet(
+          initialFilters,
+          Modifier.padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
+          overlayNavigator::finish
+        )
       }
     }
   )
@@ -418,7 +423,7 @@ private fun UpdateFiltersSheet(
   modifier: Modifier = Modifier,
   onDismiss: (Filters) -> Unit = {}
 ) {
-  Column(modifier.fillMaxWidth()) {
+  Column(modifier.fillMaxWidth(), verticalArrangement = spacedBy(16.dp)) {
     val genderOptions = remember {
       SnapshotStateMap<Gender, Boolean>().apply {
         for (gender in Gender.values()) {
@@ -464,8 +469,8 @@ private fun <T : Enum<T>> FilterOptions(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    Text(name)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Text(name, style = MaterialTheme.typography.titleMedium)
+    FlowRow(horizontalArrangement = spacedBy(8.dp)) {
       options.keys.forEach { key ->
         val selected = options.getValue(key)
         val leadingIcon: @Composable () -> Unit = { Icon(Icons.Default.Check, null) }

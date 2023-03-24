@@ -41,7 +41,7 @@ class PetListPresenterTest {
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
 
-      val animals = listOf(animal).map { it.toPetListAnimal() }
+      val animals = listOf(animal.toPetListAnimal())
       val state = awaitItem()
       check(state is PetListScreen.State.Success)
       assertThat(state.animals).isEqualTo(animals)

@@ -330,6 +330,8 @@ private fun PetListGrid(
         key = { i -> animals[i].id },
       ) { index ->
         val animal = animals[index]
+        // TODO eventually animate item placement once it's implemented
+        //  https://issuetracker.google.com/issues/257034719
         PetListGridItem(animal) {
           eventSink(PetListScreen.Event.ClickAnimal(animal.id, animal.imageUrl))
         }
@@ -344,10 +346,14 @@ private fun PetListGrid(
 }
 
 @Composable
-private fun PetListGridItem(animal: PetListAnimal, onClick: () -> Unit = {}) {
+private fun PetListGridItem(
+  animal: PetListAnimal,
+  modifier: Modifier = Modifier,
+  onClick: () -> Unit = {}
+) {
   val updatedImageUrl = animal.imageUrl ?: R.drawable.star_icon
   ElevatedCard(
-    modifier = Modifier.fillMaxWidth().testTag(CARD_TAG),
+    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(

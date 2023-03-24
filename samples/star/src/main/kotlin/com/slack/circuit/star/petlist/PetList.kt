@@ -3,6 +3,7 @@
 package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
+import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +61,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.decapitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -76,6 +76,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
+import com.slack.circuit.star.common.ImmutableSetParceler
 import com.slack.circuit.star.data.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.overlay.BottomSheetOverlay
@@ -94,6 +95,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.TypeParceler
 
 data class PetListAnimal(
   val id: Long,
@@ -116,10 +118,13 @@ enum class Size {
   LARGE
 }
 
-data class Filters(
+@Parcelize
+class Filters(
+  @TypeParceler<ImmutableSet<Gender>, ImmutableSetParceler>
   val genders: ImmutableSet<Gender> = Gender.values().toSet().toImmutableSet(),
+  @TypeParceler<ImmutableSet<Size>, ImmutableSetParceler>
   val sizes: ImmutableSet<Size> = Size.values().toSet().toImmutableSet()
-)
+) : Parcelable
 
 @Parcelize
 object PetListScreen : Screen {
@@ -183,6 +188,7 @@ constructor(
               navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
             }
             is PetListScreen.Event.UpdatedFilters -> {
+              isUpdateFiltersModalShowing = false
               filters = event.newFilters
             }
             PetListScreen.Event.UpdateFilters -> {
@@ -212,8 +218,8 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     name = name.lowercase().capitalize(Locale.current),
     imageUrl = photos.firstOrNull()?.medium,
     breed = breeds.primary,
-    gender = Gender.valueOf(gender.lowercase()),
-    size = Size.valueOf(size.lowercase()),
+    gender = Gender.valueOf(gender.uppercase()),
+    size = Size.valueOf(size.uppercase()),
     age = age
   )
 }
@@ -387,7 +393,9 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
       model = currentFilters,
       onDismiss = { currentFilters },
     ) { initialFilters, overlayNavigator ->
-      UpdateFiltersSheet(initialFilters, overlayNavigator::finish)
+      Surface(Modifier.fillMaxWidth()) {
+        UpdateFiltersSheet(initialFilters, Modifier.padding(32.dp), overlayNavigator::finish)
+      }
     }
   )
 }
@@ -399,8 +407,12 @@ internal fun PreviewUpdateFiltersSheet() {
 }
 
 @Composable
-private fun UpdateFiltersSheet(initialFilters: Filters, onDismiss: (Filters) -> Unit = {}) {
-  Column(Modifier.fillMaxWidth()) {
+private fun UpdateFiltersSheet(
+  initialFilters: Filters,
+  modifier: Modifier = Modifier,
+  onDismiss: (Filters) -> Unit = {}
+) {
+  Column(modifier.fillMaxWidth()) {
     val genderOptions = remember {
       SnapshotStateMap<Gender, Boolean>().apply {
         for (gender in Gender.values()) {
@@ -454,7 +466,7 @@ private fun <T : Enum<T>> FilterOptions(
         FilterChip(
           selected,
           onClick = { options[key] = !selected },
-          label = { Text(key.name.decapitalize(Locale.current)) },
+          label = { Text(key.name.lowercase().capitalize(Locale.current)) },
           leadingIcon = if (selected) leadingIcon else null
         )
       }

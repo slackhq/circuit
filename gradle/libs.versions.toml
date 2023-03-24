@@ -71,7 +71,7 @@ agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-benchmark-macro-junit = "androidx.benchmark:benchmark-macro-junit4:1.2.0-alpha11"
+androidx-benchmark-macro-junit = "androidx.benchmark:benchmark-macro-junit4:1.2.0-alpha12"
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 ####### Compose
 # You must enable the SlackProperties.enableCompose property to use these.
@@ -129,7 +129,7 @@ androidx-loader = "androidx.loader:loader:1.1.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.3.0"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-alpha01"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-alpha02"
 
 anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 

@@ -46,6 +46,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -445,7 +446,11 @@ private fun UpdateFiltersSheet(
     Row(Modifier.align(Alignment.End)) {
       Button(onClick = { onDismiss(initialFilters) }) { Text("Cancel") }
       Spacer(Modifier.width(16.dp))
+      val saveButtonEnabled by remember {
+        derivedStateOf { sizeOptions.values.any { it } && genderOptions.values.any { it } }
+      }
       Button(
+        enabled = saveButtonEnabled,
         onClick = {
           val newFilters =
             Filters(

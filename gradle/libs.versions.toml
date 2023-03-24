@@ -12,7 +12,7 @@ compose-animation = "1.4.0"
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler = "1.4.4"
 composeCompilerKotlinVersion = "1.8.10"
-compose-foundation = "1.3.1"
+compose-foundation = "1.4.0"
 compose-material = "1.3.1"
 compose-material3 = "1.0.1"
 compose-runtime = "1.4.0"
@@ -85,7 +85,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.01.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.03.00" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }

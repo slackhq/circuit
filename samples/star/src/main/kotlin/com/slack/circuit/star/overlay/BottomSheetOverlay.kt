@@ -3,7 +3,7 @@
 package com.slack.circuit.star.overlay
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -39,7 +39,7 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
     }
 
     ModalBottomSheet(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxWidth(),
       content = {
         // Delay setting the result until we've finished dismissing
         content(model) { result ->

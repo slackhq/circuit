@@ -5,12 +5,16 @@ package com.slack.circuit.star.petdetail
 import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -31,12 +35,7 @@ import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.accompanist.pager.rememberPagerState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
@@ -107,8 +106,9 @@ internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
+@Suppress("DEPRECATION") // https://github.com/google/accompanist/issues/1551
+@OptIn(ExperimentalFoundationApi::class, com.google.accompanist.pager.ExperimentalPagerApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Modifier = Modifier) {
   val (name, photoUrls, photoUrlMemoryCacheKey) = state
@@ -167,6 +167,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
 
     HorizontalPagerIndicator(
       pagerState = pagerState,
+      pageCount = totalPhotos,
       modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
       activeColor = MaterialTheme.colorScheme.onBackground
     )
@@ -176,7 +177,12 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
   LaunchedEffect(Unit) { requester.requestFocus() }
 }
 
-@ExperimentalPagerApi
+@OptIn(ExperimentalFoundationApi::class)
+private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
+  return (currentPage - page) + currentPageOffsetFraction
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
   count: Int,
@@ -186,7 +192,7 @@ private fun PhotoPager(
   photoUrlMemoryCacheKey: String? = null,
 ) {
   HorizontalPager(
-    count = count,
+    pageCount = count,
     state = pagerState,
     key = photoUrls::get,
     contentPadding = PaddingValues(16.dp),
@@ -197,7 +203,7 @@ private fun PhotoPager(
           // Calculate the absolute offset for the current page from the
           // scroll position. We use the absolute value which allows us to mirror
           // any effects for both directions
-          val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
 
           // We animate the scaleX + scaleY, between 85% and 100%
           lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale

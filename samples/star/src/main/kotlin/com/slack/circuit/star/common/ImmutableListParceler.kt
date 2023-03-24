@@ -4,12 +4,14 @@ package com.slack.circuit.star.common
 
 import android.os.Parcel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parceler
 
 @Suppress("DEPRECATION") // Will use the non-deprecated one when it works
-class ImmutableListParceler : Parceler<ImmutableList<*>> {
+object ImmutableListParceler : Parceler<ImmutableList<*>> {
   override fun create(parcel: Parcel): ImmutableList<*> {
     return parcel.readArrayList(ImmutableList::class.java.classLoader)?.toImmutableList()
       ?: persistentListOf<Any>()
@@ -17,5 +19,15 @@ class ImmutableListParceler : Parceler<ImmutableList<*>> {
 
   override fun ImmutableList<*>.write(parcel: Parcel, flags: Int) {
     parcel.writeList(this)
+  }
+}
+
+object ImmutableSetParceler : Parceler<ImmutableSet<*>> {
+  override fun create(parcel: Parcel): ImmutableSet<*> {
+    return ImmutableListParceler.create(parcel).toImmutableSet()
+  }
+
+  override fun ImmutableSet<*>.write(parcel: Parcel, flags: Int) {
+    with(ImmutableListParceler) { toImmutableList().write(parcel, flags) }
   }
 }

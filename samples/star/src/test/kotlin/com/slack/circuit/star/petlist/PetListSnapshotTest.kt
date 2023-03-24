@@ -70,13 +70,13 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   """
   )
   @Test
-  fun petList_show_progress_indicator_for_loading_state() {
-    snapshot { PetList(PetListScreen.State.Loading) }
+  fun petList_show_progress_indicator_for_loading_state() = snapshot {
+    PetList(PetListScreen.State.Loading)
   }
 
   @Test
-  fun petList_show_message_for_no_animals_state() {
-    snapshot { PetList(PetListScreen.State.NoAnimals(isRefreshing = false)) }
+  fun petList_show_message_for_no_animals_state() = snapshot {
+    PetList(PetListScreen.State.NoAnimals(isRefreshing = false))
   }
 
   @Test
@@ -85,8 +85,5 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     snapshot { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
   }
 
-  @Test
-  fun petList_filtersSheet() {
-    snapshot { PreviewUpdateFiltersSheet() }
-  }
+  @Test fun petList_filtersSheet() = snapshot { PreviewUpdateFiltersSheet() }
 }

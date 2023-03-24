@@ -3,7 +3,7 @@
 package com.slack.circuit.star.petdetail
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -178,7 +178,6 @@ internal fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifi
 @Composable
 private fun TopBar(state: PetDetailScreen.State) {
   if (state !is PetDetailScreen.State.Success) return
-
   CenterAlignedTopAppBar(title = { Text(state.name) }, navigationIcon = { BackPressNavIcon() })
 }
 
@@ -222,7 +221,7 @@ private fun ShowAnimal(
 private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: PaddingValues) {
   Row(
     modifier = Modifier.padding(padding),
-    horizontalArrangement = Arrangement.SpaceEvenly,
+    horizontalArrangement = spacedBy(16.dp),
   ) {
     CircuitContent(
       PetPhotoCarouselScreen(
@@ -231,7 +230,7 @@ private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: P
         photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
       )
     )
-    LazyColumn { petDetailDescriptions(state) }
+    LazyColumn(verticalArrangement = spacedBy(16.dp)) { petDetailDescriptions(state) }
   }
 }
 
@@ -240,7 +239,7 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
   LazyColumn(
     modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
     contentPadding = PaddingValues(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+    verticalArrangement = spacedBy(16.dp),
   ) {
     item {
       CircuitContent(
@@ -280,6 +279,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
       }
     }
   }
+
   item(state.description) {
     ExpandableText(text = state.description, style = MaterialTheme.typography.bodyLarge)
   }

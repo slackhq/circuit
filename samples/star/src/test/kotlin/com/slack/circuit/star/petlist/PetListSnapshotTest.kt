@@ -44,6 +44,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     Paparazzi(
       deviceConfig = PIXEL_5,
       theme = "com.slack.circuit.star.ui.StarTheme",
+      maxPercentDifference = 0.2, // Due to CI JVMs looking different :(
     )
 
   @Before

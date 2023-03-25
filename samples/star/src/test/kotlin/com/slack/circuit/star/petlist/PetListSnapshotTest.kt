@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
 import coil.Coil
+import com.android.ide.common.rendering.api.SessionParams
 import com.slack.circuit.star.ui.FakeImageLoader
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.persistentListOf
@@ -44,7 +45,8 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     Paparazzi(
       deviceConfig = PIXEL_5,
       theme = "com.slack.circuit.star.ui.StarTheme",
-      maxPercentDifference = 0.2, // Due to CI JVMs looking different :(
+      renderingMode = SessionParams.RenderingMode.SHRINK,
+      showSystemUi = false,
     )
 
   @Before

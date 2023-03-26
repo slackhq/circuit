@@ -5,8 +5,7 @@ package com.slack.circuit.star.petlist
 import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
-import coil.Coil
-import com.slack.circuit.star.ui.FakeImageLoader
+import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -46,17 +45,16 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
       theme = "com.slack.circuit.star.ui.StarTheme",
     )
 
+  @get:Rule val coilRule = CoilRule()
+
   @Before
   fun setup() {
-    val fakeImageLoader = FakeImageLoader()
-    Coil.setImageLoader(fakeImageLoader)
     Dispatchers.setMain(UnconfinedTestDispatcher())
   }
 
   @After
   fun teardown() {
     Dispatchers.resetMain()
-    Coil.reset()
   }
 
   private fun snapshot(body: @Composable () -> Unit) {

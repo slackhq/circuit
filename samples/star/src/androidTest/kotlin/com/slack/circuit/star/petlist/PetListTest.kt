@@ -11,48 +11,32 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.platform.app.InstrumentationRegistry
-import coil.Coil
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
-import com.slack.circuit.star.ui.FakeImageLoader
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 
 class PetListTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  private val coilRule = CoilRule(R.drawable.dog)
 
   @get:Rule
   val rule =
     RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
       around(composeTestRule)
+      around(coilRule)
     }
-
-  @Before
-  fun setup() {
-    val fakeImageLoader =
-      FakeImageLoader(
-        InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog)!!
-      )
-    Coil.setImageLoader(fakeImageLoader)
-  }
-
-  @After
-  fun teardown() {
-    Coil.reset()
-  }
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {

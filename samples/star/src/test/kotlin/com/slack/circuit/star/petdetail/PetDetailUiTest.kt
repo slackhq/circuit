@@ -11,22 +11,19 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
-import coil.Coil
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.star.ui.FakeImageLoader
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,6 +32,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val coilRule = CoilRule(R.drawable.dog2)
 
   // TODO this seems like not the greatest test pattern, maybe something we can offer better
   //  solutions for via semantics.
@@ -50,20 +48,6 @@ class PetDetailUiTest {
         }
       }
       .build()
-
-  @Before
-  fun setup() {
-    val fakeImageLoader =
-      FakeImageLoader(
-        InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog2)!!
-      )
-    Coil.setImageLoader(fakeImageLoader)
-  }
-
-  @After
-  fun teardown() {
-    Coil.reset()
-  }
 
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {

@@ -4,6 +4,7 @@ package com.slack.circuit.sample.coil.test
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
@@ -27,7 +28,7 @@ import org.junit.rules.ExternalResource
 @OptIn(ExperimentalCoilApi::class)
 class CoilRule(
   private val engineProvider: () -> FakeImageLoaderEngine = {
-    FakeImageLoaderEngine.Builder().default(ColorDrawable(Color.LTGRAY).wrap()).build()
+    FakeImageLoaderEngine.Builder().default(wrapInLayer(ColorDrawable(Color.LTGRAY))).build()
   },
   private val contextProvider: (() -> Context)? = null,
 ) : ExternalResource() {
@@ -56,7 +57,7 @@ class CoilRule(
     ) =
       CoilRule(
         engineProvider = {
-          FakeImageLoaderEngine.Builder().default(drawable.wrapIfNecessary()).build()
+          FakeImageLoaderEngine.Builder().default(wrapIfNecessary(drawable)).build()
         },
         contextProvider = contextProvider
       )
@@ -72,18 +73,20 @@ class CoilRule(
   }
 }
 
-private fun Drawable.wrapIfNecessary(): Drawable {
-  return when (this) {
-    // Wrap the color drawable so it isn't automatically converted into a ColorPainter.
-    is ColorDrawable -> wrap()
-    else -> this
+// Prevent optimizing drawables into compose primitives
+// https://github.com/coil-kt/coil/blob/deb887cee703551a280685baa58facb159668751/coil-compose-base/src/main/java/coil/compose/AsyncImagePainter.kt#L338
+private fun wrapIfNecessary(drawable: Drawable): Drawable {
+  return when (drawable) {
+    is ColorDrawable,
+    is BitmapDrawable -> wrapInLayer(drawable)
+    else -> drawable
   }
 }
 
-private fun ColorDrawable.wrap(): Drawable {
-  return object : LayerDrawable(arrayOf(this)) {
-    override fun getIntrinsicWidth() = 100
-    override fun getIntrinsicHeight() = 100
+private fun wrapInLayer(drawable: Drawable): Drawable {
+  return object : LayerDrawable(arrayOf(drawable)) {
+    override fun getIntrinsicWidth() = drawable.intrinsicWidth
+    override fun getIntrinsicHeight() = drawable.intrinsicHeight
   }
 }
 

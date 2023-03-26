@@ -103,6 +103,7 @@ dependencies {
   testImplementation(libs.testing.espresso.core)
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
+  testImplementation(libs.coil.test)
 
   androidTestImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.leakcanary.android.instrumentation)
@@ -110,4 +111,5 @@ dependencies {
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)
   androidTestImplementation(libs.truth)
+  androidTestImplementation(libs.coil.test)
 }

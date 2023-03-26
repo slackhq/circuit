@@ -25,6 +25,7 @@ import com.slack.circuit.star.ui.FakeImageLoader
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,6 +58,11 @@ class PetDetailUiTest {
         InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog2)!!
       )
     Coil.setImageLoader(fakeImageLoader)
+  }
+
+  @After
+  fun teardown() {
+    Coil.reset()
   }
 
   @Test

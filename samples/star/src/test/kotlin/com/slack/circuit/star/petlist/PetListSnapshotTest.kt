@@ -56,6 +56,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   @After
   fun teardown() {
     Dispatchers.resetMain()
+    Coil.reset()
   }
 
   private fun snapshot(body: @Composable () -> Unit) {

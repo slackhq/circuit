@@ -25,6 +25,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -46,6 +47,11 @@ class PetListTest {
         InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog)!!
       )
     Coil.setImageLoader(fakeImageLoader)
+  }
+
+  @After
+  fun teardown() {
+    Coil.reset()
   }
 
   @Test

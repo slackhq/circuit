@@ -45,7 +45,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
       theme = "com.slack.circuit.star.ui.StarTheme",
     )
 
-  @get:Rule val coilRule = CoilRule()
+  @get:Rule val coilRule = CoilRule(contextProvider = paparazzi::context)
 
   @Before
   fun setup() {

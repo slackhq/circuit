@@ -32,8 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       TacoTheme {
-        rememberSystemUiController().run { setStatusBarColor(MaterialTheme.colorScheme.background) }
-
+        rememberSystemUiController().setStatusBarColor(MaterialTheme.colorScheme.background)
         CircuitCompositionLocals(circuitConfig) { CircuitContent(OrderTacosScreen) }
       }
     }

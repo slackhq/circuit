@@ -60,9 +60,9 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
       Row {
         Button(
           modifier = Modifier.padding(2.dp),
-          onClick = { sink(CounterScreen.Event.Increment) },
+          onClick = { sink(CounterScreen.Event.Decrement) },
         ) {
-          Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
+          Icon(rememberVectorPainter(Remove), "Decrement")
         }
         Button(
           onClick = { sink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
@@ -75,9 +75,9 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         }
         Button(
           modifier = Modifier.padding(2.dp),
-          onClick = { sink(CounterScreen.Event.Decrement) },
+          onClick = { sink(CounterScreen.Event.Increment) },
         ) {
-          Icon(rememberVectorPainter(Remove), "Decrement")
+          Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
         }
       }
     }

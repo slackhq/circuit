@@ -18,6 +18,7 @@ tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
 
 dependencies {
   implementation(compose.desktop.currentOs)
+  implementation(libs.kotlinx.immutable)
   implementation(projects.samples.counter)
   implementation(projects.circuitFoundation)
 }

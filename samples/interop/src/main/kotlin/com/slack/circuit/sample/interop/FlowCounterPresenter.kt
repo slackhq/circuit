@@ -6,8 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import com.slack.circuit.sample.counter.CounterEvent
-import com.slack.circuit.sample.counter.CounterState
+import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,13 +26,14 @@ class FlowCounterPresenter {
   fun countStateFlow(): StateFlow<Int> = count
 }
 
-fun FlowCounterPresenter.asCircuitPresenter(): Presenter<CounterState> {
+fun FlowCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
   return presenterOf {
     val count by countStateFlow().collectAsState()
-    CounterState(count) { event ->
+    CounterScreen.State(count) { event ->
       when (event) {
-        is CounterEvent.Increment -> increment()
-        is CounterEvent.Decrement -> decrement()
+        is CounterScreen.Event.Increment -> increment()
+        is CounterScreen.Event.Decrement -> decrement()
+        else -> Unit
       }
     }
   }

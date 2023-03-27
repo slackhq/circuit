@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -201,6 +202,9 @@ private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredi
 @Composable
 internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
   val sink = state.eventSink
+
+  BackHandler(enabled = state.isPreviousVisible) { sink(OrderTacosScreen.Event.Previous) }
+
   Scaffold(
     modifier = modifier.padding(4.dp),
     topBar = {

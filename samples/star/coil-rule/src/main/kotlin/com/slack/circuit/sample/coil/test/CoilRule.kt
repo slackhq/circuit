@@ -4,7 +4,6 @@ package com.slack.circuit.sample.coil.test
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
@@ -77,8 +76,7 @@ class CoilRule(
 // https://github.com/coil-kt/coil/blob/deb887cee703551a280685baa58facb159668751/coil-compose-base/src/main/java/coil/compose/AsyncImagePainter.kt#L338
 private fun wrapIfNecessary(drawable: Drawable): Drawable {
   return when (drawable) {
-    is ColorDrawable,
-    is BitmapDrawable -> wrapInLayer(drawable)
+    is ColorDrawable -> wrapInLayer(drawable)
     else -> drawable
   }
 }

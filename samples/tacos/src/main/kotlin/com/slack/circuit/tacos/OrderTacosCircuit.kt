@@ -73,7 +73,6 @@ object OrderTacosScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     val indexModifier: Int
-      get() = 0
 
     object Previous : Event {
       override val indexModifier: Int = -1

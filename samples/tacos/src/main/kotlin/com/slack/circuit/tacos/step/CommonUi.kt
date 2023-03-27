@@ -125,5 +125,5 @@ private fun PreviewCalories() {
 @Composable
 private fun ExtrasDivider(charge: Cents, calories: Int, modifier: Modifier = Modifier) {
   if (charge <= 0 || calories <= 0) return
-  Text(text = " | ", modifier = modifier, fontSize = 8.sp)
+  Text(text = " | ", modifier = modifier, fontSize = fontSize)
 }

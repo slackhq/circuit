@@ -7,12 +7,12 @@ import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.model.Ingredient
+import com.slack.circuit.tacos.model.toCurrencyString
 import com.slack.circuit.tacos.step.FillingsOrderStep
 import com.slack.circuit.tacos.step.OrderStep
 import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.test.test
-import java.math.BigDecimal
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -213,7 +213,7 @@ class OrderTacosPresenterTest {
 
   @Test
   fun `present - update order cost when ingredients change`() = runTest {
-    val initialData = OrderDetails(ingredientsCost = BigDecimal("1.99"))
+    val initialData = OrderDetails(ingredientsCost = 199)
     val expectedCost = initialData.run { baseCost + ingredientsCost }
 
     val presenter =
@@ -227,6 +227,6 @@ class OrderTacosPresenterTest {
     moleculeFlow(RecompositionClock.Immediate) {
         presenter.presentInternal(initialOrderDetails = initialData)
       }
-      .test { awaitItem().run { assertThat(orderCost).isEqualTo(expectedCost) } }
+      .test { awaitItem().run { assertThat(orderCost).isEqualTo(expectedCost.toCurrencyString()) } }
   }
 }

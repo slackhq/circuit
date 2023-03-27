@@ -27,7 +27,7 @@ import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import java.math.BigDecimal
+import com.slack.circuit.tacos.model.toCurrencyString
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -37,8 +37,8 @@ object ConfirmationOrderStep : OrderStep {
 
   data class OrderState(
     val calories: Int,
-    val baseCost: BigDecimal,
-    val ingredientsCost: BigDecimal,
+    val baseCost: String,
+    val ingredientsCost: String,
     val diet: Diet,
     val filling: String,
     val toppings: ImmutableList<String>,
@@ -50,8 +50,8 @@ internal fun confirmationProducer(orderDetails: OrderDetails): ConfirmationOrder
   val toppings = orderDetails.toppings.sortedBy { it.name }.toImmutableList()
   return ConfirmationOrderStep.OrderState(
     calories = calculateCalories(orderDetails.filling, orderDetails.toppings),
-    baseCost = orderDetails.baseCost,
-    ingredientsCost = orderDetails.ingredientsCost,
+    baseCost = orderDetails.baseCost.toCurrencyString(),
+    ingredientsCost = orderDetails.ingredientsCost.toCurrencyString(),
     diet = determineDiet(orderDetails.filling, orderDetails.toppings),
     filling = orderDetails.filling.name,
     toppings = toppings.map { it.name }.toImmutableList(),

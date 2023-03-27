@@ -4,7 +4,6 @@ package com.slack.circuit.tacos.repository
 
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import java.math.BigDecimal
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -32,12 +31,12 @@ private val fillings =
     Ingredient(
       name = "Steak",
       calories = 150,
-      charge = BigDecimal("0.75"),
+      charge = 75,
     ),
     Ingredient(
       name = "Barbacoa",
       calories = 170,
-      charge = BigDecimal("0.50"),
+      charge = 50,
     ),
     Ingredient(
       name = "Carnitas",
@@ -61,13 +60,13 @@ private val toppings =
       name = "Guacamole",
       calories = 230,
       diet = Diet.VEGAN,
-      charge = BigDecimal("2.95"),
+      charge = 295,
     ),
     Ingredient(
       name = "Queso Blanco",
       calories = 120,
       diet = Diet.VEGETARIAN,
-      charge = BigDecimal("1.75"),
+      charge = 175,
     ),
     Ingredient(name = "Fajita Veggies", calories = 20, diet = Diet.VEGAN),
     Ingredient(

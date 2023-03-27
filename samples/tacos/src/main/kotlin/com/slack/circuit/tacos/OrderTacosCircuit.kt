@@ -40,8 +40,10 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.tacos.model.Cents
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
+import com.slack.circuit.tacos.model.toCurrencyString
 import com.slack.circuit.tacos.step.ConfirmationOrderStep
 import com.slack.circuit.tacos.step.ConfirmationUi
 import com.slack.circuit.tacos.step.FillingsOrderStep
@@ -52,7 +54,6 @@ import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsUi
 import com.slack.circuit.tacos.ui.theme.TacoTheme
-import java.math.BigDecimal
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
@@ -62,7 +63,7 @@ import kotlinx.parcelize.Parcelize
 object OrderTacosScreen : Screen {
   data class State(
     @StringRes val headerResId: Int,
-    val orderCost: BigDecimal,
+    val orderCost: String,
     val stepState: OrderStep.State,
     val isPreviousVisible: Boolean,
     val isNextEnabled: Boolean,
@@ -90,9 +91,10 @@ object OrderTacosScreen : Screen {
 data class OrderDetails(
   val filling: Ingredient = Ingredient(""),
   val toppings: Set<Ingredient> = persistentSetOf(),
-  val baseCost: BigDecimal = BigDecimal("9.99"), // Default taco price
-  val ingredientsCost: BigDecimal = BigDecimal.ZERO
-)
+  val ingredientsCost: Cents = 0
+) {
+  val baseCost: Cents = 999 // Default taco price
+}
 
 /** List of wizard steps (in order!) */
 private val orderSteps =
@@ -131,7 +133,7 @@ internal class OrderTacosPresenter(
 
     return OrderTacosScreen.State(
       headerResId = currentStep.headerResId,
-      orderCost = orderDetails.baseCost + orderDetails.ingredientsCost,
+      orderCost = (orderDetails.baseCost + orderDetails.ingredientsCost).toCurrencyString(),
       stepState = stepState,
       isPreviousVisible = currentStep.index in 1..2,
       isNextEnabled = isNextEnabled,
@@ -184,15 +186,14 @@ private fun updateOrder(
   val newIngredientsCost = calculateIngredientsCost(newFilling, newToppings)
 
   return OrderDetails(
-    baseCost = currentOrder.baseCost,
     ingredientsCost = newIngredientsCost,
     filling = newFilling,
     toppings = newToppings.toImmutableSet()
   )
 }
 
-private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredient>): BigDecimal {
-  var cost = filling?.charge ?: BigDecimal.ZERO
+private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredient>): Cents {
+  var cost = filling?.charge ?: 0
   toppings.forEach { topping -> cost += topping.charge }
   return cost
 }
@@ -278,7 +279,7 @@ private fun NavigationButton(
 
 @Composable
 private fun OrderTotal(
-  orderCost: BigDecimal,
+  orderCost: String,
   onConfirmationStep: Boolean,
   isVisible: Boolean,
   modifier: Modifier = Modifier,
@@ -313,7 +314,7 @@ private fun OrderTotal(
       fontWeight = FontWeight.Bold,
     )
     Text(
-      text = if (onConfirmationStep) "$$orderCost" else "$$orderCost",
+      text = "$$orderCost",
       modifier = Modifier.align(Alignment.CenterEnd).padding(end = 5.dp),
       color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
@@ -327,7 +328,7 @@ internal fun PreviewOrderTacosUi() {
   val toppings =
     persistentListOf(
       Ingredient("apple", calories = 10, diet = Diet.VEGAN),
-      Ingredient("orange", calories = 15, diet = Diet.VEGETARIAN, charge = BigDecimal("1.99")),
+      Ingredient("orange", calories = 15, diet = Diet.VEGETARIAN, charge = 199),
       Ingredient("pear", diet = Diet.NONE),
     )
   val stepState =
@@ -341,7 +342,7 @@ internal fun PreviewOrderTacosUi() {
       OrderTacosUi(
         OrderTacosScreen.State(
           headerResId = R.string.toppings_step_header,
-          orderCost = BigDecimal("1.99"),
+          orderCost = "1.99",
           stepState = stepState,
           isPreviousVisible = true,
           isNextVisible = true,

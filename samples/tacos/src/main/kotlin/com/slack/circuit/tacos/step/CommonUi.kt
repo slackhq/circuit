@@ -22,9 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slack.circuit.tacos.R
+import com.slack.circuit.tacos.model.Cents
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import java.math.BigDecimal
+import com.slack.circuit.tacos.model.toCurrencyString
 
 private val fontSize = 8.sp
 
@@ -63,7 +64,7 @@ private fun PreviewOrderIngredient() {
         name = "Apple",
         calories = 99,
         diet = Diet.VEGAN,
-        charge = BigDecimal("1.99"),
+        charge = 199,
       )
     )
   }
@@ -92,15 +93,15 @@ private fun PreviewDietBadge() {
 }
 
 @Composable
-private fun AdditionalCharge(charge: BigDecimal, modifier: Modifier = Modifier) {
-  if (charge <= BigDecimal.ZERO) return
-  Text(text = "$$charge", modifier = modifier, fontSize = fontSize)
+private fun AdditionalCharge(charge: Cents, modifier: Modifier = Modifier) {
+  if (charge <= 0) return
+  Text(text = "$${charge.toCurrencyString()}", modifier = modifier, fontSize = fontSize)
 }
 
 @Preview
 @Composable
 private fun PreviewAdditionalCharge() {
-  Surface { AdditionalCharge(BigDecimal("1.25")) }
+  Surface { AdditionalCharge(125) }
 }
 
 /** Display calorie count. */
@@ -122,7 +123,7 @@ private fun PreviewCalories() {
 }
 
 @Composable
-private fun ExtrasDivider(charge: BigDecimal, calories: Int, modifier: Modifier = Modifier) {
-  if (charge <= BigDecimal.ZERO || calories <= 0) return
+private fun ExtrasDivider(charge: Cents, calories: Int, modifier: Modifier = Modifier) {
+  if (charge <= 0 || calories <= 0) return
   Text(text = " | ", modifier = modifier, fontSize = 8.sp)
 }

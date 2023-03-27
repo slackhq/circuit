@@ -117,7 +117,7 @@ internal class OrderTacosPresenter(
 
     // Generate state for the current order step
     val stepState =
-      produceState(currentStep, orderDetails) { event ->
+      produceOrderStepState(currentStep, orderDetails) { event ->
         when (event) {
           is OrderStep.Validation -> isNextEnabled = event.isOrderValid
           is OrderStep.UpdateOrder -> orderDetails = updateOrder(event, orderDetails)
@@ -144,7 +144,7 @@ internal class OrderTacosPresenter(
   }
 
   @Composable
-  private fun produceState(
+  private fun produceOrderStepState(
     orderStep: OrderStep,
     orderDetails: OrderDetails,
     eventSink: (OrderStep.Event) -> Unit

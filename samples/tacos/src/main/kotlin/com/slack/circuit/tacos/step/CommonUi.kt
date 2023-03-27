@@ -33,7 +33,7 @@ private val fontSize = 8.sp
 internal fun Instructions(@StringRes resId: Int, modifier: Modifier = Modifier) {
   Text(
     text = stringResource(resId),
-    modifier = modifier.padding(start = 15.dp, bottom = 10.dp),
+    modifier = modifier.padding(start = 16.dp, bottom = 8.dp),
     fontStyle = FontStyle.Italic
   )
 }
@@ -44,7 +44,7 @@ internal fun OrderIngredient(ingredient: Ingredient) {
     with(ingredient) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(name)
-        DietBadge(diet, Modifier.padding(5.dp))
+        DietBadge(diet, Modifier.padding(4.dp))
       }
       Row {
         AdditionalCharge(charge)
@@ -74,11 +74,11 @@ private fun PreviewOrderIngredient() {
 private fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
   if (diet == Diet.NONE) return
   Box(
-    modifier = modifier.background(MaterialTheme.colorScheme.surfaceTint, RoundedCornerShape(3.dp))
+    modifier = modifier.background(MaterialTheme.colorScheme.surfaceTint, RoundedCornerShape(4.dp))
   ) {
     Text(
       text = diet.codeResId?.let { stringResource(it).uppercase() }.orEmpty(),
-      modifier = Modifier.padding(3.dp),
+      modifier = Modifier.padding(4.dp),
       fontSize = 6.sp,
       fontWeight = FontWeight.Bold,
       color = MaterialTheme.colorScheme.surface

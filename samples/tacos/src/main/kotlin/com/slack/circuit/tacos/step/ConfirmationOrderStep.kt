@@ -88,36 +88,36 @@ internal fun ConfirmationUi(
     val summary = buildSummary(filling)
     val extra = buildExtras(diet, calories)
 
-    Column(modifier = modifier.fillMaxSize().padding(5.dp)) {
+    Column(modifier = modifier.fillMaxSize().padding(4.dp)) {
       val scrollState = rememberScrollState()
       Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState).weight(1f)) {
         Text(
           text = stringResource(R.string.confirm_step_details),
           fontWeight = FontWeight.Bold,
           fontSize = 20.sp,
-          modifier = Modifier.padding(bottom = 10.dp)
+          modifier = Modifier.padding(bottom = 8.dp)
         )
-        Text(text = summary, modifier = Modifier.padding(bottom = 5.dp))
+        Text(text = summary, modifier = Modifier.padding(bottom = 4.dp))
         toppings.forEachIndexed { i, topping ->
-          Row(modifier = Modifier.padding(start = 10.dp)) {
-            Text(text = "${i + 1}.", modifier = Modifier.padding(end = 5.dp))
+          Row(modifier = Modifier.padding(start = 8.dp)) {
+            Text(text = "${i + 1}.", modifier = Modifier.padding(end = 4.dp))
             Text(
               text = topping,
               fontWeight = FontWeight.Bold,
             )
           }
         }
-        Text(text = extra, modifier = Modifier.padding(top = 5.dp))
+        Text(text = extra, modifier = Modifier.padding(top = 4.dp))
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
       }
 
-      Box(modifier = Modifier.fillMaxWidth().padding(end = 5.dp)) {
+      Box(modifier = Modifier.fillMaxWidth().padding(end = 4.dp)) {
         Column(modifier = Modifier.fillMaxWidth(fraction = 0.5f).align(Alignment.BottomEnd)) {
           Text(
             text = stringResource(R.string.confirm_step_charge_breakdown),
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 5.dp)
+            modifier = Modifier.padding(bottom = 4.dp)
           )
 
           Box(modifier = Modifier.align(Alignment.End).fillMaxWidth()) {

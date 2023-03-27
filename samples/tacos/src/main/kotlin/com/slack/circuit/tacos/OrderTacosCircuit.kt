@@ -202,7 +202,7 @@ private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredi
 internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
   val sink = state.eventSink
   Scaffold(
-    modifier = modifier.padding(5.dp),
+    modifier = modifier.padding(4.dp),
     topBar = {
       CenterAlignedTopAppBar(
         title = { Text(stringResource(state.headerResId)) },
@@ -295,9 +295,9 @@ private fun OrderTotal(
   var boxModifier =
     modifier
       .fillMaxWidth()
-      .defaultMinSize(minHeight = 30.dp)
-      .padding(horizontal = 5.dp)
-      .clip(RoundedCornerShape(5.dp))
+      .defaultMinSize(minHeight = 28.dp)
+      .padding(horizontal = 4.dp)
+      .clip(RoundedCornerShape(4.dp))
       .background(color)
   if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
@@ -309,13 +309,13 @@ private fun OrderTotal(
   Box(modifier = boxModifier) {
     Text(
       text = label,
-      modifier = Modifier.align(Alignment.CenterStart).padding(start = 5.dp),
+      modifier = Modifier.align(Alignment.CenterStart).padding(start = 4.dp),
       color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )
     Text(
       text = "$$orderCost",
-      modifier = Modifier.align(Alignment.CenterEnd).padding(end = 5.dp),
+      modifier = Modifier.align(Alignment.CenterEnd).padding(end = 4.dp),
       color = MaterialTheme.colorScheme.onPrimary,
       fontWeight = FontWeight.Bold,
     )

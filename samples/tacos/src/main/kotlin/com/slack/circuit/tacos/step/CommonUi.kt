@@ -54,6 +54,21 @@ internal fun OrderIngredient(ingredient: Ingredient) {
   }
 }
 
+@Preview
+@Composable
+private fun PreviewOrderIngredient() {
+  Surface {
+    OrderIngredient(
+      Ingredient(
+        name = "Apple",
+        calories = 99,
+        diet = Diet.VEGAN,
+        charge = BigDecimal("1.99"),
+      )
+    )
+  }
+}
+
 @Composable
 private fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
   if (diet == Diet.NONE) return
@@ -70,10 +85,22 @@ private fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
   }
 }
 
+@Preview
+@Composable
+private fun PreviewDietBadge() {
+  Surface { DietBadge(Diet.VEGAN) }
+}
+
 @Composable
 private fun AdditionalCharge(charge: BigDecimal, modifier: Modifier = Modifier) {
   if (charge <= BigDecimal.ZERO) return
   Text(text = "$$charge", modifier = modifier, fontSize = fontSize)
+}
+
+@Preview
+@Composable
+private fun PreviewAdditionalCharge() {
+  Surface { AdditionalCharge(BigDecimal("1.25")) }
 }
 
 /** Display calorie count. */
@@ -87,42 +114,15 @@ private fun Calories(calories: Int, modifier: Modifier = Modifier) {
   )
 }
 
+@Preview
+@Composable
+@Suppress("MagicNumber")
+private fun PreviewCalories() {
+  Surface { Calories(150) }
+}
+
 @Composable
 private fun ExtrasDivider(charge: BigDecimal, calories: Int, modifier: Modifier = Modifier) {
   if (charge <= BigDecimal.ZERO || calories <= 0) return
   Text(text = " | ", modifier = modifier, fontSize = 8.sp)
-}
-
-@Preview
-@Composable
-internal fun PreviewOrderIngredient() {
-  Surface {
-    OrderIngredient(
-      Ingredient(
-        name = "Apple",
-        calories = 99,
-        diet = Diet.VEGAN,
-        charge = BigDecimal("1.99"),
-      )
-    )
-  }
-}
-
-@Preview
-@Composable
-internal fun PreviewAdditionalCharge() {
-  Surface { AdditionalCharge(BigDecimal("1.25")) }
-}
-
-@Preview
-@Composable
-internal fun PreviewDietBadge() {
-  Surface { DietBadge(Diet.VEGAN) }
-}
-
-@Preview
-@Composable
-@Suppress("MagicNumber")
-internal fun PreviewCalories() {
-  Surface { Calories(150) }
 }

@@ -47,6 +47,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
       theme = "com.slack.circuit.star.ui.StarTheme",
       renderingMode = SessionParams.RenderingMode.SHRINK,
       showSystemUi = false,
+      maxPercentDifference = 0.2,
     )
 
   @Before

@@ -131,8 +131,8 @@ subprojects {
     configureComposeBom(dependencies)
   }
 
+  val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
-    val hasCompose = !project.hasProperty("circuit.noCompose")
     tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
         allWarningsAsErrors.set(true)
@@ -255,8 +255,10 @@ subprojects {
   val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
     compileSdk = 33
 
-    buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get() }
+    if (hasCompose) {
+      buildFeatures { compose = true }
+      composeOptions { kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get() }
+    }
 
     compileOptions {
       sourceCompatibility = JavaVersion.VERSION_11

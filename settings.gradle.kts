@@ -168,6 +168,7 @@ include(
   ":samples:star",
   ":samples:star:apk",
   ":samples:star:benchmark",
+  ":samples:star:coil-rule",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

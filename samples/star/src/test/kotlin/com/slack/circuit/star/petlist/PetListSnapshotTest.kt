@@ -5,9 +5,8 @@ package com.slack.circuit.star.petlist
 import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
-import coil.Coil
 import com.android.ide.common.rendering.api.SessionParams
-import com.slack.circuit.star.ui.FakeImageLoader
+import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -50,10 +49,10 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
       maxPercentDifference = 0.2,
     )
 
+  @get:Rule val coilRule = CoilRule(contextProvider = paparazzi::context)
+
   @Before
   fun setup() {
-    val fakeImageLoader = FakeImageLoader()
-    Coil.setImageLoader(fakeImageLoader)
     Dispatchers.setMain(UnconfinedTestDispatcher())
   }
 

@@ -14,8 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.slack.circuit.sample.counter.CounterEvent
-import com.slack.circuit.sample.counter.CounterState
+import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.interop.databinding.CounterViewBinding
 
 /**
@@ -62,14 +61,14 @@ constructor(
 
 /** An interop compose function that renders [CounterView] as a Circuit-powered [AndroidView]. */
 @Composable
-fun CounterViewComposable(state: CounterState, modifier: Modifier = Modifier) {
+fun CounterViewComposable(state: CounterScreen.State, modifier: Modifier = Modifier) {
   val eventSink = state.eventSink
   AndroidView(
     modifier = modifier.fillMaxSize(),
     factory = { context ->
       CounterView(context).apply {
-        setOnIncrementClickListener { eventSink(CounterEvent.Increment) }
-        setOnDecrementClickListener { eventSink(CounterEvent.Decrement) }
+        setOnIncrementClickListener { eventSink(CounterScreen.Event.Increment) }
+        setOnDecrementClickListener { eventSink(CounterScreen.Event.Decrement) }
       }
     },
     update = { view -> view.setState(state.count) }

@@ -162,7 +162,7 @@ private fun processNavigation(
   onNavEvent: (OrderStep) -> Unit
 ) {
   val newIndex = currentStep.index + navEvent.indexModifier
-  onNavEvent(orderSteps.getOrElse(newIndex) { currentStep })
+  onNavEvent(orderSteps[newIndex])
 }
 
 private fun updateOrder(

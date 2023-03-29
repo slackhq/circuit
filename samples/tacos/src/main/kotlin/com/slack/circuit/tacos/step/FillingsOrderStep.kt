@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -95,7 +96,7 @@ private fun FillingsList(
 ) {
   val sink = state.eventSink
   val scrollState = rememberScrollState()
-  Column(modifier = modifier.verticalScroll(scrollState)) {
+  Column(modifier = modifier.verticalScroll(scrollState).fillMaxWidth()) {
     Instructions(resId = R.string.fillings_step_instructions)
     state.list.forEach { ingredient ->
       Filling(

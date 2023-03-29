@@ -109,7 +109,8 @@ internal class OrderTacosPresenter(
   private val initialStep: OrderStep = FillingsOrderStep,
   private val initialOrderDetails: OrderDetails = OrderDetails()
 ) : Presenter<OrderTacosScreen.State> {
-  @Composable override fun present(): OrderTacosScreen.State {
+  @Composable
+  override fun present(): OrderTacosScreen.State {
     var currentStep by remember { mutableStateOf(initialStep) }
     var orderDetails by remember { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }

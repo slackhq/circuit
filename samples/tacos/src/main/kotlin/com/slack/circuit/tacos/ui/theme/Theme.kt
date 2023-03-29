@@ -100,10 +100,7 @@ private val DarkTacoColors =
   )
 
 @Composable
-fun TacoTheme(
-  useDarkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable () -> Unit
-) {
+fun TacoTheme(useDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
   val materialColors =
     when {
       useDarkTheme -> DarkMaterialColors
@@ -120,13 +117,11 @@ fun TacoTheme(
   }
 }
 
-internal val LocalTacoColorScheme = staticCompositionLocalOf { LightTacoColors }
+private val LocalTacoColorScheme = staticCompositionLocalOf { LightTacoColors }
 
 object TacoTheme {
   val colorScheme: TacoColorScheme
-    @Composable
-    @ReadOnlyComposable
-    get() = LocalTacoColorScheme.current
+    @Composable @ReadOnlyComposable get() = LocalTacoColorScheme.current
 }
 
 /** A color scheme holds all named color parameters for a [TacoTheme]. */
@@ -137,13 +132,16 @@ class TacoColorScheme(
   onPrimaryBottomBarContainer: Color,
   onSecondaryBottomBarContainer: Color,
 ) {
-  var primaryBottomBarContainer by mutableStateOf(primaryBottomBarContainer, structuralEqualityPolicy())
+  var primaryBottomBarContainer by
+    mutableStateOf(primaryBottomBarContainer, structuralEqualityPolicy())
     internal set
-  var secondaryBottomBarContainer by mutableStateOf(secondaryBottomBarContainer, structuralEqualityPolicy())
+  var secondaryBottomBarContainer by
+    mutableStateOf(secondaryBottomBarContainer, structuralEqualityPolicy())
     internal set
-  var onPrimaryBottomBarContainer by mutableStateOf(onPrimaryBottomBarContainer, structuralEqualityPolicy())
+  var onPrimaryBottomBarContainer by
+    mutableStateOf(onPrimaryBottomBarContainer, structuralEqualityPolicy())
     internal set
-  var onSecondaryBottomBarContainer by mutableStateOf(onSecondaryBottomBarContainer, structuralEqualityPolicy())
+  var onSecondaryBottomBarContainer by
+    mutableStateOf(onSecondaryBottomBarContainer, structuralEqualityPolicy())
     internal set
 }
-

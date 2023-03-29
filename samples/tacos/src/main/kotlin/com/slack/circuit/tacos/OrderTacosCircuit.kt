@@ -293,18 +293,24 @@ private fun OrderTotal(
 ) {
   if (!isVisible) return
 
-  val color =
+  val bdColor =
     when {
-      onConfirmationStep -> MaterialTheme.colorScheme.onTertiaryContainer
-      else -> MaterialTheme.colorScheme.tertiaryContainer
+      onConfirmationStep -> TacoTheme.colorScheme.secondaryBottomBarContainer
+      else -> TacoTheme.colorScheme.primaryBottomBarContainer
     }
+  val textColor =
+    when {
+      onConfirmationStep -> TacoTheme.colorScheme.onSecondaryBottomBarContainer
+      else -> TacoTheme.colorScheme.onPrimaryBottomBarContainer
+    }
+
   var boxModifier =
     modifier
       .fillMaxWidth()
       .defaultMinSize(minHeight = 28.dp)
       .padding(horizontal = 4.dp)
       .clip(RoundedCornerShape(4.dp))
-      .background(color)
+      .background(bdColor)
   if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
   val label =
@@ -316,13 +322,13 @@ private fun OrderTotal(
     Text(
       text = label,
       modifier = Modifier.align(Alignment.CenterStart).padding(start = 4.dp),
-      color = MaterialTheme.colorScheme.onPrimary,
+      color = textColor,
       fontWeight = FontWeight.Bold,
     )
     Text(
       text = "$$orderCost",
       modifier = Modifier.align(Alignment.CenterEnd).padding(end = 4.dp),
-      color = MaterialTheme.colorScheme.onPrimary,
+      color = textColor,
       fontWeight = FontWeight.Bold,
     )
   }

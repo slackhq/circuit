@@ -7,8 +7,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.ui.graphics.Color
 
-private val LightColors =
+private val LightMaterialColors =
   lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -41,7 +50,7 @@ private val LightColors =
     scrim = md_theme_light_scrim,
   )
 
-private val DarkColors =
+private val DarkMaterialColors =
   darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -74,13 +83,67 @@ private val DarkColors =
     scrim = md_theme_dark_scrim,
   )
 
+private val LightTacoColors =
+  TacoColorScheme(
+    primaryBottomBarContainer = tc_light_bottomBarRoseContainer,
+    secondaryBottomBarContainer = tc_light_bottomBarRedContainer,
+    onPrimaryBottomBarContainer = tc_light_onBottomBarRoseContainer,
+    onSecondaryBottomBarContainer = tc_light_onBottomBarRedContainer,
+  )
+
+private val DarkTacoColors =
+  TacoColorScheme(
+    primaryBottomBarContainer = tc_dark_bottomBarRoseContainer,
+    secondaryBottomBarContainer = tc_dark_bottomBarRedContainer,
+    onPrimaryBottomBarContainer = tc_dark_onBottomBarRoseContainer,
+    onSecondaryBottomBarContainer = tc_dark_onBottomBarRedContainer,
+  )
+
 @Composable
-fun TacoTheme(useDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-  val colors =
+fun TacoTheme(
+  useDarkTheme: Boolean = isSystemInDarkTheme(),
+  content: @Composable () -> Unit
+) {
+  val materialColors =
     when {
-      useDarkTheme -> DarkColors
-      else -> LightColors
+      useDarkTheme -> DarkMaterialColors
+      else -> LightMaterialColors
+    }
+  val tacoColors =
+    when {
+      useDarkTheme -> DarkTacoColors
+      else -> LightTacoColors
     }
 
-  MaterialTheme(colorScheme = colors, content = content)
+  MaterialTheme(colorScheme = materialColors) {
+    CompositionLocalProvider(LocalTacoColorScheme provides tacoColors, content = content)
+  }
 }
+
+internal val LocalTacoColorScheme = staticCompositionLocalOf { LightTacoColors }
+
+object TacoTheme {
+  val colorScheme: TacoColorScheme
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalTacoColorScheme.current
+}
+
+/** A color scheme holds all named color parameters for a [TacoTheme]. */
+@Stable
+class TacoColorScheme(
+  primaryBottomBarContainer: Color,
+  secondaryBottomBarContainer: Color,
+  onPrimaryBottomBarContainer: Color,
+  onSecondaryBottomBarContainer: Color,
+) {
+  var primaryBottomBarContainer by mutableStateOf(primaryBottomBarContainer, structuralEqualityPolicy())
+    internal set
+  var secondaryBottomBarContainer by mutableStateOf(secondaryBottomBarContainer, structuralEqualityPolicy())
+    internal set
+  var onPrimaryBottomBarContainer by mutableStateOf(onPrimaryBottomBarContainer, structuralEqualityPolicy())
+    internal set
+  var onSecondaryBottomBarContainer by mutableStateOf(onSecondaryBottomBarContainer, structuralEqualityPolicy())
+    internal set
+}
+

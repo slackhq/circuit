@@ -32,3 +32,6 @@ TwitterCompose:
   ComposableNaming:
     # TODO disabled for now pending https://github.com/twitter/compose-rules/issues/104
     active: false
+  CompositionLocalAllowlist:
+    active: true
+    allowedCompositionLocals: LocalTacoColorScheme

@@ -22,7 +22,6 @@ style:
       - 'Preview'
       - 'androidx.compose.desktop.ui.tooling.preview.Preview'
   MagicNumber:
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts']
     # Allow magic numbers in Compose previews
     ignoreAnnotated:
       - 'androidx.compose.ui.tooling.preview.Preview'

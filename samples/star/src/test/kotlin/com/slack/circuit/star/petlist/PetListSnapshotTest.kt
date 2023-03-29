@@ -5,6 +5,7 @@ package com.slack.circuit.star.petlist
 import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
+import com.android.ide.common.rendering.api.SessionParams
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.persistentListOf
@@ -30,8 +31,8 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
         name = "Baxter",
         imageUrl = "http://some.url",
         breed = "Australian Terrier",
-        gender = "male",
-        size = "small",
+        gender = Gender.MALE,
+        size = Size.SMALL,
         age = "12"
       )
 
@@ -43,6 +44,9 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     Paparazzi(
       deviceConfig = PIXEL_5,
       theme = "com.slack.circuit.star.ui.StarTheme",
+      renderingMode = SessionParams.RenderingMode.SHRINK,
+      showSystemUi = false,
+      maxPercentDifference = 0.2,
     )
 
   @get:Rule val coilRule = CoilRule(contextProvider = paparazzi::context)
@@ -69,13 +73,13 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   """
   )
   @Test
-  fun petList_show_progress_indicator_for_loading_state() {
-    snapshot { PetList(PetListScreen.State.Loading) }
+  fun petList_show_progress_indicator_for_loading_state() = snapshot {
+    PetList(PetListScreen.State.Loading)
   }
 
   @Test
-  fun petList_show_message_for_no_animals_state() {
-    snapshot { PetList(PetListScreen.State.NoAnimals(isRefreshing = false)) }
+  fun petList_show_message_for_no_animals_state() = snapshot {
+    PetList(PetListScreen.State.NoAnimals(isRefreshing = false))
   }
 
   @Test
@@ -84,8 +88,5 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     snapshot { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
   }
 
-  @Test
-  fun petList_filtersSheet() {
-    snapshot { PreviewUpdateFiltersSheet() }
-  }
+  @Test fun petList_filtersSheet() = snapshot { PreviewUpdateFiltersSheet() }
 }

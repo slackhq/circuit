@@ -37,6 +37,7 @@ private val LightColors =
     inverseSurface = md_theme_light_inverseSurface,
     inversePrimary = md_theme_light_inversePrimary,
     surfaceTint = md_theme_light_surfaceTint,
+    scrim = md_theme_light_shadow,
   )
 
 private val DarkColors =
@@ -68,6 +69,7 @@ private val DarkColors =
     inverseSurface = md_theme_dark_inverseSurface,
     inversePrimary = md_theme_dark_inversePrimary,
     surfaceTint = md_theme_dark_surfaceTint,
+    scrim = md_theme_dark_shadow,
   )
 
 @Composable

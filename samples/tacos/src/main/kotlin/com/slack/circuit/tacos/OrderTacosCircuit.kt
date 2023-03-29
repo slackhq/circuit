@@ -307,7 +307,7 @@ private fun OrderTotal(
   var boxModifier =
     modifier
       .fillMaxWidth()
-      .defaultMinSize(minHeight = 28.dp)
+      .defaultMinSize(minHeight = 32.dp)
       .padding(horizontal = 4.dp)
       .clip(RoundedCornerShape(4.dp))
       .background(bdColor)

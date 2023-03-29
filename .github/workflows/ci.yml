@@ -45,7 +45,16 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug verifyPaparazzi detektMain detektTest --continue --no-configuration-cache
+          arguments: check :samples:star:apk:assembleDebug detektMain detektTest --continue --no-configuration-cache
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
+
+      - name: Verify Snapshots
+        if: always()
+        id: gradle-paparazzi
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: verifyPaparazzi
           gradle-home-cache-cleanup: true
           cache-read-only: false
 

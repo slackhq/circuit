@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Tacos</string>
+
+    <!-- OrderTacosCircuit -->
+    <string name="bottom_bar_place_order">Place Order</string>
+    <string name="bottom_bar_order_total">Order Total</string>
+    <string name="top_bar_back">Back</string>
+    <string name="top_bar_forward">Forward</string>
+
+    <!-- FillingsOrderStep -->
+    <string name="fillings_step_header">Fillings</string>
+    <string name="fillings_step_instructions">Pick a filling:</string>
+
+    <!-- ToppingsOrderStep -->
+    <string name="toppings_step_header">Toppings</string>
+    <string name="toppings_step_instructions">Pick 3 or more toppings:</string>
+
+    <!-- ConfirmOrderStep -->
+    <string name="confirm_step_header">Confirm Order</string>
+    <string name="confirm_step_details">Details</string>
+    <string name="confirm_step_charge_breakdown">Charge Breakdown</string>
+    <string name="confirm_step_taco">Taco:</string>
+    <string name="confirm_step_extras">Extras:</string>
+
+    <!-- SummaryOrderStep -->
+    <string name="summary_step_header">Order Complete</string>
+    <string name="summary_step_order_again">Order Again?</string>
+
+    <!-- CommonUi -->
+    <string name="common_calories">%d cals</string>
+    <string name="common_vegetarian">vt</string>
+    <string name="common_vegan">vg</string>
+</resources>

@@ -20,12 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.sample.counter.CounterEvent
-import com.slack.circuit.sample.counter.CounterState
+import com.slack.circuit.sample.counter.CounterScreen
 
 /** A standard Circuit Counter UI in Compose. */
 @Composable
-fun Counter(state: CounterState, modifier: Modifier = Modifier) {
+fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
   val color = if (state.count >= 0) Color.Unspecified else MaterialTheme.colorScheme.error
   Box(modifier.fillMaxSize()) {
     Column(Modifier.align(Alignment.Center)) {
@@ -39,13 +38,13 @@ fun Counter(state: CounterState, modifier: Modifier = Modifier) {
       val sink = state.eventSink
       Button(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = { sink(CounterEvent.Increment) }
+        onClick = { sink(CounterScreen.Event.Increment) }
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
       }
       Button(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = { sink(CounterEvent.Decrement) }
+        onClick = { sink(CounterScreen.Event.Decrement) }
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement")
       }

@@ -27,16 +27,14 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuit.sample.counter.CounterEvent
 import com.slack.circuit.sample.counter.CounterScreen
-import com.slack.circuit.sample.counter.CounterState
 import kotlinx.parcelize.Parcelize
 
 // TODO why doesn't Parcelable get inherited through CounterScreen?
 @Parcelize object AndroidCounterScreen : CounterScreen, Parcelable
 
 @Composable
-fun Counter(state: CounterState, modifier: Modifier = Modifier) {
+fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
   val color = if (state.count >= 0) Color.Unspecified else MaterialTheme.colorScheme.error
   Box(modifier.fillMaxSize()) {
     Column(Modifier.align(Alignment.Center)) {
@@ -50,13 +48,13 @@ fun Counter(state: CounterState, modifier: Modifier = Modifier) {
       val sink = state.eventSink
       Button(
         modifier = Modifier.align(CenterHorizontally),
-        onClick = { sink(CounterEvent.Increment) }
+        onClick = { sink(CounterScreen.Event.Increment) }
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
       }
       Button(
         modifier = Modifier.align(CenterHorizontally),
-        onClick = { sink(CounterEvent.Decrement) }
+        onClick = { sink(CounterScreen.Event.Decrement) }
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement")
       }
@@ -67,7 +65,7 @@ fun Counter(state: CounterState, modifier: Modifier = Modifier) {
 class CounterUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
-      is CounterScreen -> ui<CounterState> { state, modifier -> Counter(state, modifier) }
+      is CounterScreen -> ui<CounterScreen.State> { state, modifier -> Counter(state, modifier) }
       else -> null
     }
   }
@@ -76,11 +74,11 @@ class CounterUiFactory : Ui.Factory {
 @Preview(showBackground = true)
 @Composable
 private fun CounterPreview() {
-  Counter(CounterState(0))
+  Counter(CounterScreen.State(0))
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun CounterPreviewNegative() {
-  Counter(CounterState(-1))
+  Counter(CounterScreen.State(-1))
 }

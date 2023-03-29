@@ -3,11 +3,11 @@ future==0.18.3
 Jinja2==3.1.2
 livereload==2.6.3
 lunr==0.6.2
-Markdown==3.4.1
+Markdown==3.4.3
 MarkupSafe==2.1.2
 mkdocs==1.4.2
 mkdocs-macros-plugin==0.7.0
-mkdocs-material==9.1.2
+mkdocs-material==9.1.4
 mkdocs-material-extensions==1.1.1
 Pygments==2.14.0
 pymdown-extensions==9.10

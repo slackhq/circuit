@@ -11,44 +11,34 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
-import androidx.test.platform.app.InstrumentationRegistry
-import coil.Coil
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.star.ui.FakeImageLoader
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 
 class PetDetailTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  private val coilRule = CoilRule(R.drawable.dog2)
 
   @get:Rule
   val rule =
     RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
       around(composeTestRule)
+      around(coilRule)
     }
-
-  @Before
-  fun setup() {
-    val fakeImageLoader =
-      FakeImageLoader(
-        InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog2)!!
-      )
-    Coil.setImageLoader(fakeImageLoader)
-  }
 
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {

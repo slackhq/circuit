@@ -29,7 +29,7 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
     val sheetState =
       rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = {
+        confirmValueChange = {
           if (dismissOnTapOutside) {
             if (it == ModalBottomSheetValue.Hidden) {
               // This is apparently as close as we can get to an "onDismiss" callback, which

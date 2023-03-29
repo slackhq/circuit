@@ -128,7 +128,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.12.4" }
+  plugins { id("com.gradle.enterprise") version "3.12.6" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -168,6 +168,7 @@ include(
   ":samples:star",
   ":samples:star:apk",
   ":samples:star:benchmark",
+  ":samples:star:coil-rule",
   ":samples:tacos",
 )
 

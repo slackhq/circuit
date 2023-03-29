@@ -25,4 +25,5 @@ enum class Diet(@StringRes val codeResId: Int? = null) {
 
 typealias Cents = Int
 
+@Suppress("MagicNumber")
 fun Cents.toCurrencyString(): String = String.format(Locale.US, "%.2f", this / 100f)

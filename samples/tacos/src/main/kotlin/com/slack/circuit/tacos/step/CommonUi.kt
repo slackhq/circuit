@@ -100,6 +100,7 @@ private fun AdditionalCharge(charge: Cents, modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
+@Suppress("MagicNumber")
 private fun PreviewAdditionalCharge() {
   Surface { AdditionalCharge(125) }
 }

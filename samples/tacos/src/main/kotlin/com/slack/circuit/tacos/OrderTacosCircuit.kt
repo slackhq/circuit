@@ -88,13 +88,15 @@ object OrderTacosScreen : Screen {
   }
 }
 
+private const val TACO_BASE_PRICE = 999
+
 @Immutable
 data class OrderDetails(
   val filling: Ingredient = Ingredient(""),
   val toppings: Set<Ingredient> = persistentSetOf(),
   val ingredientsCost: Cents = 0
 ) {
-  val baseCost: Cents = 999 // Default taco price
+  val baseCost: Cents = TACO_BASE_PRICE
 }
 
 /** List of wizard steps (in order!) */

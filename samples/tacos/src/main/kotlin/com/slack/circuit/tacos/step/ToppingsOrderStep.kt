@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -112,7 +111,7 @@ internal fun ToppingsUi(state: ToppingsOrderStep.State, modifier: Modifier = Mod
 @Composable
 private fun Loading(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(color = MaterialTheme.colorScheme.onSurface)
+    CircularProgressIndicator()
   }
 }
 

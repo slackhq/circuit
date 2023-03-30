@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -282,13 +283,13 @@ private fun OrderTotal(
 
   val bdColor =
     when {
-      onConfirmationStep -> TacoTheme.colorScheme.secondaryBottomBarContainer
-      else -> TacoTheme.colorScheme.primaryBottomBarContainer
+      onConfirmationStep -> MaterialTheme.colorScheme.secondaryContainer
+      else -> MaterialTheme.colorScheme.primaryContainer
     }
   val textColor =
     when {
-      onConfirmationStep -> TacoTheme.colorScheme.onSecondaryBottomBarContainer
-      else -> TacoTheme.colorScheme.onPrimaryBottomBarContainer
+      onConfirmationStep -> MaterialTheme.colorScheme.onSecondaryContainer
+      else -> MaterialTheme.colorScheme.onPrimaryContainer
     }
 
   var boxModifier =

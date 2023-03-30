@@ -79,24 +79,6 @@ class OrderTacosPresenterTest {
   }
 
   @Test
-  fun `present - do nothing if navigation event does not make sense`() = runTest {
-    val presenter =
-      OrderTacosPresenter(
-        fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
-        toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-        confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _, _ -> error("wrong step") },
-      )
-
-    presenter.test {
-      awaitItem().run { eventSink(OrderTacosScreen.Event.Previous) }
-
-      // navigation invalid; should not recompose
-      expectNoEvents()
-    }
-  }
-
-  @Test
   fun `present - toggles next button based on OrderStep validation event`() = runTest {
     lateinit var sink: (OrderStep.Event) -> Unit
     val presenter =

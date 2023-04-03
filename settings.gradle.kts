@@ -128,7 +128,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.12.4" }
+  plugins { id("com.gradle.enterprise") version "3.12.6" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -168,6 +168,8 @@ include(
   ":samples:star",
   ":samples:star:apk",
   ":samples:star:benchmark",
+  ":samples:star:coil-rule",
+  ":samples:tacos",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

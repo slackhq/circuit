@@ -38,7 +38,6 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
-import com.slack.circuit.sample.counter.CounterState
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
@@ -172,16 +171,16 @@ private enum class PresenterSource {
     override fun createPresenter(
       screen: InteropCounterScreen,
       context: CircuitContext,
-    ): Presenter<CounterState> {
+    ): Presenter<CounterScreen.State> {
       return CounterPresenterFactory().create(screen, Navigator.NoOp, context)
-        as Presenter<CounterState>
+        as Presenter<CounterScreen.State>
     }
   },
   Flow {
     override fun createPresenter(
       screen: InteropCounterScreen,
       context: CircuitContext,
-    ): Presenter<CounterState> {
+    ): Presenter<CounterScreen.State> {
       return FlowCounterPresenter().asCircuitPresenter()
     }
   },
@@ -189,7 +188,7 @@ private enum class PresenterSource {
     override fun createPresenter(
       screen: InteropCounterScreen,
       context: CircuitContext,
-    ): Presenter<CounterState> {
+    ): Presenter<CounterScreen.State> {
       return RxCounterPresenter().asCircuitPresenter()
     }
   },
@@ -197,7 +196,7 @@ private enum class PresenterSource {
     override fun createPresenter(
       screen: InteropCounterScreen,
       context: CircuitContext,
-    ): Presenter<CounterState> {
+    ): Presenter<CounterScreen.State> {
       return SimpleCounterPresenter().asCircuitPresenter()
     }
   };
@@ -205,20 +204,20 @@ private enum class PresenterSource {
   abstract fun createPresenter(
     screen: InteropCounterScreen,
     context: CircuitContext,
-  ): Presenter<CounterState>
+  ): Presenter<CounterScreen.State>
 }
 
 enum class UiSource {
   Circuit {
-    override fun createUi(): Ui<CounterState> {
+    override fun createUi(): Ui<CounterScreen.State> {
       return ui { state, modifier -> Counter(state, modifier) }
     }
   },
   View {
-    override fun createUi(): Ui<CounterState> {
+    override fun createUi(): Ui<CounterScreen.State> {
       return ui { state, modifier -> CounterViewComposable(state, modifier) }
     }
   };
 
-  abstract fun createUi(): Ui<CounterState>
+  abstract fun createUi(): Ui<CounterScreen.State>
 }

@@ -35,7 +35,7 @@ tasks
       freeCompilerArgs.addAll(
         "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
       )
 
       if (project.hasProperty("circuit.enableComposeCompilerReports")) {
@@ -103,6 +103,7 @@ dependencies {
   testImplementation(libs.testing.espresso.core)
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
+  testImplementation(projects.samples.star.coilRule)
 
   androidTestImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.leakcanary.android.instrumentation)
@@ -110,4 +111,5 @@ dependencies {
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)
   androidTestImplementation(libs.truth)
+  androidTestImplementation(projects.samples.star.coilRule)
 }

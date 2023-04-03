@@ -68,31 +68,14 @@ class OrderTacosPresenterTest {
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
         summaryProducer = { _, _ -> error("wrong step") },
+        initialStep = ToppingsOrderStep
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.presentInternal(ToppingsOrderStep) }
+    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
       .test {
         awaitItem().run { eventSink(OrderTacosScreen.Event.Previous) }
         assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
       }
-  }
-
-  @Test
-  fun `present - do nothing if navigation event does not make sense`() = runTest {
-    val presenter =
-      OrderTacosPresenter(
-        fillingsProducer = { _, _ -> FillingsOrderStep.State.Loading },
-        toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
-        confirmationProducer = { _, _ -> error("wrong step") },
-        summaryProducer = { _, _ -> error("wrong step") },
-      )
-
-    presenter.test {
-      awaitItem().run { eventSink(OrderTacosScreen.Event.Previous) }
-
-      // navigation invalid; should not recompose
-      expectNoEvents()
-    }
   }
 
   @Test
@@ -162,9 +145,10 @@ class OrderTacosPresenterTest {
         },
         confirmationProducer = { _, _ -> error("wrong step") },
         summaryProducer = { _, _ -> error("wrong step") },
+        initialStep = ToppingsOrderStep,
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.presentInternal(ToppingsOrderStep) }
+    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
       .test {
         awaitItem()
         assertThat(details).isEqualTo(OrderDetails())
@@ -194,9 +178,10 @@ class OrderTacosPresenterTest {
           sink = eventSink
           SummaryOrderStep.SummaryState {}
         },
+        initialStep = SummaryOrderStep,
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.presentInternal(SummaryOrderStep) }
+    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
       .test {
         assertThat(awaitItem().stepState).isInstanceOf(SummaryOrderStep.SummaryState::class.java)
 
@@ -222,11 +207,10 @@ class OrderTacosPresenterTest {
         toppingsProducer = { _, _ -> error("wrong step") },
         confirmationProducer = { _, _ -> error("wrong step") },
         summaryProducer = { _, _ -> error("wrong step") },
+        initialOrderDetails = initialData,
       )
 
-    moleculeFlow(RecompositionClock.Immediate) {
-        presenter.presentInternal(initialOrderDetails = initialData)
-      }
+    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
       .test { awaitItem().run { assertThat(orderCost).isEqualTo(expectedCost.toCurrencyString()) } }
   }
 }

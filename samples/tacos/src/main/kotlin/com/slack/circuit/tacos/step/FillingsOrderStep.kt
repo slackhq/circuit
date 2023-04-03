@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -85,7 +85,7 @@ internal fun FillingsUi(state: FillingsOrderStep.State, modifier: Modifier = Mod
 @Composable
 private fun Loading(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(color = MaterialTheme.colorScheme.onSurface)
+    CircularProgressIndicator()
   }
 }
 
@@ -96,7 +96,7 @@ private fun FillingsList(
 ) {
   val sink = state.eventSink
   val scrollState = rememberScrollState()
-  Column(modifier = modifier.verticalScroll(scrollState)) {
+  Column(modifier = modifier.verticalScroll(scrollState).fillMaxWidth()) {
     Instructions(resId = R.string.fillings_step_instructions)
     state.list.forEach { ingredient ->
       Filling(

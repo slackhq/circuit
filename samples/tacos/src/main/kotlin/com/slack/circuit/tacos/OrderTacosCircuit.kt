@@ -4,7 +4,6 @@ package com.slack.circuit.tacos
 
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
@@ -108,14 +107,11 @@ internal class OrderTacosPresenter(
   private val toppingsProducer: OrderStep.StateProducer<ToppingsOrderStep.State>,
   private val confirmationProducer: OrderStep.StateProducer<ConfirmationOrderStep.OrderState>,
   private val summaryProducer: OrderStep.StateProducer<SummaryOrderStep.SummaryState>,
+  private val initialStep: OrderStep = FillingsOrderStep,
+  private val initialOrderDetails: OrderDetails = OrderDetails()
 ) : Presenter<OrderTacosScreen.State> {
-  @Composable override fun present(): OrderTacosScreen.State = presentInternal()
-
   @Composable
-  internal fun presentInternal(
-    initialStep: OrderStep = FillingsOrderStep,
-    initialOrderDetails: OrderDetails = OrderDetails(),
-  ): OrderTacosScreen.State {
+  override fun present(): OrderTacosScreen.State {
     var currentStep by remember { mutableStateOf(initialStep) }
     var orderDetails by remember { mutableStateOf(initialOrderDetails) }
     var isNextEnabled by remember { mutableStateOf(false) }
@@ -168,7 +164,7 @@ private fun processNavigation(
   onNavEvent: (OrderStep) -> Unit
 ) {
   val newIndex = currentStep.index + navEvent.indexModifier
-  onNavEvent(orderSteps.getOrElse(newIndex) { currentStep })
+  onNavEvent(orderSteps[newIndex])
 }
 
 private fun updateOrder(
@@ -267,17 +263,9 @@ private fun NavigationButton(
 ) {
   if (!visible) return
 
-  val tintColour =
-    when (enabled) {
-      true -> MaterialTheme.colorScheme.onSurface
-      false -> MaterialTheme.colorScheme.outline
-    }
-
   IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
-    Image(
-      modifier = Modifier,
+    Icon(
       painter = rememberVectorPainter(image = direction.icon),
-      colorFilter = ColorFilter.tint(tintColour),
       contentDescription = stringResource(direction.descriptionResId),
     )
   }
@@ -293,18 +281,24 @@ private fun OrderTotal(
 ) {
   if (!isVisible) return
 
-  val color =
+  val bdColor =
     when {
-      onConfirmationStep -> MaterialTheme.colorScheme.onTertiaryContainer
-      else -> MaterialTheme.colorScheme.tertiaryContainer
+      onConfirmationStep -> MaterialTheme.colorScheme.secondaryContainer
+      else -> MaterialTheme.colorScheme.primaryContainer
     }
+  val textColor =
+    when {
+      onConfirmationStep -> MaterialTheme.colorScheme.onSecondaryContainer
+      else -> MaterialTheme.colorScheme.onPrimaryContainer
+    }
+
   var boxModifier =
     modifier
       .fillMaxWidth()
-      .defaultMinSize(minHeight = 28.dp)
+      .defaultMinSize(minHeight = 32.dp)
       .padding(horizontal = 4.dp)
       .clip(RoundedCornerShape(4.dp))
-      .background(color)
+      .background(bdColor)
   if (onConfirmationStep) boxModifier = boxModifier.clickable(onClick = onClick)
 
   val label =
@@ -316,13 +310,13 @@ private fun OrderTotal(
     Text(
       text = label,
       modifier = Modifier.align(Alignment.CenterStart).padding(start = 4.dp),
-      color = MaterialTheme.colorScheme.onPrimary,
+      color = textColor,
       fontWeight = FontWeight.Bold,
     )
     Text(
       text = "$$orderCost",
       modifier = Modifier.align(Alignment.CenterEnd).padding(end = 4.dp),
-      color = MaterialTheme.colorScheme.onPrimary,
+      color = textColor,
       fontWeight = FontWeight.Bold,
     )
   }

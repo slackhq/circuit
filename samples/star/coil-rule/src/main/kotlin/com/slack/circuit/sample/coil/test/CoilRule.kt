@@ -24,7 +24,7 @@ import org.junit.rules.ExternalResource
  * @property contextProvider A function that returns a [Context] to use for image loading. If none
  *   is provided, a limited fake implementation will be used.
  */
-@OptIn(ExperimentalCoilApi::class)
+@ExperimentalCoilApi
 class CoilRule(
   private val engineProvider: () -> FakeImageLoaderEngine = {
     FakeImageLoaderEngine.Builder().default(wrapInLayer(ColorDrawable(Color.LTGRAY))).build()

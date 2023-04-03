@@ -5,6 +5,7 @@ package com.slack.circuit.star.petlist
 import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
+import coil.annotation.ExperimentalCoilApi
 import com.android.ide.common.rendering.api.SessionParams
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.ui.StarTheme
@@ -21,6 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
+@ExperimentalCoilApi
 @RunWith(Parameterized::class)
 class PetListSnapshotTest(private val useDarkMode: Boolean) {
 

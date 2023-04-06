@@ -50,6 +50,7 @@ Where we think this could really shine is in multiplatform projects where Circui
 | com.slack.circuit.push                     | com.slack.circuit.foundation.push                     |
 | com.slack.circuit.screen                   | com.slack.circuit.foundation.screen                   |
 
+## More Highlights
 - [Core] Remove Android-specific `NavigableCircuitContent` and just use common one. Back handling still runs through `BackHandler`, but is now configured in `rememberCircuitNavigator`.
 - [Core] Add `defaultNavDecoration` to `CircuitConfig` to allow for customizing the default `NavDecoration` used in `NavigableCircuitContent`.
 - [Core] Mark `CircuitUiState` as `@Stable` instead of `@Immutable`.

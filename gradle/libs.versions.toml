@@ -7,7 +7,7 @@ androidx-lifecycle = "2.6.1"
 agp = "7.4.2"
 anvil = "2.4.4"
 coil = "2.3.0"
-compose-animation = "1.4.0"
+compose-animation = "1.4.1"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler = "1.4.4"

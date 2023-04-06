@@ -1,37 +1,37 @@
-$dokka.format:gfm-v1
-$dokka.linkExtension:md
-$dokka.location:com.slack.circuit.backstack////PointingToDeclaration/backstack/com.slack.circuit.backstack/index.md
-$dokka.location:com.slack.circuit.backstack//isAtRoot/com.slack.circuit.backstack.BackStack[*]#/PointingToDeclaration/backstack/com.slack.circuit.backstack/is-at-root.md
-$dokka.location:com.slack.circuit.backstack//isEmpty/com.slack.circuit.backstack.BackStack[*]#/PointingToDeclaration/backstack/com.slack.circuit.backstack/is-empty.md
-$dokka.location:com.slack.circuit.backstack//popUntil/com.slack.circuit.backstack.SaveableBackStack#kotlin.Function1[com.slack.circuit.backstack.SaveableBackStack.Record,kotlin.Boolean]/PointingToDeclaration/backstack/com.slack.circuit.backstack/pop-until.md
-$dokka.location:com.slack.circuit.backstack//providedValuesForBackStack/#com.slack.circuit.backstack.BackStack[TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])]#kotlin.collections.List[com.slack.circuit.backstack.BackStackRecordLocalProvider[TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])]]#kotlin.Boolean/PointingToDeclaration/backstack/com.slack.circuit.backstack/provided-values-for-back-stack.md
-$dokka.location:com.slack.circuit.backstack//push/com.slack.circuit.backstack.SaveableBackStack#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.Any?]/PointingToDeclaration/backstack/com.slack.circuit.backstack/push.md
-$dokka.location:com.slack.circuit.backstack//rememberSaveableBackStack/#kotlin.Function1[com.slack.circuit.backstack.SaveableBackStack,kotlin.Unit]/PointingToDeclaration/backstack/com.slack.circuit.backstack/remember-saveable-back-stack.md
-$dokka.location:com.slack.circuit.backstack/BackStack.Record///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/-record/index.md
-$dokka.location:com.slack.circuit.backstack/BackStack.Record/key/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/-record/key.md
-$dokka.location:com.slack.circuit.backstack/BackStack.Record/route/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/-record/route.md
-$dokka.location:com.slack.circuit.backstack/BackStack///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/index.md
-$dokka.location:com.slack.circuit.backstack/BackStack/pop/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/pop.md
-$dokka.location:com.slack.circuit.backstack/BackStack/size/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/size.md
-$dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProvider///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/index.md
-$dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProvider/providedValuesFor/#TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/provided-values-for.md
-$dokka.location:com.slack.circuit.backstack/NavDecoration///PointingToDeclaration/backstack/com.slack.circuit.backstack/-nav-decoration/index.md
-$dokka.location:com.slack.circuit.backstack/NavDecoration/DecoratedContent/#TypeParam(bounds=[kotlin.Any?])#kotlin.Int#androidx.compose.ui.Modifier#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/backstack/com.slack.circuit.backstack/-nav-decoration/-decorated-content.md
-$dokka.location:com.slack.circuit.backstack/ProvidedValues///PointingToDeclaration/backstack/com.slack.circuit.backstack/-provided-values/index.md
-$dokka.location:com.slack.circuit.backstack/ProvidedValues/provideValues/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-provided-values/provide-values.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record///PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/index.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/Record/#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.Any?]#kotlin.String/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/-record.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/args/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/args.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/key/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/key.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/route/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/route.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack///PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack/SaveableBackStack/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-saveable-back-stack.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack/iterator/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/iterator.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack/pop/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/pop.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack/push/#com.slack.circuit.backstack.SaveableBackStack.Record/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/push.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack/size/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/size.md
-$dokka.location:com.slack.circuit.backstack/SaveableBackStack/topRecord/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/top-record.md
-$dokka.location:com.slack.circuit.backstack/SaveableStateRegistryBackStackRecordLocalProvider///PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-state-registry-back-stack-record-local-provider/index.md
-$dokka.location:com.slack.circuit.backstack/SaveableStateRegistryBackStackRecordLocalProvider/providedValuesFor/#com.slack.circuit.backstack.BackStack.Record/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-state-registry-back-stack-record-local-provider/provided-values-for.md
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.slack.circuit.backstack////PointingToDeclaration/backstack/com.slack.circuit.backstack/index.html
+$dokka.location:com.slack.circuit.backstack//isAtRoot/com.slack.circuit.backstack.BackStack[*]#/PointingToDeclaration/backstack/com.slack.circuit.backstack/is-at-root.html
+$dokka.location:com.slack.circuit.backstack//isEmpty/com.slack.circuit.backstack.BackStack[*]#/PointingToDeclaration/backstack/com.slack.circuit.backstack/is-empty.html
+$dokka.location:com.slack.circuit.backstack//popUntil/com.slack.circuit.backstack.SaveableBackStack#kotlin.Function1[com.slack.circuit.backstack.SaveableBackStack.Record,kotlin.Boolean]/PointingToDeclaration/backstack/com.slack.circuit.backstack/pop-until.html
+$dokka.location:com.slack.circuit.backstack//providedValuesForBackStack/#com.slack.circuit.backstack.BackStack[TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])]#kotlin.collections.List[com.slack.circuit.backstack.BackStackRecordLocalProvider[TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])]]#kotlin.Boolean/PointingToDeclaration/backstack/com.slack.circuit.backstack/provided-values-for-back-stack.html
+$dokka.location:com.slack.circuit.backstack//push/com.slack.circuit.backstack.SaveableBackStack#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.Any?]/PointingToDeclaration/backstack/com.slack.circuit.backstack/push.html
+$dokka.location:com.slack.circuit.backstack//rememberSaveableBackStack/#kotlin.Function1[com.slack.circuit.backstack.SaveableBackStack,kotlin.Unit]/PointingToDeclaration/backstack/com.slack.circuit.backstack/remember-saveable-back-stack.html
+$dokka.location:com.slack.circuit.backstack/BackStack.Record///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/-record/index.html
+$dokka.location:com.slack.circuit.backstack/BackStack.Record/key/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/-record/key.html
+$dokka.location:com.slack.circuit.backstack/BackStack.Record/route/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/-record/route.html
+$dokka.location:com.slack.circuit.backstack/BackStack///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/index.html
+$dokka.location:com.slack.circuit.backstack/BackStack/pop/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/pop.html
+$dokka.location:com.slack.circuit.backstack/BackStack/size/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack/size.html
+$dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProvider///PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/index.html
+$dokka.location:com.slack.circuit.backstack/BackStackRecordLocalProvider/providedValuesFor/#TypeParam(bounds=[com.slack.circuit.backstack.BackStack.Record])/PointingToDeclaration/backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/provided-values-for.html
+$dokka.location:com.slack.circuit.backstack/NavDecoration///PointingToDeclaration/backstack/com.slack.circuit.backstack/-nav-decoration/index.html
+$dokka.location:com.slack.circuit.backstack/NavDecoration/DecoratedContent/#TypeParam(bounds=[kotlin.Any?])#kotlin.Int#androidx.compose.ui.Modifier#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/backstack/com.slack.circuit.backstack/-nav-decoration/-decorated-content.html
+$dokka.location:com.slack.circuit.backstack/ProvidedValues///PointingToDeclaration/backstack/com.slack.circuit.backstack/-provided-values/index.html
+$dokka.location:com.slack.circuit.backstack/ProvidedValues/provideValues/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-provided-values/provide-values.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record///PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/index.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/Record/#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.Any?]#kotlin.String/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/-record.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/args/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/args.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/key/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/key.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack.Record/route/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-record/route.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack///PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack/SaveableBackStack/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/-saveable-back-stack.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack/iterator/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/iterator.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack/pop/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/pop.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack/push/#com.slack.circuit.backstack.SaveableBackStack.Record/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/push.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack/size/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/size.html
+$dokka.location:com.slack.circuit.backstack/SaveableBackStack/topRecord/#/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-back-stack/top-record.html
+$dokka.location:com.slack.circuit.backstack/SaveableStateRegistryBackStackRecordLocalProvider///PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-state-registry-back-stack-record-local-provider/index.html
+$dokka.location:com.slack.circuit.backstack/SaveableStateRegistryBackStackRecordLocalProvider/providedValuesFor/#com.slack.circuit.backstack.BackStack.Record/PointingToDeclaration/backstack/com.slack.circuit.backstack/-saveable-state-registry-back-stack-record-local-provider/provided-values-for.html
 com.slack.circuit.backstack
 

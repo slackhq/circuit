@@ -300,25 +300,12 @@
     Setup
   </a>
   
-    <nav class="md-nav" aria-label="Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#android" class="md-nav__link">
-    Android
-  </a>
-  
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#jvm" class="md-nav__link">
-    JVM
+      
+        <li class="md-nav__item">
+  <a href="#granular-artifacts" class="md-nav__link">
+    Granular Artifacts
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -522,8 +509,50 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/0.x/circuit/com.slack.circuit/index.md" class="md-nav__link">
-        circuit
+      <a href="../api/0.x/circuit/com.slack.circuit.runtime/index.html" class="md-nav__link">
+        circuit-runtime
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/0.x/circuit/com.slack.circuit.runtime.presenter/index.html" class="md-nav__link">
+        circuit-runtime-presenter
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/0.x/circuit/com.slack.circuit.runtime.ui/index.html" class="md-nav__link">
+        circuit-runtime-ui
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/0.x/circuit/com.slack.circuit.foundation/index.html" class="md-nav__link">
+        circuit-foundation
       </a>
     </li>
   
@@ -704,25 +733,12 @@
     Setup
   </a>
   
-    <nav class="md-nav" aria-label="Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#android" class="md-nav__link">
-    Android
-  </a>
-  
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#jvm" class="md-nav__link">
-    JVM
+      
+        <li class="md-nav__item">
+  <a href="#granular-artifacts" class="md-nav__link">
+    Granular Artifacts
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -754,25 +770,53 @@
 <h1 id="setting-up-circuit">Setting up Circuit<a class="headerlink" href="#setting-up-circuit" title="Permanent link">&para;</a></h1>
 <p>Setting up Circuit is a breeze! Just add the following to your build:</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>The simplest way to get up and running is with the <code>circuit-foundation</code> dependency, which includes all the core Circuit artifacts.</p>
 <div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-core:&lt;version&gt;&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-foundation:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
-<h3 id="android">Android<a class="headerlink" href="#android" title="Permanent link">&para;</a></h3>
-<p>Circuit requires two headless <code>ViewModel</code>s to be available in your application: <code>BackStackRecordLocalProviderViewModel</code> and <code>Continuity</code>. These would usually be wired up in a DI framework like Dagger, but a simple <code>ViewModelProvider.Factory</code> can be used as well.</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuitViewModelProviderFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">object</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">ViewModelProvider</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ViewModel</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">modelClass</span><span class="p">:</span><span class="w"> </span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">):</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">modelClass</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">BackStackRecordLocalProviderViewModel</span><span class="o">::</span><span class="n">class</span><span class="p">.</span><span class="na">java</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">BackStackRecordLocalProviderViewModel</span><span class="p">()</span>
-<span class="w">      </span><span class="n">Continuity</span><span class="o">::</span><span class="n">class</span><span class="p">.</span><span class="na">java</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Continuity</span><span class="p">()</span>
-<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">...</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">T</span>
-<span class="w">  </span><span class="p">}</span>
+<p>Create a <code>CircuitConfig</code> instance. This controls all your common configuration, Presenter/Ui factories, etc.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuitConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CircuitConfig</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">addUiFactory</span><span class="p">(</span><span class="n">AddFavoritesUiFactory</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">AddFavoritesPresenterFactory</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+</code></pre></div>
+<p>This configuration can be rebuilt via <code>newBuilder()</code> and usually would live in your program&rsquo;s DI graph.</p>
+<p>Once you have a configuration ready, the simplest way to get going with Circuit is via <code>CircuitCompositionLocals</code>. This automatically exposes the config to all child Circuit composables and allows you to get off the ground quickly with <code>CircuitContent</code>, <code>NavigableCircuitContent</code>, etc.</p>
+<div class="highlight"><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuitConfig</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">CircuitContent</span><span class="p">(</span><span class="n">AddFavoritesScreen</span><span class="p">())</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="jvm">JVM<a class="headerlink" href="#jvm" title="Permanent link">&para;</a></h3>
-<p>No extra configuration needed!</p>
+<p>See the docs for <code>CircuitContent</code> and <code>NavigableCircuitContent</code> for more information.</p>
+<h2 id="granular-artifacts">Granular Artifacts<a class="headerlink" href="#granular-artifacts" title="Permanent link">&para;</a></h2>
+<p>Circuit is split into a few different artifacts to allow for more granular control over your dependencies. The following table shows the available artifacts and their purpose:</p>
+<table>
+<thead>
+<tr>
+<th>Artifact ID</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>circuit-runtime</code></td>
+<td>Common runtime components like <code>Screen</code>, <code>Navigator</code>, etc.</td>
+</tr>
+<tr>
+<td><code>circuit-runtime-presenter</code></td>
+<td>The <code>Presenter</code> API, depends on <code>circuit-runtime</code>.</td>
+</tr>
+<tr>
+<td><code>circuit-runtime-ui</code></td>
+<td>The <code>Ui</code> API, depends on <code>circuit-runtime</code>.</td>
+</tr>
+<tr>
+<td><code>circuit-foundation</code></td>
+<td>The circuit foundational APIs like <code>CircuitConfig</code>, <code>CircuitContent</code>, etc. Depends on the first three.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="platform-support">Platform Support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h2>
 <p>Circuit is a multiplatform library, but not all features are available on all platforms. The following table shows which features are available on which platforms:</p>
 <ul>

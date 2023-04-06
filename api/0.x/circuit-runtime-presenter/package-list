@@ -1,10 +1,10 @@
-$dokka.format:gfm-v1
-$dokka.linkExtension:md
-$dokka.location:com.slack.circuit.runtime.presenter////PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/index.md
-$dokka.location:com.slack.circuit.runtime.presenter//presenterOf/#kotlin.Function0[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/presenter-of.md
-$dokka.location:com.slack.circuit.runtime.presenter/Presenter.Factory///PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/-factory/index.md
-$dokka.location:com.slack.circuit.runtime.presenter/Presenter.Factory/create/#[Error type: Unresolved type for Screen]#[Error type: Unresolved type for Navigator]#[Error type: Unresolved type for CircuitContext]/PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/-factory/create.md
-$dokka.location:com.slack.circuit.runtime.presenter/Presenter///PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.md
-$dokka.location:com.slack.circuit.runtime.presenter/Presenter/present/#/PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/present.md
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.slack.circuit.runtime.presenter////PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/index.html
+$dokka.location:com.slack.circuit.runtime.presenter//presenterOf/#kotlin.Function0[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/presenter-of.html
+$dokka.location:com.slack.circuit.runtime.presenter/Presenter.Factory///PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/-factory/index.html
+$dokka.location:com.slack.circuit.runtime.presenter/Presenter.Factory/create/#[Error type: Unresolved type for Screen]#[Error type: Unresolved type for Navigator]#[Error type: Unresolved type for CircuitContext]/PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/-factory/create.html
+$dokka.location:com.slack.circuit.runtime.presenter/Presenter///PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html
+$dokka.location:com.slack.circuit.runtime.presenter/Presenter/present/#/PointingToDeclaration/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/present.html
 com.slack.circuit.runtime.presenter
 

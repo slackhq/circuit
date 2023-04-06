@@ -1,8 +1,8 @@
-$dokka.format:gfm-v1
-$dokka.linkExtension:md
-$dokka.location:com.slack.circuit.codegen////PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/index.md
-$dokka.location:com.slack.circuit.codegen/CircuitSymbolProcessorProvider///PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/-circuit-symbol-processor-provider/index.md
-$dokka.location:com.slack.circuit.codegen/CircuitSymbolProcessorProvider/CircuitSymbolProcessorProvider/#/PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/-circuit-symbol-processor-provider/-circuit-symbol-processor-provider.md
-$dokka.location:com.slack.circuit.codegen/CircuitSymbolProcessorProvider/create/#com.google.devtools.ksp.processing.SymbolProcessorEnvironment/PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/-circuit-symbol-processor-provider/create.md
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.slack.circuit.codegen////PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/index.html
+$dokka.location:com.slack.circuit.codegen/CircuitSymbolProcessorProvider///PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/-circuit-symbol-processor-provider/index.html
+$dokka.location:com.slack.circuit.codegen/CircuitSymbolProcessorProvider/CircuitSymbolProcessorProvider/#/PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/-circuit-symbol-processor-provider/-circuit-symbol-processor-provider.html
+$dokka.location:com.slack.circuit.codegen/CircuitSymbolProcessorProvider/create/#com.google.devtools.ksp.processing.SymbolProcessorEnvironment/PointingToDeclaration/circuit-codegen/com.slack.circuit.codegen/-circuit-symbol-processor-provider/create.html
 com.slack.circuit.codegen
 

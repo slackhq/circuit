@@ -24,7 +24,7 @@ if ! [[ ${local} ]]; then
   cd ${DIR}
 
   # Generate the API docs
-  ./gradlew dokkaGfm --no-configuration-cache
+  ./gradlew dokkaHtml --no-configuration-cache
 
 fi
 

@@ -28,7 +28,7 @@ import com.slack.circuit.runtime.ui.Ui
  *
  * ```kotlin
  * val circuitConfig = CircuitConfig.Builder()
- *     .addUiFactory(AddFavoritesUiFactory()
+ *     .addUiFactory(AddFavoritesUiFactory())
  *     .addPresenterFactory(AddFavoritesPresenterFactory())
  *     .build()
  * ```

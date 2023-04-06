@@ -9,6 +9,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
@@ -66,6 +67,7 @@ public class CircuitConfig private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
+  public val defaultNavDecoration: NavDecoration = builder.defaultNavDecoration
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   @OptIn(InternalCircuitApi::class)
@@ -122,6 +124,8 @@ public class CircuitConfig private constructor(builder: Builder) {
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
       UnavailableContent
       private set
+    public var defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
+      private set
     public var eventListenerFactory: EventListener.Factory? = null
       private set
 
@@ -160,6 +164,10 @@ public class CircuitConfig private constructor(builder: Builder) {
     public fun setOnUnavailableContent(
       content: @Composable (screen: Screen, modifier: Modifier) -> Unit
     ): Builder = apply { onUnavailableContent = content }
+
+    public fun setDefaultNavDecoration(decoration: NavDecoration): Builder = apply {
+      defaultNavDecoration = decoration
+    }
 
     public fun eventListenerFactory(factory: EventListener.Factory): Builder = apply {
       eventListenerFactory = factory

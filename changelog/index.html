@@ -12,8 +12,14 @@
         <meta name="author" content="Slack">
       
       
+      
+        <link rel="prev" href="../api/0.x/backstack/com.slack.circuit.backstack/">
+      
+      
+        <link rel="next" href="../contributing/">
+      
       <link rel="icon" href="../images/slack_logo_small.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.4.2">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
     
     
       
@@ -21,13 +27,13 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
-        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
+
     
     
     
@@ -46,6 +52,7 @@
     
       
 
+    
     
     
   </head>
@@ -82,7 +89,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="Circuit" class="md-header__button md-logo" aria-label="Circuit" data-md-component="logo">
       
@@ -112,7 +121,6 @@
       <form class="md-header__option" data-md-component="palette">
         
           
-          
           <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
           
             <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
@@ -120,7 +128,6 @@
             </label>
           
         
-          
           
           <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
           
@@ -147,7 +154,7 @@
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -159,7 +166,7 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -171,7 +178,7 @@
         <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     Circuit
@@ -215,7 +222,7 @@
       <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     Circuit
@@ -416,17 +423,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_13" type="checkbox" id="__nav_13" >
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_13">
+        <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
           API
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="API" data-md-level="1">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_13">
           <span class="md-nav__icon md-icon"></span>
           API
@@ -439,7 +447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/0.x/circuit/com.slack.circuit/" class="md-nav__link">
+      <a href="../api/0.x/circuit/com.slack.circuit/index.md" class="md-nav__link">
         circuit
       </a>
     </li>
@@ -549,7 +557,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
@@ -578,6 +586,68 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#080" class="md-nav__link">
+    0.8.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-split-up-core-artifacts" class="md-nav__link">
+    [Core] Split up core artifacts.
+  </a>
+  
+    <nav class="md-nav" aria-label="[Core] Split up core artifacts.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#circuit-runtime-artifact" class="md-nav__link">
+    circuit-runtime artifact
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circuit-runtime-presenter-artifact" class="md-nav__link">
+    circuit-runtime-presenter artifact
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circuit-runtime-ui-artifact" class="md-nav__link">
+    circuit-runtime-ui artifact
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circuit-foundation-artifact" class="md-nav__link">
+    circuit-foundation artifact
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-highlights" class="md-nav__link">
+    More Highlights
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#070" class="md-nav__link">
+    0.7.0
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#060" class="md-nav__link">
@@ -721,6 +791,68 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#080" class="md-nav__link">
+    0.8.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-split-up-core-artifacts" class="md-nav__link">
+    [Core] Split up core artifacts.
+  </a>
+  
+    <nav class="md-nav" aria-label="[Core] Split up core artifacts.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#circuit-runtime-artifact" class="md-nav__link">
+    circuit-runtime artifact
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circuit-runtime-presenter-artifact" class="md-nav__link">
+    circuit-runtime-presenter artifact
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circuit-runtime-ui-artifact" class="md-nav__link">
+    circuit-runtime-ui artifact
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circuit-foundation-artifact" class="md-nav__link">
+    circuit-foundation artifact
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-highlights" class="md-nav__link">
+    More Highlights
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#070" class="md-nav__link">
+    0.7.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#060" class="md-nav__link">
     0.6.0
   </a>
@@ -805,17 +937,169 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
-  <a href="https://github.com/slackhq/circuit/edit/master/docs/changelog.md" title="Edit this page" class="md-content__button md-icon">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
-  </a>
+                  
 
+  
+  
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="080">0.8.0<a class="headerlink" href="#080" title="Permanent link">&para;</a></h2>
+<p><em>2023-04-06</em></p>
+<h2 id="core-split-up-core-artifacts">[Core] Split up core artifacts.<a class="headerlink" href="#core-split-up-core-artifacts" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>circuit-runtime</code>: common runtime components like <code>Screen</code>, <code>Navigator</code>, etc.</li>
+<li><code>circuit-runtime-presenter</code>: the <code>Presenter</code> API, depends on <code>circuit-runtime</code>.</li>
+<li><code>circuit-runtime-ui</code>: the <code>Ui</code> API, depends on <code>circuit-runtime</code>.</li>
+<li><code>circuit-foundation</code>: the circuit foundational APIs like <code>CircuitConfig</code>, <code>CircuitContent</code>, etc. Depends on the first three.</li>
+</ul>
+<p>The goal in this is to allow more granular dependencies and easier building against subsets of the API. For example, this would allow a presenter implementation to easily live in a standalone module that doesn&rsquo;t depend on any UI dependencies. Vice versa for UI implementations.</p>
+<p>Where we think this could really shine is in multiplatform projects where Circuit&rsquo;s UI APIs may be more or less abstracted away in service of using native UI, like in iOS.</p>
+<h3 id="circuit-runtime-artifact"><code>circuit-runtime</code> artifact<a class="headerlink" href="#circuit-runtime-artifact" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>com.slack.circuit.CircuitContext</td>
+<td>com.slack.circuit.runtime.CircuitContext</td>
+</tr>
+<tr>
+<td>com.slack.circuit.CircuitUiState</td>
+<td>com.slack.circuit.runtime.CircuitUiState</td>
+</tr>
+<tr>
+<td>com.slack.circuit.CircuitUiEvent</td>
+<td>com.slack.circuit.runtime.CircuitUiEvent</td>
+</tr>
+<tr>
+<td>com.slack.circuit.Navigator</td>
+<td>com.slack.circuit.runtime.Navigator</td>
+</tr>
+<tr>
+<td>com.slack.circuit.Screen</td>
+<td>com.slack.circuit.runtime.Screen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="circuit-runtime-presenter-artifact"><code>circuit-runtime-presenter</code> artifact<a class="headerlink" href="#circuit-runtime-presenter-artifact" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>com.slack.circuit.Presenter</td>
+<td>com.slack.circuit.runtime.presenter.Presenter</td>
+</tr>
+</tbody>
+</table>
+<h3 id="circuit-runtime-ui-artifact"><code>circuit-runtime-ui</code> artifact<a class="headerlink" href="#circuit-runtime-ui-artifact" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>com.slack.circuit.Ui</td>
+<td>com.slack.circuit.runtime.presenter.Ui</td>
+</tr>
+</tbody>
+</table>
+<h3 id="circuit-foundation-artifact"><code>circuit-foundation</code> artifact<a class="headerlink" href="#circuit-foundation-artifact" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>com.slack.circuit.CircuitCompositionLocals</td>
+<td>com.slack.circuit.foundation.CircuitCompositionLocals</td>
+</tr>
+<tr>
+<td>com.slack.circuit.CircuitConfig</td>
+<td>com.slack.circuit.foundation.CircuitConfig</td>
+</tr>
+<tr>
+<td>com.slack.circuit.CircuitContent</td>
+<td>com.slack.circuit.foundation.CircuitContent</td>
+</tr>
+<tr>
+<td>com.slack.circuit.EventListener</td>
+<td>com.slack.circuit.foundation.EventListener</td>
+</tr>
+<tr>
+<td>com.slack.circuit.NavEvent</td>
+<td>com.slack.circuit.foundation.NavEvent</td>
+</tr>
+<tr>
+<td>com.slack.circuit.onNavEvent</td>
+<td>com.slack.circuit.foundation.onNavEvent</td>
+</tr>
+<tr>
+<td>com.slack.circuit.NavigableCircuitContent</td>
+<td>com.slack.circuit.foundation.NavigableCircuitContent</td>
+</tr>
+<tr>
+<td>com.slack.circuit.NavigatorDefaults</td>
+<td>com.slack.circuit.foundation.NavigatorDefaults</td>
+</tr>
+<tr>
+<td>com.slack.circuit.rememberCircuitNavigator</td>
+<td>com.slack.circuit.foundation.rememberCircuitNavigator</td>
+</tr>
+<tr>
+<td>com.slack.circuit.push</td>
+<td>com.slack.circuit.foundation.push</td>
+</tr>
+<tr>
+<td>com.slack.circuit.screen</td>
+<td>com.slack.circuit.foundation.screen</td>
+</tr>
+</tbody>
+</table>
+<h2 id="more-highlights">More Highlights<a class="headerlink" href="#more-highlights" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[Core] Remove Android-specific <code>NavigableCircuitContent</code> and just use common one. Back handling still runs through <code>BackHandler</code>, but is now configured in <code>rememberCircuitNavigator</code>.</li>
+<li>[Core] Add <code>defaultNavDecoration</code> to <code>CircuitConfig</code> to allow for customizing the default <code>NavDecoration</code> used in <code>NavigableCircuitContent</code>.</li>
+<li>[Core] Mark <code>CircuitUiState</code> as <code>@Stable</code> instead of <code>@Immutable</code>.</li>
+<li>[Code gen] Capitalize generated class names when source is a presenter function.</li>
+<li>[Sample] New <code>:samples:tacos</code> order builder sample to demonstrate complex state management.</li>
+<li>[Sample] <code>NavigableCircuitContent</code> example in the desktop counter.</li>
+<li>[Dependencies] Update compose to <code>1.4.1</code>.</li>
+<li>[Dependencies] Update compose-compiler to <code>1.4.4</code>.</li>
+<li>[Dependencies] Update androidx.activity to <code>1.7.0</code>.</li>
+<li>[Dependencies] Update molecule to <code>0.7.1</code>.</li>
+</ul>
+<h2 id="070">0.7.0<a class="headerlink" href="#070" title="Permanent link">&para;</a></h2>
+<p><em>2023-02-10</em></p>
+<ul>
+<li><strong>New</strong>: Multiplatform support for <code>NavigableCircuitContent</code>! Special thanks to <a href="https://github.com/ashdavies">@ashdavies</a> for contributions to make this possible.</li>
+<li><strong>Fix</strong>: <code>circuit-retained</code> minSdk is now 21 again. We accidentally bumped it to 28 when merging in its instrumentation tests.</li>
+<li><strong>Enhancement</strong>: embedded baseline profiles are now embedded per-artifact instead of in the root <code>circuit-core</code> artifact.</li>
+<li><strong>Enhancement</strong>: <code>circuit-retained</code> is now covered in embedded baseline profiles.</li>
+<li>[Code Gen] Update Dagger to <code>2.45</code>.</li>
+<li>[Code Gen] Update KSP to <code>1.8.10-1.0.9</code>.</li>
+<li>Update to compose-compiler <code>1.4.2</code>.</li>
+<li>Update to Kotlin <code>1.8.10</code>.</li>
+</ul>
 <h2 id="060">0.6.0<a class="headerlink" href="#060" title="Permanent link">&para;</a></h2>
 <p><em>2023-02-02</em></p>
 <p>Happy groundhog day!</p>
@@ -823,10 +1107,10 @@
 <li><strong>Breaking API change</strong>: <code>Ui.Content()</code> now contains a <code>Modifier</code> parameter.</li>
 </ul>
 <p>This allows you to pass modifiers on to UIs directly.</p>
-<div class="highlight"><pre><span></span><code><span class="w"> </span>public interface Ui&lt;UiState : CircuitUiState&gt; {<span class="w"></span>
-<span class="gd">-  @Composable public fun Content(state: UiState)</span><span class="w"></span>
-<span class="gi">+  @Composable public fun Content(state: UiState, modifier: Modifier)</span><span class="w"></span>
-<span class="w"> </span>}<span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>public interface Ui&lt;UiState : CircuitUiState&gt; {
+<span class="gd">-  @Composable public fun Content(state: UiState)</span>
+<span class="gi">+  @Composable public fun Content(state: UiState, modifier: Modifier)</span>
+<span class="w"> </span>}
 </code></pre></div>
 <ul>
 <li><strong>New:</strong> Add <code>Navigator.resetRoot(Screen)</code> function to reset the backstack root with a new root screen. There is a corresponding <code>awaitResetRoot()</code> function added to <code>FakeNavigator</code>.</li>
@@ -862,17 +1146,17 @@ Compose Animation 1.3.3
 <li><strong>Breaking API Change</strong>: <code>ViewModelBackStackRecordLocalProvider</code> is now <code>internal</code> and not publicly exposed since it no longer needs to be manually provided.</li>
 <li><strong>Fix</strong>: Add missing license info to pom.</li>
 <li>Dependency updates
-  <div class="highlight"><pre><span></span><code><span class="k">[versions]</span><span class="w"></span>
-<span class="n">anvil</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.4.3&quot;</span><span class="w"></span>
-<span class="n">compose-jb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.2.2&quot;</span><span class="w"></span>
-<span class="n">compose-animation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span><span class="w"></span>
-<span class="n">compose-compiler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span><span class="w"></span>
-<span class="n">compose-foundation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.1&quot;</span><span class="w"></span>
-<span class="n">compose-material</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.1&quot;</span><span class="w"></span>
-<span class="n">compose-material3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.0.1&quot;</span><span class="w"></span>
-<span class="n">compose-runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span><span class="w"></span>
-<span class="n">compose-ui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span><span class="w"></span>
-<span class="n">kotlin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.7.22&quot;</span><span class="w"></span>
+  <div class="highlight"><pre><span></span><code><span class="k">[versions]</span>
+<span class="n">anvil</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.4.3&quot;</span>
+<span class="n">compose-jb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.2.2&quot;</span>
+<span class="n">compose-animation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span>
+<span class="n">compose-compiler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span>
+<span class="n">compose-foundation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.1&quot;</span>
+<span class="n">compose-material</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.1&quot;</span>
+<span class="n">compose-material3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.0.1&quot;</span>
+<span class="n">compose-runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span>
+<span class="n">compose-ui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.3.2&quot;</span>
+<span class="n">kotlin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.7.22&quot;</span>
 </code></pre></div></li>
 </ul>
 <h2 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link">&para;</a></h2>
@@ -925,8 +1209,8 @@ Compose Animation 1.3.3
 <ul>
 <li>
 <p><strong>New</strong>: Code gen artifact. This targets specifically using Dagger + Anvil and will generate <code>Presenter</code> and <code>Ui.Factory</code> implementations for you. See <code>CircuitInject</code> for more details.
-  <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:x.y.z&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen-annotations:x.y.z&quot;</span><span class="p">)</span><span class="w"></span>
+  <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:x.y.z&quot;</span><span class="p">)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen-annotations:x.y.z&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 </li>
 <li>
@@ -961,51 +1245,17 @@ We&rsquo;ll do a more formal announcement when that time comes!</p>
 
 
 
-              
-            </article>
-            
-          </div>
+
+                
+              </article>
+            </div>
+          
+          
         </div>
         
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../api/0.x/backstack/com.slack.circuit.backstack/" class="md-footer__link md-footer__link--prev" aria-label="Previous: backstack" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              backstack
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../contributing/" class="md-footer__link md-footer__link--next" aria-label="Next: Contributing" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Contributing
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -1032,10 +1282,10 @@ We&rsquo;ll do a more formal announcement when that time comes!</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      <script src="../assets/javascripts/bundle.ce72ebac.min.js"></script>
       
     
   </body>

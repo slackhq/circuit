@@ -70,10 +70,10 @@ nav:
   - 'Code Generation': code-gen.md
   - 'Interop': interop.md
   - 'API':
-      - 'circuit-runtime': api/0.x/circuit/com.slack.circuit.runtime/index.html
-      - 'circuit-runtime-presenter': api/0.x/circuit/com.slack.circuit.runtime.presenter/index.html
-      - 'circuit-runtime-ui': api/0.x/circuit/com.slack.circuit.runtime.ui/index.html
-      - 'circuit-foundation': api/0.x/circuit/com.slack.circuit.foundation/index.html
+      - 'circuit-runtime': api/0.x/circuit-runtime/com.slack.circuit.runtime/index.html
+      - 'circuit-runtime-presenter': api/0.x/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/index.html
+      - 'circuit-runtime-ui': api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/index.html
+      - 'circuit-foundation': api/0.x/circuit-foundation/com.slack.circuit.foundation/index.html
       - 'circuit-overlay': api/0.x/circuit-overlay/com.slack.circuit.overlay/index.html
       - 'circuit-retained': api/0.x/circuit-retained/com.slack.circuit.retained/index.html
       - 'circuit-test': api/0.x/circuit-test/com.slack.circuit.test/index.html

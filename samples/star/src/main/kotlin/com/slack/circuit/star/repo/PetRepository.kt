@@ -7,8 +7,8 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.slack.circuit.star.Database
 import com.slack.circuit.star.data.PetfinderApi
+import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.GetAllAnimalsForList
@@ -16,24 +16,25 @@ import com.slack.circuit.star.db.GetAnimal
 import com.slack.circuit.star.db.ImmutableListAdapter
 import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.Size
+import com.slack.circuit.star.db.StarDatabase
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
 import com.slack.circuit.star.di.SingleIn
 import com.squareup.anvil.annotations.ContributesBinding
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
-import com.slack.circuit.star.db.Animal as DbAnimal
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 interface PetRepository {
   suspend fun refreshData()
@@ -51,10 +52,10 @@ constructor(
   private val petFinderApi: PetfinderApi,
 ) : PetRepository {
 
-  private val backgroundScope = CoroutineScope(Job() + Dispatchers.IO)
-  private val driver = AndroidSqliteDriver(Database.Schema, appContext, "star.db")
+  private val backgroundScope = CoroutineScope(Job() + IO)
+  private val driver = AndroidSqliteDriver(StarDatabase.Schema, appContext, "star.db")
   private val starDb =
-    Database(
+    StarDatabase(
       driver,
       DbAnimal.Adapter(
         ImmutableListAdapter(","),
@@ -65,16 +66,18 @@ constructor(
     )
 
   override suspend fun refreshData() {
-    fetchAnimals()
-    // Clear the existing bios but lazily repopulate them
-    starDb.starQueries.transaction { starDb.starQueries.deleteAllBios() }
+    withContext(IO) {
+      fetchAnimals()
+      // Clear the existing bios but lazily repopulate them
+      starDb.starQueries.deleteAllBios()
+    }
   }
 
   override fun animalsFlow(): Flow<List<GetAllAnimalsForList>> {
-    starDb.transaction {
+    backgroundScope.launch {
       if (isOperationStale("animals")) {
         // Fetch new data
-        backgroundScope.launch { fetchAnimals() }
+        fetchAnimals()
       }
     }
     return starDb.starQueries
@@ -84,13 +87,14 @@ constructor(
   }
 
   override suspend fun getAnimal(id: Long): GetAnimal? {
-    return starDb.transactionWithResult { starDb.starQueries.getAnimal(id).executeAsOneOrNull() }
+    return withContext(IO) { starDb.starQueries.getAnimal(id).executeAsOneOrNull() }
   }
 
   @Suppress("SwallowedException")
   private suspend fun fetchAnimals() {
     try {
       val animals = petFinderApi.animals(limit = 100).animals
+      // Do everything in a single transaction for atomicity
       starDb.transaction {
         val allIds = animals.map { it.id }.toSet()
         val storedIds = starDb.starQueries.getAllIds().executeAsList().toSet()
@@ -148,6 +152,7 @@ constructor(
     val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
     return if (isStale || dbBio == null) {
       petFinderApi.animalBio(animal.url).also { bio ->
+        // Single transaction to log the operation update with the put
         starDb.transactionWithResult {
           logUpdate(opId)
           starDb.starQueries.putAnimalBio(AnimalBio(id, bio))
@@ -168,12 +173,10 @@ constructor(
    * [operation].
    */
   private fun isOperationStale(operation: String): Boolean {
+    val lastUpdate =
+      starDb.starQueries.lastUpdate(operation).executeAsOneOrNull()?.timestamp ?: return true
     val timestamp = currentTimestamp()
-    val lastUpdate = starDb.starQueries.lastUpdate(operation).executeAsOneOrNull()?.timestamp
-    return Duration.between(
-        Instant.ofEpochSecond(timestamp),
-        Instant.ofEpochSecond(lastUpdate ?: 0)
-      )
+    return Duration.between(Instant.ofEpochSecond(timestamp), Instant.ofEpochSecond(lastUpdate))
       .toDays() > 1
   }
 

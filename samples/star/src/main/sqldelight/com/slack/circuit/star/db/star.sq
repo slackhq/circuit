@@ -8,13 +8,6 @@ CREATE TABLE IF NOT EXISTS opJournal (
     PRIMARY KEY(timestamp)
 );
 
-lastUpdate:
-SELECT * FROM opJournal WHERE operation = ? ORDER BY timestamp DESC LIMIT 1;
-
-putUpdate:
-INSERT INTO opJournal
-VALUES ?;
-
 CREATE TABLE IF NOT EXISTS animal (
   id INTEGER NOT NULL,
   sort INTEGER NOT NULL,
@@ -68,3 +61,10 @@ DELETE FROM animal WHERE id = ?;
 
 getAllIds:
 SELECT id FROM animal;
+
+lastUpdate:
+SELECT * FROM opJournal WHERE operation = ? ORDER BY timestamp DESC LIMIT 1;
+
+putUpdate:
+INSERT INTO opJournal
+VALUES ?;

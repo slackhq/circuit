@@ -28,14 +28,7 @@ android {
   testBuildType = "release"
 }
 
-sqldelight {
-  databases {
-    create("StarDatabase") {
-      packageName.set("com.slack.circuit.star.db")
-      generateAsync.set(true)
-    }
-  }
-}
+sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
 
 tasks
   .withType<KotlinCompile>()

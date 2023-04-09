@@ -61,6 +61,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -115,8 +117,7 @@ constructor(
     val state by
       produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
-        println("animal: $animal")
-        val bioText = petRepository.getAnimalBio(screen.petId)
+        val bioText = withContext(Dispatchers.IO) { petRepository.getAnimalBio(screen.petId) }
         value =
           when (animal) {
             null -> PetDetailScreen.State.UnknownAnimal

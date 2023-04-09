@@ -1,0 +1,70 @@
+import com.slack.circuit.star.db.Gender;
+import com.slack.circuit.star.db.Size;
+import kotlinx.collections.immutable.ImmutableList;
+
+CREATE TABLE IF NOT EXISTS opJournal (
+    timestamp INTEGER NOT NULL,
+    operation TEXT NOT NULL,
+    PRIMARY KEY(timestamp)
+);
+
+lastUpdate:
+SELECT * FROM opJournal WHERE operation = ? ORDER BY timestamp DESC LIMIT 1;
+
+putUpdate:
+INSERT INTO opJournal
+VALUES ?;
+
+CREATE TABLE IF NOT EXISTS animal (
+  id INTEGER NOT NULL,
+  sort INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  photoUrls TEXT AS ImmutableList<String> NOT NULL,
+  primaryPhotoUrl TEXT,
+  tags TEXT AS ImmutableList<String> NOT NULL,
+  description TEXT NOT NULL,
+  primaryBreed TEXT,
+  gender TEXT AS Gender NOT NULL,
+  size TEXT AS Size NOT NULL,
+  age TEXT NOT NULL,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS animalBio (
+  id INTEGER NOT NULL,
+  description TEXT NOT NULL,
+  PRIMARY KEY(id)
+);
+
+updateAnimal:
+INSERT OR REPLACE INTO animal
+VALUES ?;
+
+getAllAnimals:
+SELECT * FROM animal;
+
+getAllAnimalsForList:
+SELECT id, name, primaryPhotoUrl, primaryBreed, gender, size, age FROM animal ORDER BY sort ASC;
+
+getAnimal:
+SELECT url, photoUrls, name, description, tags FROM animal WHERE id = ?;
+
+getAnimalUrl:
+SELECT url FROM animal WHERE id = ?;
+
+getAnimalBio:
+SELECT id, description FROM animalBio WHERE id = ?;
+
+deleteAllBios:
+DELETE FROM animalBio;
+
+putAnimalBio:
+INSERT INTO animalBio
+VALUES ?;
+
+deleteAnimal:
+DELETE FROM animal WHERE id = ?;
+
+getAllIds:
+SELECT id FROM animal;

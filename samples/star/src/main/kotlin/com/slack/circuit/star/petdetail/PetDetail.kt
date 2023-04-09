@@ -48,7 +48,7 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.data.Animal
+import com.slack.circuit.star.db.GetAnimal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -61,7 +61,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -87,28 +86,18 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
   }
 }
 
-internal fun Animal.toPetDetailState(
+internal fun GetAnimal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
   description: String = this.description,
   eventSink: (PetDetailScreen.Event) -> Unit
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
-    photoUrls = photos.map { it.large }.toImmutableList(),
+    photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
     description = description,
-    tags =
-      listOfNotNull(
-          colors.primary,
-          colors.secondary,
-          breeds.primary,
-          breeds.secondary,
-          gender,
-          size,
-          status
-        )
-        .toImmutableList(),
+    tags = tags,
     eventSink
   )
 }
@@ -126,6 +115,7 @@ constructor(
     val state by
       produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
+        println("animal: $animal")
         val bioText = petRepository.getAnimalBio(screen.petId)
         value =
           when (animal) {

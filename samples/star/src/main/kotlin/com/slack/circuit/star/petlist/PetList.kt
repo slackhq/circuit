@@ -45,11 +45,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -79,7 +80,9 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.ImmutableSetParceler
-import com.slack.circuit.star.data.Animal
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.GetAllAnimalsForList
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.overlay.BottomSheetOverlay
 import com.slack.circuit.star.petdetail.PetDetailScreen
@@ -96,9 +99,11 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
+@Immutable
 data class PetListAnimal(
   val id: Long,
   val name: String,
@@ -108,17 +113,6 @@ data class PetListAnimal(
   val size: Size,
   val age: String,
 )
-
-enum class Gender {
-  MALE,
-  FEMALE
-}
-
-enum class Size {
-  SMALL,
-  MEDIUM,
-  LARGE
-}
 
 @Parcelize
 class Filters(
@@ -164,12 +158,17 @@ constructor(
   @Composable
   override fun present(): PetListScreen.State {
     var isRefreshing by remember { mutableStateOf(false) }
-    val animalState by
-      produceState<List<PetListAnimal>?>(null, isRefreshing) {
-        val animals = petRepo.getAnimals(isRefreshing)
+    if (isRefreshing) {
+      LaunchedEffect(Unit) {
+        petRepo.refreshData()
         isRefreshing = false
-        value = animals.map { it.toPetListAnimal() }
       }
+    }
+
+    val animalsFlow = remember {
+      petRepo.animalsFlow().map { animals -> animals.map { it.toPetListAnimal() } }
+    }
+    val animalState by animalsFlow.collectAsState(null)
 
     var isUpdateFiltersModalShowing by rememberSaveable { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
@@ -213,15 +212,14 @@ constructor(
   }
 }
 
-internal fun Animal.toPetListAnimal(): PetListAnimal {
+internal fun GetAllAnimalsForList.toPetListAnimal(): PetListAnimal {
   return PetListAnimal(
     id = id,
-    // Names are sometimes all caps
-    name = name.lowercase().capitalize(Locale.current),
-    imageUrl = photos.firstOrNull()?.medium,
-    breed = breeds.primary,
-    gender = Gender.valueOf(gender.uppercase()),
-    size = Size.valueOf(size.uppercase()),
+    name = name,
+    imageUrl = primaryPhotoUrl,
+    breed = primaryBreed,
+    gender = gender,
+    size = size,
     age = age
   )
 }

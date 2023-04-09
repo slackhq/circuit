@@ -28,6 +28,15 @@ android {
   testBuildType = "release"
 }
 
+sqldelight {
+  databases {
+    create("StarDatabase") {
+      packageName.set("com.slack.circuit.star.db")
+      generateAsync.set(true)
+    }
+  }
+}
+
 tasks
   .withType<KotlinCompile>()
   .matching { it !is KaptGenerateStubsTask }

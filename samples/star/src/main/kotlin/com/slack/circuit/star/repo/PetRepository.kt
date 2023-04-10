@@ -8,6 +8,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.slack.circuit.star.data.PetfinderApi
+import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.ImmutableListAdapter
@@ -18,6 +19,11 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
 import com.slack.circuit.star.di.SingleIn
 import com.squareup.anvil.annotations.ContributesBinding
+import java.time.Duration
+import java.time.Instant
+import java.util.Locale
+import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -26,12 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import java.time.Duration
-import java.time.Instant
-import java.util.Locale
-import javax.inject.Inject
-import kotlin.LazyThreadSafetyMode.NONE
-import com.slack.circuit.star.db.Animal as DbAnimal
 
 interface PetRepository {
   suspend fun refreshData()

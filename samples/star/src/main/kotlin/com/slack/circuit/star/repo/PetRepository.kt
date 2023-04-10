@@ -11,8 +11,6 @@ import com.slack.circuit.star.data.PetfinderApi
 import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
-import com.slack.circuit.star.db.GetAllAnimalsForList
-import com.slack.circuit.star.db.GetAnimal
 import com.slack.circuit.star.db.ImmutableListAdapter
 import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.Size
@@ -38,8 +36,8 @@ import retrofit2.HttpException
 
 interface PetRepository {
   suspend fun refreshData()
-  fun animalsFlow(): Flow<List<GetAllAnimalsForList>>
-  suspend fun getAnimal(id: Long): GetAnimal?
+  fun animalsFlow(): Flow<List<DbAnimal>>
+  suspend fun getAnimal(id: Long): DbAnimal?
   suspend fun getAnimalBio(id: Long): String?
 }
 
@@ -73,20 +71,17 @@ constructor(
     }
   }
 
-  override fun animalsFlow(): Flow<List<GetAllAnimalsForList>> {
+  override fun animalsFlow(): Flow<List<DbAnimal>> {
     backgroundScope.launch {
       if (isOperationStale("animals")) {
         // Fetch new data
         fetchAnimals()
       }
     }
-    return starDb.starQueries
-      .getAllAnimalsForList()
-      .asFlow()
-      .mapToList(backgroundScope.coroutineContext)
+    return starDb.starQueries.getAllAnimals().asFlow().mapToList(backgroundScope.coroutineContext)
   }
 
-  override suspend fun getAnimal(id: Long): GetAnimal? {
+  override suspend fun getAnimal(id: Long): DbAnimal? {
     return withContext(IO) { starDb.starQueries.getAnimal(id).executeAsOneOrNull() }
   }
 

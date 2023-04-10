@@ -80,8 +80,8 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.ImmutableSetParceler
+import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
-import com.slack.circuit.star.db.GetAllAnimalsForList
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.overlay.BottomSheetOverlay
@@ -212,7 +212,7 @@ constructor(
   }
 }
 
-internal fun GetAllAnimalsForList.toPetListAnimal(): PetListAnimal {
+internal fun Animal.toPetListAnimal(): PetListAnimal {
   return PetListAnimal(
     id = id,
     name = name,

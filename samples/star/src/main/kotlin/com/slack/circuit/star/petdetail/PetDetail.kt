@@ -48,7 +48,7 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.db.GetAnimal
+import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -88,7 +88,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
   }
 }
 
-internal fun GetAnimal.toPetDetailState(
+internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
   description: String = this.description,
   eventSink: (PetDetailScreen.Event) -> Unit

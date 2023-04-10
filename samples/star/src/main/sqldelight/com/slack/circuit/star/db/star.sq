@@ -37,14 +37,8 @@ VALUES ?;
 getAllAnimals:
 SELECT * FROM animal;
 
-getAllAnimalsForList:
-SELECT id, name, primaryPhotoUrl, primaryBreed, gender, size, age FROM animal ORDER BY sort ASC;
-
 getAnimal:
-SELECT url, photoUrls, name, description, tags FROM animal WHERE id = ?;
-
-getAnimalUrl:
-SELECT url FROM animal WHERE id = ?;
+SELECT * FROM animal WHERE id = ?;
 
 getAnimalBio:
 SELECT id, description FROM animalBio WHERE id = ?;

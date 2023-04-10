@@ -1,6 +1,7 @@
 import com.slack.circuit.star.db.Gender;
 import com.slack.circuit.star.db.Size;
 import kotlinx.collections.immutable.ImmutableList;
+import kotlin.String;
 
 CREATE TABLE IF NOT EXISTS opJournal (
     timestamp INTEGER NOT NULL,

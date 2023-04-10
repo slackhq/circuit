@@ -24,12 +24,23 @@ dependencyResolutionManagement {
 
     // Snapshots/local go first in order to pre-empty other repos that may contain unscrupulous
     // snapshots.
-    if (hasProperty("slack.gradle.config.enableSnapshots")) {
-      maven("https://oss.sonatype.org/content/repositories/snapshots")
-      maven("https://androidx.dev/snapshots/latest/artifacts/repository")
+    if (hasProperty("circuit.config.enableSnapshots")) {
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatype")!!) {
+        name = "snapshots-maven-central"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatypes01")!!) {
+        name = "snapshots-maven-central-s01"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.androidx")!!) {
+        name = "snapshots-androidx"
+        mavenContent { snapshotsOnly() }
+        content { includeGroupByRegex("androidx.*") }
+      }
     }
 
-    if (hasProperty("slack.gradle.config.enableMavenLocal")) {
+    if (hasProperty("circuit.config.enableMavenLocal")) {
       mavenLocal()
     }
 
@@ -37,10 +48,10 @@ dependencyResolutionManagement {
 
     google()
 
-    // Kotlin dev (previously bootstrap) repository, useful for testing against Kotlin dev builds.
+    // Kotlin dev repository, useful for testing against Kotlin dev builds.
     // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
+    maven(findProperty("circuit.mavenUrls.kotlinDev")!!) {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)
@@ -82,12 +93,23 @@ pluginManagement {
 
     // Snapshots/local go first in order to pre-empty other repos that may contain unscrupulous
     // snapshots.
-    if (hasProperty("slack.gradle.config.enableSnapshots")) {
-      maven("https://oss.sonatype.org/content/repositories/snapshots")
-      maven("https://androidx.dev/snapshots/latest/artifacts/repository")
+    if (hasProperty("circuit.config.enableSnapshots")) {
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatype")!!) {
+        name = "snapshots-maven-central"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatypes01")!!) {
+        name = "snapshots-maven-central-s01"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.androidx")!!) {
+        name = "snapshots-androidx"
+        mavenContent { snapshotsOnly() }
+        content { includeGroupByRegex("androidx.*") }
+      }
     }
 
-    if (hasProperty("slack.gradle.config.enableMavenLocal")) {
+    if (hasProperty("circuit.config.enableMavenLocal")) {
       mavenLocal()
     }
 
@@ -95,10 +117,10 @@ pluginManagement {
 
     google()
 
-    // Kotlin dev (previously bootstrap) repository, useful for testing against Kotlin dev builds.
+    // Kotlin dev repository, useful for testing against Kotlin dev builds.
     // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
+    maven(findProperty("circuit.mavenUrls.kotlinDev")!!) {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)

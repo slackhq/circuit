@@ -96,12 +96,8 @@ constructor(
       val animals = petFinderApi.animals(limit = 100).animals
       // Do everything in a single transaction for atomicity
       starDb.transaction {
-        val allIds = animals.map { it.id }.toSet()
-        val storedIds = starDb.starQueries.getAllIds().executeAsList().toSet()
         // Delete any not present
-        for (id in storedIds - allIds) {
-          starDb.starQueries.deleteAnimal(id)
-        }
+        starDb.starQueries.deleteAllAnimals()
 
         // Re-populate the DB
         for ((index, animal) in animals.withIndex()) {

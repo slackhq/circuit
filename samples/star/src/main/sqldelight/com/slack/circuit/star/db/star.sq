@@ -56,11 +56,8 @@ putAnimalBio:
 INSERT INTO animalBio
 VALUES ?;
 
-deleteAnimal:
-DELETE FROM animal WHERE id = ?;
-
-getAllIds:
-SELECT id FROM animal;
+deleteAllAnimals:
+DELETE FROM animal;
 
 lastUpdate:
 SELECT * FROM opJournal WHERE operation = ? ORDER BY timestamp DESC LIMIT 1;

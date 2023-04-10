@@ -7,6 +7,8 @@ import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers

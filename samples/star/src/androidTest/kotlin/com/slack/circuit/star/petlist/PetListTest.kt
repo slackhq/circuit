@@ -14,6 +14,8 @@ import androidx.compose.ui.test.performClick
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG

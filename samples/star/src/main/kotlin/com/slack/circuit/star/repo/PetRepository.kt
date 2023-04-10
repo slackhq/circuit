@@ -138,20 +138,22 @@ constructor(
   }
 
   override suspend fun getAnimalBio(id: Long): String? {
-    val animal = getAnimal(id) ?: return null
-    val opId = "bio:$id"
-    val isStale = isOperationStale(opId)
-    val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
-    return if (isStale || dbBio == null) {
-      petFinderApi.animalBio(animal.url).also { bio ->
-        // Single transaction to log the operation update with the put
-        starDb.transactionWithResult {
-          logUpdate(opId)
-          starDb.starQueries.putAnimalBio(AnimalBio(id, bio))
+    return withContext(IO) {
+      val animal = getAnimal(id) ?: return@withContext null
+      val opId = "bio:$id"
+      val isStale = isOperationStale(opId)
+      val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
+      if (isStale || dbBio == null) {
+        petFinderApi.animalBio(animal.url).also { bio ->
+          // Single transaction to log the operation update with the put
+          starDb.transactionWithResult {
+            logUpdate(opId)
+            starDb.starQueries.putAnimalBio(AnimalBio(id, bio))
+          }
         }
+      } else {
+        dbBio?.description
       }
-    } else {
-      dbBio?.description
     }
   }
 

@@ -117,7 +117,7 @@ constructor(
     val state by
       produceState<PetDetailScreen.State>(PetDetailScreen.State.Loading) {
         val animal = petRepository.getAnimal(screen.petId)
-        val bioText = withContext(Dispatchers.IO) { petRepository.getAnimalBio(screen.petId) }
+        val bioText = petRepository.getAnimalBio(screen.petId)
         value =
           when (animal) {
             null -> PetDetailScreen.State.UnknownAnimal

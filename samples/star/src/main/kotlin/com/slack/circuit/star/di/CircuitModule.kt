@@ -18,21 +18,15 @@ interface CircuitModule {
   @Multibinds fun viewFactories(): Set<Ui.Factory>
 
   companion object {
-    @Provides
-    fun provideCircuit(
-      presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
-      uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-    ): CircuitConfig {
-      return CircuitConfig.Builder()
-        .apply {
-          for (factory in presenterFactories) {
-            addPresenterFactory(factory)
-          }
-          for (factory in uiFactories) {
-            addUiFactory(factory)
-          }
-        }
-        .build()
-    }
+@Provides
+fun provideCircuit(
+  presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
+  uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
+): CircuitConfig {
+  return CircuitConfig.Builder()
+    .addPresenterFactories(presenterFactories)
+    .addUiFactories(uiFactories)
+    .build()
+}
   }
 }

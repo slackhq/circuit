@@ -19,6 +19,14 @@ dependencyResolutionManagement {
     return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
   }
 
+  fun findProperty(key: String): String? {
+    return if (hasProperty(key)) {
+      settings.withGroovyBuilder { "getProperty"(key) as String }
+    } else {
+      null
+    }
+  }
+
   repositories {
     // Repos are declared roughly in order of likely to hit.
 
@@ -86,6 +94,14 @@ pluginManagement {
   // Non-delegate APIs are annoyingly not public so we have to use withGroovyBuilder
   fun hasProperty(key: String): Boolean {
     return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
+  }
+
+  fun findProperty(key: String): String? {
+    return if (hasProperty(key)) {
+      settings.withGroovyBuilder { "getProperty"(key) as String }
+    } else {
+      null
+    }
   }
 
   repositories {

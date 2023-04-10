@@ -29,6 +29,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,7 +51,7 @@ constructor(
   private val petFinderApi: PetfinderApi,
 ) : PetRepository {
 
-  private val backgroundScope = CoroutineScope(Job() + IO)
+  private val backgroundScope = CoroutineScope(SupervisorJob() + IO)
   private val driver = AndroidSqliteDriver(StarDatabase.Schema, appContext, "star.db")
   private val starDb =
     StarDatabase(

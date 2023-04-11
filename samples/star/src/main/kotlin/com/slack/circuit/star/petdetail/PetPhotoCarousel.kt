@@ -224,7 +224,7 @@ private fun PhotoPager(
             .apply {
               if (page == 0) {
                 placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
-                crossfade(true)
+                crossfade(300)
               }
             }
             .build(),

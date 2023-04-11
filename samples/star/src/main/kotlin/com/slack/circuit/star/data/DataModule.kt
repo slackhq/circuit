@@ -75,10 +75,11 @@ object DataModule {
     baseRetrofit: Retrofit,
     @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
   ): PetfinderApi {
+    @Suppress("RemoveExplicitTypeArguments") // Necessary for R8
     return baseRetrofit
       .newBuilder()
       .callFactory { okHttpClientLazy.get().newCall(it) }
       .build()
-      .create()
+      .create<PetfinderApi>()
   }
 }

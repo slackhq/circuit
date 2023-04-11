@@ -369,7 +369,7 @@ private fun PetListGridItem(
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
             .memoryCacheKey(animal.imageUrl)
-            .crossfade(true)
+            .crossfade(300)
             .build(),
         contentDescription = animal.name,
         contentScale = ContentScale.Crop,
@@ -384,7 +384,7 @@ private fun PetListGridItem(
         ) {
           // Gender, age
           Text(
-            text = "${animal.gender} – ${animal.age}",
+            text = "${animal.gender.name.lowercase().capitalize(Locale.current)} – ${animal.age}",
             style = MaterialTheme.typography.bodySmall,
           )
         }

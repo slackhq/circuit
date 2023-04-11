@@ -48,7 +48,7 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.data.Animal
+import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -61,7 +61,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -94,21 +93,11 @@ internal fun Animal.toPetDetailState(
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
-    photoUrls = photos.map { it.large }.toImmutableList(),
+    photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
     description = description,
-    tags =
-      listOfNotNull(
-          colors.primary,
-          colors.secondary,
-          breeds.primary,
-          breeds.secondary,
-          gender,
-          size,
-          status
-        )
-        .toImmutableList(),
+    tags = tags,
     eventSink
   )
 }

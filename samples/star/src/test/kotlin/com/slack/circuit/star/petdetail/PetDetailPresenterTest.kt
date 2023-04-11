@@ -33,7 +33,7 @@ class PetDetailPresenterTest {
   fun `present - emit loading state then success state`() = runTest {
     val animal = PetListPresenterTest.animal
     val repository = TestRepository(listOf(animal))
-    val screen = PetDetailScreen(animal.id, animal.photos.first().small)
+    val screen = PetDetailScreen(animal.id, animal.primaryPhotoUrl)
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
@@ -42,8 +42,7 @@ class PetDetailPresenterTest {
       val success = awaitItem()
       check(success is PetDetailScreen.State.Success)
 
-      val expected =
-        animal.toPetDetailState(animal.photos.first().small, eventSink = success.eventSink)
+      val expected = animal.toPetDetailState(animal.primaryPhotoUrl, eventSink = success.eventSink)
       assertThat(success).isEqualTo(expected)
     }
   }
@@ -52,7 +51,7 @@ class PetDetailPresenterTest {
   fun `present - navigate using custom tab intent screen`() = runTest {
     val animal = PetListPresenterTest.animal
     val repository = TestRepository(listOf(animal))
-    val screen = PetDetailScreen(animal.id, animal.photos.first().small)
+    val screen = PetDetailScreen(animal.id, animal.primaryPhotoUrl)
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {

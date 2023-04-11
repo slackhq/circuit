@@ -12,6 +12,7 @@ plugins {
   alias(libs.plugins.anvil)
   alias(libs.plugins.paparazzi)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.sqldelight)
 }
 
 android {
@@ -26,6 +27,8 @@ android {
   testOptions { unitTests.isIncludeAndroidResources = true }
   testBuildType = "release"
 }
+
+sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
 
 tasks
   .withType<KotlinCompile>()
@@ -89,6 +92,9 @@ dependencies {
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.kotlinx.immutable)
   implementation(libs.jsoup)
+  implementation(libs.sqldelight.driver.android)
+  implementation(libs.sqldelight.coroutines)
+  implementation(libs.sqldelight.primitiveAdapters)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)

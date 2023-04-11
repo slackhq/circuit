@@ -24,14 +24,8 @@ interface CircuitModule {
       uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
     ): CircuitConfig {
       return CircuitConfig.Builder()
-        .apply {
-          for (factory in presenterFactories) {
-            addPresenterFactory(factory)
-          }
-          for (factory in uiFactories) {
-            addUiFactory(factory)
-          }
-        }
+        .addPresenterFactories(presenterFactories)
+        .addUiFactories(uiFactories)
         .build()
     }
   }

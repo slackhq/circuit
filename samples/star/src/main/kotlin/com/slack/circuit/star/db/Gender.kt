@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.db
 
-enum class Gender {
-  MALE,
-  FEMALE
+enum class Gender(val displayName: String) {
+  MALE("Male"),
+  FEMALE("Female"),
 }

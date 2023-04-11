@@ -384,7 +384,7 @@ private fun PetListGridItem(
         ) {
           // Gender, age
           Text(
-            text = "${animal.gender.name.lowercase().capitalize(Locale.current)} – ${animal.age}",
+            text = "${animal.gender.displayName} – ${animal.age}",
             style = MaterialTheme.typography.bodySmall,
           )
         }

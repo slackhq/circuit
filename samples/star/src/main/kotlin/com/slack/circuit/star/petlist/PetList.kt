@@ -86,6 +86,7 @@ import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.overlay.BottomSheetOverlay
 import com.slack.circuit.star.petdetail.PetDetailScreen
+import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
@@ -230,6 +231,7 @@ internal object PetListTestConstants {
   const val GRID_TAG = "grid"
   const val CARD_TAG = "card"
   const val IMAGE_TAG = "image"
+  const val AGE_AND_BREED_TAG = "age_and_breed"
 }
 
 @CircuitInject(PetListScreen::class, AppScope::class)
@@ -384,6 +386,7 @@ private fun PetListGridItem(
         ) {
           // Gender, age
           Text(
+            modifier = Modifier.testTag(AGE_AND_BREED_TAG),
             text = "${animal.gender.displayName} – ${animal.age}",
             style = MaterialTheme.typography.bodySmall,
           )

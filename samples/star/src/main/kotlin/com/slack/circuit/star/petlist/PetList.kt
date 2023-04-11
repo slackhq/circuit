@@ -4,6 +4,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,10 +48,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -166,10 +167,13 @@ constructor(
       }
     }
 
-    val animalsFlow = remember {
-      petRepo.animalsFlow().map { animals -> animals.map { it.toPetListAnimal() } }
-    }
-    val animalState by animalsFlow.collectAsState(null)
+    val animalState by
+      produceState<List<PetListAnimal>?>(initialValue = null, petRepo) {
+        petRepo
+          .animalsFlow()
+          .map { animals -> animals?.map(Animal::toPetListAnimal) }
+          .collect { value = it }
+      }
 
     var isUpdateFiltersModalShowing by rememberSaveable { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
@@ -371,7 +375,7 @@ private fun PetListGridItem(
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
             .memoryCacheKey(animal.imageUrl)
-            .crossfade(300)
+            .crossfade(AnimationConstants.DefaultDurationMillis)
             .build(),
         contentDescription = animal.name,
         contentScale = ContentScale.Crop,

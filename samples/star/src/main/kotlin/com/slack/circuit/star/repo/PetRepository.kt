@@ -29,13 +29,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 interface PetRepository {
   suspend fun refreshData()
-  fun animalsFlow(): Flow<List<DbAnimal>>
+  fun animalsFlow(): Flow<List<DbAnimal>?>
   suspend fun getAnimal(id: Long): DbAnimal?
   suspend fun getAnimalBio(id: Long): String?
 }
@@ -70,14 +71,30 @@ constructor(
     }
   }
 
-  override fun animalsFlow(): Flow<List<DbAnimal>> {
+  override fun animalsFlow(): Flow<List<DbAnimal>?> {
     backgroundScope.launch {
       if (isOperationStale("animals")) {
         // Fetch new data
         fetchAnimals()
       }
     }
-    return starDb.starQueries.getAllAnimals().asFlow().mapToList(backgroundScope.coroutineContext)
+
+    // If empty, check if the DB has been updated at all. If it hasn't, then it's just that we
+    // haven't fetched yet and we return null instead to indicate it's still loading.
+    return starDb.starQueries
+      .getAllAnimals()
+      .asFlow()
+      .mapToList(backgroundScope.coroutineContext)
+      .map { animals ->
+        animals.ifEmpty {
+          val dbHasOps = starDb.starQueries.lastUpdate("animals").executeAsOneOrNull()
+          if (dbHasOps == null) {
+            null
+          } else {
+            animals
+          }
+        }
+      }
   }
 
   override suspend fun getAnimal(id: Long): DbAnimal? {

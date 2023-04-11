@@ -5,6 +5,7 @@ package com.slack.circuit.star.petdetail
 import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -224,7 +225,7 @@ private fun PhotoPager(
             .apply {
               if (page == 0) {
                 placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
-                crossfade(300)
+                crossfade(AnimationConstants.DefaultDurationMillis)
               }
             }
             .build(),

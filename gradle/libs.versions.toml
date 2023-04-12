@@ -44,7 +44,7 @@ paparazzi = "1.2.0"
 retrofit = "2.9.0"
 robolectric = "4.9.2"
 spotless = "6.18.0"
-sqldelight = "2.0.0-alpha05"
+sqldelight = "2.0.0-SNAPSHOT"
 turbine = "0.12.3"
 versionsPlugin = "0.46.0"
 

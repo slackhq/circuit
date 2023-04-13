@@ -73,7 +73,7 @@ agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-benchmark-macro-junit = "androidx.benchmark:benchmark-macro-junit4:1.2.0-alpha12"
+androidx-benchmark-macro-junit = "androidx.benchmark:benchmark-macro-junit4:1.2.0-alpha13"
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 ####### Compose
 # You must enable the SlackProperties.enableCompose property to use these.

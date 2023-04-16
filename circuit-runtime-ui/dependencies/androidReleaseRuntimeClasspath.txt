@@ -18,9 +18,10 @@ androidx.concurrent:concurrent-futures
 androidx.core:core-ktx
 androidx.core:core
 androidx.customview:customview-poolingcontainer
-androidx.lifecycle:lifecycle-common-java8
+androidx.emoji2:emoji2
 androidx.lifecycle:lifecycle-common
 androidx.lifecycle:lifecycle-livedata-core
+androidx.lifecycle:lifecycle-process
 androidx.lifecycle:lifecycle-runtime-ktx
 androidx.lifecycle:lifecycle-runtime
 androidx.lifecycle:lifecycle-viewmodel-ktx

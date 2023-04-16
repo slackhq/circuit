@@ -7,6 +7,7 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import com.diffplug.spotless.LineEnding
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
@@ -52,6 +53,8 @@ val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
 allprojects {
   apply(plugin = "com.diffplug.spotless")
   val spotlessFormatters: SpotlessExtension.() -> Unit = {
+    lineEndings = LineEnding.PLATFORM_NATIVE
+
     format("misc") {
       target("*.md", ".gitignore")
       trimTrailingWhitespace()

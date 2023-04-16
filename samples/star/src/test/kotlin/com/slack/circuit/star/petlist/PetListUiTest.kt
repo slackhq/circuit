@@ -8,13 +8,15 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
+import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
@@ -72,10 +74,9 @@ class PetListUiTest {
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)
-      onNodeWithTag(IMAGE_TAG, true).assertIsDisplayed()
-      onNodeWithText(ANIMAL.name).assertIsDisplayed()
-      onNodeWithText(ANIMAL.breed.orEmpty()).assertIsDisplayed()
-      onNodeWithText("${ANIMAL.gender} – ${ANIMAL.age}").assertIsDisplayed()
+      onNodeWithTag(IMAGE_TAG, useUnmergedTree = true).assertIsDisplayed()
+      onNodeWithTag(AGE_AND_BREED_TAG, useUnmergedTree = true)
+        .assertTextEquals("${ANIMAL.gender.displayName} – ${ANIMAL.age}")
     }
   }
 

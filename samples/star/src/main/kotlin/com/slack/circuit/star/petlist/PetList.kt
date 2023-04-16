@@ -4,6 +4,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -79,10 +81,13 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.ImmutableSetParceler
-import com.slack.circuit.star.data.Animal
+import com.slack.circuit.star.db.Animal
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.overlay.BottomSheetOverlay
 import com.slack.circuit.star.petdetail.PetDetailScreen
+import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
@@ -96,9 +101,11 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
+@Immutable
 data class PetListAnimal(
   val id: Long,
   val name: String,
@@ -108,17 +115,6 @@ data class PetListAnimal(
   val size: Size,
   val age: String,
 )
-
-enum class Gender {
-  MALE,
-  FEMALE
-}
-
-enum class Size {
-  SMALL,
-  MEDIUM,
-  LARGE
-}
 
 @Parcelize
 class Filters(
@@ -164,11 +160,19 @@ constructor(
   @Composable
   override fun present(): PetListScreen.State {
     var isRefreshing by remember { mutableStateOf(false) }
-    val animalState by
-      produceState<List<PetListAnimal>?>(null, isRefreshing) {
-        val animals = petRepo.getAnimals(isRefreshing)
+    if (isRefreshing) {
+      LaunchedEffect(Unit) {
+        petRepo.refreshData()
         isRefreshing = false
-        value = animals.map { it.toPetListAnimal() }
+      }
+    }
+
+    val animalState by
+      produceState<List<PetListAnimal>?>(initialValue = null, petRepo) {
+        petRepo
+          .animalsFlow()
+          .map { animals -> animals?.map(Animal::toPetListAnimal) }
+          .collect { value = it }
       }
 
     var isUpdateFiltersModalShowing by rememberSaveable { mutableStateOf(false) }
@@ -216,12 +220,11 @@ constructor(
 internal fun Animal.toPetListAnimal(): PetListAnimal {
   return PetListAnimal(
     id = id,
-    // Names are sometimes all caps
-    name = name.lowercase().capitalize(Locale.current),
-    imageUrl = photos.firstOrNull()?.medium,
-    breed = breeds.primary,
-    gender = Gender.valueOf(gender.uppercase()),
-    size = Size.valueOf(size.uppercase()),
+    name = name,
+    imageUrl = primaryPhotoUrl,
+    breed = primaryBreed,
+    gender = gender,
+    size = size,
     age = age
   )
 }
@@ -232,6 +235,7 @@ internal object PetListTestConstants {
   const val GRID_TAG = "grid"
   const val CARD_TAG = "card"
   const val IMAGE_TAG = "image"
+  const val AGE_AND_BREED_TAG = "age_and_breed"
 }
 
 @CircuitInject(PetListScreen::class, AppScope::class)
@@ -371,7 +375,7 @@ private fun PetListGridItem(
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
             .memoryCacheKey(animal.imageUrl)
-            .crossfade(true)
+            .crossfade(AnimationConstants.DefaultDurationMillis)
             .build(),
         contentDescription = animal.name,
         contentScale = ContentScale.Crop,
@@ -386,7 +390,8 @@ private fun PetListGridItem(
         ) {
           // Gender, age
           Text(
-            text = "${animal.gender} – ${animal.age}",
+            modifier = Modifier.testTag(AGE_AND_BREED_TAG),
+            text = "${animal.gender.displayName} – ${animal.age}",
             style = MaterialTheme.typography.bodySmall,
           )
         }

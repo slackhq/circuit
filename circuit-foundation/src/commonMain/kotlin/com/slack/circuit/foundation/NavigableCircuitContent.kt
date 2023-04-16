@@ -36,7 +36,7 @@ public fun NavigableCircuitContent(
   modifier: Modifier = Modifier,
   circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
-  decoration: NavDecoration = NavigatorDefaults.DefaultDecoration,
+  decoration: NavDecoration = circuitConfig.defaultNavDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuitConfig.onUnavailableContent,
 ) {

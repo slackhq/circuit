@@ -14,6 +14,7 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.StaticPresenter
 import com.slack.circuit.runtime.ui.Ui
 
 @Composable
@@ -125,7 +126,13 @@ private fun <UiState : CircuitUiState> CircuitContent(
 
     onDispose { eventListener.onDisposePresent() }
   }
-  val state = presenter.present()
+  val state = if (presenter is StaticPresenter<*>) {
+    // Get the @ReadOnlyComposable optimization
+    @Suppress("UNCHECKED_CAST")
+    (presenter as StaticPresenter<UiState>).present()
+  } else {
+    presenter.present()
+  }
   // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
   SideEffect { eventListener.onState(state) }
   DisposableEffect(screen) {

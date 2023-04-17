@@ -14,6 +14,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.StatelessScreen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 
@@ -91,6 +92,12 @@ public class CircuitConfig private constructor(builder: Builder) {
       if (presenter != null) {
         return presenter
       }
+    }
+
+    // If it's stateless, gracefully fall back and return a stateless presenter and assume this is a
+    // UI-only screen. We still try giving other presenter factories
+    if (screen is StatelessScreen) {
+      return StaticStatelessPresenter
     }
 
     return null

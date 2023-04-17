@@ -30,3 +30,6 @@ import androidx.compose.runtime.Immutable
  * ```
  */
 @Immutable public expect interface Screen
+
+/** Marker interface that indicates this [Screen] is stateless. */
+public interface StatelessScreen

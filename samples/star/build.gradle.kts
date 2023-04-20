@@ -10,7 +10,7 @@ plugins {
   kotlin("plugin.parcelize")
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
-  alias(libs.plugins.paparazzi)
+  alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
 }
@@ -109,6 +109,8 @@ dependencies {
   testImplementation(libs.testing.espresso.core)
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
+  testImplementation(libs.roborazzi)
+  testImplementation(libs.roborazzi.rules)
   testImplementation(projects.samples.star.coilRule)
 
   androidTestImplementation(libs.androidx.compose.ui.testing.manifest)

@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
@@ -29,6 +30,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 
+@OptIn(ExperimentalCoilApi::class)
 class PetListTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
   private val coilRule = CoilRule(R.drawable.dog)

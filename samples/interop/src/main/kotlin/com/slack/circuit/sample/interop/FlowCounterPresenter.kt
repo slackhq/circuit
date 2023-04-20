@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 /** A basic [Flow]-based presenter interface. */
-fun interface FlowPresenter<T : Any, E : Any> {
-  fun present(scope: CoroutineScope, events: Flow<E>): StateFlow<T>
+fun interface FlowPresenter<UiState : Any, UiEvent : Any> {
+  fun present(scope: CoroutineScope, events: Flow<UiEvent>): StateFlow<UiState>
 }
 
 /** An [Flow] presenter that exposes a [StateFlow] of count changes. */

@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
@@ -343,6 +344,9 @@ subprojects {
           implementation(platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"))
         }
       }
+    }
+    tasks.withType<KotlinNativeCompile>().configureEach {
+      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
     }
   }
 }

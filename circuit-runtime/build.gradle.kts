@@ -10,6 +10,7 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  ios()
   // endregion
 
   sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }

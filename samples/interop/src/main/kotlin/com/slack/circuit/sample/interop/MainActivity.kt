@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +42,6 @@ import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
-  @OptIn(ExperimentalMaterial3Api::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -104,12 +104,12 @@ class MainActivity : AppCompatActivity() {
 private fun SourceMenu(
   label: String,
   selectedIndex: Int,
-  sourceValues: Array<out Enum<*>>,
+  sourceValues: Array<out Displayable>,
   onSelected: (Int) -> Unit,
 ) {
   var expanded by remember { mutableStateOf(false) }
   val selectedName: String by
-    remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].name) }
+    remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].presentationName) }
   ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
     TextField(
       readOnly = true,
@@ -122,7 +122,10 @@ private fun SourceMenu(
     )
     ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       for (source in sourceValues) {
-        SourceMenuItem(source, selectedIndex, onSelected)
+        SourceMenuItem(source, selectedIndex) {
+          expanded = false
+          onSelected(it)
+        }
       }
     }
   }
@@ -130,11 +133,11 @@ private fun SourceMenu(
 
 @Composable
 private fun SourceMenuItem(
-  source: Enum<*>,
+  source: Displayable,
   selectedIndex: Int,
   onSelected: (Int) -> Unit,
 ) {
-  val isSelected = selectedIndex == source.ordinal
+  val isSelected = selectedIndex == source.index
   val style =
     if (isSelected) {
       MaterialTheme.typography.labelLarge.copy(
@@ -151,11 +154,11 @@ private fun SourceMenuItem(
     text = {
       Text(
         modifier = Modifier.padding(8.dp),
-        text = source.name,
+        text = source.presentationName,
         style = style,
       )
     },
-    onClick = { onSelected(source.ordinal) },
+    onClick = { onSelected(source.index) },
   )
 }
 
@@ -165,8 +168,14 @@ private data class InteropCounterScreen(
   val uiSource: UiSource
 ) : CounterScreen, Parcelable
 
+@Stable
+private interface Displayable {
+  val index: Int
+  val presentationName: String
+}
+
 @Suppress("UNCHECKED_CAST")
-private enum class PresenterSource {
+private enum class PresenterSource : Displayable {
   Circuit {
     override fun createPresenter(
       screen: InteropCounterScreen,
@@ -175,6 +184,9 @@ private enum class PresenterSource {
       return CounterPresenterFactory().create(screen, Navigator.NoOp, context)
         as Presenter<CounterScreen.State>
     }
+
+    override val presentationName
+      get() = "Circuit"
   },
   Flow {
     override fun createPresenter(
@@ -183,6 +195,21 @@ private enum class PresenterSource {
     ): Presenter<CounterScreen.State> {
       return FlowCounterPresenter().asCircuitPresenter()
     }
+
+    override val presentationName
+      get() = "Flow -> Circuit"
+  },
+  CircuitToFlow {
+    override fun createPresenter(
+      screen: InteropCounterScreen,
+      context: CircuitContext,
+    ): Presenter<CounterScreen.State> {
+      // Two layers of interop!
+      return Flow.createPresenter(screen, context).asFlowPresenter().asCircuitPresenter()
+    }
+
+    override val presentationName
+      get() = "Circuit -> Flow -> Circuit"
   },
   RxJava {
     override fun createPresenter(
@@ -191,6 +218,9 @@ private enum class PresenterSource {
     ): Presenter<CounterScreen.State> {
       return RxCounterPresenter().asCircuitPresenter()
     }
+
+    override val presentationName
+      get() = "RxJava -> Circuit"
   },
   Simple {
     override fun createPresenter(
@@ -199,25 +229,43 @@ private enum class PresenterSource {
     ): Presenter<CounterScreen.State> {
       return SimpleCounterPresenter().asCircuitPresenter()
     }
+
+    override val presentationName
+      get() = "Simple -> Circuit"
   };
 
   abstract fun createPresenter(
     screen: InteropCounterScreen,
     context: CircuitContext,
   ): Presenter<CounterScreen.State>
+
+  open override val index: Int
+    get() = ordinal
+  open override val presentationName: String
+    get() = name
 }
 
-enum class UiSource {
+enum class UiSource : Displayable {
   Circuit {
     override fun createUi(): Ui<CounterScreen.State> {
       return ui { state, modifier -> Counter(state, modifier) }
     }
+
+    override val presentationName
+      get() = "Circuit"
   },
   View {
     override fun createUi(): Ui<CounterScreen.State> {
       return ui { state, modifier -> CounterViewComposable(state, modifier) }
     }
+
+    override val presentationName
+      get() = "View -> Circuit"
   };
 
   abstract fun createUi(): Ui<CounterScreen.State>
+  open override val index: Int
+    get() = ordinal
+  open override val presentationName: String
+    get() = name
 }

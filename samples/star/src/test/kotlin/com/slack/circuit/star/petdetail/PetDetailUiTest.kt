@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
+import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
@@ -29,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(ExperimentalCoilApi::class)
 @RunWith(RobolectricTestRunner::class)
 class PetDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()

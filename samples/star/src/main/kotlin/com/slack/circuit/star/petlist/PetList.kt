@@ -4,6 +4,7 @@ package com.slack.circuit.star.petlist
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -139,7 +140,7 @@ object PetListScreen : Screen {
       override val isRefreshing: Boolean,
       val filters: Filters = Filters(),
       val isUpdateFiltersModalShowing: Boolean = false,
-      val eventSink: (Event) -> Unit,
+      val eventSink: (Event) -> Unit = {},
     ) : State
   }
 
@@ -419,12 +420,13 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
 
 @Preview
 @Composable
-internal fun PreviewUpdateFiltersSheet() {
+private fun PreviewUpdateFiltersSheet() {
   Surface { UpdateFiltersSheet(initialFilters = Filters()) }
 }
 
+@VisibleForTesting
 @Composable
-private fun UpdateFiltersSheet(
+internal fun UpdateFiltersSheet(
   initialFilters: Filters,
   modifier: Modifier = Modifier,
   onDismiss: (Filters) -> Unit = {}

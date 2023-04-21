@@ -10,10 +10,10 @@ import androidx.compose.runtime.setValue
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
-import com.jakewharton.mosaic.Column
 import com.jakewharton.mosaic.MosaicScope
-import com.jakewharton.mosaic.Text
 import com.jakewharton.mosaic.runMosaic
+import com.jakewharton.mosaic.ui.Column
+import com.jakewharton.mosaic.ui.Text
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent

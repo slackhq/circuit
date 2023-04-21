@@ -51,10 +51,10 @@ jobs:
 
       - name: Verify Snapshots
         if: always()
-        id: gradle-paparazzi
+        id: gradle-snapshots
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: verifyPaparazzi
+          arguments: verifyRoborazzi
           gradle-home-cache-cleanup: true
           cache-read-only: false
 

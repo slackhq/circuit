@@ -9,14 +9,8 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
-  listOf(
-    iosX64(),
-    iosArm64(),
-    iosSimulatorArm64()
-  ).forEach {
-    it.binaries.framework {
-      baseName = "counter"
-    }
+  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+    it.binaries.framework { baseName = "counter" }
   }
   // endregion
 

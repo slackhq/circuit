@@ -38,6 +38,7 @@ androidx.startup:startup-runtime
 androidx.tracing:tracing
 androidx.versionedparcelable:versionedparcelable
 com.google.guava:listenablefuture
+org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-stdlib-jdk7

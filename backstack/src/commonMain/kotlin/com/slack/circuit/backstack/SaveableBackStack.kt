@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import java.util.UUID
+import com.benasher44.uuid.uuid4
 
 @Composable
 public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
@@ -62,7 +62,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   public data class Record(
     override val route: String,
     val args: Map<String, Any?> = emptyMap(),
-    override val key: String = UUID.randomUUID().toString()
+    override val key: String = uuid4().toString(),
   ) : BackStack.Record {
     internal companion object {
       val Saver: Saver<Record, List<Any>> =

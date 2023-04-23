@@ -18,6 +18,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(libs.coroutines)
+        implementation(libs.uuid)
         implementation(libs.compose.runtime.saveable)
       }
     }

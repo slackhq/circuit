@@ -47,8 +47,6 @@ kotlin {
     maybeCreate("jvmMain").apply { dependencies { implementation(compose.desktop.currentOs) } }
     maybeCreate("androidMain").apply {
       dependencies {
-        implementation(projects.samples.counter)
-        implementation(projects.circuitFoundation)
         implementation(libs.androidx.appCompat)
         implementation(libs.bundles.compose.ui)
         implementation(libs.androidx.compose.integration.activity)
@@ -60,10 +58,3 @@ kotlin {
     }
   }
 }
-
-// dependencies {
-//  implementation(compose.desktop.currentOs)
-//  implementation(libs.kotlinx.immutable)
-//  implementation(projects.samples.counter)
-//  implementation(projects.circuitFoundation)
-// }

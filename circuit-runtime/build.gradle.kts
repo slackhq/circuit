@@ -11,6 +11,7 @@ kotlin {
   android { publishLibraryVariants("release") }
   jvm()
   ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }

@@ -10,6 +10,8 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets {

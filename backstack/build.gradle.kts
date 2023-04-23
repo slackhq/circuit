@@ -40,6 +40,8 @@ kotlin {
         }
       }
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+    val iosMain by getting
+    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

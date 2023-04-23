@@ -15,10 +15,12 @@ kotlin {
   // endregion
 
   sourceSets {
-    commonMain { dependencies {
-      api(libs.compose.runtime)
-      api(libs.compose.foundation)
-    } }
+    commonMain {
+      dependencies {
+        api(libs.compose.runtime)
+        api(libs.compose.foundation)
+      }
+    }
     maybeCreate("commonTest").apply {
       dependencies {
         implementation(libs.kotlin.test)

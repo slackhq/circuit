@@ -348,6 +348,11 @@ subprojects {
     tasks.withType<KotlinNativeCompile>().configureEach {
       notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
     }
+    @Suppress("INVISIBLE_REFERENCE")
+    tasks.withType<org.jetbrains.kotlin.gradle.plugin.mpp.apple.FrameworkCopy>().configureEach {
+      @Suppress("INVISIBLE_MEMBER")
+      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
+    }
   }
 }
 

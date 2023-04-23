@@ -8,6 +8,7 @@
   "repositories": [
     "slackhq/circuit"
   ],
+  "prHourlyLimit": 10,
   "platformAutomerge": true,
   "packageRules": [
     {

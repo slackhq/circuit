@@ -1,8 +1,6 @@
 ⚡️ Circuit
 ==========
 
-🚧 **Under construction** 🚧
-
 ### [slackhq.github.io/circuit](https://slackhq.github.io/circuit)
 
 License

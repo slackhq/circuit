@@ -1,9 +1,7 @@
 ⚡️ Circuit
 ==========
 
-🚧 **Under construction** 🚧
-
-This project is very much a work in progress and far from finished!
+Circuit is used in production at Slack and ready for general use 🚀. The API is considered unstable as we continue to iterate on it.
 
 ## Overview
 

@@ -110,24 +110,26 @@ fun `present - emit loading state then list of favorites`() = runTest {
   val favorites = listOf(Favorite(1L, ...))
 
   val repo = TestFavoritesRepository(favorites)
-  val presenter = PetListPresenter(navigator, repo)
+  val presenter = FavoritesPresenter(navigator, repo)
   
   presenter.test {
-    assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
+    assertThat(awaitItem()).isEqualTo(FavoritesScreen.State.Loading)
     val resultsItem = awaitItem() as Results
     assertThat(resultsItem.favorites).isEqualTo(favorites)
   }
 }
+```
 
 The same helper can be used when testing how the presenter responds to incoming events: 
 
+```kotlin
 @Test 
 fun `present - navigate to favorite screen`() = runTest {
   val repo = TestFavoritesRepository(Favorite(123L))
-  val presenter = PetListPresenter(navigator, repo)
+  val presenter = FavoritesPresenter(navigator, repo)
   
   presenter.test {
-    assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
+    assertThat(awaitItem()).isEqualTo(FavoritesScreen.State.Loading)
     val resultsItem = awaitItem() as Results
     assertThat(resultsItem.favorites).isEqualTo(favorites)
     val clickFavorite = FavoriteScreen.Event.ClickFavorite(123L)

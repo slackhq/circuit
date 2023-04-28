@@ -22,6 +22,6 @@ Yep! This may feel like a departure from how you’ve written UDF patterns in th
     Due to this [issue](https://issuetracker.google.com/issues/256100927), you need to extract the `eventSink` into local variables first.
 
 !!! note
-    Currently, while functions are treated as implicitly `Stable` by the compose compiler, they not skippable when they're non-composable Unit-returning lambdas with equal-but-unstable captures. This may change though, and would be another free benefit for this case.
+    Currently, while functions are treated as implicitly `Stable` by the compose compiler, they're not skippable when they're non-composable Unit-returning lambdas with equal-but-unstable captures. This may change though, and would be another free benefit for this case.
 
 A longer-form writeup can be found in [this PR](https://github.com/slackhq/circuit/pull/146).

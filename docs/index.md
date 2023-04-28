@@ -43,7 +43,7 @@ This is a very simple case of a Counter screen that displays the count and has b
 
 ![image](https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png)
 
-There’s some glue code missing from this example that's covered in the Code Gen (TODO link) section later.
+There’s some glue code missing from this example that's covered in the [Code Gen](https://slackhq.github.io/circuit/code-gen/) section later.
 
 ```kotlin
 @Parcelize

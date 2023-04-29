@@ -241,6 +241,7 @@ private enum class PresenterSource : Displayable {
 
   open override val index: Int
     get() = ordinal
+
   open override val presentationName: String
     get() = name
 }
@@ -264,8 +265,10 @@ enum class UiSource : Displayable {
   };
 
   abstract fun createUi(): Ui<CounterScreen.State>
+
   open override val index: Int
     get() = ordinal
+
   open override val presentationName: String
     get() = name
 }

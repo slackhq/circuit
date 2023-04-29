@@ -17,6 +17,7 @@ import com.slack.circuit.runtime.presenter.presenterOf
 
 sealed interface CounterEvent : CircuitUiEvent {
   object Increment : CounterEvent
+
   object Decrement : CounterEvent
 }
 
@@ -54,7 +55,9 @@ interface CounterScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     data class GoTo(val screen: Screen) : Event
+
     object Increment : Event
+
     object Decrement : Event
   }
 }

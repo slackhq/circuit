@@ -15,5 +15,6 @@ class ImmutableListAdapter(private val delimiter: String) :
     } else {
       databaseValue.split(delimiter).toImmutableList()
     }
+
   override fun encode(value: ImmutableList<String>) = value.joinToString(separator = delimiter)
 }

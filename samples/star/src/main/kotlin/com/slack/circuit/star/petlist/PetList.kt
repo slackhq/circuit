@@ -135,6 +135,7 @@ object PetListScreen : Screen {
     }
 
     data class NoAnimals(override val isRefreshing: Boolean) : State
+
     data class Success(
       val animals: ImmutableList<PetListAnimal>,
       override val isRefreshing: Boolean,
@@ -146,8 +147,11 @@ object PetListScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+
     object Refresh : Event
+
     object UpdateFilters : Event
+
     data class UpdatedFilters(val newFilters: Filters) : Event
   }
 }

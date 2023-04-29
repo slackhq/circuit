@@ -27,6 +27,7 @@ internal class FakeImageLoader(engine: FakeImageLoaderEngine) : ImageLoader {
   override val components = ComponentRegistry.Builder().add(engine).build()
   override val memoryCache: MemoryCache?
     get() = null
+
   override val diskCache: DiskCache?
     get() = null
 
@@ -35,6 +36,7 @@ internal class FakeImageLoader(engine: FakeImageLoaderEngine) : ImageLoader {
       override val job = CompletableDeferred<ImageResult>()
       override val isDisposed
         get() = true
+
       override fun dispose() = Unit
     }
   }

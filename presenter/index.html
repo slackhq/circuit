@@ -731,7 +731,7 @@
 <span class="w">  </span><span class="nd">@Composable</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">UiState</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Presenters are solely intended to be business logic for your UI and a translation layer in front of your data layers. They are generally Dagger-injected types as the data layers they interpret are usually coming from the DI graph. In simple cases, they can be typed as a simple <code>@Composable</code> presenter function and Circuit code gen (TODO link) can generate the corresponding interface and (TODO link) factory for you.</p>
+<p>Presenters are solely intended to be business logic for your UI and a translation layer in front of your data layers. They are generally Dagger-injected types as the data layers they interpret are usually coming from the DI graph. In simple cases, they can be typed as a simple <code>@Composable</code> presenter function allowing Circuit <a href="https://slackhq.github.io/circuit/code-gen/">code gen</a> to generate the corresponding interface and factory for you.</p>
 <p>A very simple presenter can look like this:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">FavoritesPresenter</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nd">@Composable</span><span class="w"> </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">State</span><span class="w"> </span><span class="p">{</span>
@@ -775,7 +775,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters. <a href="https://github.com/slackhq/circuit/blob/main/samples/star/src/main/kotlin/com/slack/circuit/star/home/HomePresenter.kt">We have an example of this in the Circuit repo</a>.</p>
+<p>Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters.</p>
 <h2 id="retention">Retention<a class="headerlink" href="#retention" title="Permanent link">&para;</a></h2>
 <p>There are three types of composable retention functions used in Circuit.</p>
 <ol>

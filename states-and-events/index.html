@@ -682,7 +682,7 @@
 <h1 id="states-and-events">States and Events<a class="headerlink" href="#states-and-events" title="Permanent link">&para;</a></h1>
 <p>The core state and event interfaces in Circuit are <code>CircuitUiState</code> and <code>CircuitUiEvent</code>. All state and event types should implement/extend these marker interfaces.</p>
 <p>Presenters are simple functions that determine and return composable states. UIs are simple functions that render states. Uis can emit events via <code>eventSink</code> properties in state classes, which presenters then handle. These are the core building blocks!</p>
-<p>States and events should be immutable value types.</p>
+<p>States should be <code>@Stable</code>; events should be <code>@Immutable</code>.</p>
 <blockquote>
 <p>Wait, event callbacks in state types?</p>
 </blockquote>
@@ -701,7 +701,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Currently, while functions are treated as implicitly <code>Stable</code> by the compose compiler, they not skippable when they&rsquo;re non-composable Unit-returning lambdas with equal-but-unstable captures. This may change though, and would be another free benefit for this case.</p>
+<p>Currently, while functions are treated as implicitly <code>Stable</code> by the compose compiler, they&rsquo;re not skippable when they&rsquo;re non-composable Unit-returning lambdas with equal-but-unstable captures. This may change though, and would be another free benefit for this case.</p>
 </div>
 <p>A longer-form writeup can be found in <a href="https://github.com/slackhq/circuit/pull/146">this PR</a>.</p>
 

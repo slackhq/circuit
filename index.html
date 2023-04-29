@@ -752,8 +752,7 @@
 
 
 <h1 id="circuit">⚡️ Circuit<a class="headerlink" href="#circuit" title="Permanent link">&para;</a></h1>
-<p>🚧 <strong>Under construction</strong> 🚧</p>
-<p>This project is very much a work in progress and far from finished!</p>
+<p>Circuit is used in production at Slack and ready for general use 🚀. The API is considered unstable as we continue to iterate on it.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Circuit is a simple, lightweight, and extensible framework for building Kotlin applications that&rsquo;s Compose from the ground up.</p>
 <div class="admonition info">
@@ -773,21 +772,21 @@
 <li>They are keyed by <code>Screen</code>s. One runs a new <code>Presenter</code>/<code>Ui</code> pairing by requesting them with a given <code>Screen</code> that they understand.</li>
 </ol>
 <div class="admonition note">
-<p class="admonition-title">Circuits</p>
-<p>The pairing of a <code>Presenter</code> and <code>Ui</code> for a given <code>Screen</code> key is what we semantically call a “circuit”.</p>
+<p class="admonition-title">Screens</p>
+<p>The pairing of a <code>Presenter</code> and <code>Ui</code> for a given <code>Screen</code> key is what we semantically call a “screen&rdquo;.</p>
 <ul>
-<li>Your application is composed of “circuits”.</li>
-<li>A simple counter <code>Presenter</code> + <code>Ui</code> pairing would be a “counter circuit”.</li>
-<li>Nested presenter/UIs would be “nested circuits” or “sub circuits”</li>
-<li>Composite presenter/UIs would be “composite circuits”</li>
+<li>Your application is composed of “screens&rdquo;.</li>
+<li>A simple counter <code>Presenter</code> + <code>Ui</code> pairing would be a “counter screen&rdquo;.</li>
+<li>Nested presenter/UIs would be “nested circuits” or “sub screen&rdquo;.</li>
+<li>Composite presenter/UIs would be “composite screen&rdquo;.</li>
 <li>etc etc.</li>
 </ul>
 </div>
 <p>Circuit’s repo (<a href="https://github.com/slackhq/circuit">https://github.com/slackhq/circuit</a>) is being actively developed in the open, which allows us to continue collaborating with external folks too. We have a trivial-but-not-too-trivial sample app that we have been developing in it to serve as a demo for a number of common patterns in Circuit use.</p>
 <h2 id="counter-example">Counter Example<a class="headerlink" href="#counter-example" title="Permanent link">&para;</a></h2>
-<p>This is a very simple case of a Counter circuit that displays the count and has buttons to increment and decrement.</p>
+<p>This is a very simple case of a Counter screen that displays the count and has buttons to increment and decrement.</p>
 <p><img alt="image" src="https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png" /></p>
-<p>There’s some glue code missing from this example that&rsquo;s covered in the Code Gen (TODO link) section later.</p>
+<p>There’s some glue code missing from this example that&rsquo;s covered in the <a href="https://slackhq.github.io/circuit/code-gen/">Code Gen</a> section later.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
 <span class="kd">object</span><span class="w"> </span><span class="nc">CounterScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterState</span><span class="p">(</span>

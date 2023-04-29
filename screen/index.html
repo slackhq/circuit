@@ -680,8 +680,7 @@
 
 
 <h1 id="screen">Screen<a class="headerlink" href="#screen" title="Permanent link">&para;</a></h1>
-<p>Screens are keys for Presenter and UI pairings. Semantically, the pairing of a Presenter and UI
-for a given <code>Screen</code> key is called a circuit.</p>
+<p>Screens are keys for Presenter and UI pairings.</p>
 <p>The core <code>Screen</code> interface is this:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">Screen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Parcelable</span>
 </code></pre></div>
@@ -717,6 +716,14 @@ we are getting the <code>externalId</code> from the screen in order to get infor
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+<p>Screens are also used to look up those corresponding components in <code>CircuitConfig</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">presenter</span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;*&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">circuitconfig</span><span class="p">.</span><span class="na">presenter</span><span class="p">(</span><span class="n">addFavoritesScreen</span><span class="p">,</span><span class="w"> </span><span class="n">navigator</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">ui</span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="o">&lt;*&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">circuitconfig</span><span class="p">.</span><span class="na">ui</span><span class="p">(</span><span class="n">addFavoritesScreen</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Nomenclature</p>
+<p>Semantically, in this example we would call all of these components together the &ldquo;AddFavorites Screen&rdquo;.</p>
+</div>
 
 
 

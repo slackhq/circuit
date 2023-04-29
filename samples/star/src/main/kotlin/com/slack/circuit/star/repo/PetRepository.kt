@@ -36,8 +36,11 @@ import retrofit2.HttpException
 
 interface PetRepository {
   suspend fun refreshData()
+
   fun animalsFlow(): Flow<List<DbAnimal>?>
+
   suspend fun getAnimal(id: Long): DbAnimal?
+
   suspend fun getAnimalBio(id: Long): String?
 }
 

@@ -78,9 +78,11 @@ object OrderTacosScreen : Screen {
     object Previous : Event {
       override val indexModifier: Int = -1
     }
+
     object Next : Event {
       override val indexModifier: Int = 1
     }
+
     object ProcessOrder : Event {
       override val indexModifier: Int = 1
     }

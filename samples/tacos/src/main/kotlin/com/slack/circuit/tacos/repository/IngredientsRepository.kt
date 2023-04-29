@@ -9,6 +9,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 interface IngredientsRepository {
   suspend fun getFillings(): ImmutableList<Ingredient>
+
   suspend fun getToppings(): ImmutableList<Ingredient>
 }
 

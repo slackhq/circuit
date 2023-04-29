@@ -31,6 +31,7 @@ object ToppingsOrderStep : OrderStep {
 
   sealed interface State : OrderStep.State {
     object Loading : State
+
     data class AvailableToppings(
       val selected: ImmutableSet<Ingredient>,
       val list: ImmutableList<Ingredient>,
@@ -40,6 +41,7 @@ object ToppingsOrderStep : OrderStep {
 
   sealed interface Event {
     data class AddTopping(val ingredient: Ingredient) : Event
+
     data class RemoveTopping(val ingredient: Ingredient) : Event
   }
 }

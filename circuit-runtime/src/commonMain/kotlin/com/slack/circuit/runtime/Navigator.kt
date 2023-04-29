@@ -32,7 +32,9 @@ public interface Navigator {
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
+
     override fun pop(): Screen? = null
+
     override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }
 }

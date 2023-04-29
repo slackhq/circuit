@@ -124,8 +124,10 @@ public class CircuitConfig private constructor(builder: Builder) {
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
       UnavailableContent
       private set
+
     public var defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
       private set
+
     public var eventListenerFactory: EventListener.Factory? = null
       private set
 

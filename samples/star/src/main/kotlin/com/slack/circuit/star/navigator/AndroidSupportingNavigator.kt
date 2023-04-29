@@ -21,5 +21,6 @@ class AndroidSupportingNavigator(
 
 sealed interface AndroidScreen : Screen {
   @Parcelize data class CustomTabsIntentScreen(val url: String) : AndroidScreen
+
   @Parcelize data class IntentScreen(val intent: Intent) : AndroidScreen
 }

@@ -48,6 +48,7 @@ fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> 
       object : RememberObserver {
         val listener =
           SimpleCounterPresenter.OnCountChangedListener { newCount -> count = newCount }
+
         override fun onAbandoned() {
           setOnCountChangedListener(null)
         }

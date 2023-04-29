@@ -47,6 +47,7 @@ object HomeScreen : Screen {
 
   sealed interface Event : CircuitUiEvent {
     class ClickNavItem(val index: Int) : Event
+
     class ChildNav(val navEvent: NavEvent) : Event
   }
 }

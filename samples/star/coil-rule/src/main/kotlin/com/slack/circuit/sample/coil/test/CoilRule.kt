@@ -84,6 +84,7 @@ private fun wrapIfNecessary(drawable: Drawable): Drawable {
 private fun wrapInLayer(drawable: Drawable): Drawable {
   return object : LayerDrawable(arrayOf(drawable)) {
     override fun getIntrinsicWidth() = drawable.intrinsicWidth
+
     override fun getIntrinsicHeight() = drawable.intrinsicHeight
   }
 }

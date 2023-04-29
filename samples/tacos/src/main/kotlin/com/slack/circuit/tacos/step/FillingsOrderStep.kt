@@ -29,6 +29,7 @@ object FillingsOrderStep : OrderStep {
 
   sealed interface State : OrderStep.State {
     object Loading : State
+
     data class AvailableFillings(
       val selected: Ingredient? = null,
       val list: ImmutableList<Ingredient>,

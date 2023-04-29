@@ -93,5 +93,6 @@ class TestRepository(private val animals: List<Animal>) : PetRepository {
   override fun animalsFlow(): Flow<List<Animal>> = flow { emit(animals) }
 
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
+
   override suspend fun getAnimalBio(id: Long): String? = getAnimal(id)?.description
 }

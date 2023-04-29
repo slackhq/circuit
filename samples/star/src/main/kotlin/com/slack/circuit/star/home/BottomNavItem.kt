@@ -14,9 +14,11 @@ private const val ABOUT_SCREEN_NAME = "About"
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector) {
   abstract val screen: Screen
+
   object Adoptables : BottomNavItem(DOGS_SCREEN_NAME, Icons.Filled.Home) {
     override val screen: Screen = PetListScreen
   }
+
   object About : BottomNavItem(ABOUT_SCREEN_NAME, Icons.Filled.Info) {
     override val screen: Screen = AboutScreen
   }

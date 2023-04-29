@@ -47,6 +47,7 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
     return remember(childRegistry) {
       object : ProvidedValues {
         val list = listOf(LocalSaveableStateRegistry provides childRegistry)
+
         @Composable
         override fun provideValues(): List<ProvidedValue<*>> {
           remember {
@@ -56,6 +57,7 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
               }
 
               override fun onRemembered() {}
+
               override fun onAbandoned() {}
             }
           }

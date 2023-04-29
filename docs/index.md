@@ -1,9 +1,7 @@
 ⚡️ Circuit
 ==========
 
-🚧 **Under construction** 🚧
-
-This project is very much a work in progress and far from finished!
+Circuit is used in production at Slack and ready for general use 🚀. The API is considered unstable as we continue to iterate on it.
 
 ## Overview
 
@@ -26,24 +24,24 @@ Circuit’s core components are its `Presenter` and `Ui` interfaces.
 6. `Presenter` and `Ui` are both generic types, with generics to define the `UiState` types they communicate with.
 7. They are keyed by `Screen`s. One runs a new `Presenter`/`Ui` pairing by requesting them with a given `Screen` that they understand.
 
-!!! note "Circuits"
-    The pairing of a `Presenter` and `Ui` for a given `Screen` key is what we semantically call a “circuit”.
+!!! note "Screens"
+    The pairing of a `Presenter` and `Ui` for a given `Screen` key is what we semantically call a “screen".
     
-    * Your application is composed of “circuits”.
-    * A simple counter `Presenter` + `Ui` pairing would be a “counter circuit”.
-    * Nested presenter/UIs would be “nested circuits” or “sub circuits”
-    * Composite presenter/UIs would be “composite circuits”
+    * Your application is composed of “screens".
+    * A simple counter `Presenter` + `Ui` pairing would be a “counter screen".
+    * Nested presenter/UIs would be “nested circuits” or “sub screen".
+    * Composite presenter/UIs would be “composite screen".
     * etc etc.
 
 Circuit’s repo (https://github.com/slackhq/circuit) is being actively developed in the open, which allows us to continue collaborating with external folks too. We have a trivial-but-not-too-trivial sample app that we have been developing in it to serve as a demo for a number of common patterns in Circuit use.
 
 ## Counter Example
 
-This is a very simple case of a Counter circuit that displays the count and has buttons to increment and decrement.
+This is a very simple case of a Counter screen that displays the count and has buttons to increment and decrement.
 
 ![image](https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png)
 
-There’s some glue code missing from this example that's covered in the Code Gen (TODO link) section later.
+There’s some glue code missing from this example that's covered in the [Code Gen](https://slackhq.github.io/circuit/code-gen/) section later.
 
 ```kotlin
 @Parcelize

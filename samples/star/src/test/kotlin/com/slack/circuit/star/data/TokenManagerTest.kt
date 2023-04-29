@@ -48,6 +48,7 @@ private class FakeAuthApi : PetfinderAuthApi {
 
 private class FakeTokenStorage : TokenStorage {
   var authData: AuthenticationData? = null
+
   override suspend fun updateAuthData(authData: AuthenticationData) {
     this.authData = authData
   }

@@ -7,7 +7,6 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Presents a given [UiState].
@@ -69,7 +68,7 @@ public interface Presenter<UiState : CircuitUiState> {
    *
    * ## Testing
    *
-   * When testing, simply drive UI events with a [MutableSharedFlow] use Molecule+Turbine to drive
+   * When testing, simply drive UI events with a `MutableSharedFlow` use Molecule+Turbine to drive
    * this function.
    *
    * ```

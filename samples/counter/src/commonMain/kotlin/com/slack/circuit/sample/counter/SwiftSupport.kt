@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.counter
 
 import app.cash.molecule.RecompositionClock
@@ -23,7 +25,8 @@ fun <UiState : CircuitUiState> Presenter<UiState>.asSwiftPresenter(): SwiftPrese
 // https://github.com/JetBrains/kotlinconf-app/blob/642404f3454d384be966c34d6b254b195e8d2892/shared/src/commonMain/kotlin/org/jetbrains/kotlinconf/utils/Coroutines.kt#L6
 // No interface because interfaces don't support generics in Kotlin/Native.
 // TODO let's try to generify this pattern somehow.
-class SwiftPresenter<UiState : CircuitUiState> internal constructor(
+class SwiftPresenter<UiState : CircuitUiState>
+internal constructor(
   private val delegate: Presenter<UiState>,
 ) {
   // TODO ew globalscope

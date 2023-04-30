@@ -1,4 +1,6 @@
-package com.slack.circuit.sample.counter.util;
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+package com.slack.circuit.sample.counter.util
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

@@ -1,8 +1,10 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.counter.util
 
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.*
 import platform.darwin.*
-import kotlin.coroutines.CoroutineContext
 
 actual val Dispatchers.IO: CoroutineDispatcher
   get() = IODispatcher
@@ -13,9 +15,7 @@ actual val Dispatchers.IO: CoroutineDispatcher
 private object IODispatcher : CoroutineDispatcher(), Delay {
   override fun dispatch(context: CoroutineContext, block: Runnable) {
     val queue = dispatch_get_main_queue()
-    dispatch_async(queue) {
-      block.run()
-    }
+    dispatch_async(queue) { block.run() }
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -26,10 +26,6 @@ private object IODispatcher : CoroutineDispatcher(), Delay {
     val queue = dispatch_get_main_queue()
 
     val time = dispatch_time(DISPATCH_TIME_NOW, (timeMillis * NSEC_PER_MSEC.toLong()))
-    dispatch_after(time, queue) {
-      with(continuation) {
-        resumeUndispatched(Unit)
-      }
-    }
+    dispatch_after(time, queue) { with(continuation) { resumeUndispatched(Unit) } }
   }
 }

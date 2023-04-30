@@ -50,9 +50,7 @@ kotlin {
     // Set up dependencies between the source sets
     iosSimulatorArm64Main.dependsOn(iosMain)
 
-    configureEach {
-      languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-    }
+    configureEach { languageSettings.optIn("kotlin.experimental.ExperimentalObjCName") }
   }
 }
 

@@ -12,7 +12,7 @@ compose-animation = "1.4.2"
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler = "1.4.6"
 composeCompilerKotlinVersion = "1.8.20"
-compose-foundation = "1.4.2"
+compose-foundation = "1.4.3"
 compose-material = "1.4.2"
 compose-material3 = "1.1.0-rc01"
 compose-runtime = "1.4.2"

@@ -65,6 +65,7 @@ jobs:
           name: reports
           path: |
             **/build/reports/**
+            **/src/test/snapshots/**/*_compare.png
 
       - name: Publish snapshot (main branch only)
         if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'

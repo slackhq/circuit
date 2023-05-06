@@ -101,6 +101,7 @@ androidx-compose-material-icons = { module = "androidx.compose.material:material
 androidx-compose-material-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-material" }
 androidx-compose-material-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
 androidx-compose-material-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+androidx-compose-material-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
 # Runtime artifact, must be manually applied.
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-runtime" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose-runtime" }

@@ -120,9 +120,9 @@ data class PetListAnimal(
 @Parcelize
 class Filters(
   @TypeParceler<ImmutableSet<Gender>, ImmutableSetParceler>
-  val genders: ImmutableSet<Gender> = Gender.values().toSet().toImmutableSet(),
+  val genders: ImmutableSet<Gender> = Gender.values().asIterable().toImmutableSet(),
   @TypeParceler<ImmutableSet<Size>, ImmutableSetParceler>
-  val sizes: ImmutableSet<Size> = Size.values().toSet().toImmutableSet()
+  val sizes: ImmutableSet<Size> = Size.values().asIterable().toImmutableSet()
 ) : Parcelable
 
 @Parcelize
@@ -487,16 +487,18 @@ private fun <T : Enum<T>> FilterOptions(
   Column(modifier) {
     Text(name, style = MaterialTheme.typography.titleMedium)
     FlowRow(horizontalArrangement = spacedBy(8.dp)) {
-      options.keys.forEach { key ->
-        val selected = options.getValue(key)
-        val leadingIcon: @Composable () -> Unit = { Icon(Icons.Default.Check, null) }
-        FilterChip(
-          selected,
-          onClick = { options[key] = !selected },
-          label = { Text(key.name.lowercase().capitalize(Locale.current)) },
-          leadingIcon = if (selected) leadingIcon else null
-        )
-      }
+      options.keys
+        .sortedBy { it.ordinal }
+        .forEach { key ->
+          val selected = options.getValue(key)
+          val leadingIcon: @Composable () -> Unit = { Icon(Icons.Default.Check, null) }
+          FilterChip(
+            selected,
+            onClick = { options[key] = !selected },
+            label = { Text(key.name.lowercase().capitalize(Locale.current)) },
+            leadingIcon = if (selected) leadingIcon else null
+          )
+        }
     }
   }
 }

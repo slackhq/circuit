@@ -11,7 +11,7 @@ compose-animation = "1.4.3"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler = "1.4.7"
-composeCompilerKotlinVersion = "1.8.20"
+composeCompilerKotlinVersion = "1.8.21"
 compose-foundation = "1.4.3"
 compose-material = "1.4.3"
 compose-material3 = "1.1.0-rc01"

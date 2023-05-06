@@ -229,6 +229,7 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
     modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = spacedBy(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     item {
       CircuitContent(

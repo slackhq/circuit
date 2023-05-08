@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("com.android.library")
   kotlin("multiplatform")
+  alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
 }
 
@@ -12,12 +13,15 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
+        api(libs.compose.foundation)
         api(libs.coroutines)
         api(projects.backstack)
         api(projects.circuitRuntime)
@@ -26,12 +30,10 @@ kotlin {
         api(libs.compose.ui)
       }
     }
-    maybeCreate("jvmMain").apply { dependencies { api(libs.compose.foundation) } }
     maybeCreate("androidMain").apply {
       dependencies {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
-        api(libs.androidx.compose.foundation)
         implementation(libs.androidx.compose.integration.activity)
       }
     }

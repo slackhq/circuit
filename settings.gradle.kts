@@ -1,9 +1,7 @@
-// Copyright (C) 2023 Slack Technologies, LLC
+// Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import java.util.Locale
 
-// Copyright (C) 2022 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
 dependencyResolutionManagement {
   versionCatalogs {
     if (System.getenv("DEP_OVERRIDES") == "true") {
@@ -203,8 +201,7 @@ include(
   ":circuit-runtime-ui",
   ":circuit-test",
   ":samples:counter",
-  ":samples:counter:android",
-  ":samples:counter:desktop",
+  ":samples:counter:apps",
   ":samples:counter:mosaic",
   ":samples:interop",
   ":samples:star",

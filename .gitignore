@@ -27,3 +27,11 @@ docs/changelog.md
 docs/api/
 site/
 temp-clone/
+
+.externalNativeBuild
+Podfile.lock
+**/Pods/*
+**/*.xcworkspace/*
+**/*.xcodeproj/*
+!samples/counter/apps/Counter.xcodeproj/project.pbxproj
+*.podspec

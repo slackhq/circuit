@@ -3,6 +3,7 @@
 plugins {
   id("com.android.library")
   kotlin("multiplatform")
+  alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
 }
 
@@ -10,11 +11,17 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets {
-    commonMain { dependencies { api(libs.compose.runtime) } }
-    maybeCreate("androidMain").apply { dependencies { api(libs.androidx.compose.foundation) } }
+    commonMain {
+      dependencies {
+        api(libs.compose.runtime)
+        api(libs.compose.foundation)
+      }
+    }
     maybeCreate("commonTest").apply {
       dependencies {
         implementation(libs.kotlin.test)

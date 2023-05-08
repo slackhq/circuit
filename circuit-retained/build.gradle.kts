@@ -3,6 +3,7 @@
 plugins {
   id("com.android.library")
   kotlin("multiplatform")
+  alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
   `java-test-fixtures`
 }
@@ -11,6 +12,8 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets {
@@ -57,6 +60,8 @@ kotlin {
         implementation(libs.truth)
       }
     }
+    val iosMain by getting
+    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

@@ -8,7 +8,7 @@ import com.slack.circuit.runtime.Screen
 public fun SaveableBackStack.push(screen: Screen) {
   push(
     SaveableBackStack.Record(
-      route = screen.javaClass.simpleName,
+      route = checkNotNull(screen::class.simpleName),
       args = mapOf("screen" to screen),
       key = screen.hashCode().toString()
     )

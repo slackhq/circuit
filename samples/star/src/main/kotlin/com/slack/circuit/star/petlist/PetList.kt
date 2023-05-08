@@ -326,6 +326,7 @@ private fun PetListGrid(
       onRefresh = { eventSink(PetListScreen.Event.Refresh) }
     )
   Box(modifier = modifier.pullRefresh(pullRefreshState)) {
+    @Suppress("MagicNumber")
     val columnSpan =
       when (LocalWindowWidthSizeClass.current) {
         WindowWidthSizeClass.Medium -> 3

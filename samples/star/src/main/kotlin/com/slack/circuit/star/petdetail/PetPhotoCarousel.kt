@@ -127,9 +127,10 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
   val pagerState = rememberPagerState()
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
+  @Suppress("MagicNumber")
   val columnModifier =
     when (LocalWindowWidthSizeClass.current) {
-      @Suppress("MagicNumber") WindowWidthSizeClass.Medium,
+      WindowWidthSizeClass.Medium,
       WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
       else -> modifier.fillMaxSize()
     }

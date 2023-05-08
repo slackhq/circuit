@@ -10,4 +10,5 @@ import androidx.compose.runtime.compositionLocalOf
  * activities, so this felt like the less bad option for exposing it to Circuit UIs that try not to
  * know anything about activities.
  */
+@Suppress("CompositionLocalAllowlist")
 val LocalWindowWidthSizeClass = compositionLocalOf { WindowWidthSizeClass.Compact }

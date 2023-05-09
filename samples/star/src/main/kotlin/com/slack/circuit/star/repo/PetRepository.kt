@@ -138,7 +138,7 @@ constructor(
                     animal.status
                   )
                   .toImmutableList(),
-              description = animal.description,
+              description = animal.description.orEmpty(),
               primaryBreed = animal.breeds.primary,
               gender = Gender.valueOf(animal.gender.uppercase(Locale.US)),
               size = Size.valueOf(animal.size.uppercase(Locale.US)),

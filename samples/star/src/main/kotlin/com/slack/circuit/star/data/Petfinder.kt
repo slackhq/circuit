@@ -64,7 +64,7 @@ data class Animal(
   val size: String,
   val coat: String? = null,
   val name: String,
-  val description: String,
+  val description: String? = null,
   val photos: List<Photo>,
   val videos: List<Video>,
   val status: String,

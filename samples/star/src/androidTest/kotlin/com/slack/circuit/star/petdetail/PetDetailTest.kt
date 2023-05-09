@@ -25,22 +25,17 @@ import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_T
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
-import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
+import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.RuleChain
 
 @OptIn(ExperimentalCoilApi::class)
 class PetDetailTest {
-  private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-  private val coilRule = CoilRule(R.drawable.dog2)
 
-  @get:Rule
-  val rule =
-    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
-      around(composeTestRule)
-      around(coilRule)
-    }
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  @get:Rule val coilRule = CoilRule(R.drawable.dog2)
+  // Not using detectLeaksAfterTestSuccessWrapping() because it causes an NPE with composeTestRule
+  @get:Rule val leakDetectionRule = DetectLeaksAfterTestSuccess()
 
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
@@ -18,6 +17,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -28,7 +28,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -44,6 +43,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.rememberStableCoroutineScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -114,7 +114,6 @@ internal object PetPhotoCarouselTestConstants {
 internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Modifier = Modifier) {
   val (name, photoUrls, photoUrlMemoryCacheKey) = state
   val context = LocalContext.current
-  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   // Prefetch images
   LaunchedEffect(Unit) {
     for (url in photoUrls) {
@@ -129,7 +128,12 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
-  val columnModifier = if (isLandscape) modifier.fillMaxWidth(0.5f) else modifier.fillMaxSize()
+  val columnModifier =
+    when (LocalWindowWidthSizeClass.current) {
+      WindowWidthSizeClass.Medium,
+      WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
+      else -> modifier.fillMaxSize()
+    }
   Column(
     columnModifier
       .testTag(CAROUSEL_TAG)

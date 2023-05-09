@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.AnimationConstants
@@ -45,6 +44,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -61,7 +61,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -95,6 +94,7 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -326,11 +326,18 @@ private fun PetListGrid(
       onRefresh = { eventSink(PetListScreen.Event.Refresh) }
     )
   Box(modifier = modifier.pullRefresh(pullRefreshState)) {
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    @Suppress("MagicNumber")
+    val columnSpan =
+      when (LocalWindowWidthSizeClass.current) {
+        WindowWidthSizeClass.Medium -> 3
+        WindowWidthSizeClass.Expanded -> 4
+        // No exhausive whens available here
+        else -> 2
+      }
 
     @Suppress("MagicNumber")
     LazyVerticalStaggeredGrid(
-      columns = StaggeredGridCells.Fixed(if (isLandscape) 3 else 2),
+      columns = StaggeredGridCells.Fixed(columnSpan),
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = 16.dp,
       horizontalArrangement = spacedBy(16.dp),

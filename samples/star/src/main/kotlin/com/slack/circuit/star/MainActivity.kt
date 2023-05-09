@@ -13,6 +13,9 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -28,6 +31,7 @@ import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.navigator.AndroidSupportingNavigator
 import com.slack.circuit.star.petdetail.PetDetailScreen
+import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.StarTheme
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
@@ -40,6 +44,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig) :
   AppCompatActivity() {
 
+  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
@@ -58,8 +63,13 @@ class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig)
           val circuitNavigator = rememberCircuitNavigator(backstack)
           val navigator =
             remember(circuitNavigator) { AndroidSupportingNavigator(circuitNavigator, this::goTo) }
-          CircuitCompositionLocals(circuitConfig) {
-            ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
+          val windowSizeClass = calculateWindowSizeClass(this)
+          CompositionLocalProvider(
+            LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass
+          ) {
+            CircuitCompositionLocals(circuitConfig) {
+              ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
+            }
           }
         }
       }

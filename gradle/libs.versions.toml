@@ -6,6 +6,7 @@ androidx-browser = "1.5.0"
 androidx-lifecycle = "2.6.1"
 agp = "8.0.1"
 anvil = "2.4.5"
+benchmark = "1.2.0-alpha14"
 coil = "2.3.0"
 compose-animation = "1.4.3"
 # Pre-release versions for testing Kotlin previews can be found here
@@ -52,6 +53,7 @@ versionsPlugin = "0.46.0"
 [plugins]
 agp-application = { id = "com.android.application", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
@@ -74,7 +76,7 @@ agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-benchmark-macro-junit = "androidx.benchmark:benchmark-macro-junit4:1.2.0-alpha14"
+androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 ####### Compose
 # You must enable the SlackProperties.enableCompose property to use these.

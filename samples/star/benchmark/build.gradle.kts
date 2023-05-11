@@ -3,6 +3,7 @@
 plugins {
   id("com.android.test")
   kotlin("android")
+  alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -23,8 +24,26 @@ android {
     }
   }
 
+  testOptions.managedDevices.devices {
+    create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6Api31") {
+      device = "Pixel 6"
+      apiLevel = 31
+      systemImageSource = "aosp"
+    }
+  }
+
   targetProjectPath = ":samples:star:apk"
   experimentalProperties["android.experimental.self-instrumenting"] = true
+}
+
+baselineProfile {
+  // This specifies the managed devices to use that you run the tests on. The default
+  // is none.
+  managedDevices += "pixel6Api31"
+
+  // This enables using connected devices to generate profiles. The default is true.
+  // When using connected devices, they must be rooted or API 33 and higher.
+  useConnectedDevices = false
 }
 
 dependencies {

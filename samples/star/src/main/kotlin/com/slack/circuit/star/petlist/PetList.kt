@@ -95,11 +95,13 @@ import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
+import com.slack.circuit.star.ui.StarTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
@@ -432,7 +434,14 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
 @Preview
 @Composable
 private fun PreviewUpdateFiltersSheet() {
-  Surface { UpdateFiltersSheet(initialFilters = Filters()) }
+  StarTheme {
+    Surface {
+      UpdateFiltersSheet(
+        initialFilters = Filters(persistentSetOf(Gender.FEMALE)),
+        modifier = Modifier.padding(16.dp),
+      )
+    }
+  }
 }
 
 @VisibleForTesting

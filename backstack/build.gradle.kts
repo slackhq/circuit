@@ -5,6 +5,7 @@ plugins {
   kotlin("multiplatform")
   alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
+  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
@@ -49,3 +50,14 @@ kotlin {
 android { namespace = "com.slack.circuit.backstack" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+
+baselineProfile {
+  filter {
+    include("com.slack.circuit.backstack")
+    include("com.slack.circuit.backstack.**")
+  }
+}
+
+dependencies {
+  baselineProfile(projects.samples.star.benchmark)
+}

@@ -2,11 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.activity.ComponentActivity
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
-import app.cash.paparazzi.Paparazzi
-import coil.Coil
-import com.slack.circuit.star.ui.FakeImageLoader
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
+import coil.annotation.ExperimentalCoilApi
+import com.github.takahirom.roborazzi.RoborazziRule
+import com.github.takahirom.roborazzi.captureRoboImage
+import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -19,9 +28,12 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
+import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
 
-@RunWith(Parameterized::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@ExperimentalCoilApi
+@RunWith(ParameterizedRobolectricTestRunner::class)
 class PetListSnapshotTest(private val useDarkMode: Boolean) {
 
   companion object {
@@ -31,25 +43,32 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
         name = "Baxter",
         imageUrl = "http://some.url",
         breed = "Australian Terrier",
-        gender = "male",
-        size = "small",
+        gender = Gender.MALE,
+        size = Size.SMALL,
         age = "12"
       )
 
-    @JvmStatic @Parameterized.Parameters(name = "darkMode={0}") fun data() = listOf(true, false)
+    const val SNAPSHOT_TAG = "snapshot_tag"
+
+    @JvmStatic
+    @ParameterizedRobolectricTestRunner.Parameters(name = "darkMode={0}")
+    fun data() = listOf(true, false)
   }
 
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
   @get:Rule
-  val paparazzi =
-    Paparazzi(
-      deviceConfig = PIXEL_5,
-      theme = "com.slack.circuit.star.ui.StarTheme",
+  val roborazziRule =
+    RoborazziRule(
+      composeRule = composeTestRule,
+      captureRoot = composeTestRule.onRoot(),
+      options = RoborazziRule.Options(outputDirectoryPath = "src/test/snapshots/images")
     )
+
+  @get:Rule val coilRule = CoilRule(contextProvider = composeTestRule::activity)
 
   @Before
   fun setup() {
-    val fakeImageLoader = FakeImageLoader()
-    Coil.setImageLoader(fakeImageLoader)
     Dispatchers.setMain(UnconfinedTestDispatcher())
   }
 
@@ -58,8 +77,11 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     Dispatchers.resetMain()
   }
 
-  private fun snapshot(body: @Composable () -> Unit) {
-    paparazzi.snapshot { StarTheme(useDarkTheme = useDarkMode) { body() } }
+  private fun snapshot(body: @Composable (Modifier) -> Unit) {
+    composeTestRule.setContent {
+      StarTheme(useDarkTheme = useDarkMode) { body(Modifier.testTag(SNAPSHOT_TAG)) }
+    }
+    composeTestRule.onNodeWithTag(SNAPSHOT_TAG).captureRoboImage()
   }
 
   @Ignore(
@@ -70,23 +92,25 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   """
   )
   @Test
-  fun petList_show_progress_indicator_for_loading_state() {
-    snapshot { PetList(PetListScreen.State.Loading) }
+  fun petList_show_progress_indicator_for_loading_state() = snapshot { modifier ->
+    PetList(PetListScreen.State.Loading, modifier)
   }
 
   @Test
-  fun petList_show_message_for_no_animals_state() {
-    snapshot { PetList(PetListScreen.State.NoAnimals(isRefreshing = false)) }
+  fun petList_show_message_for_no_animals_state() = snapshot { modifier ->
+    PetList(PetListScreen.State.NoAnimals(isRefreshing = false), modifier)
   }
 
   @Test
   fun petList_show_list_for_success_state() {
     val animals = persistentListOf(ANIMAL)
-    snapshot { PetList(PetListScreen.State.Success(animals, isRefreshing = false) {}) }
+    snapshot { modifier ->
+      PetList(PetListScreen.State.Success(animals, isRefreshing = false), modifier)
+    }
   }
 
   @Test
-  fun petList_filtersSheet() {
-    snapshot { PreviewUpdateFiltersSheet() }
+  fun petList_filtersSheet() = snapshot { modifier ->
+    Surface(modifier) { UpdateFiltersSheet(initialFilters = Filters()) }
   }
 }

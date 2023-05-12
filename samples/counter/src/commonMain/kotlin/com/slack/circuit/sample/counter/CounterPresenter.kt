@@ -7,39 +7,74 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.slack.circuit.CircuitContext
-import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
-import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
-import com.slack.circuit.presenterOf
-
-data class CounterState(
-  val count: Int,
-  val eventSink: (CounterEvent) -> Unit = {},
-) : CircuitUiState
+import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.presenterOf
 
 sealed interface CounterEvent : CircuitUiEvent {
   object Increment : CounterEvent
+
   object Decrement : CounterEvent
 }
 
 @Composable
-fun CounterPresenter(): CounterState {
+fun CounterPresenter(navigator: Navigator): CounterScreen.State {
   var count by remember { mutableStateOf(0) }
 
-  return CounterState(count) { event ->
+  return CounterScreen.State(count) { event ->
     when (event) {
-      is CounterEvent.Increment -> count++
-      is CounterEvent.Decrement -> count--
+      is CounterScreen.Event.GoTo -> navigator.goTo(event.screen)
+      is CounterScreen.Event.Increment -> count++
+      is CounterScreen.Event.Decrement -> count--
     }
   }
 }
 
+@Composable
+fun PrimePresenter(navigator: Navigator, number: Int): PrimeScreen.State {
+  return PrimeScreen.State(number, isPrime(number)) { event ->
+    if (event is PrimeScreen.Event.Pop) navigator.pop()
+  }
+}
+
+private fun isPrime(value: Int): Boolean {
+  return (2..value / 2).none { value % it == 0 }
+}
+
 // Unfortunately can't make this multiplatform by itself because plugin.parcelize doesn't play nice
 // in multiplatform android library projects
-interface CounterScreen : Screen
+interface CounterScreen : Screen {
+  data class State(
+    val count: Int,
+    val eventSink: (Event) -> Unit = {},
+  ) : CircuitUiState
+
+  sealed interface Event : CircuitUiEvent {
+    data class GoTo(val screen: Screen) : Event
+
+    object Increment : Event
+
+    object Decrement : Event
+  }
+}
+
+interface PrimeScreen : Screen {
+  data class State(
+    val number: Int,
+    val isPrime: Boolean,
+    val eventSink: (Event) -> Unit = {},
+  ) : CircuitUiState
+
+  sealed interface Event {
+    object Pop : Event
+  }
+
+  val number: Int
+}
 
 class CounterPresenterFactory : Presenter.Factory {
   override fun create(
@@ -48,7 +83,8 @@ class CounterPresenterFactory : Presenter.Factory {
     context: CircuitContext,
   ): Presenter<*>? {
     return when (screen) {
-      is CounterScreen -> presenterOf { CounterPresenter() }
+      is CounterScreen -> presenterOf { CounterPresenter(navigator) }
+      is PrimeScreen -> presenterOf { PrimePresenter(navigator, screen.number) }
       else -> null
     }
   }

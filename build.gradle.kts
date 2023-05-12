@@ -7,6 +7,7 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import com.diffplug.spotless.LineEnding
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
@@ -14,12 +15,15 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
@@ -52,6 +56,8 @@ val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
 allprojects {
   apply(plugin = "com.diffplug.spotless")
   val spotlessFormatters: SpotlessExtension.() -> Unit = {
+    lineEndings = LineEnding.PLATFORM_NATIVE
+
     format("misc") {
       target("*.md", ".gitignore")
       trimTrailingWhitespace()
@@ -131,53 +137,48 @@ subprojects {
     configureComposeBom(dependencies)
   }
 
+  val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
-    val hasCompose = !project.hasProperty("circuit.noCompose")
-    tasks.withType<KotlinCompile>().configureEach {
+    tasks.withType<KotlinCompilationTask<*>>().configureEach {
       compilerOptions {
         allWarningsAsErrors.set(true)
-        jvmTarget.set(JVM_11)
-
-        // Stub gen copies args from the parent compilation
-        if (this@configureEach !is KaptGenerateStubsTask) {
-          freeCompilerArgs.addAll(
-            "-progressive",
-            "-Xinline-classes",
-            "-Xjsr305=strict",
-            "-opt-in=kotlin.contracts.ExperimentalContracts",
-            "-opt-in=kotlin.experimental.ExperimentalTypeInference",
-            "-opt-in=kotlin.ExperimentalStdlibApi",
-            "-opt-in=kotlin.time.ExperimentalTime",
-            // We should be able to remove this in Kotlin 1.7, yet for some reason it still warns
-            // about its use
-            // https://youtrack.jetbrains.com/issue/KT-52720
-            "-opt-in=kotlin.RequiresOptIn",
-            // Match JVM assertion behavior:
-            // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
-            "-Xassertions=jvm",
-            // Potentially useful for static analysis tools or annotation processors.
-            "-Xemit-jvm-type-annotations",
-            "-Xproper-ieee754-comparisons",
-            // Enable new jvm-default behavior
-            // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-            "-Xjvm-default=all",
-            // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-            "-Xtype-enhancement-improvements-strict-mode",
-            "-Xjspecify-annotations=strict",
-          )
-
-          if (hasCompose && suppressComposeKotlinVersion) {
+        if (this is KotlinJvmCompilerOptions) {
+          jvmTarget.set(JVM_11)
+          // Stub gen copies args from the parent compilation
+          if (this@configureEach !is KaptGenerateStubsTask) {
             freeCompilerArgs.addAll(
-              "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+              "-Xjsr305=strict",
+              // Match JVM assertion behavior:
+              // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
+              "-Xassertions=jvm",
+              // Potentially useful for static analysis tools or annotation processors.
+              "-Xemit-jvm-type-annotations",
+              // Enable new jvm-default behavior
+              // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+              "-Xjvm-default=all",
+              // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
+              "-Xtype-enhancement-improvements-strict-mode",
+              "-Xjspecify-annotations=strict",
             )
           }
+        }
+
+        freeCompilerArgs.add("-progressive")
+
+        if (hasCompose && suppressComposeKotlinVersion) {
+          freeCompilerArgs.addAll(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+          )
         }
       }
     }
 
     if (hasCompose) {
-      dependencies { add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler) }
+      dependencies {
+        add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
+        add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
+      }
     }
 
     if (!project.path.startsWith(":samples")) {
@@ -255,8 +256,10 @@ subprojects {
   val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
     compileSdk = 33
 
-    buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get() }
+    if (hasCompose) {
+      buildFeatures { compose = true }
+      composeOptions { kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get() }
+    }
 
     compileOptions {
       sourceCompatibility = JavaVersion.VERSION_11
@@ -338,6 +341,14 @@ subprojects {
           implementation(platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"))
         }
       }
+    }
+    tasks.withType<KotlinNativeCompile>().configureEach {
+      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
+    }
+    @Suppress("INVISIBLE_REFERENCE")
+    tasks.withType<org.jetbrains.kotlin.gradle.plugin.mpp.apple.FrameworkCopy>().configureEach {
+      @Suppress("INVISIBLE_MEMBER")
+      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
     }
   }
 }

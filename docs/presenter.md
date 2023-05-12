@@ -9,7 +9,7 @@ interface Presenter<UiState : CircuitUiState> {
 }
 ```
 
-Presenters are solely intended to be business logic for your UI and a translation layer in front of your data layers. They are generally Dagger-injected types as the data layers they interpret are usually coming from the DI graph. In simple cases, they can be typed as a simple `@Composable` presenter function and Circuit code gen (TODO link) can generate the corresponding interface and (TODO link) factory for you.
+Presenters are solely intended to be business logic for your UI and a translation layer in front of your data layers. They are generally Dagger-injected types as the data layers they interpret are usually coming from the DI graph. In simple cases, they can be typed as a simple `@Composable` presenter function allowing Circuit [code gen](https://slackhq.github.io/circuit/code-gen/) to generate the corresponding interface and factory for you.
 
 A very simple presenter can look like this:
 
@@ -65,7 +65,7 @@ fun ProfilePresenter(
 }
 ```
 
-Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters. [We have an example of this in the Circuit repo](https://github.com/slackhq/circuit/blob/main/samples/star/src/main/kotlin/com/slack/circuit/star/home/HomePresenter.kt).
+Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters.
 
 ## Retention
 

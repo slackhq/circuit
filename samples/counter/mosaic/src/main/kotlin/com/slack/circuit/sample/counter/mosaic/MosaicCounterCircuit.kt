@@ -10,21 +10,19 @@ import androidx.compose.runtime.setValue
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
-import com.jakewharton.mosaic.Column
 import com.jakewharton.mosaic.MosaicScope
-import com.jakewharton.mosaic.Text
 import com.jakewharton.mosaic.runMosaic
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitContext
-import com.slack.circuit.Screen
-import com.slack.circuit.Ui
-import com.slack.circuit.sample.counter.CounterEvent
+import com.jakewharton.mosaic.ui.Column
+import com.jakewharton.mosaic.ui.Text
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
-import com.slack.circuit.sample.counter.CounterState
-import com.slack.circuit.ui
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -63,10 +61,10 @@ class CounterUiFactory : Ui.Factory {
   }
 }
 
-private fun counterUi(): Ui<CounterState> = ui { state, _ -> Counter(state) }
+private fun counterUi(): Ui<CounterScreen.State> = ui { state, _ -> Counter(state) }
 
 @Composable
-private fun Counter(state: CounterState) {
+private fun Counter(state: CounterScreen.State) {
   Column {
     Text("Use arrow keys to increment or decrement the count. Press “q” to exit.")
     Text("Count: ${state.count}")
@@ -93,8 +91,8 @@ private fun Counter(state: CounterState) {
             when (reader.read()) {
               91 -> {
                 when (reader.read()) {
-                  65 -> eventSink(CounterEvent.Increment)
-                  66 -> eventSink(CounterEvent.Decrement)
+                  65 -> eventSink(CounterScreen.Event.Increment)
+                  66 -> eventSink(CounterScreen.Event.Decrement)
                 }
               }
             }

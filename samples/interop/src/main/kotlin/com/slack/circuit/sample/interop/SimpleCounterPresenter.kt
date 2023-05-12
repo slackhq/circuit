@@ -7,10 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.slack.circuit.Presenter
-import com.slack.circuit.presenterOf
-import com.slack.circuit.sample.counter.CounterEvent
-import com.slack.circuit.sample.counter.CounterState
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.presenterOf
+import com.slack.circuit.sample.counter.CounterScreen
 
 /** A simple presenter that uses a listener for signaling count changes. */
 class SimpleCounterPresenter {
@@ -42,13 +41,14 @@ class SimpleCounterPresenter {
   }
 }
 
-fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterState> {
+fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
   return presenterOf {
     var count by remember { mutableStateOf(0) }
     remember {
       object : RememberObserver {
         val listener =
           SimpleCounterPresenter.OnCountChangedListener { newCount -> count = newCount }
+
         override fun onAbandoned() {
           setOnCountChangedListener(null)
         }
@@ -62,10 +62,11 @@ fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterState> {
         }
       }
     }
-    CounterState(count) { event ->
+    CounterScreen.State(count) { event ->
       when (event) {
-        is CounterEvent.Increment -> increment()
-        is CounterEvent.Decrement -> decrement()
+        is CounterScreen.Event.Increment -> increment()
+        is CounterScreen.Event.Decrement -> decrement()
+        else -> Unit
       }
     }
   }

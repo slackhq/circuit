@@ -13,7 +13,7 @@ on:
   merge_group:
 
 concurrency:
-  group: ci-${{ github.ref }}-${{ github.head_ref }}
+  group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
   cancel-in-progress: true
 
 jobs:
@@ -45,20 +45,27 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug verifyPaparazzi detektMain detektTest --continue --no-configuration-cache
+          arguments: check :samples:star:apk:assembleDebug detektMain detektTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
-      - name: (Fail-only) Bundle the build report
-        if: failure()
-        run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+      - name: Verify Snapshots
+        if: always()
+        id: gradle-snapshots
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: verifyRoborazzi
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
 
-      - name: (Fail-only) Upload the build report
+      - name: (Fail-only) Upload build reports
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: error-report
-          path: build-reports.zip
+          name: reports
+          path: |
+            **/build/reports/**
+            **/src/test/snapshots/**/*_compare.png
 
       - name: Publish snapshot (main branch only)
         if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'

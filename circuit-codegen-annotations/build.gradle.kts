@@ -10,10 +10,17 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  // Anvil/Dagger does not support iOS targets
   // endregion
 
   sourceSets {
-    commonMain { dependencies { api(projects.circuit) } }
+    commonMain {
+      dependencies {
+        // Only here for docs linking
+        compileOnly(projects.circuitFoundation)
+        api(projects.circuitRuntime)
+      }
+    }
     val commonJvm =
       maybeCreate("commonJvm").apply {
         dependencies {

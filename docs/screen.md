@@ -1,8 +1,7 @@
 Screen
 ======
 
-Screens are keys for Presenter and UI pairings. Semantically, the pairing of a Presenter and UI
-for a given `Screen` key is called a circuit.
+Screens are keys for Presenter and UI pairings.
 
 The core `Screen` interface is this:
 
@@ -50,3 +49,13 @@ constructor(
   }
 }
 ```
+
+Screens are also used to look up those corresponding components in `CircuitConfig`.
+
+```kotlin
+val presenter: Presenter<*>? = circuitconfig.presenter(addFavoritesScreen, navigator)
+val ui: Ui<*>? = circuitconfig.ui(addFavoritesScreen)
+```
+
+!!! tip "Nomenclature"
+    Semantically, in this example we would call all of these components together the "AddFavorites Screen".

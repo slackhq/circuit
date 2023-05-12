@@ -2,39 +2,76 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.interop
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.slack.circuit.Presenter
-import com.slack.circuit.presenterOf
-import com.slack.circuit.sample.counter.CounterEvent
-import com.slack.circuit.sample.counter.CounterState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import app.cash.molecule.RecompositionClock
+import app.cash.molecule.launchMolecule
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.presenterOf
+import com.slack.circuit.sample.counter.CounterScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
-/** An [Flow] presenter that exposes a [StateFlow] of count changes. */
-class FlowCounterPresenter {
-  private val count = MutableStateFlow(0)
-
-  fun increment() {
-    count.tryEmit(count.value + 1)
-  }
-
-  fun decrement() {
-    count.tryEmit(count.value - 1)
-  }
-
-  fun countStateFlow(): StateFlow<Int> = count
+/** A basic [Flow]-based presenter interface. */
+fun interface FlowPresenter<UiState : Any, UiEvent : Any> {
+  fun present(scope: CoroutineScope, events: Flow<UiEvent>): StateFlow<UiState>
 }
 
-fun FlowCounterPresenter.asCircuitPresenter(): Presenter<CounterState> {
-  return presenterOf {
-    val count by countStateFlow().collectAsState()
-    CounterState(count) { event ->
-      when (event) {
-        is CounterEvent.Increment -> increment()
-        is CounterEvent.Decrement -> decrement()
+/** An [Flow] presenter that exposes a [StateFlow] of count changes. */
+class FlowCounterPresenter : FlowPresenter<Int, CounterScreen.Event> {
+  private val count = MutableStateFlow(0)
+
+  override fun present(
+    scope: CoroutineScope,
+    events: Flow<CounterScreen.Event>,
+  ): StateFlow<Int> {
+    scope.launch {
+      events.collect {
+        when (it) {
+          is CounterScreen.Event.Increment -> {
+            count.emit(count.value + 1)
+          }
+          is CounterScreen.Event.Decrement -> {
+            count.emit(count.value - 1)
+          }
+          else -> Unit
+        }
       }
+    }
+    return count
+  }
+}
+
+/** Interop from a [FlowPresenter] to a Circuit [Presenter]. */
+fun FlowPresenter<Int, CounterScreen.Event>.asCircuitPresenter(): Presenter<CounterScreen.State> {
+  return presenterOf {
+    val channel = remember { Channel<CounterScreen.Event>(Channel.BUFFERED) }
+    val eventsFlow = remember { channel.receiveAsFlow() }
+    val scope = rememberCoroutineScope()
+    val state by present(scope, eventsFlow).collectAsState()
+    CounterScreen.State(state, channel::trySend)
+  }
+}
+
+/**
+ * Interop from a Circuit [Presenter] to a [FlowPresenter].
+ *
+ * Nuance here is that this needs to know how to access the underlying event sink.
+ */
+fun Presenter<CounterScreen.State>.asFlowPresenter(): FlowPresenter<Int, CounterScreen.Event> {
+  return FlowPresenter { scope, events ->
+    scope.launchMolecule(RecompositionClock.Immediate) {
+      val (count, eventSink) = present()
+      LaunchedEffect(eventSink) { events.collect(eventSink) }
+      count
     }
   }
 }

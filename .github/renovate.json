@@ -8,7 +8,14 @@
   "repositories": [
     "slackhq/circuit"
   ],
+  "prHourlyLimit": 10,
+  "platformAutomerge": true,
   "packageRules": [
+    {
+      "description": "Automerge non-major updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
     {
       "matchPackageNames": ["renovatebot/github-action"],
       "extends": ["schedule:monthly"]

@@ -37,5 +37,3 @@ private fun PreviewFavorites() = Favorites(FavoritesState(listOf("Reeses", "Lola
 @Composable
 private fun PreviewEmptyFavorites() = Favorites(FavoritesState(listOf()))
 ```
-
-TODO image sample of IDE preview

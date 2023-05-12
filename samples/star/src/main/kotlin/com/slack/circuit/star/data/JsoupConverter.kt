@@ -25,6 +25,7 @@ class JsoupConverter<T> private constructor(private val convertBody: (ResponseBo
     fun <T> newFactory(decoder: (ResponseBody) -> T): Converter.Factory {
       return object : Converter.Factory() {
         private val converter by lazy { JsoupConverter(decoder) }
+
         override fun responseBodyConverter(
           type: Type,
           annotations: Array<Annotation>,

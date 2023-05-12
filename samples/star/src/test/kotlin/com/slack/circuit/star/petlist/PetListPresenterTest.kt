@@ -3,16 +3,16 @@
 package com.slack.circuit.star.petlist
 
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.star.data.Animal
-import com.slack.circuit.star.data.Breeds
-import com.slack.circuit.star.data.Colors
-import com.slack.circuit.star.data.Link
-import com.slack.circuit.star.data.Links
-import com.slack.circuit.star.data.Photo
+import com.slack.circuit.star.db.Animal
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,7 +41,7 @@ class PetListPresenterTest {
     presenter.test {
       assertThat(awaitItem()).isEqualTo(PetListScreen.State.Loading)
 
-      val animals = listOf(animal).map { it.toPetListAnimal() }
+      val animals = listOf(animal.toPetListAnimal())
       val state = awaitItem()
       check(state is PetListScreen.State.Success)
       assertThat(state.animals).isEqualTo(animals)
@@ -67,36 +67,32 @@ class PetListPresenterTest {
   }
 
   companion object {
-    val photo = Photo(small = "small", medium = "medium", large = "large", full = "full")
     val animal =
       Animal(
         id = 1L,
-        organizationId = "organizationId",
-        url = "url",
-        type = "type",
-        species = "species",
-        breeds = Breeds(),
-        colors = Colors(),
-        age = "age",
-        size = "size",
-        coat = "coat",
         name = "name",
+        primaryPhotoUrl = "https://example.com/photo.png",
+        primaryBreed = "Shepherd",
+        gender = Gender.MALE,
+        size = Size.SMALL,
         description = "description",
-        gender = "gender",
-        photos = listOf(photo),
-        videos = emptyList(),
-        status = "status",
-        attributes = emptyMap(),
-        environment = emptyMap(),
-        tags = emptyList(),
-        publishedAt = "publishedAt",
-        links = Links(self = Link("self"), type = Link("type"), organization = Link("organization"))
+        photoUrls = persistentListOf("https://example.com/photo.png"),
+        sort = 0,
+        tags = persistentListOf("tag"),
+        url = "https://example.com",
+        age = "Adult",
       )
   }
 }
 
 class TestRepository(private val animals: List<Animal>) : PetRepository {
-  override suspend fun getAnimals(forceRefresh: Boolean): List<Animal> = animals
+  override suspend fun refreshData() {
+    // Do nothing
+  }
+
+  override fun animalsFlow(): Flow<List<Animal>> = flow { emit(animals) }
+
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
+
   override suspend fun getAnimalBio(id: Long): String? = getAnimal(id)?.description
 }

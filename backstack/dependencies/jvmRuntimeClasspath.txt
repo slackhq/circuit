@@ -1,3 +1,5 @@
+com.benasher44:uuid-jvm
+com.benasher44:uuid
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime-saveable-desktop
 org.jetbrains.compose.runtime:runtime-saveable

@@ -1,6 +1,67 @@
 Changelog
 =========
 
+0.8.0
+-----
+
+_2023-04-06_
+
+## [Core] Split up core artifacts.
+- `circuit-runtime`: common runtime components like `Screen`, `Navigator`, etc.
+- `circuit-runtime-presenter`: the `Presenter` API, depends on `circuit-runtime`.
+- `circuit-runtime-ui`: the `Ui` API, depends on `circuit-runtime`.
+- `circuit-foundation`: the circuit foundational APIs like `CircuitConfig`, `CircuitContent`, etc. Depends on the first three.
+
+The goal in this is to allow more granular dependencies and easier building against subsets of the API. For example, this would allow a presenter implementation to easily live in a standalone module that doesn't depend on any UI dependencies. Vice versa for UI implementations.
+
+Where we think this could really shine is in multiplatform projects where Circuit's UI APIs may be more or less abstracted away in service of using native UI, like in iOS.
+
+### `circuit-runtime` artifact
+| Before                           | After                                    |
+|----------------------------------|------------------------------------------|
+| com.slack.circuit.CircuitContext | com.slack.circuit.runtime.CircuitContext |
+| com.slack.circuit.CircuitUiState | com.slack.circuit.runtime.CircuitUiState |
+| com.slack.circuit.CircuitUiEvent | com.slack.circuit.runtime.CircuitUiEvent |
+| com.slack.circuit.Navigator      | com.slack.circuit.runtime.Navigator      |
+| com.slack.circuit.Screen         | com.slack.circuit.runtime.Screen         |
+
+### `circuit-runtime-presenter` artifact
+| Before                      | After                                         |
+|-----------------------------|-----------------------------------------------|
+| com.slack.circuit.Presenter | com.slack.circuit.runtime.presenter.Presenter |
+
+### `circuit-runtime-ui` artifact
+| Before               | After                                  |
+|----------------------|----------------------------------------|
+| com.slack.circuit.Ui | com.slack.circuit.runtime.presenter.Ui |
+
+### `circuit-foundation` artifact
+| Before                                     | After                                                 |
+|--------------------------------------------|-------------------------------------------------------|
+| com.slack.circuit.CircuitCompositionLocals | com.slack.circuit.foundation.CircuitCompositionLocals |
+| com.slack.circuit.CircuitConfig            | com.slack.circuit.foundation.CircuitConfig            |
+| com.slack.circuit.CircuitContent           | com.slack.circuit.foundation.CircuitContent           |
+| com.slack.circuit.EventListener            | com.slack.circuit.foundation.EventListener            |
+| com.slack.circuit.NavEvent                 | com.slack.circuit.foundation.NavEvent                 |
+| com.slack.circuit.onNavEvent               | com.slack.circuit.foundation.onNavEvent               |
+| com.slack.circuit.NavigableCircuitContent  | com.slack.circuit.foundation.NavigableCircuitContent  |
+| com.slack.circuit.NavigatorDefaults        | com.slack.circuit.foundation.NavigatorDefaults        |
+| com.slack.circuit.rememberCircuitNavigator | com.slack.circuit.foundation.rememberCircuitNavigator |
+| com.slack.circuit.push                     | com.slack.circuit.foundation.push                     |
+| com.slack.circuit.screen                   | com.slack.circuit.foundation.screen                   |
+
+## More Highlights
+- [Core] Remove Android-specific `NavigableCircuitContent` and just use common one. Back handling still runs through `BackHandler`, but is now configured in `rememberCircuitNavigator`.
+- [Core] Add `defaultNavDecoration` to `CircuitConfig` to allow for customizing the default `NavDecoration` used in `NavigableCircuitContent`.
+- [Core] Mark `CircuitUiState` as `@Stable` instead of `@Immutable`.
+- [Code gen] Capitalize generated class names when source is a presenter function.
+- [Sample] New `:samples:tacos` order builder sample to demonstrate complex state management.
+- [Sample] `NavigableCircuitContent` example in the desktop counter.
+- [Dependencies] Update compose to `1.4.1`.
+- [Dependencies] Update compose-compiler to `1.4.4`.
+- [Dependencies] Update androidx.activity to `1.7.0`.
+- [Dependencies] Update molecule to `0.7.1`.
+
 0.7.0
 -----
 

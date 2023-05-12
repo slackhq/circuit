@@ -10,8 +10,9 @@ plugins {
   kotlin("plugin.parcelize")
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
-  alias(libs.plugins.paparazzi)
+  alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.sqldelight)
 }
 
 android {
@@ -27,6 +28,8 @@ android {
   testBuildType = "release"
 }
 
+sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
+
 tasks
   .withType<KotlinCompile>()
   .matching { it !is KaptGenerateStubsTask }
@@ -35,7 +38,7 @@ tasks
       freeCompilerArgs.addAll(
         "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
       )
 
       if (project.hasProperty("circuit.enableComposeCompilerReports")) {
@@ -59,7 +62,7 @@ dependencies {
   kapt(libs.dagger.compiler)
   ksp(projects.circuitCodegen)
   implementation(projects.circuitCodegenAnnotations)
-  implementation(projects.circuit)
+  implementation(projects.circuitFoundation)
   implementation(projects.circuitOverlay)
   implementation(projects.circuitRetained)
   implementation(libs.androidx.compose.integration.activity)
@@ -70,6 +73,7 @@ dependencies {
   implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.androidx.compose.material.icons)
   implementation(libs.androidx.compose.material.iconsExtended)
+  implementation(libs.androidx.compose.material.material3.windowSizeClass)
   implementation(libs.androidx.compose.accompanist.pager)
   implementation(libs.androidx.compose.accompanist.pager.indicators)
   implementation(libs.androidx.compose.accompanist.flowlayout)
@@ -89,6 +93,9 @@ dependencies {
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.kotlinx.immutable)
   implementation(libs.jsoup)
+  implementation(libs.sqldelight.driver.android)
+  implementation(libs.sqldelight.coroutines)
+  implementation(libs.sqldelight.primitiveAdapters)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)
@@ -103,6 +110,9 @@ dependencies {
   testImplementation(libs.testing.espresso.core)
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
+  testImplementation(libs.roborazzi)
+  testImplementation(libs.roborazzi.rules)
+  testImplementation(projects.samples.star.coilRule)
 
   androidTestImplementation(libs.androidx.compose.ui.testing.manifest)
   androidTestImplementation(libs.leakcanary.android.instrumentation)
@@ -110,4 +120,5 @@ dependencies {
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)
   androidTestImplementation(libs.truth)
+  androidTestImplementation(projects.samples.star.coilRule)
 }

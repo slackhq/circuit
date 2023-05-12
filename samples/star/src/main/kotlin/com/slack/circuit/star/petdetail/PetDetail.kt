@@ -3,7 +3,7 @@
 package com.slack.circuit.star.petdetail
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,16 +39,16 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.slack.circuit.CircuitContent
-import com.slack.circuit.CircuitUiEvent
-import com.slack.circuit.CircuitUiState
-import com.slack.circuit.Navigator
-import com.slack.circuit.Presenter
-import com.slack.circuit.Screen
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.runtime.CircuitUiEvent
+import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.data.Animal
+import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.navigator.AndroidScreen
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -61,7 +61,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -94,21 +93,11 @@ internal fun Animal.toPetDetailState(
 ): PetDetailScreen.State {
   return PetDetailScreen.State.Success(
     url = url,
-    photoUrls = photos.map { it.large }.toImmutableList(),
+    photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     name = name,
     description = description,
-    tags =
-      listOfNotNull(
-          colors.primary,
-          colors.secondary,
-          breeds.primary,
-          breeds.secondary,
-          gender,
-          size,
-          status
-        )
-        .toImmutableList(),
+    tags = tags,
     eventSink
   )
 }
@@ -178,7 +167,6 @@ internal fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifi
 @Composable
 private fun TopBar(state: PetDetailScreen.State) {
   if (state !is PetDetailScreen.State.Success) return
-
   CenterAlignedTopAppBar(title = { Text(state.name) }, navigationIcon = { BackPressNavIcon() })
 }
 
@@ -222,7 +210,7 @@ private fun ShowAnimal(
 private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: PaddingValues) {
   Row(
     modifier = Modifier.padding(padding),
-    horizontalArrangement = Arrangement.SpaceEvenly,
+    horizontalArrangement = spacedBy(16.dp),
   ) {
     CircuitContent(
       PetPhotoCarouselScreen(
@@ -231,7 +219,7 @@ private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: P
         photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
       )
     )
-    LazyColumn { petDetailDescriptions(state) }
+    LazyColumn(verticalArrangement = spacedBy(16.dp)) { petDetailDescriptions(state) }
   }
 }
 
@@ -240,7 +228,8 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
   LazyColumn(
     modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
     contentPadding = PaddingValues(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+    verticalArrangement = spacedBy(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     item {
       CircuitContent(
@@ -280,6 +269,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
       }
     }
   }
+
   item(state.description) {
     ExpandableText(text = state.description, style = MaterialTheme.typography.bodyLarge)
   }

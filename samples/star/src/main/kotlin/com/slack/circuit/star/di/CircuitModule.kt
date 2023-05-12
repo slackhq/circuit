@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.di
 
-import com.slack.circuit.CircuitConfig
-import com.slack.circuit.Presenter
-import com.slack.circuit.Ui
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.ui.Ui
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
 import dagger.Provides
@@ -24,14 +24,8 @@ interface CircuitModule {
       uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
     ): CircuitConfig {
       return CircuitConfig.Builder()
-        .apply {
-          for (factory in presenterFactories) {
-            addPresenterFactory(factory)
-          }
-          for (factory in uiFactories) {
-            addUiFactory(factory)
-          }
-        }
+        .addPresenterFactories(presenterFactories)
+        .addUiFactories(uiFactories)
         .build()
     }
   }

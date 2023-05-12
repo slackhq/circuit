@@ -3,6 +3,7 @@
 plugins {
   id("com.android.library")
   kotlin("multiplatform")
+  alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
 }
 
@@ -15,7 +16,7 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(projects.circuit)
+        api(projects.circuitFoundation)
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(libs.turbine)

@@ -11,44 +11,31 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
-import androidx.test.platform.app.InstrumentationRegistry
-import coil.Coil
+import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.CircuitCompositionLocals
-import com.slack.circuit.CircuitConfig
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.star.ui.FakeImageLoader
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
-import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
-import org.junit.Before
+import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.RuleChain
 
+@OptIn(ExperimentalCoilApi::class)
 class PetDetailTest {
-  private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-  @get:Rule
-  val rule =
-    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
-      around(composeTestRule)
-    }
-
-  @Before
-  fun setup() {
-    val fakeImageLoader =
-      FakeImageLoader(
-        InstrumentationRegistry.getInstrumentation().targetContext.getDrawable(R.drawable.dog2)!!
-      )
-    Coil.setImageLoader(fakeImageLoader)
-  }
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  @get:Rule val coilRule = CoilRule(R.drawable.dog2)
+  // Not using detectLeaksAfterTestSuccessWrapping() because it causes an NPE with composeTestRule
+  @get:Rule val leakDetectionRule = DetectLeaksAfterTestSuccess()
 
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {

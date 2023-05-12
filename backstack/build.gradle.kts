@@ -3,6 +3,7 @@
 plugins {
   id("com.android.library")
   kotlin("multiplatform")
+  alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
 }
 
@@ -10,6 +11,8 @@ kotlin {
   // region KMP Targets
   android { publishLibraryVariants("release") }
   jvm()
+  ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets {
@@ -18,6 +21,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(libs.coroutines)
+        implementation(libs.uuid)
         implementation(libs.compose.runtime.saveable)
       }
     }
@@ -37,6 +41,8 @@ kotlin {
         }
       }
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+    val iosMain by getting
+    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

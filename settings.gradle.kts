@@ -1,12 +1,14 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import java.util.Locale
+
 dependencyResolutionManagement {
   versionCatalogs {
     if (System.getenv("DEP_OVERRIDES") == "true") {
       val overrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }
       maybeCreate("libs").apply {
         for ((key, value) in overrides) {
-          val catalogKey = key.removePrefix("DEP_OVERRIDE_").toLowerCase()
+          val catalogKey = key.removePrefix("DEP_OVERRIDE_").lowercase(Locale.getDefault())
           println("Overriding $catalogKey with $value")
           version(catalogKey, value)
         }
@@ -19,17 +21,36 @@ dependencyResolutionManagement {
     return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
   }
 
+  fun findProperty(key: String): String? {
+    return if (hasProperty(key)) {
+      settings.withGroovyBuilder { "getProperty"(key) as String }
+    } else {
+      null
+    }
+  }
+
   repositories {
     // Repos are declared roughly in order of likely to hit.
 
     // Snapshots/local go first in order to pre-empty other repos that may contain unscrupulous
     // snapshots.
-    if (hasProperty("slack.gradle.config.enableSnapshots")) {
-      maven("https://oss.sonatype.org/content/repositories/snapshots")
-      maven("https://androidx.dev/snapshots/latest/artifacts/repository")
+    if (hasProperty("circuit.config.enableSnapshots")) {
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatype")!!) {
+        name = "snapshots-maven-central"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatypes01")!!) {
+        name = "snapshots-maven-central-s01"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.androidx")!!) {
+        name = "snapshots-androidx"
+        mavenContent { snapshotsOnly() }
+        content { includeGroupByRegex("androidx.*") }
+      }
     }
 
-    if (hasProperty("slack.gradle.config.enableMavenLocal")) {
+    if (hasProperty("circuit.config.enableMavenLocal")) {
       mavenLocal()
     }
 
@@ -37,10 +58,10 @@ dependencyResolutionManagement {
 
     google()
 
-    // Kotlin dev (previously bootstrap) repository, useful for testing against Kotlin dev builds.
+    // Kotlin dev repository, useful for testing against Kotlin dev builds.
     // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
+    maven(findProperty("circuit.mavenUrls.kotlinDev")!!) {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)
@@ -77,17 +98,36 @@ pluginManagement {
     return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
   }
 
+  fun findProperty(key: String): String? {
+    return if (hasProperty(key)) {
+      settings.withGroovyBuilder { "getProperty"(key) as String }
+    } else {
+      null
+    }
+  }
+
   repositories {
     // Repos are declared roughly in order of likely to hit.
 
     // Snapshots/local go first in order to pre-empty other repos that may contain unscrupulous
     // snapshots.
-    if (hasProperty("slack.gradle.config.enableSnapshots")) {
-      maven("https://oss.sonatype.org/content/repositories/snapshots")
-      maven("https://androidx.dev/snapshots/latest/artifacts/repository")
+    if (hasProperty("circuit.config.enableSnapshots")) {
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatype")!!) {
+        name = "snapshots-maven-central"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.sonatypes01")!!) {
+        name = "snapshots-maven-central-s01"
+        mavenContent { snapshotsOnly() }
+      }
+      maven(findProperty("circuit.mavenUrls.snapshots.androidx")!!) {
+        name = "snapshots-androidx"
+        mavenContent { snapshotsOnly() }
+        content { includeGroupByRegex("androidx.*") }
+      }
     }
 
-    if (hasProperty("slack.gradle.config.enableMavenLocal")) {
+    if (hasProperty("circuit.config.enableMavenLocal")) {
       mavenLocal()
     }
 
@@ -95,10 +135,10 @@ pluginManagement {
 
     google()
 
-    // Kotlin dev (previously bootstrap) repository, useful for testing against Kotlin dev builds.
+    // Kotlin dev repository, useful for testing against Kotlin dev builds.
     // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
+    maven(findProperty("circuit.mavenUrls.kotlinDev")!!) {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)
@@ -128,7 +168,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.12.4" }
+  plugins { id("com.gradle.enterprise") version "3.12.6" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -151,20 +191,24 @@ rootProject.name = "circuit-root"
 // Please keep these in alphabetical order!
 include(
   ":backstack",
-  ":circuit",
   ":circuit-codegen",
   ":circuit-codegen-annotations",
+  ":circuit-foundation",
   ":circuit-overlay",
   ":circuit-retained",
+  ":circuit-runtime",
+  ":circuit-runtime-presenter",
+  ":circuit-runtime-ui",
   ":circuit-test",
   ":samples:counter",
-  ":samples:counter:android",
-  ":samples:counter:desktop",
+  ":samples:counter:apps",
   ":samples:counter:mosaic",
   ":samples:interop",
   ":samples:star",
   ":samples:star:apk",
   ":samples:star:benchmark",
+  ":samples:star:coil-rule",
+  ":samples:tacos",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

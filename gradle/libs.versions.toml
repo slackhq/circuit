@@ -15,7 +15,7 @@ compose-compiler = "1.4.7"
 composeCompilerKotlinVersion = "1.8.21"
 compose-foundation = "1.4.3"
 compose-material = "1.4.3"
-compose-material3 = "1.1.0-rc01"
+compose-material3 = "1.1.0"
 compose-runtime = "1.4.3"
 compose-ui = "1.4.3"
 compose-jb = "1.4.0"
@@ -29,7 +29,7 @@ dokka = "1.8.10"
 jdk = "19"
 kotlin = "1.8.21"
 kotlinpoet = "1.13.2"
-kotlinx-coroutines = "1.6.4"
+kotlinx-coroutines = "1.7.1"
 ksp = "1.8.21-1.0.11"
 ktfmt = "0.44"
 leakcanary = "2.10"
@@ -47,7 +47,7 @@ robolectric = "4.10.2"
 roborazzi = "1.1.0"
 spotless = "6.18.0"
 sqldelight = "2.0.0-alpha05"
-turbine = "0.12.3"
+turbine = "0.13.0"
 versionsPlugin = "0.46.0"
 
 [plugins]
@@ -90,7 +90,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.05.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.05.01" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
@@ -124,7 +124,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
 
-androidx-core = "androidx.core:core-ktx:1.10.0"
+androidx-core = "androidx.core:core-ktx:1.10.1"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.AnimationConstants
@@ -432,6 +433,7 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewUpdateFiltersSheet() {
   StarTheme {

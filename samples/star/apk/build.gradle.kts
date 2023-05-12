@@ -3,6 +3,7 @@
 plugins {
   id("com.android.application")
   kotlin("android")
+  alias(libs.plugins.baselineprofile)
 }
 
 android {

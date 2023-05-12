@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 plugins {
   id("com.android.test")
   kotlin("android")
@@ -25,7 +27,7 @@ android {
   }
 
   testOptions.managedDevices.devices {
-    create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6Api31") {
+    create<ManagedVirtualDevice>("pixel6Api31") {
       device = "Pixel 6"
       apiLevel = 31
       systemImageSource = "aosp"

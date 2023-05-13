@@ -13,6 +13,11 @@ android {
   defaultConfig {
     targetSdk = 33
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // TODO temporary until AGP 8.2, which no longer requires this.
+    //  This is because when we update baseline profiles, we do them on emulators but they
+    //  run all tests.
+    testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
   }
 
   buildTypes {

@@ -30,13 +30,14 @@ jobs:
           distribution: 'zulu'
           java-version: '19'
 
-      - name: Generate baseline profiles
-        id: gradle
+      - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: generateReleaseBaselineProfile -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=baselineprofile
           gradle-home-cache-cleanup: true
           cache-read-only: false
+
+      - name: Generate baseline profiles
+        run: ./scripts/generate-baseline-profiles.sh
 
       - name: Create Pull Request
         if: github.event_name != 'pull_request' && github.event_name != 'merge_group'

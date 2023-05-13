@@ -74,11 +74,8 @@ androidComponents { beforeVariants { variant -> variant.enableAndroidTest = fals
 
 baselineProfile {
   // https://issuetracker.google.com/issues/282127523
-  baselineProfileOutputDir = "src/androidMain/generated/baselineProfiles"
-  filter {
-    include("com.slack.circuit.foundation")
-    include("com.slack.circuit.foundation.**")
-  }
+  baselineProfileOutputDir = "../../src/androidMain/generated/baselineProfiles"
+  filter { include("com.slack.circuit.foundation.**") }
 }
 
 dependencies { baselineProfile(projects.samples.star.benchmark) }

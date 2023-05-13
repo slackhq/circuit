@@ -51,6 +51,9 @@ baselineProfile {
   // This enables using connected devices to generate profiles. The default is true.
   // When using connected devices, they must be rooted or API 33 and higher.
   useConnectedDevices = false
+
+  // Set to true to see the emulator, useful for debugging. Only enabled locally
+  enableEmulatorDisplay = false
 }
 
 dependencies {

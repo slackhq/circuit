@@ -56,5 +56,3 @@ dependencies {
   implementation(libs.androidx.benchmark.macro.junit)
   implementation(libs.androidx.profileinstaller)
 }
-
-androidComponents { beforeVariants { it.enable = it.buildType == "benchmark" } }

@@ -47,14 +47,7 @@ kotlin {
   }
 }
 
-android {
-  namespace = "com.slack.circuit.backstack"
-  buildTypes {
-    maybeCreate("release").apply {
-      matchingFallbacks += "benchmark"
-    }
-  }
-}
+android { namespace = "com.slack.circuit.backstack" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
@@ -65,6 +58,4 @@ baselineProfile {
   }
 }
 
-dependencies {
-  baselineProfile(projects.samples.star.benchmark)
-}
+dependencies { baselineProfile(projects.samples.star.benchmark) }

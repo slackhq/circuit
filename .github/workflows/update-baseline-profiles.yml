@@ -12,7 +12,6 @@ concurrency:
   group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
   cancel-in-progress: true
 
-
 jobs:
   build:
     runs-on: macOS-latest
@@ -50,5 +49,6 @@ jobs:
           author: OSS-Bot <svc-oss-bot@slack-corp.com>
           title: 'Update baseline profiles'
           body: 'Updates baseline profiles'
+          reviewers: ${{ github.actor }}
           branch-suffix: timestamp
-          branch: bot/update-baselines
+          branch: bot/update-baseline-profiles

@@ -10,6 +10,6 @@ fi
 ./gradlew cleanManagedDevices --unused-only &&
     ./gradlew generateReleaseBaselineProfile \
     -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=baselineprofile \
-    -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=20
+    -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=20 \
     "${gpu_arg}" \
     --info

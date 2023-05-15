@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   update-baseline-profiles:
-    runs-on: macOS-12
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3

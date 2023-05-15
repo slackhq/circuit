@@ -37,7 +37,7 @@ jobs:
           cache-read-only: false
 
       - name: Generate baseline profiles
-        run: ./scripts/generate-baseline-profiles.sh
+        run: ./scripts/update-baseline-profiles.sh
 
       - name: Create Pull Request
         if: github.event_name != 'pull_request' && github.event_name != 'merge_group'

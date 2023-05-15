@@ -39,7 +39,7 @@ jobs:
         run: ./scripts/update-baseline-profiles.sh
 
       - name: Create Pull Request
-        if: github.event_name != 'pull_request' && github.event_name != 'merge_group'
+        if: github.event_name == 'workflow_dispatch'
         id: createpr
         uses: peter-evans/create-pull-request@v4
         with:

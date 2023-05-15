@@ -253,7 +253,7 @@ subprojects {
   }
 
   // Common android config
-  val commonAndroidConfig: CommonExtension<*, *, *, *, *>.() -> Unit = {
+  val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
     compileSdk = 33
 
     if (hasCompose) {

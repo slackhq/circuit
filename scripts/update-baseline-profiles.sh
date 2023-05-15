@@ -11,5 +11,6 @@ fi
     ./gradlew generateReleaseBaselineProfile \
     -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=baselineprofile \
     -Dorg.gradle.workers.max=1 \
+    -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true \
     "${gpu_arg}" \
-    --quiet
+    --info

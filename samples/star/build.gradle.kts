@@ -79,7 +79,7 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.flowlayout)
   implementation(libs.androidx.compose.accompanist.swiperefresh)
   implementation(libs.androidx.compose.accompanist.systemUi)
-  debugImplementation(libs.androidx.compose.ui.tooling)
+  implementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)
   implementation(libs.coil.compose)

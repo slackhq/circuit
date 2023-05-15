@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.star.R
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.ui.StarTheme
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -58,4 +60,10 @@ fun About(modifier: Modifier = Modifier) {
       }
     }
   )
+}
+
+@Preview
+@Composable
+private fun AboutPreview() {
+  StarTheme { About() }
 }

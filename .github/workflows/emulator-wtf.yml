@@ -9,9 +9,14 @@ jobs:
   run-tests:
     runs-on: ubuntu-20.04
   steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        lfs: 'true'
+
     - name: Build debug & test APKs
       run: ./gradlew samples:star:apk:assembleDebug samples:star:apk:assembleAndroidTest
+
     - name: Run tests on Emulator.wtf
       uses: emulator-wtf/run-tests@v0
       with:
@@ -24,6 +29,7 @@ jobs:
         num-shards: 1
         test-targets: "class com.slack.circuit.star.petdetail.PetDetailTest"
         outputs-dir: build/test-results
+
     - name: Publish test report
       uses: mikepenz/action-junit-report@v2
       if: always() # always run even if the tests fail

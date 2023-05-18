@@ -2,7 +2,7 @@ name: Emulator-WTF
 
 on:
   # Only run on my branch for testing purposes
-  pull_request:
+  push:
     branches:
       - js_test_out_emulator_wtf
 
@@ -16,8 +16,7 @@ jobs:
           lfs: "true"
 
       - name: Build debug & test APKs
-        run: ./gradlew samples:star:apk:assembleDebug
-          samples:star:apk:assembleAndroidTest
+        run: ./gradlew samples:star:apk:assembleDebug samples:star:apk:assembleAndroidTest
 
       - name: Run tests on Emulator.wtf
         uses: emulator-wtf/run-tests@v0
@@ -29,8 +28,8 @@ jobs:
           use-orchestrator: true
           clear-package-data: true
           num-shards: 1
-          test-targets: class com.slack.circuit.star.petdetail.PetDetailTest
           outputs-dir: build/test-results
+          test-targets: class com.slack.circuit.star.petdetail.PetDetailTest
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v2

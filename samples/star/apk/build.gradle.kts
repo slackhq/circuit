@@ -3,6 +3,7 @@
 plugins {
   id("com.android.application")
   kotlin("android")
+  alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -36,4 +37,5 @@ android {
 dependencies {
   api(projects.samples.star)
   implementation(libs.androidx.profileinstaller)
+  baselineProfile(projects.samples.star.benchmark)
 }

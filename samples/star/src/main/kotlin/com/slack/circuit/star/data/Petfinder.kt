@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data
 
+import androidx.annotation.Keep
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.time.Instant
@@ -22,6 +23,7 @@ import retrofit2.http.Url
 private const val API_KEY = "SYWzK0sDRY8UMNjHM1IC3WDM8qLO6vCjCSfwf6aY5QlISE65kJ"
 private const val SECRET = "aA4VMgoPSReox5Ve67cNHI9M06JEgh68fjkG46Ee"
 
+@Keep
 interface PetfinderAuthApi {
   // "grant_type=client_credentials&client_id=$API_KEY&client_secret=$SECRET"
   @FormUrlEncoded
@@ -33,6 +35,7 @@ interface PetfinderAuthApi {
   ): AuthenticationResponse
 }
 
+@Keep
 interface PetfinderApi {
   @GET("animals")
   suspend fun animals(

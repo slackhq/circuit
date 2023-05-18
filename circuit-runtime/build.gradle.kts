@@ -5,6 +5,7 @@ plugins {
   kotlin("multiplatform")
   alias(libs.plugins.compose)
   id("com.vanniktech.maven.publish")
+  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
@@ -25,3 +26,14 @@ kotlin {
 android { namespace = "com.slack.circuit.runtime" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+
+baselineProfile {
+  // https://issuetracker.google.com/issues/282127523
+  baselineProfileOutputDir = "../../src/androidMain/generated/baselineProfiles"
+  filter {
+    // Don't include subpackages, only one star
+    include("com.slack.circuit.runtime.*")
+  }
+}
+
+dependencies { baselineProfile(projects.samples.star.benchmark) }

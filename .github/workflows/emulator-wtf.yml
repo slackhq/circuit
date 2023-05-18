@@ -8,15 +8,37 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-20.04
+    runs-on: macOS-latest
+    env:
+      # Test on API 30 because that's the first version with ATDs
+      API_LEVEL: '30'
+      AVD_TARGET: 'aosp_atd'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          lfs: "true"
+          lfs: 'true'
 
-      - name: Build debug & test APKs
-        run: ./gradlew samples:star:apk:assembleDebug samples:star:apk:assembleAndroidTest
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Check LFS files
+        uses: actionsdesk/lfs-warning@v3.2
+
+      - name: Install JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '19'
+
+      - name: Build APKs
+        id: gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check :samples:star:apk:assembleDebug detektMain detektTest --continue --no-configuration-cache
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
 
       - name: Run tests on Emulator.wtf
         uses: emulator-wtf/run-tests@v0

@@ -9,31 +9,31 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-20.04
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        lfs: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: "true"
 
-    - name: Build debug & test APKs
-      run: ./gradlew samples:star:apk:assembleDebug
-        samples:star:apk:assembleAndroidTest
+      - name: Build debug & test APKs
+        run: ./gradlew samples:star:apk:assembleDebug
+          samples:star:apk:assembleAndroidTest
 
-    - name: Run tests on Emulator.wtf
-      uses: emulator-wtf/run-tests@v0
-      with:
-        api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
-        app: samples/star/apk/build/outputs/apk/debug/apk-debug.apk
-        test: samples/star/build/intermediates/apk/androidTest/release/star-release-androidTest.apk
-        devices: model=NexusLowRes,version=27
-        use-orchestrator: true
-        clear-package-data: true
-        num-shards: 1
-        test-targets: class com.slack.circuit.star.petdetail.PetDetailTest
-        outputs-dir: build/test-results
+      - name: Run tests on Emulator.wtf
+        uses: emulator-wtf/run-tests@v0
+        with:
+          api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
+          app: samples/star/apk/build/outputs/apk/debug/apk-debug.apk
+          test: samples/star/build/intermediates/apk/androidTest/release/star-release-androidTest.apk
+          devices: model=NexusLowRes,version=27
+          use-orchestrator: true
+          clear-package-data: true
+          num-shards: 1
+          test-targets: class com.slack.circuit.star.petdetail.PetDetailTest
+          outputs-dir: build/test-results
 
-    - name: Publish test report
-      uses: mikepenz/action-junit-report@v2
-      if: always()
-      with:
-        report_paths: build/test-results/**/*.xml
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v2
+        if: always()
+        with:
+          report_paths: build/test-results/**/*.xml

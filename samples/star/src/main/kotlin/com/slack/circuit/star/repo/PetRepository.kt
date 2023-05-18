@@ -162,12 +162,16 @@ constructor(
       val isStale = isOperationStale(opId)
       val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
       if (isStale || dbBio == null) {
-        petFinderApi.animalBio(animal.url).also { bio ->
-          // Single transaction to log the operation update with the put
-          starDb.transactionWithResult {
-            logUpdate(opId)
-            starDb.starQueries.putAnimalBio(AnimalBio(id, bio))
+        try {
+          petFinderApi.animalBio(animal.url).also {
+            // Single transaction to log the operation update with the put
+            starDb.transactionWithResult {
+              logUpdate(opId)
+              starDb.starQueries.putAnimalBio(AnimalBio(id, it))
+            }
           }
+        } catch (e: HttpException) {
+          null
         }
       } else {
         dbBio?.description

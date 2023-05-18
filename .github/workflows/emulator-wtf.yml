@@ -1,8 +1,10 @@
-name: Run Tests on Emulator.wtf
+name: Emulator-WTF
+
 on:
   pull_request:
     branches:
       - js_test_out_emulator_wtf
+
 jobs:
   run-tests:
     runs-on: ubuntu-20.04

@@ -45,7 +45,7 @@ jobs:
         with:
           api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
           app: samples/star/apk/build/outputs/apk/debug/apk-debug.apk
-          test: samples/star/build/intermediates/apk/androidTest/release/star-release-androidTest.apk
+          test: samples/star/apk/build/outputs/apk/androidTest/debug/apk-debug-androidTest.apk
           devices: model=NexusLowRes,version=33
           use-orchestrator: true
           clear-package-data: true

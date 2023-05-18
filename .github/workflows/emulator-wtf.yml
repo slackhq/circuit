@@ -36,7 +36,7 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check samples:star:apk:assembleDebug samples:star:apk:assembleAndroidTest --continue --no-configuration-cache
+          arguments: check samples:star:apk:assembleRelease samples:star:assembleAndroidTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
@@ -44,14 +44,14 @@ jobs:
         uses: emulator-wtf/run-tests@v0
         with:
           api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
-          app: samples/star/apk/build/outputs/apk/debug/apk-debug.apk
-          test: samples/star/apk/build/outputs/apk/androidTest/debug/apk-debug-androidTest.apk
+          app: samples/star/apk/build/outputs/apk/release/apk-release.apk
+          test: samples/star/build/outputs/apk/androidTest/release/star-release-androidTest.apk
           devices: model=NexusLowRes,version=33
           use-orchestrator: true
           clear-package-data: true
+          record-video: true
           num-shards: 1
           outputs-dir: build/test-results
-          test-targets: class com.slack.circuit.star.petdetail.PetDetailTest
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v2

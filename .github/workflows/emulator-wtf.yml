@@ -32,15 +32,15 @@ jobs:
           distribution: 'zulu'
           java-version: '19'
 
-      - name: Build APKs
+      - name: Build APKs & run tests via Gradle task
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check samples:star:apk:assembleRelease samples:star:assembleAndroidTest --continue --no-configuration-cache
+          arguments: check samples:star:apk:assembleRelease samples:star:assembleAndroidTest samples:star:testReleaseWithEmulatorWtf --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
-      - name: Run tests on Emulator.wtf
+      - name: Run tests on Emulator.wtf via Github Action
         uses: emulator-wtf/run-tests@v0
         with:
           api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
@@ -58,11 +58,3 @@ jobs:
         if: always()
         with:
           report_paths: build/test-results/**/*.xml
-
-      - name: Run tests via Gradle Task
-        id: gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: circuit-retained:assembleAndroidTest --continue --no-configuration-cache
-          gradle-home-cache-cleanup: true
-          cache-read-only: false

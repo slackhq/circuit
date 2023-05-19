@@ -3,6 +3,8 @@
 import java.util.Locale
 
 dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+
   versionCatalogs {
     if (System.getenv("DEP_OVERRIDES") == "true") {
       val overrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }
@@ -85,6 +87,11 @@ dependencyResolutionManagement {
         // this repository *only* contains compose-compiler artifacts
         includeGroup("androidx.compose.compiler")
       }
+    }
+
+    maven("https://maven.emulator.wtf/releases/") {
+      name = "wtf-emulator"
+      content { includeGroup("wtf.emulator") }
     }
 
     // JB Compose Repo

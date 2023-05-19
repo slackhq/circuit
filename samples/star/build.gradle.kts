@@ -33,12 +33,9 @@ sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.cir
 
 
 emulatorwtf {
-  // CLI version to use, defaults to 0.9.8
-  // version.set("0.9.8")
-
   // emulator.wtf API token, we recommend either using the EW_API_TOKEN env var
   // instead of this or passing this value in via a project property
-  //token.set("")
+  token.set(System.getenv("EMULATOR_WTF_TOKEN"))
 
   // where to store results in, they will be further scoped by the variant name,
   // i.e. ./gradlew :app:testFreeDebugWithEmulatorWtf will store outputs in
@@ -47,7 +44,8 @@ emulatorwtf {
 
   // Specify what kind of outputs to store in the base output dir
   // default: [OutputType.MERGED_RESULTS_XML, OutputType.COVERAGE, OutputType.PULLED_DIRS]
-  //outputs.set([wtf.emulator.OutputType.SUMMARY, wtf.emulator.OutputType.CAPTURED_VIDEO, wtf.emulator.OutputType.LOGCAT])
+  val emulatorOutputConfig = listOf(wtf.emulator.OutputType.SUMMARY, wtf.emulator.OutputType.CAPTURED_VIDEO, wtf.emulator.OutputType.LOGCAT)
+  outputs.set(emulatorOutputConfig)
 
   // record a video of the test run
   recordVideo.set(true)

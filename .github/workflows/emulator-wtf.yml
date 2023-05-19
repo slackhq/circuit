@@ -58,3 +58,11 @@ jobs:
         if: always()
         with:
           report_paths: build/test-results/**/*.xml
+
+      - name: Run tests via Gradle Task
+        id: gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: circuit-retained:assembleAndroidTest --continue --no-configuration-cache
+          gradle-home-cache-cleanup: true
+          cache-read-only: false

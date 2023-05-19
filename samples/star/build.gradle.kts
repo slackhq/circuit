@@ -8,6 +8,7 @@ plugins {
   kotlin("android")
   kotlin("kapt")
   kotlin("plugin.parcelize")
+  alias(libs.plugins.emulatorwtf)
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
@@ -29,6 +30,75 @@ android {
 }
 
 sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
+
+
+emulatorwtf {
+  // CLI version to use, defaults to 0.9.8
+  version.set("0.9.8")
+
+  // where to store results in, they will be further scoped by the variant name,
+  // i.e. ./gradlew :app:testFreeDebugWithEmulatorWtf will store outputs in
+  // build/build-results/freeDebug
+  baseOutputDir.set(layout.buildDirectory.dir("build-results"))
+
+  // Specify what kind of outputs to store in the base output dir
+  // default: [OutputType.MERGED_RESULTS_XML, OutputType.COVERAGE, OutputType.PULLED_DIRS]
+  //outputs.set([wtf.emulator.OutputType.SUMMARY, wtf.emulator.OutputType.CAPTURED_VIDEO, wtf.emulator.OutputType.LOGCAT])
+
+  // record a video of the test run
+  recordVideo.set(true)
+
+  // ignore test failures and keep running the build
+  //
+  // NOTE: the build outcome _will_ be success at the end, use the JUnit XML files to
+  //       check for test failures
+  ignoreFailures.set(true)
+
+  // devices to test on, Defaults to [[model: 'Pixel2', version: 27]]
+  val emulatorDeviceConfig = listOf(mapOf(
+    "model" to "NexusLowRes",
+    "version" to "33"
+  ))
+  devices.set(emulatorDeviceConfig)
+
+  // whether to enable Android orchestrator, if your app has orchestrator
+  // configured this will get picked up automatically, however you can
+  // force-change the value here if you want to
+  useOrchestrator.set(true)
+
+  // whether to clear package data before running each test (orchestrator only)
+  // if your app has this configured via testInstrumentationRunnerArguments then
+  // it will get picked up automatically
+  clearPackageData.set(true)
+
+  // if true, the Gradle plugin will fetch coverage data and store under
+  // `baseOutputDir/${variant}`, if your app has coverage enabled this will be
+  // enabled automatically
+  withCoverage.set(false)
+
+  // Set to a number larger than 1 to randomly split your tests into multiple
+  // shards to be executed in parallel
+  numUniformShards.set(2)
+
+  // Set to a number larger than 1 to split your tests into multiple shards
+  // based on test counts to be executed in parallel
+  numShards.set(2)
+
+  // Set to a non-zero value to repeat device/shards that failed, the repeat
+  // attempts will be executed in parallel
+  numFlakyTestAttempts.set(1)
+
+  // Enable-disable the test input file cache (APKs etc)
+  fileCacheEnabled.set(false)
+
+  // Set the maximum time-to-live of items in the test input file cache
+  //fileCacheTtl = Duration.ofHours(3)
+
+  // Disable caching test results in the backend
+  // NOTE! This will not disable caching at the Gradle task or Gradle build cache level,
+  // use sideEffects = true to disable all caching
+  testCacheEnabled.set(false)
+}
 
 tasks
   .withType<KotlinCompile>()

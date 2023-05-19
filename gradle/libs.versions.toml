@@ -59,6 +59,7 @@ dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.re
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+emulatorwtf = { id = "wtf.emulator.gradle", version = "0.10.0" }
 ## Here to trigger Renovate updates
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}

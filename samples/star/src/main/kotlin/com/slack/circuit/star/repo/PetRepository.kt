@@ -19,6 +19,7 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
 import com.slack.circuit.star.di.SingleIn
 import com.slack.eithernet.ApiResult
+import com.slack.eithernet.retryWithExponentialBackoff
 import com.squareup.anvil.annotations.ContributesBinding
 import java.time.Duration
 import java.time.Instant
@@ -106,10 +107,12 @@ constructor(
 
   @Suppress("SwallowedException")
   private suspend fun fetchAnimals() {
-    val result = petFinderApi.animals(limit = 100)
-    if (result !is ApiResult.Success) {
+    val result = retryWithExponentialBackoff {
       // Sometimes petfinder's API throws 429s for no reason.
-      // TODO retry?
+      petFinderApi.animals(limit = 100)
+    }
+    if (result !is ApiResult.Success) {
+      System.err.println("Failed to fetch animals: $result")
       return
     }
     val animals = result.value.animals

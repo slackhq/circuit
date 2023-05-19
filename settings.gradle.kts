@@ -3,8 +3,6 @@
 import java.util.Locale
 
 dependencyResolutionManagement {
-  //repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-
   versionCatalogs {
     if (System.getenv("DEP_OVERRIDES") == "true") {
       val overrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }

@@ -35,7 +35,7 @@ sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.cir
 emulatorwtf {
   // emulator.wtf API token, we recommend either using the EW_API_TOKEN env var
   // instead of this or passing this value in via a project property
-  token.set(System.getenv("EMULATOR_WTF_TOKEN"))
+  token.set(System.getenv("secrets.EMULATOR_WTF_TOKEN"))
 
   // where to store results in, they will be further scoped by the variant name,
   // i.e. ./gradlew :app:testFreeDebugWithEmulatorWtf will store outputs in

@@ -3,7 +3,7 @@
 import java.util.Locale
 
 dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+  //repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
   versionCatalogs {
     if (System.getenv("DEP_OVERRIDES") == "true") {

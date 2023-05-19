@@ -18,6 +18,7 @@ import com.slack.circuit.star.db.StarDatabase
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
 import com.slack.circuit.star.di.SingleIn
+import com.slack.eithernet.ApiResult
 import com.squareup.anvil.annotations.ContributesBinding
 import java.time.Duration
 import java.time.Instant
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 
 interface PetRepository {
   suspend fun refreshData()
@@ -106,52 +106,53 @@ constructor(
 
   @Suppress("SwallowedException")
   private suspend fun fetchAnimals() {
-    try {
-      val animals = petFinderApi.animals(limit = 100).animals
-      // Do everything in a single transaction for atomicity
-      starDb.transaction {
-        // Delete any not present
-        starDb.starQueries.deleteAllAnimals()
-
-        // Re-populate the DB
-        for ((index, animal) in animals.withIndex()) {
-          starDb.starQueries.updateAnimal(
-            DbAnimal(
-              id = animal.id,
-              sort = index.toLong(),
-              // Names are sometimes all caps
-              name =
-                animal.name.lowercase().replaceFirstChar {
-                  if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
-                },
-              url = animal.url,
-              photoUrls = animal.photos.map { it.full }.toImmutableList(),
-              primaryPhotoUrl = animal.photos.firstOrNull()?.medium,
-              tags =
-                listOfNotNull(
-                    animal.colors.primary,
-                    animal.colors.secondary,
-                    animal.breeds.primary,
-                    animal.breeds.secondary,
-                    animal.gender,
-                    animal.size,
-                    animal.status
-                  )
-                  .toImmutableList(),
-              description = animal.description.orEmpty(),
-              primaryBreed = animal.breeds.primary,
-              gender = Gender.valueOf(animal.gender.uppercase(Locale.US)),
-              size = Size.valueOf(animal.size.uppercase(Locale.US)),
-              age = animal.age,
-            )
-          )
-        }
-
-        logUpdate("animals")
-      }
-    } catch (e: HttpException) {
+    val result = petFinderApi.animals(limit = 100)
+    if (result !is ApiResult.Success) {
       // Sometimes petfinder's API throws 429s for no reason.
       // TODO retry?
+      return
+    }
+    val animals = result.value.animals
+    // Do everything in a single transaction for atomicity
+    starDb.transaction {
+      // Delete any not present
+      starDb.starQueries.deleteAllAnimals()
+
+      // Re-populate the DB
+      for ((index, animal) in animals.withIndex()) {
+        starDb.starQueries.updateAnimal(
+          DbAnimal(
+            id = animal.id,
+            sort = index.toLong(),
+            // Names are sometimes all caps
+            name =
+              animal.name.lowercase().replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
+              },
+            url = animal.url,
+            photoUrls = animal.photos.map { it.full }.toImmutableList(),
+            primaryPhotoUrl = animal.photos.firstOrNull()?.medium,
+            tags =
+              listOfNotNull(
+                  animal.colors.primary,
+                  animal.colors.secondary,
+                  animal.breeds.primary,
+                  animal.breeds.secondary,
+                  animal.gender,
+                  animal.size,
+                  animal.status
+                )
+                .toImmutableList(),
+            description = animal.description.orEmpty(),
+            primaryBreed = animal.breeds.primary,
+            gender = Gender.valueOf(animal.gender.uppercase(Locale.US)),
+            size = Size.valueOf(animal.size.uppercase(Locale.US)),
+            age = animal.age,
+          )
+        )
+      }
+
+      logUpdate("animals")
     }
   }
 
@@ -162,16 +163,17 @@ constructor(
       val isStale = isOperationStale(opId)
       val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
       if (isStale || dbBio == null) {
-        try {
-          petFinderApi.animalBio(animal.url).also {
+        when (val result = petFinderApi.animalBio(animal.url)) {
+          is ApiResult.Success -> {
+            val bio = result.value
             // Single transaction to log the operation update with the put
             starDb.transactionWithResult {
               logUpdate(opId)
-              starDb.starQueries.putAnimalBio(AnimalBio(id, it))
+              starDb.starQueries.putAnimalBio(AnimalBio(id, bio))
             }
+            bio
           }
-        } catch (e: HttpException) {
-          null
+          is ApiResult.Failure -> null
         }
       } else {
         dbBio?.description

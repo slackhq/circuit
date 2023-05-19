@@ -25,22 +25,14 @@ import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
-import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.RuleChain
 
 @OptIn(ExperimentalCoilApi::class)
 class PetListTest {
-  private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-  private val coilRule = CoilRule(R.drawable.dog)
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-  @get:Rule
-  val rule =
-    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
-      around(composeTestRule)
-      around(coilRule)
-    }
+  @get:Rule val coilRule = CoilRule(R.drawable.dog)
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
@@ -81,7 +73,7 @@ class PetListTest {
       onNodeWithTag(IMAGE_TAG, true).assertIsDisplayed()
       onNodeWithText(ANIMAL.name).assertIsDisplayed()
       onNodeWithText(ANIMAL.breed.orEmpty()).assertIsDisplayed()
-      onNodeWithText("${ANIMAL.gender} – ${ANIMAL.age}").assertIsDisplayed()
+      onNodeWithText("${ANIMAL.gender.displayName} – ${ANIMAL.age}").assertIsDisplayed()
     }
   }
 

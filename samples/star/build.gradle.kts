@@ -34,7 +34,7 @@ sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.cir
 
 emulatorwtf {
   // CLI version to use, defaults to 0.9.8
-  version.set("0.9.8")
+  // version.set("0.9.8")
 
   // emulator.wtf API token, we recommend either using the EW_API_TOKEN env var
   // instead of this or passing this value in via a project property

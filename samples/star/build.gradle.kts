@@ -36,6 +36,10 @@ emulatorwtf {
   // CLI version to use, defaults to 0.9.8
   version.set("0.9.8")
 
+  // emulator.wtf API token, we recommend either using the EW_API_TOKEN env var
+  // instead of this or passing this value in via a project property
+  //token.set("")
+
   // where to store results in, they will be further scoped by the variant name,
   // i.e. ./gradlew :app:testFreeDebugWithEmulatorWtf will store outputs in
   // build/build-results/freeDebug

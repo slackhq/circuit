@@ -38,7 +38,7 @@ jobs:
         env:
           EMULATOR_WTF_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
         with:
-          arguments: samples:star:apk:assembleRelease samples:star:assembleAndroidTest samples:star:testReleaseWithEmulatorWtf --continue --no-build-cache --no-configuration-cache
+          arguments: samples:star:apk:assembleRelease samples:star:assembleAndroidTest samples:star:testReleaseWithEmulatorWtf --continue --info --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
 

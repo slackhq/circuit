@@ -1,0 +1,31 @@
+apiVersion: v1alpha
+kind: espresso
+sauce:
+  region: us-west-1
+  concurrency: 1
+  metadata:
+    tags:
+      - sauce lab wip
+espresso:
+  app: samples/star/apk/build/outputs/apk/release/apk-release.apk
+  testApp: samples/star/build/outputs/apk/androidTest/release/star-release-androidTest.apk
+suites:
+  - name: "Run Vanilla Functional Test: PetDetailTest"
+    testOptions:
+      clearPackageData: true
+      useTestOrchestrator: true
+      class:
+        - com.slack.circuit.star.petdetail.PetDetailTest
+    emulators:
+      - name: "Android GoogleAPI Emulator"
+        orientation: portrait
+        platformVersions:
+          - "13.0"
+
+# Controls what artifacts to fetch when the suite on Sauce Cloud has finished.
+artifacts:
+  download:
+    when: always
+    match:
+      - junit.xml
+    directory: build/test-results

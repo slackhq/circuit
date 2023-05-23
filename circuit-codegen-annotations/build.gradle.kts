@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
   // region KMP Targets
-  android { publishLibraryVariants("release") }
+  androidTarget { publishLibraryVariants("release") }
   jvm()
   // Anvil/Dagger does not support iOS targets
   // endregion

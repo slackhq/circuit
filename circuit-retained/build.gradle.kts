@@ -11,7 +11,7 @@ plugins {
 
 kotlin {
   // region KMP Targets
-  android { publishLibraryVariants("release") }
+  androidTarget { publishLibraryVariants("release") }
   jvm()
   ios()
   iosSimulatorArm64()

@@ -26,6 +26,7 @@ datastore = "1.1.0-alpha04"
 dependencyAnalysisPlugin = "1.20.0"
 detekt = "1.22.0"
 dokka = "1.8.10"
+eithernet = "1.4.0"
 jdk = "19"
 kotlin = "1.8.21"
 kotlinpoet = "1.13.2"
@@ -165,6 +166,9 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.3"
+
+eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
+
 jline = "org.jline:jline:3.23.0"
 jsoup = "org.jsoup:jsoup:1.16.1"
 junit = "junit:junit:4.13.2"

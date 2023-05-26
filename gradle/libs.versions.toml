@@ -28,6 +28,7 @@ detekt = "1.23.0"
 dokka = "1.8.10"
 eithernet = "1.4.0"
 jdk = "19"
+kmmviewmodel = "1.0.0-ALPHA-9"
 kotlin = "1.8.20"
 kotlinpoet = "1.13.2"
 kotlinx-coroutines = "1.7.1"
@@ -172,6 +173,7 @@ eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet
 jline = "org.jline:jline:3.23.0"
 jsoup = "org.jsoup:jsoup:1.16.1"
 junit = "junit:junit:4.13.2"
+kmmviewmodel-core = { module = "com.rickclephas.kmm:kmm-viewmodel-core", version.ref = "kmmviewmodel"}
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}

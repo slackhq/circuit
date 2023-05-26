@@ -199,6 +199,7 @@ include(
   ":circuit-runtime",
   ":circuit-runtime-presenter",
   ":circuit-runtime-ui",
+  ":circuit-swiftui",
   ":circuit-test",
   ":samples:counter",
   ":samples:counter:apps",

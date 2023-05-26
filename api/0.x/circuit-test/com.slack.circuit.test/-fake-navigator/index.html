@@ -58,7 +58,7 @@
   <div class="breadcrumbs"><a href="../../../index.html">circuit-test</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.test</a><span class="delimiter">/</span><span class="current">FakeNavigator</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Fake</span><wbr></wbr><span><span>Navigator</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FakeNavigator</a></div><p class="paragraph">A fake Navigator that can be used in tests to record and assert navigation events.</p><p class="paragraph">Example</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val navigator = FakeNavigator()<br>val presenter = FavoritesPresenter(navigator)<br><br>presenter.test {<br>  val state = awaitItem()<br>  state.eventSink(AddFavoriteClick)<br>  assertThat(navigator.awaitNextScreen())<br>    .isEqualTo(AddFavoriteScreen)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FakeNavigator</a> : <span data-unresolved-link="com.slack.circuit.runtime/Navigator///PointingToDeclaration/">Navigator</span></div><p class="paragraph">A fake <span data-unresolved-link="com.slack.circuit.runtime/Navigator///PointingToDeclaration/">Navigator</span> that can be used in tests to record and assert navigation events.</p><p class="paragraph">Example</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val navigator = FakeNavigator()<br>val presenter = FavoritesPresenter(navigator)<br><br>presenter.test {<br>  val state = awaitItem()<br>  state.eventSink(AddFavoriteClick)<br>  assertThat(navigator.awaitNextScreen())<br>    .isEqualTo(AddFavoriteScreen)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
@@ -109,7 +109,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-next-screen.html"><span class="token function">awaitNextScreen</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></div><div class="brief "><p class="paragraph">Awaits the next Screen that was navigated to or throws if no screens were navigated to.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-next-screen.html"><span class="token function">awaitNextScreen</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span></div><div class="brief "><p class="paragraph">Awaits the next <span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span> that was navigated to or throws if no screens were navigated to.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-reset-root.html"><span class="token function">awaitResetRoot</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="reset-root.html">resetRoot</a> or throws if no resets were performed.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-reset-root.html"><span class="token function">awaitResetRoot</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="reset-root.html">resetRoot</a> or throws if no resets were performed.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -159,17 +159,17 @@
               </div>
             </div>
           </div>
-<a data-name="-761989904%2FFunctions%2F1784003048" anchor-label="goTo" id="-761989904%2FFunctions%2F1784003048" data-filterable-set=":circuit-test:dokkaHtml/commonMain"></a>
+<a data-name="211654414%2FFunctions%2F1784003048" anchor-label="goTo" id="211654414%2FFunctions%2F1784003048" data-filterable-set=":circuit-test:dokkaHtml/commonMain"></a>
           <div class="table-row" data-filterable-current=":circuit-test:dokkaHtml/commonMain" data-filterable-set=":circuit-test:dokkaHtml/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="go-to.html"><span>go</span><wbr></wbr><span><span>To</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-761989904%2FFunctions%2F1784003048"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="211654414%2FFunctions%2F1784003048"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="go-to.html"><span class="token function">goTo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="go-to.html"><span class="token function">goTo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -184,22 +184,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-948206890%2FFunctions%2F1784003048" anchor-label="resetRoot" id="-948206890%2FFunctions%2F1784003048" data-filterable-set=":circuit-test:dokkaHtml/commonMain"></a>
+<a data-name="-1584698636%2FFunctions%2F1784003048" anchor-label="resetRoot" id="-1584698636%2FFunctions%2F1784003048" data-filterable-set=":circuit-test:dokkaHtml/commonMain"></a>
           <div class="table-row" data-filterable-current=":circuit-test:dokkaHtml/commonMain" data-filterable-set=":circuit-test:dokkaHtml/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="reset-root.html"><span>reset</span><wbr></wbr><span><span>Root</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-948206890%2FFunctions%2F1784003048"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1584698636%2FFunctions%2F1784003048"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reset-root.html"><span class="token function">resetRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newRoot<span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="reset-root.html"><span class="token function">resetRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newRoot<span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -214,7 +214,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="take-next-screen.html"><span class="token function">takeNextScreen</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></div><div class="brief "><p class="paragraph">Returns the next Screen that was navigated to or throws if no screens were navigated to.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="take-next-screen.html"><span class="token function">takeNextScreen</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span></div><div class="brief "><p class="paragraph">Returns the next <span data-unresolved-link="com.slack.circuit.runtime/Screen///PointingToDeclaration/">Screen</span> that was navigated to or throws if no screens were navigated to.</p></div></div></div>
                 </div>
               </div>
             </div>

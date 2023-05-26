@@ -1,10 +1,10 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:com.slack.circuit.runtime.ui////PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/index.html
-$dokka.location:com.slack.circuit.runtime.ui//ui/#kotlin.Function2[TypeParam(bounds=[kotlin.Any?]),androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/ui.html
+$dokka.location:com.slack.circuit.runtime.ui//ui/#kotlin.Function2[TypeParam(bounds=[com.slack.circuit.runtime.CircuitUiState]),androidx.compose.ui.Modifier,kotlin.Unit]/PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/ui.html
 $dokka.location:com.slack.circuit.runtime.ui/Ui.Factory///PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/-factory/index.html
-$dokka.location:com.slack.circuit.runtime.ui/Ui.Factory/create/#[Error type: Unresolved type for Screen]#[Error type: Unresolved type for CircuitContext]/PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/-factory/create.html
+$dokka.location:com.slack.circuit.runtime.ui/Ui.Factory/create/#com.slack.circuit.runtime.Screen#com.slack.circuit.runtime.CircuitContext/PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/-factory/create.html
 $dokka.location:com.slack.circuit.runtime.ui/Ui///PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html
-$dokka.location:com.slack.circuit.runtime.ui/Ui/Content/#TypeParam(bounds=[kotlin.Any?])#androidx.compose.ui.Modifier/PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/-content.html
+$dokka.location:com.slack.circuit.runtime.ui/Ui/Content/#TypeParam(bounds=[com.slack.circuit.runtime.CircuitUiState])#androidx.compose.ui.Modifier/PointingToDeclaration/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/-content.html
 com.slack.circuit.runtime.ui
 

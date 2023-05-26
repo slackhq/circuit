@@ -630,6 +630,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#090" class="md-nav__link">
+    0.9.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preliminary-support-for-ios-targets" class="md-nav__link">
+    Preliminary support for iOS targets
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    Misc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-updates" class="md-nav__link">
+    Dependency updates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#080" class="md-nav__link">
     0.8.0
   </a>
@@ -833,6 +861,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#090" class="md-nav__link">
+    0.9.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preliminary-support-for-ios-targets" class="md-nav__link">
+    Preliminary support for iOS targets
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    Misc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-updates" class="md-nav__link">
+    Dependency updates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#080" class="md-nav__link">
     0.8.0
   </a>
@@ -990,6 +1046,31 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="090">0.9.0<a class="headerlink" href="#090" title="Permanent link">&para;</a></h2>
+<p><em>2023-05-26</em></p>
+<h2 id="preliminary-support-for-ios-targets">Preliminary support for iOS targets<a class="headerlink" href="#preliminary-support-for-ios-targets" title="Permanent link">&para;</a></h2>
+<p>Following the announcement of Compose for iOS alpha, this release adds <code>ios()</code> and <code>iosSimulatorArm64()</code> targets for the Circuit core artifacts. Note that this support doesn&rsquo;t come with any extra APIs yet for iOS, just basic target support only. We&rsquo;re not super sure what direction we want to take with iOS, but encourage others to try it out and let us know what patterns you like. We have updated the Counter sample to include an iOS app target as well, using Circuit for the presentation layer only and SwiftUI for the UI.</p>
+<p>Note that circuit-codegen and circuit-codegen-annotations don&rsquo;t support these yet, as Anvil and Dagger only support JVM targets.</p>
+<p>More details can be found in the PR: <a href="https://github.com/slackhq/circuit/pull/583">https://github.com/slackhq/circuit/pull/583</a></p>
+<h2 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Use new baseline profile plugin for generating baseline profiles.</li>
+<li>Misc sample app fixes and updates.</li>
+<li>Add window size class example to STAR sample.</li>
+<li>Switch to Roborazzi for screenshot test samples.</li>
+<li>Small documentation updates.</li>
+<li>Add bi-directional Flow/Circuit interop to interop sample.</li>
+</ul>
+<p>Note that we unintentionally used an experimental animation API for <code>NavigatorDefaults.DefaultDecotration</code>, which may cause R8 issues if you use a newer, experimental version of Compose animation. To avoid issues, copy the animation code and use your own copy compiled against the newest animation APIs. We&rsquo;ll fix this after Compose 1.5.0 is released.</p>
+<h2 id="dependency-updates">Dependency updates<a class="headerlink" href="#dependency-updates" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>androidx.activity -&gt; 1.7.2
+compose -&gt; 1.4.3
+compose-compiler -&gt; 1.4.7
+coroutines -&gt; 1.7.1
+kotlin -&gt; 1.8.21
+kotlinpoet -&gt; 1.13.2
+turbine -&gt; 0.13.0
+</code></pre></div>
 <h2 id="080">0.8.0<a class="headerlink" href="#080" title="Permanent link">&para;</a></h2>
 <p><em>2023-04-06</em></p>
 <h2 id="core-split-up-core-artifacts">[Core] Split up core artifacts.<a class="headerlink" href="#core-split-up-core-artifacts" title="Permanent link">&para;</a></h2>

@@ -1,0 +1,3 @@
+language = Objective-C
+package = com.slack.circuit.swiftui.objc
+headers = CircuitSwiftUINavigator.h

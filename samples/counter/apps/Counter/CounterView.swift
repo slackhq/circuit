@@ -1,12 +1,11 @@
 import SwiftUI
 import counter
-import KMMViewModelState
 
-struct ContentView: View {
-  @ObservedViewModelState var state = PresenterFactory.shared.counterPresenter()
+struct CounterView: View {
+    
+  var state: CounterScreenState
 
   var body: some View {
-    NavigationView {
       VStack(alignment: .center) {
         Text("Count \(state.count)")
           .font(.system(size: 36))
@@ -30,14 +29,16 @@ struct ContentView: View {
           .foregroundColor(.white)
           .background(Color.blue)
         }
+        Button("Prime?") {
+          state.eventSink(CounterScreenEventGoTo(screen: IosPrimeScreen(number: state.count)))
+        }.padding()
       }
       .navigationBarTitle("Counter")
-    }
   }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct CounterView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView()
+      CounterView(state: CounterScreenState(count: 0, eventSink: { _ in }))
   }
 }

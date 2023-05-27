@@ -7,8 +7,9 @@ plugins {
 
 kotlin {
   // region KMP Targets
-  ios()
-  iosSimulatorArm64()
+  val iosArm64 = iosArm64()
+  val iosX64 = iosX64()
+  val iosSimulatorArm64 = iosSimulatorArm64()
   // endregion
 
   sourceSets {
@@ -17,6 +18,16 @@ kotlin {
         api(projects.circuitRuntimePresenter)
         api(libs.kmmviewmodel.core)
         implementation(libs.molecule.runtime)
+      }
+    }
+  }
+
+  listOf(
+    iosArm64, iosX64, iosSimulatorArm64
+  ).forEach {
+    it.compilations.getByName("main") {
+      cinterops.create("CircuitRuntimeObjC") {
+        includeDirs("$projectDir/../CircuitRuntimeObjC")
       }
     }
   }

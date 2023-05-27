@@ -33,5 +33,7 @@ Podfile.lock
 **/Pods/*
 **/*.xcworkspace/*
 **/*.xcodeproj/*
+xcuserdata/
 !samples/counter/apps/Counter.xcodeproj/project.pbxproj
+!Circuit.xcodeproj/project.pbxproj
 *.podspec

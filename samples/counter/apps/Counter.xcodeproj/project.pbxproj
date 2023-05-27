@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
-		1DE43CE32A210A1400EB0E36 /* KMMViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43CE22A210A1400EB0E36 /* KMMViewModel.swift */; };
-		1DE43CE52A21281B00EB0E36 /* KMMViewModelState in Frameworks */ = {isa = PBXBuildFile; productRef = 1DE43CE42A21281B00EB0E36 /* KMMViewModelState */; };
+		1DC5EA872A22732C00037003 /* CircuitSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1DC5EA862A22732C00037003 /* CircuitSwiftUI */; };
+		1DC5EA892A22785A00037003 /* PrimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC5EA882A22785A00037003 /* PrimeView.swift */; };
+		1DE43CE32A210A1400EB0E36 /* Circuit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43CE22A210A1400EB0E36 /* Circuit.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		602DC854301CF43C8E7B0F6D /* Pods_Counter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D2DFDA1A8E1896075A1701 /* Pods_Counter.framework */; };
-		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		7555FF83242A565900829871 /* CounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* CounterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,13 +33,14 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		1DE43CE12A2109E500EB0E36 /* KMM-ViewModel */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "KMM-ViewModel"; path = "../../../../../Rick Clephas/KMM-ViewModel"; sourceTree = "<group>"; };
-		1DE43CE22A210A1400EB0E36 /* KMMViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KMMViewModel.swift; sourceTree = "<group>"; };
+		1DC5EA882A22785A00037003 /* PrimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimeView.swift; sourceTree = "<group>"; };
+		1DE43CE22A210A1400EB0E36 /* Circuit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circuit.swift; sourceTree = "<group>"; };
+		1DE43D322A2272A300EB0E36 /* circuit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = circuit; path = ../../..; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		27D2DFDA1A8E1896075A1701 /* Pods_Counter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Counter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		35C96B8C8A190485ECDD3046 /* Pods-Counter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Counter.debug.xcconfig"; path = "Target Support Files/Pods-Counter/Pods-Counter.debug.xcconfig"; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Counter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Counter.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7555FF82242A565900829871 /* CounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E90321D9A8A0D137411EFA43 /* Pods-Counter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Counter.release.xcconfig"; path = "Target Support Files/Pods-Counter/Pods-Counter.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -48,8 +50,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DC5EA872A22732C00037003 /* CircuitSwiftUI in Frameworks */,
 				602DC854301CF43C8E7B0F6D /* Pods_Counter.framework in Frameworks */,
-				1DE43CE52A21281B00EB0E36 /* KMMViewModelState in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,7 +78,7 @@
 		1DE43CE02A2109E500EB0E36 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				1DE43CE12A2109E500EB0E36 /* KMM-ViewModel */,
+				1DE43D322A2272A300EB0E36 /* circuit */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -104,11 +106,12 @@
 			isa = PBXGroup;
 			children = (
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
-				7555FF82242A565900829871 /* ContentView.swift */,
+				7555FF82242A565900829871 /* CounterView.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
-				1DE43CE22A210A1400EB0E36 /* KMMViewModel.swift */,
+				1DE43CE22A210A1400EB0E36 /* Circuit.swift */,
+				1DC5EA882A22785A00037003 /* PrimeView.swift */,
 			);
 			path = Counter;
 			sourceTree = "<group>";
@@ -141,7 +144,7 @@
 			);
 			name = Counter;
 			packageProductDependencies = (
-				1DE43CE42A21281B00EB0E36 /* KMMViewModelState */,
+				1DC5EA862A22732C00037003 /* CircuitSwiftUI */,
 			);
 			productName = Counter;
 			productReference = 7555FF7B242A565900829871 /* Counter.app */;
@@ -239,9 +242,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DE43CE32A210A1400EB0E36 /* KMMViewModel.swift in Sources */,
+				1DE43CE32A210A1400EB0E36 /* Circuit.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
-				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				1DC5EA892A22785A00037003 /* PrimeView.swift in Sources */,
+				7555FF83242A565900829871 /* CounterView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,6 +381,7 @@
 					"$(SRCROOT)/../build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = Counter/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -406,6 +411,7 @@
 					"$(SRCROOT)/../build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = Counter/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -446,9 +452,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1DE43CE42A21281B00EB0E36 /* KMMViewModelState */ = {
+		1DC5EA862A22732C00037003 /* CircuitSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = KMMViewModelState;
+			productName = CircuitSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

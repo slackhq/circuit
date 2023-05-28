@@ -23,11 +23,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
-buildscript {
-  dependencies {
-    classpath(platform(libs.kotlin.plugins.bom))
-  }
-}
+buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false

@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
@@ -163,7 +164,7 @@ subprojects {
           }
         }
 
-        freeCompilerArgs.add("-progressive")
+        progressiveMode.set(true)
 
         if (hasCompose && suppressComposeKotlinVersion) {
           freeCompilerArgs.addAll(

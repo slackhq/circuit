@@ -1,7 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
-  id("com.android.library")
+  alias(libs.plugins.agp.library)
   kotlin("android")
 }
 

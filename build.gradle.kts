@@ -20,7 +20,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
-import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
@@ -28,7 +27,12 @@ buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
+  alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.agp.application) apply false
+  alias(libs.plugins.agp.library) apply false
+  alias(libs.plugins.agp.test) apply false
   alias(libs.plugins.anvil) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)

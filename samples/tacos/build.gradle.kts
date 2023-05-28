@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.application")
+  alias(libs.plugins.agp.application)
   kotlin("android")
   kotlin("kapt")
   kotlin("plugin.parcelize")

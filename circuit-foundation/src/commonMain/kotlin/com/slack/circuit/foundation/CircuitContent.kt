@@ -40,16 +40,16 @@ public fun CircuitContent(
     remember(onNavEvent) {
       object : Navigator {
         override fun goTo(screen: Screen) {
-          onNavEvent(GoToNavEvent(screen))
+          onNavEvent(NavEvent.GoTo(screen))
         }
 
         override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(ResetRootNavEvent(newRoot))
+          onNavEvent(NavEvent.ResetRoot(newRoot))
           return emptyList()
         }
 
         override fun pop(): Screen? {
-          onNavEvent(PopNavEvent)
+          onNavEvent(NavEvent.Pop)
           return null
         }
       }

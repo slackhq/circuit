@@ -13,17 +13,20 @@ import com.slack.circuit.runtime.presenter.Presenter
  */
 public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
-    is GoToNavEvent -> goTo(event.screen)
-    is ResetRootNavEvent -> resetRoot(event.newRoot)
-    PopNavEvent -> pop()
+    NavEvent.Pop -> pop()
+    is NavEvent.GoTo -> goTo(event.screen)
+    is NavEvent.ResetRoot -> resetRoot(event.newRoot)
   }
 }
 
-/** A sealed navigation interface intended to be used when making a navigation call back. */
-public sealed interface NavEvent : CircuitUiEvent
+/** A sealed navigation interface intended to be used when making a navigation callback. */
+public sealed interface NavEvent : CircuitUiEvent {
+  /** Corresponds to [Navigator.pop]. */
+  public object Pop : NavEvent
 
-internal object PopNavEvent : NavEvent
+  /** Corresponds to [Navigator.goTo]. */
+  public data class GoTo(internal val screen: Screen) : NavEvent
 
-internal data class GoToNavEvent(internal val screen: Screen) : NavEvent
-
-internal data class ResetRootNavEvent(internal val newRoot: Screen) : NavEvent
+  /** Corresponds to [Navigator.resetRoot]. */
+  public data class ResetRoot(internal val newRoot: Screen) : NavEvent
+}

@@ -206,7 +206,7 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 # Robolectric/Espresso ship with an old and totally borked version of hamcrest dependency, force a newer one
 testing-hamcrest = "org.hamcrest:hamcrest:2.2"
-truth = "com.google.truth:truth:1.1.3"
+truth = "com.google.truth:truth:1.1.4"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID

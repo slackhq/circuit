@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.9.1
+-----
+
+_2023-06-02_
+
+- [runtime] Promote `NavEvent` subtypes to public API.
+- [runtime] Update `com.benasher44:uuid` to `0.7.1`.
+- [code gen] Update Anvil to `2.4.6`.
+
 0.9.0
 -----
 

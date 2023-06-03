@@ -6,12 +6,12 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   `java-test-fixtures`
-  alias(libs.plugins.baselineprofile)
+  id(libs.plugins.baselineprofile.get().pluginId)
 }
 
 kotlin {
   // region KMP Targets
-  android { publishLibraryVariants("release") }
+  androidTarget { publishLibraryVariants("release") }
   jvm()
   ios()
   iosSimulatorArm64()

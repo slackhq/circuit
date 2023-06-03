@@ -5,7 +5,7 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 plugins {
   alias(libs.plugins.agp.test)
   kotlin("android")
-  alias(libs.plugins.baselineprofile)
+  id(libs.plugins.baselineprofile.get().pluginId)
 }
 
 android {

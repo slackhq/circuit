@@ -3,7 +3,7 @@
 plugins {
   alias(libs.plugins.agp.application)
   kotlin("android")
-  alias(libs.plugins.baselineprofile)
+  id(libs.plugins.baselineprofile.get().pluginId)
 }
 
 android {

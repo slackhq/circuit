@@ -30,7 +30,7 @@ tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
 
 kotlin {
   // region KMP Targets
-  android()
+  androidTarget()
   jvm()
   ios()
   // endregion

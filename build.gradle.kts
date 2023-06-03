@@ -190,8 +190,14 @@ subprojects {
     if (hasCompose) {
       @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
       dependencies {
-        add(org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
-        add(org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
+        add(
+          org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME,
+          libs.androidx.compose.compiler
+        )
+        add(
+          org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME,
+          libs.androidx.compose.compiler
+        )
       }
     }
 

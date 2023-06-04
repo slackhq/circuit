@@ -7,6 +7,7 @@ import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -91,18 +93,20 @@ class MainActivity : AppCompatActivity() {
           }
         }
 
-        val content: @Composable (Modifier) -> Unit = { modifier ->
-          // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
-          //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
-          //  them live enough to support this, but also sort of orthogonal to the point of this
-          //  sample.
-          key(circuitScreen) { CircuitContent(screen = circuitScreen, modifier = modifier) }
+        val content = remember {
+          movableContentOf {
+            // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
+            //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
+            //  them live enough to support this, but also sort of orthogonal to the point of this
+            //  sample.
+            key(circuitScreen) { CircuitContent(screen = circuitScreen) }
+          }
         }
 
         Scaffold { paddingValues ->
           if (useColumn) {
             Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
-              content(Modifier.weight(1f))
+              Box(Modifier.weight(1f)) { content() }
               menus()
             }
           } else {
@@ -112,7 +116,7 @@ class MainActivity : AppCompatActivity() {
               verticalAlignment = Alignment.CenterVertically
             ) {
               menus()
-              content(Modifier.weight(1f))
+              Box(Modifier.weight(1f)) { content() }
             }
           }
         }

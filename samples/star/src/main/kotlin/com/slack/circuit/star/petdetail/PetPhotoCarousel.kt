@@ -9,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -167,7 +168,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
       pagerState = pagerState,
       photoUrls = photoUrls,
       name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey
+      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     )
 
     HorizontalPagerIndicator(
@@ -194,17 +195,21 @@ private fun PhotoPager(
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,
+  modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,
 ) {
   HorizontalPager(
     pageCount = count,
     state = pagerState,
     key = photoUrls::get,
+    modifier = modifier,
     contentPadding = PaddingValues(16.dp),
   ) { page ->
     Card(
       modifier =
-        Modifier.graphicsLayer {
+        Modifier
+          .aspectRatio(1f)
+          .graphicsLayer {
           // Calculate the absolute offset for the current page from the
           // scroll position. We use the absolute value which allows us to mirror
           // any effects for both directions
@@ -234,7 +239,7 @@ private fun PhotoPager(
             }
             .build(),
         contentDescription = name,
-        contentScale = ContentScale.FillWidth,
+        contentScale = ContentScale.Crop,
       )
     }
   }

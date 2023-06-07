@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -200,38 +201,9 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
 private fun ShowAnimal(
   state: PetDetailScreen.State.Success,
   padding: PaddingValues,
-) =
-  when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-    true -> ShowAnimalLandscape(state, padding)
-    false -> ShowAnimalPortrait(state, padding)
-  }
-
-@Composable
-private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: PaddingValues) {
-  Row(
-    modifier = Modifier.padding(padding),
-    horizontalArrangement = spacedBy(16.dp),
-  ) {
-    CircuitContent(
-      PetPhotoCarouselScreen(
-        name = state.name,
-        photoUrls = state.photoUrls,
-        photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-      )
-    )
-    LazyColumn(verticalArrangement = spacedBy(16.dp)) { petDetailDescriptions(state) }
-  }
-}
-
-@Composable
-private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: PaddingValues) {
-  LazyColumn(
-    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
-    contentPadding = PaddingValues(16.dp),
-    verticalArrangement = spacedBy(16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    item {
+) {
+  val carouselContent = remember {
+    movableContentOf {
       CircuitContent(
         PetPhotoCarouselScreen(
           name = state.name,
@@ -240,6 +212,41 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
         )
       )
     }
+  }
+  return when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    true -> ShowAnimalLandscape(state, padding, carouselContent)
+    false -> ShowAnimalPortrait(state, padding, carouselContent)
+  }
+}
+
+@Composable
+private fun ShowAnimalLandscape(
+  state: PetDetailScreen.State.Success,
+  padding: PaddingValues,
+  carouselContent: @Composable () -> Unit,
+) {
+  Row(
+    modifier = Modifier.padding(padding),
+    horizontalArrangement = spacedBy(16.dp),
+  ) {
+    carouselContent()
+    LazyColumn(verticalArrangement = spacedBy(16.dp)) { petDetailDescriptions(state) }
+  }
+}
+
+@Composable
+private fun ShowAnimalPortrait(
+  state: PetDetailScreen.State.Success,
+  padding: PaddingValues,
+  carouselContent: @Composable () -> Unit,
+) {
+  LazyColumn(
+    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = spacedBy(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    item { carouselContent() }
     petDetailDescriptions(state)
   }
 }

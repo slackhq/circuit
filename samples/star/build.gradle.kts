@@ -83,6 +83,7 @@ dependencies {
   implementation(libs.bundles.androidx.activity)
   implementation(libs.coil)
   implementation(libs.coil.compose)
+  implementation(libs.eithernet)
   implementation(libs.okhttp)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.okio)
@@ -112,6 +113,7 @@ dependencies {
   testImplementation(libs.leakcanary.android.instrumentation)
   testImplementation(libs.roborazzi)
   testImplementation(libs.roborazzi.rules)
+  testImplementation(testFixtures(libs.eithernet))
   testImplementation(projects.samples.star.coilRule)
 
   androidTestImplementation(libs.androidx.compose.ui.testing.manifest)

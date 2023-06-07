@@ -207,9 +207,7 @@ private fun PhotoPager(
   ) { page ->
     Card(
       modifier =
-        Modifier
-          .aspectRatio(1f)
-          .graphicsLayer {
+        Modifier.aspectRatio(1f).graphicsLayer {
           // Calculate the absolute offset for the current page from the
           // scroll position. We use the absolute value which allows us to mirror
           // any effects for both directions

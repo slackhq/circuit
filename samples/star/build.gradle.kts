@@ -97,6 +97,7 @@ dependencies {
   implementation(libs.sqldelight.driver.android)
   implementation(libs.sqldelight.coroutines)
   implementation(libs.sqldelight.primitiveAdapters)
+  implementation(libs.telephoto.zoomableImageCoil)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)

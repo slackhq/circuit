@@ -48,6 +48,7 @@ robolectric = "4.10.3"
 roborazzi = "1.2.0"
 spotless = "6.18.0"
 sqldelight = "2.0.0-rc01"
+telephoto = "0.4.0"
 turbine = "0.13.0"
 versionsPlugin = "0.46.0"
 
@@ -202,6 +203,8 @@ rxjava = "io.reactivex.rxjava3:rxjava:3.1.6"
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqldelight" }
 sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
+
+telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 # Robolectric/Espresso ship with an old and totally borked version of hamcrest dependency, force a newer one

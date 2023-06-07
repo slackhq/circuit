@@ -334,7 +334,7 @@ private fun PetListGrid(
       when (LocalWindowWidthSizeClass.current) {
         WindowWidthSizeClass.Medium -> 3
         WindowWidthSizeClass.Expanded -> 4
-        // No exhausive whens available here
+        // No exhaustive whens available here
         else -> 2
       }
 

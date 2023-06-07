@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,7 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -37,11 +41,14 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.imageviewer.ImageViewerScreen
+import com.slack.circuit.star.overlay.FullScreenOverlay
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.rememberStableCoroutineScope
@@ -202,30 +209,43 @@ private fun PhotoPager(
     key = photoUrls::get,
     contentPadding = PaddingValues(16.dp),
   ) { page ->
+    val overlayHost = LocalOverlayHost.current
+    val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
+    val scope = rememberStableCoroutineScope()
+
     Card(
       modifier =
-        Modifier.graphicsLayer {
-          // Calculate the absolute offset for the current page from the
-          // scroll position. We use the absolute value which allows us to mirror
-          // any effects for both directions
-          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
-
-          // We animate the scaleX + scaleY, between 85% and 100%
-          lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
-            ->
-            scaleX = scale
-            scaleY = scale
+        Modifier.clickable {
+            scope.launch {
+              overlayHost.show(
+                FullScreenOverlay(
+                  ImageViewerScreen(id = photoUrl!!, url = photoUrl!!, placeholderKey = name)
+                )
+              )
+            }
           }
+          .graphicsLayer {
+            // Calculate the absolute offset for the current page from the
+            // scroll position. We use the absolute value which allows us to mirror
+            // any effects for both directions
+            val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
 
-          // We animate the alpha, between 50% and 100%
-          alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
-        }
+            // We animate the scaleX + scaleY, between 85% and 100%
+            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
+              ->
+              scaleX = scale
+              scaleY = scale
+            }
+
+            // We animate the alpha, between 50% and 100%
+            alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+          }
     ) {
       AsyncImage(
         modifier = Modifier.fillMaxWidth(),
         model =
           ImageRequest.Builder(LocalContext.current)
-            .data(photoUrls[page].takeIf(String::isNotBlank))
+            .data(photoUrl)
             .apply {
               if (page == 0) {
                 placeholderMemoryCacheKey(photoUrlMemoryCacheKey)

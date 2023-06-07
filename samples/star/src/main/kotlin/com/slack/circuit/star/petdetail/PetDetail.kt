@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
@@ -38,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -151,11 +149,7 @@ internal object PetDetailTestConstants {
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifier) {
-  val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
-
-  Scaffold(modifier = modifier.systemBarsPadding(), topBar = { TopBar(state) }) { padding ->
+  Scaffold(modifier = modifier, topBar = { TopBar(state) }) { padding ->
     when (state) {
       is PetDetailScreen.State.Loading -> Loading(padding)
       is PetDetailScreen.State.UnknownAnimal -> UnknownAnimal(padding)

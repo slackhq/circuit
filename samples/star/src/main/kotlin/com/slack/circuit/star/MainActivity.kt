@@ -17,6 +17,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.core.view.WindowCompat
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
@@ -47,6 +48,7 @@ class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig)
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    WindowCompat.setDecorFitsSystemWindows(window, false)
     var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
     if (intent.data != null) {
       val httpUrl = intent.data.toString().toHttpUrl()

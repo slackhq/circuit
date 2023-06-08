@@ -51,8 +51,6 @@ android { namespace = "com.slack.circuit.backstack" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
-baselineProfile {
-  filter { include("com.slack.circuit.backstack.**") }
-}
+baselineProfile { filter { include("com.slack.circuit.backstack.**") } }
 
 dependencies { baselineProfile(projects.samples.star.benchmark) }

@@ -46,8 +46,6 @@ android { namespace = "com.slack.circuit.overlay" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
-baselineProfile {
-  filter { include("com.slack.circuit.overlay.**") }
-}
+baselineProfile { filter { include("com.slack.circuit.overlay.**") } }
 
 dependencies { baselineProfile(projects.samples.star.benchmark) }

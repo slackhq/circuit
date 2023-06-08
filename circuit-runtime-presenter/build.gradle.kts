@@ -30,8 +30,6 @@ android { namespace = "com.slack.circuit.runtime.presenter" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
-baselineProfile {
-  filter { include("com.slack.circuit.runtime.presenter.**") }
-}
+baselineProfile { filter { include("com.slack.circuit.runtime.presenter.**") } }
 
 dependencies { baselineProfile(projects.samples.star.benchmark) }

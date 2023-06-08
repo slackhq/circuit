@@ -31,8 +31,6 @@ android { namespace = "com.slack.circuit.runtime.ui" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
-baselineProfile {
-  filter { include("com.slack.circuit.runtime.ui.**") }
-}
+baselineProfile { filter { include("com.slack.circuit.runtime.ui.**") } }
 
 dependencies { baselineProfile(projects.samples.star.benchmark) }

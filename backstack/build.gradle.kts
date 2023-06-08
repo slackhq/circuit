@@ -52,8 +52,6 @@ android { namespace = "com.slack.circuit.backstack" }
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
 baselineProfile {
-  // https://issuetracker.google.com/issues/282127523
-  baselineProfileOutputDir = "../../src/androidMain/generated/baselineProfiles"
   filter { include("com.slack.circuit.backstack.**") }
 }
 

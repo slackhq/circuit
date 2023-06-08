@@ -75,10 +75,6 @@ android {
   testBuildType = "release"
 }
 
-baselineProfile {
-  // https://issuetracker.google.com/issues/282127523
-  baselineProfileOutputDir = "../../src/androidMain/generated/baselineProfiles"
-  filter { include("com.slack.circuit.retained.**") }
-}
+baselineProfile { filter { include("com.slack.circuit.retained.**") } }
 
 dependencies { baselineProfile(projects.samples.star.benchmark) }

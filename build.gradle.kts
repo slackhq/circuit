@@ -178,7 +178,7 @@ subprojects {
     if (hasCompose) {
       dependencies {
         add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
-        add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
+//        add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
       }
     }
 

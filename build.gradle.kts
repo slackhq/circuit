@@ -23,11 +23,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
-buildscript {
-  dependencies {
-    classpath(platform(libs.kotlin.plugins.bom))
-  }
-}
+buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
@@ -184,20 +180,6 @@ subprojects {
       }
     }
 
-    if (hasCompose) {
-      @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-      dependencies {
-        add(
-          org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME,
-          libs.androidx.compose.compiler
-        )
-        add(
-          org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME,
-          libs.androidx.compose.compiler
-        )
-      }
-    }
-
     if (!project.path.startsWith(":samples")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }
     }
@@ -333,9 +315,14 @@ subprojects {
   // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
     configure<ComposeExtension> {
-      kotlinCompilerPlugin.set(
-        dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
-      )
+      // Sometimes we build against JB's compose compiler and sometimes Google's, whichever has
+      // better support for the kotlin version we're on
+
+      // Google version
+      //      kotlinCompilerPlugin.set(libs.androidx.compose.compiler.get().toString())
+
+      // JB version
+      kotlinCompilerPlugin.set(libs.compose.compilerJb.get().toString())
     }
   }
 

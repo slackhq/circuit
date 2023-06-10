@@ -19,6 +19,7 @@ compose-material3 = "1.1.0"
 compose-runtime = "1.4.3"
 compose-ui = "1.4.3"
 compose-jb = "1.5.0-dev1057"
+compose-jb-compiler = "1.4.7.1-beta"
 compose-jb-kotlinVersion = "1.8.20"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.46.1"
@@ -157,6 +158,7 @@ coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
 
+compose-compilerJb = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "compose-jb-compiler" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }

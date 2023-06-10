@@ -26,10 +26,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 buildscript {
   dependencies {
     classpath(platform(libs.kotlin.plugins.bom))
-    classpath(libs.baselineProfilePlugin) {
-      exclude(group = "org.jetbrains.kotlin")
-      exclude(group = "com.android.tools.build")
-    }
   }
 }
 

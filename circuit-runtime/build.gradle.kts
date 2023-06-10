@@ -28,8 +28,6 @@ android { namespace = "com.slack.circuit.runtime" }
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
 baselineProfile {
-  // https://issuetracker.google.com/issues/282127523
-  baselineProfileOutputDir = "../../src/androidMain/generated/baselineProfiles"
   filter {
     // Don't include subpackages, only one star
     include("com.slack.circuit.runtime.*")

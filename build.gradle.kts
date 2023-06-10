@@ -52,6 +52,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
+  alias(libs.plugins.baselineprofile) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()

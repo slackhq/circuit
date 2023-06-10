@@ -70,10 +70,10 @@ public class CircuitConfig private constructor(builder: Builder) {
   public val defaultNavDecoration: NavDecoration = builder.defaultNavDecoration
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
-  @OptIn(InternalCircuitApi::class)
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
+    @OptIn(InternalCircuitApi::class)
     context: CircuitContext = CircuitContext(null).also { it.config = this }
   ): Presenter<*>? {
     return nextPresenter(null, screen, navigator, context)
@@ -96,9 +96,9 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  @OptIn(InternalCircuitApi::class)
   public fun ui(
     screen: Screen,
+    @OptIn(InternalCircuitApi::class)
     context: CircuitContext = CircuitContext(null).also { it.config = this }
   ): Ui<*>? {
     return nextUi(null, screen, context)

@@ -116,7 +116,7 @@ public class CircuitConfig private constructor(builder: Builder) {
 
   public fun newBuilder(): Builder = Builder(this)
 
-  public class Builder constructor() {
+  public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =

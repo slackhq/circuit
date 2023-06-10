@@ -255,7 +255,7 @@ subprojects {
 
   // Common android config
   val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
-    compileSdk = 33
+    compileSdk = 34
 
     if (hasCompose) {
       buildFeatures { compose = true }

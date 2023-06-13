@@ -65,8 +65,8 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
  */
 @Composable
 public fun continuityRetainedStateRegistry(
-  factory: ViewModelProvider.Factory = Continuity.Factory,
   key: String = Continuity.KEY,
+  factory: ViewModelProvider.Factory = Continuity.Factory,
 ): RetainedStateRegistry {
   val vm = viewModel<Continuity>(key = key, factory = factory)
   val canRetain = rememberCanRetainChecker()

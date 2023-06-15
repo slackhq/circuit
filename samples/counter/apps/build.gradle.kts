@@ -12,9 +12,8 @@ plugins {
 android {
   namespace = "com.slack.circuit.sample.counter.android"
   defaultConfig {
-    compileSdk = 33
-    minSdk = 33
-    targetSdk = 33
+    minSdk = 31 // For the dynamic m3 theme
+    targetSdk = 34
   }
 }
 

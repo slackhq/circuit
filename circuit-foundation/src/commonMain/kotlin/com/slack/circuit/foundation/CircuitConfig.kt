@@ -66,23 +66,23 @@ public class CircuitConfig private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-      builder.onUnavailableContent
+    builder.onUnavailableContent
   public val defaultNavDecoration: NavDecoration = builder.defaultNavDecoration
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   public fun presenter(
-      screen: Screen,
-      navigator: Navigator,
-      context: CircuitContext = newContext()
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext = newContext()
   ): Presenter<*>? {
     return nextPresenter(null, screen, navigator, context)
   }
 
   public fun nextPresenter(
-      skipPast: Presenter.Factory?,
-      screen: Screen,
-      navigator: Navigator,
-      context: CircuitContext
+    skipPast: Presenter.Factory?,
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext
   ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
@@ -95,10 +95,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     return null
   }
 
-  public fun ui(
-      screen: Screen,
-      context: CircuitContext = newContext()
-  ): Ui<*>? {
+  public fun ui(screen: Screen, context: CircuitContext = newContext()): Ui<*>? {
     return nextUi(null, screen, context)
   }
 
@@ -120,7 +117,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-        UnavailableContent
+      UnavailableContent
       private set
 
     public var defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
@@ -162,7 +159,7 @@ public class CircuitConfig private constructor(builder: Builder) {
     }
 
     public fun setOnUnavailableContent(
-        content: @Composable (screen: Screen, modifier: Modifier) -> Unit
+      content: @Composable (screen: Screen, modifier: Modifier) -> Unit
     ): Builder = apply { onUnavailableContent = content }
 
     public fun setDefaultNavDecoration(decoration: NavDecoration): Builder = apply {
@@ -180,15 +177,17 @@ public class CircuitConfig private constructor(builder: Builder) {
 }
 
 @OptIn(InternalCircuitApi::class)
-internal fun CircuitConfig.newContext(): CircuitContext = CircuitContext(null).also { it.config = this }
+internal fun CircuitConfig.newContext(): CircuitContext =
+  CircuitContext(null).also { it.config = this }
 
 private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier) -> Unit =
-    { screen, modifier ->
-      BasicText(
-          "Route not available: ${screen::class.qualifiedName}",
-          modifier.background(Color.Red),
-          style = TextStyle(color = Color.Yellow))
-    }
+  { screen, modifier ->
+    BasicText(
+      "Route not available: ${screen::class.qualifiedName}",
+      modifier.background(Color.Red),
+      style = TextStyle(color = Color.Yellow)
+    )
+  }
 
 /** The [CircuitConfig] used in this context. */
 public var CircuitContext.config: CircuitConfig

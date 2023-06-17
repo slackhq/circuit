@@ -9,8 +9,8 @@ plugins {
 android {
   namespace = "com.slack.circuit.sample.interop"
   defaultConfig {
-    minSdk = 33
-    targetSdk = 33
+    minSdk = 28
+    targetSdk = 34
     versionCode = 1
     versionName = "1"
   }

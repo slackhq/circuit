@@ -5,7 +5,7 @@ The core state and event interfaces in Circuit are `CircuitUiState` and `Circuit
 
 Presenters are simple functions that determine and return composable states. UIs are simple functions that render states. Uis can emit events via `eventSink` properties in state classes, which presenters then handle. These are the core building blocks!
 
-States should be `@Stable`; events should be `@Immutable`.
+States should be [`@Stable`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable); events should be [`@Immutable`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable).
 
 > Wait, event callbacks in state types?
 

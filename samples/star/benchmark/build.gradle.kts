@@ -11,7 +11,7 @@ plugins {
 android {
   namespace = "com.circuit.samples.star.benchmark"
   defaultConfig {
-    targetSdk = 33
+    targetSdk = 34
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     // TODO temporary until AGP 8.2, which no longer requires this.

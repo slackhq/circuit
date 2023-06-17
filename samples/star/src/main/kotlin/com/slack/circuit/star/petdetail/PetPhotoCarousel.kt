@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -174,7 +175,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
       pagerState = pagerState,
       photoUrls = photoUrls,
       name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey
+      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     )
 
     HorizontalPagerIndicator(
@@ -194,6 +195,7 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
+@Suppress("LongParameterList")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
@@ -201,12 +203,14 @@ private fun PhotoPager(
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,
+  modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,
 ) {
   HorizontalPager(
     pageCount = count,
     state = pagerState,
     key = photoUrls::get,
+    modifier = modifier,
     contentPadding = PaddingValues(16.dp),
   ) { page ->
     val overlayHost = LocalOverlayHost.current
@@ -215,7 +219,8 @@ private fun PhotoPager(
 
     Card(
       modifier =
-        Modifier.clickable {
+        Modifier
+          .clickable {
             scope.launch {
               overlayHost.show(
                 FullScreenOverlay(
@@ -224,11 +229,11 @@ private fun PhotoPager(
               )
             }
           }
-          .graphicsLayer {
-            // Calculate the absolute offset for the current page from the
-            // scroll position. We use the absolute value which allows us to mirror
-            // any effects for both directions
-            val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
+          .aspectRatio(1f).graphicsLayer {
+          // Calculate the absolute offset for the current page from the
+          // scroll position. We use the absolute value which allows us to mirror
+          // any effects for both directions
+          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
 
             // We animate the scaleX + scaleY, between 85% and 100%
             lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
@@ -254,7 +259,7 @@ private fun PhotoPager(
             }
             .build(),
         contentDescription = name,
-        contentScale = ContentScale.FillWidth,
+        contentScale = ContentScale.Crop,
       )
     }
   }

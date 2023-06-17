@@ -39,6 +39,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
+  alias(libs.plugins.baselineprofile) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
@@ -254,7 +255,13 @@ subprojects {
 
   // Common android config
   val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
-    compileSdk = 33
+    // Don't force compile SDK 34 yet in circuit artifacts yet
+    compileSdk =
+      if (project.path.startsWith(":samples")) {
+        34
+      } else {
+        33
+      }
 
     if (hasCompose) {
       buildFeatures { compose = true }

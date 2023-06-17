@@ -25,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -56,12 +55,12 @@ import com.slack.circuit.star.ui.rememberStableCoroutineScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
+import kotlin.math.absoluteValue
 
 /*
  * This is a trivial example of a photo carousel used in the pet detail screen. We'd normally likely
@@ -219,8 +218,7 @@ private fun PhotoPager(
 
     Card(
       modifier =
-        Modifier
-          .clickable {
+        Modifier.clickable {
             scope.launch {
               overlayHost.show(
                 FullScreenOverlay(
@@ -229,11 +227,12 @@ private fun PhotoPager(
               )
             }
           }
-          .aspectRatio(1f).graphicsLayer {
-          // Calculate the absolute offset for the current page from the
-          // scroll position. We use the absolute value which allows us to mirror
-          // any effects for both directions
-          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
+          .aspectRatio(1f)
+          .graphicsLayer {
+            // Calculate the absolute offset for the current page from the
+            // scroll position. We use the absolute value which allows us to mirror
+            // any effects for both directions
+            val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
 
             // We animate the scaleX + scaleY, between 85% and 100%
             lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale

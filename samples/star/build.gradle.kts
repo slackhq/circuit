@@ -114,6 +114,7 @@ dependencies {
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
   testImplementation(libs.roborazzi)
+  testImplementation(libs.roborazzi.compose)
   testImplementation(libs.roborazzi.rules)
   testImplementation(testFixtures(libs.eithernet))
   testImplementation(projects.samples.star.coilRule)

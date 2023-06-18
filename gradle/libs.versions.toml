@@ -45,7 +45,7 @@ okhttp = "5.0.0-alpha.11"
 paparazzi = "1.3.0"
 retrofit = "2.9.0"
 robolectric = "4.10.3"
-roborazzi = "1.2.0"
+roborazzi = "1.3.0-alpha-4"
 spotless = "6.18.0"
 sqldelight = "2.0.0-rc01"
 telephoto = "0.4.0"
@@ -196,6 +196,7 @@ retrofit-converters-scalars = { module = "com.squareup.retrofit2:converter-scala
 robolectric = { module = "org.robolectric:robolectric", version.ref="robolectric" }
 
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
 rxjava = "io.reactivex.rxjava3:rxjava:3.1.6"

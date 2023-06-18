@@ -55,12 +55,12 @@ import com.slack.circuit.star.ui.rememberStableCoroutineScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
-import kotlin.math.absoluteValue
 
 /*
  * This is a trivial example of a photo carousel used in the pet detail screen. We'd normally likely

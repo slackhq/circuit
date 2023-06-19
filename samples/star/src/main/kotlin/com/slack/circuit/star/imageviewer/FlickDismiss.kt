@@ -40,6 +40,7 @@ fun FlickToDismiss(
 ) {
   val dragStartedOnLeftSide = remember { mutableStateOf(false) }
 
+  @Suppress("MagicNumber")
   Box(
     modifier =
       modifier
@@ -54,6 +55,7 @@ fun FlickToDismiss(
           interactionSource = interactionSource,
           startDragImmediately = state.isResettingOnRelease,
           onDragStarted = { startedPosition ->
+            @Suppress("UnsafeCallOnNullableType")
             dragStartedOnLeftSide.value = startedPosition.x < (state.contentSize.value!!.width / 2f)
           },
           onDragStopped = {
@@ -141,6 +143,7 @@ data class FlickToDismissState(
 
   internal suspend fun animateDismissal() {
     draggableState.drag(MutatePriority.PreventUserInput) {
+      @Suppress("UnsafeCallOnNullableType")
       Animatable(offset).animateTo(
         targetValue = contentSize.value!!.height * if (offset > 0f) 1f else -1f,
         animationSpec = tween(AnimationConstants.DefaultDurationMillis)

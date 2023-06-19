@@ -216,34 +216,35 @@ private fun PhotoPager(
     val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
     val scope = rememberStableCoroutineScope()
 
+    val clickableModifier =
+      photoUrl?.let { url ->
+        Modifier.clickable {
+          scope.launch {
+            overlayHost.show(
+              FullScreenOverlay(ImageViewerScreen(id = url, url = url, placeholderKey = name))
+            )
+          }
+        }
+      }
+        ?: Modifier
     Card(
       modifier =
-        Modifier.clickable {
-            scope.launch {
-              overlayHost.show(
-                FullScreenOverlay(
-                  ImageViewerScreen(id = photoUrl!!, url = photoUrl!!, placeholderKey = name)
-                )
-              )
-            }
-          }
-          .aspectRatio(1f)
-          .graphicsLayer {
-            // Calculate the absolute offset for the current page from the
-            // scroll position. We use the absolute value which allows us to mirror
-            // any effects for both directions
-            val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
+        clickableModifier.aspectRatio(1f).graphicsLayer {
+          // Calculate the absolute offset for the current page from the
+          // scroll position. We use the absolute value which allows us to mirror
+          // any effects for both directions
+          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
 
-            // We animate the scaleX + scaleY, between 85% and 100%
-            lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
-              ->
-              scaleX = scale
-              scaleY = scale
-            }
-
-            // We animate the alpha, between 50% and 100%
-            alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+          // We animate the scaleX + scaleY, between 85% and 100%
+          lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
+            ->
+            scaleX = scale
+            scaleY = scale
           }
+
+          // We animate the alpha, between 50% and 100%
+          alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+        }
     ) {
       AsyncImage(
         modifier = Modifier.fillMaxWidth(),

@@ -20,6 +20,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
+import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
@@ -183,14 +185,13 @@ subprojects {
     if (hasCompose && !pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
       // A standard android project using compose, we need to force the version again here
       // separate from the ComposeExtension configuration elsewhere.
-      @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
       dependencies {
         add(
-          org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME,
+          PLUGIN_CLASSPATH_CONFIGURATION_NAME,
           libs.androidx.compose.compiler
         )
         add(
-          org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME,
+          NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME,
           libs.androidx.compose.compiler
         )
       }

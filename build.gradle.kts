@@ -186,14 +186,8 @@ subprojects {
       // A standard android project using compose, we need to force the version again here
       // separate from the ComposeExtension configuration elsewhere.
       dependencies {
-        add(
-          PLUGIN_CLASSPATH_CONFIGURATION_NAME,
-          libs.androidx.compose.compiler
-        )
-        add(
-          NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME,
-          libs.androidx.compose.compiler
-        )
+        add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
+        add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
       }
     }
 

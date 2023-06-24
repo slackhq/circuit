@@ -336,10 +336,10 @@ subprojects {
       // better support for the kotlin version we're on
 
       // Google version
-      //      kotlinCompilerPlugin.set(libs.androidx.compose.compiler.get().toString())
+      kotlinCompilerPlugin.set(libs.androidx.compose.compiler.get().toString())
 
       // JB version
-      kotlinCompilerPlugin.set(libs.compose.compilerJb.get().toString())
+      //      kotlinCompilerPlugin.set(libs.compose.compilerJb.get().toString())
     }
   }
 

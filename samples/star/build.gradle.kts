@@ -80,7 +80,8 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.swiperefresh)
   implementation(libs.androidx.compose.accompanist.systemUi)
   implementation(libs.androidx.compose.ui.tooling)
-  implementation(libs.bundles.androidx.activity)
+  // Use a newer version for access to edgeToEdge APIs
+  implementation("androidx.activity:activity-ktx:1.8.0-alpha05")
   implementation(libs.coil)
   implementation(libs.coil.compose)
   implementation(libs.eithernet)
@@ -97,6 +98,7 @@ dependencies {
   implementation(libs.sqldelight.driver.android)
   implementation(libs.sqldelight.coroutines)
   implementation(libs.sqldelight.primitiveAdapters)
+  implementation(libs.telephoto.zoomableImageCoil)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)
@@ -112,6 +114,7 @@ dependencies {
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
   testImplementation(libs.roborazzi)
+  testImplementation(libs.roborazzi.compose)
   testImplementation(libs.roborazzi.rules)
   testImplementation(testFixtures(libs.eithernet))
   testImplementation(projects.samples.star.coilRule)

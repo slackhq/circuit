@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -264,6 +265,7 @@ internal fun PetList(
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   Scaffold(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    contentWindowInsets = WindowInsets(0, 0, 0, 0),
     topBar = {
       CenterAlignedTopAppBar(
         title = {
@@ -334,7 +336,7 @@ private fun PetListGrid(
       when (LocalWindowWidthSizeClass.current) {
         WindowWidthSizeClass.Medium -> 3
         WindowWidthSizeClass.Expanded -> 4
-        // No exhausive whens available here
+        // No exhaustive whens available here
         else -> 2
       }
 

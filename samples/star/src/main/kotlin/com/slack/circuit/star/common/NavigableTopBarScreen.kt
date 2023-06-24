@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -16,14 +17,16 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 @Composable
 fun BackPressNavIcon(
   modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
   iconButtonContent: @Composable () -> Unit = { ClosedIconImage() },
 ) {
-  val onBackPressedDispatcher =
-    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-      ?: error("No local LocalOnBackPressedDispatcherOwner found.")
-  IconButton(modifier = modifier, onClick = onBackPressedDispatcher::onBackPressed) {
-    iconButtonContent()
+  val backPressOwner = LocalOnBackPressedDispatcherOwner.current
+  val finalOnClick = remember {
+    onClick
+      ?: backPressOwner?.onBackPressedDispatcher?.let { dispatcher -> dispatcher::onBackPressed }
+        ?: error("No local LocalOnBackPressedDispatcherOwner found.")
   }
+  IconButton(modifier = modifier, onClick = finalOnClick) { iconButtonContent() }
 }
 
 @Composable

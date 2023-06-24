@@ -102,11 +102,9 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   }
 
   @Test
-  fun petList_show_list_for_success_state() {
+  fun petList_show_list_for_success_state() = snapshot { modifier ->
     val animals = persistentListOf(ANIMAL)
-    snapshot { modifier ->
-      PetList(PetListScreen.State.Success(animals, isRefreshing = false), modifier)
-    }
+    PetList(PetListScreen.State.Success(animals, isRefreshing = false), modifier)
   }
 
   @Test

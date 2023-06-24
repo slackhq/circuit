@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -18,7 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.compose.ui.graphics.Color
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
@@ -69,13 +68,11 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
-  val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
-
   val eventSink = state.eventSink
   Scaffold(
-    modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
+    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+    containerColor = Color.Transparent,
     bottomBar = {
       StarTheme(useDarkTheme = true) {
         BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->

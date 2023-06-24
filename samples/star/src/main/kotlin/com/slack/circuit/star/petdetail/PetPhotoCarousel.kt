@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +32,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -37,6 +41,7 @@ import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.VerticalPagerIndicator
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
@@ -145,6 +150,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
       .focusable()
       .onKeyEvent { event ->
         if (event.nativeKeyEvent.action != KeyEvent.ACTION_UP) return@onKeyEvent false
+        // TODO vert
         val index =
           when (event.nativeKeyEvent.keyCode) {
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
@@ -163,20 +169,26 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
         }
       }
   ) {
-    PhotoPager(
-      count = totalPhotos,
-      pagerState = pagerState,
-      photoUrls = photoUrls,
-      name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
-    )
-
-    HorizontalPagerIndicator(
-      pagerState = pagerState,
-      pageCount = totalPhotos,
-      modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
-      activeColor = MaterialTheme.colorScheme.onBackground
-    )
+    when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      true -> {
+        VerticalPhotoPager(
+          count = totalPhotos,
+          pagerState = pagerState,
+          photoUrls = photoUrls,
+          name = name,
+          photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+        )
+      }
+      false -> {
+        HorizontalPhotoPager(
+          count = totalPhotos,
+          pagerState = pagerState,
+          photoUrls = photoUrls,
+          name = name,
+          photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+        )
+      }
+    }
   }
 
   // Focus the pager so we can cycle through it with arrow keys
@@ -188,10 +200,9 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
-@Suppress("LongParameterList")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PhotoPager(
+private fun ColumnScope.HorizontalPhotoPager(
   count: Int,
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
@@ -206,40 +217,84 @@ private fun PhotoPager(
     modifier = modifier,
     contentPadding = PaddingValues(16.dp),
   ) { page ->
-    Card(
-      modifier =
-        Modifier.aspectRatio(1f).graphicsLayer {
-          // Calculate the absolute offset for the current page from the
-          // scroll position. We use the absolute value which allows us to mirror
-          // any effects for both directions
-          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
+    PhotoPage(page, pagerState, photoUrls, name, photoUrlMemoryCacheKey)
+  }
 
-          // We animate the scaleX + scaleY, between 85% and 100%
-          lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
-            ->
-            scaleX = scale
-            scaleY = scale
-          }
+  HorizontalPagerIndicator(
+    pagerState = pagerState,
+    pageCount = count,
+    modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+    activeColor = MaterialTheme.colorScheme.onBackground
+  )
+}
 
-          // We animate the alpha, between 50% and 100%
-          alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ColumnScope.VerticalPhotoPager(
+  count: Int,
+  pagerState: PagerState,
+  photoUrls: ImmutableList<String>,
+  name: String,
+  photoUrlMemoryCacheKey: String? = null,
+) {
+  VerticalPager(
+    pageCount = count,
+    state = pagerState,
+    key = photoUrls::get,
+    contentPadding = PaddingValues(16.dp),
+  ) { page ->
+    PhotoPage(page, pagerState, photoUrls, name, photoUrlMemoryCacheKey)
+  }
+
+  VerticalPagerIndicator(
+    pagerState = pagerState,
+    pageCount = count,
+    modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+    activeColor = MaterialTheme.colorScheme.onBackground
+  )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PhotoPage(
+  page: Int,
+  pagerState: PagerState,
+  photoUrls: ImmutableList<String>,
+  name: String,
+  photoUrlMemoryCacheKey: String? = null,
+) {
+  Card(
+    modifier =
+      Modifier.aspectRatio(1f).graphicsLayer {
+        // Calculate the absolute offset for the current page from the
+        // scroll position. We use the absolute value which allows us to mirror
+        // any effects for both directions
+        val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
+
+        // We animate the scaleX + scaleY, between 85% and 100%
+        lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale ->
+          scaleX = scale
+          scaleY = scale
         }
-    ) {
-      AsyncImage(
-        modifier = Modifier.fillMaxWidth(),
-        model =
-          ImageRequest.Builder(LocalContext.current)
-            .data(photoUrls[page].takeIf(String::isNotBlank))
-            .apply {
-              if (page == 0) {
-                placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
-                crossfade(AnimationConstants.DefaultDurationMillis)
-              }
+
+        // We animate the alpha, between 50% and 100%
+        alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
+      }
+  ) {
+    AsyncImage(
+      modifier = Modifier.fillMaxWidth(),
+      model =
+        ImageRequest.Builder(LocalContext.current)
+          .data(photoUrls[page].takeIf(String::isNotBlank))
+          .apply {
+            if (page == 0) {
+              placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
+              crossfade(AnimationConstants.DefaultDurationMillis)
             }
-            .build(),
-        contentDescription = name,
-        contentScale = ContentScale.Crop,
-      )
-    }
+          }
+          .build(),
+      contentDescription = name,
+      contentScale = ContentScale.Crop,
+    )
   }
 }

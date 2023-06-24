@@ -15,6 +15,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -105,7 +106,9 @@ class PetDetailUiTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent {
+        CircuitCompositionLocals(circuitConfig) { ContentWithOverlays { PetDetail(success) } }
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -144,7 +147,9 @@ class PetDetailUiTest {
         .build()
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent {
+        CircuitCompositionLocals(circuitConfig) { ContentWithOverlays { PetDetail(success) } }
+      }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()

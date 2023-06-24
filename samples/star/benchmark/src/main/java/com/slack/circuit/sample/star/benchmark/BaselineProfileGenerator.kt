@@ -11,7 +11,7 @@ class BaselineProfileGenerator {
 
   @Test
   fun startupBaselineProfile() =
-    baselineProfileRule.collectBaselineProfile(
+    baselineProfileRule.collect(
       packageName = "com.slack.circuit.sample.star.apk",
       // Iteration values recommended by AndroidX folks
       maxIterations = 15,

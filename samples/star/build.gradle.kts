@@ -81,7 +81,7 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.systemUi)
   implementation(libs.androidx.compose.ui.tooling)
   // Use a newer version for access to edgeToEdge APIs
-  implementation("androidx.activity:activity-ktx:1.8.0-alpha05")
+  implementation("androidx.activity:activity-ktx:1.8.0-alpha06")
   implementation(libs.coil)
   implementation(libs.coil.compose)
   implementation(libs.eithernet)

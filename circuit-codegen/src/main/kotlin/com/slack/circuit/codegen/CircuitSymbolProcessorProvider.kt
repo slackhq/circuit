@@ -158,7 +158,7 @@ private class CircuitSymbolProcessor(
         )
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class.java)
+            .addAnnotation(Inject::class)
             .addParameters(factoryData.constructorParams)
             .build()
         )

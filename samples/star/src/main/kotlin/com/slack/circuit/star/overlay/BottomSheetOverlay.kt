@@ -39,7 +39,6 @@ class BottomSheetOverlay<Model : Any, Result : Any>(
     }
 
     ModalBottomSheet(
-      modifier = Modifier.fillMaxWidth(),
       content = {
         // Delay setting the result until we've finished dismissing
         content(model) { result ->

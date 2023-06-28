@@ -227,7 +227,9 @@ private fun ShowAnimalLandscape(
     LazyColumn(
       verticalArrangement = spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-    ) { petDetailDescriptions(state) }
+    ) {
+      petDetailDescriptions(state)
+    }
   }
 }
 

@@ -224,7 +224,12 @@ private fun ShowAnimalLandscape(
     horizontalArrangement = spacedBy(16.dp),
   ) {
     carouselContent()
-    LazyColumn(verticalArrangement = spacedBy(16.dp)) { petDetailDescriptions(state) }
+    LazyColumn(
+      verticalArrangement = spacedBy(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      petDetailDescriptions(state)
+    }
   }
 }
 
@@ -276,10 +281,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   }
 
   item(state.url) {
-    Button(
-      modifier = Modifier.fillMaxWidth(),
-      onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }
-    ) {
+    Button(onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }) {
       Text(
         modifier = Modifier.testTag(FULL_BIO_TAG),
         text = "Full bio on Petfinder ➡",

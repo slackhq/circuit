@@ -301,6 +301,7 @@ subprojects {
     lint {
       // https://issuetracker.google.com/issues/243267012
       disable += "Instantiatable"
+      checkTestSources = true
     }
   }
 

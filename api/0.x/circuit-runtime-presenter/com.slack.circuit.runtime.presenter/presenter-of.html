@@ -1,11 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>presenterOf</title>
-    <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../";</script>
-    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -18,32 +16,29 @@
         }
     }
     </script>
-<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
 <link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
-<script type="text/javascript" src="../../scripts/clipboard.js" async="async"></script>
-<script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
-<script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
-<script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
-<script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
-<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
-</head>
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
-            <a href="../../index.html">
-                    <span>circuit-runtime-presenter</span>
-            </a>
-    </div>
+<a href="../../index.html">
+<span>circuit-root</span>            </a>    </div>
     <div>
     </div>
     <div class="pull-right d-flex">
         <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-presenter:dokkaHtml/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain">common</button>
         </div>
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
@@ -54,19 +49,18 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageIds="circuit-runtime-presenter::com.slack.circuit.runtime.presenter//presenterOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.runtime.CircuitUiState])]/PointingToDeclaration//-1002598353">
-  <div class="breadcrumbs"><a href="../../index.html">circuit-runtime-presenter</a><span class="delimiter">/</span><a href="index.html">com.slack.circuit.runtime.presenter</a><span class="delimiter">/</span><span class="current">presenterOf</span></div>
+<div class="main-content" data-page-type="member" id="content" pageids="circuit-runtime-presenter::com.slack.circuit.runtime.presenter//presenterOf/#kotlin.Function0[TypeParam(bounds=[com.slack.circuit.runtime.CircuitUiState])]/PointingToDeclaration//1353099894">
+  <div class="breadcrumbs"><a href="../index.html">circuit-runtime-presenter</a><span class="delimiter">/</span><a href="index.html">com.slack.circuit.runtime.presenter</a><span class="delimiter">/</span><span class="current">presenterOf</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>presenter</span><wbr></wbr><span><span>Of</span></span></h1>
+    <h1 class="cover"><span>presenter</span><wbr><span><span>Of</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-presenter:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="presenter-of.html">UiState</a><span class="token operator"> : </span><span data-unresolved-link="com.slack.circuit.runtime/CircuitUiState///PointingToDeclaration/">CircuitUiState</span><span class="token operator">&gt; </span><a href="presenter-of.html"><span class="token function">presenterOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">crossinline </span>body<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a> </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="presenter-of.html">UiState</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-presenter/index.html">Presenter</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="presenter-of.html">UiState</a><span class="token operator">&gt;</span></div><p class="paragraph">Due to this bug in Studio, we can't write lambda impls of <a href="-presenter/index.html">Presenter</a> directly. This works around it by offering a shim function of the same name. Once it's fixed, we can remove this and make <a href="-presenter/index.html">Presenter</a> a fun interface instead.</p><p class="paragraph">Bug: https://issuetracker.google.com/issues/240292828</p><h4 class="">See also</h4><div class="table"><div class="table-row" data-filterable-current=":circuit-runtime-presenter:dokkaHtml/commonMain" data-filterable-set=":circuit-runtime-presenter:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-presenter/index.html"><span><span>Presenter</span></span></a></div></span></div><div><div class="title"><p class="paragraph">for main docs.</p></div></div></div></div></div></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="presenter-of.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt; </span><a href="presenter-of.html"><span class="token function">presenterOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">crossinline </span>body<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a>&nbsp;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="presenter-of.html">UiState</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-presenter/index.html">Presenter</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="presenter-of.html">UiState</a><span class="token operator">&gt;</span></div><p class="paragraph">Due to this bug in Studio, we can't write lambda impls of <a href="-presenter/index.html">Presenter</a> directly. This works around it by offering a shim function of the same name. Once it's fixed, we can remove this and make <a href="-presenter/index.html">Presenter</a> a fun interface instead.</p><p class="paragraph">Bug: https://issuetracker.google.com/issues/240292828</p><h4 class="">See also</h4><div class="table"><div class="table-row" data-filterable-current=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-presenter/index.html"><span><span>Presenter</span></span></a></div></span></div><div><div class="title"><p class="paragraph">for main docs.</p></div></div></div></div></div></div></div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
-                class="pull-right"><span>Generated by </span><a
-                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
     </div>
 </div>
 </body>
 </html>
+

@@ -1,11 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>SaveableBackStack</title>
-    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../../";</script>
-    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -18,32 +16,29 @@
         }
     }
     </script>
-<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
-<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
-<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
-<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
-<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
-<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
-</head>
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
-            <a href="../../../index.html">
-                    <span>backstack</span>
-            </a>
-    </div>
+<a href="../../../index.html">
+<span>circuit-root</span>            </a>    </div>
     <div>
     </div>
     <div class="pull-right d-flex">
         <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":backstack:dokkaHtml/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":backstack:dokkaHtmlPartial/commonMain">common</button>
         </div>
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
@@ -54,28 +49,28 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="backstack::com.slack.circuit.backstack/SaveableBackStack///PointingToDeclaration//133827745">
-  <div class="breadcrumbs"><a href="../../../index.html">backstack</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.backstack</a><span class="delimiter">/</span><span class="current">SaveableBackStack</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="backstack::com.slack.circuit.backstack/SaveableBackStack///PointingToDeclaration//-177428028">
+  <div class="breadcrumbs"><a href="../../index.html">backstack</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.backstack</a><span class="delimiter">/</span><span class="current">SaveableBackStack</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Saveable</span><wbr></wbr><span>Back</span><wbr></wbr><span><span>Stack</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">SaveableBackStack</a> : <a href="../-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">&gt; </span></div><p class="paragraph">A <a href="../-back-stack/index.html">BackStack</a> that supports saving its state via <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/package-summary.html">rememberSaveable</a>. See <a href="../remember-saveable-back-stack.html">rememberSaveableBackStack</a>.</p></div></div>
+    <h1 class="cover"><span>Saveable</span><wbr><span>Back</span><wbr><span><span>Stack</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">SaveableBackStack</a> : <a href="../-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">&gt; </span></div><p class="paragraph">A <a href="../-back-stack/index.html">BackStack</a> that supports saving its state via <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/package-summary.html">rememberSaveable</a>. See <a href="../remember-saveable-back-stack.html">rememberSaveableBackStack</a>.</p></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-710536394%2FConstructors%2F133827745" anchor-label="SaveableBackStack" id="-710536394%2FConstructors%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
+        <div class="table"><a data-name="-710536394%2FConstructors%2F-177428028" anchor-label="SaveableBackStack" id="-710536394%2FConstructors%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-saveable-back-stack.html"><span>Saveable</span><wbr></wbr><span>Back</span><wbr></wbr><span><span>Stack</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-710536394%2FConstructors%2F133827745"></span>
+                  <div><a href="-saveable-back-stack.html"><span>Saveable</span><wbr><span>Back</span><wbr><span><span>Stack</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-710536394%2FConstructors%2F-177428028"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -84,96 +79,17 @@
       </div>
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="209681278%2FClasslikes%2F133827745" anchor-label="Record" id="209681278%2FClasslikes%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
+        <div class="table"><a data-name="209681278%2FClasslikes%2F-177428028" anchor-label="Record" id="209681278%2FClasslikes%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-record/index.html"><span><span>Record</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="209681278%2FClasslikes%2F133827745"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="209681278%2FClasslikes%2F-177428028"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-record/index.html">Record</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>route<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span>uuid4().toString()</span></span><span class="token punctuation">)</span> : <a href="../-back-stack/-record/index.html">BackStack.Record</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-1718274996%2FFunctions%2F133827745" anchor-label="iterator" id="-1718274996%2FFunctions%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="iterator.html"><span><span>iterator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1718274996%2FFunctions%2F133827745"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="iterator.html"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">&gt;</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1898187567%2FFunctions%2F133827745" anchor-label="pop" id="1898187567%2FFunctions%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="pop.html"><span><span>pop</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1898187567%2FFunctions%2F133827745"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Attempt to pop the top item off of the back stack, returning the popped <a href="-record/index.html">Record</a> if popping was successful or <code class="lang-kotlin">null</code> if no entry was popped.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-414125503%2FFunctions%2F133827745" anchor-label="popUntil" id="-414125503%2FFunctions%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="../pop-until.html"><span>pop</span><wbr></wbr><span><span>Until</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-414125503%2FFunctions%2F133827745"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="index.html">SaveableBackStack</a><span class="token punctuation">.</span><a href="../pop-until.html"><span class="token function">popUntil</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1953588942%2FFunctions%2F133827745" anchor-label="push" id="1953588942%2FFunctions%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="push.html"><span><span>push</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1953588942%2FFunctions%2F133827745"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">record<span class="token operator">: </span><a href="-record/index.html">SaveableBackStack.Record</a></span></span><span class="token punctuation">)</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-946461632%2FFunctions%2F133827745" anchor-label="push" id="-946461632%2FFunctions%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="../push.html"><span><span>push</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-946461632%2FFunctions%2F133827745"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html">SaveableBackStack</a><span class="token punctuation">.</span><a href="../push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">route<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-record/index.html">Record</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>route<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span>uuid4().toString()</span></span><span class="token punctuation">)</span> : <a href="../-back-stack/-record/index.html">BackStack.Record</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -182,62 +98,141 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="-1925478601%2FProperties%2F133827745" anchor-label="isAtRoot" id="-1925478601%2FProperties%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
+        <div class="table"><a data-name="-1925478601%2FProperties%2F-177428028" anchor-label="isAtRoot" id="-1925478601%2FProperties%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../is-at-root.html"><span>is</span><wbr></wbr><span>At</span><wbr></wbr><span><span>Root</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1925478601%2FProperties%2F133827745"></span>
+                  <div><a href="../is-at-root.html"><span>is</span><wbr><span>At</span><wbr><span><span>Root</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1925478601%2FProperties%2F-177428028"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../is-at-root.html">isAtRoot</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">true</code> if the <a href="../-back-stack/index.html">BackStack</a> contains exactly one record.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../is-at-root.html">isAtRoot</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">true</code> if the <a href="../-back-stack/index.html">BackStack</a> contains exactly one record.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1649112587%2FProperties%2F133827745" anchor-label="isEmpty" id="-1649112587%2FProperties%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
+<a data-name="-1649112587%2FProperties%2F-177428028" anchor-label="isEmpty" id="-1649112587%2FProperties%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../is-empty.html"><span>is</span><wbr></wbr><span><span>Empty</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1649112587%2FProperties%2F133827745"></span>
+                  <div><a href="../is-empty.html"><span>is</span><wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1649112587%2FProperties%2F-177428028"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../is-empty.html">isEmpty</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">true</code> if the <a href="../-back-stack/index.html">BackStack</a> contains no records. <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/index.html">BackStack.firstOrNull</a> will return <code class="lang-kotlin">null</code>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../is-empty.html">isEmpty</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">true</code> if the <a href="../-back-stack/index.html">BackStack</a> contains no records. <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/index.html">BackStack.firstOrNull</a> will return <code class="lang-kotlin">null</code>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="185212569%2FProperties%2F133827745" anchor-label="size" id="185212569%2FProperties%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
+<a data-name="185212569%2FProperties%2F-177428028" anchor-label="size" id="185212569%2FProperties%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="size.html"><span><span>size</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="185212569%2FProperties%2F133827745"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="185212569%2FProperties%2F-177428028"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The number of records contained in this <a href="../-back-stack/index.html">BackStack</a> that will be seen by an iterator.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The number of records contained in this <a href="../-back-stack/index.html">BackStack</a> that will be seen by an iterator.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2026531110%2FProperties%2F133827745" anchor-label="topRecord" id="-2026531110%2FProperties%2F133827745" data-filterable-set=":backstack:dokkaHtml/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack:dokkaHtml/commonMain" data-filterable-set=":backstack:dokkaHtml/commonMain">
+<a data-name="-2026531110%2FProperties%2F-177428028" anchor-label="topRecord" id="-2026531110%2FProperties%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="top-record.html"><span>top</span><wbr></wbr><span><span>Record</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2026531110%2FProperties%2F133827745"></span>
+                  <div><a href="top-record.html"><span>top</span><wbr><span><span>Record</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2026531110%2FProperties%2F-177428028"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="top-record.html">topRecord</a><span class="token operator">: </span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="top-record.html">topRecord</a><span class="token operator">: </span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1718274996%2FFunctions%2F-177428028" anchor-label="iterator" id="-1718274996%2FFunctions%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="iterator.html"><span><span>iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1718274996%2FFunctions%2F-177428028"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="iterator.html"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1898187567%2FFunctions%2F-177428028" anchor-label="pop" id="1898187567%2FFunctions%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pop.html"><span><span>pop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1898187567%2FFunctions%2F-177428028"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Attempt to pop the top item off of the back stack, returning the popped <a href="-record/index.html">Record</a> if popping was successful or <code class="lang-kotlin">null</code> if no entry was popped.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-414125503%2FFunctions%2F-177428028" anchor-label="popUntil" id="-414125503%2FFunctions%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../pop-until.html"><span>pop</span><wbr><span><span>Until</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-414125503%2FFunctions%2F-177428028"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="index.html">SaveableBackStack</a><span class="token punctuation">.</span><a href="../pop-until.html"><span class="token function">popUntil</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="-record/index.html">SaveableBackStack.Record</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1953588942%2FFunctions%2F-177428028" anchor-label="push" id="1953588942%2FFunctions%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="push.html"><span><span>push</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1953588942%2FFunctions%2F-177428028"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">record<span class="token operator">: </span><a href="-record/index.html">SaveableBackStack.Record</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-946461632%2FFunctions%2F-177428028" anchor-label="push" id="-946461632%2FFunctions%2F-177428028" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":backstack:dokkaHtmlPartial/commonMain" data-filterable-set=":backstack:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../push.html"><span><span>push</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-946461632%2FFunctions%2F-177428028"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html">SaveableBackStack</a><span class="token punctuation">.</span><a href="../push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">route<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -248,11 +243,10 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
-                class="pull-right"><span>Generated by </span><a
-                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
     </div>
 </div>
 </body>
 </html>
+

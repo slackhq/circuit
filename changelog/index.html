@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../api/0.x/backstack/com.slack.circuit.backstack/">
+        <link rel="prev" href="../api/0.x/">
       
       
         <link rel="next" href="../contributing/">
@@ -360,6 +360,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../overlays/" class="md-nav__link">
+        Overlays
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../testing/" class="md-nav__link">
         Testing
       </a>
@@ -419,156 +434,10 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
-      
-      
-      
-        <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
-          API
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_13">
-          <span class="md-nav__icon md-icon"></span>
-          API
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../api/0.x/circuit-runtime/com.slack.circuit.runtime/" class="md-nav__link">
-        circuit-runtime
+      <a href="../api/0.x/" class="md-nav__link">
+        API
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/" class="md-nav__link">
-        circuit-runtime-presenter
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/" class="md-nav__link">
-        circuit-runtime-ui
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-foundation/com.slack.circuit.foundation/" class="md-nav__link">
-        circuit-foundation
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-overlay/com.slack.circuit.overlay/" class="md-nav__link">
-        circuit-overlay
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-retained/com.slack.circuit.retained/" class="md-nav__link">
-        circuit-retained
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-test/com.slack.circuit.test/" class="md-nav__link">
-        circuit-test
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/circuit-codegen-annotations/com.slack.circuit.codegen.annotations/" class="md-nav__link">
-        circuit-codegen-annotations
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/0.x/backstack/com.slack.circuit.backstack/" class="md-nav__link">
-        backstack
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -628,6 +497,20 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0100" class="md-nav__link">
+    0.10.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#091" class="md-nav__link">
+    0.9.1
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#090" class="md-nav__link">
@@ -861,6 +744,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0100" class="md-nav__link">
+    0.10.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#091" class="md-nav__link">
+    0.9.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#090" class="md-nav__link">
     0.9.0
   </a>
@@ -1046,6 +943,28 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="0100">0.10.0<a class="headerlink" href="#0100" title="Permanent link">&para;</a></h2>
+<p><em>2023-06-30</em></p>
+<ul>
+<li>[runtime] Fix wrong compose-compiler used in iOS targets. Now we&rsquo;re using the compose-multiplatform fork.</li>
+<li>[runtime] Allow creation of multiple <code>RetainedStateRegistry</code> instances.</li>
+<li>[docs] Add clarifying links to Events docs.</li>
+<li>[samples] Add new image detail view in STAR sample.</li>
+<li>Update Molecule to <code>0.11.0</code>.</li>
+<li>Update AndroidX compose-compiler to <code>1.4.8</code>.</li>
+<li>Update compose-multiplatform to <code>1.4.1</code>.</li>
+<li>Update to coroutines <code>1.7.2</code>.</li>
+<li>Update to Turbine <code>1.0.0</code>.</li>
+<li>Update to Kotlin <code>1.8.22</code>.</li>
+</ul>
+<p>Special thanks to <a href="https://github.com/bryanstern">@bryanstern</a>, <a href="https://github.com/saket">@saket</a>, and <a href="https://github.com/chrisbanes">@chrisbanes</a> for contributing to this release!</p>
+<h2 id="091">0.9.1<a class="headerlink" href="#091" title="Permanent link">&para;</a></h2>
+<p><em>2023-06-02</em></p>
+<ul>
+<li>[runtime] Promote <code>NavEvent</code> subtypes to public API.</li>
+<li>[runtime] Update <code>com.benasher44:uuid</code> to <code>0.7.1</code>.</li>
+<li>[code gen] Update Anvil to <code>2.4.6</code>.</li>
+</ul>
 <h2 id="090">0.9.0<a class="headerlink" href="#090" title="Permanent link">&para;</a></h2>
 <p><em>2023-05-26</em></p>
 <h2 id="preliminary-support-for-ios-targets">Preliminary support for iOS targets<a class="headerlink" href="#preliminary-support-for-ios-targets" title="Permanent link">&para;</a></h2>

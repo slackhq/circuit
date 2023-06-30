@@ -3,10 +3,10 @@
 import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
 
 plugins {
-  kotlin("multiplatform")
+  alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  id("com.android.application")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.agp.application)
+  alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
 android {

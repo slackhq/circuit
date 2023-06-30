@@ -11,15 +11,16 @@ coil = "2.4.0"
 compose-animation = "1.4.3"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler = "1.4.8"
-composeCompilerKotlinVersion = "1.8.22"
+compose-compiler-version = "1.4.8"
+compose-compiler-kotlinVersion = "1.8.22"
 compose-foundation = "1.4.3"
 compose-material = "1.4.3"
 compose-material3 = "1.1.1"
 compose-runtime = "1.4.3"
 compose-ui = "1.4.3"
 compose-jb = "1.4.1"
-compose-jb-kotlinVersion = "1.8.20"
+compose-jb-compiler = "1.4.8"
+compose-jb-compiler-kotlinVersion = "1.8.22"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.46.1"
 datastore = "1.1.0-alpha04"
@@ -54,6 +55,8 @@ versionsPlugin = "0.46.0"
 
 [plugins]
 agp-application = { id = "com.android.application", version.ref = "agp" }
+agp-library = { id = "com.android.library", version.ref = "agp" }
+agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
@@ -62,7 +65,11 @@ dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ## Here to trigger Renovate updates
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
@@ -93,7 +100,7 @@ androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:a
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.06.01" }
-androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
+androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-integration-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -145,12 +152,15 @@ anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
 autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version = "1.0.0" }
 
+baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
+
 clikt = "com.github.ajalt.clikt:clikt:3.5.4"
 
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
 
+compose-compilerJb = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "compose-jb-compiler" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }
@@ -177,6 +187,7 @@ kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
+kotlin-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 # Only present to trigger automatic renovate updates

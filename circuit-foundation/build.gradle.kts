@@ -3,10 +3,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.library")
-  kotlin("multiplatform")
+  alias(libs.plugins.agp.library)
+  alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  id("com.vanniktech.maven.publish")
+  alias(libs.plugins.mavenPublish)
   alias(libs.plugins.baselineprofile)
 }
 

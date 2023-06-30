@@ -13,7 +13,7 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -41,7 +41,7 @@ plugins {
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
-  alias(libs.plugins.dokka) apply false
+  alias(libs.plugins.dokka)
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyAnalysis)
@@ -54,6 +54,11 @@ plugins {
 val ktfmtVersion = libs.versions.ktfmt.get()
 val detektVersion = libs.versions.detekt.get()
 val twitterDetektPlugin = libs.detektPlugins.twitterCompose
+
+tasks.dokkaHtmlMultiModule {
+  outputDirectory.set(rootDir.resolve("docs/api/0.x"))
+  includes.from(project.layout.projectDirectory.file("README.md"))
+}
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
@@ -224,9 +229,14 @@ subprojects {
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
 
-    tasks.withType<DokkaTask>().configureEach {
-      outputDirectory.set(rootProject.rootDir.resolve("docs/api/0.x"))
+    tasks.withType<DokkaTaskPartial>().configureEach {
+      outputDirectory.set(buildDir.resolve("docs/partial"))
       dokkaSourceSets.configureEach {
+        val readMeProvider = project.layout.projectDirectory.file("README.md")
+        if (readMeProvider.asFile.exists()) {
+          includes.from(readMeProvider)
+        }
+
         if (name.contains("androidTest", ignoreCase = true)) {
           suppress.set(true)
         }

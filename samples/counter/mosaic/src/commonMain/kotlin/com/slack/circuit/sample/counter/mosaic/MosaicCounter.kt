@@ -7,9 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.option
 import com.jakewharton.mosaic.MosaicScope
 import com.jakewharton.mosaic.runMosaic
 import com.jakewharton.mosaic.ui.Column
@@ -24,31 +21,8 @@ import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jline.terminal.TerminalBuilder
-
-private class MosaicCounterCommand : CliktCommand() {
-
-  private val useCircuit by
-    option("--use-circuit", help = "Use Circuit")
-      // TODO change to true once circuit's impl is working
-      .flag(default = false)
-
-  override fun run() {
-    runBlocking {
-      runMosaic {
-        if (useCircuit) {
-          runCounterCircuit()
-        } else {
-          runWithoutCircuit()
-        }
-      }
-    }
-  }
-}
-
-fun main(args: Array<String>) = MosaicCounterCommand().main(args)
 
 object MosaicCounterScreen : CounterScreen
 
@@ -103,7 +77,15 @@ private fun Counter(state: CounterScreen.State) {
   }
 }
 
-private suspend fun runCounterCircuit() = runMosaic {
+internal suspend fun runCounterScreen(useCircuit: Boolean) = runMosaic {
+  if (useCircuit) {
+    runCircuitCounterScreen()
+  } else {
+    runStandardCounterScreen()
+  }
+}
+
+internal fun MosaicScope.runCircuitCounterScreen() {
   setContent {
     val circuitConfig =
       CircuitConfig.Builder()
@@ -115,7 +97,7 @@ private suspend fun runCounterCircuit() = runMosaic {
 }
 
 // A working, circuit-less implementation for reference
-private suspend fun MosaicScope.runWithoutCircuit() {
+private suspend fun MosaicScope.runStandardCounterScreen() {
   // TODO https://github.com/JakeWharton/mosaic/issues/3
   var count by mutableStateOf(0)
 

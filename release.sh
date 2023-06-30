@@ -31,4 +31,4 @@ git commit -am "Prepare next development version."
 git push && git push --tags
 
 # Publish docs
-./deploy-website.sh
+./deploy_website.sh

@@ -1,6 +1,24 @@
 Changelog
 =========
 
+0.10.0
+------
+
+_2023-06-30_
+
+- [runtime] Fix wrong compose-compiler used in iOS targets. Now we're using the compose-multiplatform fork.
+- [runtime] Allow creation of multiple `RetainedStateRegistry` instances.
+- [docs] Add clarifying links to Events docs.
+- [samples] Add new image detail view in STAR sample.
+- Update Molecule to `0.11.0`.
+- Update AndroidX compose-compiler to `1.4.8`.
+- Update compose-multiplatform to `1.4.1`.
+- Update to coroutines `1.7.2`.
+- Update to Turbine `1.0.0`.
+- Update to Kotlin `1.8.22`.
+
+Special thanks to [@bryanstern](https://github.com/bryanstern), [@saket](https://github.com/saket), and [@chrisbanes](https://github.com/chrisbanes) for contributing to this release!
+
 0.9.1
 -----
 

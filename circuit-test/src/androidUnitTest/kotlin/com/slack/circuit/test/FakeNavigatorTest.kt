@@ -2,14 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.test
 
-import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.runtime.Screen
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import kotlinx.parcelize.Parcelize
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class FakeNavigatorTest {
   @Test
   fun `resetRoot - ensure resetRoot returns old screens in proper order`() = runTest {
@@ -34,16 +32,8 @@ class FakeNavigatorTest {
   }
 }
 
-private object TestScreen1 : Screen {
-  override fun describeContents(): Int {
-    throw NotImplementedError()
-  }
+@Parcelize private object TestScreen1 : Screen
 
-  override fun writeToParcel(dest: Parcel, flags: Int) {
-    throw NotImplementedError()
-  }
-}
+@Parcelize private object TestScreen2 : Screen
 
-private object TestScreen2 : Screen by TestScreen1
-
-private object TestScreen3 : Screen by TestScreen2
+@Parcelize private object TestScreen3 : Screen

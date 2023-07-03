@@ -2,29 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import android.os.Parcel
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.runtime.Screen
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
+import kotlinx.parcelize.Parcelize
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-private object TestScreen : Screen {
-  override fun describeContents(): Int {
-    throw NotImplementedError()
-  }
+@Parcelize private object TestScreen : Screen
 
-  override fun writeToParcel(dest: Parcel, flags: Int) {
-    throw NotImplementedError()
-  }
-}
+@Parcelize private object TestScreen2 : Screen
 
-private object TestScreen2 : Screen by TestScreen
-
-private object TestScreen3 : Screen by TestScreen
+@Parcelize private object TestScreen3 : Screen
 
 @RunWith(RobolectricTestRunner::class)
 class NavigatorTest {

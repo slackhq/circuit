@@ -3,6 +3,7 @@
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
 }

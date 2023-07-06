@@ -1,9 +1,7 @@
-// Copyright (C) 2023 Slack Technologies, LLC
+// Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
-// Copyright (C) 2022 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)

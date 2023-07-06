@@ -5,9 +5,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   alias(libs.plugins.agp.library)
-  kotlin("android")
-  kotlin("kapt")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.kapt)
+  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
@@ -81,7 +81,7 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.systemUi)
   implementation(libs.androidx.compose.ui.tooling)
   // Use a newer version for access to edgeToEdge APIs
-  implementation("androidx.activity:activity-ktx:1.8.0-alpha05")
+  implementation("androidx.activity:activity-ktx:1.8.0-alpha06")
   implementation(libs.coil)
   implementation(libs.coil.compose)
   implementation(libs.eithernet)

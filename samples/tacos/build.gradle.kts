@@ -5,9 +5,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   alias(libs.plugins.agp.application)
-  kotlin("android")
-  kotlin("kapt")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.kapt)
+  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.ksp)
 }
 

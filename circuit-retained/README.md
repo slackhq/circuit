@@ -1,5 +1,4 @@
-circuit-retained
-================
+# Module circuit-retained
 
 This optional artifact contains an implementation of `rememberRetained` and `produceRetainedState`. This is
 useful for cases where you want to retain non-parcelable state across configuration changes. This

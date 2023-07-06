@@ -19,7 +19,7 @@ git commit -am "Prepare for release $NEW_VERSION."
 git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
 
 # Publish
-./gradlew publish -x dokkaHtml --no-configuration-cache
+./gradlew publish -x dokkaHtml --no-configuration-cache -Pcircuit.forceAndroidXComposeCompiler=false
 
 # Prepare next snapshot
 echo "Restoring snapshot version $SNAPSHOT_VERSION"
@@ -29,3 +29,6 @@ git commit -am "Prepare next development version."
 
 # Push it all up
 git push && git push --tags
+
+# Publish docs
+./deploy_website.sh

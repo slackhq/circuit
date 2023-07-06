@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.agp.library)
-  kotlin("android")
+  alias(libs.plugins.kotlin.android)
 }
 
 android { namespace = "com.slack.circuit.sample.coil.test" }

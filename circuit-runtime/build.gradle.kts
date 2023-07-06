@@ -5,7 +5,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
-  id(libs.plugins.baselineprofile.get().pluginId)
+  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {

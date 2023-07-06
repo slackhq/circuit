@@ -6,7 +6,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.application)
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
 android {

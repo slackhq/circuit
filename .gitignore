@@ -1,5 +1,6 @@
 .gradle
 local.properties
+.fleet
 .idea
 !/.idea/codeStyles
 !/.idea/inspectionProfiles

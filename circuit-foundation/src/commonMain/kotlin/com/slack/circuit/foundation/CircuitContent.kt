@@ -94,14 +94,22 @@ internal fun CircuitContent(
     onDispose { eventListener.dispose() }
   }
 
-  eventListener.onBeforeCreatePresenter(screen, navigator, context)
-  @Suppress("UNCHECKED_CAST")
-  val presenter = circuitConfig.presenter(screen, navigator, context) as Presenter<CircuitUiState>?
-  eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
+  val presenter =
+    remember(eventListener, screen, navigator, context) {
+      eventListener.onBeforeCreatePresenter(screen, navigator, context)
+      @Suppress("UNCHECKED_CAST")
+      (circuitConfig.presenter(screen, navigator, context) as Presenter<CircuitUiState>?).also {
+        eventListener.onAfterCreatePresenter(screen, navigator, it, context)
+      }
+    }
 
-  eventListener.onBeforeCreateUi(screen, context)
-  val ui = circuitConfig.ui(screen, context)
-  eventListener.onAfterCreateUi(screen, ui, context)
+  val ui =
+    remember(eventListener, screen, context) {
+      eventListener.onBeforeCreateUi(screen, context)
+      circuitConfig.ui(screen, context).also { ui ->
+        eventListener.onAfterCreateUi(screen, ui, context)
+      }
+    }
 
   if (ui != null && presenter != null) {
     @Suppress("UNCHECKED_CAST")

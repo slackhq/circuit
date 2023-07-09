@@ -24,7 +24,7 @@ public fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuitConfig.onUnavailableContent,
 ) {
-  CircuitContent(screen, modifier, Navigator.NoOp, circuitConfig, unavailableContent)
+  CircuitContent(screen, Navigator.NoOp, modifier, circuitConfig, unavailableContent)
 }
 
 @Composable
@@ -54,16 +54,17 @@ public fun CircuitContent(
         }
       }
     }
-  CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent)
+  CircuitContent(screen, navigator, modifier, circuitConfig, unavailableContent)
 }
 
 @Composable
-internal fun CircuitContent(
+public fun CircuitContent(
   screen: Screen,
-  modifier: Modifier,
   navigator: Navigator,
-  circuitConfig: CircuitConfig,
-  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
+  modifier: Modifier = Modifier,
+  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
 ) {
   val parent = LocalCircuitContext.current
   @OptIn(InternalCircuitApi::class)

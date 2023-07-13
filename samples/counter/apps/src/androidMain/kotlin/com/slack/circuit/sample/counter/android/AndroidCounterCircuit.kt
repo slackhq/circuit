@@ -45,16 +45,15 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         color = color
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val sink = state.eventSink
       Button(
         modifier = Modifier.align(CenterHorizontally),
-        onClick = { sink(CounterScreen.Event.Increment) }
+        onClick = { state.eventSink(CounterScreen.Event.Increment) }
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
       }
       Button(
         modifier = Modifier.align(CenterHorizontally),
-        onClick = { sink(CounterScreen.Event.Decrement) }
+        onClick = { state.eventSink(CounterScreen.Event.Decrement) }
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement")
       }

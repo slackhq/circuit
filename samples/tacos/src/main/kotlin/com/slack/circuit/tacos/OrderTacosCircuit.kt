@@ -201,9 +201,9 @@ private fun calculateIngredientsCost(filling: Ingredient?, toppings: Set<Ingredi
 
 @Composable
 internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Modifier) {
-  val sink = state.eventSink
-
-  BackHandler(enabled = state.isPreviousVisible) { sink(OrderTacosScreen.Event.Previous) }
+  BackHandler(enabled = state.isPreviousVisible) {
+    state.eventSink(OrderTacosScreen.Event.Previous)
+  }
 
   Scaffold(
     modifier = modifier.padding(4.dp),
@@ -216,7 +216,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
             direction = Direction.LEFT,
             visible = state.isPreviousVisible,
           ) {
-            sink(OrderTacosScreen.Event.Previous)
+            state.eventSink(OrderTacosScreen.Event.Previous)
           }
         },
         actions = {
@@ -225,7 +225,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
             enabled = state.isNextEnabled,
             visible = state.isNextVisible,
           ) {
-            sink(OrderTacosScreen.Event.Next)
+            state.eventSink(OrderTacosScreen.Event.Next)
           }
         }
       )
@@ -236,7 +236,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
         onConfirmationStep = state.stepState is ConfirmationOrderStep.OrderState,
         isVisible = state.isFooterVisible,
       ) {
-        sink(OrderTacosScreen.Event.ProcessOrder)
+        state.eventSink(OrderTacosScreen.Event.ProcessOrder)
       }
     }
   ) { padding ->

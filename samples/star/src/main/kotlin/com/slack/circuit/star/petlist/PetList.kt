@@ -254,11 +254,10 @@ internal fun PetList(
   modifier: Modifier = Modifier,
 ) {
   if (state is PetListScreen.State.Success && state.isUpdateFiltersModalShowing) {
-    val eventSink = state.eventSink
     val overlayHost = LocalOverlayHost.current
     LaunchedEffect(state) {
       val result = overlayHost.updateFilters(state.filters)
-      eventSink(PetListScreen.Event.UpdatedFilters(result))
+      state.eventSink(PetListScreen.Event.UpdatedFilters(result))
     }
   }
 
@@ -278,8 +277,7 @@ internal fun PetList(
         scrollBehavior = scrollBehavior,
         actions = {
           if (state is PetListScreen.State.Success) {
-            val eventSink = state.eventSink
-            IconButton(onClick = { eventSink(PetListScreen.Event.UpdateFilters) }) {
+            IconButton(onClick = { state.eventSink(PetListScreen.Event.UpdateFilters) }) {
               Icon(
                 imageVector = Icons.Default.FilterList,
                 contentDescription = "Filter pet list",

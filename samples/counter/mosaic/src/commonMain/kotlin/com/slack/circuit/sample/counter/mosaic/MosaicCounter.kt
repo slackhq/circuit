@@ -46,7 +46,6 @@ private fun Counter(state: CounterScreen.State) {
 
   // TODO THIS DOES NOT WORK! Needs https://github.com/JakeWharton/mosaic/issues/3
   //  This is left as a toe-hold for the future.
-  val eventSink = state.eventSink
   LaunchedEffect(Unit) {
     withContext(IO) {
       val terminal = TerminalBuilder.terminal()
@@ -65,8 +64,8 @@ private fun Counter(state: CounterScreen.State) {
             when (reader.read()) {
               91 -> {
                 when (reader.read()) {
-                  65 -> eventSink(CounterScreen.Event.Increment)
-                  66 -> eventSink(CounterScreen.Event.Decrement)
+                  65 -> state.eventSink(CounterScreen.Event.Increment)
+                  66 -> state.eventSink(CounterScreen.Event.Decrement)
                 }
               }
             }

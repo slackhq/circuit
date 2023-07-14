@@ -103,7 +103,6 @@ constructor(
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
 fun ImageViewer(state: ImageViewerScreen.State, modifier: Modifier = Modifier) {
-  val sink = state.eventSink
   var showChrome by remember { mutableStateOf(true) }
   val systemUiController = rememberSystemUiController()
   systemUiController.isSystemBarsVisible = showChrome
@@ -132,7 +131,7 @@ fun ImageViewer(state: ImageViewerScreen.State, modifier: Modifier = Modifier) {
 
         val dismissState = rememberFlickToDismissState()
         if (dismissState.gestureState is Dismissed) {
-          sink(ImageViewerScreen.Event.Close)
+          state.eventSink(ImageViewerScreen.Event.Close)
         }
         // TODO bind scrim with flick. animate scrim out after flick finishes? Or with flick?
         FlickToDismiss(state = dismissState) {
@@ -160,7 +159,7 @@ fun ImageViewer(state: ImageViewerScreen.State, modifier: Modifier = Modifier) {
         ) {
           BackPressNavIcon(
             Modifier.align(Alignment.TopStart).padding(8.dp).statusBarsPadding(),
-            onClick = { sink(ImageViewerScreen.Event.Close) }
+            onClick = { state.eventSink(ImageViewerScreen.Event.Close) }
           )
         }
       }

@@ -56,16 +56,15 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         color = color
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val sink = state.eventSink
       Row {
         Button(
           modifier = Modifier.padding(2.dp),
-          onClick = { sink(CounterScreen.Event.Decrement) },
+          onClick = { state.eventSink(CounterScreen.Event.Decrement) },
         ) {
           Icon(rememberVectorPainter(Remove), "Decrement")
         }
         Button(
-          onClick = { sink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
+          onClick = { state.eventSink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
           modifier = Modifier.padding(2.dp)
         ) {
           Text(
@@ -75,7 +74,7 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         }
         Button(
           modifier = Modifier.padding(2.dp),
-          onClick = { sink(CounterScreen.Event.Increment) },
+          onClick = { state.eventSink(CounterScreen.Event.Increment) },
         ) {
           Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
         }
@@ -94,7 +93,6 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
         text = "${state.number}",
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val sink = state.eventSink
       if (state.isPrime) {
         Text(
           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -109,7 +107,7 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
       Spacer(modifier = Modifier.height(16.dp))
       Button(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = { sink(PrimeScreen.Event.Pop) },
+        onClick = { state.eventSink(PrimeScreen.Event.Pop) },
       ) {
         Text("Back")
       }

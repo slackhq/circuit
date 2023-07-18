@@ -88,12 +88,11 @@ internal fun CircuitContent(
 ) {
   val eventListener =
     remember(screen, context) {
-      (circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE)
-              .also { it.start() }
+      (circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE).also {
+        it.start()
+      }
     }
-  DisposableEffect(eventListener, screen, context) {
-    onDispose { eventListener.dispose() }
-  }
+  DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
 
   val presenter =
     remember(eventListener, screen, navigator, context) {

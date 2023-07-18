@@ -90,8 +90,8 @@ internal fun CircuitContent(
     remember(screen, context) {
       circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
     }
+  eventListener.start()
   DisposableEffect(screen, context) {
-    eventListener.start()
     onDispose { eventListener.dispose() }
   }
 

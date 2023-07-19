@@ -95,7 +95,6 @@ private fun FillingsList(
   state: FillingsOrderStep.State.AvailableFillings,
   modifier: Modifier = Modifier
 ) {
-  val sink = state.eventSink
   val scrollState = rememberScrollState()
   Column(modifier = modifier.verticalScroll(scrollState).fillMaxWidth()) {
     Instructions(resId = R.string.fillings_step_instructions)
@@ -103,7 +102,7 @@ private fun FillingsList(
       Filling(
         ingredient = ingredient,
         isSelected = state.selected == ingredient,
-        onSelect = { sink(FillingsOrderStep.Event.SelectFilling(ingredient)) },
+        onSelect = { state.eventSink(FillingsOrderStep.Event.SelectFilling(ingredient)) },
       )
     }
   }

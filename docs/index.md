@@ -80,14 +80,13 @@ fun Counter(state: CounterState) {
         style = MaterialTheme.typography.displayLarge
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val eventSink = state.eventSink
       Button(
         modifier = Modifier.align(CenterHorizontally),
-        onClick = { eventSink(CounterEvent.Increment) }
+        onClick = { state.eventSink(CounterEvent.Increment) }
       ) { Icon(rememberVectorPainter(Icons.Filled.Add), "Increment") }
       Button(
         modifier = Modifier.align(CenterHorizontally),
-        onClick = { eventSink(CounterEvent.Decrement) }
+        onClick = { state.eventSink(CounterEvent.Decrement) }
       ) { Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement") }
     }
   }

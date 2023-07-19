@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.10.1
+------
+
+_2023-07-09_
+
+- [runtime] Make `CircuitContent` overload with `Navigator` public.
+- [runtime] Remember `Presenter` and `Ui` in `CircuitContent`.
+- [runtime] Fix kdoc typo in `RememberRetained` .
+
+Special thanks to [@chrisbanes](https://github.com/chrisbanes) and [@bryanstern](https://github.com/bryanstern) for contributing to this release!
+
 0.10.0
 ------
 

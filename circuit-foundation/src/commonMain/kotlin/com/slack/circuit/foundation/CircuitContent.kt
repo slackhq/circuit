@@ -24,7 +24,7 @@ public fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuitConfig.onUnavailableContent,
 ) {
-  CircuitContent(screen, modifier, Navigator.NoOp, circuitConfig, unavailableContent)
+  CircuitContent(screen, Navigator.NoOp, modifier, circuitConfig, unavailableContent)
 }
 
 @Composable
@@ -54,16 +54,17 @@ public fun CircuitContent(
         }
       }
     }
-  CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent)
+  CircuitContent(screen, navigator, modifier, circuitConfig, unavailableContent)
 }
 
 @Composable
-internal fun CircuitContent(
+public fun CircuitContent(
   screen: Screen,
-  modifier: Modifier,
   navigator: Navigator,
-  circuitConfig: CircuitConfig,
-  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
+  modifier: Modifier = Modifier,
+  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuitConfig.onUnavailableContent,
 ) {
   val parent = LocalCircuitContext.current
   @OptIn(InternalCircuitApi::class)
@@ -94,14 +95,22 @@ internal fun CircuitContent(
     onDispose { eventListener.dispose() }
   }
 
-  eventListener.onBeforeCreatePresenter(screen, navigator, context)
-  @Suppress("UNCHECKED_CAST")
-  val presenter = circuitConfig.presenter(screen, navigator, context) as Presenter<CircuitUiState>?
-  eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
+  val presenter =
+    remember(eventListener, screen, navigator, context) {
+      eventListener.onBeforeCreatePresenter(screen, navigator, context)
+      @Suppress("UNCHECKED_CAST")
+      (circuitConfig.presenter(screen, navigator, context) as Presenter<CircuitUiState>?).also {
+        eventListener.onAfterCreatePresenter(screen, navigator, it, context)
+      }
+    }
 
-  eventListener.onBeforeCreateUi(screen, context)
-  val ui = circuitConfig.ui(screen, context)
-  eventListener.onAfterCreateUi(screen, ui, context)
+  val ui =
+    remember(eventListener, screen, context) {
+      eventListener.onBeforeCreateUi(screen, context)
+      circuitConfig.ui(screen, context).also { ui ->
+        eventListener.onAfterCreateUi(screen, ui, context)
+      }
+    }
 
   if (ui != null && presenter != null) {
     @Suppress("UNCHECKED_CAST")

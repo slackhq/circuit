@@ -68,7 +68,6 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
-  val eventSink = state.eventSink
   Scaffold(
     modifier = modifier.fillMaxWidth(),
     contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -76,7 +75,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
     bottomBar = {
       StarTheme(useDarkTheme = true) {
         BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->
-          eventSink(ClickNavItem(index))
+          state.eventSink(ClickNavItem(index))
         }
       }
     }
@@ -85,7 +84,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
     CircuitContent(
       screen,
       modifier = Modifier.padding(paddingValues),
-      onNavEvent = { event -> eventSink(ChildNav(event)) }
+      onNavEvent = { event -> state.eventSink(ChildNav(event)) }
     )
   }
 }

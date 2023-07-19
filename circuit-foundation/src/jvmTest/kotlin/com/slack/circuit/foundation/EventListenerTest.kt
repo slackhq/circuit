@@ -78,6 +78,10 @@ private class StringUi : Ui<StringState> {
 private class RecordingEventListener(private val onDispose: () -> Unit) : EventListener {
   val states = Turbine<Any>(name = "recording event listener states")
 
+  override fun start() {
+    log("start")
+  }
+
   override fun onState(state: CircuitUiState) {
     log("onState: $state")
     states.add(state)

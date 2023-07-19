@@ -89,9 +89,10 @@ internal fun CircuitContent(
 ) {
   val eventListener =
     remember(screen, context) {
-      val eventListener = circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
-      EventListenerRememberObserver(eventListener)
+      (circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE)
+        .also { it.start() }
     }
+  DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
 
   val presenter =
     remember(eventListener, screen, navigator, context) {
@@ -141,12 +142,4 @@ private fun <UiState : CircuitUiState> CircuitContent(
     onDispose { eventListener.onDisposeContent() }
   }
   ui.Content(state, modifier)
-}
-
-private class EventListenerRememberObserver(private val eventListener: EventListener) : RememberObserver, EventListener by eventListener {
-  override fun onAbandoned() = Unit // Do nothing. Never started
-
-  override fun onForgotten() = eventListener.dispose()
-
-  override fun onRemembered() = eventListener.start()
 }

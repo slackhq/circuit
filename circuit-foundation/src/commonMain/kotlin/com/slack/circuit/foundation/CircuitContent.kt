@@ -5,6 +5,7 @@ package com.slack.circuit.foundation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -88,11 +89,9 @@ internal fun CircuitContent(
 ) {
   val eventListener =
     remember(screen, context) {
-      (circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE).also {
-        it.start()
-      }
+      val eventListener = circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
+      EventListenerRememberObserver(eventListener)
     }
-  DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
 
   val presenter =
     remember(eventListener, screen, navigator, context) {
@@ -142,4 +141,12 @@ private fun <UiState : CircuitUiState> CircuitContent(
     onDispose { eventListener.onDisposeContent() }
   }
   ui.Content(state, modifier)
+}
+
+private class EventListenerRememberObserver(private val eventListener: EventListener) : RememberObserver, EventListener by eventListener {
+  override fun onAbandoned() = Unit // Do nothing. Never started
+
+  override fun onForgotten() = eventListener.dispose()
+
+  override fun onRemembered() = eventListener.start()
 }

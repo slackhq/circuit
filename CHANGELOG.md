@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.11.0
+------
+
+_2023-07-20_
+
+- [runtime] Fix race condition in `EventListener.start()` callback.
+- [code gen] Update to Dagger 2.47.
+- [docs] No longer recommend or require extracting intermediate event sink variables. This is no longer an issue 🎉.
+- Update Molecule to `1.0.0`.
+
+Thanks to [@bryanstern](https://github.com/bryanstern) for contributing to this release!
+
 0.10.1
 ------
 

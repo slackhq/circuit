@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
@@ -68,7 +68,7 @@ fun FlowPresenter<Int, CounterScreen.Event>.asCircuitPresenter(): Presenter<Coun
  */
 fun Presenter<CounterScreen.State>.asFlowPresenter(): FlowPresenter<Int, CounterScreen.Event> {
   return FlowPresenter { scope, events ->
-    scope.launchMolecule(RecompositionClock.Immediate) {
+    scope.launchMolecule(RecompositionMode.Immediate) {
       val (count, eventSink) = present()
       LaunchedEffect(eventSink) { events.collect(eventSink) }
       count

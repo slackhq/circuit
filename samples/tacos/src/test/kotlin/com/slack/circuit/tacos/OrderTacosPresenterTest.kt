@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos
 
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -71,7 +71,7 @@ class OrderTacosPresenterTest {
         initialStep = ToppingsOrderStep
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
+    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
       .test {
         awaitItem().run { eventSink(OrderTacosScreen.Event.Previous) }
         assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
@@ -148,7 +148,7 @@ class OrderTacosPresenterTest {
         initialStep = ToppingsOrderStep,
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
+    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
       .test {
         awaitItem()
         assertThat(details).isEqualTo(OrderDetails())
@@ -181,7 +181,7 @@ class OrderTacosPresenterTest {
         initialStep = SummaryOrderStep,
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
+    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
       .test {
         assertThat(awaitItem().stepState).isInstanceOf(SummaryOrderStep.SummaryState::class.java)
 
@@ -210,7 +210,7 @@ class OrderTacosPresenterTest {
         initialOrderDetails = initialData,
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { presenter.present() }
+    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
       .test { awaitItem().run { assertThat(orderCost).isEqualTo(expectedCost.toCurrencyString()) } }
   }
 }

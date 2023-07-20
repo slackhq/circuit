@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import app.cash.molecule.RecompositionClock.Immediate
+import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat

@@ -3,7 +3,7 @@
 package com.slack.circuit.test
 
 import androidx.compose.runtime.Composable
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -44,5 +44,5 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
   name: String? = null,
   block: suspend ReceiveTurbine<UiState>.() -> Unit
 ) {
-  moleculeFlow(RecompositionClock.Immediate, presentFunction).test(timeout, name, block)
+  moleculeFlow(RecompositionMode.Immediate, presentFunction).test(timeout, name, block)
 }

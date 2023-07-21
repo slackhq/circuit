@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 class HomePresenterTest {
   @Test
   fun changeIndices() = runTest {
-    moleculeFlow(RecompositionClock.Immediate) { HomePresenter(FakeNavigator()) }
+    moleculeFlow(RecompositionMode.Immediate) { HomePresenter(FakeNavigator()) }
       .test {
         // Initial index is 0.
         val firstState = awaitItem()

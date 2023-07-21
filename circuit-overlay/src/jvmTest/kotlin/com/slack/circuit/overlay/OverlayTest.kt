@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import kotlin.test.Test
@@ -22,7 +22,7 @@ import kotlinx.coroutines.test.runTest
 class OverlayTest {
   @Test
   fun noOverlayMeansNullData() = runTest {
-    moleculeFlow(RecompositionClock.Immediate) {
+    moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
         overlayHost.currentOverlayData
       }
@@ -32,7 +32,7 @@ class OverlayTest {
 
   @Test
   fun overlayHasData() = runTest {
-    moleculeFlow(RecompositionClock.Immediate) {
+    moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
         LaunchedEffect(overlayHost) {
           overlayHost.show(
@@ -53,7 +53,7 @@ class OverlayTest {
   @Test
   fun overlayFinishedHasNullDataAgain() = runTest {
     val resultState = mutableStateOf<String?>(null)
-    moleculeFlow(RecompositionClock.Immediate) {
+    moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
         val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
         key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }

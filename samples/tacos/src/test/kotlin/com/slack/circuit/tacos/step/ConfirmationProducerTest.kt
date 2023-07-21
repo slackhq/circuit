@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -23,7 +23,7 @@ class ConfirmationProducerTest {
     val details = OrderDetails(toppings = testToppings.reversed().toImmutableSet())
     val expectedToppings = testToppings.map { it.name }
 
-    moleculeFlow(RecompositionClock.Immediate) { confirmationProducer(details) }
+    moleculeFlow(RecompositionMode.Immediate) { confirmationProducer(details) }
       .test { awaitItem().run { assertThat(toppings).isEqualTo(expectedToppings) } }
   }
 
@@ -38,7 +38,7 @@ class ConfirmationProducerTest {
     val expectedCalorieCount =
       filling.calories + testToppings.fold(0) { acc, topping -> acc + topping.calories }
 
-    moleculeFlow(RecompositionClock.Immediate) { confirmationProducer(details) }
+    moleculeFlow(RecompositionMode.Immediate) { confirmationProducer(details) }
       .test { awaitItem().run { assertThat(calories).isEqualTo(expectedCalorieCount) } }
   }
 }
@@ -57,7 +57,7 @@ class ConfirmationProducerDietTest(
         toppings = toppings.toSet(),
       )
 
-    moleculeFlow(RecompositionClock.Immediate) { confirmationProducer(details) }
+    moleculeFlow(RecompositionMode.Immediate) { confirmationProducer(details) }
       .test { awaitItem().run { assertThat(diet).isEqualTo(expectedDiet) } }
   }
 

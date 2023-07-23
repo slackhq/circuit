@@ -138,7 +138,7 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
       else -> "$obj (${obj.javaClass.simpleName})"
     }
 
-  internal companion object {
-    val DEFAULT_TIMEOUT = 10.toDuration(DurationUnit.SECONDS)
+  public companion object {
+    public val DEFAULT_TIMEOUT: Duration = 10.toDuration(DurationUnit.SECONDS)
   }
 }

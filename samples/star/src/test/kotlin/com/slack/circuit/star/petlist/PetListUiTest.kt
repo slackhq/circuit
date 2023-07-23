@@ -11,7 +11,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
-import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.db.Gender
@@ -22,8 +21,8 @@ import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
+import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -82,20 +81,19 @@ class PetListUiTest {
 
   @Test
   fun petList_emits_event_when_tapping_on_animal() = runTest {
-    val channel = Channel<Any>(1)
+    val testSink = TestEventSink<PetListScreen.Event>()
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
       setContent {
         PetList(
-          PetListScreen.State.Success(animals, isRefreshing = false, eventSink = channel::trySend)
+          PetListScreen.State.Success(animals, isRefreshing = false, eventSink = testSink)
         )
       }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 
-      val event = channel.receive()
-      assertThat(event).isEqualTo(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
+      testSink.assertEvent(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
     }
   }
 

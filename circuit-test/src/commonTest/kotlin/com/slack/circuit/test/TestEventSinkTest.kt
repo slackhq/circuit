@@ -1,9 +1,13 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.test
 
 import com.google.common.truth.Truth.assertThat
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.slack.circuit.runtime.CircuitUiEvent
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -14,8 +18,6 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(TestParameterInjector::class)
@@ -85,9 +87,7 @@ class TestEventSinkTest {
 
   @Test
   fun `assertEvent - fails if no events have been received`() {
-    assertThrows(AssertionError::class.java) {
-      TestEventSink<Event>().assertEvent(Event1)
-    }
+    assertThrows(AssertionError::class.java) { TestEventSink<Event>().assertEvent(Event1) }
   }
 
   @Test
@@ -165,9 +165,7 @@ class TestEventSinkTest {
     TestEventSink<Event>().run {
       events.forEach { invoke(it) }
 
-      events.indices.forEach { i ->
-        assertEventAt(i) { actual -> events[i] == actual }
-      }
+      events.indices.forEach { i -> assertEventAt(i) { actual -> events[i] == actual } }
     }
   }
 
@@ -180,7 +178,7 @@ class TestEventSinkTest {
 
   @Test
   fun `assertEventAt - fails with predicate when called with an invalid index`(
-    @TestParameter("-1","1") index: Int
+    @TestParameter("-1", "1") index: Int
   ) {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
@@ -193,7 +191,7 @@ class TestEventSinkTest {
   @Test
   fun `assertEventAt - fails when predicate returns false`() {
     assertThrows(AssertionError::class.java) {
-      TestEventSink<Event>().run{
+      TestEventSink<Event>().run {
         invoke(Event1)
         assertEventAt(0) { false }
       }
@@ -254,13 +252,16 @@ class TestEventSinkTest {
       TestEventSink<Event>().run {
         invoke(Event1)
 
-        assertEvents { _,_ -> false }
+        assertEvents { _, _ -> false }
       }
     }
   }
 }
 
 private sealed interface Event : CircuitUiEvent
+
 private object Event1 : Event
+
 private object Event2 : Event
+
 private object Event3 : Event

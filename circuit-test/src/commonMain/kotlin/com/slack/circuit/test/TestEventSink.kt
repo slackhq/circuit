@@ -1,12 +1,14 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.test
 
 import com.slack.circuit.runtime.CircuitUiEvent
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.withTimeout
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withTimeout
 
 /**
  * A test event sink that records events from a Circuit UI and allows making assertions about them.
@@ -35,9 +37,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
   }
 
   /**
-   * Awaits the specified [duration] for the sink to receive an event. If an event is not
-   * received within [duration], this method will throw a
-   * [TimeoutCancellationException].
+   * Awaits the specified [duration] for the sink to receive an event. If an event is not received
+   * within [duration], this method will throw a [TimeoutCancellationException].
    *
    * Note: this method has a default duration of [DEFAULT_TIMEOUT].
    *
@@ -62,7 +63,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
         """
           expected: $count
           got: ${receivedEvents.size}; Value counts differ
-        """.trimIndent()
+        """
+          .trimIndent()
       )
     }
 
@@ -78,6 +80,7 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
 
   /**
    * Assert that this TestEventSink as received exactly one [Event] and that it equals [event].
+   *
    * @param event the expected [Event]
    * @return this
    */
@@ -87,7 +90,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
         """
           expected: ${valueAndClass(event)}
           got: $receivedEvents
-        """.trimIndent()
+        """
+          .trimIndent()
       )
     }
 
@@ -97,7 +101,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
         """
           expected: ${valueAndClass(event)}
           got: ${valueAndClass(received)}
-        """.trimIndent()
+        """
+          .trimIndent()
       )
     }
 
@@ -115,7 +120,9 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
     assertEventAt(0, predicate)
 
     if (receivedEvents.size > 1) {
-      throw AssertionError("The first value passed the predicate but this sink received more than one event")
+      throw AssertionError(
+        "The first value passed the predicate but this sink received more than one event"
+      )
     }
 
     return this
@@ -149,7 +156,9 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
 
     val received = receivedEvents[index]
     if (!predicate(received)) {
-      throw AssertionError("Value ${valueAndClass(received)} at index $index did not pass the predicate check")
+      throw AssertionError(
+        "Value ${valueAndClass(received)} at index $index did not pass the predicate check"
+      )
     }
 
     return this
@@ -167,7 +176,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
         """
           expected: ${events.size} ${events.contentToString()}
           got: ${receivedEvents.size} $receivedEvents; Value count differs
-        """.trimIndent()
+        """
+          .trimIndent()
       )
     }
 
@@ -178,7 +188,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
           """
             expected: ${valueAndClass(event)}
             got: ${valueAndClass(received)}; Values at index $i differ
-          """.trimIndent()
+          """
+            .trimIndent()
         )
       }
     }
@@ -195,7 +206,9 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
   public fun assertEvents(predicate: (Int, Event) -> Boolean): TestEventSink<Event> {
     receivedEvents.forEachIndexed { i, received ->
       if (!predicate(i, received)) {
-        throw AssertionError("Value ${valueAndClass(received)} at index $i did not pass the predicate check")
+        throw AssertionError(
+          "Value ${valueAndClass(received)} at index $i did not pass the predicate check"
+        )
       }
     }
 

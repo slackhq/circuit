@@ -202,13 +202,9 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
     return this
   }
 
-  private fun valueAndClass(obj: Any?): String =
-    when (obj) {
-      null -> "null"
-      else -> "$obj (${obj.javaClass.simpleName})"
-    }
-
   public companion object {
     public val DEFAULT_TIMEOUT: Duration = 10.toDuration(DurationUnit.SECONDS)
+
+    private fun valueAndClass(obj: Any): String = "$obj (${obj.javaClass.simpleName})"
   }
 }

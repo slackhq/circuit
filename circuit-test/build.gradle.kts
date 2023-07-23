@@ -30,6 +30,7 @@ kotlin {
         implementation(libs.coroutines.test)
         implementation(libs.junit)
         implementation(libs.truth)
+        implementation(libs.testing.testParameterInjector)
       }
     }
   }

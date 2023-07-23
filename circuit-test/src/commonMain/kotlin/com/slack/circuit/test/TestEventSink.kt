@@ -6,9 +6,6 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.withTimeout
 
 /**
  * A test event sink that records events from a Circuit UI and allows making assertions about them.
@@ -20,7 +17,6 @@ import kotlinx.coroutines.withTimeout
  */
 public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
   private val receivedEvents = mutableListOf<Event>()
-  private val channel = Channel<Unit>(Channel.CONFLATED)
 
   /** The list of received events */
   public val events: List<Event>
@@ -32,24 +28,8 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
    * @param event the [Event] being added to the sink
    */
   public override fun invoke(event: Event) {
-    channel.trySend(Unit)
     receivedEvents.add(event)
   }
-
-  /**
-   * Awaits the specified [duration] for the sink to receive an event. If an event is not received
-   * within [duration], this method will throw a [TimeoutCancellationException].
-   *
-   * Note: this method has a default duration of [DEFAULT_TIMEOUT].
-   *
-   * @see DEFAULT_TIMEOUT
-   * @see TimeoutCancellationException
-   */
-  public suspend fun awaitFirstEvent(duration: Duration = DEFAULT_TIMEOUT): TestEventSink<Event> =
-    withTimeout(duration) {
-      channel.receive()
-      this@TestEventSink
-    }
 
   /**
    * Assert that this TestEventSink has received [count] events.

@@ -6,20 +6,10 @@ import com.google.common.truth.Truth.assertThat
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.slack.circuit.runtime.CircuitUiEvent
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertThrows
-import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(TestParameterInjector::class)
 class TestEventSinkTest {
   @Test
@@ -31,32 +21,6 @@ class TestEventSinkTest {
 
       assertThat(events).isEqualTo(listOf(Event1, Event2, Event3))
     }
-  }
-
-  @Test
-  fun `awaitFirstEvent - verify timeout`() = runTest {
-    try {
-      TestEventSink<Event>().awaitFirstEvent(TestEventSink.DEFAULT_TIMEOUT)
-      fail("Timeout failed to interrupt await")
-    } catch (_: TimeoutCancellationException) {
-      // Nothing to do!
-    }
-  }
-
-  @Test
-  fun `awaitFirstEvent - return if first event received before timeout`() = runTest {
-    val sink = TestEventSink<Event>()
-
-    launch {
-      delay(1.toDuration(DurationUnit.SECONDS))
-      sink.awaitFirstEvent(TestEventSink.DEFAULT_TIMEOUT)
-    }
-
-    advanceTimeBy(2.toDuration(DurationUnit.SECONDS))
-
-    sink(Event1)
-
-    assertThat(sink.events).isEqualTo(listOf(Event1))
   }
 
   @Test

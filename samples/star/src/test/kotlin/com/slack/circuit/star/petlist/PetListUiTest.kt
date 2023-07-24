@@ -86,9 +86,7 @@ class PetListUiTest {
 
     composeTestRule.run {
       setContent {
-        PetList(
-          PetListScreen.State.Success(animals, isRefreshing = false, eventSink = testSink)
-        )
+        PetList(PetListScreen.State.Success(animals, isRefreshing = false, eventSink = testSink))
       }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()

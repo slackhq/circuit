@@ -15,19 +15,19 @@ import kotlin.time.toDuration
  *
  * @see CircuitUiEvent
  */
-public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
-  private val receivedEvents = mutableListOf<Event>()
+public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
+  private val receivedEvents = mutableListOf<UiEvent>()
 
   /** The list of received events */
-  public val events: List<Event>
+  public val events: List<UiEvent>
     get() = receivedEvents
 
   /**
    * Sends the specified [event] to this TestEventSink.
    *
-   * @param event the [Event] being added to the sink
+   * @param event the [UiEvent] being added to the sink
    */
-  public override fun invoke(event: Event) {
+  public override fun invoke(event: UiEvent) {
     receivedEvents.add(event)
   }
 
@@ -37,7 +37,7 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
    * @param count the number of expected events
    * @return this
    */
-  public fun assertEventCount(count: Int): TestEventSink<Event> {
+  public fun assertEventCount(count: Int): TestEventSink<UiEvent> {
     if (receivedEvents.size != count) {
       throw AssertionError(
         """
@@ -56,15 +56,15 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
    *
    * @return this
    */
-  public fun assertNoEvents(): TestEventSink<Event> = assertEventCount(0)
+  public fun assertNoEvents(): TestEventSink<UiEvent> = assertEventCount(0)
 
   /**
-   * Assert that this TestEventSink as received exactly one [Event] and that it equals [event].
+   * Assert that this TestEventSink as received exactly one [UiEvent] and that it equals [event].
    *
-   * @param event the expected [Event]
+   * @param event the expected [UiEvent]
    * @return this
    */
-  public fun assertEvent(event: Event): TestEventSink<Event> {
+  public fun assertEvent(event: UiEvent): TestEventSink<UiEvent> {
     if (receivedEvents.size != 1) {
       throw AssertionError(
         """
@@ -90,13 +90,13 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
   }
 
   /**
-   * Assert that this TestEventSink has received exactly one [Event] and that running [predicate]
+   * Assert that this TestEventSink has received exactly one [UiEvent] and that running [predicate]
    * with that event returns true.
    *
    * @param predicate the function used to determine equality with the received event
    * @return this
    */
-  public fun assertEvent(predicate: (Event) -> Boolean): TestEventSink<Event> {
+  public fun assertEvent(predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> {
     assertEventAt(0, predicate)
 
     if (receivedEvents.size > 1) {
@@ -113,10 +113,10 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
    * [event].
    *
    * @param index the index of the received event to be asserted
-   * @param event the expected [Event] to be compared to the received event at [index]
+   * @param event the expected [UiEvent] to be compared to the received event at [index]
    * @return this
    */
-  public fun assertEventAt(index: Int, event: Event): TestEventSink<Event> =
+  public fun assertEventAt(index: Int, event: UiEvent): TestEventSink<UiEvent> =
     assertEventAt(index) { received -> received == event }
 
   /**
@@ -127,7 +127,7 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
    * @param predicate the function used to determine equality with the received event at [index]
    * @return this
    */
-  public fun assertEventAt(index: Int, predicate: (Event) -> Boolean): TestEventSink<Event> {
+  public fun assertEventAt(index: Int, predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> {
     if (receivedEvents.isEmpty()) throw AssertionError("No events")
 
     if (index < 0 || receivedEvents.size <= index) {
@@ -147,10 +147,10 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
   /**
    * Assert that this TestEventSink received only the specified [events] in the specified order.
    *
-   * @param events the list of expected [events][Event] that is compared to the received events
+   * @param events the list of expected [events][UiEvent] that is compared to the received events
    * @return this
    */
-  public fun assertEvents(vararg events: Event): TestEventSink<Event> {
+  public fun assertEvents(vararg events: UiEvent): TestEventSink<UiEvent> {
     if (receivedEvents.size != events.size) {
       throw AssertionError(
         """
@@ -183,7 +183,7 @@ public class TestEventSink<Event : CircuitUiEvent> : (Event) -> Unit {
    * @param predicate the function used to determine equality with each received event
    * @return this
    */
-  public fun assertEvents(predicate: (Int, Event) -> Boolean): TestEventSink<Event> {
+  public fun assertEvents(predicate: (Int, UiEvent) -> Boolean): TestEventSink<UiEvent> {
     receivedEvents.forEachIndexed { i, received ->
       if (!predicate(i, received)) {
         throw AssertionError(

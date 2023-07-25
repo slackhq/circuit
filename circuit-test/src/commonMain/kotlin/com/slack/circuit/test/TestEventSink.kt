@@ -18,10 +18,6 @@ import kotlin.time.toDuration
 public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
   private val receivedEvents = mutableListOf<UiEvent>()
 
-  /** The list of received events */
-  public val events: List<UiEvent>
-    get() = receivedEvents
-
   /**
    * Sends the specified [event] to this TestEventSink.
    *

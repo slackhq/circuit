@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.test
 
-import com.google.common.truth.Truth.assertThat
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -13,17 +12,6 @@ import org.junit.runner.RunWith
 @RunWith(TestParameterInjector::class)
 class TestEventSinkTest {
   @Test
-  fun events() {
-    TestEventSink<Event>().run {
-      invoke(Event1)
-      invoke(Event2)
-      invoke(Event3)
-
-      assertThat(events).isEqualTo(listOf(Event1, Event2, Event3))
-    }
-  }
-
-  @Test
   fun assertEventCount() {
     TestEventSink<Event>().run {
       invoke(Event1)
@@ -31,7 +19,7 @@ class TestEventSinkTest {
       invoke(Event3)
 
       assertEventCount(3)
-      assertThat(events).isEqualTo(listOf(Event1, Event2, Event3))
+      assertEvents(Event1, Event2, Event3)
     }
   }
 

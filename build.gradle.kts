@@ -145,7 +145,7 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
-  plugins.withType<KotlinBasePlugin>().configureEach outerConfigureEach@ {
+  plugins.withType<KotlinBasePlugin>() {
     val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       compilerOptions {
@@ -205,7 +205,7 @@ subprojects {
     }
 
     // region Detekt
-    plugins.apply("io.gitlab.arturbosch.detekt")
+    project.apply(plugin = "io.gitlab.arturbosch.detekt")
     configure<DetektExtension> {
       toolVersion = detektVersion
       allRules = true

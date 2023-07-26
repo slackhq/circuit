@@ -171,7 +171,7 @@ subprojects {
           }
         }
 
-        freeCompilerArgs.add("-progressive")
+        progressiveMode.set(true)
 
         if (hasCompose && !isMultiPlatformPlugin) {
           // Flag to disable Compose's kotlin version check because they're often behind
@@ -205,7 +205,7 @@ subprojects {
     }
 
     // region Detekt
-    plugins.apply("io.gitlab.arturbosch.detekt")
+    project.apply(plugin = "io.gitlab.arturbosch.detekt")
     configure<DetektExtension> {
       toolVersion = detektVersion
       allRules = true
@@ -277,7 +277,7 @@ subprojects {
   }
 
   // Common android config
-  val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
+  val commonAndroidConfig: CommonExtension<*, *, *, *, *>.() -> Unit = {
     // Don't force compile SDK 34 yet in circuit artifacts yet
     compileSdk =
       if (project.path.startsWith(":samples")) {
@@ -361,8 +361,7 @@ subprojects {
             libs.versions.compose.compiler.kotlinVersion.get()
         } else {
           // JB version
-          libs.compose.compilerJb.get().toString() to
-            libs.versions.compose.jb.compiler.kotlinVersion.get()
+          libs.compose.compilerJb.get().toString() to libs.versions.compose.jb.kotlinVersion.get()
         }
       kotlinCompilerPlugin.set(compilerDep)
       val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion

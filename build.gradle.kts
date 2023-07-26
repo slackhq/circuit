@@ -277,7 +277,7 @@ subprojects {
   }
 
   // Common android config
-  val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
+  val commonAndroidConfig: CommonExtension<*, *, *, *, *>.() -> Unit = {
     // Don't force compile SDK 34 yet in circuit artifacts yet
     compileSdk =
       if (project.path.startsWith(":samples")) {

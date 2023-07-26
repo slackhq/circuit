@@ -145,7 +145,7 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
-  plugins.withType<KotlinBasePlugin>() {
+  plugins.withType<KotlinBasePlugin> {
     val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       compilerOptions {

@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/update-baseline-profiles.yml'
+      - 'gradle/libs.versions.toml'
 
 concurrency:
   group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'

@@ -5,8 +5,9 @@ Circuit is designed to make testing as easy as possible. Its core components are
 
 Circuit will have a test artifact containing APIs to aid testing both presenters and composable UIs:
 
-1. `Presenter.test()` - an extension function that bridges the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages [Molecule](https://github.com/cashapp/molecule) and [Turbine](https://github.com/cashapp/turbine).
-2. `FakeNavigator` - a test fake implementing the Circuit/Navigator interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back).
+- `Presenter.test()` - an extension function that bridges the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages [Molecule](https://github.com/cashapp/molecule) and [Turbine](https://github.com/cashapp/turbine).
+- `FakeNavigator` - a test fake implementing the Circuit/Navigator interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back).
+- `TestEventSink` - a generic test fake for recording and asserting event emissions through an event sink function.
 
 ## Installation
 
@@ -144,32 +145,41 @@ fun `present - navigate to favorite screen`() = runTest {
 
 ### Android UI Instrumentation Tests
 
-UI tests can be driven directly through ComposeTestRule and use its Espresso-esque API for assertions:
+UI tests can be driven directly through `ComposeTestRule` and use its Espresso-esque API for assertions:
+
+Here is also a good place to use a `TestEventSink` and assert expected event emissions from specific UI interactions.
 
 ```kotlin
 @Test
 fun favoritesList_show_favorites_for_result_state() = runTest {
-  val favorites = listOf(Favorite(1L, ...)
+  val favorites = listOf(Favorite(1L, ...))
+  val events = TestEventSink<FavoriteScreen.Event>()
 
   composeTestRule.run {
     setContent { 
       // bootstrap the UI in the desired state
       FavoritesList(
-        state = FavoriteScreen.State.Results(favorites) { /* event callback */ }
+        state = FavoriteScreen.State.Results(favorites, events)
       )
     }
 
     onNodeWithTag("no favorites").assertDoesNotExist()
     onNodeWithText("Your Favorites").assertIsDisplayed()
     onAllNodesWithTag("favorite").assertCountEquals(1)
+      .get(1)
+      .performClick()
+    
+    events.assertEvent(FavoriteScreen.Event.ClickFavorite(1L))
   }
 }
 ```
 
 
-### Future: Android UI Unit Tests via Paparazzi
+### Snapshot Tests
 
-We’ve started exploring use of [Paparazzi](https://github.com/cashapp/paparazzi), which allows us to render Android UI without a physical device or emulator. More to come soon, but in short it would work similar to the above but be for purely non-functional 1:1 state ↔ UI tests.
+Because Circuit UIs simply take an input state parameter, snapshot tests via [Paparazzi](https://github.com/cashapp/paparazzi) or [Roborazzi](https://github.com/takahirom/roborazzi) are a breeze.
+
+This allows allows you to render UI without a physical device or emulator and assert pixel-perfection on the result.
 
 ```kotlin
 @Test

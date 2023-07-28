@@ -50,6 +50,7 @@ roborazzi = "1.4.0-rc-1"
 spotless = "6.20.0"
 sqldelight = "2.0.0"
 telephoto = "0.4.0"
+testParameterInjector = "1.12"
 turbine = "1.0.0"
 versionsPlugin = "0.47.0"
 
@@ -221,6 +222,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 # Robolectric/Espresso ship with an old and totally borked version of hamcrest dependency, force a newer one
 testing-hamcrest = "org.hamcrest:hamcrest:2.2"
+testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.1.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 

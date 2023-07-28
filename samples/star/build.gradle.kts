@@ -125,5 +125,6 @@ dependencies {
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)
   androidTestImplementation(libs.truth)
+  androidTestImplementation(projects.circuitTest)
   androidTestImplementation(projects.samples.star.coilRule)
 }

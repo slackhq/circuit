@@ -22,8 +22,8 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
@@ -110,7 +110,7 @@ class PetDetailTest {
 
   @Test
   fun petDetail_emits_event_when_tapping_on_full_bio_button() = runTest {
-    val channel = Channel<Any>(1)
+    val testSink = TestEventSink<PetDetailScreen.Event>()
 
     val success =
       PetDetailScreen.State.Success(
@@ -120,7 +120,7 @@ class PetDetailTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = persistentListOf("dog", "terrier", "male"),
-        eventSink = channel::trySend
+        eventSink = testSink
       )
 
     val circuitConfig =
@@ -136,8 +136,7 @@ class PetDetailTest {
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
 
-      val event = channel.receive()
-      assertThat(event).isEqualTo(PetDetailScreen.Event.ViewFullBio(success.url))
+      testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
     }
   }
 }

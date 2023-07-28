@@ -73,6 +73,9 @@ android { namespace = "com.slack.circuit.foundation" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
-baselineProfile { filter { include("com.slack.circuit.foundation.**") } }
-
-dependencies { baselineProfile(projects.samples.star.benchmark) }
+baselineProfile {
+  mergeIntoMain = true
+  saveInSrc = true
+  from(projects.samples.star.benchmark.dependencyProject)
+  filter { include("com.slack.circuit.foundation.**") }
+}

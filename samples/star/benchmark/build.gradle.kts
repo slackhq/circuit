@@ -31,9 +31,11 @@ android {
   targetProjectPath = ":samples:star:apk"
   experimentalProperties["android.experimental.testOptions.managedDevices.setupTimeoutMinutes"] = 20
   // TODO remove in AGP 8.2
-  experimentalProperties["android.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules"] = "baselineprofile"
+  experimentalProperties[
+    "android.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules"] =
+    "baselineprofile"
   // TODO enable in AGP 8.2, doesn't work in AGP 8.1
-//  experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
+  //  experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
 }
 
 baselineProfile {

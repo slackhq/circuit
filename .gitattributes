@@ -1,2 +1,2 @@
 **/snapshots/**/*.png filter=lfs diff=lfs merge=lfs -text
-**/baseline-prof.txt linguist-generated=true
+**/generated/baselineProfiles/** linguist-generated=true

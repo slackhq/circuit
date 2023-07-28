@@ -28,10 +28,12 @@ android { namespace = "com.slack.circuit.runtime" }
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
 baselineProfile {
+  mergeIntoMain = true
+  saveInSrc = true
+  from(projects.samples.star.benchmark.dependencyProject)
+
   filter {
     // Don't include subpackages, only one star
     include("com.slack.circuit.runtime.*")
   }
 }
-
-dependencies { baselineProfile(projects.samples.star.benchmark) }

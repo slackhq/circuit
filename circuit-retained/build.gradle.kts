@@ -75,6 +75,9 @@ android {
   testBuildType = "release"
 }
 
-baselineProfile { filter { include("com.slack.circuit.retained.**") } }
-
-dependencies { baselineProfile(projects.samples.star.benchmark) }
+baselineProfile {
+  mergeIntoMain = true
+  saveInSrc = true
+  from(projects.samples.star.benchmark.dependencyProject)
+  filter { include("com.slack.circuit.retained.**") }
+}

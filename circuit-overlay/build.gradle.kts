@@ -21,6 +21,7 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
+        implementation(libs.coroutines)
       }
     }
     maybeCreate("commonTest").apply {

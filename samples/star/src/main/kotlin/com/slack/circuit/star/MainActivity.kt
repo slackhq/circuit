@@ -19,8 +19,8 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.push
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -42,8 +42,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
 @ActivityKey(MainActivity::class)
-class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig) :
-  AppCompatActivity() {
+class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {
 
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +69,7 @@ class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig)
           CompositionLocalProvider(
             LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass
           ) {
-            CircuitCompositionLocals(circuitConfig) {
+            CircuitCompositionLocals(circuit) {
               ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
             }
           }

@@ -50,7 +50,6 @@ jobs:
           cache-read-only: false
 
       - name: Verify Snapshots
-        if: always()
         id: gradle-snapshots
         uses: gradle/gradle-build-action@v2
         with:

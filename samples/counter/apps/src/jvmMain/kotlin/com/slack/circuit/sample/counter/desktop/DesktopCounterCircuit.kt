@@ -26,8 +26,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.push
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -148,14 +148,14 @@ fun main() = application {
     val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
     val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
 
-    val circuitConfig: CircuitConfig =
-      CircuitConfig.Builder()
+    val circuit: Circuit =
+      Circuit.Builder()
         .addPresenterFactory(CounterPresenterFactory())
         .addUiFactory(CounterUiFactory())
         .build()
 
     MaterialTheme {
-      CircuitCompositionLocals(circuitConfig) { NavigableCircuitContent(navigator, backStack) }
+      CircuitCompositionLocals(circuit) { NavigableCircuitContent(navigator, backStack) }
     }
   }
 }

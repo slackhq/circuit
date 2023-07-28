@@ -96,7 +96,7 @@ injection to types using Dagger `AssistedInject`. For these cases, the `Assisted
 Types available for assisted injection are:
 - `Screen` – the screen key used to create the `Presenter` or `Ui`.
 - `Navigator` – (presenters only)
-- `CircuitConfig`
+- `Circuit`
 
 Each should only be defined at-most once.
 

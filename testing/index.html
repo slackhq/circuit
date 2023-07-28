@@ -436,8 +436,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#future-android-ui-unit-tests-via-paparazzi" class="md-nav__link">
-    Future: Android UI Unit Tests via Paparazzi
+  <a href="#snapshot-tests" class="md-nav__link">
+    Snapshot Tests
   </a>
   
 </li>
@@ -631,8 +631,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#future-android-ui-unit-tests-via-paparazzi" class="md-nav__link">
-    Future: Android UI Unit Tests via Paparazzi
+  <a href="#snapshot-tests" class="md-nav__link">
+    Snapshot Tests
   </a>
   
 </li>
@@ -664,10 +664,11 @@
 <h1 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h1>
 <p>Circuit is designed to make testing as easy as possible. Its core components are not mockable nor do they need to be mocked. Fakes are provided where needed, everything else can be used directly.</p>
 <p>Circuit will have a test artifact containing APIs to aid testing both presenters and composable UIs:</p>
-<ol>
+<ul>
 <li><code>Presenter.test()</code> - an extension function that bridges the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages <a href="https://github.com/cashapp/molecule">Molecule</a> and <a href="https://github.com/cashapp/turbine">Turbine</a>.</li>
 <li><code>FakeNavigator</code> - a test fake implementing the Circuit/Navigator interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back).</li>
-</ol>
+<li><code>TestEventSink</code> - a generic test fake for recording and asserting event emissions through an event sink function.</li>
+</ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>Test helpers are available via the <code>circuit-test</code> artifact.</p>
 <div class="highlight"><pre><span></span><code><span class="n">testImplementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-test:&lt;version&gt;&quot;</span><span class="p">)</span>
@@ -785,27 +786,34 @@
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="android-ui-instrumentation-tests">Android UI Instrumentation Tests<a class="headerlink" href="#android-ui-instrumentation-tests" title="Permanent link">&para;</a></h3>
-<p>UI tests can be driven directly through ComposeTestRule and use its Espresso-esque API for assertions:</p>
+<p>UI tests can be driven directly through <code>ComposeTestRule</code> and use its Espresso-esque API for assertions:</p>
+<p>Here is also a good place to use a <code>TestEventSink</code> and assert expected event emissions from specific UI interactions.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">favoritesList_show_favorites_for_result_state</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">favorites</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">Favorite</span><span class="p">(</span><span class="m">1L</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">favorites</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">Favorite</span><span class="p">(</span><span class="m">1L</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TestEventSink</span><span class="o">&lt;</span><span class="n">FavoriteScreen</span><span class="p">.</span><span class="na">Event</span><span class="o">&gt;</span><span class="p">()</span>
 
 <span class="w">  </span><span class="n">composeTestRule</span><span class="p">.</span><span class="na">run</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
 <span class="w">      </span><span class="c1">// bootstrap the UI in the desired state</span>
 <span class="w">      </span><span class="n">FavoritesList</span><span class="p">(</span>
-<span class="w">        </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FavoriteScreen</span><span class="p">.</span><span class="na">State</span><span class="p">.</span><span class="na">Results</span><span class="p">(</span><span class="n">favorites</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* event callback */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FavoriteScreen</span><span class="p">.</span><span class="na">State</span><span class="p">.</span><span class="na">Results</span><span class="p">(</span><span class="n">favorites</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">)</span>
 <span class="w">      </span><span class="p">)</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="n">onNodeWithTag</span><span class="p">(</span><span class="s">&quot;no favorites&quot;</span><span class="p">).</span><span class="na">assertDoesNotExist</span><span class="p">()</span>
 <span class="w">    </span><span class="n">onNodeWithText</span><span class="p">(</span><span class="s">&quot;Your Favorites&quot;</span><span class="p">).</span><span class="na">assertIsDisplayed</span><span class="p">()</span>
 <span class="w">    </span><span class="n">onAllNodesWithTag</span><span class="p">(</span><span class="s">&quot;favorite&quot;</span><span class="p">).</span><span class="na">assertCountEquals</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="na">performClick</span><span class="p">()</span>
+
+<span class="w">    </span><span class="n">events</span><span class="p">.</span><span class="na">assertEvent</span><span class="p">(</span><span class="n">FavoriteScreen</span><span class="p">.</span><span class="na">Event</span><span class="p">.</span><span class="na">ClickFavorite</span><span class="p">(</span><span class="m">1L</span><span class="p">))</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="future-android-ui-unit-tests-via-paparazzi">Future: Android UI Unit Tests via Paparazzi<a class="headerlink" href="#future-android-ui-unit-tests-via-paparazzi" title="Permanent link">&para;</a></h3>
-<p>We’ve started exploring use of <a href="https://github.com/cashapp/paparazzi">Paparazzi</a>, which allows us to render Android UI without a physical device or emulator. More to come soon, but in short it would work similar to the above but be for purely non-functional 1:1 state ↔ UI tests.</p>
+<h3 id="snapshot-tests">Snapshot Tests<a class="headerlink" href="#snapshot-tests" title="Permanent link">&para;</a></h3>
+<p>Because Circuit UIs simply take an input state parameter, snapshot tests via <a href="https://github.com/cashapp/paparazzi">Paparazzi</a> or <a href="https://github.com/takahirom/roborazzi">Roborazzi</a> are a breeze.</p>
+<p>This allows allows you to render UI without a physical device or emulator and assert pixel-perfection on the result.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">previewFavorite</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">paparazzi</span><span class="p">.</span><span class="na">snapshot</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">PreviewFavorite</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>

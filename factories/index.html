@@ -548,8 +548,8 @@
 
 
 <h1 id="factories">Factories<a class="headerlink" href="#factories" title="Permanent link">&para;</a></h1>
-<p>At its core, Circuit works on the Factory pattern. Every <code>Presenter</code> and <code>Ui</code> is contributed to a <code>CircuitConfig</code> instance by a corresponding factory that creates them for given <code>Screen</code>s. These are intended to be aggregated in the DI layer and added to a <code>CircuitConfig</code> instance during construction.</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuitConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CircuitConfig</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<p>At its core, Circuit works on the Factory pattern. Every <code>Presenter</code> and <code>Ui</code> is contributed to a <code>Circuit</code> instance by a corresponding factory that creates them for given <code>Screen</code>s. These are intended to be aggregated in the DI layer and added to a <code>Circuit</code> instance during construction.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
 <span class="w">  </span><span class="p">.</span><span class="na">addUiFactory</span><span class="p">(</span><span class="n">FavoritesUiFactory</span><span class="p">())</span>
 <span class="w">  </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">FavoritesPresenterFactory</span><span class="p">())</span>
 <span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>

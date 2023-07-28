@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>ui</title>
+    <title>invoke</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -38,7 +38,7 @@
     </div>
     <div class="pull-right d-flex">
         <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-foundation:dokkaHtmlPartial/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/commonMain">common</button>
         </div>
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
@@ -49,12 +49,12 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageids="circuit-foundation::com.slack.circuit.foundation/CircuitConfig/ui/#com.slack.circuit.runtime.Screen#com.slack.circuit.runtime.CircuitContext/PointingToDeclaration//-2130359332">
-  <div class="breadcrumbs"><a href="../../index.html">circuit-foundation</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.foundation</a><span class="delimiter">/</span><a href="index.html">CircuitConfig</a><span class="delimiter">/</span><span class="current">ui</span></div>
+<div class="main-content" data-page-type="member" id="content" pageids="circuit-test::com.slack.circuit.test/TestEventSink/invoke/#TypeParam(bounds=[com.slack.circuit.runtime.CircuitUiEvent])/PointingToDeclaration//1098370717">
+  <div class="breadcrumbs"><a href="../../index.html">circuit-test</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.test</a><span class="delimiter">/</span><a href="index.html">TestEventSink</a><span class="delimiter">/</span><span class="current">invoke</span></div>
   <div class="cover ">
-    <h1 class="cover"><span><span>ui</span></span></h1>
+    <h1 class="cover"><span><span>invoke</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="ui.html"><span class="token function">ui</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><a href="../../../circuit-runtime/com.slack.circuit.runtime/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="../../../circuit-runtime/com.slack.circuit.runtime/-circuit-context/index.html">CircuitContext</a><span class="token operator"> = </span>CircuitContext(null).also { it.config = this }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html">Ui</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">Sends the specified <a href="invoke.html">event</a> to this TestEventSink.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>event</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the <a href="index.html">UiEvent</a> being added to the sink</p></div></div></div></div></div></div></div>
 </div>
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>

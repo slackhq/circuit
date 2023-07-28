@@ -644,15 +644,15 @@
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
-<p>Create a <code>CircuitConfig</code> instance. This controls all your common configuration, Presenter/Ui factories, etc.</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuitConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CircuitConfig</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<p>Create a <code>Circuit</code> instance. This controls all your common configuration, Presenter/Ui factories, etc.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
 <span class="w">  </span><span class="p">.</span><span class="na">addUiFactory</span><span class="p">(</span><span class="n">AddFavoritesUiFactory</span><span class="p">())</span>
 <span class="w">  </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">AddFavoritesPresenterFactory</span><span class="p">())</span>
 <span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 </code></pre></div>
 <p>This configuration can be rebuilt via <code>newBuilder()</code> and usually would live in your program&rsquo;s DI graph.</p>
 <p>Once you have a configuration ready, the simplest way to get going with Circuit is via <code>CircuitCompositionLocals</code>. This automatically exposes the config to all child Circuit composables and allows you to get off the ground quickly with <code>CircuitContent</code>, <code>NavigableCircuitContent</code>, etc.</p>
-<div class="highlight"><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuitConfig</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">CircuitContent</span><span class="p">(</span><span class="n">AddFavoritesScreen</span><span class="p">())</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -681,7 +681,7 @@
 </tr>
 <tr>
 <td><code>circuit-foundation</code></td>
-<td>The circuit foundational APIs like <code>CircuitConfig</code>, <code>CircuitContent</code>, etc. Depends on the first three.</td>
+<td>The circuit foundational APIs like <code>Circuit</code>, <code>CircuitContent</code>, etc. Depends on the first three.</td>
 </tr>
 </tbody>
 </table>

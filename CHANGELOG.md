@@ -1,6 +1,22 @@
 Changelog
 =========
 
+0.12.0
+------
+
+_2023-07-28_
+
+- [foundation] Rename `CircuitConfig` -> `Circuit`. There is a source-compatible typealias for `CircuitConfig` left with a deprecation replacement to ease migration.
+- [foundation] Rename `CircuitContext.config` -> `CircuitContext.circuit`. The previous `CircuitContext.config` function is left with a deprecation replacement to ease migration.
+- [test] Add new `TestEventSink` helper for testing event emissions in UI tests.
+- [overlay] Add missing coroutines implementation dependency.
+- Update to Kotlin `1.9.0`.
+- Update to KSP `1.9.0-1.0.12`.
+- Update to Compose Multiplatform `1.4.3`.
+- Update to Coroutines `1.7.3`.
+- Update to Compose compiler to `1.5.1` (androidx) and `1.5.0` (compose-multiplatform).
+- Update [uuid](https://github.com/benasher44/uuid) to `0.8.0`.
+
 0.11.0
 ------
 

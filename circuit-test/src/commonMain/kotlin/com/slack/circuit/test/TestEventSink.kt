@@ -33,18 +33,15 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @param count the number of expected events
    * @return this
    */
-  public fun assertEventCount(count: Int): TestEventSink<UiEvent> {
+  public fun assertEventCount(count: Int): TestEventSink<UiEvent> = apply {
     if (receivedEvents.size != count) {
       throw AssertionError(
-        """
+          """
           expected: $count
           got: ${receivedEvents.size}; Value counts differ
         """
-          .trimIndent()
-      )
+              .trimIndent())
     }
-
-    return this
   }
 
   /**
@@ -60,29 +57,25 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @param event the expected [UiEvent]
    * @return this
    */
-  public fun assertEvent(event: UiEvent): TestEventSink<UiEvent> {
+  public fun assertEvent(event: UiEvent): TestEventSink<UiEvent> = apply {
     if (receivedEvents.size != 1) {
       throw AssertionError(
-        """
+          """
           expected: ${valueAndClass(event)}
           got: $receivedEvents
         """
-          .trimIndent()
-      )
+              .trimIndent())
     }
 
     val received = receivedEvents[0]
     if (received != event) {
       throw AssertionError(
-        """
+          """
           expected: ${valueAndClass(event)}
           got: ${valueAndClass(received)}
         """
-          .trimIndent()
-      )
+              .trimIndent())
     }
-
-    return this
   }
 
   /**
@@ -92,16 +85,13 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @param predicate the function used to determine equality with the received event
    * @return this
    */
-  public fun assertEvent(predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> {
+  public fun assertEvent(predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> = apply {
     assertEventAt(0, predicate)
 
     if (receivedEvents.size > 1) {
       throw AssertionError(
-        "The first value passed the predicate but this sink received more than one event"
-      )
+          "The first value passed the predicate but this sink received more than one event")
     }
-
-    return this
   }
 
   /**
@@ -113,7 +103,7 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @return this
    */
   public fun assertEventAt(index: Int, event: UiEvent): TestEventSink<UiEvent> =
-    assertEventAt(index) { received -> received == event }
+      assertEventAt(index) { received -> received == event }
 
   /**
    * Assert this TestEventSink received an event at [index] and that running [predicate] with that
@@ -123,22 +113,20 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @param predicate the function used to determine equality with the received event at [index]
    * @return this
    */
-  public fun assertEventAt(index: Int, predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> {
-    if (receivedEvents.isEmpty()) throw AssertionError("No events")
+  public fun assertEventAt(index: Int, predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> =
+      apply {
+        if (receivedEvents.isEmpty()) throw AssertionError("No events")
 
-    if (index < 0 || receivedEvents.size <= index) {
-      throw AssertionError("Index $index is out of range [0, ${receivedEvents.size})")
-    }
+        if (index < 0 || receivedEvents.size <= index) {
+          throw AssertionError("Index $index is out of range [0, ${receivedEvents.size})")
+        }
 
-    val received = receivedEvents[index]
-    if (!predicate(received)) {
-      throw AssertionError(
-        "Value ${valueAndClass(received)} at index $index did not pass the predicate check"
-      )
-    }
-
-    return this
-  }
+        val received = receivedEvents[index]
+        if (!predicate(received)) {
+          throw AssertionError(
+              "Value ${valueAndClass(received)} at index $index did not pass the predicate check")
+        }
+      }
 
   /**
    * Assert that this TestEventSink received only the specified [events] in the specified order.
@@ -146,31 +134,27 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @param events the list of expected [events][UiEvent] that is compared to the received events
    * @return this
    */
-  public fun assertEvents(vararg events: UiEvent): TestEventSink<UiEvent> {
+  public fun assertEvents(vararg events: UiEvent): TestEventSink<UiEvent> = apply {
     if (receivedEvents.size != events.size) {
       throw AssertionError(
-        """
+          """
           expected: ${events.size} ${events.contentToString()}
           got: ${receivedEvents.size} $receivedEvents; Value count differs
         """
-          .trimIndent()
-      )
+              .trimIndent())
     }
 
     receivedEvents.forEachIndexed { i, received ->
       val event = events[i]
       if (received != event) {
         throw AssertionError(
-          """
+            """
             expected: ${valueAndClass(event)}
             got: ${valueAndClass(received)}; Values at index $i differ
           """
-            .trimIndent()
-        )
+                .trimIndent())
       }
     }
-
-    return this
   }
 
   /**
@@ -179,16 +163,13 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @param predicate the function used to determine equality with each received event
    * @return this
    */
-  public fun assertEvents(predicate: (Int, UiEvent) -> Boolean): TestEventSink<UiEvent> {
+  public fun assertEvents(predicate: (Int, UiEvent) -> Boolean): TestEventSink<UiEvent> = apply {
     receivedEvents.forEachIndexed { i, received ->
       if (!predicate(i, received)) {
         throw AssertionError(
-          "Value ${valueAndClass(received)} at index $i did not pass the predicate check"
-        )
+            "Value ${valueAndClass(received)} at index $i did not pass the predicate check")
       }
     }
-
-    return this
   }
 
   public companion object {

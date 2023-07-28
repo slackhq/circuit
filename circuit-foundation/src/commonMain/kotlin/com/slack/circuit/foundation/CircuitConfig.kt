@@ -12,8 +12,9 @@ import com.slack.circuit.runtime.CircuitContext
 public typealias CircuitConfig = Circuit
 
 @Deprecated(
-    "Use CircuitContext.circuit instead",
-    ReplaceWith("circuit", "com.slack.circuit.foundation.circuit"))
+  "Use CircuitContext.circuit instead",
+  ReplaceWith("circuit", "com.slack.circuit.foundation.circuit")
+)
 public var CircuitContext.config: Circuit
   get() = circuit
   set(value) {

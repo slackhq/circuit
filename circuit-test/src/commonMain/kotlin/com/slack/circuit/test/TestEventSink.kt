@@ -36,11 +36,12 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
   public fun assertEventCount(count: Int): TestEventSink<UiEvent> = apply {
     if (receivedEvents.size != count) {
       throw AssertionError(
-          """
+        """
           expected: $count
           got: ${receivedEvents.size}; Value counts differ
         """
-              .trimIndent())
+          .trimIndent()
+      )
     }
   }
 
@@ -60,21 +61,23 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
   public fun assertEvent(event: UiEvent): TestEventSink<UiEvent> = apply {
     if (receivedEvents.size != 1) {
       throw AssertionError(
-          """
+        """
           expected: ${valueAndClass(event)}
           got: $receivedEvents
         """
-              .trimIndent())
+          .trimIndent()
+      )
     }
 
     val received = receivedEvents[0]
     if (received != event) {
       throw AssertionError(
-          """
+        """
           expected: ${valueAndClass(event)}
           got: ${valueAndClass(received)}
         """
-              .trimIndent())
+          .trimIndent()
+      )
     }
   }
 
@@ -90,7 +93,8 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
 
     if (receivedEvents.size > 1) {
       throw AssertionError(
-          "The first value passed the predicate but this sink received more than one event")
+        "The first value passed the predicate but this sink received more than one event"
+      )
     }
   }
 
@@ -103,7 +107,7 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @return this
    */
   public fun assertEventAt(index: Int, event: UiEvent): TestEventSink<UiEvent> =
-      assertEventAt(index) { received -> received == event }
+    assertEventAt(index) { received -> received == event }
 
   /**
    * Assert this TestEventSink received an event at [index] and that running [predicate] with that
@@ -114,19 +118,20 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
    * @return this
    */
   public fun assertEventAt(index: Int, predicate: (UiEvent) -> Boolean): TestEventSink<UiEvent> =
-      apply {
-        if (receivedEvents.isEmpty()) throw AssertionError("No events")
+    apply {
+      if (receivedEvents.isEmpty()) throw AssertionError("No events")
 
-        if (index < 0 || receivedEvents.size <= index) {
-          throw AssertionError("Index $index is out of range [0, ${receivedEvents.size})")
-        }
-
-        val received = receivedEvents[index]
-        if (!predicate(received)) {
-          throw AssertionError(
-              "Value ${valueAndClass(received)} at index $index did not pass the predicate check")
-        }
+      if (index < 0 || receivedEvents.size <= index) {
+        throw AssertionError("Index $index is out of range [0, ${receivedEvents.size})")
       }
+
+      val received = receivedEvents[index]
+      if (!predicate(received)) {
+        throw AssertionError(
+          "Value ${valueAndClass(received)} at index $index did not pass the predicate check"
+        )
+      }
+    }
 
   /**
    * Assert that this TestEventSink received only the specified [events] in the specified order.
@@ -137,22 +142,24 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
   public fun assertEvents(vararg events: UiEvent): TestEventSink<UiEvent> = apply {
     if (receivedEvents.size != events.size) {
       throw AssertionError(
-          """
+        """
           expected: ${events.size} ${events.contentToString()}
           got: ${receivedEvents.size} $receivedEvents; Value count differs
         """
-              .trimIndent())
+          .trimIndent()
+      )
     }
 
     receivedEvents.forEachIndexed { i, received ->
       val event = events[i]
       if (received != event) {
         throw AssertionError(
-            """
+          """
             expected: ${valueAndClass(event)}
             got: ${valueAndClass(received)}; Values at index $i differ
           """
-                .trimIndent())
+            .trimIndent()
+        )
       }
     }
   }
@@ -167,7 +174,8 @@ public class TestEventSink<UiEvent : CircuitUiEvent> : (UiEvent) -> Unit {
     receivedEvents.forEachIndexed { i, received ->
       if (!predicate(i, received)) {
         throw AssertionError(
-            "Value ${valueAndClass(received)} at index $i did not pass the predicate check")
+          "Value ${valueAndClass(received)} at index $i did not pass the predicate check"
+        )
       }
     }
   }

@@ -70,7 +70,7 @@ public fun CircuitContent(
   @OptIn(InternalCircuitApi::class)
   val context =
     remember(screen, navigator, circuit, parent) {
-      CircuitContext(parent).also { it.config = circuit }
+      CircuitContext(parent).also { it.circuit = circuit }
     }
   CompositionLocalProvider(LocalCircuitContext provides context) {
     CircuitContent(screen, modifier, navigator, circuit, unavailableContent, context)

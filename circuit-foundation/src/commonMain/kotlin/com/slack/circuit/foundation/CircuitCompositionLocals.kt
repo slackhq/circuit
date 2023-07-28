@@ -11,13 +11,13 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import com.slack.circuit.runtime.CircuitContext
 
 /**
- * Provides the given [circuitConfig] as a [CompositionLocal] to all composables within [content].
- * Also adds any other composition locals that Circuit needs.
+ * Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. Also
+ * adds any other composition locals that Circuit needs.
  */
 @Composable
-public fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Composable () -> Unit) {
+public fun CircuitCompositionLocals(circuit: Circuit, content: @Composable () -> Unit) {
   CompositionLocalProvider(
-    LocalCircuitConfig provides circuitConfig,
+    LocalCircuit provides circuit,
   ) {
     content()
   }
@@ -25,8 +25,5 @@ public fun CircuitCompositionLocals(circuitConfig: CircuitConfig, content: @Comp
 
 internal val LocalCircuitContext = compositionLocalOf<CircuitContext?> { null }
 
-/** CompositionLocal with a current [CircuitConfig] instance. */
-public val LocalCircuitConfig: ProvidableCompositionLocal<CircuitConfig?> =
-  staticCompositionLocalOf {
-    null
-  }
+/** CompositionLocal with a current [Circuit] instance. */
+public val LocalCircuit: ProvidableCompositionLocal<Circuit?> = staticCompositionLocalOf { null }

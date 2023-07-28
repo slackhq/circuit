@@ -18,16 +18,16 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 
 /**
- * [CircuitConfig] adapts [presenter factories][Presenter.Factory] to their corresponding
+ * [Circuit] adapts [presenter factories][Presenter.Factory] to their corresponding
  * [ui factories][Ui.Factory] using [screens][Screen]. Create instances using [the Builder]
  * [Builder] and create new [CircuitContent] with it to run presenter/UI pairings.
  *
  * ## Construction
  *
- * Construction of [CircuitConfig] instances is done using [the Builder] [Builder].
+ * Construction of [Circuit] instances is done using [the Builder] [Builder].
  *
  * ```kotlin
- * val circuitConfig = CircuitConfig.Builder()
+ * val circuit = Circuit.Builder()
  *     .addUiFactory(AddFavoritesUiFactory())
  *     .addPresenterFactory(AddFavoritesPresenterFactory())
  *     .build()
@@ -42,7 +42,7 @@ import com.slack.circuit.runtime.ui.Ui
  * [CircuitCompositionLocals] CompositionLocalProvider.
  *
  * ```kotlin
- * CircuitCompositionLocals(circuitConfig) {
+ * CircuitCompositionLocals(circuit) {
  *   CircuitContent(AddFavoritesScreen())
  * }
  * ```
@@ -52,7 +52,7 @@ import com.slack.circuit.runtime.ui.Ui
  * ```kotlin
  * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
  * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
- * CircuitCompositionLocals(circuitConfig) {
+ * CircuitCompositionLocals(circuit) {
  *   NavigableCircuitContent(navigator, backstack)
  * }
  * ```
@@ -62,7 +62,7 @@ import com.slack.circuit.runtime.ui.Ui
  * @see `NavigableCircuitContent`
  */
 @Immutable
-public class CircuitConfig private constructor(builder: Builder) {
+public class Circuit private constructor(builder: Builder) {
   private val uiFactories: List<Ui.Factory> = builder.uiFactories.toList()
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
@@ -74,7 +74,7 @@ public class CircuitConfig private constructor(builder: Builder) {
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
-    context: CircuitContext = CircuitContext(null).also { it.config = this }
+    context: CircuitContext = CircuitContext(null).also { it.circuit = this }
   ): Presenter<*>? {
     return nextPresenter(null, screen, navigator, context)
   }
@@ -99,7 +99,7 @@ public class CircuitConfig private constructor(builder: Builder) {
   @OptIn(InternalCircuitApi::class)
   public fun ui(
     screen: Screen,
-    context: CircuitContext = CircuitContext(null).also { it.config = this }
+    context: CircuitContext = CircuitContext(null).also { it.circuit = this }
   ): Ui<*>? {
     return nextUi(null, screen, context)
   }
@@ -131,10 +131,10 @@ public class CircuitConfig private constructor(builder: Builder) {
     public var eventListenerFactory: EventListener.Factory? = null
       private set
 
-    internal constructor(circuitConfig: CircuitConfig) : this() {
-      uiFactories.addAll(circuitConfig.uiFactories)
-      presenterFactories.addAll(circuitConfig.presenterFactories)
-      eventListenerFactory = circuitConfig.eventListenerFactory
+    internal constructor(circuit: Circuit) : this() {
+      uiFactories.addAll(circuit.uiFactories)
+      presenterFactories.addAll(circuit.presenterFactories)
+      eventListenerFactory = circuit.eventListenerFactory
     }
 
     public fun addUiFactory(factory: Ui.Factory): Builder = apply { uiFactories.add(factory) }
@@ -175,8 +175,8 @@ public class CircuitConfig private constructor(builder: Builder) {
       eventListenerFactory = factory
     }
 
-    public fun build(): CircuitConfig {
-      return CircuitConfig(this)
+    public fun build(): Circuit {
+      return Circuit(this)
     }
   }
 }
@@ -190,8 +190,8 @@ private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier)
     )
   }
 
-/** The [CircuitConfig] used in this context. */
-public var CircuitContext.config: CircuitConfig
+/** The [Circuit] used in this context. */
+public var CircuitContext.circuit: Circuit
   get() = checkNotNull(tag())
   set(value) {
     putTag(value)

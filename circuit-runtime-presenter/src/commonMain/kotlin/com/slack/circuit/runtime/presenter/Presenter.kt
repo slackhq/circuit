@@ -95,8 +95,8 @@ public interface Presenter<UiState : CircuitUiState> {
   @Composable public fun present(): UiState
 
   /**
-   * A factory that produces [presenters][Presenter] for a given [Screen]. `CircuitConfig` instances
-   * use the created presenter and connects it to a given `Ui` for the same [Screen].
+   * A factory that produces [presenters][Presenter] for a given [Screen]. `Circuit` instances use
+   * the created presenter and connects it to a given `Ui` for the same [Screen].
    *
    * Factories should be simple aggregate multiple presenters for a canonical "whole screen". That
    * is to say, they should be hand-written and aggregate all the presenters responsible for the UI

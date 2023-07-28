@@ -39,15 +39,15 @@ class EventListenerTest {
 
     val presenter = StringPresenter(state)
     val ui = StringUi()
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .addPresenterFactory { _, _, _ -> presenter }
         .addUiFactory { _, _ -> ui }
         .eventListenerFactory(eventListenerFactory)
         .build()
 
     backgroundScope.launchMolecule(Immediate) {
-      CircuitContent(circuitConfig = circuitConfig, screen = TestScreen)
+      CircuitContent(circuit = circuit, screen = TestScreen)
     }
     val (screen, listener) = eventListenerFactory.listeners.entries.first()
     assertThat(screen).isEqualTo(TestScreen)

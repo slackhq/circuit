@@ -34,11 +34,11 @@ public fun NavigableCircuitContent(
   navigator: Navigator,
   backstack: SaveableBackStack,
   modifier: Modifier = Modifier,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
-  decoration: NavDecoration = circuitConfig.defaultNavDecoration,
+  decoration: NavDecoration = circuit.defaultNavDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
+    circuit.onUnavailableContent,
 ) {
   val activeContentProviders = buildList {
     for (record in backstack) {
@@ -47,7 +47,7 @@ public fun NavigableCircuitContent(
           val screen = record.screen
 
           val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator, modifier, circuitConfig, unavailableRoute)
+            CircuitContent(screen, navigator, modifier, circuit, unavailableRoute)
           }
 
           val currentRouteContent by rememberUpdatedState(currentContent)

@@ -34,8 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -51,8 +51,8 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .addPresenterFactory { screen, _, context ->
           when (screen) {
             is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, context)
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         .build()
 
     setContent {
-      CircuitCompositionLocals(circuitConfig) {
+      CircuitCompositionLocals(circuit) {
         var selectedPresenterIndex by remember { mutableStateOf(0) }
         var selectedUiIndex by remember { mutableStateOf(0) }
         val circuitScreen =

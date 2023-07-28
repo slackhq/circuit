@@ -11,15 +11,15 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
 
 class CounterActivity : AppCompatActivity() {
 
-  private val circuitConfig: CircuitConfig =
-    CircuitConfig.Builder()
+  private val circuit: Circuit =
+    Circuit.Builder()
       .addPresenterFactory(CounterPresenterFactory())
       .addUiFactory(CounterUiFactory())
       .build()
@@ -37,7 +37,7 @@ class CounterActivity : AppCompatActivity() {
       val systemUiController = rememberSystemUiController()
       systemUiController.setSystemBarsColor(color = colorScheme.primaryContainer)
       MaterialTheme(colorScheme = colorScheme) {
-        CircuitCompositionLocals(circuitConfig) { CircuitContent(AndroidCounterScreen) }
+        CircuitCompositionLocals(circuit) { CircuitContent(AndroidCounterScreen) }
       }
     }
   }

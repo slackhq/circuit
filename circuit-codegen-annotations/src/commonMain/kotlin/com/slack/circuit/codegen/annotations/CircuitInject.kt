@@ -3,7 +3,7 @@
 package com.slack.circuit.codegen.annotations
 
 import androidx.compose.runtime.Composable
-import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
@@ -96,7 +96,7 @@ import kotlin.reflect.KClass
  * Types available for assisted injection are:
  * - [Screen] – the screen key used to create the [Presenter] or [Ui].
  * - [Navigator] – (presenters only)
- * - [CircuitConfig]
+ * - [Circuit]
  *
  * Each should only be defined at-most once.
  *

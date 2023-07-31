@@ -16,7 +16,8 @@ class BaselineProfileGenerator {
       // Iteration values recommended by AndroidX folks
       maxIterations = 15,
       stableIterations = 3,
-      includeInStartupProfile = true,
+      // TODO re-enable when this doesn't break library consumption
+      includeInStartupProfile = false,
       profileBlock = { startActivityAndWait() }
     )
 }

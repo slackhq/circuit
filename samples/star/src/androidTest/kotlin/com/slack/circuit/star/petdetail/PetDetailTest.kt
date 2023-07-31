@@ -13,8 +13,8 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -22,8 +22,8 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
@@ -76,8 +76,8 @@ class PetDetailTest {
       )
 
     var carouselScreen: PetPhotoCarouselScreen? = null
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
           carouselScreen = screen as PetPhotoCarouselScreen
           PetPhotoCarousel(PetPhotoCarouselScreen.State(screen), modifier)
@@ -92,7 +92,7 @@ class PetDetailTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuit) { PetDetail(success) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -110,7 +110,7 @@ class PetDetailTest {
 
   @Test
   fun petDetail_emits_event_when_tapping_on_full_bio_button() = runTest {
-    val channel = Channel<Any>(1)
+    val testSink = TestEventSink<PetDetailScreen.Event>()
 
     val success =
       PetDetailScreen.State.Success(
@@ -120,24 +120,23 @@ class PetDetailTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = persistentListOf("dog", "terrier", "male"),
-        eventSink = channel::trySend
+        eventSink = testSink
       )
 
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
           PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen), modifier)
         }
         .build()
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuitConfig) { PetDetail(success) } }
+      setContent { CircuitCompositionLocals(circuit) { PetDetail(success) } }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
 
-      val event = channel.receive()
-      assertThat(event).isEqualTo(PetDetailScreen.Event.ViewFullBio(success.url))
+      testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
     }
   }
 }

@@ -13,8 +13,8 @@ import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
@@ -23,8 +23,8 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -40,8 +40,8 @@ class PetDetailUiTest {
   // TODO this seems like not the greatest test pattern, maybe something we can offer better
   //  solutions for via semantics.
   private var carouselScreen: PetPhotoCarouselScreen? = null
-  private val circuitConfig =
-    CircuitConfig.Builder()
+  private val circuit =
+    Circuit.Builder()
       .setOnUnavailableContent { screen, modifier ->
         when (screen) {
           is PetPhotoCarouselScreen -> {
@@ -55,9 +55,7 @@ class PetDetailUiTest {
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent {
-        CircuitCompositionLocals(circuitConfig) { PetDetail(PetDetailScreen.State.Loading) }
-      }
+      setContent { CircuitCompositionLocals(circuit) { PetDetail(PetDetailScreen.State.Loading) } }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -69,7 +67,7 @@ class PetDetailUiTest {
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
       setContent {
-        CircuitCompositionLocals(circuitConfig) { PetDetail(PetDetailScreen.State.UnknownAnimal) }
+        CircuitCompositionLocals(circuit) { PetDetail(PetDetailScreen.State.UnknownAnimal) }
       }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
@@ -107,7 +105,7 @@ class PetDetailUiTest {
 
     composeTestRule.run {
       setContent {
-        CircuitCompositionLocals(circuitConfig) { ContentWithOverlays { PetDetail(success) } }
+        CircuitCompositionLocals(circuit) { ContentWithOverlays { PetDetail(success) } }
       }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
@@ -126,7 +124,7 @@ class PetDetailUiTest {
 
   @Test
   fun petDetail_emits_event_when_tapping_on_full_bio_button() = runTest {
-    val channel = Channel<Any>(1)
+    val testSink = TestEventSink<PetDetailScreen.Event>()
 
     val success =
       PetDetailScreen.State.Success(
@@ -136,11 +134,11 @@ class PetDetailUiTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = persistentListOf("dog", "terrier", "male"),
-        eventSink = channel::trySend
+        eventSink = testSink
       )
 
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
           PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen), modifier)
         }
@@ -148,14 +146,13 @@ class PetDetailUiTest {
 
     composeTestRule.run {
       setContent {
-        CircuitCompositionLocals(circuitConfig) { ContentWithOverlays { PetDetail(success) } }
+        CircuitCompositionLocals(circuit) { ContentWithOverlays { PetDetail(success) } }
       }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
 
-      val event = channel.receive()
-      assertThat(event).isEqualTo(PetDetailScreen.Event.ViewFullBio(success.url))
+      testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
     }
   }
 }

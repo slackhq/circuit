@@ -5,13 +5,13 @@ androidx-appcompat = "1.6.1"
 androidx-browser = "1.5.0"
 androidx-lifecycle = "2.6.1"
 agp = "8.1.0"
-anvil = "2.4.6"
+anvil = "2.4.7"
 benchmark = "1.2.0-beta02"
 coil = "2.4.0"
 compose-animation = "1.4.3"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.0"
+compose-compiler-version = "1.5.1"
 compose-compiler-kotlinVersion = "1.9.0"
 compose-foundation = "1.4.3"
 compose-material = "1.4.3"
@@ -50,6 +50,7 @@ roborazzi = "1.4.0-rc-1"
 spotless = "6.20.0"
 sqldelight = "2.0.0"
 telephoto = "0.4.0"
+testParameterInjector = "1.12"
 turbine = "1.0.0"
 versionsPlugin = "0.47.0"
 
@@ -145,7 +146,7 @@ androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.3.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
 androidx-test-monitor = "androidx.test:monitor:1.6.1"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-alpha03"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-alpha04"
 
 anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 
@@ -154,7 +155,7 @@ autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", versi
 
 baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
 
-clikt = "com.github.ajalt.clikt:clikt:4.1.0"
+clikt = "com.github.ajalt.clikt:clikt:4.2.0"
 
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
@@ -221,6 +222,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 # Robolectric/Espresso ship with an old and totally borked version of hamcrest dependency, force a newer one
 testing-hamcrest = "org.hamcrest:hamcrest:2.2"
+testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.1.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 

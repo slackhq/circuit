@@ -11,8 +11,8 @@ import com.jakewharton.mosaic.MosaicScope
 import com.jakewharton.mosaic.runMosaic
 import com.jakewharton.mosaic.ui.Column
 import com.jakewharton.mosaic.ui.Text
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Screen
@@ -86,12 +86,12 @@ internal suspend fun runCounterScreen(useCircuit: Boolean) = runMosaic {
 
 internal fun MosaicScope.runCircuitCounterScreen() {
   setContent {
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .addPresenterFactory(CounterPresenterFactory())
         .addUiFactory(CounterUiFactory())
         .build()
-    CircuitCompositionLocals(circuitConfig) { CircuitContent(MosaicCounterScreen) }
+    CircuitCompositionLocals(circuit) { CircuitContent(MosaicCounterScreen) }
   }
 }
 

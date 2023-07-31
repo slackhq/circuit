@@ -1,10 +1,10 @@
 Factories
 =========
 
-At its core, Circuit works on the Factory pattern. Every `Presenter` and `Ui` is contributed to a `CircuitConfig` instance by a corresponding factory that creates them for given `Screen`s. These are intended to be aggregated in the DI layer and added to a `CircuitConfig` instance during construction.
+At its core, Circuit works on the Factory pattern. Every `Presenter` and `Ui` is contributed to a `Circuit` instance by a corresponding factory that creates them for given `Screen`s. These are intended to be aggregated in the DI layer and added to a `Circuit` instance during construction.
 
 ```kotlin
-val circuitConfig = CircuitConfig.Builder()
+val circuit = Circuit.Builder()
   .addUiFactory(FavoritesUiFactory())
   .addPresenterFactory(FavoritesPresenterFactory())
   .build()

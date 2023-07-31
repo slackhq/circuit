@@ -20,11 +20,11 @@ import com.slack.circuit.runtime.ui.Ui
 public fun CircuitContent(
   screen: Screen,
   modifier: Modifier = Modifier,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
+    circuit.onUnavailableContent,
 ) {
-  CircuitContent(screen, Navigator.NoOp, modifier, circuitConfig, unavailableContent)
+  CircuitContent(screen, Navigator.NoOp, modifier, circuit, unavailableContent)
 }
 
 @Composable
@@ -32,9 +32,9 @@ public fun CircuitContent(
   screen: Screen,
   modifier: Modifier = Modifier,
   onNavEvent: (event: NavEvent) -> Unit,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
+    circuit.onUnavailableContent,
 ) {
   val navigator =
     remember(onNavEvent) {
@@ -54,7 +54,7 @@ public fun CircuitContent(
         }
       }
     }
-  CircuitContent(screen, navigator, modifier, circuitConfig, unavailableContent)
+  CircuitContent(screen, navigator, modifier, circuit, unavailableContent)
 }
 
 @Composable
@@ -62,18 +62,18 @@ public fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
   modifier: Modifier = Modifier,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
+    circuit.onUnavailableContent,
 ) {
   val parent = LocalCircuitContext.current
   @OptIn(InternalCircuitApi::class)
   val context =
-    remember(screen, navigator, circuitConfig, parent) {
-      CircuitContext(parent).also { it.config = circuitConfig }
+    remember(screen, navigator, circuit, parent) {
+      CircuitContext(parent).also { it.circuit = circuit }
     }
   CompositionLocalProvider(LocalCircuitContext provides context) {
-    CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent, context)
+    CircuitContent(screen, modifier, navigator, circuit, unavailableContent, context)
   }
 }
 
@@ -82,13 +82,13 @@ internal fun CircuitContent(
   screen: Screen,
   modifier: Modifier,
   navigator: Navigator,
-  circuitConfig: CircuitConfig,
+  circuit: Circuit,
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
   context: CircuitContext,
 ) {
   val eventListener =
     remember(screen, context) {
-      (circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE).also {
+      (circuit.eventListenerFactory?.create(screen, context) ?: EventListener.NONE).also {
         it.start()
       }
     }
@@ -98,7 +98,7 @@ internal fun CircuitContent(
     remember(eventListener, screen, navigator, context) {
       eventListener.onBeforeCreatePresenter(screen, navigator, context)
       @Suppress("UNCHECKED_CAST")
-      (circuitConfig.presenter(screen, navigator, context) as Presenter<CircuitUiState>?).also {
+      (circuit.presenter(screen, navigator, context) as Presenter<CircuitUiState>?).also {
         eventListener.onAfterCreatePresenter(screen, navigator, it, context)
       }
     }
@@ -106,9 +106,7 @@ internal fun CircuitContent(
   val ui =
     remember(eventListener, screen, context) {
       eventListener.onBeforeCreateUi(screen, context)
-      circuitConfig.ui(screen, context).also { ui ->
-        eventListener.onAfterCreateUi(screen, ui, context)
-      }
+      circuit.ui(screen, context).also { ui -> eventListener.onAfterCreateUi(screen, ui, context) }
     }
 
   if (ui != null && presenter != null) {

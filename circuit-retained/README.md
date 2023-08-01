@@ -8,6 +8,9 @@ persist across process death.
 The only meaningful implementation in this artifact is for Android, where a backing `ViewModel` is used
 to hold values. If you're not running this on Android, you shouldn't need this artifact.
 
+**Note**: For the Android artifacts, there are no baseline profiles shipped with circuit-retained.
+This is normal, as it's not usually something on your startup hot path.
+
 ## Installation
 
 Simply provide the `LocalRetainedStateRegistry` composition local using `continuityRetainedStateRegistry()`.

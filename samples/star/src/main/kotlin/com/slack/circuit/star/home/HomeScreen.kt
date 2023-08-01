@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
+import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,6 +69,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
+  var contentComposed by rememberRetained { mutableStateOf(false) }
   Scaffold(
     modifier = modifier.fillMaxWidth(),
     contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -80,6 +82,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       }
     }
   ) { paddingValues ->
+    contentComposed = true
     val screen = state.navItems[state.selectedIndex].screen
     CircuitContent(
       screen,
@@ -87,15 +90,13 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       onNavEvent = { event -> state.eventSink(ChildNav(event)) }
     )
   }
+  ReportDrawnWhen { contentComposed }
 }
 
 @Composable
 private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
   // These are the buttons on the NavBar, they dictate where we navigate too
-  //
-  // NOTE: we wouldn't normally use rememberRetained here, but we want to have it in the
-  // sample for our baseline profile generation
-  val items = rememberRetained { listOf(BottomNavItem.Adoptables, BottomNavItem.About) }
+  val items = remember { listOf(BottomNavItem.Adoptables, BottomNavItem.About) }
   NavigationBar(
     containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {

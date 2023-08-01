@@ -15,27 +15,24 @@ android {
     versionName = "1"
   }
   buildTypes {
-    val releaseBuildType =
-      getByName("release") {
-        isMinifyEnabled = true
-        isShrinkResources = true
-        proguardFiles(
-          getDefaultProguardFile("proguard-android-optimize.txt"),
-          file("proguard-rules.pro")
-        )
-      }
-
-    create("benchmark") {
-      initWith(releaseBuildType)
-      signingConfig = signingConfigs.getByName("debug")
-      matchingFallbacks += listOf("release")
-      isDebuggable = false
+    getByName("release") {
+      isMinifyEnabled = true
+      isShrinkResources = true
+      proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"),
+        file("proguard-rules.pro")
+      )
     }
   }
+}
+
+baselineProfile {
+  saveInSrc = true
+  dexLayoutOptimization = true
+  from(projects.samples.star.benchmark.dependencyProject)
 }
 
 dependencies {
   api(projects.samples.star)
   implementation(libs.androidx.profileinstaller)
-  baselineProfile(projects.samples.star.benchmark)
 }

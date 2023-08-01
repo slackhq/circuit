@@ -20,17 +20,6 @@ android {
     testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
   }
 
-  buildTypes {
-    // This benchmark buildType is used for benchmarking, and should function like your
-    // release build (for example, with minification on). It"s signed with a debug key
-    // for easy local/CI testing.
-    create("benchmark") {
-      isDebuggable = true
-      signingConfig = getByName("debug").signingConfig
-      matchingFallbacks += listOf("release")
-    }
-  }
-
   testOptions.managedDevices.devices {
     create<ManagedVirtualDevice>("pixel6Api31") {
       device = "Pixel 6"
@@ -40,7 +29,13 @@ android {
   }
 
   targetProjectPath = ":samples:star:apk"
-  experimentalProperties["android.experimental.self-instrumenting"] = true
+  experimentalProperties["android.experimental.testOptions.managedDevices.setupTimeoutMinutes"] = 20
+  // TODO remove in AGP 8.2
+  experimentalProperties[
+    "android.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules"] =
+    "baselineprofile"
+  // TODO enable in AGP 8.2, doesn't work in AGP 8.1
+  //  experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
 }
 
 baselineProfile {

@@ -6,7 +6,6 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   `java-test-fixtures`
-  id(libs.plugins.baselineprofile.get().pluginId)
 }
 
 kotlin {
@@ -74,7 +73,3 @@ android {
   testOptions { unitTests.isIncludeAndroidResources = true }
   testBuildType = "release"
 }
-
-baselineProfile { filter { include("com.slack.circuit.retained.**") } }
-
-dependencies { baselineProfile(projects.samples.star.benchmark) }

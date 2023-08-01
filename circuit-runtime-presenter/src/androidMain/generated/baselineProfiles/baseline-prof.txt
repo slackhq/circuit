@@ -1,2 +1,1 @@
 Lcom/slack/circuit/runtime/presenter/Presenter;
-Lcom/slack/circuit/runtime/presenter/Presenter$Factory;

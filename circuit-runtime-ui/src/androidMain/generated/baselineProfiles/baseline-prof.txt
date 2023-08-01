@@ -1,2 +1,1 @@
 Lcom/slack/circuit/runtime/ui/Ui;
-Lcom/slack/circuit/runtime/ui/Ui$Factory;

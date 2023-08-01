@@ -39,10 +39,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object HomeScreen : Screen {
   data class State(
-      val navItems: ImmutableList<BottomNavItem> =
-          persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),
-      val selectedIndex: Int = 0,
-      val eventSink: (Event) -> Unit,
+    val navItems: ImmutableList<BottomNavItem> =
+      persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),
+    val selectedIndex: Int = 0,
+    val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
@@ -71,23 +71,25 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   var contentComposed by rememberRetained { mutableStateOf(false) }
   Scaffold(
-      modifier = modifier.fillMaxWidth(),
-      contentWindowInsets = WindowInsets(0, 0, 0, 0),
-      containerColor = Color.Transparent,
-      bottomBar = {
-        StarTheme(useDarkTheme = true) {
-          BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->
-            state.eventSink(ClickNavItem(index))
-          }
+    modifier = modifier.fillMaxWidth(),
+    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+    containerColor = Color.Transparent,
+    bottomBar = {
+      StarTheme(useDarkTheme = true) {
+        BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->
+          state.eventSink(ClickNavItem(index))
         }
-      }) { paddingValues ->
-        contentComposed = true
-        val screen = state.navItems[state.selectedIndex].screen
-        CircuitContent(
-            screen,
-            modifier = Modifier.padding(paddingValues),
-            onNavEvent = { event -> state.eventSink(ChildNav(event)) })
       }
+    }
+  ) { paddingValues ->
+    contentComposed = true
+    val screen = state.navItems[state.selectedIndex].screen
+    CircuitContent(
+      screen,
+      modifier = Modifier.padding(paddingValues),
+      onNavEvent = { event -> state.eventSink(ChildNav(event)) }
+    )
+  }
   ReportDrawnWhen { contentComposed }
 }
 
@@ -96,15 +98,16 @@ private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Un
   // These are the buttons on the NavBar, they dictate where we navigate too
   val items = remember { listOf(BottomNavItem.Adoptables, BottomNavItem.About) }
   NavigationBar(
-      containerColor = MaterialTheme.colorScheme.primaryContainer,
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {
     items.forEachIndexed { index, item ->
       NavigationBarItem(
-          icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
-          label = { Text(text = item.title) },
-          alwaysShowLabel = true,
-          selected = selectedIndex == index,
-          onClick = { onSelectedIndex(index) })
+        icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+        label = { Text(text = item.title) },
+        alwaysShowLabel = true,
+        selected = selectedIndex == index,
+        onClick = { onSelectedIndex(index) }
+      )
     }
   }
 }

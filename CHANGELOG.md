@@ -7,6 +7,7 @@ Changelog
 _2023-08-01_
 
 - Patch release with baseline profiles bundled in the Android artifacts again.
+- Update to Anvil `2.4.7`.
 
 0.12.0
 ------

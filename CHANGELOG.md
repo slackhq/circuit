@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.12.1
+------
+
+_2023-08-01_
+
+- Patch release with baseline profiles bundled in the Android artifacts again.
+
 0.12.0
 ------
 

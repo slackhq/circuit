@@ -1,4 +1,5 @@
 androidx.annotation:annotation
+androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime
 com.google.dagger:dagger
 com.squareup.anvil:annotations

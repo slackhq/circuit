@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.google.devtools.ksp.gradle.KspTaskJvm
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -57,6 +58,14 @@ tasks
       }
     }
   }
+
+// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
+afterEvaluate {
+  val kspReleaseTask = tasks.named<KspTaskJvm>("kspReleaseKotlin")
+  tasks.named<KotlinCompile>("kaptGenerateStubsReleaseKotlin").configure {
+    source(kspReleaseTask.flatMap { it.destination })
+  }
+}
 
 dependencies {
   kapt(libs.dagger.compiler)

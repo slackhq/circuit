@@ -131,7 +131,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
   }
 
   val totalPhotos = photoUrls.size
-  val pagerState = rememberPagerState()
+  val pagerState = rememberPagerState { totalPhotos }
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
@@ -170,7 +170,6 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
       }
   ) {
     PhotoPager(
-      count = totalPhotos,
       pagerState = pagerState,
       photoUrls = photoUrls,
       name = name,
@@ -198,7 +197,6 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
-  count: Int,
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,
@@ -206,7 +204,6 @@ private fun PhotoPager(
   photoUrlMemoryCacheKey: String? = null,
 ) {
   HorizontalPager(
-    pageCount = count,
     state = pagerState,
     key = photoUrls::get,
     modifier = modifier,

@@ -38,7 +38,7 @@ leakcanary = "2.12"
 material = "1.6.1"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.25.3"
-molecule = "1.1.0"
+molecule = "1.2.0"
 mosaic = "0.8.0"
 moshi = "1.15.0"
 moshix = "0.24.0"
@@ -100,7 +100,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.06.01" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.08.00" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }

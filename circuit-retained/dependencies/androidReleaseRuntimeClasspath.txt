@@ -6,6 +6,8 @@ androidx.arch.core:core-common
 androidx.arch.core:core-runtime
 androidx.autofill:autofill
 androidx.collection:collection
+androidx.compose.runtime:runtime-android
+androidx.compose.runtime:runtime-saveable-android
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
 androidx.compose.ui:ui-geometry

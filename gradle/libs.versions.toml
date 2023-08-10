@@ -2,7 +2,7 @@
 accompanist = "0.30.1"
 androidx-activity = "1.7.2"
 androidx-appcompat = "1.6.1"
-androidx-browser = "1.5.0"
+androidx-browser = "1.6.0"
 androidx-lifecycle = "2.6.1"
 agp = "8.1.0"
 anvil = "2.4.7"

@@ -6,7 +6,7 @@ androidx-browser = "1.6.0"
 androidx-lifecycle = "2.6.1"
 agp = "8.1.0"
 anvil = "2.4.7"
-benchmark = "1.2.0-beta02"
+benchmark = "1.2.0-beta03"
 coil = "2.4.0"
 compose-animation = "1.4.3"
 # Pre-release versions for testing Kotlin previews can be found here

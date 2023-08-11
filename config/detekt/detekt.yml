@@ -21,6 +21,11 @@ style:
     ignoreAnnotated:
       - 'Preview'
       - 'androidx.compose.desktop.ui.tooling.preview.Preview'
+  # This rule ends up causing more style issues than not
+  OptionalWhenBraces:
+    active: false
+  BracesOnWhenStatements:
+    active: false
   MagicNumber:
     # Allow magic numbers in Compose previews
     ignoreAnnotated:

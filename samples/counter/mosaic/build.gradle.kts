@@ -35,18 +35,14 @@ kotlin {
   }
 }
 
-configurations
-  .matching { it.name == "kotlinCompilerPluginClasspathJvmMain" }
-  .configureEach {
-    // Mosaic imposes its compose compiler version, so we need to exclude whichever one
-    // we're not using
-    val (group, artifact) =
-      if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
-        // JB version
-        libs.compose.compilerJb.get().toString().split(":")
-      } else {
-        // Google version
-        libs.androidx.compose.compiler.get().toString().split(":")
-      }
-    exclude(group, artifact)
-  }
+mosaic {
+  val compiler =
+    if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
+      // JB version
+      libs.compose.compilerJb
+    } else {
+      // Google version
+      libs.androidx.compose.compiler
+    }
+  kotlinCompilerPlugin.set(compiler.map { it.toString() })
+}

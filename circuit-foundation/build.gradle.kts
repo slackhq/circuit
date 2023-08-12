@@ -59,6 +59,8 @@ kotlin {
       dependsOn(commonJvmTest)
       dependencies { implementation(libs.robolectric) }
     }
+    val iosMain by getting
+    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

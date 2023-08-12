@@ -87,7 +87,7 @@ import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.overlay.BottomSheetOverlay
+import com.slack.circuitx.overlays.BottomSheetOverlay
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG

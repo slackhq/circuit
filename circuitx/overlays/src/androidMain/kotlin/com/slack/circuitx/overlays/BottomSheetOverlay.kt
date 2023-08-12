@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.star.overlay
+package com.slack.circuitx.overlays
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +16,7 @@ import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-class BottomSheetOverlay<Model : Any, Result : Any>(
+public class BottomSheetOverlay<Model : Any, Result : Any>(
   private val model: Model,
   private val onDismiss: () -> Result,
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,

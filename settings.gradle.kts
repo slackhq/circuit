@@ -200,6 +200,7 @@ include(
   ":circuit-runtime-presenter",
   ":circuit-runtime-ui",
   ":circuit-test",
+  ":circuitx:overlays",
   ":samples:counter",
   ":samples:counter:apps",
   ":samples:counter:mosaic",

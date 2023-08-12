@@ -241,6 +241,13 @@ subprojects {
           suppress.set(true)
         }
         skipDeprecated.set(true)
+
+        // Skip internal packages
+        perPackageOption {
+          // language=RegExp
+          matchingRegex.set(".*\\.internal\\..*")
+          suppress.set(true)
+        }
         // AndroidX and Android docs are automatically added by the Dokka plugin.
       }
     }

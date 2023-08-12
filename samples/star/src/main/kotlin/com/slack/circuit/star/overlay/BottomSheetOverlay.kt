@@ -12,7 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
-import com.slack.circuit.star.ui.rememberStableCoroutineScope
+import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

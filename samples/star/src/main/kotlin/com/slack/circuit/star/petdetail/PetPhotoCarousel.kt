@@ -51,7 +51,7 @@ import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.overlay.FullScreenOverlay
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
-import com.slack.circuit.star.ui.rememberStableCoroutineScope
+import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

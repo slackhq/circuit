@@ -1,6 +1,6 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.star.ui
+package com.slack.circuit.runtime.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -14,10 +14,11 @@ import kotlinx.coroutines.CoroutineScope
  * to be stable.
  */
 @Composable
-fun rememberStableCoroutineScope(): StableCoroutineScope {
+public fun rememberStableCoroutineScope(): StableCoroutineScope {
   val scope = rememberCoroutineScope()
   return remember { StableCoroutineScope(scope) }
 }
 
 /** @see rememberStableCoroutineScope */
-@Stable class StableCoroutineScope(scope: CoroutineScope) : CoroutineScope by scope
+@Stable
+public class StableCoroutineScope(scope: CoroutineScope) : CoroutineScope by scope

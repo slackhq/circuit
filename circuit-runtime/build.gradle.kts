@@ -17,7 +17,12 @@ kotlin {
   // endregion
 
   sourceSets {
-    commonMain { dependencies { api(libs.compose.runtime) } }
+    commonMain {
+      dependencies {
+        api(libs.compose.runtime)
+        api(libs.coroutines)
+      }
+    }
     val iosMain by getting
     val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }

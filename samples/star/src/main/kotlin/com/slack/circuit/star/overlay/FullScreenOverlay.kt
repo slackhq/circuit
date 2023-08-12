@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.overlay
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator

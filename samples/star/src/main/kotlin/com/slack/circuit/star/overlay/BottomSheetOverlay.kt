@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.overlay
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -10,6 +9,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope

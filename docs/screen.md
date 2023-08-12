@@ -50,11 +50,11 @@ constructor(
 }
 ```
 
-Screens are also used to look up those corresponding components in `CircuitConfig`.
+Screens are also used to look up those corresponding components in `Circuit`.
 
 ```kotlin
-val presenter: Presenter<*>? = circuitconfig.presenter(addFavoritesScreen, navigator)
-val ui: Ui<*>? = circuitconfig.ui(addFavoritesScreen)
+val presenter: Presenter<*>? = circuit.presenter(addFavoritesScreen, navigator)
+val ui: Ui<*>? = circuit.ui(addFavoritesScreen)
 ```
 
 !!! tip "Nomenclature"

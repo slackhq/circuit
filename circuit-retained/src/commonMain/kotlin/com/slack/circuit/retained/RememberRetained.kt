@@ -18,7 +18,7 @@ import androidx.compose.runtime.rememberUpdatedState
  *
  * This differs from `rememberSaveable` by not being tied to Android bundles or parcelable. You
  * should take care to ensure that the state computed by [init] does not capture anything that is
- * not save to persist across reconfiguration, such as Navigators. The same caveats of
+ * not safe to persist across reconfiguration, such as Navigators. The same caveats of
  * `rememberSaveable` also still apply (i.e. do not retain Android Contexts, Views, etc).
  *
  * However, it does not participate in saved instance state either, so care should be taken to

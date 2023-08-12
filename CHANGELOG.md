@@ -1,6 +1,116 @@
 Changelog
 =========
 
+0.12.1
+------
+
+_2023-08-01_
+
+- Patch release with baseline profiles bundled in the Android artifacts again.
+- Update to Anvil `2.4.7`.
+
+0.12.0
+------
+
+_2023-07-28_
+
+- [foundation] Rename `CircuitConfig` -> `Circuit`. There is a source-compatible typealias for `CircuitConfig` left with a deprecation replacement to ease migration.
+- [foundation] Rename `CircuitContext.config` -> `CircuitContext.circuit`. The previous `CircuitContext.config` function is left with a deprecation replacement to ease migration.
+- [test] Add new `TestEventSink` helper for testing event emissions in UI tests.
+- [overlay] Add missing coroutines implementation dependency.
+- Update to Kotlin `1.9.0`.
+- Update to KSP `1.9.0-1.0.12`.
+- Update to Compose Multiplatform `1.4.3`.
+- Update to Coroutines `1.7.3`.
+- Update to Compose compiler to `1.5.1` (androidx) and `1.5.0` (compose-multiplatform).
+- Update [uuid](https://github.com/benasher44/uuid) to `0.8.0`.
+
+0.11.0
+------
+
+_2023-07-20_
+
+- [runtime] Fix race condition in `EventListener.start()` callback.
+- [code gen] Update to Dagger 2.47.
+- [docs] No longer recommend or require extracting intermediate event sink variables. This is no longer an issue 🎉.
+- Update Molecule to `1.0.0`.
+
+Thanks to [@bryanstern](https://github.com/bryanstern) for contributing to this release!
+
+0.10.1
+------
+
+_2023-07-09_
+
+- [runtime] Make `CircuitContent` overload with `Navigator` public.
+- [runtime] Remember `Presenter` and `Ui` in `CircuitContent`.
+- [runtime] Fix kdoc typo in `RememberRetained` .
+
+Special thanks to [@chrisbanes](https://github.com/chrisbanes) and [@bryanstern](https://github.com/bryanstern) for contributing to this release!
+
+0.10.0
+------
+
+_2023-06-30_
+
+- [runtime] Fix wrong compose-compiler used in iOS targets. Now we're using the compose-multiplatform fork.
+- [runtime] Allow creation of multiple `RetainedStateRegistry` instances.
+- [docs] Add clarifying links to Events docs.
+- [samples] Add new image detail view in STAR sample.
+- Update Molecule to `0.11.0`.
+- Update AndroidX compose-compiler to `1.4.8`.
+- Update compose-multiplatform to `1.4.1`.
+- Update to coroutines `1.7.2`.
+- Update to Turbine `1.0.0`.
+- Update to Kotlin `1.8.22`.
+
+Special thanks to [@bryanstern](https://github.com/bryanstern), [@saket](https://github.com/saket), and [@chrisbanes](https://github.com/chrisbanes) for contributing to this release!
+
+0.9.1
+-----
+
+_2023-06-02_
+
+- [runtime] Promote `NavEvent` subtypes to public API.
+- [runtime] Update `com.benasher44:uuid` to `0.7.1`.
+- [code gen] Update Anvil to `2.4.6`.
+
+0.9.0
+-----
+
+_2023-05-26_
+
+## Preliminary support for iOS targets
+
+Following the announcement of Compose for iOS alpha, this release adds `ios()` and `iosSimulatorArm64()` targets for the Circuit core artifacts. Note that this support doesn't come with any extra APIs yet for iOS, just basic target support only. We're not super sure what direction we want to take with iOS, but encourage others to try it out and let us know what patterns you like. We have updated the Counter sample to include an iOS app target as well, using Circuit for the presentation layer only and SwiftUI for the UI.
+
+Note that circuit-codegen and circuit-codegen-annotations don't support these yet, as Anvil and Dagger only support JVM targets.
+
+More details can be found in the PR: https://github.com/slackhq/circuit/pull/583
+
+## Misc
+
+- Use new baseline profile plugin for generating baseline profiles.
+- Misc sample app fixes and updates.
+- Add window size class example to STAR sample.
+- Switch to Roborazzi for screenshot test samples.
+- Small documentation updates.
+- Add bi-directional Flow/Circuit interop to interop sample.
+
+Note that we unintentionally used an experimental animation API for `NavigatorDefaults.DefaultDecotration`, which may cause R8 issues if you use a newer, experimental version of Compose animation. To avoid issues, copy the animation code and use your own copy compiled against the newest animation APIs. We'll fix this after Compose 1.5.0 is released.
+
+## Dependency updates
+
+```
+androidx.activity -> 1.7.2
+compose -> 1.4.3
+compose-compiler -> 1.4.7
+coroutines -> 1.7.1
+kotlin -> 1.8.21
+kotlinpoet -> 1.13.2
+turbine -> 0.13.0
+```
+
 0.8.0
 -----
 

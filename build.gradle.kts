@@ -13,45 +13,52 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
+buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
+
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
+  alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.kotlin.kapt) apply false
+  alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.agp.application) apply false
+  alias(libs.plugins.agp.library) apply false
+  alias(libs.plugins.agp.test) apply false
   alias(libs.plugins.anvil) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
-  alias(libs.plugins.dokka) apply false
-  //  alias(libs.plugins.ksp) apply false
+  alias(libs.plugins.dokka)
+  alias(libs.plugins.ksp) apply false
   alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
+  alias(libs.plugins.baselineprofile) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
 val detektVersion = libs.versions.detekt.get()
 val twitterDetektPlugin = libs.detektPlugins.twitterCompose
 
-// Flag to disable Compose's kotlin version check because they're often behind
-// Or ahead
-// Or if they're the same, do nothing
-// It's basically just very noisy.
-val composeCompilerKotlinVersion = libs.versions.composeCompilerKotlinVersion.get()
-val kotlinVersion = libs.versions.kotlin.get()
-val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
+tasks.dokkaHtmlMultiModule {
+  outputDirectory.set(rootDir.resolve("docs/api/0.x"))
+  includes.from(project.layout.projectDirectory.file("README.md"))
+}
 
 allprojects {
   apply(plugin = "com.diffplug.spotless")
@@ -139,6 +146,7 @@ subprojects {
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
+    val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       compilerOptions {
         allWarningsAsErrors.set(true)
@@ -163,18 +171,29 @@ subprojects {
           }
         }
 
-        freeCompilerArgs.add("-progressive")
+        progressiveMode.set(true)
 
-        if (hasCompose && suppressComposeKotlinVersion) {
-          freeCompilerArgs.addAll(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
-          )
+        if (hasCompose && !isMultiPlatformPlugin) {
+          // Flag to disable Compose's kotlin version check because they're often behind
+          // Or ahead
+          // Or if they're the same, do nothing
+          // It's basically just very noisy.
+          val composeCompilerKotlinVersion = libs.versions.compose.compiler.kotlinVersion.get()
+          val kotlinVersion = libs.versions.kotlin.get()
+          val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
+          if (suppressComposeKotlinVersion) {
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+            )
+          }
         }
       }
     }
 
-    if (hasCompose) {
+    if (hasCompose && !isMultiPlatformPlugin) {
+      // A standard android project using compose, we need to force the version again here
+      // separate from the ComposeExtension configuration elsewhere.
       dependencies {
         add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
         add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
@@ -186,7 +205,7 @@ subprojects {
     }
 
     // region Detekt
-    plugins.apply("io.gitlab.arturbosch.detekt")
+    project.apply(plugin = "io.gitlab.arturbosch.detekt")
     configure<DetektExtension> {
       toolVersion = detektVersion
       allRules = true
@@ -210,9 +229,14 @@ subprojects {
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
 
-    tasks.withType<DokkaTask>().configureEach {
-      outputDirectory.set(rootProject.rootDir.resolve("docs/api/0.x"))
+    tasks.withType<DokkaTaskPartial>().configureEach {
+      outputDirectory.set(buildDir.resolve("docs/partial"))
       dokkaSourceSets.configureEach {
+        val readMeProvider = project.layout.projectDirectory.file("README.md")
+        if (readMeProvider.asFile.exists()) {
+          includes.from(readMeProvider)
+        }
+
         if (name.contains("androidTest", ignoreCase = true)) {
           suppress.set(true)
         }
@@ -253,12 +277,20 @@ subprojects {
   }
 
   // Common android config
-  val commonAndroidConfig: CommonExtension<*, *, *, *>.() -> Unit = {
-    compileSdk = 33
+  val commonAndroidConfig: CommonExtension<*, *, *, *, *>.() -> Unit = {
+    // Don't force compile SDK 34 yet in circuit artifacts yet
+    compileSdk =
+      if (project.path.startsWith(":samples")) {
+        34
+      } else {
+        33
+      }
 
     if (hasCompose) {
       buildFeatures { compose = true }
-      composeOptions { kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get() }
+      composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.version.get()
+      }
     }
 
     compileOptions {
@@ -269,6 +301,7 @@ subprojects {
     lint {
       // https://issuetracker.google.com/issues/243267012
       disable += "Instantiatable"
+      checkTestSources = true
     }
   }
 
@@ -316,9 +349,34 @@ subprojects {
   // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
     configure<ComposeExtension> {
-      kotlinCompilerPlugin.set(
-        dependencies.compiler.forKotlin(libs.versions.compose.jb.kotlinVersion.get())
-      )
+      val kotlinVersion = libs.versions.kotlin.get()
+      // Flag to disable Compose's kotlin version check because they're often behind
+      // Or ahead
+      // Or if they're the same, do nothing
+      // It's basically just very noisy.
+      val (compilerDep, composeCompilerKotlinVersion) =
+        if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
+          // Google version
+          libs.androidx.compose.compiler.get().toString() to
+            libs.versions.compose.compiler.kotlinVersion.get()
+        } else {
+          // JB version
+          libs.compose.compilerJb.get().toString() to libs.versions.compose.jb.kotlinVersion.get()
+        }
+      kotlinCompilerPlugin.set(compilerDep)
+      val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
+      if (suppressComposeKotlinVersion) {
+        tasks.withType<KotlinCompilationTask<*>>().configureEach {
+          compilerOptions {
+            if (this is KotlinJvmCompilerOptions) {
+              freeCompilerArgs.addAll(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+              )
+            }
+          }
+        }
+      }
     }
   }
 

@@ -1,0 +1,55 @@
+name: "Update Baseline Profiles"
+
+on:
+  workflow_dispatch:
+  # Always run on PRs if this file was modified! We won't PR changes if we modify the file though
+  pull_request:
+    paths:
+      - '.github/workflows/update-baseline-profiles.yml'
+      - 'gradle/libs.versions.toml'
+
+concurrency:
+  group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
+  cancel-in-progress: true
+
+jobs:
+  update-baseline-profiles:
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: 'true'
+
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Install JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '20'
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
+
+      - name: Generate baseline profiles
+        run: ./scripts/update-baseline-profiles.sh
+
+      - name: Create Pull Request
+        if: github.event_name == 'workflow_dispatch'
+        id: createpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.SLACKHQ_MBR_GITHUB_TOKEN }}
+          commit-message: 'Update baseline profiles'
+          committer: OSS-Bot <svc-oss-bot@slack-corp.com>
+          author: OSS-Bot <svc-oss-bot@slack-corp.com>
+          title: 'Update baseline profiles'
+          body: 'Updates baseline profiles'
+          reviewers: ${{ github.actor }}
+          branch-suffix: timestamp
+          branch: bot/update-baseline-profiles

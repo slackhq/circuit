@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos.step
 
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -20,7 +20,7 @@ class ToppingsProducerImplTest {
     val repo = TestIngredientsRepository(testToppings)
     val producer = ToppingsProducerImpl(repo)
 
-    moleculeFlow(RecompositionClock.Immediate) {
+    moleculeFlow(RecompositionMode.Immediate) {
         producer(orderDetails = parent.orderDetails, eventSink = parent::childEvent)
       }
       .test {
@@ -41,7 +41,7 @@ class ToppingsProducerImplTest {
     val repo = TestIngredientsRepository(testToppings)
     val producer = ToppingsProducerImpl(repo)
 
-    moleculeFlow(RecompositionClock.Immediate) {
+    moleculeFlow(RecompositionMode.Immediate) {
         producer(
           orderDetails = parent.orderDetails,
           minimumToppings = 1,
@@ -79,7 +79,7 @@ class ToppingsProducerImplTest {
       val repo = TestIngredientsRepository(testToppings)
       val producer = ToppingsProducerImpl(repo)
 
-      moleculeFlow(RecompositionClock.Immediate) {
+      moleculeFlow(RecompositionMode.Immediate) {
           producer(
             orderDetails = parent.orderDetails,
             minimumToppings = 1,

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.di
 
-import com.slack.circuit.foundation.CircuitConfig
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.star.imageviewer.ImageViewerAwareNavDecoration
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
 import dagger.Provides
@@ -22,10 +23,11 @@ interface CircuitModule {
     fun provideCircuit(
       presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
       uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-    ): CircuitConfig {
-      return CircuitConfig.Builder()
+    ): Circuit {
+      return Circuit.Builder()
         .addPresenterFactories(presenterFactories)
         .addUiFactories(uiFactories)
+        .setDefaultNavDecoration(ImageViewerAwareNavDecoration)
         .build()
     }
   }

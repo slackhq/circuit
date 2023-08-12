@@ -7,8 +7,9 @@ import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,19 +19,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -42,11 +47,12 @@ import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
+  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .addPresenterFactory { screen, _, context ->
           when (screen) {
             is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, context)
@@ -62,9 +68,9 @@ class MainActivity : AppCompatActivity() {
         .build()
 
     setContent {
-      CircuitCompositionLocals(circuitConfig) {
-        var selectedPresenterIndex by rememberSaveable { mutableStateOf(0) }
-        var selectedUiIndex by rememberSaveable { mutableStateOf(0) }
+      CircuitCompositionLocals(circuit) {
+        var selectedPresenterIndex by remember { mutableStateOf(0) }
+        var selectedUiIndex by remember { mutableStateOf(0) }
         val circuitScreen =
           remember(selectedUiIndex, selectedPresenterIndex) {
             InteropCounterScreen(
@@ -72,26 +78,46 @@ class MainActivity : AppCompatActivity() {
               UiSource.values()[selectedUiIndex]
             )
           }
-        Scaffold(
-          modifier = Modifier,
-          bottomBar = {
-            Column(Modifier.padding(16.dp).fillMaxWidth(), Arrangement.spacedBy(16.dp)) {
-              SourceMenu("Presenter Source", selectedPresenterIndex, PresenterSource.values()) {
-                index ->
-                selectedPresenterIndex = index
-              }
-              SourceMenu("UI Source", selectedUiIndex, UiSource.values()) { index ->
-                selectedUiIndex = index
-              }
+        val useColumn =
+          calculateWindowSizeClass(this).widthSizeClass == WindowWidthSizeClass.Compact
+
+        val menus: @Composable () -> Unit = {
+          Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
+            SourceMenu("Presenter Source", selectedPresenterIndex, PresenterSource.values()) { index
+              ->
+              selectedPresenterIndex = index
             }
-          },
-        ) { paddingValues ->
-          // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
-          //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
-          //  them live enough to support this, but also sort of orthogonal to the point of this
-          //  sample.
-          key(circuitScreen) {
-            CircuitContent(screen = circuitScreen, modifier = Modifier.padding(paddingValues))
+            SourceMenu("UI Source", selectedUiIndex, UiSource.values()) { index ->
+              selectedUiIndex = index
+            }
+          }
+        }
+
+        val content = remember {
+          movableContentOf {
+            // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
+            //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
+            //  them live enough to support this, but also sort of orthogonal to the point of this
+            //  sample.
+            key(circuitScreen) { CircuitContent(screen = circuitScreen) }
+          }
+        }
+
+        Scaffold { paddingValues ->
+          if (useColumn) {
+            Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
+              Box(Modifier.weight(1f)) { content() }
+              menus()
+            }
+          } else {
+            Row(
+              modifier = Modifier.padding(paddingValues),
+              horizontalArrangement = Arrangement.spacedBy(16.dp),
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              menus()
+              Box(Modifier.weight(1f)) { content() }
+            }
           }
         }
       }

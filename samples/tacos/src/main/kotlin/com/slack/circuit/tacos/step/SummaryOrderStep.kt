@@ -25,8 +25,7 @@ internal fun summaryProducer(eventSink: (OrderStep.Event) -> Unit) =
 
 @Composable
 internal fun SummaryUi(state: SummaryOrderStep.SummaryState, modifier: Modifier = Modifier) {
-  val sink = state.eventSink
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Button(onClick = sink) { Text(stringResource(R.string.summary_step_order_again)) }
+    Button(onClick = state.eventSink) { Text(stringResource(R.string.summary_step_order_again)) }
   }
 }

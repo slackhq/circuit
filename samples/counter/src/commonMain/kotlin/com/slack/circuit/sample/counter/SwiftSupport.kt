@@ -2,16 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.counter
 
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import com.slack.circuit.sample.counter.util.IO
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -33,7 +33,7 @@ internal constructor(
   @OptIn(DelicateCoroutinesApi::class)
   fun subscribe(block: (UiState) -> Unit): Job {
     return GlobalScope.launch(Dispatchers.IO) {
-      launchMolecule(RecompositionClock.Immediate) { delegate.present() }.collect { block(it) }
+      launchMolecule(RecompositionMode.Immediate) { delegate.present() }.collect { block(it) }
     }
   }
 }

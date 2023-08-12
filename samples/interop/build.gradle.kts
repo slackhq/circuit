@@ -1,16 +1,16 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
-  id("com.android.application")
-  kotlin("android")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.agp.application)
+  alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
 android {
   namespace = "com.slack.circuit.sample.interop"
   defaultConfig {
-    minSdk = 33
-    targetSdk = 33
+    minSdk = 28
+    targetSdk = 34
     versionCode = 1
     versionName = "1"
   }
@@ -35,6 +35,7 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.swiperefresh)
   implementation(libs.androidx.compose.accompanist.systemUi)
   debugImplementation(libs.androidx.compose.ui.tooling)
+  implementation(libs.androidx.compose.material.material3.windowSizeClass)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.kotlinx.immutable)
   implementation(libs.rxjava)

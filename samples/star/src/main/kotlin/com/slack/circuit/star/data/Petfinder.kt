@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data
 
+import androidx.annotation.Keep
+import com.slack.eithernet.ApiResult
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.time.Instant
@@ -22,6 +24,7 @@ import retrofit2.http.Url
 private const val API_KEY = "SYWzK0sDRY8UMNjHM1IC3WDM8qLO6vCjCSfwf6aY5QlISE65kJ"
 private const val SECRET = "aA4VMgoPSReox5Ve67cNHI9M06JEgh68fjkG46Ee"
 
+@Keep
 interface PetfinderAuthApi {
   // "grant_type=client_credentials&client_id=$API_KEY&client_secret=$SECRET"
   @FormUrlEncoded
@@ -30,9 +33,10 @@ interface PetfinderAuthApi {
     @Field("client_id") clientId: String = API_KEY,
     @Field("client_secret") secret: String = SECRET,
     @Field("grant_type") grantType: String = "client_credentials"
-  ): AuthenticationResponse
+  ): ApiResult<AuthenticationResponse, Unit>
 }
 
+@Keep
 interface PetfinderApi {
   @GET("animals")
   suspend fun animals(
@@ -40,11 +44,11 @@ interface PetfinderApi {
     @Query("limit") limit: Int = 100, // (default: 20, max: 100)
     @Query("page") page: Int = 1,
     @Query("organization") organization: String = "NY835"
-  ): AnimalsResponse
+  ): ApiResult<AnimalsResponse, Unit>
 
-  @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): Animal
+  @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): ApiResult<Animal, Unit>
 
-  @JSoupEndpoint @GET("") suspend fun animalBio(@Url url: String): String
+  @JSoupEndpoint @GET("") suspend fun animalBio(@Url url: String): ApiResult<String, Unit>
 }
 
 @JsonClass(generateAdapter = true)
@@ -204,8 +208,12 @@ class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: 
     mutex.withLock {
       println("INFO: Refreshing token")
 
-      val authResponse = api.authenticate()
-      tokenStorage.updateAuthData(authResponse)
+      when (val result = api.authenticate()) {
+        is ApiResult.Success -> tokenStorage.updateAuthData(result.value)
+        is ApiResult.Failure -> {
+          println("ERROR: Failed to refresh token: $result")
+        }
+      }
     }
 }
 

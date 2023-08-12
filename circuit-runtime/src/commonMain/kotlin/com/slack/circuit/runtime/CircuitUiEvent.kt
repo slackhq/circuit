@@ -12,5 +12,9 @@ import androidx.compose.runtime.Immutable
  *
  * **Circuit event types are annotated as [@Immutable][Immutable] and should only use immutable
  * properties.**
+ *
+ * ## Testing
+ *
+ * To test events flowing from a UI, consider using `TestEventSink` from Circuit's test artifact.
  */
 @Immutable public interface CircuitUiEvent

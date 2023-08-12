@@ -6,9 +6,11 @@ import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,11 +41,14 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.imageviewer.ImageViewerScreen
+import com.slack.circuit.star.overlay.FullScreenOverlay
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.rememberStableCoroutineScope
@@ -124,7 +131,7 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
   }
 
   val totalPhotos = photoUrls.size
-  val pagerState = rememberPagerState()
+  val pagerState = rememberPagerState { totalPhotos }
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
@@ -163,11 +170,10 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
       }
   ) {
     PhotoPager(
-      count = totalPhotos,
       pagerState = pagerState,
       photoUrls = photoUrls,
       name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey
+      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     )
 
     HorizontalPagerIndicator(
@@ -187,24 +193,40 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
+@Suppress("LongParameterList")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
-  count: Int,
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,
+  modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,
 ) {
   HorizontalPager(
-    pageCount = count,
     state = pagerState,
     key = photoUrls::get,
+    modifier = modifier,
     contentPadding = PaddingValues(16.dp),
   ) { page ->
+    val overlayHost = LocalOverlayHost.current
+    val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
+    val scope = rememberStableCoroutineScope()
+
+    val clickableModifier =
+      photoUrl?.let { url ->
+        Modifier.clickable {
+          scope.launch {
+            overlayHost.show(
+              FullScreenOverlay(ImageViewerScreen(id = url, url = url, placeholderKey = name))
+            )
+          }
+        }
+      }
+        ?: Modifier
     Card(
       modifier =
-        Modifier.graphicsLayer {
+        clickableModifier.aspectRatio(1f).graphicsLayer {
           // Calculate the absolute offset for the current page from the
           // scroll position. We use the absolute value which allows us to mirror
           // any effects for both directions
@@ -225,7 +247,7 @@ private fun PhotoPager(
         modifier = Modifier.fillMaxWidth(),
         model =
           ImageRequest.Builder(LocalContext.current)
-            .data(photoUrls[page].takeIf(String::isNotBlank))
+            .data(photoUrl)
             .apply {
               if (page == 0) {
                 placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
@@ -234,7 +256,7 @@ private fun PhotoPager(
             }
             .build(),
         contentDescription = name,
-        contentScale = ContentScale.FillWidth,
+        contentScale = ContentScale.Crop,
       )
     }
   }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CornerSize
@@ -23,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -151,11 +150,7 @@ internal object PetDetailTestConstants {
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifier) {
-  val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
-
-  Scaffold(modifier = modifier.systemBarsPadding(), topBar = { TopBar(state) }) { padding ->
+  Scaffold(modifier = modifier, topBar = { TopBar(state) }) { padding ->
     when (state) {
       is PetDetailScreen.State.Loading -> Loading(padding)
       is PetDetailScreen.State.UnknownAnimal -> UnknownAnimal(padding)
@@ -200,38 +195,9 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
 private fun ShowAnimal(
   state: PetDetailScreen.State.Success,
   padding: PaddingValues,
-) =
-  when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-    true -> ShowAnimalLandscape(state, padding)
-    false -> ShowAnimalPortrait(state, padding)
-  }
-
-@Composable
-private fun ShowAnimalLandscape(state: PetDetailScreen.State.Success, padding: PaddingValues) {
-  Row(
-    modifier = Modifier.padding(padding),
-    horizontalArrangement = spacedBy(16.dp),
-  ) {
-    CircuitContent(
-      PetPhotoCarouselScreen(
-        name = state.name,
-        photoUrls = state.photoUrls,
-        photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-      )
-    )
-    LazyColumn(verticalArrangement = spacedBy(16.dp)) { petDetailDescriptions(state) }
-  }
-}
-
-@Composable
-private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: PaddingValues) {
-  LazyColumn(
-    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
-    contentPadding = PaddingValues(16.dp),
-    verticalArrangement = spacedBy(16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    item {
+) {
+  val carouselContent = remember {
+    movableContentOf {
       CircuitContent(
         PetPhotoCarouselScreen(
           name = state.name,
@@ -240,6 +206,46 @@ private fun ShowAnimalPortrait(state: PetDetailScreen.State.Success, padding: Pa
         )
       )
     }
+  }
+  return when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    true -> ShowAnimalLandscape(state, padding, carouselContent)
+    false -> ShowAnimalPortrait(state, padding, carouselContent)
+  }
+}
+
+@Composable
+private fun ShowAnimalLandscape(
+  state: PetDetailScreen.State.Success,
+  padding: PaddingValues,
+  carouselContent: @Composable () -> Unit,
+) {
+  Row(
+    modifier = Modifier.padding(padding),
+    horizontalArrangement = spacedBy(16.dp),
+  ) {
+    carouselContent()
+    LazyColumn(
+      verticalArrangement = spacedBy(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      petDetailDescriptions(state)
+    }
+  }
+}
+
+@Composable
+private fun ShowAnimalPortrait(
+  state: PetDetailScreen.State.Success,
+  padding: PaddingValues,
+  carouselContent: @Composable () -> Unit,
+) {
+  LazyColumn(
+    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = spacedBy(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    item { carouselContent() }
     petDetailDescriptions(state)
   }
 }
@@ -275,10 +281,7 @@ private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Suc
   }
 
   item(state.url) {
-    Button(
-      modifier = Modifier.fillMaxWidth(),
-      onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }
-    ) {
+    Button(onClick = { state.eventSink(PetDetailScreen.Event.ViewFullBio(state.url)) }) {
       Text(
         modifier = Modifier.testTag(FULL_BIO_TAG),
         text = "Full bio on Petfinder ➡",

@@ -1,13 +1,14 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.google.devtools.ksp.gradle.KspTaskJvm
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.library")
-  kotlin("android")
-  kotlin("kapt")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.agp.library)
+  alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.kapt)
+  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
@@ -58,6 +59,14 @@ tasks
     }
   }
 
+// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
+afterEvaluate {
+  val kspReleaseTask = tasks.named<KspTaskJvm>("kspReleaseKotlin")
+  tasks.named<KotlinCompile>("kaptGenerateStubsReleaseKotlin").configure {
+    source(kspReleaseTask.flatMap { it.destination })
+  }
+}
+
 dependencies {
   kapt(libs.dagger.compiler)
   ksp(projects.circuitCodegen)
@@ -79,10 +88,12 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.flowlayout)
   implementation(libs.androidx.compose.accompanist.swiperefresh)
   implementation(libs.androidx.compose.accompanist.systemUi)
-  debugImplementation(libs.androidx.compose.ui.tooling)
-  implementation(libs.bundles.androidx.activity)
+  implementation(libs.androidx.compose.ui.tooling)
+  // Use a newer version for access to edgeToEdge APIs
+  implementation("androidx.activity:activity-ktx:1.8.0-alpha06")
   implementation(libs.coil)
   implementation(libs.coil.compose)
+  implementation(libs.eithernet)
   implementation(libs.okhttp)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.okio)
@@ -96,6 +107,7 @@ dependencies {
   implementation(libs.sqldelight.driver.android)
   implementation(libs.sqldelight.coroutines)
   implementation(libs.sqldelight.primitiveAdapters)
+  implementation(libs.telephoto.zoomableImageCoil)
 
   testImplementation(libs.androidx.compose.ui.testing.junit)
   testImplementation(libs.junit)
@@ -111,7 +123,9 @@ dependencies {
   testImplementation(libs.androidx.compose.ui.testing.manifest)
   testImplementation(libs.leakcanary.android.instrumentation)
   testImplementation(libs.roborazzi)
+  testImplementation(libs.roborazzi.compose)
   testImplementation(libs.roborazzi.rules)
+  testImplementation(testFixtures(libs.eithernet))
   testImplementation(projects.samples.star.coilRule)
 
   androidTestImplementation(libs.androidx.compose.ui.testing.manifest)
@@ -120,5 +134,6 @@ dependencies {
   androidTestImplementation(libs.junit)
   androidTestImplementation(libs.coroutines.test)
   androidTestImplementation(libs.truth)
+  androidTestImplementation(projects.circuitTest)
   androidTestImplementation(projects.samples.star.coilRule)
 }

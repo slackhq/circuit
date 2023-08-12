@@ -20,11 +20,11 @@ import com.slack.circuit.runtime.ui.Ui
 public fun CircuitContent(
   screen: Screen,
   modifier: Modifier = Modifier,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
+    circuit.onUnavailableContent,
 ) {
-  CircuitContent(screen, modifier, Navigator.NoOp, circuitConfig, unavailableContent)
+  CircuitContent(screen, Navigator.NoOp, modifier, circuit, unavailableContent)
 }
 
 @Composable
@@ -32,47 +32,48 @@ public fun CircuitContent(
   screen: Screen,
   modifier: Modifier = Modifier,
   onNavEvent: (event: NavEvent) -> Unit,
-  circuitConfig: CircuitConfig = requireNotNull(LocalCircuitConfig.current),
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
-    circuitConfig.onUnavailableContent,
+    circuit.onUnavailableContent,
 ) {
   val navigator =
     remember(onNavEvent) {
       object : Navigator {
         override fun goTo(screen: Screen) {
-          onNavEvent(GoToNavEvent(screen))
+          onNavEvent(NavEvent.GoTo(screen))
         }
 
         override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(ResetRootNavEvent(newRoot))
+          onNavEvent(NavEvent.ResetRoot(newRoot))
           return emptyList()
         }
 
         override fun pop(): Screen? {
-          onNavEvent(PopNavEvent)
+          onNavEvent(NavEvent.Pop)
           return null
         }
       }
     }
-  CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent)
+  CircuitContent(screen, navigator, modifier, circuit, unavailableContent)
 }
 
 @Composable
-internal fun CircuitContent(
+public fun CircuitContent(
   screen: Screen,
-  modifier: Modifier,
   navigator: Navigator,
-  circuitConfig: CircuitConfig,
-  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
+  modifier: Modifier = Modifier,
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuit.onUnavailableContent,
 ) {
   val parent = LocalCircuitContext.current
   @OptIn(InternalCircuitApi::class)
   val context =
-    remember(screen, navigator, circuitConfig, parent) {
-      CircuitContext(parent).also { it.config = circuitConfig }
+    remember(screen, navigator, circuit, parent) {
+      CircuitContext(parent).also { it.circuit = circuit }
     }
   CompositionLocalProvider(LocalCircuitContext provides context) {
-    CircuitContent(screen, modifier, navigator, circuitConfig, unavailableContent, context)
+    CircuitContent(screen, modifier, navigator, circuit, unavailableContent, context)
   }
 }
 
@@ -81,27 +82,32 @@ internal fun CircuitContent(
   screen: Screen,
   modifier: Modifier,
   navigator: Navigator,
-  circuitConfig: CircuitConfig,
+  circuit: Circuit,
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
   context: CircuitContext,
 ) {
   val eventListener =
     remember(screen, context) {
-      circuitConfig.eventListenerFactory?.create(screen, context) ?: EventListener.NONE
+      (circuit.eventListenerFactory?.create(screen, context) ?: EventListener.NONE).also {
+        it.start()
+      }
     }
-  DisposableEffect(screen, context) {
-    eventListener.start()
-    onDispose { eventListener.dispose() }
-  }
+  DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
 
-  eventListener.onBeforeCreatePresenter(screen, navigator, context)
-  @Suppress("UNCHECKED_CAST")
-  val presenter = circuitConfig.presenter(screen, navigator, context) as Presenter<CircuitUiState>?
-  eventListener.onAfterCreatePresenter(screen, navigator, presenter, context)
+  val presenter =
+    remember(eventListener, screen, navigator, context) {
+      eventListener.onBeforeCreatePresenter(screen, navigator, context)
+      @Suppress("UNCHECKED_CAST")
+      (circuit.presenter(screen, navigator, context) as Presenter<CircuitUiState>?).also {
+        eventListener.onAfterCreatePresenter(screen, navigator, it, context)
+      }
+    }
 
-  eventListener.onBeforeCreateUi(screen, context)
-  val ui = circuitConfig.ui(screen, context)
-  eventListener.onAfterCreateUi(screen, ui, context)
+  val ui =
+    remember(eventListener, screen, context) {
+      eventListener.onBeforeCreateUi(screen, context)
+      circuit.ui(screen, context).also { ui -> eventListener.onAfterCreateUi(screen, ui, context) }
+    }
 
   if (ui != null && presenter != null) {
     @Suppress("UNCHECKED_CAST")

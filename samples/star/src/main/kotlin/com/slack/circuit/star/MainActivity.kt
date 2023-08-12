@@ -6,6 +6,7 @@ import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -18,8 +19,8 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.push
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -41,12 +42,13 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
 @ActivityKey(MainActivity::class)
-class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig) :
-  AppCompatActivity() {
+class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {
 
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+
     var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
     if (intent.data != null) {
       val httpUrl = intent.data.toString().toHttpUrl()
@@ -67,7 +69,7 @@ class MainActivity @Inject constructor(private val circuitConfig: CircuitConfig)
           CompositionLocalProvider(
             LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass
           ) {
-            CircuitCompositionLocals(circuitConfig) {
+            CircuitCompositionLocals(circuit) {
               ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
             }
           }

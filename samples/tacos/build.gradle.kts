@@ -4,17 +4,17 @@ import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.application")
-  kotlin("android")
-  kotlin("kapt")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.agp.application)
+  alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.kapt)
+  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.ksp)
 }
 
 android {
   namespace = "com.slack.circuit.tacos"
 
-  defaultConfig { minSdk = 33 }
+  defaultConfig { minSdk = 28 }
 
   testOptions { unitTests.isIncludeAndroidResources = true }
 }

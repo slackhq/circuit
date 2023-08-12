@@ -26,8 +26,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.push
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -56,16 +56,15 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         color = color
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val sink = state.eventSink
       Row {
         Button(
           modifier = Modifier.padding(2.dp),
-          onClick = { sink(CounterScreen.Event.Decrement) },
+          onClick = { state.eventSink(CounterScreen.Event.Decrement) },
         ) {
           Icon(rememberVectorPainter(Remove), "Decrement")
         }
         Button(
-          onClick = { sink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
+          onClick = { state.eventSink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
           modifier = Modifier.padding(2.dp)
         ) {
           Text(
@@ -75,7 +74,7 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         }
         Button(
           modifier = Modifier.padding(2.dp),
-          onClick = { sink(CounterScreen.Event.Increment) },
+          onClick = { state.eventSink(CounterScreen.Event.Increment) },
         ) {
           Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
         }
@@ -94,7 +93,6 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
         text = "${state.number}",
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val sink = state.eventSink
       if (state.isPrime) {
         Text(
           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -109,7 +107,7 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
       Spacer(modifier = Modifier.height(16.dp))
       Button(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = { sink(PrimeScreen.Event.Pop) },
+        onClick = { state.eventSink(PrimeScreen.Event.Pop) },
       ) {
         Text("Back")
       }
@@ -150,14 +148,14 @@ fun main() = application {
     val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
     val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
 
-    val circuitConfig: CircuitConfig =
-      CircuitConfig.Builder()
+    val circuit: Circuit =
+      Circuit.Builder()
         .addPresenterFactory(CounterPresenterFactory())
         .addUiFactory(CounterUiFactory())
         .build()
 
     MaterialTheme {
-      CircuitCompositionLocals(circuitConfig) { NavigableCircuitContent(navigator, backStack) }
+      CircuitCompositionLocals(circuit) { NavigableCircuitContent(navigator, backStack) }
     }
   }
 }

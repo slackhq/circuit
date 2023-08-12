@@ -107,12 +107,9 @@ private class CircuitSymbolProcessor(
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
       annotatedElement ->
       when (annotatedElement) {
-        is KSClassDeclaration -> {
-          generateFactory(annotatedElement, InstantiationType.CLASS, symbols)
-        }
-        is KSFunctionDeclaration -> {
+        is KSClassDeclaration -> generateFactory(annotatedElement, InstantiationType.CLASS, symbols)
+        is KSFunctionDeclaration ->
           generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols)
-        }
         else ->
           logger.error(
             "CircuitInject is only applicable on classes and functions.",
@@ -158,7 +155,7 @@ private class CircuitSymbolProcessor(
         )
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class.java)
+            .addAnnotation(Inject::class)
             .addParameters(factoryData.constructorParams)
             .build()
         )

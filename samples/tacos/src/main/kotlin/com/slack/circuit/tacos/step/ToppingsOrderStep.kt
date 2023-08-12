@@ -123,7 +123,6 @@ private fun ToppingsList(
   state: ToppingsOrderStep.State.AvailableToppings,
   modifier: Modifier = Modifier
 ) {
-  val sink = state.eventSink
   val scrollState = rememberScrollState()
   Column(modifier = modifier.verticalScroll(scrollState).fillMaxWidth()) {
     Instructions(resId = R.string.toppings_step_instructions)
@@ -137,7 +136,7 @@ private fun ToppingsList(
               selected -> ToppingsOrderStep.Event::AddTopping
               else -> ToppingsOrderStep.Event::RemoveTopping
             }
-          sink(event(ingredient))
+          state.eventSink(event(ingredient))
         },
       )
     }

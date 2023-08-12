@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import app.cash.molecule.RecompositionClock.Immediate
+import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.Turbine
 import com.google.common.truth.Truth.assertThat
@@ -19,7 +19,7 @@ import com.slack.circuit.runtime.ui.Ui
 import java.time.LocalTime
 import java.time.ZoneOffset.UTC
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -32,7 +32,6 @@ class EventListenerTest {
   val timeout: Timeout =
     Timeout.builder().withTimeout(10, TimeUnit.SECONDS).withLookingForStuckThread(true).build()
 
-  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun basicEventRecording() = runTest {
     val eventListenerFactory = RecordingEventListener.Factory()
@@ -40,22 +39,35 @@ class EventListenerTest {
 
     val presenter = StringPresenter(state)
     val ui = StringUi()
-    val circuitConfig =
-      CircuitConfig.Builder()
+    val circuit =
+      Circuit.Builder()
         .addPresenterFactory { _, _, _ -> presenter }
         .addUiFactory { _, _ -> ui }
         .eventListenerFactory(eventListenerFactory)
         .build()
 
     backgroundScope.launchMolecule(Immediate) {
-      CircuitContent(circuitConfig = circuitConfig, screen = TestScreen)
+      CircuitContent(circuit = circuit, screen = TestScreen)
     }
     val (screen, listener) = eventListenerFactory.listeners.entries.first()
     assertThat(screen).isEqualTo(TestScreen)
 
-    assertThat(listener.states.awaitItem()).isEqualTo(StringState("State"))
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.Start)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnBeforeCreatePresenter)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnAfterCreatePresenter)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnBeforeCreateUi)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnAfterCreateUi)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnStartPresent)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnStartContent)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnState(StringState("State")))
     state.value = "State2"
-    assertThat(listener.states.awaitItem()).isEqualTo(StringState("State2"))
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnState(StringState("State2")))
+
+    backgroundScope.cancel()
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnDisposeContent)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.OnDisposePresent)
+    assertThat(listener.events.awaitItem()).isEqualTo(Event.Dispose)
+    listener.events.awaitComplete()
   }
 }
 
@@ -76,11 +88,16 @@ private class StringUi : Ui<StringState> {
 }
 
 private class RecordingEventListener(private val onDispose: () -> Unit) : EventListener {
-  val states = Turbine<Any>(name = "recording event listener states")
+  val events = Turbine<Event>(name = "recording callback events")
+
+  override fun start() {
+    log("start")
+    events.add(Event.Start)
+  }
 
   override fun onState(state: CircuitUiState) {
     log("onState: $state")
-    states.add(state)
+    events.add(Event.OnState(state))
   }
 
   override fun onBeforeCreatePresenter(
@@ -89,6 +106,7 @@ private class RecordingEventListener(private val onDispose: () -> Unit) : EventL
     context: CircuitContext,
   ) {
     log("onBeforeCreatePresenter: $screen")
+    events.add(Event.OnBeforeCreatePresenter)
   }
 
   override fun onAfterCreatePresenter(
@@ -98,14 +116,17 @@ private class RecordingEventListener(private val onDispose: () -> Unit) : EventL
     context: CircuitContext,
   ) {
     log("onAfterCreatePresenter: $screen, $presenter")
+    events.add(Event.OnAfterCreatePresenter)
   }
 
   override fun onBeforeCreateUi(screen: Screen, context: CircuitContext) {
     log("onBeforeCreateUi: $screen")
+    events.add(Event.OnBeforeCreateUi)
   }
 
   override fun onAfterCreateUi(screen: Screen, ui: Ui<*>?, context: CircuitContext) {
     log("onAfterCreateUi: $screen, $ui")
+    events.add(Event.OnAfterCreateUi)
   }
 
   override fun onUnavailableContent(
@@ -114,28 +135,35 @@ private class RecordingEventListener(private val onDispose: () -> Unit) : EventL
     ui: Ui<*>?,
     context: CircuitContext,
   ) {
+    events.add(Event.OnUnavailableContent)
     error("onUnavailableContent: $screen, $presenter, $ui")
   }
 
   override fun onStartPresent() {
     log("onStartPresent")
+    events.add(Event.OnStartPresent)
   }
 
   override fun onDisposePresent() {
     log("onDisposePresent")
+    events.add(Event.OnDisposePresent)
   }
 
   override fun onStartContent() {
     log("onStartContent")
+    events.add(Event.OnStartContent)
   }
 
   override fun onDisposeContent() {
     log("onDisposeContent")
+    events.add(Event.OnDisposeContent)
   }
 
   override fun dispose() {
     log("dispose")
     onDispose()
+    events.add(Event.Dispose)
+    events.close()
   }
 
   class Factory : EventListener.Factory {
@@ -158,4 +186,30 @@ private class RecordingEventListener(private val onDispose: () -> Unit) : EventL
 
 private fun log(message: String) {
   println("${LocalTime.now(UTC).toString().replace("T"," ")}: $message")
+}
+
+private sealed interface Event {
+  object Start : Event
+
+  data class OnState(val state: CircuitUiState) : Event
+
+  object OnBeforeCreatePresenter : Event
+
+  object OnAfterCreatePresenter : Event
+
+  object OnBeforeCreateUi : Event
+
+  object OnAfterCreateUi : Event
+
+  object OnUnavailableContent : Event
+
+  object OnStartPresent : Event
+
+  object OnDisposePresent : Event
+
+  object OnStartContent : Event
+
+  object OnDisposeContent : Event
+
+  object Dispose : Event
 }

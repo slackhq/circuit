@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
+import androidx.activity.compose.ReportDrawnWhen
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -18,7 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.compose.ui.graphics.Color
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
@@ -69,37 +69,34 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
-  val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
-
-  val eventSink = state.eventSink
+  var contentComposed by rememberRetained { mutableStateOf(false) }
   Scaffold(
-    modifier = modifier.navigationBarsPadding().systemBarsPadding().fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
+    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+    containerColor = Color.Transparent,
     bottomBar = {
       StarTheme(useDarkTheme = true) {
         BottomNavigationBar(selectedIndex = state.selectedIndex) { index ->
-          eventSink(ClickNavItem(index))
+          state.eventSink(ClickNavItem(index))
         }
       }
     }
   ) { paddingValues ->
+    contentComposed = true
     val screen = state.navItems[state.selectedIndex].screen
     CircuitContent(
       screen,
       modifier = Modifier.padding(paddingValues),
-      onNavEvent = { event -> eventSink(ChildNav(event)) }
+      onNavEvent = { event -> state.eventSink(ChildNav(event)) }
     )
   }
+  ReportDrawnWhen { contentComposed }
 }
 
 @Composable
 private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
   // These are the buttons on the NavBar, they dictate where we navigate too
-  //
-  // NOTE: we wouldn't normally use rememberRetained here, but we want to have it in the
-  // sample for our baseline profile generation
-  val items = rememberRetained { listOf(BottomNavItem.Adoptables, BottomNavItem.About) }
+  val items = remember { listOf(BottomNavItem.Adoptables, BottomNavItem.About) }
   NavigationBar(
     containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {

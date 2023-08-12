@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textSize="48sp"
+        android:gravity="center"
         android:text="+"/>
 
     <Button
@@ -33,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textSize="48sp"
+        android:gravity="center"
         android:text="-"/>
 
 </LinearLayout>

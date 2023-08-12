@@ -3,18 +3,17 @@
 import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
 
 plugins {
-  kotlin("multiplatform")
+  alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  id("com.android.application")
-  kotlin("plugin.parcelize")
+  alias(libs.plugins.agp.application)
+  alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
 android {
   namespace = "com.slack.circuit.sample.counter.android"
   defaultConfig {
-    compileSdk = 33
-    minSdk = 33
-    targetSdk = 33
+    minSdk = 31 // For the dynamic m3 theme
+    targetSdk = 34
   }
 }
 
@@ -30,7 +29,7 @@ tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
 
 kotlin {
   // region KMP Targets
-  android()
+  androidTarget()
   jvm()
   ios()
   // endregion

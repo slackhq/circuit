@@ -3,15 +3,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.android.library")
-  kotlin("multiplatform")
+  alias(libs.plugins.agp.library)
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
-  id("com.vanniktech.maven.publish")
+  alias(libs.plugins.mavenPublish)
+  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
   // region KMP Targets
-  android { publishLibraryVariants("release") }
+  androidTarget { publishLibraryVariants("release") }
   jvm()
   ios()
   iosSimulatorArm64()
@@ -70,3 +72,10 @@ tasks
 android { namespace = "com.slack.circuit.foundation" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+
+baselineProfile {
+  mergeIntoMain = true
+  saveInSrc = true
+  from(projects.samples.star.benchmark.dependencyProject)
+  filter { include("com.slack.circuit.foundation.**") }
+}

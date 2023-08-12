@@ -7,8 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitConfig
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val circuitConfig: CircuitConfig =
-      CircuitConfig.Builder()
+    val circuit: Circuit =
+      Circuit.Builder()
         .addPresenterFactory(buildPresenterFactory())
         .addUiFactory(buildUiFactory())
         .build()
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     setContent {
       TacoTheme {
         rememberSystemUiController().setStatusBarColor(MaterialTheme.colorScheme.background)
-        CircuitCompositionLocals(circuitConfig) { CircuitContent(OrderTacosScreen) }
+        CircuitCompositionLocals(circuit) { CircuitContent(OrderTacosScreen) }
       }
     }
   }

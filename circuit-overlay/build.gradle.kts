@@ -1,15 +1,16 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
-  id("com.android.library")
-  kotlin("multiplatform")
+  alias(libs.plugins.agp.library)
+  alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  id("com.vanniktech.maven.publish")
+  alias(libs.plugins.mavenPublish)
+  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
   // region KMP Targets
-  android { publishLibraryVariants("release") }
+  androidTarget { publishLibraryVariants("release") }
   jvm()
   ios()
   iosSimulatorArm64()
@@ -20,6 +21,7 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
+        implementation(libs.coroutines)
       }
     }
     maybeCreate("commonTest").apply {
@@ -44,3 +46,10 @@ kotlin {
 android { namespace = "com.slack.circuit.overlay" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+
+baselineProfile {
+  mergeIntoMain = true
+  saveInSrc = true
+  from(projects.samples.star.benchmark.dependencyProject)
+  filter { include("com.slack.circuit.overlay.**") }
+}

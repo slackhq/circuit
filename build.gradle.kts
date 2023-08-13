@@ -261,6 +261,14 @@ subprojects {
             it.substringBeforeLast(":")
           }
         }
+      } else if (project.path == ":circuitx:android") {
+        // Android-only project
+        configuration("releaseRuntimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
+        }
       } else {
         configuration("androidReleaseRuntimeClasspath") {
           baselineMap = {

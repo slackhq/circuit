@@ -28,7 +28,7 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
-import com.slack.circuit.star.navigator.CustomTabsIntentScreen
+import com.slack.circuit.star.navigation.CustomTabsIntentScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.StarTheme

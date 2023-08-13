@@ -17,7 +17,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -29,11 +28,13 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
-import com.slack.circuit.star.navigator.AndroidScreen
-import com.slack.circuit.star.navigator.AndroidSupportingNavigator
+import com.slack.circuit.star.navigator.CustomTabsIntentScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.StarTheme
+import com.slack.circuitx.android.AndroidScreen
+import com.slack.circuitx.android.IntentScreen
+import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
@@ -63,8 +64,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         Surface(color = MaterialTheme.colorScheme.background) {
           val backstack = rememberSaveableBackStack { backStack.forEach { screen -> push(screen) } }
           val circuitNavigator = rememberCircuitNavigator(backstack)
-          val navigator =
-            remember(circuitNavigator) { AndroidSupportingNavigator(circuitNavigator, this::goTo) }
+          val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
           val windowSizeClass = calculateWindowSizeClass(this)
           CompositionLocalProvider(
             LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass
@@ -80,11 +80,12 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
 
   private fun goTo(screen: AndroidScreen) =
     when (screen) {
-      is AndroidScreen.CustomTabsIntentScreen -> goTo(screen)
-      is AndroidScreen.IntentScreen -> TODO()
+      is CustomTabsIntentScreen -> goTo(screen)
+      is IntentScreen -> screen.launchWith(this)
+      else -> error("Unknown AndroidScreen: $screen")
     }
 
-  private fun goTo(screen: AndroidScreen.CustomTabsIntentScreen) {
+  private fun goTo(screen: CustomTabsIntentScreen) {
     val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
     CustomTabsIntent.Builder()
       .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)

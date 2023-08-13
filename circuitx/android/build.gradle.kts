@@ -8,3 +8,8 @@ plugins {
 }
 
 android { namespace = "com.slack.circuitx.android" }
+
+dependencies {
+  implementation(libs.androidx.annotation)
+  api(projects.circuitRuntime)
+}

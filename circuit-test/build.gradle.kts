@@ -25,9 +25,10 @@ kotlin {
       }
     }
 
-    commonTest {
+    commonTest { dependencies { implementation(libs.coroutines.test) } }
+
+    getByName("jvmTest").apply {
       dependencies {
-        implementation(libs.coroutines.test)
         implementation(libs.junit)
         implementation(libs.truth)
         implementation(libs.testing.testParameterInjector)

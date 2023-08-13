@@ -29,8 +29,12 @@ kotlin {
     with(getByName("androidMain")) {
       dependencies {
         api(libs.androidx.compose.material.material3)
+        implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
+
+    val iosMain by getting
+    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

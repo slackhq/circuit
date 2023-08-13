@@ -20,5 +20,4 @@ public fun rememberStableCoroutineScope(): StableCoroutineScope {
 }
 
 /** @see rememberStableCoroutineScope */
-@Stable
-public class StableCoroutineScope(scope: CoroutineScope) : CoroutineScope by scope
+@Stable public class StableCoroutineScope(scope: CoroutineScope) : CoroutineScope by scope

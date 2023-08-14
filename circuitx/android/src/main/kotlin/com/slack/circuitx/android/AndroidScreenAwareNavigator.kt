@@ -30,8 +30,8 @@ public interface AndroidScreen : Screen
  * A simple [Intent] [Screen] that wraps an [intent] and optional [options] bundle. These are passed
  * on to [Context.startActivity].
  *
- * For reuse in custom [AndroidScreenStarter] implementations, you can call [startWith] on
- * instances of this.
+ * For reuse in custom [AndroidScreenStarter] implementations, you can call [startWith] on instances
+ * of this.
  */
 @Parcelize
 public data class IntentScreen(val intent: Intent, val options: Bundle? = null) : AndroidScreen {

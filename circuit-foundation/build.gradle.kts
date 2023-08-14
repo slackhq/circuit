@@ -57,7 +57,12 @@ kotlin {
     maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
     maybeCreate("androidUnitTest").apply {
       dependsOn(commonJvmTest)
-      dependencies { implementation(libs.robolectric) }
+      dependencies {
+        implementation(libs.robolectric)
+        implementation(libs.androidx.compose.foundation)
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
+      }
     }
   }
 }
@@ -69,7 +74,10 @@ tasks
     compilerOptions { freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi") }
   }
 
-android { namespace = "com.slack.circuit.foundation" }
+android {
+  namespace = "com.slack.circuit.foundation"
+  testOptions { unitTests { isIncludeAndroidResources = true } }
+}
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 

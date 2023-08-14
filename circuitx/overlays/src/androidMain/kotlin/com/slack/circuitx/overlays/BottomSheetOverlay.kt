@@ -22,13 +22,58 @@ import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * An [Overlay] that shows a [ModalBottomSheet] with the given [model] and [content]. When the sheet
+ * is dismissed, it emits a [Result] type to the [OverlayNavigator]. This is useful for showing
+ * temporary content in a sheet that you want to return back to the calling UI, such as a picker UI
+ * or user input prompt.
+ *
+ * @property model The model to pass to the [content] composable. This should be thought of like a
+ *   state model.
+ * @property dismissOnTapOutside Controls whether the sheet can be dismissed by tapping outside of
+ *   it.
+ * @property onDismiss A callback that is invoked when the sheet is dismissed with a result. This is
+ *   required if [dismissOnTapOutside] is true.
+ * @property content The Composable content to show in the sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
-public class BottomSheetOverlay<Model : Any, Result : Any>(
+public class BottomSheetOverlay<Model : Any, Result : Any>
+private constructor(
   private val model: Model,
   private val dismissOnTapOutside: Boolean = true,
   private val onDismiss: (() -> Result)? = null,
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
 ) : Overlay<Result> {
+
+  /**
+   * Constructs a new [BottomSheetOverlay] that will not dismiss when tapped outside of the sheet.
+   * This means that only the [content] can finish the overlay.
+   */
+  public constructor(
+    model: Model,
+    content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
+  ) : this(
+    model = model,
+    dismissOnTapOutside = false,
+    onDismiss = null,
+    content = content,
+  )
+
+  /**
+   * Constructs a new [BottomSheetOverlay] that will dismiss when tapped outside of the sheet.
+   * [onDismiss] is required in this case to offer a default value in this event.
+   */
+  public constructor(
+    model: Model,
+    onDismiss: (() -> Result),
+    content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
+  ) : this(
+    model = model,
+    dismissOnTapOutside = true,
+    onDismiss = onDismiss,
+    content = content,
+  )
+
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
     var hasShown by remember { mutableStateOf(false) }

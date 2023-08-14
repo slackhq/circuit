@@ -81,7 +81,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
   private fun goTo(screen: AndroidScreen) =
     when (screen) {
       is CustomTabsIntentScreen -> goTo(screen)
-      is IntentScreen -> screen.launchWith(this)
+      is IntentScreen -> screen.startWith(this)
       else -> error("Unknown AndroidScreen: $screen")
     }
 

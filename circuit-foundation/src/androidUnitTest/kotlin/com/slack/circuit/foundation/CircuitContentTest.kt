@@ -79,5 +79,11 @@ private fun Count(state: CountScreen.State, modifier: Modifier) {
 }
 
 class CountPresenter(private val screen: CountScreen) : Presenter<CountScreen.State> {
-  @Composable override fun present() = CountScreen.State(screen.count)
+  @Composable
+  override fun present(): CountScreen.State {
+    // This is a contrived example to force the edge case.
+    // TL;DR Keyless remembers remain bound across presenter instances in the eyes of compose.
+    val myCount = remember { screen.count }
+    return CountScreen.State(myCount)
+  }
 }

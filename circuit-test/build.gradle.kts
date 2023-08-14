@@ -12,6 +12,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
+  ios()
+  iosSimulatorArm64()
   // endregion
 
   sourceSets {
@@ -25,7 +27,9 @@ kotlin {
       }
     }
 
-    commonTest {
+    commonTest { dependencies { implementation(libs.coroutines.test) } }
+
+    val jvmTest by getting {
       dependencies {
         implementation(libs.coroutines.test)
         implementation(libs.junit)
@@ -33,6 +37,7 @@ kotlin {
         implementation(libs.testing.testParameterInjector)
       }
     }
+    with(getByName("androidUnitTest")) { dependsOn(jvmTest) }
   }
 }
 

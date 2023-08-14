@@ -4,6 +4,7 @@ package com.slack.circuitx.overlays
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.internal.BackHandler
@@ -14,31 +15,39 @@ import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Screen
 
+/**
+ * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
+ * over the entire available screen space available to the current [OverlayHost].
+ */
 public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen)
 
-@Stable
-internal interface ShowSaveCallbacks {
-  fun save()
-
-  fun restore()
-
-  object NoOp : ShowSaveCallbacks {
-    override fun save() {}
-
-    override fun restore() {}
-  }
-}
-
+/**
+ * A simple overlay that renders a given [screen] in a [CircuitContent] with backhandling support
+ * cand callbacks to [callbacks].
+ */
 internal class FullScreenOverlay<S : Screen>(
   private val screen: S,
-  private val showSaveCallbacks: @Composable () -> ShowSaveCallbacks = { ShowSaveCallbacks.NoOp },
+  private val callbacks: @Composable () -> Callbacks = { Callbacks.NoOp },
 ) : Overlay<Unit> {
+  /** Simple callbacks for when a [FullScreenOverlay] is shown and finished. */
+  @Stable
+  internal interface Callbacks {
+    fun onShow()
+
+    fun onFinish()
+
+    object NoOp : Callbacks {
+      override fun onShow() {}
+
+      override fun onFinish() {}
+    }
+  }
 
   @Composable
   override fun Content(navigator: OverlayNavigator<Unit>) {
-    val callbacks = showSaveCallbacks()
+    val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
-      DispatchingOverlayNavigator(navigator) { callbacks.restore() }
+      DispatchingOverlayNavigator(navigator) { callbacks.onFinish() }
     }
 
     BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
@@ -46,8 +55,12 @@ internal class FullScreenOverlay<S : Screen>(
   }
 }
 
+/**
+ * A [Navigator] that dispatches to the given [overlayNavigator] and calls [onPop] when [pop] is
+ * called.
+ */
 internal class DispatchingOverlayNavigator(
-  private val navigator: OverlayNavigator<Unit>,
+  private val overlayNavigator: OverlayNavigator<Unit>,
   private val onPop: () -> Unit,
 ) : Navigator {
   override fun goTo(screen: Screen) {
@@ -55,7 +68,7 @@ internal class DispatchingOverlayNavigator(
   }
 
   override fun pop(): Screen? {
-    navigator.finish(Unit)
+    overlayNavigator.finish(Unit)
     onPop()
     return null
   }

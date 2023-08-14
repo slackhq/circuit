@@ -9,20 +9,24 @@ import androidx.compose.runtime.setValue
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+/**
+ * A [FullScreenOverlay.Callbacks] that remembers the current system UI colors and restores them
+ * when finished.
+ */
 internal class ConditionalSystemUiColors(
   private val systemUiController: SystemUiController,
   initialStatusBarDarkContent: Boolean,
   initialNavBarDarkContent: Boolean,
-) : ShowSaveCallbacks {
+) : FullScreenOverlay.Callbacks {
   private var storedStatusBarDarkContent by mutableStateOf(initialStatusBarDarkContent)
   private var storedNavBarDarkContent by mutableStateOf(initialNavBarDarkContent)
 
-  override fun save() {
+  override fun onShow() {
     storedStatusBarDarkContent = systemUiController.statusBarDarkContentEnabled
     storedNavBarDarkContent = systemUiController.navigationBarDarkContentEnabled
   }
 
-  override fun restore() {
+  override fun onFinish() {
     systemUiController.statusBarDarkContentEnabled = storedStatusBarDarkContent
     systemUiController.navigationBarDarkContentEnabled = storedNavBarDarkContent
   }

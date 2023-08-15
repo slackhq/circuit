@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.sample.counter.desktop
+package com.slack.circuit.sample.counter
 
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 // Copied because it's not available in compose-desktop yet.
 @Suppress("MagicNumber")
-internal val Remove: ImageVector
+val Remove: ImageVector
   get() {
     _remove?.let {
       return it

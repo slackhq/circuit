@@ -23,9 +23,6 @@ compose.desktop {
 
 compose.experimental { web.application {} }
 
-// The name of the final JS file to be referenced from HTML.
-// archivesBaseName = "counter"
-
 kotlin {
   // region KMP Targets
   androidTarget()

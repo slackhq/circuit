@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 @file:Suppress("DEPRECATION")
 
 package com.slack.circuit.sample.counter.browser
@@ -51,5 +53,6 @@ fun main() {
 
 private object InputModeManagerObject : InputModeManager {
   override val inputMode = InputMode.Keyboard
+
   @ExperimentalComposeUiApi override fun requestInputMode(inputMode: InputMode) = false
 }

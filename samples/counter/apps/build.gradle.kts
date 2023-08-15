@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
-
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
@@ -23,12 +21,10 @@ compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
 }
 
-compose.experimental {
-  web.application {}
-}
+compose.experimental { web.application {} }
 
 // The name of the final JS file to be referenced from HTML.
-//archivesBaseName = "counter"
+// archivesBaseName = "counter"
 
 kotlin {
   // region KMP Targets

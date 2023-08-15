@@ -51,11 +51,7 @@ kotlin {
       }
     }
     maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }
-    val iosMain by sourceSets.getting {
-      dependencies {
-        api(libs.coroutines)
-      }
-    }
+    val iosMain by sourceSets.getting { dependencies { api(libs.coroutines) } }
     val iosSimulatorArm64Main by sourceSets.getting
     // Set up dependencies between the source sets
     iosSimulatorArm64Main.dependsOn(iosMain)

@@ -23,15 +23,23 @@ compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
 }
 
-tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
-  notCompatibleWithConfigurationCache("https://github.com/JetBrains/compose-jb/issues/2376")
+compose.experimental {
+  web.application {}
 }
+
+// The name of the final JS file to be referenced from HTML.
+//archivesBaseName = "counter"
 
 kotlin {
   // region KMP Targets
   androidTarget()
   jvm()
   ios()
+  js(IR) {
+    moduleName = "counterapp"
+    browser()
+    binaries.executable()
+  }
   // endregion
 
   sourceSets {
@@ -53,6 +61,13 @@ kotlin {
         implementation(libs.androidx.compose.material.icons)
         implementation(libs.androidx.compose.material.iconsExtended)
         implementation(libs.androidx.compose.accompanist.systemUi)
+      }
+    }
+    maybeCreate("jsMain").apply {
+      dependencies {
+        @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+        implementation(compose.components.resources)
+        implementation(compose.html.core)
       }
     }
   }

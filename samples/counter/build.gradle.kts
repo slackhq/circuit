@@ -15,6 +15,11 @@ kotlin {
   jvm()
   ios()
   iosSimulatorArm64()
+  js(IR) {
+    moduleName = "counterbrowser"
+    browser()
+    binaries.executable()
+  }
   // TODO regular frameworks are not yet supported
   //  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
   //    it.binaries.framework {
@@ -40,12 +45,17 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.circuitFoundation)
-        api(libs.coroutines)
+        api(libs.compose.foundation)
+        api(libs.compose.material.material3)
         implementation(libs.molecule.runtime)
       }
     }
     maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }
-    val iosMain by sourceSets.getting
+    val iosMain by sourceSets.getting {
+      dependencies {
+        api(libs.coroutines)
+      }
+    }
     val iosSimulatorArm64Main by sourceSets.getting
     // Set up dependencies between the source sets
     iosSimulatorArm64Main.dependsOn(iosMain)

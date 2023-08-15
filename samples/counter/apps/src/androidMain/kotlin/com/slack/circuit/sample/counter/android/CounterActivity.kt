@@ -15,6 +15,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.sample.counter.CounterPresenterFactory
+import com.slack.circuit.sample.counter.CounterUiFactory
 
 class CounterActivity : AppCompatActivity() {
 

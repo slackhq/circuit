@@ -16,9 +16,9 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
 
 sealed interface CounterEvent : CircuitUiEvent {
-  object Increment : CounterEvent
+  data object Increment : CounterEvent
 
-  object Decrement : CounterEvent
+  data object Decrement : CounterEvent
 }
 
 @Composable

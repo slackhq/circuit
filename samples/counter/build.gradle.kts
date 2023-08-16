@@ -17,8 +17,7 @@ kotlin {
   iosSimulatorArm64()
   js {
     moduleName = "counterbrowser"
-    browser()
-    binaries.executable()
+    nodejs()
   }
   // TODO regular frameworks are not yet supported
   //  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {

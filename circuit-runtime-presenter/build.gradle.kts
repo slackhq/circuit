@@ -16,14 +16,6 @@ kotlin {
   iosSimulatorArm64()
   js {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    compilations.all {
-      kotlinOptions {
-        sourceMap = true
-        moduleKind = "umd"
-        metaInfo = true
-      }
-    }
-    browser()
     nodejs()
   }
   // endregion

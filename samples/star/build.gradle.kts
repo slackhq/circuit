@@ -74,6 +74,8 @@ dependencies {
   implementation(projects.circuitFoundation)
   implementation(projects.circuitOverlay)
   implementation(projects.circuitRetained)
+  implementation(projects.circuitx.android)
+  implementation(projects.circuitx.overlays)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)

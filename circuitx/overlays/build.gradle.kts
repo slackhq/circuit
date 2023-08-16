@@ -3,7 +3,6 @@
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
 }
@@ -14,36 +13,29 @@ kotlin {
   jvm()
   ios()
   iosSimulatorArm64()
-  js {
-    moduleName = property("POM_ARTIFACT_ID").toString()
-    nodejs()
-  }
   // endregion
 
   sourceSets {
     commonMain {
       dependencies {
-        api(projects.circuitFoundation)
+        api(projects.circuitOverlay)
         api(libs.compose.runtime)
         api(libs.coroutines)
-        api(libs.turbine)
-        api(libs.molecule.runtime)
+        api(libs.compose.material.material3)
+        implementation(projects.circuitFoundation)
       }
     }
 
-    commonTest { dependencies { implementation(libs.coroutines.test) } }
-
-    val jvmTest by getting {
+    with(getByName("androidMain")) {
       dependencies {
-        implementation(libs.junit)
-        implementation(libs.truth)
-        implementation(libs.testing.testParameterInjector)
+        api(libs.androidx.compose.material.material3)
+        implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
-    with(getByName("androidUnitTest")) { dependsOn(jvmTest) }
+
     val iosMain by getting
     val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 
-android { namespace = "com.slack.circuit.test" }
+android { namespace = "com.slack.circuitx.overlays" }

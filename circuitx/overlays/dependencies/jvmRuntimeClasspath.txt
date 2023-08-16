@@ -39,6 +39,8 @@ org.jetbrains.kotlinx:atomicfu
 org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core
+org.jetbrains.kotlinx:kotlinx-datetime-jvm
+org.jetbrains.kotlinx:kotlinx-datetime
 org.jetbrains.skiko:skiko-awt
 org.jetbrains.skiko:skiko
 org.jetbrains:annotations

@@ -1,4 +1,5 @@
 androidx.annotation:annotation
+androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
@@ -131,7 +132,14 @@ private fun <UiState : CircuitUiState> CircuitContent(
 
     onDispose { eventListener.onDisposePresent() }
   }
-  val state = presenter.present()
+
+  // While the presenter is different, in the eyes of compose its position is _the same_, meaning
+  // we need to wrap the presenter in a key() to force recomposition if it changes. A good example
+  // case of this is when you have code that calls CircuitContent with a common screen with
+  // different inputs (but thus same presenter instance type) and you need this to recompose with a
+  // different presenter.
+  val state = key(presenter) { presenter.present() }
+
   // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
   SideEffect { eventListener.onState(state) }
   DisposableEffect(screen) {

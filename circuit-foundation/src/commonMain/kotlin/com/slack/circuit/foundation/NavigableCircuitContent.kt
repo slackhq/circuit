@@ -10,7 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -95,22 +95,24 @@ public object NavigatorDefaults {
         modifier = modifier,
         transitionSpec = {
           // Mirror the forward and backward transitions of activities in Android 33
-          if (diff > 0) {
-            slideInHorizontally(tween(), SlightlyRight) + fadeIn() with
-              slideOutHorizontally(tween(), SlightlyLeft) + fadeOut()
-          } else
-            if (diff < 0) {
-                slideInHorizontally(tween(), SlightlyLeft) + fadeIn() with
-                  slideOutHorizontally(tween(), SlightlyRight) + fadeOut()
-              } else {
-                // Crossfade if there was no diff
-                fadeIn() with fadeOut()
-              }
-              .using(
-                // Disable clipping since the faded slide-in/out should
-                // be displayed out of bounds.
-                SizeTransform(clip = false)
-              )
+          when {
+            diff > 0 -> {
+              (slideInHorizontally(tween(), SlightlyRight) + fadeIn()) togetherWith
+                slideOutHorizontally(tween(), SlightlyLeft) + fadeOut()
+            }
+            diff < 0 -> {
+              (slideInHorizontally(tween(), SlightlyLeft) + fadeIn()) togetherWith
+                slideOutHorizontally(tween(), SlightlyRight) + fadeOut()
+            }
+            else -> {
+              // Crossfade if there was no diff
+              fadeIn() togetherWith fadeOut()
+            }
+          }.using(
+            // Disable clipping since the faded slide-in/out should
+            // be displayed out of bounds.
+            SizeTransform(clip = false)
+          )
         },
       ) {
         content(it)

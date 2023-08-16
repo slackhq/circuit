@@ -41,7 +41,7 @@ import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
 import kotlinx.collections.immutable.persistentListOf
 
-object DesktopCounterScreen : CounterScreen
+data object DesktopCounterScreen : CounterScreen
 
 data class DesktopPrimeScreen(override val number: Int) : PrimeScreen
 

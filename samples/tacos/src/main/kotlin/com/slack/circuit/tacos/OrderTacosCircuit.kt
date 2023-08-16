@@ -60,7 +60,7 @@ import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object OrderTacosScreen : Screen {
+data object OrderTacosScreen : Screen {
   data class State(
     @StringRes val headerResId: Int,
     val orderCost: String,
@@ -75,15 +75,15 @@ object OrderTacosScreen : Screen {
   sealed interface Event : CircuitUiEvent {
     val indexModifier: Int
 
-    object Previous : Event {
+    data object Previous : Event {
       override val indexModifier: Int = -1
     }
 
-    object Next : Event {
+    data object Next : Event {
       override val indexModifier: Int = 1
     }
 
-    object ProcessOrder : Event {
+    data object ProcessOrder : Event {
       override val indexModifier: Int = 1
     }
   }

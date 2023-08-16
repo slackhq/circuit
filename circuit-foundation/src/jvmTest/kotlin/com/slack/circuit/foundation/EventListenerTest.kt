@@ -71,7 +71,7 @@ class EventListenerTest {
   }
 }
 
-private object TestScreen : Screen
+private data object TestScreen : Screen
 
 private data class StringState(val value: String) : CircuitUiState
 

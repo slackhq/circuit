@@ -56,9 +56,9 @@ interface CounterScreen : Screen {
   sealed interface Event : CircuitUiEvent {
     data class GoTo(val screen: Screen) : Event
 
-    object Increment : Event
+    data object Increment : Event
 
-    object Decrement : Event
+    data object Decrement : Event
   }
 }
 
@@ -70,7 +70,7 @@ interface PrimeScreen : Screen {
   ) : CircuitUiState
 
   sealed interface Event {
-    object Pop : Event
+    data object Pop : Event
   }
 
   val number: Int

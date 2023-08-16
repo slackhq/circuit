@@ -12,11 +12,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@Parcelize private object TestScreen : Screen
+@Parcelize private data object TestScreen : Screen
 
-@Parcelize private object TestScreen2 : Screen
+@Parcelize private data object TestScreen2 : Screen
 
-@Parcelize private object TestScreen3 : Screen
+@Parcelize private data object TestScreen3 : Screen
 
 @RunWith(RobolectricTestRunner::class)
 class NavigatorTest {

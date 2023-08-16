@@ -26,7 +26,7 @@ import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.CounterUiFactory
 import org.jetbrains.skiko.wasm.onWasmReady
 
-object BrowserCounterScreen : CounterScreen
+data object BrowserCounterScreen : CounterScreen
 
 fun main() {
   val circuit: Circuit =

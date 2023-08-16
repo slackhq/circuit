@@ -130,11 +130,11 @@ class Filters(
 ) : Parcelable
 
 @Parcelize
-object PetListScreen : Screen {
+data object PetListScreen : Screen {
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean
 
-    object Loading : State {
+    data object Loading : State {
       override val isRefreshing: Boolean = false
     }
 
@@ -152,9 +152,9 @@ object PetListScreen : Screen {
   sealed interface Event : CircuitUiEvent {
     data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
 
-    object Refresh : Event
+    data object Refresh : Event
 
-    object UpdateFilters : Event
+    data object UpdateFilters : Event
 
     data class UpdatedFilters(val newFilters: Filters) : Event
   }

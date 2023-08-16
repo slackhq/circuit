@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.jline.terminal.TerminalBuilder
 
-object MosaicCounterScreen : CounterScreen
+data object MosaicCounterScreen : CounterScreen
 
 class CounterUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {

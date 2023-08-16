@@ -23,7 +23,7 @@ public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen)
 
 /**
  * A simple overlay that renders a given [screen] in a [CircuitContent] with backhandling support
- * cand callbacks to [callbacks].
+ * and callbacks to [callbacks].
  */
 internal class FullScreenOverlay<S : Screen>(
   private val screen: S,

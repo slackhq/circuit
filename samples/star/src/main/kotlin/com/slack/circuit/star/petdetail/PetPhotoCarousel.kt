@@ -44,14 +44,14 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
-import com.slack.circuit.star.overlay.FullScreenOverlay
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
-import com.slack.circuit.star.ui.rememberStableCoroutineScope
+import com.slack.circuitx.overlays.showFullScreenOverlay
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -217,8 +217,8 @@ private fun PhotoPager(
       photoUrl?.let { url ->
         Modifier.clickable {
           scope.launch {
-            overlayHost.show(
-              FullScreenOverlay(ImageViewerScreen(id = url, url = url, placeholderKey = name))
+            overlayHost.showFullScreenOverlay(
+              ImageViewerScreen(id = url, url = url, placeholderKey = name)
             )
           }
         }

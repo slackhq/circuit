@@ -241,6 +241,13 @@ subprojects {
           suppress.set(true)
         }
         skipDeprecated.set(true)
+
+        // Skip internal packages
+        perPackageOption {
+          // language=RegExp
+          matchingRegex.set(".*\\.internal\\..*")
+          suppress.set(true)
+        }
         // AndroidX and Android docs are automatically added by the Dokka plugin.
       }
     }
@@ -249,6 +256,14 @@ subprojects {
     configure<DependencyGuardPluginExtension> {
       if (project.name == "circuit-codegen") {
         configuration("runtimeClasspath") {
+          baselineMap = {
+            // Remove the version
+            it.substringBeforeLast(":")
+          }
+        }
+      } else if (project.path == ":circuitx:android") {
+        // Android-only project
+        configuration("releaseRuntimeClasspath") {
           baselineMap = {
             // Remove the version
             it.substringBeforeLast(":")

@@ -49,7 +49,7 @@ import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.navigator.AndroidScreen
+import com.slack.circuit.star.navigation.CustomTabsIntentScreen
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
@@ -124,7 +124,7 @@ constructor(
                 screen.photoUrlMemoryCacheKey,
                 bioText ?: animal.description
               ) {
-                navigator.goTo(AndroidScreen.CustomTabsIntentScreen(animal.url))
+                navigator.goTo(CustomTabsIntentScreen(animal.url))
               }
             }
           }

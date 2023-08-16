@@ -5,7 +5,6 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
-  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
@@ -19,26 +18,24 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        api(projects.circuitOverlay)
         api(libs.compose.runtime)
         api(libs.coroutines)
+        api(libs.compose.material.material3)
+        implementation(projects.circuitFoundation)
       }
     }
+
+    with(getByName("androidMain")) {
+      dependencies {
+        api(libs.androidx.compose.material.material3)
+        implementation(libs.androidx.compose.accompanist.systemUi)
+      }
+    }
+
     val iosMain by getting
     val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 
-android { namespace = "com.slack.circuit.runtime" }
-
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
-
-baselineProfile {
-  mergeIntoMain = true
-  saveInSrc = true
-  from(projects.samples.star.benchmark.dependencyProject)
-
-  filter {
-    // Don't include subpackages, only one star
-    include("com.slack.circuit.runtime.*")
-  }
-}
+android { namespace = "com.slack.circuitx.overlays" }

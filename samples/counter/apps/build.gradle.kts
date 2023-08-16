@@ -28,7 +28,7 @@ kotlin {
   androidTarget()
   jvm()
   ios()
-  js(IR) {
+  js {
     moduleName = "counterapp"
     browser()
     binaries.executable()

@@ -15,7 +15,7 @@ kotlin {
   jvm()
   ios()
   iosSimulatorArm64()
-  js(IR) {
+  js {
     moduleName = "counterbrowser"
     browser()
     binaries.executable()

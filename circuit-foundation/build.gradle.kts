@@ -17,7 +17,7 @@ kotlin {
   jvm()
   ios()
   iosSimulatorArm64()
-  js(IR) {
+  js {
     moduleName = property("POM_ARTIFACT_ID").toString()
     compilations.all {
       kotlinOptions {

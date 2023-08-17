@@ -1,6 +1,28 @@
 Changelog
 =========
 
+0.13.0-beta01
+-------------
+
+_2023-08-17_
+
+- **New**: Circuit now supports JS targets!
+- **New**: Introduce CircuitX artifacts. CircuitX is a suite of extension artifacts for Circuit. These artifacts are intended to be
+  batteries-included implementations of common use cases, such as out-of-the-box `Overlay` types or
+  Android navigation interop. See the [docs](https://slackhq.github.io/circuit/circuitx/) for more details.
+- **Fix**: Fix new presenter instances of the same type not being recomposed. See [#799](https://github.com/slackhq/circuit/pull/799) for more details.
+- **Fix**: Export iOS targets for `circuit-test` artifact.
+- Update to Compile SDK 34.
+- Update to Compose Multiplatform `1.5.0-beta02`.
+- Update androidx.compose.ui to `1.5.0`.
+- Update androidx.compose.material to `1.5.0`.
+- Update androidx.compose.runtime to `1.5.0`.
+- Update androidx.compose.foundation to `1.5.0`.
+- Update Molecule to `1.2.0`.
+- Update KSP to `1.9.0-1.0.13`.
+
+Note this release is a beta release due to the dependency on CM `1.5.0-beta02`.
+
 0.12.1
 ------
 

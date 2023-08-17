@@ -2,5 +2,6 @@ Lcom/slack/circuit/runtime/CircuitContext;
 HSPLcom/slack/circuit/runtime/CircuitContext;-><clinit>()V
 HSPLcom/slack/circuit/runtime/CircuitContext;-><init>(Lcom/slack/circuit/runtime/CircuitContext;)V
 HSPLcom/slack/circuit/runtime/CircuitContext;->putTag(Lkotlin/reflect/KClass;Ljava/lang/Object;)V
+Lcom/slack/circuit/runtime/CircuitUiState;
 Lcom/slack/circuit/runtime/Navigator;
 Lcom/slack/circuit/runtime/Screen;

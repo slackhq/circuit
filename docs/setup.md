@@ -40,12 +40,16 @@ See the docs for `CircuitContent` and `NavigableCircuitContent` for more informa
 
 Circuit is split into a few different artifacts to allow for more granular control over your dependencies. The following table shows the available artifacts and their purpose:
 
-| Artifact ID                 | Dependencies                                                                                           |
-|-----------------------------|--------------------------------------------------------------------------------------------------------|
-| `circuit-runtime`           | Common runtime components like `Screen`, `Navigator`, etc.                                             |
-| `circuit-runtime-presenter` | The `Presenter` API, depends on `circuit-runtime`.                                                     |
-| `circuit-runtime-ui`        | The `Ui` API, depends on `circuit-runtime`.                                                            |
-| `circuit-foundation`        | The circuit foundational APIs like `Circuit`, `CircuitContent`, etc. Depends on the first three. |
+| Artifact ID                 | Dependencies                                                                                     |
+|-----------------------------|--------------------------------------------------------------------------------------------------|
+| `circuit-backstack`         | Circuit's backstack implementation.                                                              |
+| `circuit-runtime`           | Common runtime components like `Screen`, `Navigator`, etc.                                       |
+| `circuit-runtime-presenter` | The `Presenter` API, depends on `circuit-runtime`.                                               |
+| `circuit-runtime-ui`        | The `Ui` API, depends on `circuit-runtime`.                                                      |
+| `circuit-foundation`        | The Circuit foundational APIs like `Circuit`, `CircuitContent`, etc. Depends on the first three. |
+| `circuit-test`              | First-party test APIs for testing navigation, state emissions, and event sinks.                  |
+| `circuit-overlay`           | Optional `Overlay` APIs.                                                                         |
+| `circuit-retained`          | Optional `rememberRetained()` APIs.                                                              |
 
 ## Platform Support
 
@@ -55,13 +59,14 @@ Circuit is a multiplatform library, but not all features are available on all pl
 - ❌ Not available
 - – Not applicable
 
-| Feature                   | Android | JVM | Notes |
-|---------------------------| ------- |--| |
-| `Backstack`               | ✅ | ✅ | |
-| `CircuitContent`          | ✅ | ✅ | |
-| `ContentWithOverlays` | ✅ | ✅ | |
-| `NavigableCircuitContent` | ✅ | ✅ | |
-| `Navigator`               | ✅ | ✅ | |
-| `SaveableBackstack`       | ✅ | ✅ | Saveable is a no-op on desktop. |
-| `rememberCircuitNavigator` | ✅ | ✅ | |
-| `rememberRetained` | ✅ | ✅ | |
+| Feature                    | Android | JVM | iOS | JS | Notes                                       |
+|----------------------------|---------|-----|-----|----|---------------------------------------------|
+| `Backstack`                | ✅       | ✅   | ✅   | ✅  |                                             |
+| `CircuitContent`           | ✅       | ✅   | ✅   | ✅  |                                             |
+| `ContentWithOverlays`      | ✅       | ✅   | ✅   | ✅  |                                             |
+| `NavigableCircuitContent`  | ✅       | ✅   | ✅   | ✅  |                                             |
+| `Navigator`                | ✅       | ✅   | ✅   | ✅  |                                             |
+| `SaveableBackstack`        | ✅       | ✅   | ✅   | ✅  | Saveable is a no-op on non-android.         |
+| `rememberCircuitNavigator` | ✅       | ✅   | ✅   | ✅  |                                             |
+| `rememberRetained`         | ✅       | ✅   | ✅   | ✅  |                                             |
+| `TestEventSink`            | ✅       | ✅   | ✅   | ✅  | On JS you must use `asEventSinkFunction()`. |

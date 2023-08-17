@@ -1,7 +1,7 @@
 CircuitX
 ========
 
-CircuitX is is a suite of extension artifacts for Circuit. These artifacts are intended to be
+CircuitX is a suite of extension artifacts for Circuit. These artifacts are intended to be
 batteries-included implementations of common use cases, such as out-of-the-box `Overlay` types or
 Android navigation interop.
 

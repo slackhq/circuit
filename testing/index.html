@@ -508,6 +508,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../circuitx/" class="md-nav__link">
+        CircuitX
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/0.x/" class="md-nav__link">
         API
       </a>
@@ -681,10 +696,10 @@
 <div class="highlight"><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Favorite</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
 
 <span class="nd">@Parcelable</span>
-<span class="kd">object</span><span class="w"> </span><span class="nc">FavoritesScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">FavoritesScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">State</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">State</span>
-<span class="w">    </span><span class="kd">object</span><span class="w"> </span><span class="nc">NoFavorites</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">State</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">State</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">NoFavorites</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">State</span>
 <span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Results</span><span class="p">(</span>
 <span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">list</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Favorite</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span>

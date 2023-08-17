@@ -433,6 +433,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../circuitx/" class="md-nav__link">
+        CircuitX
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/0.x/" class="md-nav__link">
         API
       </a>
@@ -495,6 +510,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0130-beta01" class="md-nav__link">
+    0.13.0-beta01
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#0121" class="md-nav__link">
@@ -770,6 +792,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0130-beta01" class="md-nav__link">
+    0.13.0-beta01
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0121" class="md-nav__link">
     0.12.1
   </a>
@@ -998,6 +1027,25 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="0130-beta01">0.13.0-beta01<a class="headerlink" href="#0130-beta01" title="Permanent link">&para;</a></h2>
+<p><em>2023-08-17</em></p>
+<ul>
+<li><strong>New</strong>: Circuit now supports JS targets!</li>
+<li><strong>New</strong>: Introduce CircuitX artifacts. CircuitX is a suite of extension artifacts for Circuit. These artifacts are intended to be
+  batteries-included implementations of common use cases, such as out-of-the-box <code>Overlay</code> types or
+  Android navigation interop. See the <a href="https://slackhq.github.io/circuit/circuitx/">docs</a> for more details.</li>
+<li><strong>Fix</strong>: Fix new presenter instances of the same type not being recomposed. See <a href="https://github.com/slackhq/circuit/pull/799">#799</a> for more details.</li>
+<li><strong>Fix</strong>: Export iOS targets for <code>circuit-test</code> artifact.</li>
+<li>Update to Compile SDK 34.</li>
+<li>Update to Compose Multiplatform <code>1.5.0-beta02</code>.</li>
+<li>Update androidx.compose.ui to <code>1.5.0</code>.</li>
+<li>Update androidx.compose.material to <code>1.5.0</code>.</li>
+<li>Update androidx.compose.runtime to <code>1.5.0</code>.</li>
+<li>Update androidx.compose.foundation to <code>1.5.0</code>.</li>
+<li>Update Molecule to <code>1.2.0</code>.</li>
+<li>Update KSP to <code>1.9.0-1.0.13</code>.</li>
+</ul>
+<p>Note this release is a beta release due to the dependency on CM <code>1.5.0-beta02</code>.</p>
 <h2 id="0121">0.12.1<a class="headerlink" href="#0121" title="Permanent link">&para;</a></h2>
 <p><em>2023-08-01</em></p>
 <ul>

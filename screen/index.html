@@ -443,6 +443,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../circuitx/" class="md-nav__link">
+        CircuitX
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/0.x/" class="md-nav__link">
         API
       </a>
@@ -552,9 +567,12 @@
 <p>The core <code>Screen</code> interface is this:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">Screen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Parcelable</span>
 </code></pre></div>
-<p>These types are <code>Parcelable</code> for saveability in our backstack and easy deeplinking. A <code>Screen</code> can
-be a simple marker object type or a data object with information to pass on.</p>
+<p>These types are <code>Parcelable</code> on Android for saveability in our backstack and easy deeplinking. A 
+<code>Screen</code> can be a simple marker <code>data object</code> or a <code>data class</code> with information to pass on.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">HomeScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="nd">@Parcelize</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">AddFavoritesScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">externalId</span><span class="p">:</span><span class="w"> </span><span class="n">UUID</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 </code></pre></div>
 <p>These are used by <code>Navigator</code>s (when called from presenters) or <code>CircuitContent</code> (when called from

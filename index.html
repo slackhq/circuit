@@ -486,6 +486,21 @@
   
   
     <li class="md-nav__item">
+      <a href="circuitx/" class="md-nav__link">
+        CircuitX
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="api/0.x/" class="md-nav__link">
         API
       </a>
@@ -656,14 +671,14 @@
 <p><img alt="image" src="https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png" /></p>
 <p>There’s some glue code missing from this example that&rsquo;s covered in the <a href="https://slackhq.github.io/circuit/code-gen/">Code Gen</a> section later.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
-<span class="kd">object</span><span class="w"> </span><span class="nc">CounterScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">CounterScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterState</span><span class="p">(</span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">count</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="p">,</span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">CounterEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
 <span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
 <span class="w">  </span><span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">CounterEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">object</span><span class="w"> </span><span class="nc">Increment</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CounterEvent</span>
-<span class="w">    </span><span class="kd">object</span><span class="w"> </span><span class="nc">Decrement</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CounterEvent</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Increment</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CounterEvent</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Decrement</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CounterEvent</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 
@@ -674,8 +689,8 @@
 
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">CounterState</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
 <span class="w">    </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">CounterEvent</span><span class="p">.</span><span class="na">Increment</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">count</span><span class="o">++</span>
-<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">CounterEvent</span><span class="p">.</span><span class="na">Decrement</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">count</span><span class="o">--</span>
+<span class="w">      </span><span class="n">CounterEvent</span><span class="p">.</span><span class="na">Increment</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">count</span><span class="o">++</span>
+<span class="w">      </span><span class="n">CounterEvent</span><span class="p">.</span><span class="na">Decrement</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">count</span><span class="o">--</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>

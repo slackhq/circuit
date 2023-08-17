@@ -495,6 +495,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../circuitx/" class="md-nav__link">
+        CircuitX
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/0.x/" class="md-nav__link">
         API
       </a>
@@ -668,6 +683,10 @@
 </thead>
 <tbody>
 <tr>
+<td><code>circuit-backstack</code></td>
+<td>Circuit&rsquo;s backstack implementation.</td>
+</tr>
+<tr>
 <td><code>circuit-runtime</code></td>
 <td>Common runtime components like <code>Screen</code>, <code>Navigator</code>, etc.</td>
 </tr>
@@ -681,7 +700,19 @@
 </tr>
 <tr>
 <td><code>circuit-foundation</code></td>
-<td>The circuit foundational APIs like <code>Circuit</code>, <code>CircuitContent</code>, etc. Depends on the first three.</td>
+<td>The Circuit foundational APIs like <code>Circuit</code>, <code>CircuitContent</code>, etc. Depends on the first three.</td>
+</tr>
+<tr>
+<td><code>circuit-test</code></td>
+<td>First-party test APIs for testing navigation, state emissions, and event sinks.</td>
+</tr>
+<tr>
+<td><code>circuit-overlay</code></td>
+<td>Optional <code>Overlay</code> APIs.</td>
+</tr>
+<tr>
+<td><code>circuit-retained</code></td>
+<td>Optional <code>rememberRetained()</code> APIs.</td>
 </tr>
 </tbody>
 </table>
@@ -698,6 +729,8 @@
 <th>Feature</th>
 <th>Android</th>
 <th>JVM</th>
+<th>iOS</th>
+<th>JS</th>
 <th>Notes</th>
 </tr>
 </thead>
@@ -706,10 +739,14 @@
 <td><code>Backstack</code></td>
 <td>✅</td>
 <td>✅</td>
+<td>✅</td>
+<td>✅</td>
 <td></td>
 </tr>
 <tr>
 <td><code>CircuitContent</code></td>
+<td>✅</td>
+<td>✅</td>
 <td>✅</td>
 <td>✅</td>
 <td></td>
@@ -718,10 +755,14 @@
 <td><code>ContentWithOverlays</code></td>
 <td>✅</td>
 <td>✅</td>
+<td>✅</td>
+<td>✅</td>
 <td></td>
 </tr>
 <tr>
 <td><code>NavigableCircuitContent</code></td>
+<td>✅</td>
+<td>✅</td>
 <td>✅</td>
 <td>✅</td>
 <td></td>
@@ -730,16 +771,22 @@
 <td><code>Navigator</code></td>
 <td>✅</td>
 <td>✅</td>
+<td>✅</td>
+<td>✅</td>
 <td></td>
 </tr>
 <tr>
 <td><code>SaveableBackstack</code></td>
 <td>✅</td>
 <td>✅</td>
-<td>Saveable is a no-op on desktop.</td>
+<td>✅</td>
+<td>✅</td>
+<td>Saveable is a no-op on non-android.</td>
 </tr>
 <tr>
 <td><code>rememberCircuitNavigator</code></td>
+<td>✅</td>
+<td>✅</td>
 <td>✅</td>
 <td>✅</td>
 <td></td>
@@ -748,7 +795,17 @@
 <td><code>rememberRetained</code></td>
 <td>✅</td>
 <td>✅</td>
+<td>✅</td>
+<td>✅</td>
 <td></td>
+</tr>
+<tr>
+<td><code>TestEventSink</code></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>On JS you must use <code>asEventSinkFunction()</code>.</td>
 </tr>
 </tbody>
 </table>

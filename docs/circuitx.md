@@ -18,7 +18,7 @@ The `circuitx-android` artifact contains Android-specific extensions for Circuit
 
 ```kotlin
 dependencies {
-  implementation("com.slack.circuitx:circuitx-android:<version>")
+  implementation("com.slack.circuit:circuitx-android:<version>")
 }
 ```
 

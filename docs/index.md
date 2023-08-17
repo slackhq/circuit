@@ -45,14 +45,14 @@ There’s some glue code missing from this example that's covered in the [Code G
 
 ```kotlin
 @Parcelize
-object CounterScreen : Screen {
+data object CounterScreen : Screen {
   data class CounterState(
     val count: Int,
     val eventSink: (CounterEvent) -> Unit,
   ) : CircuitUiState
   sealed interface CounterEvent : CircuitUiEvent {
-    object Increment : CounterEvent
-    object Decrement : CounterEvent
+    data object Increment : CounterEvent
+    data object Decrement : CounterEvent
   }
 }
 
@@ -63,8 +63,8 @@ fun CounterPresenter(): CounterState {
 
   return CounterState(count) { event ->
     when (event) {
-      is CounterEvent.Increment -> count++
-      is CounterEvent.Decrement -> count--
+      CounterEvent.Increment -> count++
+      CounterEvent.Decrement -> count--
     }
   }
 }

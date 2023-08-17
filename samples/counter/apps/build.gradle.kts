@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.compose.desktop.preview.tasks.AbstractConfigureDesktopPreviewTask
-
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
@@ -23,15 +21,18 @@ compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
 }
 
-tasks.withType<AbstractConfigureDesktopPreviewTask>().configureEach {
-  notCompatibleWithConfigurationCache("https://github.com/JetBrains/compose-jb/issues/2376")
-}
+compose.experimental { web.application {} }
 
 kotlin {
   // region KMP Targets
   androidTarget()
   jvm()
   ios()
+  js {
+    moduleName = "counterapp"
+    browser()
+    binaries.executable()
+  }
   // endregion
 
   sourceSets {
@@ -53,6 +54,13 @@ kotlin {
         implementation(libs.androidx.compose.material.icons)
         implementation(libs.androidx.compose.material.iconsExtended)
         implementation(libs.androidx.compose.accompanist.systemUi)
+      }
+    }
+    maybeCreate("jsMain").apply {
+      dependencies {
+        @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+        implementation(compose.components.resources)
+        implementation(compose.html.core)
       }
     }
   }

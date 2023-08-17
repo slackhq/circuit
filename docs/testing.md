@@ -31,10 +31,10 @@ Testing a Circuit Presenter and UI is a breeze! Consider the following example:
 data class Favorite(id: Long, ...)
 
 @Parcelable
-object FavoritesScreen : Screen {
+data object FavoritesScreen : Screen {
   sealed interface State : CircuitUiState {
-    object Loading : State
-    object NoFavorites : State
+    data object Loading : State
+    data object NoFavorites : State
     data class Results(
       val list: List<Favorite>,
       val eventSink: (Event) -> Unit

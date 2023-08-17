@@ -37,7 +37,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object HomeScreen : Screen {
+data object HomeScreen : Screen {
   data class State(
     val navItems: ImmutableList<BottomNavItem> =
       persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),

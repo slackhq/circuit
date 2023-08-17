@@ -32,8 +32,8 @@ class FakeNavigatorTest {
   }
 }
 
-@Parcelize private object TestScreen1 : Screen
+@Parcelize private data object TestScreen1 : Screen
 
-@Parcelize private object TestScreen2 : Screen
+@Parcelize private data object TestScreen2 : Screen
 
-@Parcelize private object TestScreen3 : Screen
+@Parcelize private data object TestScreen3 : Screen

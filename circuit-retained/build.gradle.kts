@@ -14,6 +14,10 @@ kotlin {
   jvm()
   ios()
   iosSimulatorArm64()
+  js {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    nodejs()
+  }
   // endregion
 
   sourceSets {

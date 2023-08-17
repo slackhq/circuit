@@ -30,7 +30,7 @@ import com.slack.circuit.star.ui.StarTheme
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object AboutScreen : Screen {
+data object AboutScreen : Screen {
   object State : CircuitUiState
 }
 

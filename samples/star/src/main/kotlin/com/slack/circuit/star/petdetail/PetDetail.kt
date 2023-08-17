@@ -65,9 +65,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : CircuitUiState {
-    object Loading : State
+    data object Loading : State
 
-    object UnknownAnimal : State
+    data object UnknownAnimal : State
 
     data class Success(
       val url: String,

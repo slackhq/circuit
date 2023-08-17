@@ -9,10 +9,13 @@ The core `Screen` interface is this:
 interface Screen : Parcelable
 ```
 
-These types are `Parcelable` for saveability in our backstack and easy deeplinking. A `Screen` can
-be a simple marker object type or a data object with information to pass on.
+These types are `Parcelable` on Android for saveability in our backstack and easy deeplinking. A 
+`Screen` can be a simple marker `data object` or a `data class` with information to pass on.
 
 ```kotlin
+@Parcelize
+data object HomeScreen : Screen
+
 @Parcelize
 data class AddFavoritesScreen(val externalId: UUID) : Screen
 ```

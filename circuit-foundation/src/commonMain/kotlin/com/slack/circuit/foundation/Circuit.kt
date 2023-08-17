@@ -184,7 +184,7 @@ public class Circuit private constructor(builder: Builder) {
 private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier) -> Unit =
   { screen, modifier ->
     BasicText(
-      "Route not available: ${screen::class.qualifiedName}",
+      "Route not available: $screen",
       modifier.background(Color.Red),
       style = TextStyle(color = Color.Yellow)
     )

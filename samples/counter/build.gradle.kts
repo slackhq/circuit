@@ -36,7 +36,6 @@ kotlin {
       baseName = "counter"
       isStatic = true
     }
-    extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
   }
   // endregion
 

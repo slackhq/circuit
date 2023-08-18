@@ -43,17 +43,13 @@ tasks
       )
 
       if (project.hasProperty("circuit.enableComposeCompilerReports")) {
+        val metricsDir =
+          project.layout.buildDirectory.dir("compose_metrics").get().asFile.absolutePath
         freeCompilerArgs.addAll(
           "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-            project.buildDir.absolutePath +
-            "/compose_metrics"
-        )
-        freeCompilerArgs.addAll(
+          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
           "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-            project.buildDir.absolutePath +
-            "/compose_metrics"
+          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir"
         )
       }
     }

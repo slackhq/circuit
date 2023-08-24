@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
@@ -35,6 +37,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -43,9 +47,9 @@ kotlin {
         api(projects.circuitFoundation)
       }
     }
-    maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }
-    maybeCreate("jvmMain").apply { dependencies { implementation(compose.desktop.currentOs) } }
-    maybeCreate("androidMain").apply {
+    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
+    val jvmMain by getting { dependencies { implementation(compose.desktop.currentOs) } }
+    val androidMain by getting {
       dependencies {
         implementation(libs.androidx.appCompat)
         implementation(libs.bundles.compose.ui)
@@ -56,7 +60,7 @@ kotlin {
         implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
-    maybeCreate("jsMain").apply {
+    val jsMain by getting {
       dependencies {
         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)

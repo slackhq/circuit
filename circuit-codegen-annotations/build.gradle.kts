@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -12,6 +14,8 @@ kotlin {
   jvm()
   // Anvil/Dagger does not support iOS targets
   // endregion
+
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
 
   sourceSets {
     commonMain {
@@ -28,8 +32,8 @@ kotlin {
           api(libs.dagger)
         }
       }
-    maybeCreate("androidMain").apply { dependsOn(commonJvm) }
-    maybeCreate("jvmMain").apply { dependsOn(commonJvm) }
+    val androidMain by getting { dependsOn(commonJvm) }
+    val jvmMain by getting { dependsOn(commonJvm) }
   }
 }
 

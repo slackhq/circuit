@@ -403,9 +403,13 @@ subprojects {
     // Enforce Kotlin BOM
     configure<KotlinMultiplatformExtension> {
       sourceSets {
-        maybeCreate("commonMain").dependencies {
-          // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
-          implementation(platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"))
+        val commonMain by getting {
+          dependencies {
+            // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
+            implementation(
+              platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}")
+            )
+          }
         }
       }
     }

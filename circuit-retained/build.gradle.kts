@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -20,6 +22,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -27,16 +31,18 @@ kotlin {
         api(libs.coroutines)
       }
     }
-    val androidMain =
-      maybeCreate("androidMain").apply {
-        dependencies {
-          api(libs.androidx.lifecycle.viewModel.compose)
-          api(libs.androidx.lifecycle.viewModel)
-          api(libs.androidx.compose.runtime)
-          implementation(libs.androidx.compose.ui.ui)
-        }
+
+    val androidMain by getting {
+      dependencies {
+        api(libs.androidx.lifecycle.viewModel.compose)
+        api(libs.androidx.lifecycle.viewModel)
+        api(libs.androidx.compose.runtime)
+        implementation(libs.androidx.compose.ui.ui)
       }
-    maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }
+    }
+
+    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
+
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependencies {
@@ -44,11 +50,13 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+
+    val jvmTest by getting { dependsOn(commonJvmTest) }
+
     // TODO export this in Android too when it's supported in kotlin projects
-    maybeCreate("jvmMain").apply { dependencies.add("testFixturesApi", projects.circuitTest) }
-    maybeCreate("androidInstrumentedTest").apply {
-      dependsOn(androidMain)
+    val jvmMain by getting { dependencies.add("testFixturesApi", projects.circuitTest) }
+
+    val androidInstrumentedTest by getting {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(libs.coroutines)
@@ -64,8 +72,6 @@ kotlin {
         implementation(libs.truth)
       }
     }
-    val iosMain by getting
-    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

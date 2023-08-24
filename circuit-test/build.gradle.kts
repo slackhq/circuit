@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -19,6 +21,8 @@ kotlin {
     nodejs()
   }
   // endregion
+
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
 
   sourceSets {
     commonMain {
@@ -40,9 +44,7 @@ kotlin {
         implementation(libs.testing.testParameterInjector)
       }
     }
-    with(getByName("androidUnitTest")) { dependsOn(jvmTest) }
-    val iosMain by getting
-    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
+    val androidUnitTest by getting { dependsOn(jvmTest) }
   }
 }
 

@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -20,6 +22,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -30,14 +34,14 @@ kotlin {
         implementation(libs.compose.runtime.saveable)
       }
     }
-    maybeCreate("androidMain").apply {
+    val androidMain by getting {
       dependencies {
         implementation(libs.androidx.lifecycle.viewModel.compose)
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
       }
     }
-    maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }
+    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependencies {
@@ -45,9 +49,7 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
-    val iosMain by getting
-    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
+    val jvmTest by getting { dependsOn(commonJvmTest) }
   }
 }
 

@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
@@ -39,6 +41,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -48,11 +52,9 @@ kotlin {
         implementation(libs.molecule.runtime)
       }
     }
-    maybeCreate("commonTest").apply { dependencies { implementation(libs.kotlin.test) } }
+    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
     val iosMain by sourceSets.getting { dependencies { api(libs.coroutines) } }
     val iosSimulatorArm64Main by sourceSets.getting
-    // Set up dependencies between the source sets
-    iosSimulatorArm64Main.dependsOn(iosMain)
 
     configureEach { languageSettings.optIn("kotlin.experimental.ExperimentalObjCName") }
   }

@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -23,6 +24,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -36,14 +39,14 @@ kotlin {
         api(libs.compose.ui)
       }
     }
-    maybeCreate("androidMain").apply {
+    val androidMain by getting {
       dependencies {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
         implementation(libs.androidx.compose.integration.activity)
       }
     }
-    maybeCreate("commonTest").apply {
+    val commonTest by getting {
       dependencies {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
@@ -58,8 +61,8 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
-    maybeCreate("androidUnitTest").apply {
+    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val androidUnitTest by getting {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(libs.robolectric)
@@ -68,8 +71,6 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
-    val iosMain by getting
-    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

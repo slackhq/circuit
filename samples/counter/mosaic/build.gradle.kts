@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
@@ -18,6 +19,8 @@ kotlin {
   jvm()
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -26,7 +29,7 @@ kotlin {
       }
     }
     // TODO is there a multiplatform way to do this?
-    maybeCreate("jvmMain").apply { dependencies { implementation(libs.jline) } }
+    val jvmMain by getting { dependencies { implementation(libs.jline) } }
   }
 
   targets.withType<KotlinJvmTarget> {

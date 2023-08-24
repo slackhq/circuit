@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -20,6 +22,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -28,7 +32,7 @@ kotlin {
         implementation(libs.coroutines)
       }
     }
-    maybeCreate("commonTest").apply {
+    val commonTest by getting {
       dependencies {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
@@ -43,7 +47,7 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    maybeCreate("jvmTest").apply { dependsOn(commonJvmTest) }
+    val jvmTest by getting { dependsOn(commonJvmTest) }
   }
 }
 

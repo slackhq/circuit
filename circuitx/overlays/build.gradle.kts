@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -19,6 +21,8 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+
   sourceSets {
     commonMain {
       dependencies {
@@ -30,15 +34,12 @@ kotlin {
       }
     }
 
-    with(getByName("androidMain")) {
+    val androidMain by getting {
       dependencies {
         api(libs.androidx.compose.material.material3)
         implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
-
-    val iosMain by getting
-    val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
   }
 }
 

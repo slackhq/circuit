@@ -60,11 +60,8 @@ public fun NavigableCircuitContent(
 
   if (backstack.size > 0) {
     @Suppress("SpreadOperator")
-    decoration.DecoratedContent(
-      arg = activeContentProviders.first(),
-      backStackDepth = backstack.size,
-      modifier = Modifier,
-    ) { (record, provider) ->
+    decoration.DecoratedContent(activeContentProviders.first(), backstack.size, modifier) {
+      (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
       CompositionLocalProvider(*providedLocals) { provider() }

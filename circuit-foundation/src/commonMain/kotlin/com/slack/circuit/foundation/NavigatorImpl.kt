@@ -8,6 +8,7 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.popUntil
+import com.slack.circuit.backstack.push
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 

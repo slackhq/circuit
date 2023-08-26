@@ -31,7 +31,6 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.screen
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator

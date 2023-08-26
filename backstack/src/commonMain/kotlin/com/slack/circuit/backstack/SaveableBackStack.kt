@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import com.benasher44.uuid.uuid4
+import com.slack.circuit.runtime.screen.Screen
 
 @Composable
 public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
@@ -29,8 +29,8 @@ public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): Saveab
     }
   }
 
-public fun SaveableBackStack.push(route: String, args: Map<String, Any?> = emptyMap()) {
-  push(SaveableBackStack.Record(route, args))
+public fun SaveableBackStack.push(screen: Screen, args: Map<String, Any?> = emptyMap()) {
+  push(SaveableBackStack.Record(screen, args))
 }
 
 public inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> Boolean) {
@@ -60,26 +60,23 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   override fun pop(): Record? = entryList.removeFirstOrNull()
 
   public data class Record(
-    override val route: String,
+    override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
-    override val key: String = uuid4().toString(),
   ) : BackStack.Record {
     internal companion object {
       val Saver: Saver<Record, List<Any>> =
         Saver(
           save = { value ->
             buildList {
-              add(value.route)
+              add(value.screen)
               add(value.args)
-              add(value.key)
             }
           },
           restore = { list ->
             @Suppress("UNCHECKED_CAST")
             Record(
-              route = list[0] as String,
+              screen = list[0] as Screen,
               args = list[1] as Map<String, Any?>,
-              key = list[2] as String
             )
           }
         )

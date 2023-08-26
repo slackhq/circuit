@@ -16,10 +16,11 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Stable
+import com.slack.circuit.runtime.screen.Screen
 
 /**
- * A caller-supplied stack of [Record]s for presentation with the [Navigator] composable. Iteration
- * order is top-first (first element is the top of the stack).
+ * A caller-supplied stack of [Record]s for presentation with a `Navigator`. Iteration order is
+ * top-first (first element is the top of the stack).
  */
 @Stable
 public interface BackStack<R : BackStack.Record> : Iterable<R> {
@@ -34,16 +35,13 @@ public interface BackStack<R : BackStack.Record> : Iterable<R> {
 
   public interface Record {
     /**
-     * A value that identifies this record uniquely, even if it shares the same [route] with another
+     * A value that identifies this record uniquely, even if it shares the same route with another
      * record. This key may be used by [BackStackRecordLocalProvider]s to associate presentation
      * data with a record across composition recreation.
      *
-     * [key] MUST NOT change for the life of the record.
+     * [screen] MUST NOT change for the life of the record.
      */
-    public val key: String
-
-    /** The name of the route that should present this record. */
-    public val route: String
+    public val screen: Screen
   }
 }
 

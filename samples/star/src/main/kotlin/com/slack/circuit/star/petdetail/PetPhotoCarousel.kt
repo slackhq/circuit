@@ -45,6 +45,7 @@ import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
@@ -75,7 +76,7 @@ data class PetPhotoCarouselScreen(
   val name: String,
   @TypeParceler<ImmutableList<String>, ImmutableListParceler> val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
-) : com.slack.circuit.runtime.screen.Screen {
+) : Screen {
   data class State(
     val name: String,
     val photoUrls: ImmutableList<String>,

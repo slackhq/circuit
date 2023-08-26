@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.push
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
@@ -31,6 +32,7 @@ class NavigatorTest {
   fun popAtRoot() {
     val backstack = SaveableBackStack()
     backstack.push(TestScreen)
+    emptyMap()
     backstack.push(TestScreen)
 
     var onRootPop = 0
@@ -51,7 +53,9 @@ class NavigatorTest {
   @Test
   fun resetRoot() {
     val backStack = SaveableBackStack()
+    emptyMap()
     backStack.push(TestScreen)
+    emptyMap()
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }

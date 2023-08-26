@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Represents a composable UI for the given [UiState]. Conventionally, this should just be the
@@ -69,10 +70,7 @@ public interface Ui<UiState : CircuitUiState> {
    * ```
    */
   public fun interface Factory {
-    public fun create(
-      screen: com.slack.circuit.runtime.screen.Screen,
-      context: CircuitContext
-    ): Ui<*>?
+    public fun create(screen: Screen, context: CircuitContext): Ui<*>?
   }
 }
 

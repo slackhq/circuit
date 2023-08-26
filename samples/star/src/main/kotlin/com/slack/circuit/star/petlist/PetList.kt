@@ -80,6 +80,7 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.ImmutableSetParceler
 import com.slack.circuit.star.db.Animal
@@ -129,7 +130,7 @@ class Filters(
 ) : Parcelable
 
 @Parcelize
-data object PetListScreen : com.slack.circuit.runtime.screen.Screen {
+data object PetListScreen : Screen {
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean
 

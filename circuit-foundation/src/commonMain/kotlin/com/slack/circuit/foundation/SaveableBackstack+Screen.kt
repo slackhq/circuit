@@ -3,16 +3,17 @@
 package com.slack.circuit.foundation
 
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.runtime.screen.Screen
 
-public fun SaveableBackStack.push(screen: com.slack.circuit.runtime.screen.Screen) {
-  push(
-    SaveableBackStack.Record(
-      route = checkNotNull(screen::class.simpleName),
-      args = mapOf("screen" to screen),
-      key = screen.hashCode().toString()
-    )
-  )
+@Deprecated(
+  "Use SaveableBackStack.push instead",
+  ReplaceWith("this.push(screen)", "com.slack.circuit.backstack.push"),
+  level = DeprecationLevel.ERROR
+)
+public fun SaveableBackStack.push(screen: Screen) {
+  push(SaveableBackStack.Record(screen = screen))
 }
 
-public val SaveableBackStack.Record.screen: com.slack.circuit.runtime.screen.Screen
-  get() = args.getValue("screen") as com.slack.circuit.runtime.screen.Screen
+@Deprecated("Use Record.screen instead", level = DeprecationLevel.HIDDEN)
+public val SaveableBackStack.Record.screen: Screen
+  get() = args.getValue("screen") as Screen

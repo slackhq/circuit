@@ -32,7 +32,6 @@ class NavigatorTest {
   fun popAtRoot() {
     val backstack = SaveableBackStack()
     backstack.push(TestScreen)
-    emptyMap()
     backstack.push(TestScreen)
 
     var onRootPop = 0
@@ -53,9 +52,7 @@ class NavigatorTest {
   @Test
   fun resetRoot() {
     val backStack = SaveableBackStack()
-    emptyMap()
     backStack.push(TestScreen)
-    emptyMap()
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }

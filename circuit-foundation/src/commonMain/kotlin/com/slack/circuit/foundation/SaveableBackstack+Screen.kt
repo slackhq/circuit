@@ -14,6 +14,7 @@ public fun SaveableBackStack.push(screen: Screen) {
   push(SaveableBackStack.Record(screen = screen))
 }
 
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 @Deprecated("Use Record.screen instead", level = DeprecationLevel.HIDDEN)
 public val SaveableBackStack.Record.screen: Screen
   get() = args.getValue("screen") as Screen

@@ -1,5 +1,3 @@
-com.benasher44:uuid-jvm
-com.benasher44:uuid
 org.jetbrains.compose.animation:animation-core-desktop
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation-desktop

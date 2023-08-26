@@ -35,8 +35,8 @@ import com.slack.circuit.foundation.screen
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.Dismissed

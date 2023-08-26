@@ -6,7 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.petlist.PetListScreen
 
 private const val DOGS_SCREEN_NAME = "Adoptables"

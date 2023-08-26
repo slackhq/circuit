@@ -4,8 +4,8 @@ package com.slack.circuit.foundation
 
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 
 /**
  * A Circuit call back to help navigate to different screens. Intended to be used when forwarding

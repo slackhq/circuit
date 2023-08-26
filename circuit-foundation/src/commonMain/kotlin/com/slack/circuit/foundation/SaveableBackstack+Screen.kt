@@ -3,9 +3,8 @@
 package com.slack.circuit.foundation
 
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.runtime.Screen
 
-public fun SaveableBackStack.push(screen: Screen) {
+public fun SaveableBackStack.push(screen: com.slack.circuit.runtime.screen.Screen) {
   push(
     SaveableBackStack.Record(
       route = checkNotNull(screen::class.simpleName),
@@ -15,5 +14,5 @@ public fun SaveableBackStack.push(screen: Screen) {
   )
 }
 
-public val SaveableBackStack.Record.screen: Screen
-  get() = args.getValue("screen") as Screen
+public val SaveableBackStack.Record.screen: com.slack.circuit.runtime.screen.Screen
+  get() = args.getValue("screen") as com.slack.circuit.runtime.screen.Screen

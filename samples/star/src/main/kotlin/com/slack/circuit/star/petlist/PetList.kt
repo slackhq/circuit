@@ -79,7 +79,6 @@ import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.ImmutableSetParceler
@@ -130,7 +129,7 @@ class Filters(
 ) : Parcelable
 
 @Parcelize
-data object PetListScreen : Screen {
+data object PetListScreen : com.slack.circuit.runtime.screen.Screen {
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean
 

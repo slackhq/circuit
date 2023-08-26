@@ -41,7 +41,7 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.push
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory

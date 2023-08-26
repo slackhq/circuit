@@ -22,7 +22,7 @@ kotlin {
       dependencies {
         // Only here for docs linking
         compileOnly(projects.circuitFoundation)
-        api(projects.circuitRuntime)
+        api(projects.circuitRuntimeScreen)
       }
     }
     val commonJvm =

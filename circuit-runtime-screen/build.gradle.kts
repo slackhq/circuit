@@ -24,13 +24,7 @@ kotlin {
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
 
-  sourceSets {
-    commonMain {
-      dependencies {
-        api(libs.compose.runtime)
-      }
-    }
-  }
+  sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
 }
 
 android { namespace = "com.slack.circuit.runtime.screen" }

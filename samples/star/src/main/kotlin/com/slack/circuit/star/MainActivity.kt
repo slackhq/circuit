@@ -24,7 +24,7 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.push
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen

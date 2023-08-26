@@ -27,7 +27,7 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 
 @Composable
 public fun NavigableCircuitContent(

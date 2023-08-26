@@ -7,9 +7,9 @@ import androidx.compose.runtime.Immutable
 /**
  * Represents an individual screen, used as a key for `Presenter.Factory` and `Ui.Factory`.
  *
- * Screens can be simple sentinel `object` types or data classes with information to share. Screens
- * with information should contain the minimum amount of data needed for the target presenter to
- * begin presenting state.
+ * Screens can be simple sentinel `data object` types or data classes with information to share.
+ * Screens with information should contain the minimum amount of data needed for the target
+ * presenter to begin presenting state.
  *
  * ```
  * data class AddFavorites(

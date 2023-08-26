@@ -28,14 +28,12 @@ kotlin {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
-        api(libs.coroutines)
-        api(projects.circuitRuntimeScreen)
       }
     }
   }
 }
 
-android { namespace = "com.slack.circuit.runtime" }
+android { namespace = "com.slack.circuit.runtime.screen" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
 
@@ -46,6 +44,6 @@ baselineProfile {
 
   filter {
     // Don't include subpackages, only one star
-    include("com.slack.circuit.runtime.*")
+    include("com.slack.circuit.runtime.screen.*")
   }
 }

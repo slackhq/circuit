@@ -47,7 +47,12 @@ public fun NavigableCircuitContent(
           val screen = record.screen
 
           val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
-            CircuitContent(screen, navigator, modifier, circuit, unavailableRoute)
+            CircuitContent(
+              screen = screen,
+              navigator = navigator,
+              circuit = circuit,
+              unavailableContent = unavailableRoute,
+            )
           }
 
           val currentRouteContent by rememberUpdatedState(currentContent)

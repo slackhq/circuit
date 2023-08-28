@@ -3,17 +3,9 @@
 package com.slack.circuit.foundation
 
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 
-public fun SaveableBackStack.push(screen: Screen) {
-  push(
-    SaveableBackStack.Record(
-      route = checkNotNull(screen::class.simpleName),
-      args = mapOf("screen" to screen),
-      key = screen.hashCode().toString()
-    )
-  )
-}
-
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+@Deprecated("Use Record.screen instead", level = DeprecationLevel.HIDDEN)
 public val SaveableBackStack.Record.screen: Screen
   get() = args.getValue("screen") as Screen

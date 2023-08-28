@@ -17,8 +17,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 import kotlinx.parcelize.Parcelize
 import org.junit.Rule

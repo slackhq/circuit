@@ -198,6 +198,7 @@ include(
   ":circuit-retained",
   ":circuit-runtime",
   ":circuit-runtime-presenter",
+  ":circuit-runtime-screen",
   ":circuit-runtime-ui",
   ":circuit-test",
   ":circuitx:android",

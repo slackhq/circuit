@@ -4,31 +4,31 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
-import com.slack.circuit.backstack.popUntil
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
- * @param backstack The backing [SaveableBackStack] to navigate.
+ * @param backstack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(
-  backstack: SaveableBackStack,
+  backstack: BackStack<out Record>,
   onRootPop: () -> Unit,
 ): Navigator {
   return remember { NavigatorImpl(backstack, onRootPop) }
 }
 
 internal class NavigatorImpl(
-  private val backstack: SaveableBackStack,
+  private val backstack: BackStack<out Record>,
   private val onRootPop: () -> Unit
 ) : Navigator {
 

@@ -30,8 +30,9 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(libs.coroutines)
-        implementation(libs.uuid)
+        api(projects.circuitRuntimeScreen)
         implementation(libs.compose.runtime.saveable)
+        implementation(libs.uuid)
       }
     }
     val androidMain by getting {

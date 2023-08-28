@@ -25,6 +25,7 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitRuntime)
+        api(projects.circuitRuntimeScreen)
       }
     }
   }

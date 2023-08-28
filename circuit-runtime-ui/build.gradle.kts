@@ -26,6 +26,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(projects.circuitRuntime)
+        api(projects.circuitRuntimeScreen)
       }
     }
   }

@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.runtime.Navigator
@@ -15,7 +14,7 @@ import com.slack.circuit.runtime.screen.Screen
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
- * @param backstack The backing [SaveableBackStack] to navigate.
+ * @param backstack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @see NavigableCircuitContent

@@ -15,7 +15,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterPresenterFactory

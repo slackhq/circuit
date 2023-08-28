@@ -13,7 +13,7 @@ import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes

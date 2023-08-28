@@ -50,6 +50,7 @@ import javax.inject.Provider
 
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
 private const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
+private const val CIRCUIT_RUNTIME_SCREEN_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.screen"
 private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
 private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
 private val CIRCUIT_INJECT_ANNOTATION =
@@ -59,7 +60,7 @@ private val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
 private val CIRCUIT_UI = ClassName(CIRCUIT_RUNTIME_UI_PACKAGE, "Ui")
 private val CIRCUIT_UI_FACTORY = CIRCUIT_UI.nestedClass("Factory")
 private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitUiState")
-private val SCREEN = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Screen")
+private val SCREEN = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "Screen")
 private val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
 private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
 private const val FACTORY = "Factory"

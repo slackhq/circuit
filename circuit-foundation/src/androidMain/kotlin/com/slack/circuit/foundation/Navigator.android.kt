@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.runtime.Navigator
 
 /**
@@ -19,7 +20,7 @@ import com.slack.circuit.runtime.Navigator
  */
 @Composable
 public fun rememberCircuitNavigator(
-  backstack: BackStack<*>,
+  backstack: BackStack<out Record>,
   enableBackHandler: Boolean = true,
 ): Navigator {
   val navigator =

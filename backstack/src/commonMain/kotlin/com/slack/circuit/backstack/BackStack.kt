@@ -69,9 +69,9 @@ public interface BackStack<R : Record> : Iterable<R> {
 }
 
 /** `true` if the [BackStack] contains no records. [BackStack.firstOrNull] will return `null`. */
-public val BackStack<*>.isEmpty: Boolean
+public val BackStack<out Record>.isEmpty: Boolean
   get() = size == 0
 
 /** `true` if the [BackStack] contains exactly one record. */
-public val BackStack<*>.isAtRoot: Boolean
+public val BackStack<out Record>.isAtRoot: Boolean
   get() = size == 1

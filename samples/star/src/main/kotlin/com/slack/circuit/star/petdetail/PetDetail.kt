@@ -5,6 +5,8 @@ package com.slack.circuit.star.petdetail
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,9 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -250,15 +249,14 @@ private fun ShowAnimalPortrait(
   }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 private fun LazyListScope.petDetailDescriptions(state: PetDetailScreen.State.Success) {
   // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
   item(state.tags.hashCode()) {
     FlowRow(
       modifier = Modifier.fillMaxWidth(),
-      mainAxisSpacing = 8.dp,
-      crossAxisSpacing = 8.dp,
-      mainAxisAlignment = FlowMainAxisAlignment.Center,
-      crossAxisAlignment = FlowCrossAxisAlignment.Center,
+      horizontalArrangement = spacedBy(8.dp, Alignment.CenterHorizontally),
+      verticalArrangement = spacedBy(8.dp, Alignment.Top),
     ) {
       state.tags.forEach { tag ->
         Surface(

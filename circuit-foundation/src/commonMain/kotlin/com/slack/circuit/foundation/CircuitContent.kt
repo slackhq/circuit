@@ -149,7 +149,5 @@ private fun <UiState : CircuitUiState> CircuitContent(
     onDispose { eventListener.onDisposeContent() }
   }
 
-  BackHandlerBox {
-    ui.Content(state, modifier)
-  }
+  BackHandlerBox { ui.Content(state, modifier) }
 }

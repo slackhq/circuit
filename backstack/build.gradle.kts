@@ -32,6 +32,7 @@ kotlin {
         api(libs.coroutines)
         api(projects.circuitRuntimeScreen)
         implementation(libs.compose.runtime.saveable)
+        implementation(libs.uuid)
       }
     }
     val androidMain by getting {

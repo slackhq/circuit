@@ -30,7 +30,6 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.slack.circuit.runtime.screen.Screen
 
 private fun Context.findActivity(): Activity? {
   var context = this
@@ -54,7 +53,7 @@ internal object ViewModelBackStackRecordLocalProvider :
       viewModel<BackStackRecordLocalProviderViewModel>(
         factory = BackStackRecordLocalProviderViewModel.Factory
       )
-    val viewModelStore = containerViewModel.viewModelStoreForKey(record.screen)
+    val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
     val activity = LocalContext.current.findActivity()
     remember(record, viewModelStore) {
       object : RememberObserver {
@@ -70,7 +69,7 @@ internal object ViewModelBackStackRecordLocalProvider :
 
         fun disposeIfNotChangingConfiguration() {
           if (activity?.isChangingConfigurations != true) {
-            containerViewModel.removeViewModelStoreOwnerForKey(record.screen)?.clear()
+            containerViewModel.removeViewModelStoreOwnerForKey(record.key)?.clear()
           }
         }
       }
@@ -92,12 +91,12 @@ internal object ViewModelBackStackRecordLocalProvider :
 }
 
 internal class BackStackRecordLocalProviderViewModel : ViewModel() {
-  private val owners = mutableMapOf<Screen, ViewModelStore>()
+  private val owners = mutableMapOf<String, ViewModelStore>()
 
-  internal fun viewModelStoreForKey(key: Screen): ViewModelStore =
+  internal fun viewModelStoreForKey(key: String): ViewModelStore =
     owners.getOrPut(key) { ViewModelStore() }
 
-  internal fun removeViewModelStoreOwnerForKey(key: Screen): ViewModelStore? = owners.remove(key)
+  internal fun removeViewModelStoreOwnerForKey(key: String): ViewModelStore? = owners.remove(key)
 
   override fun onCleared() {
     owners.forEach { (_, store) -> store.clear() }

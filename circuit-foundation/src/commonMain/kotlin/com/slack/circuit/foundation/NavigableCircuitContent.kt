@@ -42,12 +42,11 @@ public fun NavigableCircuitContent(
 ) {
   val activeContentProviders = buildList {
     for (record in backstack) {
-      val screen = record.screen
       val provider =
-        key(screen) {
-          val currentContent: (@Composable (BackStack.Record) -> Unit) = {
+        key(record.key) {
+          val currentContent: (@Composable (BackStack.Record) -> Unit) = { record ->
             CircuitContent(
-              screen = screen,
+              screen = record.screen,
               navigator = navigator,
               circuit = circuit,
               unavailableContent = unavailableRoute,

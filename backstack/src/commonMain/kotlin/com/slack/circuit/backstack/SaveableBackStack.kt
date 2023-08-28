@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.benasher44.uuid.uuid4
 import com.slack.circuit.runtime.screen.Screen
 
 @Composable
@@ -62,6 +63,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   public data class Record(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
+    override val key: String = uuid4().toString(),
   ) : BackStack.Record {
     internal companion object {
       val Saver: Saver<Record, List<Any>> =
@@ -70,6 +72,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
             buildList {
               add(value.screen)
               add(value.args)
+              add(value.key)
             }
           },
           restore = { list ->
@@ -77,6 +80,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
             Record(
               screen = list[0] as Screen,
               args = list[1] as Map<String, Any?>,
+              key = list[2] as String,
             )
           }
         )

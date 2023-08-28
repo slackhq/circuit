@@ -38,7 +38,7 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
       rememberSaveable(
         record,
         saver = BackStackRecordLocalSaveableStateRegistry.Saver,
-        key = record.screen.hashCode().toString()
+        key = record.key
       ) {
         BackStackRecordLocalSaveableStateRegistry(mutableStateMapOf())
       }

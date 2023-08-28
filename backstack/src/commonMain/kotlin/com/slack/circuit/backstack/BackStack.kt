@@ -55,12 +55,15 @@ public interface BackStack<R : Record> : Iterable<R> {
 
   public interface Record {
     /**
-     * A value that identifies this record uniquely, even if it shares the same route with another
-     * record. This key may be used by [BackStackRecordLocalProvider]s to associate presentation
-     * data with a record across composition recreation.
+     * A value that identifies this record uniquely, even if it shares the same [screen] with
+     * another record. This key may be used by [BackStackRecordLocalProvider]s to associate
+     * presentation data with a record across composition recreation.
      *
-     * [screen] MUST NOT change for the life of the record.
+     * [key] MUST NOT change for the life of the record.
      */
+    public val key: String
+
+    /** The [Screen] that should present this record. */
     public val screen: Screen
   }
 }

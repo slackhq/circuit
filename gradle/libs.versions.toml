@@ -229,6 +229,9 @@ testing-testParameterInjector = { module = "com.google.testparameterinjector:tes
 truth = "com.google.truth:truth:1.1.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
+# KMP UUID
+uuid = "com.benasher44:uuid:0.8.0"
+
 [bundles]
 androidx-activity = ["androidx-activity", "androidx-activity-ktx"]
 compose-ui = ["androidx-compose-foundation", "androidx-compose-material-material", "androidx-compose-material-material3", "androidx-compose-ui-ui", "androidx-compose-ui-tooling-preview"]

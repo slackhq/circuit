@@ -22,20 +22,20 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 
 @Composable
 public fun NavigableCircuitContent(
   navigator: Navigator,
-  backstack: SaveableBackStack,
+  backstack: BackStack<out Record>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),
+  providedValues: Map<out Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
@@ -44,11 +44,9 @@ public fun NavigableCircuitContent(
     for (record in backstack) {
       val provider =
         key(record.key) {
-          val screen = record.screen
-
-          val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
+          val currentContent: (@Composable (Record) -> Unit) = { record ->
             CircuitContent(
-              screen = screen,
+              screen = record.screen,
               navigator = navigator,
               circuit = circuit,
               unavailableContent = unavailableRoute,

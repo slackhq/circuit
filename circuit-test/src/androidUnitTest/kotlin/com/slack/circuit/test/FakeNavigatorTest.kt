@@ -3,7 +3,7 @@
 package com.slack.circuit.test
 
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.runtime.Screen
+import com.slack.circuit.runtime.screen.Screen
 import kotlinx.coroutines.test.runTest
 import kotlinx.parcelize.Parcelize
 import org.junit.Test

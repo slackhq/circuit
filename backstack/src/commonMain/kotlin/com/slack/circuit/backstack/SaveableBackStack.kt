@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.benasher44.uuid.uuid4
+import com.slack.circuit.runtime.screen.Screen
 
 @Composable
 public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
@@ -28,14 +29,6 @@ public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): Saveab
       check(!it.isEmpty) { "Backstack must be non-empty after init." }
     }
   }
-
-public fun SaveableBackStack.push(route: String, args: Map<String, Any?> = emptyMap()) {
-  push(SaveableBackStack.Record(route, args))
-}
-
-public inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> Boolean) {
-  while (topRecord?.let(predicate) == false) pop()
-}
 
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
@@ -50,17 +43,25 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   override fun iterator(): Iterator<Record> = entryList.iterator()
 
-  public val topRecord: Record?
+  public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public fun push(record: Record) {
+  public override fun push(screen: Screen) {
+    push(screen, emptyMap())
+  }
+
+  public fun push(screen: Screen, args: Map<String, Any?>) {
+    push(Record(screen, args))
+  }
+
+  public override fun push(record: Record) {
     entryList.add(0, record)
   }
 
   override fun pop(): Record? = entryList.removeFirstOrNull()
 
   public data class Record(
-    override val route: String,
+    override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
     override val key: String = uuid4().toString(),
   ) : BackStack.Record {
@@ -69,7 +70,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
         Saver(
           save = { value ->
             buildList {
-              add(value.route)
+              add(value.screen)
               add(value.args)
               add(value.key)
             }
@@ -77,9 +78,9 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
           restore = { list ->
             @Suppress("UNCHECKED_CAST")
             Record(
-              route = list[0] as String,
+              screen = list[0] as Screen,
               args = list[1] as Map<String, Any?>,
-              key = list[2] as String
+              key = list[2] as String,
             )
           }
         )

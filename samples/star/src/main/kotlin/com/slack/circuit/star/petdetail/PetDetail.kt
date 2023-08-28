@@ -42,7 +42,6 @@ import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Screen
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -62,7 +61,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) :
+  com.slack.circuit.runtime.screen.Screen {
   sealed interface State : CircuitUiState {
     data object Loading : State
 

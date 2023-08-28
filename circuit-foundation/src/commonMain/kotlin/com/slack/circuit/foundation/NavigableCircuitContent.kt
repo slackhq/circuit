@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -32,7 +31,7 @@ import com.slack.circuit.runtime.screen.Screen
 @Composable
 public fun NavigableCircuitContent(
   navigator: Navigator,
-  backstack: SaveableBackStack,
+  backstack: BackStack<*>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: Map<out BackStack.Record, ProvidedValues> = providedValuesForBackStack(backstack),

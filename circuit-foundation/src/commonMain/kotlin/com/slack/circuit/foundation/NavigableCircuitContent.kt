@@ -45,7 +45,7 @@ public fun NavigableCircuitContent(
       val screen = record.screen
       val provider =
         key(screen) {
-          val currentContent: (@Composable (SaveableBackStack.Record) -> Unit) = {
+          val currentContent: (@Composable (BackStack.Record) -> Unit) = {
             CircuitContent(
               screen = screen,
               navigator = navigator,

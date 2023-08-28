@@ -29,14 +29,6 @@ public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): Saveab
     }
   }
 
-public fun SaveableBackStack.push(screen: Screen, args: Map<String, Any?> = emptyMap()) {
-  push(SaveableBackStack.Record(screen, args))
-}
-
-public inline fun SaveableBackStack.popUntil(predicate: (SaveableBackStack.Record) -> Boolean) {
-  while (topRecord?.let(predicate) == false) pop()
-}
-
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
@@ -50,10 +42,18 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   override fun iterator(): Iterator<Record> = entryList.iterator()
 
-  public val topRecord: Record?
+  public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public fun push(record: Record) {
+  public override fun push(screen: Screen) {
+    push(screen, emptyMap())
+  }
+
+  public fun push(screen: Screen, args: Map<String, Any?>) {
+    push(Record(screen, args))
+  }
+
+  public override fun push(record: Record) {
     entryList.add(0, record)
   }
 

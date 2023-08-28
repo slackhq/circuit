@@ -4,7 +4,6 @@ package com.slack.circuit.foundation
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.backstack.push
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertFailsWith
 import kotlin.test.fail

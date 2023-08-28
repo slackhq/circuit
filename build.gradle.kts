@@ -168,26 +168,27 @@ subprojects {
               "-Xtype-enhancement-improvements-strict-mode",
               "-Xjspecify-annotations=strict",
             )
+
+            // Multiplatform compose handling is handled in a later block with the compose plugin
+            if (hasCompose && !isMultiPlatformPlugin) {
+              // Flag to disable Compose's kotlin version check because they're often behind
+              // Or ahead
+              // Or if they're the same, do nothing
+              // It's basically just very noisy.
+              val composeCompilerKotlinVersion = libs.versions.compose.compiler.kotlinVersion.get()
+              val kotlinVersion = libs.versions.kotlin.get()
+              val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
+              if (suppressComposeKotlinVersion) {
+                freeCompilerArgs.addAll(
+                  "-P",
+                  "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+                )
+              }
+            }
           }
         }
 
         progressiveMode.set(true)
-
-        if (hasCompose && !isMultiPlatformPlugin) {
-          // Flag to disable Compose's kotlin version check because they're often behind
-          // Or ahead
-          // Or if they're the same, do nothing
-          // It's basically just very noisy.
-          val composeCompilerKotlinVersion = libs.versions.compose.compiler.kotlinVersion.get()
-          val kotlinVersion = libs.versions.kotlin.get()
-          val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
-          if (suppressComposeKotlinVersion) {
-            freeCompilerArgs.addAll(
-              "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
-            )
-          }
-        }
       }
     }
 
@@ -357,6 +358,8 @@ subprojects {
 
   // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
+    // Don't run this on a pure android project
+    if (project.plugins.hasPlugin("org.jetbrains.kotlin.android")) return@withPlugin
     configure<ComposeExtension> {
       val kotlinVersion = libs.versions.kotlin.get()
       // Flag to disable Compose's kotlin version check because they're often behind
@@ -377,12 +380,10 @@ subprojects {
       if (suppressComposeKotlinVersion) {
         tasks.withType<KotlinCompilationTask<*>>().configureEach {
           compilerOptions {
-            if (this is KotlinJvmCompilerOptions) {
-              freeCompilerArgs.addAll(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
-              )
-            }
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+            )
           }
         }
       }

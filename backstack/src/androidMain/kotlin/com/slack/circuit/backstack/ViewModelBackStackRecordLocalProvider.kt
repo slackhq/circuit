@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.collections.immutable.persistentListOf
 
 private fun Context.findActivity(): Activity? {
   var context = this
@@ -76,7 +77,7 @@ internal object ViewModelBackStackRecordLocalProvider :
     }
     return remember(viewModelStore) {
       val list =
-        listOf<ProvidedValue<*>>(
+        persistentListOf<ProvidedValue<*>>(
           LocalViewModelStoreOwner provides
             object : ViewModelStoreOwner {
               override val viewModelStore: ViewModelStore = viewModelStore

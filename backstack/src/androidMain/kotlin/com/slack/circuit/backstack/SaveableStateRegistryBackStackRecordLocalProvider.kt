@@ -28,6 +28,8 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /** A [BackStackRecordLocalProvider] that provides a [SaveableStateRegistry] for each record. */
 public object SaveableStateRegistryBackStackRecordLocalProvider :
@@ -46,10 +48,10 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
     childRegistry.parentRegistry = LocalSaveableStateRegistry.current
     return remember(childRegistry) {
       object : ProvidedValues {
-        val list = listOf(LocalSaveableStateRegistry provides childRegistry)
+        val list = persistentListOf(LocalSaveableStateRegistry provides childRegistry)
 
         @Composable
-        override fun provideValues(): List<ProvidedValue<*>> {
+        override fun provideValues(): ImmutableList<ProvidedValue<*>> {
           remember {
             object : RememberObserver {
               override fun onForgotten() {

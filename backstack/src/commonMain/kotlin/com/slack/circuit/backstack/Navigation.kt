@@ -18,13 +18,14 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import kotlinx.collections.immutable.ImmutableList
 
 /** Presentation logic for currently visible routes of a navigable UI. */
 @Stable
 public interface NavDecoration {
   @Composable
   public fun <T> DecoratedContent(
-    arg: T,
+    args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit

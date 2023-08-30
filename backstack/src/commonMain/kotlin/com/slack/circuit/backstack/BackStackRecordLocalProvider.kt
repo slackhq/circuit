@@ -19,47 +19,52 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.key
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 
 public fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
   @Composable public fun providedValuesFor(record: R): ProvidedValues
 }
 
 public fun interface ProvidedValues {
-  @Composable public fun provideValues(): List<ProvidedValue<*>>
+  @Composable public fun provideValues(): ImmutableList<ProvidedValue<*>>
 }
 
 internal class CompositeProvidedValues(private val list: List<ProvidedValues>) : ProvidedValues {
   @Composable
-  override fun provideValues(): List<ProvidedValue<*>> = buildList {
-    list.forEach { addAll(key(it) { it.provideValues() }) }
-  }
+  override fun provideValues(): ImmutableList<ProvidedValue<*>> =
+    buildList { list.forEach { addAll(key(it) { it.provideValues() }) } }.toImmutableList()
 }
 
 @Composable
 public fun <R : BackStack.Record> providedValuesForBackStack(
   backStack: BackStack<R>,
-  stackLocalProviders: List<BackStackRecordLocalProvider<R>> = emptyList(),
+  stackLocalProviders: ImmutableList<BackStackRecordLocalProvider<R>> = persistentListOf(),
   includeDefaults: Boolean = true,
-): Map<R, ProvidedValues> =
+): ImmutableMap<R, ProvidedValues> =
   buildMap(backStack.size) {
-    backStack.forEach { record ->
-      key(record) {
-        put(
-          record,
-          CompositeProvidedValues(
-            buildList(stackLocalProviders.size + 1) {
-              if (includeDefaults) {
-                LocalBackStackRecordLocalProviders.current.forEach {
-                  add(key(it) { it.providedValuesFor(record) })
+      backStack.forEach { record ->
+        key(record) {
+          put(
+            record,
+            CompositeProvidedValues(
+              buildList(stackLocalProviders.size + 1) {
+                if (includeDefaults) {
+                  LocalBackStackRecordLocalProviders.current.forEach {
+                    add(key(it) { it.providedValuesFor(record) })
+                  }
                 }
+                stackLocalProviders.forEach { add(key(it) { it.providedValuesFor(record) }) }
               }
-              stackLocalProviders.forEach { add(key(it) { it.providedValuesFor(record) }) }
-            }
+            )
           )
-        )
+        }
       }
     }
-  }
+    .toImmutableMap()
 
 internal expect val LocalBackStackRecordLocalProviders:
   ProvidableCompositionLocal<List<BackStackRecordLocalProvider<BackStack.Record>>>

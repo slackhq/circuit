@@ -7,6 +7,6 @@ import androidx.compose.runtime.remember
 
 /** Checks whether or not we can retain in the current composable context. */
 @Composable
-internal actual fun rememberCanRetainChecker(): () -> Boolean {
-  return remember { { false } }
+public actual fun rememberCanRetainChecker(): CanRetainChecker {
+  return remember { CanRetainChecker { false } }
 }

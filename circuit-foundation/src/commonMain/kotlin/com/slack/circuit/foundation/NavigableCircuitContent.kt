@@ -3,7 +3,6 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +48,7 @@ public fun NavigableCircuitContent(
 
   if (backstack.size > 0) {
     @Suppress("SpreadOperator")
-    decoration.DecoratedContent(activeContentProviders.first(), backstack.size, modifier) {
+    decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) {
       (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
@@ -117,10 +115,9 @@ public object NavigatorDefaults {
 
   /** The default [NavDecoration] used in navigation. */
   public object DefaultDecoration : NavDecoration {
-    @OptIn(ExperimentalAnimationApi::class)
     @Composable
     override fun <T> DecoratedContent(
-      arg: T,
+      args: List<T>,
       backStackDepth: Int,
       modifier: Modifier,
       content: @Composable (T) -> Unit
@@ -130,7 +127,7 @@ public object NavigatorDefaults {
       val diff = backStackDepth - prevStackDepth.value
       prevStackDepth.value = backStackDepth
       AnimatedContent(
-        targetState = arg,
+        targetState = args,
         modifier = modifier,
         transitionSpec = {
           // Mirror the forward and backward transitions of activities in Android 33
@@ -154,7 +151,7 @@ public object NavigatorDefaults {
           )
         },
       ) {
-        content(it)
+        content(it.first())
       }
     }
   }
@@ -163,12 +160,12 @@ public object NavigatorDefaults {
   public object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T> DecoratedContent(
-      arg: T,
+      args: List<T>,
       backStackDepth: Int,
       modifier: Modifier,
       content: @Composable (T) -> Unit
     ) {
-      content(arg)
+      content(args.first())
     }
   }
 }

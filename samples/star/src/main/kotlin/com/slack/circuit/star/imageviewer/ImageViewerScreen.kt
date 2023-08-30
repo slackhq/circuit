@@ -170,23 +170,25 @@ fun ImageViewer(state: ImageViewerScreen.State, modifier: Modifier = Modifier) {
 //  generalize this when there's a factory pattern for it in Circuit
 //  shared element transitions?
 object ImageViewerAwareNavDecoration : NavDecoration {
+  @Suppress("UnstableCollections")
   @Composable
   override fun <T> DecoratedContent(
-    arg: T,
+    args: List<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit
   ) {
+    val firstArg = args.firstOrNull()
     val decoration =
       if (
-        arg is Pair<*, *> &&
-          arg.first is SaveableBackStack.Record &&
-          (arg.first as SaveableBackStack.Record).screen is ImageViewerScreen
+        firstArg is Pair<*, *> &&
+          firstArg.first is SaveableBackStack.Record &&
+          (firstArg.first as SaveableBackStack.Record).screen is ImageViewerScreen
       ) {
         NavigatorDefaults.EmptyDecoration
       } else {
         NavigatorDefaults.DefaultDecoration
       }
-    decoration.DecoratedContent(arg, backStackDepth, modifier, content)
+    decoration.DecoratedContent(args, backStackDepth, modifier, content)
   }
 }

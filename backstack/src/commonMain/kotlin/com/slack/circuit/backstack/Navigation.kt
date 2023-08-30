@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 public interface NavDecoration {
   @Composable
   public fun <T> DecoratedContent(
-    arg: T,
+    args: List<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit

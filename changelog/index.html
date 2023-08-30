@@ -514,6 +514,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0140" class="md-nav__link">
+    0.14.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0130-beta01" class="md-nav__link">
     0.13.0-beta01
   </a>
@@ -794,6 +801,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0140" class="md-nav__link">
+    0.14.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0130-beta01" class="md-nav__link">
     0.13.0-beta01
   </a>
@@ -1028,6 +1042,38 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="0140">0.14.0<a class="headerlink" href="#0140" title="Permanent link">&para;</a></h2>
+<p><em>2023-08-30</em></p>
+<ul>
+<li><strong>New</strong>: Circuit now supports JS targets!</li>
+<li><strong>New</strong>: Introduce CircuitX artifacts. CircuitX is a suite of extension artifacts for Circuit. These artifacts are intended to be
+  batteries-included implementations of common use cases, such as out-of-the-box <code>Overlay</code> types or
+  Android navigation interop. See the <a href="https://slackhq.github.io/circuit/circuitx/">docs</a> for more details.</li>
+<li><strong>Enhancement</strong>: Promote <code>Screen</code> to its own artifact. This is now under the <code>com.slack.circuit.runtime.Screen</code> name.</li>
+<li><strong>Enhancement</strong>: Use <code>Screen</code> directly in the <code>BackStack</code> in place of <code>route</code>.</li>
+<li><strong>Enhancement</strong>: No longer require <code>SaveableBackStack</code> in <code>NavigableCircuitContent</code>, now any <code>BackStack</code> impl is supported.</li>
+<li><strong>Enhancement</strong>: Make <code>CanRetainChecker</code> more customizable in <code>circuit-retained</code>.</li>
+<li><strong>Enhancement</strong>: Pass the whole list of active records to <code>DecoratedContent</code>, allowing more complex handling of back gestures (predictive back in android, drag gestures in iOS, etc).</li>
+<li><strong>Enhancement</strong>: Refactor out a <code>buildCircuitContentProviders()</code> in <code>NavigableCircuitContent</code>, which enables <code>movableContentOf</code> to work since it&rsquo;s reusing the same instance for records across changes.</li>
+<li><strong>Fix</strong>: Fix duplicated <code>Modifier</code> for <code>DecoratedContent</code>.</li>
+<li><strong>Fix</strong>: Fix new presenter instances of the same type not being recomposed. See <a href="https://github.com/slackhq/circuit/pull/799">#799</a> for more details.</li>
+<li><strong>Fix</strong>: Export iOS targets for <code>circuit-test</code> artifact.</li>
+<li><strong>Fix</strong>: Export iOS targets for <code>circuit-test</code> artifact.</li>
+<li>Demonstrate back handling for Compose Multiplatform in Counter sample.</li>
+<li>Add <code>kotlinx.collections.immutable</code> to core APIs.</li>
+<li>Update to Compile SDK 34.</li>
+<li>Update to Compose Multiplatform <code>1.5.0</code>.</li>
+<li>Update androidx.compose.compiler to <code>1.5.3</code>.</li>
+<li>Update androidx.compose.ui to <code>1.5.0</code>.</li>
+<li>Update androidx.compose.material to <code>1.5.0</code>.</li>
+<li>Update androidx.compose.runtime to <code>1.5.0</code>.</li>
+<li>Update androidx.compose.foundation to <code>1.5.0</code>.</li>
+<li>Update uuid to <code>0.8.1</code>.</li>
+<li>Update Molecule to <code>1.2.0</code>.</li>
+<li>Update Kotlin to <code>1.9.10</code>.</li>
+<li>Update KSP to <code>1.9.10-1.0.13</code>.</li>
+</ul>
+<p>Thanks to <a href="https://github.com/chrisbanes">@chrisbanes</a> and <a href="https://github.com/ashdavies">@ashdavies</a> for contributing to this release!</p>
 <h2 id="0130-beta01">0.13.0-beta01<a class="headerlink" href="#0130-beta01" title="Permanent link">&para;</a></h2>
 <p><em>2023-08-17</em></p>
 <ul>

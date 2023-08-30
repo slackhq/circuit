@@ -28,9 +28,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.RecordContentProvider
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -43,6 +43,7 @@ import com.slack.circuit.star.ui.StarTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
@@ -170,23 +171,21 @@ fun ImageViewer(state: ImageViewerScreen.State, modifier: Modifier = Modifier) {
 //  generalize this when there's a factory pattern for it in Circuit
 //  shared element transitions?
 object ImageViewerAwareNavDecoration : NavDecoration {
+  @Suppress("UnstableCollections")
   @Composable
   override fun <T> DecoratedContent(
-    arg: T,
+    args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit
   ) {
+    val firstArg = args.firstOrNull()
     val decoration =
-      if (
-        arg is Pair<*, *> &&
-          arg.first is SaveableBackStack.Record &&
-          (arg.first as SaveableBackStack.Record).screen is ImageViewerScreen
-      ) {
+      if (firstArg is RecordContentProvider && firstArg.record.screen is ImageViewerScreen) {
         NavigatorDefaults.EmptyDecoration
       } else {
         NavigatorDefaults.DefaultDecoration
       }
-    decoration.DecoratedContent(arg, backStackDepth, modifier, content)
+    decoration.DecoratedContent(args, backStackDepth, modifier, content)
   }
 }

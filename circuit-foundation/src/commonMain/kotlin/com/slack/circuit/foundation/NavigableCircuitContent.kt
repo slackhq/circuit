@@ -13,6 +13,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
@@ -40,26 +41,12 @@ public fun NavigableCircuitContent(
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  val activeContentProviders = buildList {
-    for (record in backstack) {
-      val provider =
-        key(record.key) {
-          val currentContent: (@Composable (Record) -> Unit) = { record ->
-            CircuitContent(
-              screen = record.screen,
-              navigator = navigator,
-              circuit = circuit,
-              unavailableContent = unavailableRoute,
-            )
-          }
-
-          val currentRouteContent by rememberUpdatedState(currentContent)
-          val currentRecord by rememberUpdatedState(record)
-          remember { movableContentOf { currentRouteContent(currentRecord) } }
-        }
-      add(record to provider)
-    }
-  }
+  val activeContentProviders =
+    backstack.buildCircuitContentProviders(
+      navigator = navigator,
+      circuit = circuit,
+      unavailableRoute = unavailableRoute,
+    )
 
   if (backstack.size > 0) {
     @Suppress("SpreadOperator")
@@ -67,9 +54,58 @@ public fun NavigableCircuitContent(
       (record, provider) ->
       val values = providedValues[record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider() }
+      CompositionLocalProvider(*providedLocals) { provider(record) }
     }
   }
+}
+
+@Immutable
+internal data class RecordContentProvider(
+  val backStackRecord: Record,
+  val content: @Composable (Record) -> Unit,
+)
+
+@Composable
+private fun BackStack<out Record>.buildCircuitContentProviders(
+  navigator: Navigator,
+  circuit: Circuit,
+  unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
+): List<RecordContentProvider> {
+  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider>() }
+
+  val lastNavigator by rememberUpdatedState(navigator)
+  val lastCircuit by rememberUpdatedState(circuit)
+  val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
+
+  return iterator()
+    .asSequence()
+    .map { record ->
+      // Query the previous content providers map, so that we use the same
+      // RecordContentProvider instances across calls.
+      previousContentProviders.getOrPut(record.key) {
+        RecordContentProvider(
+          backStackRecord = record,
+          content =
+            movableContentOf { record ->
+              CircuitContent(
+                screen = record.screen,
+                modifier = Modifier,
+                navigator = lastNavigator,
+                circuit = lastCircuit,
+                unavailableContent = lastUnavailableRoute,
+              )
+            },
+        )
+      }
+    }
+    .toList()
+    .also { list ->
+      // Update the previousContentProviders map so we can reference it on the next call
+      previousContentProviders.clear()
+      for (provider in list) {
+        previousContentProviders[provider.backStackRecord.key] = provider
+      }
+    }
 }
 
 /** Default values and common alternatives used by navigable composables. */

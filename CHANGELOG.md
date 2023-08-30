@@ -34,6 +34,8 @@ _2023-08-30_
 - Update Kotlin to `1.9.10`.
 - Update KSP to `1.9.10-1.0.13`.
 
+Thanks to [@chrisbanes](https://github.com/chrisbanes) and [@ashdavies](https://github.com/ashdavies) for contributing to this release!
+
 0.13.0-beta01
 -------------
 

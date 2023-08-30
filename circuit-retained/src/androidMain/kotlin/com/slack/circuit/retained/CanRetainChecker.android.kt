@@ -11,10 +11,10 @@ import androidx.compose.ui.platform.LocalContext
 
 /** On Android, we retain only if the activity is changing configurations. */
 @Composable
-internal actual fun rememberCanRetainChecker(): () -> Boolean {
+public actual fun rememberCanRetainChecker(): CanRetainChecker {
   val context = LocalContext.current
   val activity = remember(context) { context.findActivity() }
-  return remember { { activity?.isChangingConfigurations == true } }
+  return remember { CanRetainChecker { activity?.isChangingConfigurations == true } }
 }
 
 private fun Context.findActivity(): Activity? {

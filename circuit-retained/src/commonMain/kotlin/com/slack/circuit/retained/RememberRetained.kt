@@ -99,7 +99,7 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
   // the different order. so we use rememberUpdatedState.
   val valueState = rememberUpdatedState(value)
 
-  val canRetain = rememberCanRetainChecker()
+  val canRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
   remember(registry, finalKey) {
     val entry = registry.registerValue(finalKey) { valueState.value }
     object : RememberObserver {
@@ -112,7 +112,7 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
       }
 
       fun unregisterIfNotRetainable() {
-        if (!canRetain()) {
+        if (!canRetainChecker.canRetain()) {
           entry.unregister()
         }
       }

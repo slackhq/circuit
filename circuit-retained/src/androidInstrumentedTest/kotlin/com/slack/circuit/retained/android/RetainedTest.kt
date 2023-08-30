@@ -239,7 +239,8 @@ class RetainedTest {
     scenario.onActivity { activity ->
       activity.setContent {
         CompositionLocalProvider(
-          LocalRetainedStateRegistry provides continuityRetainedStateRegistry(vmFactory),
+          LocalRetainedStateRegistry provides
+            continuityRetainedStateRegistry(Continuity.KEY, vmFactory)
         ) {
           content()
         }

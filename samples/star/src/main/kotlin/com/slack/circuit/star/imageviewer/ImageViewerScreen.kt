@@ -43,6 +43,7 @@ import com.slack.circuit.star.ui.StarTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
@@ -173,7 +174,7 @@ object ImageViewerAwareNavDecoration : NavDecoration {
   @Suppress("UnstableCollections")
   @Composable
   override fun <T> DecoratedContent(
-    args: List<T>,
+    args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit

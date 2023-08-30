@@ -27,6 +27,9 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 public fun NavigableCircuitContent(
@@ -34,7 +37,7 @@ public fun NavigableCircuitContent(
   backstack: BackStack<out Record>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: Map<out Record, ProvidedValues> = providedValuesForBackStack(backstack),
+  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backstack),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
@@ -68,7 +71,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
   navigator: Navigator,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
-): List<RecordContentProvider> {
+): ImmutableList<RecordContentProvider> {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider>() }
 
   val lastNavigator by rememberUpdatedState(navigator)
@@ -96,7 +99,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
         )
       }
     }
-    .toList()
+    .toImmutableList()
     .also { list ->
       // Update the previousContentProviders map so we can reference it on the next call
       previousContentProviders.clear()
@@ -117,7 +120,7 @@ public object NavigatorDefaults {
   public object DefaultDecoration : NavDecoration {
     @Composable
     override fun <T> DecoratedContent(
-      args: List<T>,
+      args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
       content: @Composable (T) -> Unit
@@ -160,7 +163,7 @@ public object NavigatorDefaults {
   public object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T> DecoratedContent(
-      args: List<T>,
+      args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
       content: @Composable (T) -> Unit

@@ -60,17 +60,19 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
 /**
  * Provides a [RetainedStateRegistry].
  *
+ * @param key the key to use when creating the [Continuity] instance.
  * @param factory an optional [ViewModelProvider.Factory] to use when creating the [Continuity]
  *   instance.
+ * @param canRetainChecker an optional [CanRetainChecker] to use when determining whether to retain.
  */
 @Composable
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
   factory: ViewModelProvider.Factory = Continuity.Factory,
+  canRetainChecker: CanRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
 ): RetainedStateRegistry {
   val vm = viewModel<Continuity>(key = key, factory = factory)
-  val canRetain = rememberCanRetainChecker()
-  remember(canRetain) {
+  remember(canRetainChecker) {
     object : RememberObserver {
       override fun onAbandoned() = unregisterIfNotRetainable()
 
@@ -81,7 +83,7 @@ public fun continuityRetainedStateRegistry(
       }
 
       fun unregisterIfNotRetainable() {
-        if (canRetain()) {
+        if (canRetainChecker.canRetain()) {
           vm.performSave()
         }
       }

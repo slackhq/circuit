@@ -51,20 +51,40 @@ public fun NavigableCircuitContent(
 
   if (backstack.size > 0) {
     @Suppress("SpreadOperator")
-    decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) {
-      (record, provider) ->
-      val values = providedValues[record]?.provideValues()
+    decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) { provider ->
+      val values = providedValues[provider.record]?.provideValues()
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider(record) }
+      CompositionLocalProvider(*providedLocals) { provider.content(provider.record) }
     }
   }
 }
 
+/** A simple holder class for a [record] and its associated [content]. */
 @Immutable
-internal data class RecordContentProvider(
-  val backStackRecord: Record,
-  val content: @Composable (Record) -> Unit,
-)
+public class RecordContentProvider(
+  public val record: Record,
+  internal val content: @Composable (Record) -> Unit,
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || this::class != other::class) return false
+
+    other as RecordContentProvider
+
+    if (record != other.record) return false
+    if (content != other.content) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = record.hashCode()
+    result = 31 * result + content.hashCode()
+    return result
+  }
+
+  override fun toString(): String = "RecordContentProvider(record=$record)"
+}
 
 @Composable
 private fun BackStack<out Record>.buildCircuitContentProviders(
@@ -85,7 +105,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
       // RecordContentProvider instances across calls.
       previousContentProviders.getOrPut(record.key) {
         RecordContentProvider(
-          backStackRecord = record,
+          record = record,
           content =
             movableContentOf { record ->
               CircuitContent(
@@ -104,7 +124,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
       // Update the previousContentProviders map so we can reference it on the next call
       previousContentProviders.clear()
       for (provider in list) {
-        previousContentProviders[provider.backStackRecord.key] = provider
+        previousContentProviders[provider.record.key] = provider
       }
     }
 }

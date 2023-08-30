@@ -28,9 +28,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.RecordContentProvider
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -181,11 +181,7 @@ object ImageViewerAwareNavDecoration : NavDecoration {
   ) {
     val firstArg = args.firstOrNull()
     val decoration =
-      if (
-        firstArg is Pair<*, *> &&
-          firstArg.first is SaveableBackStack.Record &&
-          (firstArg.first as SaveableBackStack.Record).screen is ImageViewerScreen
-      ) {
+      if (firstArg is RecordContentProvider && firstArg.record.screen is ImageViewerScreen) {
         NavigatorDefaults.EmptyDecoration
       } else {
         NavigatorDefaults.DefaultDecoration

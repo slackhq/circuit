@@ -1,6 +1,39 @@
 Changelog
 =========
 
+0.13.0
+------
+
+_2023-08-30_
+
+- **New**: Circuit now supports JS targets!
+- **New**: Introduce CircuitX artifacts. CircuitX is a suite of extension artifacts for Circuit. These artifacts are intended to be
+  batteries-included implementations of common use cases, such as out-of-the-box `Overlay` types or
+  Android navigation interop. See the [docs](https://slackhq.github.io/circuit/circuitx/) for more details.
+- **Enhancement**: Promote `Screen` to its own artifact. This is now under the `com.slack.circuit.runtime.Screen` name.
+- **Enhancement**: Use `Screen` directly in the `BackStack` in place of `route`.
+- **Enhancement**: No longer require `SaveableBackStack` in `NavigableCircuitContent`, now any `BackStack` impl is supported.
+- **Enhancement**: Make `CanRetainChecker` more customizable in `circuit-retained`.
+- **Enhancement**: Pass the whole list of active records to `DecoratedContent`, allowing more complex handling of back gestures (predictive back in android, drag gestures in iOS, etc).
+- **Enhancement**: Refactor out a `buildCircuitContentProviders()` in `NavigableCircuitContent`, which enables `movableContentOf` to work since it's reusing the same instance for records across changes.
+- **Fix**: Fix duplicated `Modifier` for `DecoratedContent`.
+- **Fix**: Fix new presenter instances of the same type not being recomposed. See [#799](https://github.com/slackhq/circuit/pull/799) for more details.
+- **Fix**: Export iOS targets for `circuit-test` artifact.
+- **Fix**: Export iOS targets for `circuit-test` artifact.
+- Demonstrate back handling for Compose Multiplatform in Counter sample.
+- Add `kotlinx.collections.immutable` to core APIs.
+- Update to Compile SDK 34.
+- Update to Compose Multiplatform `1.5.0`.
+- Update androidx.compose.compiler to `1.5.3`.
+- Update androidx.compose.ui to `1.5.0`.
+- Update androidx.compose.material to `1.5.0`.
+- Update androidx.compose.runtime to `1.5.0`.
+- Update androidx.compose.foundation to `1.5.0`.
+- Update uuid to `0.8.1`.
+- Update Molecule to `1.2.0`.
+- Update Kotlin to `1.9.10`.
+- Update KSP to `1.9.10-1.0.13`.
+
 0.13.0-beta01
 -------------
 

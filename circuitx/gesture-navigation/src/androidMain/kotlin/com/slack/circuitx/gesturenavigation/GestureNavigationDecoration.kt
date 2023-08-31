@@ -39,16 +39,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.NavigatorDefaults
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 
 public actual fun GestureNavigationDecoration(
   onBackInvoked: () -> Unit,
+  fallback: NavDecoration
 ): NavDecoration =
   when {
     Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavigationDecoration(onBackInvoked)
-    else -> NavigatorDefaults.DefaultDecoration
+    else -> fallback
   }
 
 @RequiresApi(34)
@@ -70,7 +70,7 @@ private class AndroidPredictiveNavigationDecoration(
       var recordPoppedFromGesture by remember { mutableStateOf<T?>(null) }
 
       if (previous != null) {
-        PreviousContent(isVisible = { showPrevious }) { content(previous) }
+        OptionalLayout(shouldLayout = { showPrevious }) { content(previous) }
       }
 
       // Remember the previous stack depth so we know if the navigation is going "back".

@@ -73,6 +73,7 @@ public class GestureNavigationProperties(
 @OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecoration(
   onBackInvoked: () -> Unit,
+  fallback: NavDecoration,
 ): NavDecoration = IosGestureNavigationDecoration(onBackInvoked)
 
 /**
@@ -127,8 +128,8 @@ private class IosGestureNavigationDecoration(
             derivedStateOf { dismissState.offset.value != 0f || transition.isRunning }
           }
 
-        PreviousContent(
-          isVisible = { showPrevious },
+        OptionalLayout(
+          shouldLayout = { showPrevious },
           modifier =
             Modifier.graphicsLayer {
               translationX =

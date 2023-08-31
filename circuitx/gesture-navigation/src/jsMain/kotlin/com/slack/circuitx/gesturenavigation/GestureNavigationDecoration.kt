@@ -3,8 +3,8 @@
 package com.slack.circuitx.gesturenavigation
 
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.NavigatorDefaults
 
 public actual fun GestureNavigationDecoration(
   onBackInvoked: () -> Unit,
-): NavDecoration = NavigatorDefaults.DefaultDecoration
+  fallback: NavDecoration,
+): NavDecoration = fallback

@@ -202,6 +202,7 @@ include(
   ":circuit-runtime-ui",
   ":circuit-test",
   ":circuitx:android",
+  ":circuitx:gesture-navigation",
   ":circuitx:overlays",
   ":samples:counter",
   ":samples:counter:apps",

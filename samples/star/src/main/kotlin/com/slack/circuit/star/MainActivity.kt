@@ -27,6 +27,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
+import com.slack.circuit.star.imageviewer.ImageViewerAwareNavDecoration
 import com.slack.circuit.star.navigation.CustomTabsIntentScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
@@ -34,6 +35,7 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
@@ -69,7 +71,14 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
             LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass
           ) {
             CircuitCompositionLocals(circuit) {
-              ContentWithOverlays { NavigableCircuitContent(navigator, backstack) }
+              ContentWithOverlays {
+                NavigableCircuitContent(
+                  navigator = navigator,
+                  backstack = backstack,
+                  decoration =
+                    ImageViewerAwareNavDecoration(GestureNavigationDecoration(navigator::pop))
+                )
+              }
             }
           }
         }

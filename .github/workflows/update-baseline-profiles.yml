@@ -39,6 +39,14 @@ jobs:
       - name: Generate baseline profiles
         run: ./scripts/update-baseline-profiles.sh
 
+      - name: Upload build reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/**
+            **/generated/baselineProfiles/**
+
       - name: Create Pull Request
         if: github.event_name == 'workflow_dispatch'
         id: createpr

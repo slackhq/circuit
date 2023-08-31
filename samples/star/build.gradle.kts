@@ -71,6 +71,7 @@ dependencies {
   implementation(projects.circuitOverlay)
   implementation(projects.circuitRetained)
   implementation(projects.circuitx.android)
+  implementation(projects.circuitx.gestureNavigation)
   implementation(projects.circuitx.overlays)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)

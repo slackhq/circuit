@@ -10,7 +10,7 @@ _2023-08-30_
 - **New**: Introduce CircuitX artifacts. CircuitX is a suite of extension artifacts for Circuit. These artifacts are intended to be
   batteries-included implementations of common use cases, such as out-of-the-box `Overlay` types or
   Android navigation interop. See the [docs](https://slackhq.github.io/circuit/circuitx/) for more details.
-- **Enhancement**: Promote `Screen` to its own artifact. This is now under the `com.slack.circuit.runtime.Screen` name.
+- **Enhancement**: Promote `Screen` to its own artifact. This is now under the `com.slack.circuit.runtime.screen.Screen` name.
 - **Enhancement**: Use `Screen` directly in the `BackStack` in place of `route`.
 - **Enhancement**: No longer require `SaveableBackStack` in `NavigableCircuitContent`, now any `BackStack` impl is supported.
 - **Enhancement**: Make `CanRetainChecker` more customizable in `circuit-retained`.

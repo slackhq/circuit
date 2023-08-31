@@ -44,16 +44,16 @@ import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 
 public actual fun GestureNavigationDecoration(
-  onBack: () -> Unit,
+  onBackInvoked: () -> Unit,
 ): NavDecoration =
   when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavigationDecoration(onBack)
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavigationDecoration(onBackInvoked)
     else -> NavigatorDefaults.DefaultDecoration
   }
 
 @RequiresApi(34)
 private class AndroidPredictiveNavigationDecoration(
-  private val onBack: () -> Unit,
+  private val onBackInvoked: () -> Unit,
 ) : NavDecoration {
   @Composable
   override fun <T> DecoratedContent(
@@ -128,7 +128,7 @@ private class AndroidPredictiveNavigationDecoration(
                 // use a different transition
                 recordPoppedFromGesture = record
               }
-              onBack()
+              onBackInvoked()
             },
           )
         }
@@ -218,12 +218,7 @@ private fun BackHandler(
         override fun handleOnBackPressed() = lastOnBackInvoked()
       }
 
-    onBackDispatcher.addCallback(
-      // Circuit adds its own BackHandler() at the root, so we need to add a callback
-      // with a higher priority.
-      // OnBackInvokedDispatcher.PRIORITY_DEFAULT + 10,
-      callback,
-    )
+    onBackDispatcher.addCallback(callback)
 
     onDispose { callback.remove() }
   }

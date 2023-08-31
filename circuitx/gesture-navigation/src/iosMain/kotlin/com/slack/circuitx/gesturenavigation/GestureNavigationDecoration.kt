@@ -72,19 +72,23 @@ public class GestureNavigationProperties(
 
 @OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecoration(
-  onBack: () -> Unit,
-): NavDecoration = gestureNavigationDecoration(onBack, GestureNavigationProperties())
+  onBackInvoked: () -> Unit,
+): NavDecoration = IosGestureNavigationDecoration(onBackInvoked)
 
+/**
+ * iOS specific version of [GestureNavigationDecoration] which allows passing of customized
+ * [GestureNavigationProperties].
+ */
 @ExperimentalMaterialApi
-public fun gestureNavigationDecoration(
+public fun GestureNavigationDecoration(
   onBack: () -> Unit,
   properties: GestureNavigationProperties,
 ): NavDecoration = IosGestureNavigationDecoration(onBack, properties)
 
 @ExperimentalMaterialApi
 private class IosGestureNavigationDecoration(
-  val onBack: () -> Unit,
-  val properties: GestureNavigationProperties,
+  val onBackInvoked: () -> Unit,
+  val properties: GestureNavigationProperties = GestureNavigationProperties(),
 ) : NavDecoration {
 
   @Composable
@@ -109,7 +113,7 @@ private class IosGestureNavigationDecoration(
         snapshotFlow { dismissState.isDismissed(DismissDirection.StartToEnd) }
           .filter { it }
           .collect {
-            onBack()
+            onBackInvoked()
             offsetWhenPopped = dismissState.offset.value
           }
       }

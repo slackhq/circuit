@@ -19,7 +19,6 @@ _2023-08-30_
 - **Fix**: Fix duplicated `Modifier` for `DecoratedContent`.
 - **Fix**: Fix new presenter instances of the same type not being recomposed. See [#799](https://github.com/slackhq/circuit/pull/799) for more details.
 - **Fix**: Export iOS targets for `circuit-test` artifact.
-- **Fix**: Export iOS targets for `circuit-test` artifact.
 - Demonstrate back handling for Compose Multiplatform in Counter sample.
 - Add `kotlinx.collections.immutable` to core APIs.
 - Update to Compile SDK 34.

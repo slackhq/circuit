@@ -23,7 +23,6 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
@@ -38,7 +37,6 @@ import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
@@ -51,19 +49,23 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
 
-    var backStack: ImmutableList<Screen> = persistentListOf(HomeScreen)
-    if (intent.data != null) {
-      val httpUrl = intent.data.toString().toHttpUrl()
-      val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
-      val petDetailScreen = PetDetailScreen(animalId, null)
-      backStack = persistentListOf(HomeScreen, petDetailScreen)
-    }
+    val initialBackstack =
+      if (intent.data == null) {
+        persistentListOf(HomeScreen)
+      } else {
+        val httpUrl = intent.data.toString().toHttpUrl()
+        val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
+        val petDetailScreen = PetDetailScreen(animalId, null)
+        persistentListOf(HomeScreen, petDetailScreen)
+      }
 
     setContent {
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
-          val backstack = rememberSaveableBackStack { backStack.forEach { screen -> push(screen) } }
+          val backstack = rememberSaveableBackStack {
+            initialBackstack.forEach { screen -> push(screen) }
+          }
           val circuitNavigator = rememberCircuitNavigator(backstack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
           val windowSizeClass = calculateWindowSizeClass(this)

@@ -12,7 +12,7 @@ This is a new `NavDecoration` that allows for gesture-based navigation, such as 
 
 ```kotlin
 NavigableCircuitContent(
-  navigator = navigator, 
+  navigator = navigator,
   backstack = backstack,
   decoration = GestureNavigationDecoration(
     // Pop the back stack once the user has gone 'back'

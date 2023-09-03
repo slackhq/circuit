@@ -72,10 +72,10 @@ To enable gesture navigation support, you can use the use the `GestureNavigation
 NavigableCircuitContent(
   navigator = navigator, 
   backstack = backstack,
-  decoration = GestureNavigationDecoration {
+  decoration = GestureNavigationDecoration(
     // Pop the back stack once the user has gone 'back'
-    navigator.pop()
-  }
+    navigator::pop
+  )
 )
 ```
 

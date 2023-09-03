@@ -27,5 +27,7 @@ module:circuit-test
 com.slack.circuit.test
 module:android
 com.slack.circuitx.android
+module:gesture-navigation
+com.slack.circuitx.gesturenavigation
 module:overlays
 com.slack.circuitx.overlays

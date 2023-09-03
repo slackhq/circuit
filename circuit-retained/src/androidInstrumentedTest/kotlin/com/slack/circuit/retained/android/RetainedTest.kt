@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 
-package com.circuit.retained.android
+package com.slack.circuit.retained.android
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

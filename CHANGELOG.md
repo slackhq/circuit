@@ -1,6 +1,30 @@
 Changelog
 =========
 
+0.14.1
+------
+
+_2023-09-03_
+
+- **New**: Add `GestureNavigationDecoration` to `CircuitX` courtesy of [@chrisbanes](https://github.com/chrisbanes).
+
+This is a new `NavDecoration` that allows for gesture-based navigation, such as predictive back in Android 14 or drag gestures in iOS. See the [docs](https://slackhq.github.io/circuit/circuitx/#gesture-navigation) for more details.
+
+```kotlin
+NavigableCircuitContent(
+  navigator = navigator, 
+  backstack = backstack,
+  decoration = GestureNavigationDecoration {
+    // Pop the back stack once the user has gone 'back'
+    navigator.pop()
+  }
+)
+```
+
+- Fix embedded baseline profiles in published artifacts. Unfortunately GMDs used to generate these are quite finicky to run so these are sometimes tricky to regen each release.
+
+Special thanks to [@chrisbanes](https://github.com/chrisbanes) and [@alexvanyo](https://github.com/alexvanyo) for contributing to this release!
+
 0.14.0
 ------
 

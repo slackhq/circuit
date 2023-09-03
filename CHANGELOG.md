@@ -14,10 +14,10 @@ This is a new `NavDecoration` that allows for gesture-based navigation, such as 
 NavigableCircuitContent(
   navigator = navigator, 
   backstack = backstack,
-  decoration = GestureNavigationDecoration {
+  decoration = GestureNavigationDecoration(
     // Pop the back stack once the user has gone 'back'
-    navigator.pop()
-  }
+    navigator::pop
+  )
 )
 ```
 

@@ -72,9 +72,9 @@ public class GestureNavigationProperties(
 
 @OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecoration(
-  onBackInvoked: () -> Unit,
   fallback: NavDecoration,
-): NavDecoration = IosGestureNavigationDecoration(onBackInvoked)
+  onBackInvoked: () -> Unit
+): NavDecoration = IosGestureNavigationDecoration(onBackInvoked = onBackInvoked)
 
 /**
  * iOS specific version of [GestureNavigationDecoration] which allows passing of customized
@@ -82,8 +82,8 @@ public actual fun GestureNavigationDecoration(
  */
 @ExperimentalMaterialApi
 public fun GestureNavigationDecoration(
-  onBack: () -> Unit,
   properties: GestureNavigationProperties,
+  onBack: () -> Unit,
 ): NavDecoration = IosGestureNavigationDecoration(onBack, properties)
 
 @ExperimentalMaterialApi

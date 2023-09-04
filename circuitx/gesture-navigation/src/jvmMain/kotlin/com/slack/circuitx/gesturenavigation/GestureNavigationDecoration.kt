@@ -5,6 +5,6 @@ package com.slack.circuitx.gesturenavigation
 import com.slack.circuit.backstack.NavDecoration
 
 public actual fun GestureNavigationDecoration(
-  onBackInvoked: () -> Unit,
   fallback: NavDecoration,
+  onBackInvoked: () -> Unit
 ): NavDecoration = fallback

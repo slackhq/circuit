@@ -78,7 +78,9 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                   navigator = navigator,
                   backstack = backstack,
                   decoration =
-                    ImageViewerAwareNavDecoration(GestureNavigationDecoration(navigator::pop))
+                    ImageViewerAwareNavDecoration(
+                      GestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    )
                 )
               }
             }

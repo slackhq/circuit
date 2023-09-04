@@ -20,7 +20,10 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
     return delegate.consumeValue(key)
   }
 
-  override fun registerValue(key: String, valueProvider: () -> Any?): RetainedStateRegistry.Entry {
+  override fun registerValue(
+    key: String,
+    valueProvider: RetainedValueProvider
+  ): RetainedStateRegistry.Entry {
     return delegate.registerValue(key, valueProvider)
   }
 
@@ -40,7 +43,8 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
   @VisibleForTesting fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
 
   @VisibleForTesting
-  fun peekProviders(): Map<String, MutableList<() -> Any?>> = delegate.valueProviders.toMap()
+  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
+    delegate.valueProviders.toMap()
 
   object Factory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

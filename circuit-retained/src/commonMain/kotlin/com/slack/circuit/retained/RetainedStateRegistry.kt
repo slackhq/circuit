@@ -34,7 +34,7 @@ public interface RetainedStateRegistry {
    * @param valueProvider The value to provide
    * @return the registry entry which you can use to unregister the provider
    */
-  public fun registerValue(key: String, valueProvider: () -> Any?): Entry
+  public fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry
 
   /**
    * Executes all the registered value providers and combines these values into a map. We have a
@@ -76,7 +76,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   MutableRetainedStateRegistry {
 
   override val retained: MutableMap<String, List<Any?>> = retained?.toMutableMap() ?: mutableMapOf()
-  internal val valueProviders = mutableMapOf<String, MutableList<() -> Any?>>()
+  internal val valueProviders = mutableMapOf<String, MutableList<RetainedValueProvider>>()
 
   override fun consumeValue(key: String): Any? {
     val list = retained.remove(key)
@@ -90,7 +90,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     }
   }
 
-  override fun registerValue(key: String, valueProvider: () -> Any?): Entry {
+  override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
     valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
     return object : Entry {
@@ -138,7 +138,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
 internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
   override fun consumeValue(key: String): Any? = null
 
-  override fun registerValue(key: String, valueProvider: () -> Any?): Entry = NoOpEntry
+  override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry = NoOpEntry
 
   override fun performSave() {}
 

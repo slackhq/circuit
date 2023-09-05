@@ -13,12 +13,12 @@ import com.slack.circuit.foundation.NavigatorDefaults
  * * When running on iOS, this decoration simulates iOS's 'interative pop gesture'.
  * * On other platforms, it defers to `NavigatorDefaults.DefaultDecoration`.
  *
- * @param onBackInvoked A lambda which will be called when the user has invoked a 'back' gesture.
- *   Typically this should call `Navigator.pop()`.
  * @param fallback The [NavDecoration] which should be used when running on platforms which
  *   [GestureNavigationDecoration] does not support.
+ * @param onBackInvoked A lambda which will be called when the user has invoked a 'back' gesture.
+ *   Typically this should call `Navigator.pop()`.
  */
 public expect fun GestureNavigationDecoration(
-  onBackInvoked: () -> Unit,
   fallback: NavDecoration = NavigatorDefaults.DefaultDecoration,
+  onBackInvoked: () -> Unit
 ): NavDecoration

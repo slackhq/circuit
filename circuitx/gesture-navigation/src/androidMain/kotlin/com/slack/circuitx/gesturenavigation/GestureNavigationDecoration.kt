@@ -43,8 +43,8 @@ import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 
 public actual fun GestureNavigationDecoration(
-  onBackInvoked: () -> Unit,
-  fallback: NavDecoration
+  fallback: NavDecoration,
+  onBackInvoked: () -> Unit
 ): NavDecoration =
   when {
     Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavigationDecoration(onBackInvoked)

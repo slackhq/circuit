@@ -94,6 +94,7 @@ injection to types using Dagger `AssistedInject`. For these cases, the `Assisted
 -annotated interface should be annotated with `CircuitInject` instead of the enclosing class.
 
 Types available for assisted injection are:
+
 - `Screen` – the screen key used to create the `Presenter` or `Ui`.
 - `Navigator` – (presenters only)
 - `Circuit`

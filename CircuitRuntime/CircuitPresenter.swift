@@ -6,8 +6,10 @@
 //
 
 import CircuitRuntimeObjC
-import KMMViewModelCore
 
-public protocol CircuitPresenter: KMMViewModel {
+public protocol CircuitPresenter: AnyObject {
+    var state: Any { get }
     var navigator: CircuitSwiftUINavigator? { get set }
+    func setStateWillChangeListener(listener: @escaping () -> Void)
+    func cancel()
 }

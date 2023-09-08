@@ -7,17 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D0026E32AA8F5BE0072496E /* ObservablePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0026E22AA8F5BE0072496E /* ObservablePresenter.swift */; };
 		1DE43D022A2265EE00EB0E36 /* CircuitRuntimeObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DE43D012A2265EE00EB0E36 /* CircuitRuntimeObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1DE43D132A22660400EB0E36 /* CircuitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DE43CF22A2265C600EB0E36 /* CircuitRuntime.framework */; };
 		1DE43D182A22660B00EB0E36 /* CircuitRuntimeObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DE43CFF2A2265EE00EB0E36 /* CircuitRuntimeObjC.framework */; };
 		1DE43D1E2A22669D00EB0E36 /* CircuitRuntimeObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43D1D2A22669D00EB0E36 /* CircuitRuntimeObjC.m */; };
 		1DE43D212A22670F00EB0E36 /* CircuitSwiftUINavigator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DE43D1F2A2266AF00EB0E36 /* CircuitSwiftUINavigator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1DE43D232A2267EB00EB0E36 /* CircuitPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43D222A2267EB00EB0E36 /* CircuitPresenter.swift */; };
-		1DE43D262A22682200EB0E36 /* KMMViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1DE43D252A22682200EB0E36 /* KMMViewModelCore */; };
 		1DE43D282A226BF200EB0E36 /* CircuitNavigationStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43D272A226BF200EB0E36 /* CircuitNavigationStack.swift */; };
 		1DE43D2A2A226C3A00EB0E36 /* CircuitNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43D292A226C3A00EB0E36 /* CircuitNavigator.swift */; };
 		1DE43D2C2A226E2E00EB0E36 /* CircuitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE43D2B2A226E2E00EB0E36 /* CircuitView.swift */; };
-		1DE43D2E2A226E5100EB0E36 /* KMMViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1DE43D2D2A226E5100EB0E36 /* KMMViewModelSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1D0026E22AA8F5BE0072496E /* ObservablePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservablePresenter.swift; sourceTree = "<group>"; };
 		1DE43CF22A2265C600EB0E36 /* CircuitRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CircuitRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DE43CFF2A2265EE00EB0E36 /* CircuitRuntimeObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CircuitRuntimeObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DE43D012A2265EE00EB0E36 /* CircuitRuntimeObjC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CircuitRuntimeObjC.h; sourceTree = "<group>"; };
@@ -55,7 +55,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DE43D262A22682200EB0E36 /* KMMViewModelCore in Frameworks */,
 				1DE43D182A22660B00EB0E36 /* CircuitRuntimeObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -72,7 +71,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1DE43D132A22660400EB0E36 /* CircuitRuntime.framework in Frameworks */,
-				1DE43D2E2A226E5100EB0E36 /* KMMViewModelSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,6 +122,7 @@
 			children = (
 				1DE43D272A226BF200EB0E36 /* CircuitNavigationStack.swift */,
 				1DE43D2B2A226E2E00EB0E36 /* CircuitView.swift */,
+				1D0026E22AA8F5BE0072496E /* ObservablePresenter.swift */,
 			);
 			path = CircuitSwiftUI;
 			sourceTree = "<group>";
@@ -180,7 +179,6 @@
 			);
 			name = CircuitRuntime;
 			packageProductDependencies = (
-				1DE43D252A22682200EB0E36 /* KMMViewModelCore */,
 			);
 			productName = CircuitRuntime;
 			productReference = 1DE43CF22A2265C600EB0E36 /* CircuitRuntime.framework */;
@@ -220,7 +218,6 @@
 			);
 			name = CircuitSwiftUI;
 			packageProductDependencies = (
-				1DE43D2D2A226E5100EB0E36 /* KMMViewModelSwiftUI */,
 			);
 			productName = CircuitSwiftUI;
 			productReference = 1DE43D0B2A2265FD00EB0E36 /* CircuitSwiftUI.framework */;
@@ -258,7 +255,6 @@
 			);
 			mainGroup = 1DE43CE62A22655F00EB0E36;
 			packageReferences = (
-				1DE43D242A22682200EB0E36 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */,
 			);
 			productRefGroup = 1DE43CF32A2265C600EB0E36 /* Products */;
 			projectDirPath = "";
@@ -318,6 +314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1DE43D2C2A226E2E00EB0E36 /* CircuitView.swift in Sources */,
+				1D0026E32AA8F5BE0072496E /* ObservablePresenter.swift in Sources */,
 				1DE43D282A226BF200EB0E36 /* CircuitNavigationStack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -816,30 +813,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		1DE43D242A22682200EB0E36 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rickclephas/KMM-ViewModel/";
-			requirement = {
-				kind = exactVersion;
-				version = "1.0.0-ALPHA-9";
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1DE43D252A22682200EB0E36 /* KMMViewModelCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1DE43D242A22682200EB0E36 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */;
-			productName = KMMViewModelCore;
-		};
-		1DE43D2D2A226E5100EB0E36 /* KMMViewModelSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1DE43D242A22682200EB0E36 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */;
-			productName = KMMViewModelSwiftUI;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1DE43CE72A22655F00EB0E36 /* Project object */;
 }

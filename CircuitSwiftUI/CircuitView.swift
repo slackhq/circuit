@@ -6,28 +6,27 @@
 //
 
 import CircuitRuntime
-import KMMViewModelSwiftUI
 import SwiftUI
 
-public struct CircuitView<Presenter: CircuitPresenter, State: AnyObject, Content: View>: View {
+public struct CircuitView<Presenter: CircuitPresenter, State: Any, Content: View>: View {
     
     @EnvironmentObject private var navigator: CircuitNavigator
-    @StateViewModel private var presenter: Presenter
+    @StateObject private var observableObject: ObservablePresenter<Presenter>
     private var stateKeyPath: KeyPath<Presenter, State>
     private var content: (State) -> Content
     
     public init(_ presenter: @autoclosure @escaping () -> Presenter,
-         _ stateKeyPath: KeyPath<Presenter, State>,
-         @ViewBuilder _ content: @escaping (State) -> Content
+                @ViewBuilder _ content: @escaping (State) -> Content,
+                _ stateKeyPath: KeyPath<Presenter, State> = \Presenter.state
     ) {
-        self._presenter = StateViewModel(wrappedValue: presenter())
+        self._observableObject = StateObject(wrappedValue: observablePresenter(for: presenter()))
         self.stateKeyPath = stateKeyPath
         self.content = content
     }
     
     public var body: some View {
-        content(presenter[keyPath: stateKeyPath]).onAppear {
-            presenter.navigator = navigator
+        content(observableObject.presenter[keyPath: stateKeyPath]).onAppear {
+            observableObject.presenter.navigator = navigator
         }
     }
 }

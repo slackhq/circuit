@@ -16,7 +16,6 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.circuitRuntimePresenter)
-        api(libs.kmmviewmodel.core)
         implementation(libs.molecule.runtime)
       }
     }

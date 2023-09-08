@@ -5,7 +5,7 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.swiftui.objc.CircuitSwiftUINavigatorProtocol
 import platform.darwin.NSObject
 
-public class SwiftUINavigator internal constructor(): Navigator {
+internal class SwiftUINavigator internal constructor(): Navigator {
 
     internal var navigator: CircuitSwiftUINavigatorProtocol? = null
 

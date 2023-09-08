@@ -5,9 +5,9 @@ import com.slack.circuit.runtime.Screen
 import com.slack.circuit.swiftui.objc.CircuitSwiftUINavigatorProtocol
 import platform.darwin.NSObject
 
-internal class SwiftUINavigator internal constructor(): Navigator {
+internal class SwiftUINavigator: Navigator {
 
-    internal var navigator: CircuitSwiftUINavigatorProtocol? = null
+    var navigator: CircuitSwiftUINavigatorProtocol? = null
 
     private fun requireNavigator(): CircuitSwiftUINavigatorProtocol =
         navigator ?: throw RuntimeException("SwiftUINavigator hasn't been initialized")

@@ -10,7 +10,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 /** Checks whether or not we can retain, usually derived from the current composable context. */
 @Stable
 public fun interface CanRetainChecker {
-  public fun canRetain(): Boolean
+  public fun canRetain(registry: RetainedStateRegistry): Boolean
+
+  public companion object {
+    public val Always: CanRetainChecker = CanRetainChecker { _ -> true }
+  }
 }
 
 public val LocalCanRetainChecker: ProvidableCompositionLocal<CanRetainChecker?> =

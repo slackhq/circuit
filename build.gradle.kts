@@ -319,7 +319,10 @@ subprojects {
   pluginManager.withPlugin("com.android.library") {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
-      defaultConfig { minSdk = 21 }
+      defaultConfig {
+        minSdk = 21
+        targetSdk = 34
+      }
     }
 
     // Single-variant libraries

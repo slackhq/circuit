@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-internal class Continuity : ViewModel(), RetainedStateRegistry {
+internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
   private val delegate = RetainedStateRegistryImpl(null)
 
   override fun consumeValue(key: String): Any? {
@@ -27,8 +27,12 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
     return delegate.registerValue(key, valueProvider)
   }
 
-  override fun performSave() {
-    delegate.performSave()
+  override fun saveAll() {
+    delegate.saveAll()
+  }
+
+  override fun saveValue(key: String) {
+    delegate.saveValue(key)
   }
 
   override fun forgetUnclaimedValues() {
@@ -48,18 +52,21 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
 
   object Factory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      @Suppress("UNCHECKED_CAST") return Continuity() as T
+      @Suppress("UNCHECKED_CAST") return ContinuityViewModel() as T
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
       return create(modelClass)
     }
   }
-
-  companion object {
-    const val KEY = "CircuitContinuity"
-  }
 }
+
+@Composable
+public actual fun continuityRetainedStateRegistry(
+  key: String,
+  canRetainChecker: CanRetainChecker
+): RetainedStateRegistry =
+  continuityRetainedStateRegistry(key, ContinuityViewModel.Factory, canRetainChecker)
 
 /**
  * Provides a [RetainedStateRegistry].
@@ -72,32 +79,35 @@ internal class Continuity : ViewModel(), RetainedStateRegistry {
 @Composable
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
-  factory: ViewModelProvider.Factory = Continuity.Factory,
+  factory: ViewModelProvider.Factory,
   canRetainChecker: CanRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
 ): RetainedStateRegistry {
-  val vm = viewModel<Continuity>(key = key, factory = factory)
-  remember(canRetainChecker) {
-    object : RememberObserver {
-      override fun onAbandoned() = unregisterIfNotRetainable()
+  val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
 
-      override fun onForgotten() = unregisterIfNotRetainable()
+  remember(vm, canRetainChecker) {
+    object : RememberObserver {
+      override fun onAbandoned() = saveIfRetainable()
+
+      override fun onForgotten() = saveIfRetainable()
 
       override fun onRemembered() {
         // Do nothing
       }
 
-      fun unregisterIfNotRetainable() {
-        if (canRetainChecker.canRetain()) {
-          vm.performSave()
+      fun saveIfRetainable() {
+        if (canRetainChecker.canRetain(vm)) {
+          vm.saveAll()
         }
       }
     }
   }
+
   LaunchedEffect(vm) {
     withFrameNanos {}
     // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
     // point can be assumed to be no longer used
     vm.forgetUnclaimedValues()
   }
+
   return vm
 }

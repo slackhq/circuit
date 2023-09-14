@@ -40,7 +40,10 @@ public interface RetainedStateRegistry {
    * Executes all the registered value providers and combines these values into a map. We have a
    * list of values for each key as it is allowed to have multiple providers for the same key.
    */
-  public fun performSave()
+  public fun saveAll()
+
+  /** Executes the value providers registered with the given [key], and saves them for retrieval. */
+  public fun saveValue(key: String)
 
   /** Releases all currently unconsumed values. Useful as a GC mechanism for the registry. */
   public fun forgetUnclaimedValues()
@@ -61,10 +64,10 @@ internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
  *
  * @param values The map of the restored values
  */
-public fun RetainedStateRegistry(values: Map<String, List<Any?>>?): RetainedStateRegistry =
-  RetainedStateRegistryImpl(
-    values?.mapValues { it.value.toMutableList() }?.toMutableMap() ?: mutableMapOf()
-  )
+public fun RetainedStateRegistry(
+  values: Map<String, List<Any?>> = emptyMap()
+): RetainedStateRegistry =
+  RetainedStateRegistryImpl(values.mapValues { it.value.toMutableList() }.toMutableMap())
 
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
 public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateRegistry> =
@@ -105,29 +108,37 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     }
   }
 
-  override fun performSave() {
-    val map = retained.toMutableMap()
-    valueProviders.forEach { (key, list) ->
-      if (list.size == 1) {
-        val value = list[0].invoke()
-        if (value != null) {
-          map[key] = arrayListOf<Any?>(value)
-        }
-      } else {
+  override fun saveAll() {
+    val map =
+      valueProviders.mapValues { (_, list) ->
         // If we have multiple providers we should store null values as well to preserve
         // the order in which providers were registered. Say there were two providers.
         // the first provider returned null(nothing to save) and the second one returned
         // "1". When we will be restoring the first provider would restore null (it is the
         // same as to have nothing to restore) and the second one restore "1".
-        map[key] =
-          List(list.size) { index ->
-            val value = list[index].invoke()
-            value
+        list
+          .map { it.invoke() }
+          .onEach { value ->
+            // Allow nested registries to also save
+            if (value is RetainedStateRegistry) {
+              value.saveAll()
+            }
           }
       }
-    }
+
     valueProviders.clear()
-    retained.putAll(map)
+
+    if (map.isNotEmpty()) {
+      retained.putAll(map)
+    }
+  }
+
+  override fun saveValue(key: String) {
+    val providers = valueProviders[key]
+    if (providers != null) {
+      retained[key] = providers.map { it.invoke() }
+      valueProviders.remove(key)
+    }
   }
 
   override fun forgetUnclaimedValues() {
@@ -140,7 +151,9 @@ internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
 
   override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry = NoOpEntry
 
-  override fun performSave() {}
+  override fun saveAll() {}
+
+  override fun saveValue(key: String) {}
 
   override fun forgetUnclaimedValues() {}
 

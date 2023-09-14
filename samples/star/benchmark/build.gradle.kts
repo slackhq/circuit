@@ -18,6 +18,7 @@ android {
     //  This is because when we update baseline profiles, we do them on emulators but they
     //  run all tests.
     testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
+    testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "LOW-BATTERY"
   }
 
   testOptions.managedDevices.devices {

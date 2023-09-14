@@ -23,6 +23,7 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
@@ -50,7 +51,16 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
     enableEdgeToEdge()
 
     val initialBackstack =
-      if (intent.data == null) {
+      if (intent.getBooleanExtra("benchmark", false)) {
+        val scenario = intent.getStringExtra("scenario") ?: error("Missing scenario")
+        when (scenario) {
+          "list" -> {
+            val useNestedContent = intent.getBooleanExtra("useNestedContent", false)
+            persistentListOf(ListBenchmarksScreen(useNestedContent))
+          }
+          else -> error("Unknown scenario: $scenario")
+        }
+      } else if (intent.data == null) {
         persistentListOf(HomeScreen)
       } else {
         val httpUrl = intent.data.toString().toHttpUrl()

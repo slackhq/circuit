@@ -24,7 +24,7 @@ import org.junit.runners.Parameterized.Parameters
  */
 @OptIn(ExperimentalMetricApi::class)
 @RunWith(Parameterized::class)
-class ComposeListInteropBenchmark(
+class NestedContentListBenchmark(
   private val useNestedContent: Boolean,
 ) {
   @get:Rule val benchmarkRule = MacrobenchmarkRule()

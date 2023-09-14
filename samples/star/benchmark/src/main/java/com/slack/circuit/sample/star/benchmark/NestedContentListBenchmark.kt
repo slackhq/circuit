@@ -34,8 +34,8 @@ class NestedContentListBenchmark(
     @Parameters(name = "useNestedContent = {0}")
     fun data() =
       listOf(
-        arrayOf(false),
-        arrayOf(true),
+        booleanArrayOf(false),
+        booleanArrayOf(true),
       )
   }
 

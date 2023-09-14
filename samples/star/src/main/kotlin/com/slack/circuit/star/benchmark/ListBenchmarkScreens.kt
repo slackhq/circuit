@@ -49,6 +49,8 @@ constructor(@Assisted private val screen: ListBenchmarksScreen) :
   @Composable override fun present() = ListBenchmarksScreen.State(screen.useNestedContent)
 }
 
+private const val ITEM_COUNT = 100
+
 @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
 @Composable
 fun ListBenchmarks(
@@ -58,13 +60,15 @@ fun ListBenchmarks(
   var contentComposed by rememberRetained { mutableStateOf(false) }
   if (state.useNestedContent) {
     LazyColumn(modifier.systemBarsPadding()) {
-      items(100) { index ->
+      items(ITEM_COUNT) { index ->
         val itemScreen = remember { ListBenchmarksItemScreen(index) }
         CircuitContent(itemScreen)
       }
     }
   } else {
-    LazyColumn(modifier.systemBarsPadding()) { items(100) { index -> ListBenchmarksItem(index) } }
+    LazyColumn(modifier.systemBarsPadding()) {
+      items(ITEM_COUNT) { index -> ListBenchmarksItem(index) }
+    }
   }
   contentComposed = true
   ReportDrawnWhen { contentComposed }

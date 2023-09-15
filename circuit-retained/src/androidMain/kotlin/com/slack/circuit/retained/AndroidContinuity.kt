@@ -79,7 +79,7 @@ public actual fun continuityRetainedStateRegistry(
 @Composable
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
-  factory: ViewModelProvider.Factory,
+  factory: ViewModelProvider.Factory = ContinuityViewModel.Factory,
   canRetainChecker: CanRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
 ): RetainedStateRegistry {
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)

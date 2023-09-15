@@ -25,6 +25,11 @@ import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.retained.CanRetainChecker
+import com.slack.circuit.retained.LocalCanRetainChecker
+import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistry
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -108,14 +113,30 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
           record = record,
           content =
             movableContentOf { record ->
-              CircuitContent(
-                screen = record.screen,
-                modifier = Modifier,
-                navigator = lastNavigator,
-                circuit = lastCircuit,
-                unavailableContent = lastUnavailableRoute,
-              )
-            },
+              // We retain the record's retained state registry if the back stack
+              // contains the record
+              val retainChecker = remember(this, record) { CanRetainChecker { contains(record) } }
+
+              CompositionLocalProvider(LocalCanRetainChecker provides retainChecker) {
+                val registry =
+                  rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
+
+                // Now provide the registry to the Circuit circuit, along with a retain checker
+                // which is always true (as any state is managed by the parent registry)
+                CompositionLocalProvider(
+                  LocalRetainedStateRegistry provides registry,
+                  LocalCanRetainChecker provides CanRetainChecker.Always,
+                ) {
+                  CircuitContent(
+                    screen = record.screen,
+                    modifier = Modifier,
+                    navigator = lastNavigator,
+                    circuit = lastCircuit,
+                    unavailableContent = lastUnavailableRoute,
+                  )
+                }
+              }
+            }
         )
       }
     }
@@ -128,6 +149,9 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
       }
     }
 }
+
+private val Record.registryKey: String
+  get() = "_registry_${key}"
 
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {

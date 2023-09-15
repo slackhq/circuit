@@ -62,7 +62,12 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val jvmTest by getting {
+      dependsOn(commonJvmTest)
+      dependencies {
+        implementation(compose.desktop.currentOs)
+      }
+    }
     val androidUnitTest by getting {
       dependsOn(commonJvmTest)
       dependencies {

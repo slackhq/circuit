@@ -30,6 +30,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @Parcelize
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
@@ -79,17 +80,24 @@ data class ListBenchmarksItemScreen(val index: Int) : Screen {
   data class State(val index: Int) : CircuitUiState
 }
 
+class IndexMultiplier @Inject constructor() {
+  fun multiply(index: Int) = index * 1
+}
+
 class ListBenchmarksItemPresenter
 @AssistedInject
-constructor(@Assisted private val screen: ListBenchmarksItemScreen) :
-  Presenter<ListBenchmarksItemScreen.State> {
+constructor(
+  @Assisted private val screen: ListBenchmarksItemScreen,
+  // Simulate injecting something that accumulates instances
+  private val indexMultiplier: IndexMultiplier,
+) : Presenter<ListBenchmarksItemScreen.State> {
   @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {
     fun create(screen: ListBenchmarksItemScreen): ListBenchmarksItemPresenter
   }
 
-  @Composable override fun present() = ListBenchmarksItemScreen.State(screen.index)
+  @Composable override fun present() = ListBenchmarksItemScreen.State(indexMultiplier.multiply(screen.index))
 }
 
 @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)

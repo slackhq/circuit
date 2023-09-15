@@ -50,7 +50,7 @@ class NestedContentListBenchmark(
           FrameTimingMetric(),
           MemoryUsageMetric(MemoryUsageMetric.Mode.Last),
         ),
-      iterations = 10,
+      iterations = 50,
       startupMode = StartupMode.WARM,
     ) {
       pressHome()

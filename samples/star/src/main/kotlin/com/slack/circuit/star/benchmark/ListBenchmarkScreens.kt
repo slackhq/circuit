@@ -29,8 +29,8 @@ import com.slack.circuit.star.di.AppScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
@@ -97,7 +97,8 @@ constructor(
     fun create(screen: ListBenchmarksItemScreen): ListBenchmarksItemPresenter
   }
 
-  @Composable override fun present() = ListBenchmarksItemScreen.State(indexMultiplier.multiply(screen.index))
+  @Composable
+  override fun present() = ListBenchmarksItemScreen.State(indexMultiplier.multiply(screen.index))
 }
 
 @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)

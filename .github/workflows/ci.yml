@@ -72,6 +72,8 @@ jobs:
 
   benchmarks:
     runs-on: macOS-latest
+    # Don't run on merge_group events
+    if: github.event_name != 'merge_group'
     env:
       # Test on API 30 because that's the first version with ATDs
       API_LEVEL: '30'

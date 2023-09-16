@@ -26,16 +26,21 @@ import org.junit.runners.Parameterized.Parameters
 @RunWith(Parameterized::class)
 class NestedContentListBenchmark(
   private val useNestedContent: Boolean,
+  private val iterations: Int,
 ) {
   @get:Rule val benchmarkRule = MacrobenchmarkRule()
 
   companion object {
     @JvmStatic
-    @Parameters(name = "useNestedContent = {0}")
+    @Parameters(name = "useNestedContent = {0}, iterations = {1}")
     fun data() =
       listOf(
-        booleanArrayOf(false),
-        booleanArrayOf(true),
+        arrayOf(false, 10),
+        arrayOf(true, 10),
+        arrayOf(false, 30),
+        arrayOf(true, 30),
+        arrayOf(false, 50),
+        arrayOf(true, 50),
       )
   }
 
@@ -50,7 +55,7 @@ class NestedContentListBenchmark(
           FrameTimingMetric(),
           MemoryUsageMetric(MemoryUsageMetric.Mode.Last),
         ),
-      iterations = 50,
+      iterations = iterations,
       startupMode = StartupMode.WARM,
     ) {
       pressHome()

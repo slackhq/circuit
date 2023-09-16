@@ -76,6 +76,7 @@ jobs:
       # Test on API 30 because that's the first version with ATDs
       API_LEVEL: '30'
       AVD_TARGET: 'aosp_atd'
+      AVD_ARCH: 'x86'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -116,6 +117,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ env.API_LEVEL }}
+          target: ${{ env.API_TARGET }}
+          arch: ${{ env.API_ARCH }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -125,6 +128,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ env.API_LEVEL }}
+          target: ${{ env.API_TARGET }}
+          arch: ${{ env.API_ARCH }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true

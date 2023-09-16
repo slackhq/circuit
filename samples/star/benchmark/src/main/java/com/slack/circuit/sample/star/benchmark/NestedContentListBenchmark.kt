@@ -30,7 +30,7 @@ class NestedContentListBenchmark(private val useNestedContent: Boolean) {
   companion object {
     @Suppress("ArrayPrimitive") // Required for Parameterized to work
     @JvmStatic
-    @Parameters(name = "useNestedContent = {0}, iterations = {1}")
+    @Parameters(name = "useNestedContent = {0}")
     fun data() = listOf(arrayOf(false), arrayOf(true))
   }
 

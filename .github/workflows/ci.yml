@@ -138,6 +138,6 @@ jobs:
       - name: Upload build reports
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: reports-benchmark
           path: |
             **/build/reports/**

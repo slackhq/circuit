@@ -42,10 +42,9 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(projects.circuitFoundation)
-        api(projects.circuitx.keyNavigation)
         api(projects.samples.counter)
         api(libs.kotlinx.immutable)
+        api(projects.circuitFoundation)
       }
     }
     val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }

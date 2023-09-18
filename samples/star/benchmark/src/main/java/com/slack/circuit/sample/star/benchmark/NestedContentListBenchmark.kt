@@ -24,19 +24,14 @@ import org.junit.runners.Parameterized.Parameters
  */
 @OptIn(ExperimentalMetricApi::class)
 @RunWith(Parameterized::class)
-class NestedContentListBenchmark(
-  private val useNestedContent: Boolean,
-) {
+class NestedContentListBenchmark(private val useNestedContent: Boolean) {
   @get:Rule val benchmarkRule = MacrobenchmarkRule()
 
   companion object {
+    @Suppress("ArrayPrimitive") // Required for Parameterized to work
     @JvmStatic
     @Parameters(name = "useNestedContent = {0}")
-    fun data() =
-      listOf(
-        booleanArrayOf(false),
-        booleanArrayOf(true),
-      )
+    fun data() = listOf(arrayOf(false), arrayOf(true))
   }
 
   @Test

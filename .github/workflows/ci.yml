@@ -18,22 +18,12 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macOS-latest
-    env:
-      # Test on API 30 because that's the first version with ATDs
-      API_LEVEL: '30'
-      AVD_TARGET: 'aosp_atd'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           lfs: 'true'
-
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1
-
-      - name: Check LFS files
-        uses: actionsdesk/lfs-warning@v3.2
 
       - name: Install JDK
         uses: actions/setup-java@v3
@@ -45,9 +35,37 @@ jobs:
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug detektMain detektTest --continue --no-configuration-cache
+          arguments: check :samples:star:apk:assembleDebug detektMain detektTest :samples:star:benchmark:compileBenchmarkReleaseKotlin --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
+
+      - name: (Fail-only) Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports-build
+          path: |
+            **/build/reports/**
+
+      - name: Publish snapshot (main branch only)
+        if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
+        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache
+  snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+
+      - name: Check LFS files
+        uses: actionsdesk/lfs-warning@v3.2
+
+      - name: Install JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '20'
 
       - name: Verify Snapshots
         id: gradle-snapshots
@@ -57,15 +75,11 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
-      - name: (Fail-only) Upload build reports
+      - name: (Fail-only) Upload reports
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: reports-snapshots
           path: |
             **/build/reports/**
             **/src/test/snapshots/**/*_compare.png
-
-      - name: Publish snapshot (main branch only)
-        if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
-        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache

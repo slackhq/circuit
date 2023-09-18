@@ -17,8 +17,7 @@ android {
     // TODO temporary until AGP 8.2, which no longer requires this.
     //  This is because when we update baseline profiles, we do them on emulators but they
     //  run all tests.
-    testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
-    testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "LOW-BATTERY"
+    testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR,LOW-BATTERY"
   }
 
   testOptions.managedDevices.devices {

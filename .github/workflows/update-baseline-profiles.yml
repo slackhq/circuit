@@ -21,9 +21,6 @@ jobs:
         with:
           lfs: 'true'
 
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1
-
       - name: Install JDK
         uses: actions/setup-java@v3
         with:

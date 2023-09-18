@@ -17,19 +17,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
@@ -47,6 +38,7 @@ import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
+import com.slack.circuitx.keynavigation.KeyNavigationDecoration
 import kotlinx.collections.immutable.persistentListOf
 
 data object DesktopCounterScreen : CounterScreen
@@ -168,28 +160,9 @@ fun main() = application {
         NavigableCircuitContent(
           navigator = navigator,
           backstack = backStack,
-          modifier =
-            Modifier.backHandler(
-              enabled = backStack.size > 1,
-              onBack = { navigator.pop() },
-            )
+          decoration = KeyNavigationDecoration { if (backStack.size > 1) navigator.pop() },
         )
       }
     }
   }
-}
-
-@Composable
-private fun Modifier.backHandler(enabled: Boolean, onBack: () -> Unit): Modifier {
-  val focusRequester = remember { FocusRequester() }
-  return focusRequester(focusRequester)
-    .onPlaced { focusRequester.requestFocus() }
-    .onPreviewKeyEvent {
-      if (enabled && it.type == KeyEventType.KeyDown && it.key == Key.Escape) {
-        onBack()
-        true
-      } else {
-        false
-      }
-    }
 }

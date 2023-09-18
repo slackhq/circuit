@@ -203,6 +203,7 @@ include(
   ":circuit-test",
   ":circuitx:android",
   ":circuitx:gesture-navigation",
+  ":circuitx:key-navigation",
   ":circuitx:overlays",
   ":samples:counter",
   ":samples:counter:apps",

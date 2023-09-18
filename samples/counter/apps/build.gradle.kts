@@ -42,13 +42,19 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        api(projects.circuitFoundation)
+        api(projects.circuitx.keyNavigation)
         api(projects.samples.counter)
         api(libs.kotlinx.immutable)
-        api(projects.circuitFoundation)
       }
     }
     val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
-    val jvmMain by getting { dependencies { implementation(compose.desktop.currentOs) } }
+    val jvmMain by getting {
+      dependencies {
+        implementation(projects.circuitx.keyNavigation)
+        implementation(compose.desktop.currentOs)
+      }
+    }
     val androidMain by getting {
       dependencies {
         implementation(libs.androidx.appCompat)

@@ -55,11 +55,30 @@ public fun NavigableCircuitContent(
     )
 
   if (backstack.size > 0) {
-    @Suppress("SpreadOperator")
     decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) { provider ->
-      val values = providedValues[provider.record]?.provideValues()
-      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider.content(provider.record) }
+      // We retain the record's retained state registry if the back stack
+      // contains the record
+      val record = provider.record
+      val retainChecker =
+        remember(backstack, record) { CanRetainChecker { backstack.contains(record) } }
+
+      CompositionLocalProvider(LocalCanRetainChecker provides retainChecker) {
+        val registry = rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
+
+        val values = providedValues[record]?.provideValues()
+        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+
+        // Now provide the registry to the content, along with a retain checker
+        // which is always true (as any state is managed by the parent registry), and the other
+        // provided values
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides registry,
+          LocalCanRetainChecker provides CanRetainChecker.Always,
+          *providedLocals,
+        ) {
+          provider.content(record)
+        }
+      }
     }
   }
 }
@@ -113,29 +132,13 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
           record = record,
           content =
             movableContentOf { record ->
-              // We retain the record's retained state registry if the back stack
-              // contains the record
-              val retainChecker = remember(this, record) { CanRetainChecker { contains(record) } }
-
-              CompositionLocalProvider(LocalCanRetainChecker provides retainChecker) {
-                val registry =
-                  rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
-
-                // Now provide the registry to the Circuit circuit, along with a retain checker
-                // which is always true (as any state is managed by the parent registry)
-                CompositionLocalProvider(
-                  LocalRetainedStateRegistry provides registry,
-                  LocalCanRetainChecker provides CanRetainChecker.Always,
-                ) {
-                  CircuitContent(
-                    screen = record.screen,
-                    modifier = Modifier,
-                    navigator = lastNavigator,
-                    circuit = lastCircuit,
-                    unavailableContent = lastUnavailableRoute,
-                  )
-                }
-              }
+              CircuitContent(
+                screen = record.screen,
+                modifier = Modifier,
+                navigator = lastNavigator,
+                circuit = lastCircuit,
+                unavailableContent = lastUnavailableRoute,
+              )
             }
         )
       }

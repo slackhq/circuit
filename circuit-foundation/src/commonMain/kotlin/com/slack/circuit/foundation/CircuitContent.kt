@@ -138,7 +138,7 @@ private fun <UiState : CircuitUiState> CircuitContent(
   // case of this is when you have code that calls CircuitContent with a common screen with
   // different inputs (but thus same presenter instance type) and you need this to recompose with a
   // different presenter.
-  val state = key(presenter) { presenter.present() }
+  val state = key(screen) { presenter.present() }
 
   // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
   SideEffect { eventListener.onState(state) }

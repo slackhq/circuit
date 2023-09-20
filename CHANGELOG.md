@@ -1,6 +1,38 @@
 Changelog
 =========
 
+0.15.0
+------
+
+_2023-09-20_
+
+## **New**: Allow retained state to be retained whilst UIs and Presenters are on the back stack.
+
+Originally, `circuit-retained` was implemented as a solution for preserving arbitrary data across configuration changes on Android. With this change it now also acts as a solution for retaining state _across the back stack_, meaning that traversing the backstack no longer causes restored contents to re-run through their empty states anymore.
+
+To support this, each back stack entry now has its own `RetainedStateRegistry` instance.
+
+Note that `circuit-retained` is still optional for now, but we are considering making it part of `CircuitCompositionLocals` in the future. Please let us know your thoughts in this issue: https://github.com/slackhq/circuit/issues/891.
+
+Full details + demos can be found in https://github.com/slackhq/circuit/pull/888. Big thank you to [@chrisbanes](https://github.com/chrisbanes) for the implementation!
+
+## Other changes
+
+- **New**: Add `collectAsRetainedState` utility function, analogous to `collectAsState` but will retain the previous value across configuration changes and back stack entries.
+- **Enhancement**: Optimize `rememberRetained` with a port of the analogous optimization in `rememberSaveable`. See [#850](https://github.com/slackhq/circuit/pull/850).
+- **Enhancement**: `Presenter` and `Ui` interfaces are now annotated as `@Stable`.
+- **Fix**: Fix `GestureNavigationDecoration` function parameter order.
+- **Fix**: `BackHandler` on iOS now has the proper file name.
+- **Fix**: Key the `presenter.present()` in `CircuitContent` on the `Screen` rather than the `presenter` itself, which fixes a severe issue that prevented `currentCompositeKeyHash` from working correctly on `rememberRetained` and `rememberSaveable` uses.
+- Update CM compiler to `1.5.2`.
+- Update CM to `1.5.1`.
+- Update `androidx.compose.animation` to `1.5.1`.
+- Update `androidx.compose.foundation` to `1.5.1`.
+- Update `androidx.compose.runtime` to `1.5.1`.
+- Update `androidx.compose.material` to `1.5.1`.
+- Update `androidx.lifecycle` to `2.6.2`.
+- Update `androidx.annotation` to `1.7.0`.
+
 0.14.1
 ------
 

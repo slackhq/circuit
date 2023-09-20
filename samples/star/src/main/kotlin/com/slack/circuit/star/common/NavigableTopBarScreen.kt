@@ -24,7 +24,7 @@ fun BackPressNavIcon(
   val finalOnClick = remember {
     onClick
       ?: backPressOwner?.onBackPressedDispatcher?.let { dispatcher -> dispatcher::onBackPressed }
-        ?: error("No local LocalOnBackPressedDispatcherOwner found.")
+      ?: error("No local LocalOnBackPressedDispatcherOwner found.")
   }
   IconButton(modifier = modifier, onClick = finalOnClick) { iconButtonContent() }
 }

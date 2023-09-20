@@ -3,6 +3,7 @@
 package com.slack.circuit.runtime.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -41,6 +42,7 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * @see ui
  */
+@Stable
 public interface Ui<UiState : CircuitUiState> {
   @Composable public fun Content(state: UiState, modifier: Modifier)
 

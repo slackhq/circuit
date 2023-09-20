@@ -145,7 +145,7 @@ private class RetainableHolder<T>(
 
   fun unregisterIfNotRetainable() {
     // If the value is a RetainedStateRegistry, we need to take care to retain it.
-    // First we tell it to performSave, to retain it's values. Then we need to tell the host
+    // First we tell it to saveAll, to retain it's values. Then we need to tell the host
     // registry to retain the child registry.
     if (value is RetainedStateRegistry) {
       (value as RetainedStateRegistry).saveAll()

@@ -5,8 +5,8 @@ package com.slack.circuit.retained
 /**
  * Provides a retained value to a [RetainedStateRegistry].
  *
- * Only defined as a top-level interface to allow non-JS targets to extend `() -> Any?`.
+ * Only defined as a top-level interface because JS doesn't allow types to extend function types.
  */
-public expect fun interface RetainedValueProvider {
-  public fun invoke(): Any?
+public fun interface RetainedValueProvider {
+  public operator fun invoke(): Any?
 }

@@ -24,6 +24,8 @@ kotlin {
   applyDefaultHierarchyTemplate()
 
   sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
+
+  compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
 }
 
 android { namespace = "com.slack.circuit.runtime.screen" }

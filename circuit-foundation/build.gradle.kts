@@ -86,12 +86,6 @@ tasks
 
 android {
   namespace = "com.slack.circuit.foundation"
-
-  defaultConfig {
-    // Needed for Robolectric tests to run
-    targetSdk = 33
-  }
-
   testOptions { unitTests { isIncludeAndroidResources = true } }
 }
 

@@ -4,8 +4,10 @@ package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
 
-/** Checks whether or not we can retain in the current composable context. */
 @Composable
-public actual fun rememberCanRetainChecker(): CanRetainChecker {
-  return CanRetainChecker.Always
+public actual fun continuityRetainedStateRegistry(
+  key: String,
+  canRetainChecker: CanRetainChecker
+): RetainedStateRegistry {
+  return RetainedStateRegistryImpl(null)
 }

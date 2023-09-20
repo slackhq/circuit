@@ -94,9 +94,9 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
       // value is restored using the registry or created via [init] lambda
       val restored = registry.consumeValue(finalKey)
       val finalValue = restored ?: init()
-      SaveableHolder(registry, canRetainChecker, finalKey, finalValue, inputs)
+      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, inputs)
     }
-  val value = holder.getValueIfInputsDidntChange(inputs) ?: init()
+  val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect { holder.update(registry, finalKey, value, inputs) }
   @Suppress("UNCHECKED_CAST") return value as T
 }
@@ -104,7 +104,7 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36
 
-private class SaveableHolder<T>(
+private class RetainableHolder<T>(
   private var registry: RetainedStateRegistry?,
   private var canRetainChecker: CanRetainChecker,
   private var key: String,
@@ -143,8 +143,16 @@ private class SaveableHolder<T>(
   /** Value provider called by the registry. */
   override fun invoke(): Any = requireNotNull(value) { "Value should be initialized" }
 
-  fun unregisterIfNotRetainable() {
-    if (!canRetainChecker.canRetain()) {
+  fun saveIfRetainable() {
+    // If the value is a RetainedStateRegistry, we need to take care to retain it.
+    // First we tell it to saveAll, to retain it's values. Then we need to tell the host
+    // registry to retain the child registry.
+    if (value is RetainedStateRegistry) {
+      (value as RetainedStateRegistry).saveAll()
+      registry?.saveValue(key)
+    }
+
+    if (registry != null && !canRetainChecker.canRetain(registry!!)) {
       entry?.unregister()
     }
   }
@@ -154,18 +162,14 @@ private class SaveableHolder<T>(
   }
 
   override fun onForgotten() {
-    unregisterIfNotRetainable()
+    saveIfRetainable()
   }
 
   override fun onAbandoned() {
-    unregisterIfNotRetainable()
+    saveIfRetainable()
   }
 
-  fun getValueIfInputsDidntChange(inputs: Array<out Any?>): T? {
-    return if (inputs.contentEquals(this.inputs)) {
-      value
-    } else {
-      null
-    }
+  fun getValueIfInputsAreEqual(inputs: Array<out Any?>): T? {
+    return value.takeIf { inputs.contentEquals(this.inputs) }
   }
 }

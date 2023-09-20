@@ -25,6 +25,11 @@ import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.retained.CanRetainChecker
+import com.slack.circuit.retained.LocalCanRetainChecker
+import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistry
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -50,11 +55,30 @@ public fun NavigableCircuitContent(
     )
 
   if (backstack.size > 0) {
-    @Suppress("SpreadOperator")
     decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) { provider ->
-      val values = providedValues[provider.record]?.provideValues()
-      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider.content(provider.record) }
+      // We retain the record's retained state registry if the back stack
+      // contains the record
+      val record = provider.record
+      val retainChecker =
+        remember(backstack, record) { CanRetainChecker { backstack.contains(record) } }
+
+      CompositionLocalProvider(LocalCanRetainChecker provides retainChecker) {
+        val registry = rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
+
+        val values = providedValues[record]?.provideValues()
+        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+
+        // Now provide the registry to the content, along with a retain checker
+        // which is always true (as any state is managed by the parent registry), and the other
+        // provided values
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides registry,
+          LocalCanRetainChecker provides CanRetainChecker.Always,
+          *providedLocals,
+        ) {
+          provider.content(record)
+        }
+      }
     }
   }
 }
@@ -115,7 +139,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
               )
-            },
+            }
         )
       }
     }
@@ -128,6 +152,9 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
       }
     }
 }
+
+private val Record.registryKey: String
+  get() = "_registry_${key}"
 
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {

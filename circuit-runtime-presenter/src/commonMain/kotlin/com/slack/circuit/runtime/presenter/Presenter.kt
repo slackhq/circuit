@@ -3,6 +3,7 @@
 package com.slack.circuit.runtime.presenter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -19,6 +20,7 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * @see present for more thorough documentation.
  */
+@Stable
 public interface Presenter<UiState : CircuitUiState> {
   /**
    * The primary [Composable] entry point to present a [UiState]. In production, a [Navigator] is

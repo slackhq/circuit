@@ -96,7 +96,7 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
       val finalValue = restored ?: init()
       RetainableHolder(registry, canRetainChecker, finalKey, finalValue, inputs)
     }
-  val value = holder.getValueIfInputsDidntChange(inputs) ?: init()
+  val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect { holder.update(registry, finalKey, value, inputs) }
   @Suppress("UNCHECKED_CAST") return value as T
 }
@@ -143,7 +143,7 @@ private class RetainableHolder<T>(
   /** Value provider called by the registry. */
   override fun invoke(): Any = requireNotNull(value) { "Value should be initialized" }
 
-  fun unregisterIfNotRetainable() {
+  fun saveIfRetainable() {
     // If the value is a RetainedStateRegistry, we need to take care to retain it.
     // First we tell it to saveAll, to retain it's values. Then we need to tell the host
     // registry to retain the child registry.
@@ -162,18 +162,14 @@ private class RetainableHolder<T>(
   }
 
   override fun onForgotten() {
-    unregisterIfNotRetainable()
+    saveIfRetainable()
   }
 
   override fun onAbandoned() {
-    unregisterIfNotRetainable()
+    saveIfRetainable()
   }
 
-  fun getValueIfInputsDidntChange(inputs: Array<out Any?>): T? {
-    return if (inputs.contentEquals(this.inputs)) {
-      value
-    } else {
-      null
-    }
+  fun getValueIfInputsAreEqual(inputs: Array<out Any?>): T? {
+    return value.takeIf { inputs.contentEquals(this.inputs) }
   }
 }

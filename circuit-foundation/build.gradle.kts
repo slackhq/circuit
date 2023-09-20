@@ -38,6 +38,8 @@ kotlin {
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
         api(libs.compose.ui)
+
+        implementation(projects.circuitRetained)
       }
     }
     val androidMain by getting {

@@ -14,7 +14,18 @@ import androidx.compose.ui.platform.LocalContext
 public actual fun rememberCanRetainChecker(): CanRetainChecker {
   val context = LocalContext.current
   val activity = remember(context) { context.findActivity() }
-  return remember { CanRetainChecker { activity?.isChangingConfigurations == true } }
+  return remember {
+    CanRetainChecker { registry ->
+      if (registry is ContinuityViewModel) {
+        // If this is the root Continuity registry, only retain if the Activity is changing
+        // configuration
+        activity?.isChangingConfigurations == true
+      } else {
+        // Otherwise we always allow retaining for 'child' registries
+        true
+      }
+    }
+  }
 }
 
 private fun Context.findActivity(): Activity? {

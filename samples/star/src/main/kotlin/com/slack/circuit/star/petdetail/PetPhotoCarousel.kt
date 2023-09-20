@@ -222,8 +222,7 @@ private fun PhotoPager(
             )
           }
         }
-      }
-        ?: Modifier
+      } ?: Modifier
     Card(
       modifier =
         clickableModifier.aspectRatio(1f).graphicsLayer {

@@ -109,7 +109,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun saveAll() {
-    val map =
+    val values =
       valueProviders.mapValues { (_, list) ->
         // If we have multiple providers we should store null values as well to preserve
         // the order in which providers were registered. Say there were two providers.
@@ -126,11 +126,12 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
           }
       }
 
-    valueProviders.clear()
-
-    if (map.isNotEmpty()) {
-      retained.putAll(map)
+    if (values.isNotEmpty()) {
+      // Store the values in our retained map
+      retained.putAll(values)
     }
+    // Clear the value providers now that we've stored the values
+    valueProviders.clear()
   }
 
   override fun saveValue(key: String) {

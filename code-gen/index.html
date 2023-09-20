@@ -734,10 +734,12 @@ required.
 <p>Any type that is offered in <code>Presenter.Factory</code> and <code>Ui.Factory</code> can be offered as an assisted
 injection to types using Dagger <code>AssistedInject</code>. For these cases, the <code>AssistedFactory</code>
 -annotated interface should be annotated with <code>CircuitInject</code> instead of the enclosing class.</p>
-<p>Types available for assisted injection are:
-- <code>Screen</code> – the screen key used to create the <code>Presenter</code> or <code>Ui</code>.
-- <code>Navigator</code> – (presenters only)
-- <code>Circuit</code></p>
+<p>Types available for assisted injection are:</p>
+<ul>
+<li><code>Screen</code> – the screen key used to create the <code>Presenter</code> or <code>Ui</code>.</li>
+<li><code>Navigator</code> – (presenters only)</li>
+<li><code>Circuit</code></li>
+</ul>
 <p>Each should only be defined at-most once.</p>
 <p><strong>Examples</strong>
 <div class="highlight"><pre><span></span><code><span class="c1">// Function example</span>

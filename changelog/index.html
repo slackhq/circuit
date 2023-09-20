@@ -512,6 +512,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0150" class="md-nav__link">
+    0.15.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-allow-retained-state-to-be-retained-whilst-uis-and-presenters-are-on-the-back-stack" class="md-nav__link">
+    New: Allow retained state to be retained whilst UIs and Presenters are on the back stack.
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-changes" class="md-nav__link">
+    Other changes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0141" class="md-nav__link">
     0.14.1
   </a>
@@ -806,6 +827,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0150" class="md-nav__link">
+    0.15.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-allow-retained-state-to-be-retained-whilst-uis-and-presenters-are-on-the-back-stack" class="md-nav__link">
+    New: Allow retained state to be retained whilst UIs and Presenters are on the back stack.
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-changes" class="md-nav__link">
+    Other changes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0141" class="md-nav__link">
     0.14.1
   </a>
@@ -1055,6 +1097,30 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="0150">0.15.0<a class="headerlink" href="#0150" title="Permanent link">&para;</a></h2>
+<p><em>2023-09-20</em></p>
+<h2 id="new-allow-retained-state-to-be-retained-whilst-uis-and-presenters-are-on-the-back-stack"><strong>New</strong>: Allow retained state to be retained whilst UIs and Presenters are on the back stack.<a class="headerlink" href="#new-allow-retained-state-to-be-retained-whilst-uis-and-presenters-are-on-the-back-stack" title="Permanent link">&para;</a></h2>
+<p>Originally, <code>circuit-retained</code> was implemented as a solution for preserving arbitrary data across configuration changes on Android. With this change it now also acts as a solution for retaining state <em>across the back stack</em>, meaning that traversing the backstack no longer causes restored contents to re-run through their empty states anymore.</p>
+<p>To support this, each back stack entry now has its own <code>RetainedStateRegistry</code> instance.</p>
+<p>Note that <code>circuit-retained</code> is still optional for now, but we are considering making it part of <code>CircuitCompositionLocals</code> in the future. Please let us know your thoughts in this issue: <a href="https://github.com/slackhq/circuit/issues/891">https://github.com/slackhq/circuit/issues/891</a>.</p>
+<p>Full details + demos can be found in <a href="https://github.com/slackhq/circuit/pull/888">https://github.com/slackhq/circuit/pull/888</a>. Big thank you to <a href="https://github.com/chrisbanes">@chrisbanes</a> for the implementation!</p>
+<h2 id="other-changes">Other changes<a class="headerlink" href="#other-changes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>New</strong>: Add <code>collectAsRetainedState</code> utility function, analogous to <code>collectAsState</code> but will retain the previous value across configuration changes and back stack entries.</li>
+<li><strong>Enhancement</strong>: Optimize <code>rememberRetained</code> with a port of the analogous optimization in <code>rememberSaveable</code>. See <a href="https://github.com/slackhq/circuit/pull/850">#850</a>.</li>
+<li><strong>Enhancement</strong>: <code>Presenter</code> and <code>Ui</code> interfaces are now annotated as <code>@Stable</code>.</li>
+<li><strong>Fix</strong>: Fix <code>GestureNavigationDecoration</code> function parameter order.</li>
+<li><strong>Fix</strong>: <code>BackHandler</code> on iOS now has the proper file name.</li>
+<li><strong>Fix</strong>: Key the <code>presenter.present()</code> in <code>CircuitContent</code> on the <code>Screen</code> rather than the <code>presenter</code> itself, which fixes a severe issue that prevented <code>currentCompositeKeyHash</code> from working correctly on <code>rememberRetained</code> and <code>rememberSaveable</code> uses.</li>
+<li>Update CM compiler to <code>1.5.2</code>.</li>
+<li>Update CM to <code>1.5.1</code>.</li>
+<li>Update <code>androidx.compose.animation</code> to <code>1.5.1</code>.</li>
+<li>Update <code>androidx.compose.foundation</code> to <code>1.5.1</code>.</li>
+<li>Update <code>androidx.compose.runtime</code> to <code>1.5.1</code>.</li>
+<li>Update <code>androidx.compose.material</code> to <code>1.5.1</code>.</li>
+<li>Update <code>androidx.lifecycle</code> to <code>2.6.2</code>.</li>
+<li>Update <code>androidx.annotation</code> to <code>1.7.0</code>.</li>
+</ul>
 <h2 id="0141">0.14.1<a class="headerlink" href="#0141" title="Permanent link">&para;</a></h2>
 <p><em>2023-09-03</em></p>
 <ul>
@@ -1062,7 +1128,7 @@
 </ul>
 <p>This is a new <code>NavDecoration</code> that allows for gesture-based navigation, such as predictive back in Android 14 or drag gestures in iOS. See the <a href="https://slackhq.github.io/circuit/circuitx/#gesture-navigation">docs</a> for more details.</p>
 <div class="highlight"><pre><span></span><code><span class="n">NavigableCircuitContent</span><span class="p">(</span>
-<span class="w">  </span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span>
 <span class="w">  </span><span class="n">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backstack</span><span class="p">,</span>
 <span class="w">  </span><span class="n">decoration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GestureNavigationDecoration</span><span class="p">(</span>
 <span class="w">    </span><span class="c1">// Pop the back stack once the user has gone &#39;back&#39;</span>

@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>registerValue</title>
+    <title>Continuity</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -58,12 +58,36 @@
                 <div class="sidebar--inner" id="sideMenu"></div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageids="circuit-retained::com.slack.circuit.retained/RetainedStateRegistry/registerValue/#kotlin.String#com.slack.circuit.retained.RetainedValueProvider/PointingToDeclaration//434727563">
-  <div class="breadcrumbs"><a href="../../index.html">circuit-retained</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.retained</a><span class="delimiter">/</span><a href="index.html">RetainedStateRegistry</a><span class="delimiter">/</span><span class="current">registerValue</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-retained::com.slack.circuit.retained/Continuity///PointingToDeclaration//434727563">
+  <div class="breadcrumbs"><a href="../../index.html">circuit-retained</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.retained</a><span class="delimiter">/</span><span class="current">Continuity</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>register</span><wbr><span><span>Value</span></span></h1>
+    <h1 class="cover"><span><span>Continuity</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">Continuity</a></div></div></div>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="register-value.html"><span class="token function">registerValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">valueProvider<span class="token operator">: </span><a href="../-retained-value-provider/index.html">RetainedValueProvider</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-entry/index.html">RetainedStateRegistry.Entry</a></div><p class="paragraph">Registers the value provider.</p><p class="paragraph">There are could be multiple providers registered for the same <a href="register-value.html">key</a>. In this case the order in which they were registered matters.</p><p class="paragraph">Say we registered two values for the key. One provides "1", second provides "2". this case will have listOf("1", "2) as a value for the key in the underlying map. And later, when the registry will be recreated with the previously saved values, the first execution of <a href="consume-value.html">consumeValue</a> would consume "1" and the second one "2".</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">the registry entry which you can use to unregister the provider</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>key</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Key to use for storing the value</p></div></div></div></div><div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>value</span><wbr><span><span>Provider</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The value to provide</p></div></div></div></div></div></div></div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-412735774%2FProperties%2F434727563" anchor-label="KEY" id="-412735774%2FProperties%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-k-e-y.html"><span><span>KEY</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-412735774%2FProperties%2F434727563"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-k-e-y.html">KEY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>

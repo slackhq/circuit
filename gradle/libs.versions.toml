@@ -7,7 +7,7 @@ androidx-browser = "1.6.0"
 androidx-lifecycle = "2.6.2"
 agp = "8.1.1"
 anvil = "2.4.8"
-benchmark = "1.2.0-beta05"
+benchmark = "1.2.0-rc01"
 coil = "2.4.0"
 compose-animation = "1.5.1"
 # Pre-release versions for testing Kotlin previews can be found here
@@ -16,7 +16,7 @@ compose-compiler-version = "1.5.4-dev-k1.9.20-Beta-692cbee7ddd"
 compose-compiler-kotlinVersion = "1.9.20-Beta"
 compose-foundation = "1.5.1"
 compose-material = "1.5.1"
-compose-material3 = "1.1.1"
+compose-material3 = "1.1.2"
 compose-runtime = "1.5.1"
 compose-ui = "1.5.1"
 compose-jb = "1.5.1"
@@ -50,7 +50,7 @@ robolectric = "4.10.3"
 roborazzi = "1.5.0"
 spotless = "6.20.0"
 sqldelight = "2.0.0"
-telephoto = "0.5.0"
+telephoto = "0.6.1"
 testParameterInjector = "1.12"
 turbine = "1.0.0"
 versionsPlugin = "0.47.0"
@@ -86,7 +86,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0-beta01" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0-rc01" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -103,7 +103,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.09.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.09.01" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }

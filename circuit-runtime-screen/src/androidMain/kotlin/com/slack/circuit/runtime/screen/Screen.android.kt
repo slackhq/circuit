@@ -7,4 +7,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable public actual interface Screen : Saveable
 
+@OptIn(ExperimentalMultiplatform::class)
+@AllowDifferentMembersInActual
 public actual typealias Saveable = Parcelable

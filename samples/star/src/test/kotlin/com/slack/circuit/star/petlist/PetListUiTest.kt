@@ -22,6 +22,7 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.test.TestEventSink
+import com.slack.circuit.test.asEventSinkFunction
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -86,7 +87,13 @@ class PetListUiTest {
 
     composeTestRule.run {
       setContent {
-        PetList(PetListScreen.State.Success(animals, isRefreshing = false, eventSink = testSink))
+        PetList(
+          PetListScreen.State.Success(
+            animals,
+            isRefreshing = false,
+            eventSink = testSink.asEventSinkFunction()
+          )
+        )
       }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()

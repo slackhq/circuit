@@ -14,9 +14,9 @@ class TestEventSinkTest {
   @Test
   fun assertEventCount() {
     TestEventSink<Event>().run {
-      invoke(Event1)
-      invoke(Event2)
-      invoke(Event3)
+      emit(Event1)
+      emit(Event2)
+      emit(Event3)
 
       assertEventCount(3)
       assertEvents(Event1, Event2, Event3)
@@ -31,7 +31,7 @@ class TestEventSinkTest {
   @Test
   fun `assertEvent - verify single event`() {
     TestEventSink<Event>().run {
-      invoke(Event1)
+      emit(Event1)
 
       assertEvent(Event1)
     }
@@ -46,8 +46,8 @@ class TestEventSinkTest {
   fun `assertEvent - fails if too many events have been received`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
-        invoke(Event2)
+        emit(Event1)
+        emit(Event2)
 
         assertEvent(Event1)
       }
@@ -58,7 +58,7 @@ class TestEventSinkTest {
   fun `assertEvent - fails if received and expected fail equality check`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
+        emit(Event1)
 
         assertEvent(Event2)
       }
@@ -68,7 +68,7 @@ class TestEventSinkTest {
   @Test
   fun `assertEvent - verify single event using predicate`() {
     TestEventSink<Event>().run {
-      invoke(Event1)
+      emit(Event1)
 
       assertEvent { actual -> Event1 == actual }
     }
@@ -78,8 +78,8 @@ class TestEventSinkTest {
   fun `assertEvent - fails using predicate if too many events have been received`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
-        invoke(Event2)
+        emit(Event1)
+        emit(Event2)
 
         assertEvent { actual -> Event1 == actual }
       }
@@ -90,7 +90,7 @@ class TestEventSinkTest {
   fun `assertEvent - fails when predicate returns false`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
+        emit(Event1)
 
         assertEvent { false }
       }
@@ -100,9 +100,9 @@ class TestEventSinkTest {
   @Test
   fun `assertEventAt - verify event at index`() {
     TestEventSink<Event>().run {
-      invoke(Event1)
-      invoke(Event2)
-      invoke(Event3)
+      emit(Event1)
+      emit(Event2)
+      emit(Event3)
 
       assertEventAt(0, Event1)
       assertEventAt(1, Event2)
@@ -115,7 +115,7 @@ class TestEventSinkTest {
     val events = listOf(Event1, Event2, Event3)
 
     TestEventSink<Event>().run {
-      events.forEach { invoke(it) }
+      events.forEach { emit(it) }
 
       events.indices.forEach { i -> assertEventAt(i) { actual -> events[i] == actual } }
     }
@@ -134,7 +134,7 @@ class TestEventSinkTest {
   ) {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
+        emit(Event1)
         assertEventAt(index) { actual -> Event1 == actual }
       }
     }
@@ -144,7 +144,7 @@ class TestEventSinkTest {
   fun `assertEventAt - fails when predicate returns false`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
+        emit(Event1)
         assertEventAt(0) { false }
       }
     }
@@ -153,9 +153,9 @@ class TestEventSinkTest {
   @Test
   fun `assertEvents - verify multiple events`() {
     TestEventSink<Event>().run {
-      invoke(Event1)
-      invoke(Event2)
-      invoke(Event3)
+      emit(Event1)
+      emit(Event2)
+      emit(Event3)
 
       assertEvents(Event1, Event2, Event3)
     }
@@ -165,9 +165,9 @@ class TestEventSinkTest {
   fun `assertEvents - fails when number of received and expected differ`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
-        invoke(Event2)
-        invoke(Event3)
+        emit(Event1)
+        emit(Event2)
+        emit(Event3)
 
         assertEvents(Event1, Event2)
       }
@@ -178,9 +178,9 @@ class TestEventSinkTest {
   fun `assertEvents - fails when received and expected fail equality check`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
-        invoke(Event2)
-        invoke(Event3)
+        emit(Event1)
+        emit(Event2)
+        emit(Event3)
 
         assertEvents(Event1, Event2, Event2)
       }
@@ -192,7 +192,7 @@ class TestEventSinkTest {
     val events = listOf(Event1, Event2, Event3)
 
     TestEventSink<Event>().run {
-      events.forEach { invoke(it) }
+      events.forEach { emit(it) }
 
       assertEvents { i, actual -> events[i] == actual }
     }
@@ -202,7 +202,7 @@ class TestEventSinkTest {
   fun `assertEvents - fails when predicate returns false`() {
     assertThrows(AssertionError::class.java) {
       TestEventSink<Event>().run {
-        invoke(Event1)
+        emit(Event1)
 
         assertEvents { _, _ -> false }
       }

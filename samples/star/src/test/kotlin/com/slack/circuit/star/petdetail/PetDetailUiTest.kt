@@ -24,6 +24,7 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.test.TestEventSink
+import com.slack.circuit.test.asEventSinkFunction
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -134,7 +135,7 @@ class PetDetailUiTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = persistentListOf("dog", "terrier", "male"),
-        eventSink = testSink
+        eventSink = testSink.asEventSinkFunction()
       )
 
     val circuit =

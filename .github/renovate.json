@@ -17,6 +17,11 @@
       "automerge": true
     },
     {
+      "description": "Group docsite deps",
+      "matchManagers": ["pip_requirements"],
+      "automerge": true
+    },
+    {
       "matchPackageNames": ["renovatebot/github-action"],
       "extends": ["schedule:monthly"]
     },

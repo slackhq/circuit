@@ -28,11 +28,10 @@ public actual fun rememberCanRetainChecker(): CanRetainChecker {
   }
 }
 
-private fun Context.findActivity(): Activity? {
-  var context = this
-  while (context is ContextWrapper) {
-    if (context is Activity) return context
-    context = context.baseContext
+private tailrec fun Context.findActivity(): Activity? {
+  return when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
   }
-  return null
 }

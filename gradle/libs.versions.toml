@@ -5,35 +5,35 @@ androidx-annotation = "1.7.0"
 androidx-appcompat = "1.6.1"
 androidx-browser = "1.6.0"
 androidx-lifecycle = "2.6.2"
-agp = "8.1.1"
+agp = "8.1.2"
 anvil = "2.4.8"
 benchmark = "1.2.0-rc01"
 coil = "2.4.0"
-compose-animation = "1.5.1"
+compose-animation = "1.5.2"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.4-dev-k1.9.20-Beta-692cbee7ddd"
-compose-compiler-kotlinVersion = "1.9.20-Beta"
-compose-foundation = "1.5.1"
-compose-material = "1.5.1"
+compose-compiler-version = "1.5.4-dev-k1.9.20-Beta2-ac5f960bdaf"
+compose-compiler-kotlinVersion = "1.9.20-Beta2"
+compose-foundation = "1.5.2"
+compose-material = "1.5.2"
 compose-material3 = "1.1.2"
-compose-runtime = "1.5.1"
-compose-ui = "1.5.1"
-compose-jb = "1.5.1"
+compose-runtime = "1.5.2"
+compose-ui = "1.5.2"
+compose-jb = "1.5.2"
 compose-jb-compiler = "1.5.2.1-Beta"
 compose-jb-kotlinVersion = "1.9.20-Beta"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.48"
 datastore = "1.1.0-alpha05"
-dependencyAnalysisPlugin = "1.22.0"
+dependencyAnalysisPlugin = "1.24.0"
 detekt = "1.23.1"
 dokka = "1.9.0"
-eithernet = "1.5.0"
+eithernet = "1.6.0"
 jdk = "20"
-kotlin = "1.9.20-Beta"
+kotlin = "1.9.20-Beta2"
 kotlinpoet = "1.14.2"
 kotlinx-coroutines = "1.7.3"
-ksp = "1.9.20-Beta-1.0.13"
+ksp = "1.9.20-Beta2-1.0.13"
 ktfmt = "0.46"
 leakcanary = "2.12"
 material = "1.6.1"
@@ -50,7 +50,7 @@ robolectric = "4.10.3"
 roborazzi = "1.5.0"
 spotless = "6.20.0"
 sqldelight = "2.0.0"
-telephoto = "0.6.1"
+telephoto = "0.6.2"
 testParameterInjector = "1.12"
 turbine = "1.0.0"
 versionsPlugin = "0.47.0"
@@ -103,7 +103,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.09.01" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.09.02" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
@@ -217,7 +217,7 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.7"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.8"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqldelight" }

@@ -408,8 +408,10 @@ subprojects {
           dependencies {
             // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
             implementation(
-              @Suppress("DEPRECATION") // https://youtrack.jetbrains.com/issue/KT-58759
-              platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}")
+              // https://youtrack.jetbrains.com/issue/KT-58759
+              project.dependencies.platform(
+                "org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"
+              )
             )
           }
         }

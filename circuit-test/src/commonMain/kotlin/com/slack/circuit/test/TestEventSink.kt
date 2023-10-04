@@ -8,6 +8,18 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 /**
+ * Base `expect` type for [TestEventSink]. This layer of indirection is necessary because Kotlin/JS
+ * does not allow extension of function types. To work around it, we make this interface extend
+ * `(UiEvent) -> Unit` on all platforms except JS, and then expose an `asEventSinkFunction()`
+ * extension function on [TestEventSink] in JS that returns a function wrapper around it.
+ *
+ * This type is _not_ intended to be used directly or implemented by consumers of this library.
+ */
+public expect sealed interface BaseTestEventSinkType<UiEvent> {
+  public operator fun invoke(event: UiEvent)
+}
+
+/**
  * A test event sink that records events from a Circuit UI and allows making assertions about them.
  *
  * Note: this class was heavily influenced by RxJava3's
@@ -15,7 +27,7 @@ import kotlin.time.toDuration
  *
  * @see CircuitUiEvent
  */
-public class TestEventSink<UiEvent : CircuitUiEvent> {
+public class TestEventSink<UiEvent : CircuitUiEvent> : BaseTestEventSinkType<UiEvent> {
   private val receivedEvents = mutableListOf<UiEvent>()
 
   /**
@@ -23,7 +35,7 @@ public class TestEventSink<UiEvent : CircuitUiEvent> {
    *
    * @param event the [UiEvent] being added to the sink
    */
-  public fun emit(event: UiEvent) {
+  public override operator fun invoke(event: UiEvent) {
     receivedEvents.add(event)
   }
 
@@ -186,12 +198,3 @@ public class TestEventSink<UiEvent : CircuitUiEvent> {
     private fun valueAndClass(obj: Any): String = "$obj (${obj::class.simpleName})"
   }
 }
-
-/**
- * A helper function for creating a function wrapper around this [TestEventSink] for use in tests as
- * an event sink function. We can't make [TestEventSink] extend a function type due to that being
- * prohibited in JS, and we can't use expect/actual for the base type due to that being prohibited
- * in Kotlin 1.9.20+.
- */
-public fun <UiEvent : CircuitUiEvent> TestEventSink<UiEvent>.asEventSinkFunction():
-  (UiEvent) -> Unit = this::emit

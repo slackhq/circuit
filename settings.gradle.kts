@@ -168,7 +168,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.12.6" }
+  plugins { id("com.gradle.enterprise") version "3.15.1" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -183,6 +183,12 @@ gradleEnterprise {
 
     tag(if (System.getenv("CI").isNullOrBlank()) "Local" else "CI")
     tag(VERSION_NAME)
+
+    obfuscation {
+      username { "Redacted" }
+      hostname { "Redacted" }
+      ipAddresses { addresses -> addresses.map { "0.0.0.0" } }
+    }
   }
 }
 

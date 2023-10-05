@@ -9,15 +9,15 @@ agp = "8.1.2"
 anvil = "2.4.8"
 benchmark = "1.2.0-rc01"
 coil = "2.4.0"
-compose-animation = "1.5.2"
+compose-animation = "1.5.3"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler-version = "1.5.3"
 compose-compiler-kotlinVersion = "1.9.10"
-compose-foundation = "1.5.2"
+compose-foundation = "1.5.3"
 compose-material = "1.5.3"
 compose-material3 = "1.1.2"
-compose-runtime = "1.5.2"
+compose-runtime = "1.5.3"
 compose-ui = "1.5.2"
 compose-jb = "1.5.2"
 compose-jb-compiler = "1.5.2"
@@ -86,7 +86,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0-rc01" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }

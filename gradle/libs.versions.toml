@@ -9,21 +9,21 @@ agp = "8.1.2"
 anvil = "2.4.8"
 benchmark = "1.2.0-rc01"
 coil = "2.4.0"
-compose-animation = "1.5.2"
+compose-animation = "1.5.3"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler-version = "1.5.4-dev-k1.9.20-Beta2-ac5f960bdaf"
 compose-compiler-kotlinVersion = "1.9.20-Beta2"
-compose-foundation = "1.5.2"
+compose-foundation = "1.5.3"
 compose-material = "1.5.2"
 compose-material3 = "1.1.2"
-compose-runtime = "1.5.2"
+compose-runtime = "1.5.3"
 compose-ui = "1.5.2"
 compose-jb = "1.5.2"
 compose-jb-compiler = "1.5.2.1-Beta"
 compose-jb-kotlinVersion = "1.9.20-Beta"
 compose-integration-constraintlayout = "1.0.1"
-dagger = "2.48"
+dagger = "2.48.1"
 datastore = "1.1.0-alpha05"
 dependencyAnalysisPlugin = "1.24.0"
 detekt = "1.23.1"
@@ -86,7 +86,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0-rc01" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -158,7 +158,7 @@ autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", versi
 
 baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
 
-clikt = "com.github.ajalt.clikt:clikt:4.2.0"
+clikt = "com.github.ajalt.clikt:clikt:4.2.1"
 
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
@@ -207,7 +207,7 @@ moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "mosh
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
-okio = "com.squareup.okio:okio:3.5.0"
+okio = "com.squareup.okio:okio:3.6.0"
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converters-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 retrofit-converters-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }

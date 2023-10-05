@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.codegen
 
 import com.google.common.truth.Truth.assertThat
@@ -8,29 +10,32 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import java.io.File
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Ignore
 import org.junit.Test
-import java.io.File
 
 @OptIn(ExperimentalCompilerApi::class)
 class CircuitSymbolProcessorTest {
-  private val appScope = kotlin(
-    "AppScope.kt",
-    """
-      package test
-      
-      annotation class AppScope
-    """.trimIndent()
-  )
-  private val screens = kotlin(
-    "Screens.kt",
-    """
+  private val appScope =
+    kotlin(
+      "AppScope.kt",
+      """
       package test
 
-      import com.slack.circuit.runtime.CircuitUiState 
-      import com.slack.circuit.runtime.screen.Screen   
+      annotation class AppScope
+    """
+        .trimIndent()
+    )
+  private val screens =
+    kotlin(
+      "Screens.kt",
+      """
+      package test
+
+      import com.slack.circuit.runtime.CircuitUiState
+      import com.slack.circuit.runtime.screen.Screen
 
       object HomeScreen : Screen {
         data class State(val message: String) : CircuitUiState
@@ -38,15 +43,17 @@ class CircuitSymbolProcessorTest {
       data class FavoritesScreen(val userId: String) : Screen {
         data class State(val count: Int) : CircuitUiState
       }
-    """.trimIndent()
-  )
+    """
+        .trimIndent()
+    )
 
   @Test
   fun simpleUiFunction_withObjectScreen_noState() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -58,12 +65,14 @@ class CircuitSymbolProcessorTest {
           fun Home(modifier: Modifier = Modifier) {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/HomeFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
           package test
-          
+
           import com.slack.circuit.runtime.CircuitContext
           import com.slack.circuit.runtime.CircuitUiState
           import com.slack.circuit.runtime.screen.Screen
@@ -71,7 +80,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.ui.ui
           import com.squareup.anvil.annotations.ContributesMultibinding
           import javax.inject.Inject
-          
+
           @ContributesMultibinding(AppScope::class)
           public class HomeFactory @Inject constructor() : Ui.Factory {
             override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -79,16 +88,18 @@ class CircuitSymbolProcessorTest {
               else -> null
             }
           }
-        """.trimIndent()
+        """
+          .trimIndent()
     )
   }
 
   @Test
   fun simpleUiFunction_withClassScreen_noState() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -100,12 +111,14 @@ class CircuitSymbolProcessorTest {
           fun Favorites(modifier: Modifier = Modifier) {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.CircuitUiState
         import com.slack.circuit.runtime.screen.Screen
@@ -113,7 +126,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -121,16 +134,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun simpleUiFunction_withInjectedClassScreen_noState() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -142,12 +157,14 @@ class CircuitSymbolProcessorTest {
           fun Favorites(screen: FavoritesScreen, modifier: Modifier = Modifier) {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.CircuitUiState
         import com.slack.circuit.runtime.screen.Screen
@@ -155,7 +172,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -164,16 +181,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun simpleUiFunction_withObjectScreen_withState() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -185,19 +204,21 @@ class CircuitSymbolProcessorTest {
           fun Home(state: HomeScreen.State, modifier: Modifier = Modifier) {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/HomeFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
           package test
-    
+
           import com.slack.circuit.runtime.CircuitContext
           import com.slack.circuit.runtime.screen.Screen
           import com.slack.circuit.runtime.ui.Ui
           import com.slack.circuit.runtime.ui.ui
           import com.squareup.anvil.annotations.ContributesMultibinding
           import javax.inject.Inject
-          
+
           @ContributesMultibinding(AppScope::class)
           public class HomeFactory @Inject constructor() : Ui.Factory {
             override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -205,16 +226,18 @@ class CircuitSymbolProcessorTest {
               else -> null
             }
           }
-        """.trimIndent()
+        """
+          .trimIndent()
     )
   }
 
   @Test
   fun simpleUiFunction_withClassScreen_withState() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -226,19 +249,21 @@ class CircuitSymbolProcessorTest {
           fun Favorites(state: FavoritesScreen.State, modifier: Modifier = Modifier) {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -246,16 +271,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun simpleUiFunction_withInjectedClassScreen_withState() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -267,19 +294,21 @@ class CircuitSymbolProcessorTest {
           fun Favorites(state: FavoritesScreen.State, screen: FavoritesScreen, modifier: Modifier = Modifier) {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -288,16 +317,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun uiClass_noInjection() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -313,18 +344,20 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -332,16 +365,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun uiClass_simpleInjection() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -358,19 +393,21 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
         import javax.inject.Provider
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
           private val provider: Provider<Favorites>,
@@ -380,16 +417,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun uiClass_assistedInjection() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestUi.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -409,24 +448,26 @@ class CircuitSymbolProcessorTest {
             fun interface Factory {
               fun create(screen: FavoritesScreen): Favorites
             }
-          
+
             @Composable
             override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
             }
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
           private val factory: Favorites.Factory,
@@ -436,16 +477,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun simplePresenterFunction_withObjectScreen() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -456,12 +499,14 @@ class CircuitSymbolProcessorTest {
           fun HomePresenter(): HomeScreen.State {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/HomePresenterFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
           package test
-    
+
           import com.slack.circuit.runtime.CircuitContext
           import com.slack.circuit.runtime.Navigator
           import com.slack.circuit.runtime.presenter.Presenter
@@ -469,7 +514,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.screen.Screen
           import com.squareup.anvil.annotations.ContributesMultibinding
           import javax.inject.Inject
-          
+
           @ContributesMultibinding(AppScope::class)
           public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
             override fun create(
@@ -481,16 +526,18 @@ class CircuitSymbolProcessorTest {
               else -> null
             }
           }
-        """.trimIndent()
+        """
+          .trimIndent()
     )
   }
 
   @Test
   fun simplePresenterFunction_withClassScreen() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -501,12 +548,14 @@ class CircuitSymbolProcessorTest {
           fun FavoritesPresenter(): FavoritesScreen.State {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
@@ -514,7 +563,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
           override fun create(
@@ -526,16 +575,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun simplePresenterFunction_withInjectedClassScreen() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -547,12 +598,14 @@ class CircuitSymbolProcessorTest {
           fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
 
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
@@ -560,7 +613,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
           override fun create(
@@ -572,16 +625,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun presenterClass_noInjection() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -596,19 +651,21 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
           override fun create(
@@ -620,16 +677,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun presenterClass_simpleInjection() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -645,12 +704,14 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
@@ -658,7 +719,7 @@ class CircuitSymbolProcessorTest {
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
         import javax.inject.Provider
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
           private val provider: Provider<FavoritesPresenter>,
@@ -672,16 +733,18 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
   @Test
   fun presenterClass_assistedInjection() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -708,19 +771,21 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      ),
+        """
+            .trimIndent()
+        ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
-      expectedContent = """
+      expectedContent =
+        """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
           private val factory: FavoritesPresenter.Factory,
@@ -734,7 +799,8 @@ class CircuitSymbolProcessorTest {
             else -> null
           }
         }
-      """.trimIndent()
+      """
+          .trimIndent()
     )
   }
 
@@ -742,9 +808,10 @@ class CircuitSymbolProcessorTest {
   @Test
   fun invalidInjections() {
     assertProcessingError(
-      sourceFile = kotlin(
-        "InvalidInjections.kt",
-        """
+      sourceFile =
+        kotlin(
+          "InvalidInjections.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -771,7 +838,7 @@ class CircuitSymbolProcessorTest {
             fun interface Factory {
               fun create(someString: String): Favorites
             }
-          
+
             @Composable
             override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
@@ -799,8 +866,10 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      )) { messages ->
+        """
+            .trimIndent()
+        )
+    ) { messages ->
       assertThat(messages).contains("TODO")
     }
   }
@@ -808,9 +877,10 @@ class CircuitSymbolProcessorTest {
   @Test
   fun invalidSupertypes() {
     assertProcessingError(
-      sourceFile = kotlin(
-        "InvalidSupertypes.kt",
-        """
+      sourceFile =
+        kotlin(
+          "InvalidSupertypes.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -825,9 +895,14 @@ class CircuitSymbolProcessorTest {
 
             }
           }
-        """.trimIndent()
-      )) { messages ->
-      assertThat(messages).contains("Factory must be for a UI or Presenter class, but was test.Favorites. Supertypes: [Any]")
+        """
+            .trimIndent()
+        )
+    ) { messages ->
+      assertThat(messages)
+        .contains(
+          "Factory must be for a UI or Presenter class, but was test.Favorites. Supertypes: [Any]"
+        )
     }
   }
 
@@ -835,9 +910,10 @@ class CircuitSymbolProcessorTest {
   @Test
   fun presenterFunctionMissingReturn() {
     assertProcessingError(
-      sourceFile = kotlin(
-        "MissingPresenterReturn.kt",
-        """
+      sourceFile =
+        kotlin(
+          "MissingPresenterReturn.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -848,8 +924,10 @@ class CircuitSymbolProcessorTest {
           fun FavoritesPresenter() {
 
           }
-        """.trimIndent()
-      )) { messages ->
+        """
+            .trimIndent()
+        )
+    ) { messages ->
       assertThat(messages).contains("TODO")
     }
   }
@@ -857,9 +935,10 @@ class CircuitSymbolProcessorTest {
   @Test
   fun uiFunctionMissingModifier() {
     assertProcessingError(
-      sourceFile = kotlin(
-        "MissingModifierParam.kt",
-        """
+      sourceFile =
+        kotlin(
+          "MissingModifierParam.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -870,8 +949,10 @@ class CircuitSymbolProcessorTest {
           fun Favorites() {
 
           }
-        """.trimIndent()
-      )) { messages ->
+        """
+            .trimIndent()
+        )
+    ) { messages ->
       assertThat(messages).contains("UI composable functions must have a Modifier parameter!")
     }
   }
@@ -887,14 +968,10 @@ class CircuitSymbolProcessorTest {
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedAdapter = File(generatedSourcesDir, "kotlin/$generatedFilePath")
     assertThat(generatedAdapter.exists()).isTrue()
-    assertThat(generatedAdapter.readText().trim())
-      .isEqualTo(expectedContent.trimIndent())
+    assertThat(generatedAdapter.readText().trim()).isEqualTo(expectedContent.trimIndent())
   }
 
-  private fun assertProcessingError(
-    sourceFile: SourceFile,
-    body: (messages: String) -> Unit
-  ) {
+  private fun assertProcessingError(sourceFile: SourceFile, body: (messages: String) -> Unit) {
     val compilation = prepareCompilation(sourceFile)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)

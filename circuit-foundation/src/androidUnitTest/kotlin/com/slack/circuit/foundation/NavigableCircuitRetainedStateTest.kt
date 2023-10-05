@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
@@ -17,8 +16,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -59,14 +56,10 @@ class NavigableCircuitRetainedStateTest {
           .build()
 
       setContent {
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides continuityRetainedStateRegistry()
-        ) {
-          CircuitCompositionLocals(circuit) {
-            val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
-            val navigator = rememberCircuitNavigator(backstack = backstack)
-            NavigableCircuitContent(navigator = navigator, backstack = backstack)
-          }
+        CircuitCompositionLocals(circuit) {
+          val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
+          val navigator = rememberCircuitNavigator(backstack = backstack)
+          NavigableCircuitContent(navigator = navigator, backstack = backstack)
         }
       }
 

@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Ignore
 import org.junit.Test
 
+@Suppress("LargeClass")
 @OptIn(ExperimentalCompilerApi::class)
 class CircuitSymbolProcessorTest {
   private val appScope =

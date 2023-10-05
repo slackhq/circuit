@@ -439,12 +439,312 @@ class CircuitSymbolProcessorTest {
     )
   }
 
+  @Test
+  fun simplePresenterFunction_withObjectScreen() {
+    assertGeneratedFile(
+      sourceFile = kotlin(
+        "TestPresenter.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(): HomeScreen.State {
+
+          }
+        """.trimIndent()
+      ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent = """
+          package test
+    
+          import com.slack.circuit.runtime.CircuitContext
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import com.slack.circuit.runtime.presenter.presenterOf
+          import com.slack.circuit.runtime.screen.Screen
+          import com.squareup.anvil.annotations.ContributesMultibinding
+          import javax.inject.Inject
+          
+          @ContributesMultibinding(AppScope::class)
+          public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
+            override fun create(
+              screen: Screen,
+              navigator: Navigator,
+              context: CircuitContext,
+            ): Presenter<*>? = when (screen) {
+              HomeScreen -> presenterOf { HomePresenter() }
+              else -> null
+            }
+          }
+        """.trimIndent()
+    )
+  }
+
+  @Test
+  fun simplePresenterFunction_withClassScreen() {
+    assertGeneratedFile(
+      sourceFile = kotlin(
+        "TestPresenter.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter(): FavoritesScreen.State {
+
+          }
+        """.trimIndent()
+      ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent = """
+        package test
+    
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> presenterOf { FavoritesPresenter() }
+            else -> null
+          }
+        }
+      """.trimIndent()
+    )
+  }
+
+  @Test
+  fun simplePresenterFunction_withInjectedClassScreen() {
+    assertGeneratedFile(
+      sourceFile = kotlin(
+        "TestPresenter.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
+
+          }
+        """.trimIndent()
+      ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent = """
+        package test
+    
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> presenterOf { FavoritesPresenter(screen = screen, navigator = navigator) }
+            else -> null
+          }
+        }
+      """.trimIndent()
+    )
+  }
+
+  @Test
+  fun presenterClass_noInjection() {
+    assertGeneratedFile(
+      sourceFile = kotlin(
+        "TestPresenter.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """.trimIndent()
+      ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent = """
+        package test
+    
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> FavoritesPresenter()
+            else -> null
+          }
+        }
+      """.trimIndent()
+    )
+  }
+
+  @Test
+  fun presenterClass_simpleInjection() {
+    assertGeneratedFile(
+      sourceFile = kotlin(
+        "TestPresenter.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import javax.inject.Inject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """.trimIndent()
+      ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent = """
+        package test
+    
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        import javax.inject.Provider
+        
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+      """.trimIndent()
+    )
+  }
+
+  @Test
+  fun presenterClass_assistedInjection() {
+    assertGeneratedFile(
+      sourceFile = kotlin(
+        "TestPresenter.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+
+          @Composable
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """.trimIndent()
+      ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent = """
+        package test
+    
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
+            else -> null
+          }
+        }
+      """.trimIndent()
+    )
+  }
+
   // TODO
-  //  - presenter functions
-  //  - presenter classes
-  //  - presenter classes/functions with injections (screen and navigator)
-  //  - presenter functions without return values
-  //  - injecting invalid injections
+  //  - errors: wrong supertypes
+  //  - errors: presenter functions without return values
+  //  - errors: injecting invalid injections
 
   private fun assertGeneratedFile(
     sourceFile: SourceFile,

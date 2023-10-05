@@ -23,8 +23,6 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -83,7 +81,6 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           val windowSizeClass = calculateWindowSizeClass(this)
           CompositionLocalProvider(
             LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass,
-            LocalRetainedStateRegistry provides continuityRetainedStateRegistry()
           ) {
             CircuitCompositionLocals(circuit) {
               ContentWithOverlays {

@@ -10,6 +10,7 @@ import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 
@@ -540,7 +541,6 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.codegen.annotations.CircuitInject
           import com.slack.circuit.runtime.Navigator
           import androidx.compose.runtime.Composable
-          import androidx.compose.ui.Modifier
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           @Composable
@@ -587,7 +587,6 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.codegen.annotations.CircuitInject
           import com.slack.circuit.runtime.presenter.Presenter
           import androidx.compose.runtime.Composable
-          import androidx.compose.ui.Modifier
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           @Composable
@@ -636,7 +635,6 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.codegen.annotations.CircuitInject
           import com.slack.circuit.runtime.presenter.Presenter
           import androidx.compose.runtime.Composable
-          import androidx.compose.ui.Modifier
           import javax.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
@@ -690,7 +688,6 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.Navigator
           import com.slack.circuit.runtime.presenter.Presenter
           import androidx.compose.runtime.Composable
-          import androidx.compose.ui.Modifier
           import dagger.assisted.Assisted
           import dagger.assisted.AssistedFactory
           import dagger.assisted.AssistedInject
@@ -741,10 +738,143 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-  // TODO
-  //  - errors: wrong supertypes
-  //  - errors: presenter functions without return values
-  //  - errors: injecting invalid injections
+  @Ignore("Toe hold for when we implement this validation")
+  @Test
+  fun invalidInjections() {
+    assertProcessingError(
+      sourceFile = kotlin(
+        "InvalidInjections.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesFunction(state: FavoritesScreen.State, someString: String, modifier: Modifier = Modifier) {
+
+          }
+
+          @Composable
+          class Favorites @AssistedInject constructor(
+            @Assisted private val someString: String,
+          ) : Ui<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(someString: String): Favorites
+            }
+          
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
+            }
+          }
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesFunctionPresenter(someString: String): FavoritesScreen.State {
+
+          }
+
+          @Composable
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val someString: String,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(someString: String): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """.trimIndent()
+      )) { messages ->
+      assertThat(messages).contains("TODO")
+    }
+  }
+
+  @Test
+  fun invalidSupertypes() {
+    assertProcessingError(
+      sourceFile = kotlin(
+        "InvalidSupertypes.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          class Favorites {
+            @Composable
+            fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
+            }
+          }
+        """.trimIndent()
+      )) { messages ->
+      assertThat(messages).contains("Factory must be for a UI or Presenter class, but was test.Favorites. Supertypes: [Any]")
+    }
+  }
+
+  @Ignore("Toe hold for when we implement this validation")
+  @Test
+  fun presenterFunctionMissingReturn() {
+    assertProcessingError(
+      sourceFile = kotlin(
+        "MissingPresenterReturn.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter() {
+
+          }
+        """.trimIndent()
+      )) { messages ->
+      assertThat(messages).contains("TODO")
+    }
+  }
+
+  @Test
+  fun uiFunctionMissingModifier() {
+    assertProcessingError(
+      sourceFile = kotlin(
+        "MissingModifierParam.kt",
+        """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun Favorites() {
+
+          }
+        """.trimIndent()
+      )) { messages ->
+      assertThat(messages).contains("UI composable functions must have a Modifier parameter!")
+    }
+  }
 
   private fun assertGeneratedFile(
     sourceFile: SourceFile,
@@ -759,6 +889,16 @@ class CircuitSymbolProcessorTest {
     assertThat(generatedAdapter.exists()).isTrue()
     assertThat(generatedAdapter.readText().trim())
       .isEqualTo(expectedContent.trimIndent())
+  }
+
+  private fun assertProcessingError(
+    sourceFile: SourceFile,
+    body: (messages: String) -> Unit
+  ) {
+    val compilation = prepareCompilation(sourceFile)
+    val result = compilation.compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
+    body(result.messages)
   }
 
   private fun prepareCompilation(

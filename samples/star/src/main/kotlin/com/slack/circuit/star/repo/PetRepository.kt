@@ -2,30 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.repo
 
-import android.content.Context
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.slack.circuit.star.data.PetfinderApi
-import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.ImmutableListAdapter
 import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.Size
+import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.ApplicationContext
 import com.slack.circuit.star.di.SingleIn
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.retryWithExponentialBackoff
 import com.squareup.anvil.annotations.ContributesBinding
-import java.time.Duration
-import java.time.Instant
-import java.util.Locale
-import javax.inject.Inject
-import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -34,6 +26,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Duration
+import java.time.Instant
+import java.util.Locale
+import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
+import com.slack.circuit.star.db.Animal as DbAnimal
 
 interface PetRepository {
   suspend fun refreshData()
@@ -50,12 +48,12 @@ interface PetRepository {
 class PetRepositoryImpl
 @Inject
 constructor(
-  @ApplicationContext private val appContext: Context,
+  sqliteDriverFactory: SqlDriverFactory,
   private val petFinderApi: PetfinderApi,
 ) : PetRepository {
 
   private val backgroundScope = CoroutineScope(SupervisorJob() + IO)
-  private val driver = AndroidSqliteDriver(StarDatabase.Schema, appContext, "star.db")
+  private val driver = sqliteDriverFactory.create(StarDatabase.Schema, "star.db")
   private val starDb =
     StarDatabase(
       driver,

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -30,7 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -55,12 +58,12 @@ import com.slack.circuitx.overlays.showFullScreenOverlay
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
+import kotlin.math.absoluteValue
 
 /*
  * This is a trivial example of a photo carousel used in the pet detail screen. We'd normally likely
@@ -150,13 +153,13 @@ internal fun PetPhotoCarousel(state: PetPhotoCarouselScreen.State, modifier: Mod
       .focusRequester(requester)
       .focusable()
       .onKeyEvent { event ->
-        if (event.nativeKeyEvent.action != KeyEvent.ACTION_UP) return@onKeyEvent false
+        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
         val index =
-          when (event.nativeKeyEvent.keyCode) {
-            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+          when (event.key) {
+            Key.DirectionRight -> {
               pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
             }
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
+            Key.DirectionLeft -> {
               pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
             }
             else -> -1

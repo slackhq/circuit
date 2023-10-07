@@ -12,7 +12,7 @@ import androidx.compose.ui.layout.layout
  * A composable which optionally lays out the given [content], depending on what [shouldLayout]
  * returns, whilst still keeping [content] attached to composition.
  *
- * This is useful when used in conjuction with `movableContentOf`, as that will destroy the
+ * This is useful when used in conjunction with `movableContentOf`, as that will destroy the
  * content's state 'very soon' after the content is detached from composition. By using this
  * composable, the content can remain attached to composition, but can avoid being measured, laid
  * out or drawn, allowing us to reduce wasted work.

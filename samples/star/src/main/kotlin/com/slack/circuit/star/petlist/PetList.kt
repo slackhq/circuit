@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.AnimationConstants
@@ -68,7 +67,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -96,14 +94,12 @@ import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
-import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.overlays.BottomSheetOverlay
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
@@ -121,12 +117,13 @@ data class PetListAnimal(
   val age: String,
 )
 
+// TODO KMP this
 @Parcelize
 class Filters(
   @TypeParceler<ImmutableSet<Gender>, ImmutableSetParceler>
-  val genders: ImmutableSet<Gender> = Gender.values().asIterable().toImmutableSet(),
+  val genders: ImmutableSet<Gender> = Gender.entries.asIterable().toImmutableSet(),
   @TypeParceler<ImmutableSet<Size>, ImmutableSetParceler>
-  val sizes: ImmutableSet<Size> = Size.values().asIterable().toImmutableSet()
+  val sizes: ImmutableSet<Size> = Size.entries.asIterable().toImmutableSet()
 ) : Parcelable
 
 @Parcelize
@@ -432,20 +429,6 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
   )
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun PreviewUpdateFiltersSheet() {
-  StarTheme {
-    Surface {
-      UpdateFiltersSheet(
-        initialFilters = Filters(persistentSetOf(Gender.FEMALE)),
-        modifier = Modifier.padding(16.dp),
-      )
-    }
-  }
-}
-
 @VisibleForTesting
 @Composable
 internal fun UpdateFiltersSheet(
@@ -456,7 +439,7 @@ internal fun UpdateFiltersSheet(
   Column(modifier.fillMaxWidth(), verticalArrangement = spacedBy(16.dp)) {
     val genderOptions = remember {
       SnapshotStateMap<Gender, Boolean>().apply {
-        for (gender in Gender.values()) {
+        for (gender in Gender.entries) {
           put(gender, gender in initialFilters.genders)
         }
       }
@@ -465,7 +448,7 @@ internal fun UpdateFiltersSheet(
 
     val sizeOptions = remember {
       SnapshotStateMap<Size, Boolean>().apply {
-        for (size in Size.values()) {
+        for (size in Size.entries) {
           put(size, size in initialFilters.sizes)
         }
       }

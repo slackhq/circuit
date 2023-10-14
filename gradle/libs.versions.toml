@@ -52,7 +52,7 @@ roborazzi = "1.5.0"
 spotless = "6.20.0"
 sqldelight = "2.0.0"
 telephoto = "0.6.2"
-testParameterInjector = "1.12"
+testParameterInjector = "1.13"
 turbine = "1.0.0"
 versionsPlugin = "0.47.0"
 

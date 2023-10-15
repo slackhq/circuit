@@ -1,16 +1,25 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import java.util.Locale
-
 dependencyResolutionManagement {
   versionCatalogs {
-    if (System.getenv("DEP_OVERRIDES") == "true") {
-      val overrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }
-      maybeCreate("libs").apply {
-        for ((key, value) in overrides) {
-          val catalogKey = key.removePrefix("DEP_OVERRIDE_").lowercase(Locale.getDefault())
-          println("Overriding $catalogKey with $value")
-          version(catalogKey, value)
+    if (System.getenv("DEP_OVERRIDES") == "true" || System.getProperty("DEP_OVERRIDES") == "true") {
+      // Source both env vars and system props for overrides. System props take precedence.
+      val envOverrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }
+      val systemPropOverrides =
+        System.getProperties()
+          .filterKeys { it.toString().startsWith("DEP_OVERRIDE_") }
+          .entries
+          .associate { (k, v) -> k.toString() to v.toString() }
+      val overrides =
+        (envOverrides + systemPropOverrides).mapKeys { (key, _) ->
+          // Case-sensitive, don't adjust it after removing the prefix!
+          key.removePrefix("DEP_OVERRIDE_")
+        }
+      configureEach {
+        val catalog = this
+        for ((catalogKey, value) in overrides) {
+          println("Overriding $catalogKey with $value in catalog '${catalog.name}'")
+          catalog.version(catalogKey, value)
         }
       }
     }

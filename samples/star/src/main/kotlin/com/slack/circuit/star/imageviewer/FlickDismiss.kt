@@ -154,10 +154,10 @@ data class FlickToDismissState(
   }
 
   sealed interface FlickGestureState {
-    object Idle : FlickGestureState
+    data object Idle : FlickGestureState
 
-    object Dragging : FlickGestureState
+    data object Dragging : FlickGestureState
 
-    object Dismissed : FlickGestureState
+    data object Dismissed : FlickGestureState
   }
 }

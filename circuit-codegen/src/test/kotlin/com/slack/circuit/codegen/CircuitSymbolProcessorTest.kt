@@ -8,6 +8,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
+import com.tschuchort.compiletesting.kspArgs
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
@@ -805,6 +806,71 @@ class CircuitSymbolProcessorTest {
     )
   }
 
+  @Test
+  fun anvilBindingsSkipped() {
+    assertGeneratedFile(
+      emitAnvilBindings = false,
+      sourceFile =
+        kotlin(
+            "TestPresenterWithoutAnvil.kt",
+            """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+
+          @Composable
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """
+                .trimIndent()
+        ),
+        generatedFilePath = "test/FavoritesPresenterFactory.kt",
+        expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import javax.inject.Inject
+
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
+            else -> null
+          }
+        }
+      """
+            .trimIndent()
+    )
+  }
+
   @Ignore("Toe hold for when we implement this validation")
   @Test
   fun invalidInjections() {
@@ -961,9 +1027,10 @@ class CircuitSymbolProcessorTest {
   private fun assertGeneratedFile(
     sourceFile: SourceFile,
     generatedFilePath: String,
-    @Language("kotlin") expectedContent: String
+    @Language("kotlin") expectedContent: String,
+    emitAnvilBindings: Boolean = true
   ) {
-    val compilation = prepareCompilation(sourceFile)
+    val compilation = prepareCompilation(sourceFile, emitAnvilBindings = emitAnvilBindings)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
@@ -972,8 +1039,12 @@ class CircuitSymbolProcessorTest {
     assertThat(generatedAdapter.readText().trim()).isEqualTo(expectedContent.trimIndent())
   }
 
-  private fun assertProcessingError(sourceFile: SourceFile, body: (messages: String) -> Unit) {
-    val compilation = prepareCompilation(sourceFile)
+  private fun assertProcessingError(
+    sourceFile: SourceFile,
+    emitAnvilBindings: Boolean = true,
+    body: (messages: String) -> Unit
+  ) {
+    val compilation = prepareCompilation(sourceFile, emitAnvilBindings = emitAnvilBindings)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     body(result.messages)
@@ -981,16 +1052,19 @@ class CircuitSymbolProcessorTest {
 
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
+    emitAnvilBindings: Boolean
   ): KotlinCompilation =
     KotlinCompilation().apply {
       sources = sourceFiles.toList() + listOf(appScope, screens)
       inheritClassPath = true
       symbolProcessorProviders = listOf(CircuitSymbolProcessorProvider())
+      kspArgs += "circuit.generate-anvil-bindings" to emitAnvilBindings.toString()
     }
 
   private fun compile(
     vararg sourceFiles: SourceFile,
+    emitAnvilBindings: Boolean
   ): CompilationResult {
-    return prepareCompilation(*sourceFiles).compile()
+    return prepareCompilation(*sourceFiles, emitAnvilBindings = emitAnvilBindings).compile()
   }
 }

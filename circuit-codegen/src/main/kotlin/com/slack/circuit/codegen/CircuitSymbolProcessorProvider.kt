@@ -64,11 +64,12 @@ private val SCREEN = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "Screen")
 private val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
 private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
 private const val FACTORY = "Factory"
+private const val CIRCUIT_GENERATE_ANVIL_BINDINGS = "circuit.generate-anvil-bindings"
 
 @AutoService(SymbolProcessorProvider::class)
 public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-    return CircuitSymbolProcessor(environment.logger, environment.codeGenerator)
+    return CircuitSymbolProcessor(environment.logger, environment.codeGenerator, environment.options)
   }
 }
 
@@ -101,16 +102,19 @@ private fun Resolver.loadOptionalKSType(name: String?): KSType? {
 private class CircuitSymbolProcessor(
   private val logger: KSPLogger,
   private val codeGenerator: CodeGenerator,
+  private val options: Map<String, String>,
 ) : SymbolProcessor {
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
+    val emitAnvilBindings = (options[CIRCUIT_GENERATE_ANVIL_BINDINGS] ?: "true").toBoolean()
+
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
       annotatedElement ->
       when (annotatedElement) {
-        is KSClassDeclaration -> generateFactory(annotatedElement, InstantiationType.CLASS, symbols)
+        is KSClassDeclaration -> generateFactory(annotatedElement, InstantiationType.CLASS, symbols, emitAnvilBindings)
         is KSFunctionDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols)
+          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, emitAnvilBindings)
         else ->
           logger.error(
             "CircuitInject is only applicable on classes and functions.",
@@ -125,6 +129,7 @@ private class CircuitSymbolProcessor(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
     symbols: CircuitSymbols,
+    emitAnvilBindings: Boolean,
   ) {
     val circuitInjectAnnotation =
       annotatedElement.annotations.first {
@@ -149,11 +154,6 @@ private class CircuitSymbolProcessor(
 
     val builder =
       TypeSpec.classBuilder(className + FACTORY)
-        .addAnnotation(
-          AnnotationSpec.builder(ContributesMultibinding::class)
-            .addMember("%T::class", scope)
-            .build()
-        )
         .primaryConstructor(
           FunSpec.constructorBuilder()
             .addAnnotation(Inject::class)
@@ -169,6 +169,13 @@ private class CircuitSymbolProcessor(
                   .build()
               )
             }
+          }
+          if (emitAnvilBindings) {
+            addAnnotation(
+              AnnotationSpec.builder(ContributesMultibinding::class)
+                .addMember("%T::class", scope)
+                .build()
+            )
           }
         }
     val screenBranch =

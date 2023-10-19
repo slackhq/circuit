@@ -9,7 +9,7 @@ agp = "8.1.2"
 anvil = "2.4.8"
 benchmark = "1.2.0-rc02"
 coil = "2.4.0"
-compose-animation = "1.5.3"
+compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler-version = "1.5.3"

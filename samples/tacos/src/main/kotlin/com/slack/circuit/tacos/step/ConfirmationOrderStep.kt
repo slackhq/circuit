@@ -31,7 +31,7 @@ import com.slack.circuit.tacos.model.toCurrencyString
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-object ConfirmationOrderStep : OrderStep {
+data object ConfirmationOrderStep : OrderStep {
   override val index = 2
   override val headerResId = R.string.confirm_step_header
 

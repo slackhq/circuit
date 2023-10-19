@@ -189,27 +189,27 @@ private fun log(message: String) {
 }
 
 private sealed interface Event {
-  object Start : Event
+  data object Start : Event
 
   data class OnState(val state: CircuitUiState) : Event
 
-  object OnBeforeCreatePresenter : Event
+  data object OnBeforeCreatePresenter : Event
 
-  object OnAfterCreatePresenter : Event
+  data object OnAfterCreatePresenter : Event
 
-  object OnBeforeCreateUi : Event
+  data object OnBeforeCreateUi : Event
 
-  object OnAfterCreateUi : Event
+  data object OnAfterCreateUi : Event
 
-  object OnUnavailableContent : Event
+  data object OnUnavailableContent : Event
 
-  object OnStartPresent : Event
+  data object OnStartPresent : Event
 
-  object OnDisposePresent : Event
+  data object OnDisposePresent : Event
 
-  object OnStartContent : Event
+  data object OnStartContent : Event
 
-  object OnDisposeContent : Event
+  data object OnDisposeContent : Event
 
-  object Dispose : Event
+  data object Dispose : Event
 }

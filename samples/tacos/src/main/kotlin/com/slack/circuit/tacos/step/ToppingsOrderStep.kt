@@ -25,12 +25,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
 
-object ToppingsOrderStep : OrderStep {
+data object ToppingsOrderStep : OrderStep {
   override val index = 1
   override val headerResId = R.string.toppings_step_header
 
   sealed interface State : OrderStep.State {
-    object Loading : State
+    data object Loading : State
 
     data class AvailableToppings(
       val selected: ImmutableSet<Ingredient>,

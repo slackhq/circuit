@@ -12,6 +12,10 @@
   "platformAutomerge": true,
   "packageRules": [
     {
+      "matchManagers": ["pip_requirements"],
+      "automerge": true
+    },
+    {
       "description": "Automerge non-major updates",
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true

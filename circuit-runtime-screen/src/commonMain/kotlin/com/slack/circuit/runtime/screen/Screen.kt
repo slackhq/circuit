@@ -29,10 +29,4 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  */
-@Immutable public expect interface Screen : Saveable
-
-/**
- * Defined in common due to https://youtrack.jetbrains.com/issue/KT-22841. Parcelable on Android,
- * unimplemented everywhere else.
- */
-public expect interface Saveable
+@Immutable public expect interface Screen

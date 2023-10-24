@@ -5,8 +5,4 @@ package com.slack.circuit.runtime.screen
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 
-@Immutable public actual interface Screen : Saveable
-
-@OptIn(ExperimentalMultiplatform::class)
-@AllowDifferentMembersInActual
-public actual typealias Saveable = Parcelable
+@Immutable public actual interface Screen : Parcelable

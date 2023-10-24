@@ -23,12 +23,12 @@ sealed interface OrderStep {
     val isOrderValid: Boolean
 
     // Order is in an invalid state. Do not allow user to proceed to next step
-    object Invalid : Validation {
+    data object Invalid : Validation {
       override val isOrderValid = false
     }
 
     // Order is in a valid state. Allow user to proceed to next step
-    object Valid : Validation {
+    data object Valid : Validation {
       override val isOrderValid = true
     }
   }
@@ -43,7 +43,7 @@ sealed interface OrderStep {
   }
 
   // Reset order state and restart the order process
-  object Restart : Event
+  data object Restart : Event
 
   /** The primary [Composable] entry point to produce order step state */
   fun interface StateProducer<T : State> {

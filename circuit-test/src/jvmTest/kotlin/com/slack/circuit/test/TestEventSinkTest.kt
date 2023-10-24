@@ -212,8 +212,8 @@ class TestEventSinkTest {
 
 private sealed interface Event : CircuitUiEvent
 
-private object Event1 : Event
+private data object Event1 : Event
 
-private object Event2 : Event
+private data object Event2 : Event
 
-private object Event3 : Event
+private data object Event3 : Event

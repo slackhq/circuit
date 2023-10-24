@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.slack.circuit.tacos.R
 
-object SummaryOrderStep : OrderStep {
+data object SummaryOrderStep : OrderStep {
   @Suppress("MagicNumber") override val index = 3
   override val headerResId = R.string.summary_step_header
 

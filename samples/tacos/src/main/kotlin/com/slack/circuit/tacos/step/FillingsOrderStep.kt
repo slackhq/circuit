@@ -23,12 +23,12 @@ import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
 import kotlinx.collections.immutable.ImmutableList
 
-object FillingsOrderStep : OrderStep {
+data object FillingsOrderStep : OrderStep {
   override val index = 0
   override val headerResId = R.string.fillings_step_header
 
   sealed interface State : OrderStep.State {
-    object Loading : State
+    data object Loading : State
 
     data class AvailableFillings(
       val selected: Ingredient? = null,

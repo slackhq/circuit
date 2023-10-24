@@ -64,9 +64,9 @@ data class ImageViewerScreen(
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    object Close : Event
+    data object Close : Event
 
-    object NoOp : Event // Weird but necessary because of the reuse in bottom sheet
+    data object NoOp : Event // Weird but necessary because of the reuse in bottom sheet
   }
 }
 

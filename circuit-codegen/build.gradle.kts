@@ -14,4 +14,17 @@ dependencies {
   implementation(libs.kotlinpoet)
   implementation(libs.kotlinpoet.ksp)
   implementation(libs.anvil.annotations)
+
+  testImplementation(libs.compose.foundation)
+  testImplementation(libs.junit)
+  testImplementation(libs.kct)
+  testImplementation(libs.kct.ksp)
+  testImplementation(libs.kotlin.compilerEmbeddable)
+  testImplementation(libs.ksp)
+  testImplementation(libs.ksp.api)
+  testImplementation(libs.truth)
+  testImplementation(projects.circuitCodegenAnnotations)
+  testImplementation(projects.circuitRuntimePresenter)
+  testImplementation(projects.circuitRuntimeScreen)
+  testImplementation(projects.circuitRuntimeUi)
 }

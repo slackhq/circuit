@@ -25,7 +25,13 @@ kotlin {
 
   sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
 
-  compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+      }
+    }
+  }
 }
 
 android { namespace = "com.slack.circuit.runtime.screen" }

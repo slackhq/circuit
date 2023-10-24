@@ -21,7 +21,13 @@ kotlin {
   }
   // endregion
 
-  compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+      }
+    }
+  }
 
   applyDefaultHierarchyTemplate()
 

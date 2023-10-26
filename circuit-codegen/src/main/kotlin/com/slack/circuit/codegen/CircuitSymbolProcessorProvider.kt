@@ -49,6 +49,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
+private const val DAGGER_PACKAGE = "dagger"
+private const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"
+private const val DAGGER_MULTIBINDINGS_PACKAGE = "$DAGGER_PACKAGE.multibindings"
 private const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
 private const val CIRCUIT_RUNTIME_SCREEN_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.screen"
 private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
@@ -63,13 +66,22 @@ private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitU
 private val SCREEN = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "Screen")
 private val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
 private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
+private val DAGGER_MODULE = ClassName(DAGGER_PACKAGE, "Module")
+private val DAGGER_BINDS = ClassName(DAGGER_PACKAGE, "Binds")
+private val DAGGER_INSTALL_IN = ClassName(DAGGER_HILT_PACKAGE, "InstallIn")
+private val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
+private const val MODULE = "Module"
 private const val FACTORY = "Factory"
-private const val CIRCUIT_GENERATE_ANVIL_BINDINGS = "circuit.generate-anvil-bindings"
+private const val CIRCUIT_CODEGEN_MODE = "circuit.codegen.mode"
 
 @AutoService(SymbolProcessorProvider::class)
 public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-    return CircuitSymbolProcessor(environment.logger, environment.codeGenerator, environment.options)
+    return CircuitSymbolProcessor(
+      environment.logger,
+      environment.codeGenerator,
+      environment.options
+    )
   }
 }
 
@@ -107,14 +119,17 @@ private class CircuitSymbolProcessor(
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
-    val emitAnvilBindings = (options[CIRCUIT_GENERATE_ANVIL_BINDINGS] ?: "true").toBoolean()
+    val codegenMode =
+      CodegenMode.entries.find { it.name.equals(options[CIRCUIT_CODEGEN_MODE], ignoreCase = true) }
+        ?: CodegenMode.ANVIL
 
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
       annotatedElement ->
       when (annotatedElement) {
-        is KSClassDeclaration -> generateFactory(annotatedElement, InstantiationType.CLASS, symbols, emitAnvilBindings)
+        is KSClassDeclaration ->
+          generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
         is KSFunctionDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, emitAnvilBindings)
+          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
         else ->
           logger.error(
             "CircuitInject is only applicable on classes and functions.",
@@ -129,7 +144,7 @@ private class CircuitSymbolProcessor(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
     symbols: CircuitSymbols,
-    emitAnvilBindings: Boolean,
+    codegenMode: CodegenMode,
   ) {
     val circuitInjectAnnotation =
       annotatedElement.annotations.first {
@@ -170,13 +185,8 @@ private class CircuitSymbolProcessor(
               )
             }
           }
-          if (emitAnvilBindings) {
-            addAnnotation(
-              AnnotationSpec.builder(ContributesMultibinding::class)
-                .addMember("%T::class", scope)
-                .build()
-            )
-          }
+
+          codegenMode.annotateFactory(builder = this, scope = scope)
         }
     val screenBranch =
       if (screenIsObject) {
@@ -193,6 +203,16 @@ private class CircuitSymbolProcessor(
       }
 
     FileSpec.get(factoryData.packageName, typeSpec)
+      .writeTo(codeGenerator = codeGenerator, aggregating = false)
+
+    val additionalType =
+      codegenMode.produceAdditionalTypeSpec(
+        factoryType = factoryData.factoryType,
+        factory = ClassName(factoryData.packageName, className + FACTORY),
+        scope = scope
+      ) ?: return
+
+    FileSpec.get(factoryData.packageName, additionalType)
       .writeTo(codeGenerator = codeGenerator, aggregating = false)
   }
 
@@ -536,6 +556,68 @@ private enum class FactoryType {
 private enum class InstantiationType {
   FUNCTION,
   CLASS
+}
+
+private enum class CodegenMode {
+  ANVIL {
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
+      builder.addAnnotation(
+        AnnotationSpec.builder(ContributesMultibinding::class).addMember("%T::class", scope).build()
+      )
+    }
+  },
+  HILT {
+    override fun produceAdditionalTypeSpec(
+      factory: ClassName,
+      factoryType: FactoryType,
+      scope: TypeName
+    ): TypeSpec {
+      val moduleAnnotations =
+        listOf(
+          AnnotationSpec.builder(DAGGER_MODULE).build(),
+          AnnotationSpec.builder(DAGGER_INSTALL_IN).addMember("%T::class", scope).build(),
+        )
+
+      val providerAnnotations =
+        listOf(
+          AnnotationSpec.builder(DAGGER_BINDS).build(),
+          AnnotationSpec.builder(DAGGER_INTO_SET).build(),
+        )
+
+      val providerReturns =
+        if (factoryType == FactoryType.UI) {
+          CIRCUIT_UI_FACTORY
+        } else {
+          CIRCUIT_PRESENTER_FACTORY
+        }
+
+      val factoryName = factory.simpleName
+
+      val providerSpec =
+        FunSpec.builder("bind${factoryName}")
+          .addModifiers(KModifier.ABSTRACT)
+          .addAnnotations(providerAnnotations)
+          .addParameter(name = factoryName.replaceFirstChar { it.lowercase() }, type = factory)
+          .returns(providerReturns)
+          .build()
+
+      return TypeSpec.classBuilder(factory.peerClass(factoryName + MODULE))
+        .addModifiers(KModifier.ABSTRACT)
+        .addAnnotations(moduleAnnotations)
+        .addFunction(providerSpec)
+        .build()
+    }
+  };
+
+  open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
+
+  open fun produceAdditionalTypeSpec(
+    factory: ClassName,
+    factoryType: FactoryType,
+    scope: TypeName,
+  ): TypeSpec? {
+    return null
+  }
 }
 
 private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: () -> Unit) {

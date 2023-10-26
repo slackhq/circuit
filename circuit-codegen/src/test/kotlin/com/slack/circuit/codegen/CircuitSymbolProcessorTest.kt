@@ -30,6 +30,16 @@ class CircuitSymbolProcessorTest {
     """
         .trimIndent()
     )
+  private val singletonComponent =
+    kotlin(
+      "SingletonComponent.kt",
+      """
+            package dagger.hilt.components
+
+            annotation class SingletonComponent
+          """
+        .trimIndent()
+    )
   private val screens =
     kotlin(
       "Screens.kt",
@@ -807,13 +817,13 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
-  fun anvilBindingsSkipped() {
+  fun hiltCodegenMode_skipsAnvilBinding() {
     assertGeneratedFile(
-      emitAnvilBindings = false,
+      codegenMode = CodegenMode.HILT,
       sourceFile =
         kotlin(
-            "TestPresenterWithoutAnvil.kt",
-            """
+          "TestPresenterWithoutAnvil.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -823,13 +833,14 @@ class CircuitSymbolProcessorTest {
           import dagger.assisted.Assisted
           import dagger.assisted.AssistedFactory
           import dagger.assisted.AssistedInject
+          import dagger.hilt.components.SingletonComponent
 
           @Composable
           class FavoritesPresenter @AssistedInject constructor(
             @Assisted private val screen: FavoritesScreen,
             @Assisted private val navigator: Navigator,
           ) : Presenter<FavoritesScreen.State> {
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
             @AssistedFactory
             fun interface Factory {
               fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
@@ -841,10 +852,10 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-                .trimIndent()
+            .trimIndent()
         ),
-        generatedFilePath = "test/FavoritesPresenterFactory.kt",
-        expectedContent =
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
         """
         package test
 
@@ -867,7 +878,71 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
+          .trimIndent()
+    )
+  }
+
+  @Test
+  fun hiltCodegenMode_module() {
+    assertGeneratedFile(
+      codegenMode = CodegenMode.HILT,
+      sourceFile =
+        kotlin(
+          "TestPresenterWithoutAnvil.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+          import dagger.hilt.components.SingletonComponent
+
+          @Composable
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """
             .trimIndent()
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactoryModule.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.presenter.Presenter
+        import dagger.Binds
+        import dagger.Module
+        import dagger.hilt.InstallIn
+        import dagger.hilt.components.SingletonComponent
+        import dagger.multibindings.IntoSet
+
+        @Module
+        @InstallIn(SingletonComponent::class)
+        public abstract class FavoritesPresenterFactoryModule {
+          @Binds
+          @IntoSet
+          public abstract
+              fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
+              Presenter.Factory
+        }
+      """
+          .trimIndent()
     )
   }
 
@@ -1024,13 +1099,18 @@ class CircuitSymbolProcessorTest {
     }
   }
 
+  private enum class CodegenMode {
+    ANVIL,
+    HILT
+  }
+
   private fun assertGeneratedFile(
     sourceFile: SourceFile,
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
-    emitAnvilBindings: Boolean = true
+    codegenMode: CodegenMode = CodegenMode.ANVIL
   ) {
-    val compilation = prepareCompilation(sourceFile, emitAnvilBindings = emitAnvilBindings)
+    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
@@ -1041,10 +1121,10 @@ class CircuitSymbolProcessorTest {
 
   private fun assertProcessingError(
     sourceFile: SourceFile,
-    emitAnvilBindings: Boolean = true,
+    codegenMode: CodegenMode = CodegenMode.ANVIL,
     body: (messages: String) -> Unit
   ) {
-    val compilation = prepareCompilation(sourceFile, emitAnvilBindings = emitAnvilBindings)
+    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     body(result.messages)
@@ -1052,19 +1132,22 @@ class CircuitSymbolProcessorTest {
 
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
-    emitAnvilBindings: Boolean
+    codegenMode: CodegenMode
   ): KotlinCompilation =
     KotlinCompilation().apply {
-      sources = sourceFiles.toList() + listOf(appScope, screens)
+      sources =
+        sourceFiles.toList() +
+          screens +
+          when (codegenMode) {
+            CodegenMode.ANVIL -> appScope
+            CodegenMode.HILT -> singletonComponent
+          }
       inheritClassPath = true
       symbolProcessorProviders = listOf(CircuitSymbolProcessorProvider())
-      kspArgs += "circuit.generate-anvil-bindings" to emitAnvilBindings.toString()
+      kspArgs += "circuit.codegen.mode" to codegenMode.name
     }
 
-  private fun compile(
-    vararg sourceFiles: SourceFile,
-    emitAnvilBindings: Boolean
-  ): CompilationResult {
-    return prepareCompilation(*sourceFiles, emitAnvilBindings = emitAnvilBindings).compile()
+  private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {
+    return prepareCompilation(*sourceFiles, codegenMode = codegenMode).compile()
   }
 }

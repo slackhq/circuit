@@ -188,7 +188,7 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.3"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 
-jline = "org.jline:jline:3.23.0"
+jline = "org.jline:jline:3.24.0"
 jsoup = "org.jsoup:jsoup:1.16.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }

@@ -1,6 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
@@ -19,7 +18,7 @@ kotlin {
   jvm()
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {

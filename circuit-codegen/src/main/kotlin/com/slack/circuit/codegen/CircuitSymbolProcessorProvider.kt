@@ -568,6 +568,18 @@ private enum class InstantiationType {
 }
 
 private enum class CodegenMode {
+  /**
+   * The Anvil Codegen mode
+   *
+   * This mode annotates generated factory types with [ContributesMultibinding], allowing for
+   * Anvil to automatically wire the generated class up to Dagger's multibinding system within a
+   * given scope (e.g. AppScope).
+   *
+   * @ContributesMultibinding(AppScope::class)
+   * public class FavoritesPresenterFactory @Inject constructor(
+   *   private val factory: FavoritesPresenter.Factory,
+   * ) : Presenter.Factory { ... }
+   */
   ANVIL {
     override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
       builder.addAnnotation(
@@ -575,6 +587,24 @@ private enum class CodegenMode {
       )
     }
   },
+
+  /**
+   * The Hilt Codegen mode
+   *
+   * This mode provides an additional type, a Hilt module, which binds the generated factory, wiring
+   * up multibinding in the Hilt DI framework. The scope provided via [CircuitInject] is used to define
+   * the dagger component the factory provider is installed in.
+   *
+   * @Module
+   * @InstallIn(SingletonComponent::class)
+   * public abstract class FavoritesPresenterFactoryModule {
+   *   @Binds
+   *   @IntoSet
+   *   public abstract
+   *       fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
+   *       Presenter.Factory
+   * }
+   */
   HILT {
     override fun produceAdditionalTypeSpec(
       factory: ClassName,

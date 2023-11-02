@@ -120,8 +120,17 @@ private class CircuitSymbolProcessor(
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
     val codegenMode =
-      CodegenMode.entries.find { it.name.equals(options[CIRCUIT_CODEGEN_MODE], ignoreCase = true) }
-        ?: CodegenMode.ANVIL
+      options[CIRCUIT_CODEGEN_MODE].let { mode ->
+        if (mode == null) {
+          CodegenMode.ANVIL
+        } else {
+          CodegenMode.entries.find { it.name.equals(mode, ignoreCase = true) }
+            ?: run {
+              logger.error("Unrecognised option for codegen mode \"$mode\".")
+              return emptyList()
+            }
+        }
+      }
 
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
       annotatedElement ->

@@ -184,7 +184,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.3"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 

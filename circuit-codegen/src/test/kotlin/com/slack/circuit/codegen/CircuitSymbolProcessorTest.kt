@@ -929,17 +929,68 @@ class CircuitSymbolProcessorTest {
         import dagger.Binds
         import dagger.Module
         import dagger.hilt.InstallIn
+        import dagger.hilt.codegen.OriginatingElement
         import dagger.hilt.components.SingletonComponent
         import dagger.multibindings.IntoSet
 
         @Module
         @InstallIn(SingletonComponent::class)
+        @OriginatingElement(topLevelClass = FavoritesPresenter::class)
         public abstract class FavoritesPresenterFactoryModule {
           @Binds
           @IntoSet
           public abstract
               fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
               Presenter.Factory
+        }
+      """
+          .trimIndent()
+    )
+  }
+
+  @Test
+  fun hiltCodegenMode_topLevelOriginatingElement() {
+    assertGeneratedFile(
+      codegenMode = CodegenMode.HILT,
+      sourceFile =
+        kotlin(
+          "Home.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dagger.hilt.components.SingletonComponent
+
+          @CircuitInject(HomeScreen::class, SingletonComponent::class)
+          @Composable
+          fun Home(modifier: Modifier = Modifier) {
+
+          }
+        """
+            .trimIndent()
+        ),
+      generatedFilePath = "test/HomeFactoryModule.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.ui.Ui
+        import dagger.Binds
+        import dagger.Module
+        import dagger.hilt.InstallIn
+        import dagger.hilt.codegen.OriginatingElement
+        import dagger.hilt.components.SingletonComponent
+        import dagger.multibindings.IntoSet
+
+        @Module
+        @InstallIn(SingletonComponent::class)
+        @OriginatingElement(topLevelClass = HomeKt::class)
+        public abstract class HomeFactoryModule {
+          @Binds
+          @IntoSet
+          public abstract fun bindHomeFactory(homeFactory: HomeFactory): Ui.Factory
         }
       """
           .trimIndent()

@@ -30,6 +30,7 @@ kotlin {
         dependencies {
           api(libs.anvil.annotations)
           api(libs.dagger)
+          api(libs.hilt)
         }
       }
     val androidMain by getting { dependsOn(commonJvm) }

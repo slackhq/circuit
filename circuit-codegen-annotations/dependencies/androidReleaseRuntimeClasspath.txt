@@ -1,7 +1,9 @@
 androidx.annotation:annotation
 androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime
+com.google.code.findbugs:jsr305
 com.google.dagger:dagger
+com.google.dagger:hilt-core
 com.squareup.anvil:annotations
 javax.inject:javax.inject
 org.jetbrains.compose.runtime:runtime

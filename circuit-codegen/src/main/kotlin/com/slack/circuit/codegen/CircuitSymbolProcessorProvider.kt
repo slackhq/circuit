@@ -11,7 +11,9 @@ import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.KSPLogger
+import com.google.devtools.ksp.processing.PlatformInfo
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -51,6 +53,7 @@ import javax.inject.Provider
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
 private const val DAGGER_PACKAGE = "dagger"
 private const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"
+private const val DAGGER_HILT_CODEGEN_PACKAGE = "$DAGGER_HILT_PACKAGE.codegen"
 private const val DAGGER_MULTIBINDINGS_PACKAGE = "$DAGGER_PACKAGE.multibindings"
 private const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
 private const val CIRCUIT_RUNTIME_SCREEN_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.screen"
@@ -69,6 +72,8 @@ private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitCo
 private val DAGGER_MODULE = ClassName(DAGGER_PACKAGE, "Module")
 private val DAGGER_BINDS = ClassName(DAGGER_PACKAGE, "Binds")
 private val DAGGER_INSTALL_IN = ClassName(DAGGER_HILT_PACKAGE, "InstallIn")
+private val DAGGER_ORIGINATING_ELEMENT =
+  ClassName(DAGGER_HILT_CODEGEN_PACKAGE, "OriginatingElement")
 private val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
 private const val MODULE = "Module"
 private const val FACTORY = "Factory"
@@ -80,7 +85,8 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
     return CircuitSymbolProcessor(
       environment.logger,
       environment.codeGenerator,
-      environment.options
+      environment.options,
+      environment.platforms
     )
   }
 }
@@ -115,6 +121,7 @@ private class CircuitSymbolProcessor(
   private val logger: KSPLogger,
   private val codeGenerator: CodeGenerator,
   private val options: Map<String, String>,
+  private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -131,6 +138,11 @@ private class CircuitSymbolProcessor(
             }
         }
       }
+
+    if (!codegenMode.supportsPlatforms(platforms)) {
+      logger.error("Unsupported platforms for codegen mode ${codegenMode.name}. $platforms")
+      return emptyList()
+    }
 
     resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
       annotatedElement ->
@@ -211,6 +223,11 @@ private class CircuitSymbolProcessor(
           builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
       }
 
+    // Note: We can't directly reference the top-level class declaration for top-level functions in
+    // kotlin. For annotatedElements which as top-level functions, topLevelClass will be null.
+    val topLevelDeclaration = (annotatedElement as KSDeclaration).topLevelDeclaration()
+    val topLevelClass = (topLevelDeclaration as? KSClassDeclaration)?.toClassName()
+
     FileSpec.get(factoryData.packageName, typeSpec)
       .writeTo(codeGenerator = codeGenerator, aggregating = false)
 
@@ -218,7 +235,8 @@ private class CircuitSymbolProcessor(
       codegenMode.produceAdditionalTypeSpec(
         factoryType = factoryData.factoryType,
         factory = ClassName(factoryData.packageName, className + FACTORY),
-        scope = scope
+        scope = scope,
+        topLevelClass = topLevelClass
       ) ?: return
 
     FileSpec.get(factoryData.packageName, additionalType)
@@ -571,16 +589,23 @@ private enum class CodegenMode {
   /**
    * The Anvil Codegen mode
    *
-   * This mode annotates generated factory types with [ContributesMultibinding], allowing for
-   * Anvil to automatically wire the generated class up to Dagger's multibinding system within a
-   * given scope (e.g. AppScope).
+   * This mode annotates generated factory types with [ContributesMultibinding], allowing for Anvil
+   * to automatically wire the generated class up to Dagger's multibinding system within a given
+   * scope (e.g. AppScope).
    *
+   * ```kotlin
    * @ContributesMultibinding(AppScope::class)
    * public class FavoritesPresenterFactory @Inject constructor(
    *   private val factory: FavoritesPresenter.Factory,
    * ) : Presenter.Factory { ... }
+   * ```
    */
   ANVIL {
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      // Anvil only supports JVM & Android
+      return platforms.all { it is JvmPlatformInfo }
+    }
+
     override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
       builder.addAnnotation(
         AnnotationSpec.builder(ContributesMultibinding::class).addMember("%T::class", scope).build()
@@ -592,11 +617,13 @@ private enum class CodegenMode {
    * The Hilt Codegen mode
    *
    * This mode provides an additional type, a Hilt module, which binds the generated factory, wiring
-   * up multibinding in the Hilt DI framework. The scope provided via [CircuitInject] is used to define
-   * the dagger component the factory provider is installed in.
+   * up multibinding in the Hilt DI framework. The scope provided via [CircuitInject] is used to
+   * define the dagger component the factory provider is installed in.
    *
+   * ```kotlin
    * @Module
    * @InstallIn(SingletonComponent::class)
+   * @OriginatingElement(topLevelClass = FavoritesPresenter::class)
    * public abstract class FavoritesPresenterFactoryModule {
    *   @Binds
    *   @IntoSet
@@ -604,17 +631,29 @@ private enum class CodegenMode {
    *       fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
    *       Presenter.Factory
    * }
+   * ```
    */
   HILT {
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      // Hilt only supports JVM & Android
+      return platforms.all { it is JvmPlatformInfo }
+    }
+
     override fun produceAdditionalTypeSpec(
       factory: ClassName,
       factoryType: FactoryType,
-      scope: TypeName
+      scope: TypeName,
+      topLevelClass: ClassName?,
     ): TypeSpec {
       val moduleAnnotations =
-        listOf(
+        listOfNotNull(
           AnnotationSpec.builder(DAGGER_MODULE).build(),
           AnnotationSpec.builder(DAGGER_INSTALL_IN).addMember("%T::class", scope).build(),
+          topLevelClass?.let {
+            AnnotationSpec.builder(DAGGER_ORIGINATING_ELEMENT)
+              .addMember("%L = %T::class", "topLevelClass", topLevelClass)
+              .build()
+          }
         )
 
       val providerAnnotations =
@@ -654,9 +693,12 @@ private enum class CodegenMode {
     factory: ClassName,
     factoryType: FactoryType,
     scope: TypeName,
+    topLevelClass: ClassName?,
   ): TypeSpec? {
     return null
   }
+
+  abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
 }
 
 private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: () -> Unit) {
@@ -664,6 +706,10 @@ private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: 
     logger.error("CircuitInject is not applicable to private or local functions and classes.", this)
     returnBody()
   }
+}
+
+private fun KSDeclaration.topLevelDeclaration(): KSDeclaration {
+  return parentDeclaration?.topLevelDeclaration() ?: this
 }
 
 private val Visibility.isVisible: Boolean

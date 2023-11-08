@@ -1,6 +1,25 @@
 Changelog
 =========
 
+0.16.0
+------
+
+_2023-11-01_
+
+- **New**: `circut-retained` is now enabled automatically in `CircuitCompositionLocals` by default, we still allowing overriding it with no-op implementation.
+- Update to Kotlin `1.9.20`.
+- Update Compose Multiplatform to `1.5.2`.
+- Update `agp` to `8.1.2`.
+- Update `androidx.activity` to `1.8.0`.
+- Update `benchmark` to `1.2.0`.
+- Update `coil` to `2.5.0`.
+- Update `compose.material3` to `1.1.2`.
+- Update `compose.material` to `1.5.4`.
+- Update `compose.runtime` to `1.5.4`.
+- Update `compose.ui` to `1.5.4`.
+- Update `roborazzi` to `1.6.0`.
+
+
 0.15.0
 ------
 

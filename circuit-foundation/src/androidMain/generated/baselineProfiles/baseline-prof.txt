@@ -21,11 +21,11 @@ HSPLcom/slack/circuit/foundation/Circuit$Builder;->getPresenterFactories()Ljava/
 HSPLcom/slack/circuit/foundation/Circuit$Builder;->getUiFactories()Ljava/util/List;
 Lcom/slack/circuit/foundation/CircuitCompositionLocalsKt;
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;-><clinit>()V
-HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->CircuitCompositionLocals(Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+HPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->CircuitCompositionLocals(Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->getLocalCircuit()Landroidx/compose/runtime/ProvidableCompositionLocal;
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->getLocalCircuitContext()Landroidx/compose/runtime/ProvidableCompositionLocal;
 Lcom/slack/circuit/foundation/CircuitCompositionLocalsKt$CircuitCompositionLocals$1;
-HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt$CircuitCompositionLocals$1;-><init>(Lkotlin/jvm/functions/Function2;I)V
+HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt$CircuitCompositionLocals$1;-><init>(Lkotlin/jvm/functions/Function2;)V
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt$CircuitCompositionLocals$1;->invoke(Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt$CircuitCompositionLocals$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/CircuitCompositionLocalsKt$LocalCircuit$1;
@@ -47,7 +47,7 @@ HPLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$10;-><init>(Lcom
 PLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$10;->invoke(Landroidx/compose/runtime/Composer;I)V
 PLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$10;->invoke(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$3;
-HPLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$3;-><init>(Lcom/slack/circuit/runtime/screen/Screen;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function4;Lcom/slack/circuit/runtime/CircuitContext;I)V
+HSPLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$3;-><init>(Lcom/slack/circuit/runtime/screen/Screen;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function4;Lcom/slack/circuit/runtime/CircuitContext;)V
 HPLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$3;->invoke(Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$3;->invoke(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/CircuitContentKt$CircuitContent$4;
@@ -121,7 +121,7 @@ HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt;->buildCircuitContent
 HPLcom/slack/circuit/foundation/NavigableCircuitContentKt;->buildCircuitContentProviders(Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;I)Lkotlinx/collections/immutable/ImmutableList;
 HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt;->getRegistryKey(Lcom/slack/circuit/backstack/BackStack$Record;)Ljava/lang/String;
 Lcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$1;
-HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$1;-><init>(Lcom/slack/circuit/backstack/BackStack;ILkotlinx/collections/immutable/ImmutableMap;)V
+HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$1;-><init>(Lcom/slack/circuit/backstack/BackStack;Lkotlinx/collections/immutable/ImmutableMap;)V
 HPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$1;->invoke(Lcom/slack/circuit/foundation/RecordContentProvider;Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$1$1;
@@ -159,7 +159,7 @@ HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedCo
 HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$1$1;->invoke(Landroidx/compose/animation/AnimatedContentTransitionScope;)Landroidx/compose/animation/ContentTransform;
 HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$1$1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$2;
-HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$2;-><init>(Lkotlin/jvm/functions/Function3;I)V
+HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$2;-><init>(Lkotlin/jvm/functions/Function3;)V
 HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$2;->invoke(Landroidx/compose/animation/AnimatedContentScope;Lkotlinx/collections/immutable/ImmutableList;Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$2;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$3;

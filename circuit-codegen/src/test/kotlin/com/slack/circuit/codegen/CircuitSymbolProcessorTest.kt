@@ -9,6 +9,7 @@ import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
 import com.tschuchort.compiletesting.kspArgs
+import com.tschuchort.compiletesting.kspIncremental
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
@@ -980,13 +981,11 @@ class CircuitSymbolProcessorTest {
         import dagger.Binds
         import dagger.Module
         import dagger.hilt.InstallIn
-        import dagger.hilt.codegen.OriginatingElement
         import dagger.hilt.components.SingletonComponent
         import dagger.multibindings.IntoSet
 
         @Module
         @InstallIn(SingletonComponent::class)
-        @OriginatingElement(topLevelClass = HomeKt::class)
         public abstract class HomeFactoryModule {
           @Binds
           @IntoSet

@@ -228,8 +228,10 @@ private class CircuitSymbolProcessor(
     val topLevelDeclaration = (annotatedElement as KSDeclaration).topLevelDeclaration()
     val topLevelClass = (topLevelDeclaration as? KSClassDeclaration)?.toClassName()
 
+    val originatingFile = listOfNotNull(annotatedElement.containingFile)
+
     FileSpec.get(factoryData.packageName, typeSpec)
-      .writeTo(codeGenerator = codeGenerator, aggregating = false)
+      .writeTo(codeGenerator = codeGenerator, aggregating = false, originatingKSFiles = originatingFile)
 
     val additionalType =
       codegenMode.produceAdditionalTypeSpec(
@@ -240,7 +242,7 @@ private class CircuitSymbolProcessor(
       ) ?: return
 
     FileSpec.get(factoryData.packageName, additionalType)
-      .writeTo(codeGenerator = codeGenerator, aggregating = false)
+      .writeTo(codeGenerator = codeGenerator, aggregating = false, originatingKSFiles = originatingFile)
   }
 
   private data class FactoryData(

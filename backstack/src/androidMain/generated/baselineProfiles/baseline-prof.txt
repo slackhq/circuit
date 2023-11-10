@@ -29,7 +29,7 @@ HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;-><ini
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->access$getSaver$cp()Landroidx/compose/runtime/saveable/Saver;
 PLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->access$getValueProviders$p(Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;)Ljava/util/Map;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->canBeSaved(Ljava/lang/Object;)Z
-HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->consumeRestored(Ljava/lang/String;)Ljava/lang/Object;
+HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->consumeRestored(Ljava/lang/String;)Ljava/lang/Object;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->getParentRegistry()Landroidx/compose/runtime/saveable/SaveableStateRegistry;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->performSave()Ljava/util/Map;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->registerProvider(Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Landroidx/compose/runtime/saveable/SaveableStateRegistry$Entry;

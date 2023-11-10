@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.16.1
+------
+
+_2023-11-09_
+
+- **Fix**: Fix retained value not recalculating if inputs changed.
+- Build against KSP `1.9.20-1.0.14`.
+
 0.16.0
 ------
 

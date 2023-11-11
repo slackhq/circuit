@@ -238,7 +238,7 @@ truth = "com.google.truth:truth:1.1.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID
-uuid = "com.benasher44:uuid:0.8.1"
+uuid = "com.benasher44:uuid:0.8.2"
 
 [bundles]
 androidx-activity = ["androidx-activity", "androidx-activity-ktx"]

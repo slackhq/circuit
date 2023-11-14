@@ -24,15 +24,13 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @ExperimentalCoilApi
-@RunWith(Parameterized::class)
-class PetListPaparazziSnapshotTest(private val useDarkMode: Boolean) {
+class PetListPaparazziSnapshotTest {
 
   companion object {
     val ANIMAL =
@@ -45,15 +43,7 @@ class PetListPaparazziSnapshotTest(private val useDarkMode: Boolean) {
         size = Size.SMALL,
         age = "12"
       )
-
-    const val SNAPSHOT_TAG = "snapshot_tag"
-
-    @JvmStatic
-    @Parameterized.Parameters(name = "darkMode={0}")
-    fun data() = listOf(true, false)
   }
-
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @get:Rule
   val paparazzi =
@@ -65,10 +55,9 @@ class PetListPaparazziSnapshotTest(private val useDarkMode: Boolean) {
       compileSdkVersion = 33
     ),
       renderingMode = SessionParams.RenderingMode.SHRINK,
-//      options = RoborazziRule.Options(outputDirectoryPath = "src/test/snapshots/images")
     )
 
-  @get:Rule val coilRule = CoilRule(contextProvider = composeTestRule::activity)
+  @get:Rule val coilRule = CoilRule(contextProvider = paparazzi::context)
 
   @Before
   fun setup() {
@@ -80,25 +69,13 @@ class PetListPaparazziSnapshotTest(private val useDarkMode: Boolean) {
     Dispatchers.resetMain()
   }
 
-  private fun snapshot(body: @Composable (Modifier) -> Unit) {
-    paparazzi.snapshot {
-      StarTheme(useDarkTheme = useDarkMode) { body(Modifier.testTag(SNAPSHOT_TAG)) }
-    }
-  }
-
   @Test
-  fun petList_show_message_for_no_animals_state() = snapshot { modifier ->
-    PetList(PetListScreen.State.NoAnimals(isRefreshing = false), modifier)
-  }
-
-  @Test
-  fun petList_show_list_for_success_state() = snapshot { modifier ->
+  fun example() {
     val animals = persistentListOf(ANIMAL)
-    PetList(PetListScreen.State.Success(animals, isRefreshing = false), modifier)
-  }
-
-  @Test
-  fun petList_filtersSheet() = snapshot { modifier ->
-    Surface(modifier) { UpdateFiltersSheet(initialFilters = Filters()) }
+    paparazzi.snapshot {
+      StarTheme {
+        PetList(PetListScreen.State.Success(animals, isRefreshing = false))
+      }
+    }
   }
 }

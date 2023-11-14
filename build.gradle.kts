@@ -436,3 +436,38 @@ dependencyAnalysis {
     }
   }
 }
+
+// Guava workarounds
+// This matches how we handle this generically internally.
+// Both workarounds are needed to work internally (where we apply a guava bom on all projects),
+// but seemingly only the former is needed in this project
+subprojects {
+  // https://github.com/google/guava/issues/6801
+  pluginManager.withPlugin("app.cash.paparazzi") {
+    // Defer until after evaluate so that testImplementation is created
+    afterEvaluate {
+      dependencies.constraints {
+        add("testImplementation", "com.google.guava:guava") {
+          attributes {
+            attribute(
+              TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+              objects.named(TargetJvmEnvironment.STANDARD_JVM)
+            )
+          }
+        }
+      }
+    }
+  }
+
+  // https://github.com/google/guava/issues/6801
+  configurations.configureEach {
+    resolutionStrategy.capabilitiesResolution.withCapability("com.google.guava:guava") {
+      select(candidates.single { it.variantName.contains("jreRuntimeElements") })
+    }
+    resolutionStrategy.capabilitiesResolution.withCapability(
+      "com.google.collections:google-collections"
+    ) {
+      select(candidates.single { it.variantName.contains("jreRuntimeElements") })
+    }
+  }
+}

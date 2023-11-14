@@ -2,12 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.activity.ComponentActivity
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.androidHome
 import app.cash.paparazzi.detectEnvironment
@@ -26,8 +20,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 
 @ExperimentalCoilApi
 class PetListPaparazziSnapshotTest {
@@ -49,11 +41,8 @@ class PetListPaparazziSnapshotTest {
   val paparazzi =
     Paparazzi(
       environment =
-  detectEnvironment()
-    .copy(
-      platformDir = "${androidHome()}/platforms/android-33",
-      compileSdkVersion = 33
-    ),
+        detectEnvironment()
+          .copy(platformDir = "${androidHome()}/platforms/android-33", compileSdkVersion = 33),
       renderingMode = SessionParams.RenderingMode.SHRINK,
     )
 
@@ -73,9 +62,7 @@ class PetListPaparazziSnapshotTest {
   fun example() {
     val animals = persistentListOf(ANIMAL)
     paparazzi.snapshot {
-      StarTheme {
-        PetList(PetListScreen.State.Success(animals, isRefreshing = false))
-      }
+      StarTheme { PetList(PetListScreen.State.Success(animals, isRefreshing = false)) }
     }
   }
 }

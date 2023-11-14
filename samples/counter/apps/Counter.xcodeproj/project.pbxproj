@@ -68,6 +68,38 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		44F183EF946CDFB76155AFF3 /* spotlessKotlin */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = spotlessKotlin;
+			path = build/spotless/spotlessKotlin;
+			sourceTree = "<group>";
+		};
+		44F1886B27BB539428A4A86A /* spotlessMisc */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = spotlessMisc;
+			path = build/spotless/spotlessMisc;
+			sourceTree = "<group>";
+		};
+		44F18D0EC00C0A177CA48683 /* spotlessLicense */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = spotlessLicense;
+			path = build/spotless/spotlessLicense;
+			sourceTree = "<group>";
+		};
+		44F18F90BC9F307936DF649B /* spotlessKotlinGradle */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = spotlessKotlinGradle;
+			path = build/spotless/spotlessKotlinGradle;
+			sourceTree = "<group>";
+		};
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +107,10 @@
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
 				0435033584C3B2BE6D67BAB4 /* Pods */,
+				44F183EF946CDFB76155AFF3 /* spotlessKotlin */,
+				44F18F90BC9F307936DF649B /* spotlessKotlinGradle */,
+				44F18D0EC00C0A177CA48683 /* spotlessLicense */,
+				44F1886B27BB539428A4A86A /* spotlessMisc */,
 			);
 			sourceTree = "<group>";
 		};

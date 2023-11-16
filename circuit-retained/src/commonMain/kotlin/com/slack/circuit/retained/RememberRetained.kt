@@ -92,9 +92,10 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
   val holder =
     remember(canRetainChecker) {
       // value is restored using the registry or created via [init] lambda
-      val restored = registry.consumeValue(finalKey)
-      val finalValue = restored ?: init()
-      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, inputs)
+      val restored = registry.consumeValue(finalKey) as? RetainableHolder.Value<*>
+      val finalValue = restored?.value ?: init()
+      val finalInputs = restored?.inputs ?: inputs
+      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, finalInputs)
     }
   val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect { holder.update(registry, finalKey, value, inputs) }
@@ -141,7 +142,8 @@ private class RetainableHolder<T>(
   }
 
   /** Value provider called by the registry. */
-  override fun invoke(): Any = requireNotNull(value) { "Value should be initialized" }
+  override fun invoke(): Any =
+    Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
 
   fun saveIfRetainable() {
     // If the value is a RetainedStateRegistry, we need to take care to retain it.
@@ -172,4 +174,6 @@ private class RetainableHolder<T>(
   fun getValueIfInputsAreEqual(inputs: Array<out Any?>): T? {
     return value.takeIf { inputs.contentEquals(this.inputs) }
   }
+
+  class Value<T>(val value: T, val inputs: Array<out Any?>)
 }

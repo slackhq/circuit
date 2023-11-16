@@ -1,18 +1,18 @@
 [versions]
 accompanist = "0.32.0"
-androidx-activity = "1.8.0"
+androidx-activity = "1.8.1"
 androidx-annotation = "1.7.0"
 androidx-appcompat = "1.6.1"
-androidx-browser = "1.6.0"
+androidx-browser = "1.7.0"
 androidx-lifecycle = "2.6.2"
 agp = "8.1.3"
 anvil = "2.4.8"
-benchmark = "1.2.0"
+benchmark = "1.2.1"
 coil = "2.5.0"
 compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.4-dev-k1.9.20-50f08dfa4b4"
+compose-compiler-version = "1.5.4"
 compose-compiler-kotlinVersion = "1.9.20"
 compose-foundation = "1.5.4"
 compose-material = "1.5.4"
@@ -25,7 +25,7 @@ compose-jb-kotlinVersion = "1.9.20"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.48.1"
 datastore = "1.1.0-alpha06"
-dependencyAnalysisPlugin = "1.25.0"
+dependencyAnalysisPlugin = "1.26.0"
 detekt = "1.23.3"
 dokka = "1.9.10"
 eithernet = "1.8.0"
@@ -41,7 +41,7 @@ material = "1.6.1"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.25.3"
 molecule = "1.3.0"
-mosaic = "0.9.1"
+mosaic = "0.10.0"
 moshi = "1.15.0"
 moshix = "0.25.0"
 okhttp = "5.0.0-alpha.11"
@@ -87,7 +87,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.1" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -239,7 +239,7 @@ truth = "com.google.truth:truth:1.1.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID
-uuid = "com.benasher44:uuid:0.8.1"
+uuid = "com.benasher44:uuid:0.8.2"
 
 [bundles]
 androidx-activity = ["androidx-activity", "androidx-activity-ktx"]

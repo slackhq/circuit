@@ -184,4 +184,4 @@ HSPLcom/slack/circuit/foundation/RecordContentProvider;-><clinit>()V
 HSPLcom/slack/circuit/foundation/RecordContentProvider;-><init>(Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function3;)V
 HSPLcom/slack/circuit/foundation/RecordContentProvider;->getContent$circuit_foundation_release()Lkotlin/jvm/functions/Function3;
 HSPLcom/slack/circuit/foundation/RecordContentProvider;->getRecord()Lcom/slack/circuit/backstack/BackStack$Record;
-HSPLcom/slack/circuit/foundation/RecordContentProvider;->hashCode()I
+HPLcom/slack/circuit/foundation/RecordContentProvider;->hashCode()I

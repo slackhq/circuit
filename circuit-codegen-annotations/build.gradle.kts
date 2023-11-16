@@ -26,9 +26,7 @@ kotlin {
     val commonJvm =
       maybeCreate("commonJvm").apply {
         dependencies {
-          api(libs.anvil.annotations)
-          api(libs.dagger)
-          api(libs.hilt)
+          compileOnly(libs.hilt)
         }
       }
     val androidMain by getting { dependsOn(commonJvm) }

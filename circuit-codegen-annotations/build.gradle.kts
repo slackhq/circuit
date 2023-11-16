@@ -34,6 +34,12 @@ kotlin {
     val androidMain by getting { dependsOn(commonJvm) }
     val jvmMain by getting { dependsOn(commonJvm) }
   }
+
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+    }
+  }
 }
 
 android { namespace = "com.slack.circuit.codegen.annotations" }

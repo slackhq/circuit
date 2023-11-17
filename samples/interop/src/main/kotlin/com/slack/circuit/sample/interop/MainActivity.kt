@@ -39,9 +39,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
@@ -139,7 +137,7 @@ private fun SourceMenu(
 ) {
   var expanded by remember { mutableStateOf(false) }
   val selectedName: String by
-  remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].presentationName) }
+    remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].presentationName) }
   ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
     TextField(
       readOnly = true,

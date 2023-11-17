@@ -23,12 +23,7 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
-    val commonJvm =
-      maybeCreate("commonJvm").apply {
-        dependencies {
-          compileOnly(libs.hilt)
-        }
-      }
+    val commonJvm = maybeCreate("commonJvm").apply { dependencies { compileOnly(libs.hilt) } }
     val androidMain by getting { dependsOn(commonJvm) }
     val jvmMain by getting { dependsOn(commonJvm) }
   }

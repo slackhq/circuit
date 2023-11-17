@@ -69,13 +69,13 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       CircuitCompositionLocals(circuit) {
-        var selectedPresenterIndex by remember { mutableStateOf(0) }
-        var selectedUiIndex by remember { mutableStateOf(0) }
+        var selectedPresenterIndex by remember { mutableIntStateOf(0) }
+        var selectedUiIndex by remember { mutableIntStateOf(0) }
         val circuitScreen =
           remember(selectedUiIndex, selectedPresenterIndex) {
             InteropCounterScreen(
-              PresenterSource.values()[selectedPresenterIndex],
-              UiSource.values()[selectedUiIndex]
+              PresenterSource.entries[selectedPresenterIndex],
+              UiSource.entries[selectedUiIndex]
             )
           }
         val useColumn =
@@ -83,30 +83,33 @@ class MainActivity : AppCompatActivity() {
 
         val menus: @Composable () -> Unit = {
           Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
-            SourceMenu("Presenter Source", selectedPresenterIndex, PresenterSource.values()) { index
-              ->
+            SourceMenu(
+              "Presenter Source",
+              selectedPresenterIndex,
+              PresenterSource.entries.toTypedArray()
+            ) { index ->
               selectedPresenterIndex = index
             }
-            SourceMenu("UI Source", selectedUiIndex, UiSource.values()) { index ->
+            SourceMenu("UI Source", selectedUiIndex, UiSource.entries.toTypedArray()) { index ->
               selectedUiIndex = index
             }
           }
         }
 
         val content = remember {
-          movableContentOf {
+          movableContentOf { screen: Screen ->
             // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
             //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
             //  them live enough to support this, but also sort of orthogonal to the point of this
             //  sample.
-            key(circuitScreen) { CircuitContent(screen = circuitScreen) }
+            key(screen) { CircuitContent(screen = screen) }
           }
         }
 
         Scaffold { paddingValues ->
           if (useColumn) {
             Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
-              Box(Modifier.weight(1f)) { content() }
+              Box(Modifier.weight(1f)) { content(circuitScreen) }
               menus()
             }
           } else {
@@ -116,7 +119,7 @@ class MainActivity : AppCompatActivity() {
               verticalAlignment = Alignment.CenterVertically
             ) {
               menus()
-              Box(Modifier.weight(1f)) { content() }
+              Box(Modifier.weight(1f)) { content(circuitScreen) }
             }
           }
         }

@@ -12,9 +12,10 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.interop.databinding.CounterViewBinding
 
 /**
@@ -62,12 +63,13 @@ constructor(
 /** An interop compose function that renders [CounterView] as a Circuit-powered [AndroidView]. */
 @Composable
 fun CounterViewComposable(state: CounterScreen.State, modifier: Modifier = Modifier) {
+  val eventSink by rememberUpdatedState(state.eventSink)
   AndroidView(
     modifier = modifier.fillMaxSize(),
     factory = { context ->
       CounterView(context).apply {
-        setOnIncrementClickListener { state.eventSink(CounterScreen.Event.Increment) }
-        setOnDecrementClickListener { state.eventSink(CounterScreen.Event.Decrement) }
+        setOnIncrementClickListener { eventSink(CounterScreen.Event.Increment) }
+        setOnDecrementClickListener { eventSink(CounterScreen.Event.Decrement) }
       }
     },
     update = { view -> view.setState(state.count) }

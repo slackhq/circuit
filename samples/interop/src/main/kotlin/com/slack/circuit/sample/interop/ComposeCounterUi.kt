@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.sample.counter.CounterScreen
 
 /** A standard Circuit Counter UI in Compose. */
 @Composable

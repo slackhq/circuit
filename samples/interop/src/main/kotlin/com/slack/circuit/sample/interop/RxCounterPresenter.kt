@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rxjava3.subscribeAsState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import com.slack.circuit.sample.counter.CounterScreen
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
@@ -32,7 +31,6 @@ fun RxCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
       when (event) {
         is CounterScreen.Event.Increment -> increment()
         is CounterScreen.Event.Decrement -> decrement()
-        else -> Unit
       }
     }
   }

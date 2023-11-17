@@ -19,8 +19,6 @@ android {
 
 dependencies {
   implementation(projects.circuitFoundation)
-  // Reuse the counter presenter logic for this sample
-  implementation(projects.samples.counter)
   implementation(libs.androidx.compose.integration.activity)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)

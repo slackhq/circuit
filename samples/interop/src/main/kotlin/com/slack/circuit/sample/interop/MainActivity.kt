@@ -27,6 +27,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,12 +39,10 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuit.sample.counter.CounterPresenterFactory
-import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
@@ -69,13 +68,13 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       CircuitCompositionLocals(circuit) {
-        var selectedPresenterIndex by remember { mutableStateOf(0) }
-        var selectedUiIndex by remember { mutableStateOf(0) }
+        var selectedPresenterIndex by remember { mutableIntStateOf(0) }
+        var selectedUiIndex by remember { mutableIntStateOf(0) }
         val circuitScreen =
           remember(selectedUiIndex, selectedPresenterIndex) {
             InteropCounterScreen(
-              PresenterSource.values()[selectedPresenterIndex],
-              UiSource.values()[selectedUiIndex]
+              PresenterSource.entries[selectedPresenterIndex],
+              UiSource.entries[selectedUiIndex]
             )
           }
         val useColumn =
@@ -83,30 +82,33 @@ class MainActivity : AppCompatActivity() {
 
         val menus: @Composable () -> Unit = {
           Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
-            SourceMenu("Presenter Source", selectedPresenterIndex, PresenterSource.values()) { index
-              ->
+            SourceMenu(
+              "Presenter Source",
+              selectedPresenterIndex,
+              PresenterSource.entries.toTypedArray()
+            ) { index ->
               selectedPresenterIndex = index
             }
-            SourceMenu("UI Source", selectedUiIndex, UiSource.values()) { index ->
+            SourceMenu("UI Source", selectedUiIndex, UiSource.entries.toTypedArray()) { index ->
               selectedUiIndex = index
             }
           }
         }
 
         val content = remember {
-          movableContentOf {
+          movableContentOf { screen: Screen ->
             // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
             //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
             //  them live enough to support this, but also sort of orthogonal to the point of this
             //  sample.
-            key(circuitScreen) { CircuitContent(screen = circuitScreen) }
+            key(screen) { CircuitContent(screen = screen) }
           }
         }
 
         Scaffold { paddingValues ->
           if (useColumn) {
             Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
-              Box(Modifier.weight(1f)) { content() }
+              Box(Modifier.weight(1f)) { content(circuitScreen) }
               menus()
             }
           } else {
@@ -116,7 +118,7 @@ class MainActivity : AppCompatActivity() {
               verticalAlignment = Alignment.CenterVertically
             ) {
               menus()
-              Box(Modifier.weight(1f)) { content() }
+              Box(Modifier.weight(1f)) { content(circuitScreen) }
             }
           }
         }
@@ -192,7 +194,7 @@ private fun SourceMenuItem(
 private data class InteropCounterScreen(
   val presenterSource: PresenterSource,
   val uiSource: UiSource
-) : CounterScreen, Parcelable
+) : Screen, Parcelable
 
 @Stable
 private interface Displayable {
@@ -200,15 +202,13 @@ private interface Displayable {
   val presentationName: String
 }
 
-@Suppress("UNCHECKED_CAST")
 private enum class PresenterSource : Displayable {
   Circuit {
     override fun createPresenter(
       screen: InteropCounterScreen,
       context: CircuitContext,
     ): Presenter<CounterScreen.State> {
-      return CounterPresenterFactory().create(screen, Navigator.NoOp, context)
-        as Presenter<CounterScreen.State>
+      return CircuitCounterPresenter()
     }
 
     override val presentationName

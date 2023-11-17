@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.interop.databinding.CounterViewBinding
 
 /**

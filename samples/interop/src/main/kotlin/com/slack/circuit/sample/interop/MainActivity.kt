@@ -27,6 +27,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,10 +41,10 @@ import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.presenterOf
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuit.sample.counter.CounterPresenterFactory
-import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
@@ -138,7 +139,7 @@ private fun SourceMenu(
 ) {
   var expanded by remember { mutableStateOf(false) }
   val selectedName: String by
-    remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].presentationName) }
+  remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].presentationName) }
   ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
     TextField(
       readOnly = true,
@@ -195,7 +196,7 @@ private fun SourceMenuItem(
 private data class InteropCounterScreen(
   val presenterSource: PresenterSource,
   val uiSource: UiSource
-) : CounterScreen, Parcelable
+) : Screen, Parcelable
 
 @Stable
 private interface Displayable {
@@ -203,15 +204,13 @@ private interface Displayable {
   val presentationName: String
 }
 
-@Suppress("UNCHECKED_CAST")
 private enum class PresenterSource : Displayable {
   Circuit {
     override fun createPresenter(
       screen: InteropCounterScreen,
       context: CircuitContext,
     ): Presenter<CounterScreen.State> {
-      return CounterPresenterFactory().create(screen, Navigator.NoOp, context)
-        as Presenter<CounterScreen.State>
+      return CircuitCounterPresenter()
     }
 
     override val presentationName

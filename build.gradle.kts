@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFI
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import java.net.URI
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
@@ -250,6 +251,19 @@ subprojects {
           suppress.set(true)
         }
         // AndroidX and Android docs are automatically added by the Dokka plugin.
+
+        // Add source links
+        sourceLink {
+          localDirectory.set(layout.projectDirectory.dir("src").asFile)
+          val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
+          remoteUrl.set(
+            providers.gradleProperty("POM_SCM_URL")
+              .map { scmUrl ->
+                URI("$scmUrl/tree/main/$relPath/src").toURL()
+              }
+          )
+          remoteLineSuffix.set("#L")
+        }
       }
     }
 

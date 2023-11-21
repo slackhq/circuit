@@ -219,6 +219,7 @@ include(
   ":circuitx:android",
   ":circuitx:gesture-navigation",
   ":circuitx:overlays",
+  ":circuitx:sideeffects",
   ":samples:counter",
   ":samples:counter:apps",
   ":samples:counter:mosaic",

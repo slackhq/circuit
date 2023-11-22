@@ -1,8 +1,3 @@
-com.google.code.findbugs:jsr305
-com.google.dagger:dagger
-com.google.dagger:hilt-core
-com.squareup.anvil:annotations
-javax.inject:javax.inject
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom

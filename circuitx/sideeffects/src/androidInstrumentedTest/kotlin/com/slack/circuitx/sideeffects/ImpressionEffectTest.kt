@@ -44,9 +44,9 @@ class ImpressionEffectTest {
 
   @get:Rule
   val rule =
-      RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
-        around(composeTestRule)
-      }
+    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
+      around(composeTestRule)
+    }
 
   private val scenario: ActivityScenario<ComponentActivity>
     get() = composeTestRule.activityRule.scenario
@@ -93,12 +93,12 @@ class ImpressionEffectTest {
     composeTestRule.run {
       var count = 0
       val content =
-          @Composable {
-            LaunchedImpressionEffect {
-              delay(1)
-              count++
-            }
+        @Composable {
+          LaunchedImpressionEffect {
+            delay(1)
+            count++
           }
+        }
       // Compose the content
       setActivityContent(content)
       // Advance over the delay and execute
@@ -148,9 +148,9 @@ class ImpressionEffectTest {
       val fakeNavigator = FakeNavigator()
       var count = 0
       val content =
-          @Composable {
-            RememberImpressionNavigatorContent(delegate = fakeNavigator, impression = { count++ })
-          }
+        @Composable {
+          RememberImpressionNavigatorContent(delegate = fakeNavigator, impression = { count++ })
+        }
       // Compose the content
       setActivityContent(content)
       // Advance over the delay and execute
@@ -175,11 +175,14 @@ class ImpressionEffectTest {
       val fakeNavigator = FakeNavigator()
       var count = 0
       val content =
-          @Composable {
-            val input by inputs.collectAsState()
-            RememberImpressionNavigatorContent(
-                input, delegate = fakeNavigator, impression = { count++ })
-          }
+        @Composable {
+          val input by inputs.collectAsState()
+          RememberImpressionNavigatorContent(
+            input,
+            delegate = fakeNavigator,
+            impression = { count++ }
+          )
+        }
       // Compose the content
       setActivityContent(content)
       // Advance over the delay and execute
@@ -201,9 +204,9 @@ class ImpressionEffectTest {
       val fakeNavigator = FakeNavigator()
       var count = 0
       val content =
-          @Composable {
-            RememberImpressionNavigatorContent(delegate = fakeNavigator, impression = { count++ })
-          }
+        @Composable {
+          RememberImpressionNavigatorContent(delegate = fakeNavigator, impression = { count++ })
+        }
       // Compose the content
       setActivityContent(content)
       // Advance over the delay and execute
@@ -232,9 +235,9 @@ class ImpressionEffectTest {
       val fakeNavigator = FakeNavigator()
       var count = 0
       val content =
-          @Composable {
-            RememberImpressionNavigatorContent(delegate = fakeNavigator, impression = { count++ })
-          }
+        @Composable {
+          RememberImpressionNavigatorContent(delegate = fakeNavigator, impression = { count++ })
+        }
       // Compose the content
       setActivityContent(content)
       // Simulate going to a screen
@@ -258,27 +261,27 @@ class ImpressionEffectTest {
 
   @Composable
   private fun RememberImpressionNavigatorContent(
-      vararg inputs: Any?,
-      delegate: Navigator,
-      impression: () -> Unit,
+    vararg inputs: Any?,
+    delegate: Navigator,
+    impression: () -> Unit,
   ) {
     val navigator =
-        rememberImpressionNavigator(*inputs, navigator = delegate) {
-          delay(1)
-          impression()
-        }
+      rememberImpressionNavigator(*inputs, navigator = delegate) {
+        delay(1)
+        impression()
+      }
     Row {
       BasicText(
-          text = "GoTo",
-          modifier = Modifier.testTag(TAG_GOTO).clickable { navigator.goTo(TestGoToScreen) },
+        text = "GoTo",
+        modifier = Modifier.testTag(TAG_GOTO).clickable { navigator.goTo(TestGoToScreen) },
       )
       BasicText(
-          text = "Pop",
-          modifier = Modifier.testTag(TAG_POP).clickable { navigator.pop() },
+        text = "Pop",
+        modifier = Modifier.testTag(TAG_POP).clickable { navigator.pop() },
       )
       BasicText(
-          text = "Reset",
-          modifier = Modifier.testTag(TAG_RESET).clickable { navigator.resetRoot(TestResetScreen) },
+        text = "Reset",
+        modifier = Modifier.testTag(TAG_RESET).clickable { navigator.resetRoot(TestResetScreen) },
       )
     }
   }
@@ -292,7 +295,7 @@ class ImpressionEffectTest {
     scenario.onActivity { activity ->
       activity.setContent {
         CompositionLocalProvider(
-            LocalRetainedStateRegistry provides continuityRetainedStateRegistry(),
+          LocalRetainedStateRegistry provides continuityRetainedStateRegistry(),
         ) {
           content()
         }

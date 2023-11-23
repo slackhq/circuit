@@ -8,6 +8,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
+import com.tschuchort.compiletesting.kspArgs
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
@@ -27,6 +28,16 @@ class CircuitSymbolProcessorTest {
 
       annotation class AppScope
     """
+        .trimIndent()
+    )
+  private val singletonComponent =
+    kotlin(
+      "SingletonComponent.kt",
+      """
+            package dagger.hilt.components
+
+            annotation class SingletonComponent
+          """
         .trimIndent()
     )
   private val screens =
@@ -805,6 +816,185 @@ class CircuitSymbolProcessorTest {
     )
   }
 
+  @Test
+  fun hiltCodegenMode_skipsAnvilBinding() {
+    assertGeneratedFile(
+      codegenMode = CodegenMode.HILT,
+      sourceFile =
+        kotlin(
+          "TestPresenterWithoutAnvil.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+          import dagger.hilt.components.SingletonComponent
+
+          @Composable
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """
+            .trimIndent()
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import javax.inject.Inject
+
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
+            else -> null
+          }
+        }
+      """
+          .trimIndent()
+    )
+  }
+
+  @Test
+  fun hiltCodegenMode_module() {
+    assertGeneratedFile(
+      codegenMode = CodegenMode.HILT,
+      sourceFile =
+        kotlin(
+          "TestPresenterWithoutAnvil.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+          import dagger.hilt.components.SingletonComponent
+
+          @Composable
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """
+            .trimIndent()
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactoryModule.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.presenter.Presenter
+        import dagger.Binds
+        import dagger.Module
+        import dagger.hilt.InstallIn
+        import dagger.hilt.codegen.OriginatingElement
+        import dagger.hilt.components.SingletonComponent
+        import dagger.multibindings.IntoSet
+
+        @Module
+        @InstallIn(SingletonComponent::class)
+        @OriginatingElement(topLevelClass = FavoritesPresenter::class)
+        public abstract class FavoritesPresenterFactoryModule {
+          @Binds
+          @IntoSet
+          public abstract
+              fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
+              Presenter.Factory
+        }
+      """
+          .trimIndent()
+    )
+  }
+
+  @Test
+  fun hiltCodegenMode_topLevelOriginatingElement() {
+    assertGeneratedFile(
+      codegenMode = CodegenMode.HILT,
+      sourceFile =
+        kotlin(
+          "Home.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dagger.hilt.components.SingletonComponent
+
+          @CircuitInject(HomeScreen::class, SingletonComponent::class)
+          @Composable
+          fun Home(modifier: Modifier = Modifier) {
+
+          }
+        """
+            .trimIndent()
+        ),
+      generatedFilePath = "test/HomeFactoryModule.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.ui.Ui
+        import dagger.Binds
+        import dagger.Module
+        import dagger.hilt.InstallIn
+        import dagger.hilt.components.SingletonComponent
+        import dagger.multibindings.IntoSet
+
+        @Module
+        @InstallIn(SingletonComponent::class)
+        public abstract class HomeFactoryModule {
+          @Binds
+          @IntoSet
+          public abstract fun bindHomeFactory(homeFactory: HomeFactory): Ui.Factory
+        }
+      """
+          .trimIndent()
+    )
+  }
+
   @Ignore("Toe hold for when we implement this validation")
   @Test
   fun invalidInjections() {
@@ -958,12 +1148,18 @@ class CircuitSymbolProcessorTest {
     }
   }
 
+  private enum class CodegenMode {
+    ANVIL,
+    HILT
+  }
+
   private fun assertGeneratedFile(
     sourceFile: SourceFile,
     generatedFilePath: String,
-    @Language("kotlin") expectedContent: String
+    @Language("kotlin") expectedContent: String,
+    codegenMode: CodegenMode = CodegenMode.ANVIL
   ) {
-    val compilation = prepareCompilation(sourceFile)
+    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
@@ -972,8 +1168,12 @@ class CircuitSymbolProcessorTest {
     assertThat(generatedAdapter.readText().trim()).isEqualTo(expectedContent.trimIndent())
   }
 
-  private fun assertProcessingError(sourceFile: SourceFile, body: (messages: String) -> Unit) {
-    val compilation = prepareCompilation(sourceFile)
+  private fun assertProcessingError(
+    sourceFile: SourceFile,
+    codegenMode: CodegenMode = CodegenMode.ANVIL,
+    body: (messages: String) -> Unit
+  ) {
+    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     body(result.messages)
@@ -981,16 +1181,22 @@ class CircuitSymbolProcessorTest {
 
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
+    codegenMode: CodegenMode
   ): KotlinCompilation =
     KotlinCompilation().apply {
-      sources = sourceFiles.toList() + listOf(appScope, screens)
+      sources =
+        sourceFiles.toList() +
+          screens +
+          when (codegenMode) {
+            CodegenMode.ANVIL -> appScope
+            CodegenMode.HILT -> singletonComponent
+          }
       inheritClassPath = true
       symbolProcessorProviders = listOf(CircuitSymbolProcessorProvider())
+      kspArgs += "circuit.codegen.mode" to codegenMode.name
     }
 
-  private fun compile(
-    vararg sourceFiles: SourceFile,
-  ): CompilationResult {
-    return prepareCompilation(*sourceFiles).compile()
+  private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {
+    return prepareCompilation(*sourceFiles, codegenMode = codegenMode).compile()
   }
 }

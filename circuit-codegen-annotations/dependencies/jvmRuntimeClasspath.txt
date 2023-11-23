@@ -1,6 +1,3 @@
-com.google.dagger:dagger
-com.squareup.anvil:annotations
-javax.inject:javax.inject
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom

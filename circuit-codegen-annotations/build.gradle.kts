@@ -23,15 +23,15 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
-    val commonJvm =
-      maybeCreate("commonJvm").apply {
-        dependencies {
-          api(libs.anvil.annotations)
-          api(libs.dagger)
-        }
-      }
+    val commonJvm = maybeCreate("commonJvm").apply { dependencies { compileOnly(libs.hilt) } }
     val androidMain by getting { dependsOn(commonJvm) }
     val jvmMain by getting { dependsOn(commonJvm) }
+  }
+
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+    }
   }
 }
 

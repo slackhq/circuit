@@ -25,9 +25,9 @@ module:circuit-runtime-ui
 com.slack.circuit.runtime.ui
 module:circuit-test
 com.slack.circuit.test
-module:android
+module:circuitx/android
 com.slack.circuitx.android
-module:gesture-navigation
+module:circuitx/gesture-navigation
 com.slack.circuitx.gesturenavigation
-module:overlays
+module:circuitx/overlays
 com.slack.circuitx.overlays

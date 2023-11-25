@@ -12,6 +12,7 @@ import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import java.net.URI
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
@@ -250,6 +251,18 @@ subprojects {
           suppress.set(true)
         }
         // AndroidX and Android docs are automatically added by the Dokka plugin.
+
+        // Add source links
+        sourceLink {
+          localDirectory.set(layout.projectDirectory.dir("src").asFile)
+          val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
+          remoteUrl.set(
+            providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
+              URI("$scmUrl/tree/main/$relPath/src").toURL()
+            }
+          )
+          remoteLineSuffix.set("#L")
+        }
       }
     }
 

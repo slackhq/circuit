@@ -31,20 +31,33 @@ kotlin {
         implementation(projects.circuitFoundation)
       }
     }
-    val androidInstrumentedTest by getting {
+    val commonTest by getting {
       dependencies {
-        implementation(libs.junit)
-        implementation(libs.truth)
-        implementation(libs.coroutines)
-        implementation(libs.coroutines.android)
+        implementation(compose.foundation)
+        implementation(compose.material3)
+        implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+        implementation(libs.turbine)
         implementation(projects.circuitTest)
-        implementation(projects.circuitx.sideeffects)
-        implementation(libs.androidx.compose.integration.activity)
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.ui)
-        implementation(libs.leakcanary.android.instrumentation)
       }
+    }
+    val iosTest by getting { dependencies { dependsOn(commonTest) } }
+    val jsTest by getting { dependencies { dependsOn(commonTest) } }
+    val jvmTest by getting { dependencies { dependsOn(commonTest) } }
+    val androidUnitTest by getting {
+      dependsOn(commonTest)
+      dependencies {
+        implementation(libs.robolectric)
+        implementation(libs.androidx.compose.foundation)
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
+      }
+    }
+  }
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
     }
   }
 }

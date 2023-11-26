@@ -33,8 +33,7 @@ private const val TAG_COLUMN = "column"
 @RunWith(RobolectricTestRunner::class)
 class ImpressionEffectScrollTest {
 
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
   private val registry = RetainedStateRegistry()
 
   @Test
@@ -55,17 +54,9 @@ class ImpressionEffectScrollTest {
     composeTestRule.run {
       val counts = mutableMapOf<Int, Int>()
       setRetainedContent {
-        LazyColumn(
-          Modifier
-            .testTag(TAG_COLUMN)
-            .size(200.dp)
-        ) {
+        LazyColumn(Modifier.testTag(TAG_COLUMN).size(200.dp)) {
           items(40) { index ->
-            Row(
-              Modifier
-                .fillMaxWidth()
-                .height(20.dp)
-            ) {
+            Row(Modifier.fillMaxWidth().height(20.dp)) {
               content(index, counts)
               Text(text = "$index")
             }

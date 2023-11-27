@@ -55,6 +55,54 @@ options `Bundle` to pass to `startActivity()`. Custom `AndroidScreens` can be im
 and route through here, but you should be sure to implement your own `AndroidScreenStarter` to
 handle them accordingly.
 
+## Effects
+
+CircuitX provides some effects for use with logging/analytics. These effects are typically used in 
+circuit presenters for tracking `impressions` and will run only once until forgotten based on the 
+current circuit retained strategy.
+
+```kotlin
+dependencies {
+  implementation("com.slack.circuit:circuitx-effects:<version>")
+}
+```
+
+### ImpressionEffect
+
+`ImpressionEffect` is a simple single fire side effect useful for logging or analytics. 
+This `impression` will run only once until it is forgotten based on the current `RetainedStateRegistry`.
+
+```kotlin
+ImpressionEffect {
+  // Impression 
+}
+```
+
+### LaunchedImpressionEffect
+
+This is useful for async single fire side effects like logging or analytics. This effect will run a 
+suspendable `impression` once until it is forgotten based on the `RetainedStateRegistry`.
+
+```kotlin
+LaunchedImpressionEffect {
+  // Impression 
+}
+```
+
+### RememberImpressionNavigator
+
+A `LaunchedImpressionEffect` that is useful for async single fire side effects like logging or
+analytics that need to be navigation aware. This will run the `impression` again if it re-enters
+the composition after a navigation event.
+
+```kotlin
+val navigator = rememberImpressionNavigator(
+  navigator = Navigator()
+) {
+  // Impression
+}
+```
+
 ## Gesture Navigation
 
 CircuitX provides `NavDecoration` implementation which support navigation through appropriate
@@ -66,11 +114,11 @@ dependencies {
 }
 ```
 
-To enable gesture navigation support, you can use the use the `GestureNavigationDecoration` function:
+To enable gesture navigation support, you can use the use the `GestureNavigationDecoration`function:
 
 ```kotlin
 NavigableCircuitContent(
-  navigator = navigator, 
+  navigator = navigator,
   backstack = backstack,
   decoration = GestureNavigationDecoration(
     // Pop the back stack once the user has gone 'back'
@@ -164,6 +212,6 @@ overlayHost.showFullScreenOverlay(
 ```
 
 !!! info "When to use `FullScreenOverlay` vs navigating to a `Screen`?"
-    While they achieve similar results, the key difference is that `FullScreenOverlay` is 
-    inherently an ephemeral UI that is _controlled_ by an underlying primary UI. It cannot 
-    navigate elsewhere and it does not participate in the backstack.
+While they achieve similar results, the key difference is that `FullScreenOverlay` is
+inherently an ephemeral UI that is _controlled_ by an underlying primary UI. It cannot
+navigate elsewhere and it does not participate in the backstack.

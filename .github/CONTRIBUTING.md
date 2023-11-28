@@ -9,9 +9,8 @@ discussion.
 Check out this repo with Android Studio. It's a standard gradle project and conventional to
 checkout.
 
-If you have build issues, you may need to run [kdoctor](https://github.com/Kotlin/kdoctor) to
-ensure you have all of the required dependencies, as this project uses KMP and therefore needs a few
-extra things installed beyond typical Android development such as Ruby and Cocoapods.
+Circuit is a Kotlin Multiplatform project, so ensure you have your environment set up 
+accordingly: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html
 
 The primary project is `circuit`. The primary sample is `samples/star`.
 

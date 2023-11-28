@@ -140,6 +140,7 @@ public fun <UiState : CircuitUiState> CircuitContent(
  *   instantiation. True by default.
  * @param factory a factory to create the [EventListener].
  */
+@Suppress("NOTHING_TO_INLINE")
 @Composable
 public inline fun rememberEventListener(
   screen: Screen,
@@ -162,6 +163,7 @@ public inline fun rememberEventListener(
  *
  * @param factory a factory to create the [Presenter].
  */
+@Suppress("NOTHING_TO_INLINE")
 @Composable
 public inline fun rememberPresenter(
   screen: Screen,
@@ -183,6 +185,7 @@ public inline fun rememberPresenter(
  *
  * @param factory a factory to create the [Ui].
  */
+@Suppress("NOTHING_TO_INLINE")
 @Composable
 public inline fun rememberUi(
   screen: Screen,

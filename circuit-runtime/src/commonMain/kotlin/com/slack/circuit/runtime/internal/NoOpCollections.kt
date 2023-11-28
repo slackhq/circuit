@@ -1,7 +1,10 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.runtime.internal
 
 /**
- * A no-op [MutableMap]. This mimics the behavior of Java's Collections.emptyMap(), which silently ignores mutating operations.
+ * A no-op [MutableMap]. This mimics the behavior of Java's Collections.emptyMap(), which silently
+ * ignores mutating operations.
  */
 internal object NoOpMap : MutableMap<Any, Any> {
   override val size: Int = 0
@@ -11,17 +14,14 @@ internal object NoOpMap : MutableMap<Any, Any> {
     NoOpSet as MutableSet<MutableMap.MutableEntry<Any, Any>>
   override val keys: MutableSet<Any> = NoOpSet
   override val values: MutableCollection<Any> = NoOpSet
-  override fun clear() {
 
-  }
+  override fun clear() {}
 
   override fun isEmpty() = true
 
   override fun remove(key: Any) = null
 
-  override fun putAll(from: Map<out Any, Any>) {
-
-  }
+  override fun putAll(from: Map<out Any, Any>) {}
 
   override fun put(key: Any, value: Any) = null
 
@@ -33,7 +33,8 @@ internal object NoOpMap : MutableMap<Any, Any> {
 }
 
 /**
- * A no-op [MutableSet]. This mimics the behavior of Java's Collections.emptySet(), which silently ignores mutating operations.
+ * A no-op [MutableSet]. This mimics the behavior of Java's Collections.emptySet(), which silently
+ * ignores mutating operations.
  */
 private object NoOpSet : MutableSet<Any> {
   override fun add(element: Any) = false
@@ -42,9 +43,7 @@ private object NoOpSet : MutableSet<Any> {
 
   override val size: Int = 0
 
-  override fun clear() {
-
-  }
+  override fun clear() {}
 
   override fun isEmpty() = true
 

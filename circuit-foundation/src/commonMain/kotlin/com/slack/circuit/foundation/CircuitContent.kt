@@ -4,7 +4,6 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
@@ -88,15 +87,12 @@ internal fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
   context: CircuitContext,
 ) {
-  val eventListener =
-    rememberEventListener(screen, context, factory = circuit.eventListenerFactory)
+  val eventListener = rememberEventListener(screen, context, factory = circuit.eventListenerFactory)
   DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
 
-  val presenter =
-    rememberPresenter(screen, navigator, context, eventListener, circuit::presenter)
+  val presenter = rememberPresenter(screen, navigator, context, eventListener, circuit::presenter)
 
-  val ui =
-    rememberUi(screen, context, eventListener, circuit::ui)
+  val ui = rememberUi(screen, context, eventListener, circuit::ui)
 
   if (ui != null && presenter != null) {
     (CircuitContent(screen, modifier, presenter, ui, eventListener))
@@ -140,7 +136,8 @@ public fun <UiState : CircuitUiState> CircuitContent(
 /**
  * Remembers a new [EventListener] instance for the given [screen] and [context].
  *
- * @param startOnInit indicates whether to call [EventListener.start] automatically after instantiation. True by default.
+ * @param startOnInit indicates whether to call [EventListener.start] automatically after
+ *   instantiation. True by default.
  * @param factory a factory to create the [EventListener].
  */
 @Composable
@@ -160,7 +157,8 @@ public inline fun rememberEventListener(
 }
 
 /**
- * Remembers a new [Presenter] instance for the given [screen], [navigator], [context], and [eventListener].
+ * Remembers a new [Presenter] instance for the given [screen], [navigator], [context], and
+ * [eventListener].
  *
  * @param factory a factory to create the [Presenter].
  */
@@ -171,13 +169,14 @@ public inline fun rememberPresenter(
   context: CircuitContext = CircuitContext.EMPTY,
   eventListener: EventListener = EventListener.NONE,
   factory: Presenter.Factory
-): Presenter<CircuitUiState>? = remember(eventListener, screen, navigator, context) {
-  eventListener.onBeforeCreatePresenter(screen, navigator, context)
-  @Suppress("UNCHECKED_CAST")
-  (factory.create(screen, navigator, context) as Presenter<CircuitUiState>?).also {
-    eventListener.onAfterCreatePresenter(screen, navigator, it, context)
+): Presenter<CircuitUiState>? =
+  remember(eventListener, screen, navigator, context) {
+    eventListener.onBeforeCreatePresenter(screen, navigator, context)
+    @Suppress("UNCHECKED_CAST")
+    (factory.create(screen, navigator, context) as Presenter<CircuitUiState>?).also {
+      eventListener.onAfterCreatePresenter(screen, navigator, it, context)
+    }
   }
-}
 
 /**
  * Remembers a new [Ui] instance for the given [screen], [context], and [eventListener].
@@ -190,8 +189,11 @@ public inline fun rememberUi(
   context: CircuitContext = CircuitContext.EMPTY,
   eventListener: EventListener = EventListener.NONE,
   factory: Ui.Factory
-): Ui<CircuitUiState>? = remember(eventListener, screen, context) {
-  eventListener.onBeforeCreateUi(screen, context)
-  @Suppress("UNCHECKED_CAST")
-  (factory.create(screen, context) as Ui<CircuitUiState>?).also { ui -> eventListener.onAfterCreateUi(screen, ui, context) }
-}
+): Ui<CircuitUiState>? =
+  remember(eventListener, screen, context) {
+    eventListener.onBeforeCreateUi(screen, context)
+    @Suppress("UNCHECKED_CAST")
+    (factory.create(screen, context) as Ui<CircuitUiState>?).also { ui ->
+      eventListener.onAfterCreateUi(screen, ui, context)
+    }
+  }

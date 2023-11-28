@@ -21,7 +21,7 @@ HSPLcom/slack/circuit/foundation/Circuit$Builder;->getPresenterFactories()Ljava/
 HSPLcom/slack/circuit/foundation/Circuit$Builder;->getUiFactories()Ljava/util/List;
 Lcom/slack/circuit/foundation/CircuitCompositionLocalsKt;
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;-><clinit>()V
-HPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->CircuitCompositionLocals(Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->CircuitCompositionLocals(Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->getLocalCircuit()Landroidx/compose/runtime/ProvidableCompositionLocal;
 HSPLcom/slack/circuit/foundation/CircuitCompositionLocalsKt;->getLocalCircuitContext()Landroidx/compose/runtime/ProvidableCompositionLocal;
 Lcom/slack/circuit/foundation/CircuitCompositionLocalsKt$CircuitCompositionLocals$1;
@@ -169,6 +169,7 @@ HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedCo
 HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$prevStackDepth$1$1;->invoke()Landroidx/compose/runtime/MutableState;
 HSPLcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration$DecoratedContent$prevStackDepth$1$1;->invoke()Ljava/lang/Object;
 Lcom/slack/circuit/foundation/NavigatorImpl;
+HSPLcom/slack/circuit/foundation/NavigatorImpl;-><clinit>()V
 HSPLcom/slack/circuit/foundation/NavigatorImpl;-><init>(Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function0;)V
 Lcom/slack/circuit/foundation/NavigatorImplKt;
 HSPLcom/slack/circuit/foundation/NavigatorImplKt;->rememberCircuitNavigator(Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
@@ -184,4 +185,4 @@ HSPLcom/slack/circuit/foundation/RecordContentProvider;-><clinit>()V
 HSPLcom/slack/circuit/foundation/RecordContentProvider;-><init>(Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function3;)V
 HSPLcom/slack/circuit/foundation/RecordContentProvider;->getContent$circuit_foundation_release()Lkotlin/jvm/functions/Function3;
 HSPLcom/slack/circuit/foundation/RecordContentProvider;->getRecord()Lcom/slack/circuit/backstack/BackStack$Record;
-HPLcom/slack/circuit/foundation/RecordContentProvider;->hashCode()I
+HSPLcom/slack/circuit/foundation/RecordContentProvider;->hashCode()I

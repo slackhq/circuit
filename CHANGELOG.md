@@ -1,6 +1,33 @@
 Changelog
 =========
 
+0.16.2
+------
+
+_2023-11-28_
+
+- **Fix**: Collection of fixes and changes in the interop sample to get it back up to speed and working.
+- **Enhancement**: Link sources in kdocs. Now they have a nice link in the side to the sources.
+- **New**: Add codegen mode to support both Anvil and Hilt.
+- **Enhancement**: Better name handling for nested projects in dokka.
+- **New**: Adding some specific side-effects for use with clogging/analytics.
+- Update `com.benasher44:uuid` to `0.8.2`.
+- Update `com.jakewharton.mosaic` to `0.10.0`.
+- Update `androidx.activity` to `1.8.1`.
+- Update `com.autonomousapps.dependency-analysis` to `1.26.0`.
+- Update `androidx.activity:activity-compose` to `1.8.1`.
+- Update `androidx.browser:browser` to `1.7.0`.
+- Update `agp` to `8.1.4`.
+- Update `me.saket.telephoto:zoomable-image-coil` to `0.7.1`.
+- Update `kotlinpoet` to `1.15.1`.
+- Update `compose.jb` to `1.5.11`.
+- Update to Kotlin `1.9.21`.
+- Update `org.jetbrains.compose.compiler:compiler` to `1.5.4`.
+- Update `app.cash.molecule:molecule-runtime` to `1.3.1`.
+- Update `org.jsoup:jsoup` to `1.17.1`.
+- Build against KSP `1.9.21-1.0.15`.
+- Update `dev.zacsweers.moshix` to `0.25.1`.
+
 0.16.1
 ------
 

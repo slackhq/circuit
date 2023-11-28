@@ -6,6 +6,7 @@ Lcom/slack/circuit/backstack/BackStackRecordLocalProvider;
 Lcom/slack/circuit/backstack/BackStackRecordLocalProviderKt;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalProviderKt;->providedValuesForBackStack(Lcom/slack/circuit/backstack/BackStack;Lkotlinx/collections/immutable/ImmutableList;ZLandroidx/compose/runtime/Composer;II)Lkotlinx/collections/immutable/ImmutableMap;
 Lcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel;
+HSPLcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel;-><clinit>()V
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel;-><init>()V
 PLcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel;->onCleared()V
 PLcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel;->removeViewModelStoreOwnerForKey$backstack_release(Ljava/lang/String;)Landroidx/lifecycle/ViewModelStore;
@@ -52,6 +53,7 @@ Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerP
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerProvider$3;-><init>(Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)V
 PLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerProvider$3;->unregister()V
 Lcom/slack/circuit/backstack/CompositeProvidedValues;
+HSPLcom/slack/circuit/backstack/CompositeProvidedValues;-><clinit>()V
 HSPLcom/slack/circuit/backstack/CompositeProvidedValues;-><init>(Ljava/util/List;)V
 HPLcom/slack/circuit/backstack/CompositeProvidedValues;->provideValues(Landroidx/compose/runtime/Composer;I)Lkotlinx/collections/immutable/ImmutableList;
 Lcom/slack/circuit/backstack/NavDecoration;

@@ -666,7 +666,7 @@
 
 
 <h1 id="code-generation">Code Generation<a class="headerlink" href="#code-generation" title="Permanent link">&para;</a></h1>
-<p>If using Dagger and Anvil, Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories.</p>
+<p>If using Dagger and Anvil or Hilt, Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="n">plugins</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">id</span><span class="p">(</span><span class="s">&quot;com.google.devtools.ksp&quot;</span><span class="p">)</span>
@@ -675,6 +675,11 @@
 <span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">api</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen-annotations:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:&lt;version&gt;&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Note that Anvil is enabled by default. If you are using Hilt, you must specify the mode as a KSP arg.</p>
+<div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;circuit.codegen.mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hilt&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>

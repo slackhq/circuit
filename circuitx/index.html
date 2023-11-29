@@ -870,9 +870,9 @@ options <code>Bundle</code> to pass to <code>startActivity()</code>. Custom <cod
 and route through here, but you should be sure to implement your own <code>AndroidScreenStarter</code> to
 handle them accordingly.</p>
 <h2 id="effects">Effects<a class="headerlink" href="#effects" title="Permanent link">&para;</a></h2>
-<p>CircuitX provides some effects for use with logging/analytics. These effects are typically used in 
-circuit presenters for tracking <code>impressions</code> and will run only once until forgotten based on the 
-current circuit retained strategy.</p>
+<p>CircuitX provides some effects for use with logging/analytics. These effects are typically used in
+Circuit presenters for tracking <code>impressions</code> and will run only once until forgotten based on the 
+current circuit-retained strategy.</p>
 <div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuitx-effects:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
@@ -986,10 +986,10 @@ content you want to show in the overlay.</p>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">When to use <code>FullScreenOverlay</code> vs navigating to a <code>Screen</code>?</p>
-</div>
 <p>While they achieve similar results, the key difference is that <code>FullScreenOverlay</code> is
 inherently an ephemeral UI that is <em>controlled</em> by an underlying primary UI. It cannot
 navigate elsewhere and it does not participate in the backstack.</p>
+</div>
 
 
 

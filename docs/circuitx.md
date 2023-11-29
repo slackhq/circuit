@@ -212,6 +212,6 @@ overlayHost.showFullScreenOverlay(
 ```
 
 !!! info "When to use `FullScreenOverlay` vs navigating to a `Screen`?"
-While they achieve similar results, the key difference is that `FullScreenOverlay` is
-inherently an ephemeral UI that is _controlled_ by an underlying primary UI. It cannot
-navigate elsewhere and it does not participate in the backstack.
+    While they achieve similar results, the key difference is that `FullScreenOverlay` is
+    inherently an ephemeral UI that is _controlled_ by an underlying primary UI. It cannot
+    navigate elsewhere and it does not participate in the backstack.

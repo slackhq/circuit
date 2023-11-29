@@ -57,9 +57,9 @@ handle them accordingly.
 
 ## Effects
 
-CircuitX provides some effects for use with logging/analytics. These effects are typically used in 
-circuit presenters for tracking `impressions` and will run only once until forgotten based on the 
-current circuit retained strategy.
+CircuitX provides some effects for use with logging/analytics. These effects are typically used in
+Circuit presenters for tracking `impressions` and will run only once until forgotten based on the 
+current circuit-retained strategy.
 
 ```kotlin
 dependencies {

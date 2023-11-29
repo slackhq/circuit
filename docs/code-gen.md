@@ -1,7 +1,7 @@
 Code Generation
 ===============
 
-If using Dagger and Anvil, Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories.
+If using Dagger and Anvil or Hilt, Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories.
 
 ## Installation
 
@@ -13,6 +13,14 @@ plugins {
 dependencies {
   api("com.slack.circuit:circuit-codegen-annotations:<version>")
   ksp("com.slack.circuit:circuit-codegen:<version>")
+}
+```
+
+Note that Anvil is enabled by default. If you are using Hilt, you must specify the mode as a KSP arg.
+
+```kotlin
+ksp {
+  arg("circuit.codegen.mode", "hilt")
 }
 ```
 

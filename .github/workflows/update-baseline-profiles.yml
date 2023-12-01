@@ -22,7 +22,7 @@ jobs:
           lfs: 'true'
 
       - name: Install JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '20'

@@ -22,11 +22,9 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
-import kotlinx.parcelize.Parcelize
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 private const val TAG_GO_NEXT = "go"
 private const val TAG_POP = "pop"
@@ -34,7 +32,7 @@ private const val TAG_INCREASE_COUNT = "inc"
 private const val TAG_COUNT = "count"
 private const val TAG_LABEL = "label"
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(ComposeUiTestRunner::class)
 class NavigableCircuitRetainedStateTest {
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -58,7 +56,11 @@ class NavigableCircuitRetainedStateTest {
       setContent {
         CircuitCompositionLocals(circuit) {
           val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
-          val navigator = rememberCircuitNavigator(backstack = backstack)
+          val navigator =
+            rememberCircuitNavigator(
+              backstack = backstack,
+              onRootPop = {} // no-op for tests
+            )
           NavigableCircuitContent(navigator = navigator, backstack = backstack)
         }
       }

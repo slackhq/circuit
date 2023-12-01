@@ -7,6 +7,7 @@ androidx-browser = "1.7.0"
 androidx-lifecycle = "2.6.2"
 agp = "8.2.0"
 anvil = "2.4.8"
+atomicfu = "0.23.1"
 benchmark = "1.2.1"
 coil = "2.5.0"
 compose-animation = "1.5.4"
@@ -69,6 +70,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ## Here to trigger Renovate updates
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -154,6 +156,8 @@ androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-alpha05
 
 anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
 autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version = "1.1.0" }
 
@@ -170,6 +174,7 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }
 compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose-jb" }
+compose-ui-testing-junit = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "compose-jb" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-jb" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb" }

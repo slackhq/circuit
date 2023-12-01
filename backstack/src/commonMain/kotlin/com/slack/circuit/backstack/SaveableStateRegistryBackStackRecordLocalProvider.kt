@@ -28,6 +28,8 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -79,6 +81,8 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   private val valueProviders = mutableMapOf<String, MutableList<() -> Any?>>()
 
+  private val lock = SynchronizedObject()
+
   override fun canBeSaved(value: Any): Boolean = parentRegistry?.canBeSaved(value) != false
 
   override fun consumeRestored(key: String): Any? =
@@ -101,12 +105,10 @@ private class BackStackRecordLocalSaveableStateRegistry(
     valueProvider: () -> Any?
   ): SaveableStateRegistry.Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
-    synchronized(valueProviders) {
-      valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
-    }
+    synchronized(lock) { valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider) }
     return object : SaveableStateRegistry.Entry {
       override fun unregister() {
-        synchronized(valueProviders) {
+        synchronized(lock) {
           val list = valueProviders.remove(key)
           list?.remove(valueProvider)
           if (list != null && list.isNotEmpty()) {
@@ -124,7 +126,7 @@ private class BackStackRecordLocalSaveableStateRegistry(
   }
 
   private fun saveInto(map: MutableMap<String, List<Any?>>) {
-    synchronized(valueProviders) {
+    synchronized(lock) {
       valueProviders.forEach { (key, list) ->
         if (list.size == 1) {
           val value = list[0].invoke()

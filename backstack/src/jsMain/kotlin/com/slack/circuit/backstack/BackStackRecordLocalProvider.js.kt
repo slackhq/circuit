@@ -5,4 +5,4 @@ import androidx.compose.runtime.compositionLocalOf
 
 internal actual val LocalBackStackRecordLocalProviders:
   ProvidableCompositionLocal<List<BackStackRecordLocalProvider<BackStack.Record>>>
-  get() = compositionLocalOf { emptyList() }
+  get() = compositionLocalOf { listOf(SaveableStateRegistryBackStackRecordLocalProvider) }

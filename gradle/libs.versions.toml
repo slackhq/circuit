@@ -8,7 +8,7 @@ androidx-lifecycle = "2.6.2"
 agp = "8.2.0"
 anvil = "2.4.8"
 atomicfu = "0.23.1"
-benchmark = "1.2.1"
+benchmark = "1.2.2"
 coil = "2.5.0"
 compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here

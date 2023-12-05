@@ -6,13 +6,13 @@ Changelog
 
 _2023-12-05_
 
-- **Enhancement**: Commonizes `SaveableStateRegistryBackStackRecordLocalProvider` to be supported across all currently supported platforms.
+- **Enhancement**: Commonize `SaveableStateRegistryBackStackRecordLocalProvider` to be supported across all currently supported platforms.
 - **Fix**: Fix `LocalBackStackRecordLocalProviders` always returning a new composition local.
 - Update `androidx.compose.compiler:compiler` to `1.5.5`
 - Update KotlinPoet to `1.15.3`
-- Update Dagger to `2.4.9`
+- Update Dagger to `2.49`
 
-Special thanks to [@alexvanyo](https://github.com/alexvanyo)
+Special thanks to [@alexvanyo](https://github.com/alexvanyo) for contributing to this release.
 
 0.17.0
 ------

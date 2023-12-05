@@ -6,14 +6,13 @@ Changelog
 
 _2023-12-05_
 
-- **Enhancement**: Commonize SaveableStateRegistryBackStackRecordLocalProvider
-- Update `androidx.datastore:datastore-preferences` to `1.1.0-alpha07`
+- **Enhancement**: Commonizes `SaveableStateRegistryBackStackRecordLocalProvider` to be supported across all currently supported platforms.
+- **Fix**: Fix `LocalBackStackRecordLocalProviders` always returning a new composition local.
 - Update `androidx.compose.compiler:compiler` to `1.5.5`
 - Update KotlinPoet to `1.15.3`
-- Update Gradle to `8.5`
-- Update AGP to `8.2.0`
 - Update Dagger to `2.4.9`
-- Update SqlDelight to `2.0.1`
+
+Special thanks to [@alexvanyo](https://github.com/alexvanyo)
 
 0.17.0
 ------

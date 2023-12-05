@@ -27,10 +27,11 @@ HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt$LocalBack
 Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;-><clinit>()V
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;-><init>(Landroidx/compose/runtime/snapshots/SnapshotStateMap;)V
+PLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->access$getLock$p(Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;)Ljava/lang/Object;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->access$getSaver$cp()Landroidx/compose/runtime/saveable/Saver;
 PLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->access$getValueProviders$p(Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;)Ljava/util/Map;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->canBeSaved(Ljava/lang/Object;)Z
-HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->consumeRestored(Ljava/lang/String;)Ljava/lang/Object;
+HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->consumeRestored(Ljava/lang/String;)Ljava/lang/Object;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->getParentRegistry()Landroidx/compose/runtime/saveable/SaveableStateRegistry;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->performSave()Ljava/util/Map;
 HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;->registerProvider(Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Landroidx/compose/runtime/saveable/SaveableStateRegistry$Entry;
@@ -51,7 +52,7 @@ HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$Compan
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$Companion$Saver$2;-><init>()V
 Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerProvider$3;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerProvider$3;-><init>(Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)V
-PLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerProvider$3;->unregister()V
+HPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry$registerProvider$3;->unregister()V
 Lcom/slack/circuit/backstack/CompositeProvidedValues;
 HSPLcom/slack/circuit/backstack/CompositeProvidedValues;-><clinit>()V
 HSPLcom/slack/circuit/backstack/CompositeProvidedValues;-><init>(Ljava/util/List;)V

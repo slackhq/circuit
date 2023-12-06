@@ -85,6 +85,7 @@ public interface Ui<UiState : CircuitUiState> {
  *
  * @see [Ui] for main docs.
  */
+@Suppress("NOTHING_TO_INLINE")
 public inline fun <UiState : CircuitUiState> ui(
   crossinline body: @Composable (state: UiState, modifier: Modifier) -> Unit
 ): Ui<UiState> {

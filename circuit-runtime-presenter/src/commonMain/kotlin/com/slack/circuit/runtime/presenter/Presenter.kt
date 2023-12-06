@@ -166,6 +166,7 @@ public interface Presenter<UiState : CircuitUiState> {
  *
  * @see [Presenter] for main docs.
  */
+@Suppress("NOTHING_TO_INLINE")
 public inline fun <UiState : CircuitUiState> presenterOf(
   crossinline body: @Composable () -> UiState
 ): Presenter<UiState> {

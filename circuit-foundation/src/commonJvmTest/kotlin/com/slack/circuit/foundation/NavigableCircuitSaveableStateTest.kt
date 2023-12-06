@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -16,17 +17,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
-import kotlinx.parcelize.Parcelize
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 private const val TAG_GO_NEXT = "go"
 private const val TAG_POP = "pop"
@@ -34,16 +32,16 @@ private const val TAG_INCREASE_COUNT = "inc"
 private const val TAG_COUNT = "count"
 private const val TAG_LABEL = "label"
 
-@RunWith(RobolectricTestRunner::class)
-class NavigableCircuitRetainedStateTest {
+@RunWith(ComposeUiTestRunner::class)
+class NavigableCircuitSaveableStateTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Test fun retainedStateScopedToBackstackWithKeys() = retainedStateScopedToBackstack(true)
+  @Test fun saveableStateScopedToBackstackWithKeys() = saveableStateScopedToBackstack(true)
 
-  @Test fun retainedStateScopedToBackstackWithoutKeys() = retainedStateScopedToBackstack(false)
+  @Test fun saveableStateScopedToBackstackWithoutKeys() = saveableStateScopedToBackstack(false)
 
-  private fun retainedStateScopedToBackstack(useKeys: Boolean) {
+  private fun saveableStateScopedToBackstack(useKeys: Boolean) {
     composeTestRule.run {
       val circuit =
         Circuit.Builder()
@@ -58,7 +56,11 @@ class NavigableCircuitRetainedStateTest {
       setContent {
         CircuitCompositionLocals(circuit) {
           val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
-          val navigator = rememberCircuitNavigator(backstack = backstack)
+          val navigator =
+            rememberCircuitNavigator(
+              backstack = backstack,
+              onRootPop = {} // no-op for tests
+            )
           NavigableCircuitContent(navigator = navigator, backstack = backstack)
         }
       }
@@ -90,22 +92,22 @@ class NavigableCircuitRetainedStateTest {
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
-      // Navigate to Screen C. Assert that it's state was not retained
+      // Navigate to Screen C. Assert that it's state was not saved
       onNodeWithTag(TAG_GO_NEXT).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
-      // Pop to Screen B. Assert that it's state was retained
+      // Pop to Screen B. Assert that it's state was saved
       onNodeWithTag(TAG_POP).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
-      // Pop to Screen A. Assert that it's state was retained
+      // Pop to Screen A. Assert that it's state was saved
       onNodeWithTag(TAG_POP).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
-      // Navigate to Screen B. Assert that it's state was not retained
+      // Navigate to Screen B. Assert that it's state was not saved
       onNodeWithTag(TAG_GO_NEXT).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
@@ -155,7 +157,7 @@ class NavigableCircuitRetainedStateTest {
   ) : Presenter<TestState> {
     @Composable
     override fun present(): TestState {
-      var launchCount by rememberRetained(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
+      var launchCount by rememberSaveable(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
 
       return TestState(launchCount, screen.label) { event ->
         when (event) {

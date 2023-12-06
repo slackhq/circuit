@@ -1,6 +1,60 @@
 Changelog
 =========
 
+0.17.1
+------
+
+_2023-12-05_
+
+- **Enhancement**: Commonize `SaveableStateRegistryBackStackRecordLocalProvider` to be supported across all currently supported platforms.
+- **Fix**: Fix `LocalBackStackRecordLocalProviders` always returning a new composition local.
+- Update `androidx.compose.compiler:compiler` to `1.5.5`
+- Update KotlinPoet to `1.15.3`
+- Update Dagger to `2.49`
+
+Special thanks to [@alexvanyo](https://github.com/alexvanyo) for contributing to this release.
+
+0.17.0
+------
+
+_2023-11-28_
+
+## **New**: circuitx-effects artifact
+
+The circuitx-effects artifact provides some effects for use with logging/analytics. These effects
+are typically used in Circuit presenters for tracking `impressions` and will run only once until
+forgotten based on the current circuit-retained strategy.
+
+```kotlin
+dependencies {
+  implementation("com.slack.circuit:circuitx-effects:<version>")
+}
+```
+
+Docs: https://slackhq.github.io/circuit/circuitx/#effects
+
+## **New**: Add codegen mode to support both Anvil and Hilt
+
+Circuit's code gen artifact now supports generating for Hilt projects. See the docs for usage instructions: https://slackhq.github.io/circuit/code-gen/
+
+## Misc
+
+- Decompose various `CircuitContent` internals like `rememberPresenter()`, `rememberUi`, etc for reuse.
+- Make `CircuitContent()` overload that accepts a pre-constructed presenter/ui parameters public to allow for more control over content.
+- [samples] Update README to include the interop sample.
+- [samples] Various bugfixes to samples.
+- [docs] Link sources in kdocs.
+- [docs] Nest CircuitX artifacts in kdocs ToC.
+- Update uuid to `0.8.2`.
+- Update KotlinPoet to `1.15.1`.
+- Update to Compose Multiplatform `1.5.11`.
+- Update to Kotlin `1.9.21`.
+- Update to KSP `1.9.21-1.0.15`.
+- Update to compose-compiler (multiplatform) `1.5.4`.
+- Update to Molecule `1.3.1`.
+
+Special thanks to [@jamiesanson](https://github.com/jamiesanson), [@frett](https://github.com/frett), and [@bryanstern](https://github.com/BryanStern) for contributing to this release!
+
 0.16.1
 ------
 

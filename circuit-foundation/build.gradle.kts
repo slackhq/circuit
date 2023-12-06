@@ -59,11 +59,15 @@ kotlin {
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependencies {
+          implementation(libs.compose.ui.testing.junit)
           implementation(libs.junit)
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val jvmTest by getting {
+      dependsOn(commonJvmTest)
+      dependencies { implementation(compose.desktop.currentOs) }
+    }
     val androidUnitTest by getting {
       dependsOn(commonJvmTest)
       dependencies {
@@ -80,7 +84,12 @@ tasks
   .withType<KotlinCompile>()
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
-    compilerOptions { freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi") }
+    compilerOptions {
+      freeCompilerArgs.addAll(
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-Xexpect-actual-classes" // used for Parcelize in tests
+      )
+    }
   }
 
 android {

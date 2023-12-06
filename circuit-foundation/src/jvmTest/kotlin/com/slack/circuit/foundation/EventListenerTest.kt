@@ -47,10 +47,10 @@ class EventListenerTest {
         .build()
 
     backgroundScope.launchMolecule(Immediate) {
-      CircuitContent(circuit = circuit, screen = TestScreen)
+      CircuitContent(circuit = circuit, screen = TestEventListenerScreen)
     }
     val (screen, listener) = eventListenerFactory.listeners.entries.first()
-    assertThat(screen).isEqualTo(TestScreen)
+    assertThat(screen).isEqualTo(TestEventListenerScreen)
 
     assertThat(listener.events.awaitItem()).isEqualTo(Event.Start)
     assertThat(listener.events.awaitItem()).isEqualTo(Event.OnBeforeCreatePresenter)
@@ -71,7 +71,7 @@ class EventListenerTest {
   }
 }
 
-private data object TestScreen : Screen
+private data object TestEventListenerScreen : Screen
 
 private data class StringState(val value: String) : CircuitUiState
 

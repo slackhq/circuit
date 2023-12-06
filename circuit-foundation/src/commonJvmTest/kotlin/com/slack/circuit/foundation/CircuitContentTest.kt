@@ -20,16 +20,14 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
-import kotlinx.parcelize.Parcelize
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 private const val TAG_BUTTON = "Button"
 private const val TAG_COUNT = "Count"
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(ComposeUiTestRunner::class)
 class CircuitContentTest {
 
   @get:Rule val composeTestRule = createComposeRule()

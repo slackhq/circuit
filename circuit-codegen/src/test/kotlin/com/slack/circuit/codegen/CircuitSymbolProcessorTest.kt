@@ -1183,6 +1183,8 @@ class CircuitSymbolProcessorTest {
       inheritClassPath = true
       symbolProcessorProviders = listOf(CircuitSymbolProcessorProvider())
       kspArgs += "circuit.codegen.mode" to codegenMode.name
+      // Necessary for KSP
+      languageVersion = "1.9"
     }
 
   private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {

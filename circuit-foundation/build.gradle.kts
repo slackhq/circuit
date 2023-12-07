@@ -58,7 +58,9 @@ kotlin {
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest)
         dependencies {
+          implementation(libs.kotlin.test)
           implementation(libs.compose.ui.testing.junit)
           implementation(libs.junit)
           implementation(libs.truth)

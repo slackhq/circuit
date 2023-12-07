@@ -116,14 +116,11 @@ class NavigableCircuitSaveableStateTest {
 
   private sealed class TestScreen(val label: String) : Screen {
 
-    @Parcelize
-    data object ScreenA : TestScreen("A")
+    @Parcelize data object ScreenA : TestScreen("A")
 
-    @Parcelize
-    data object ScreenB : TestScreen("B")
+    @Parcelize data object ScreenB : TestScreen("B")
 
-    @Parcelize
-    data object ScreenC : TestScreen("C")
+    @Parcelize data object ScreenC : TestScreen("C")
   }
 
   @Composable

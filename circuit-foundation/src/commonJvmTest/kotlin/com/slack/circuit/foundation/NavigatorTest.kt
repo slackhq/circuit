@@ -1,11 +1,13 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
-import org.junit.Test
-import org.junit.runner.RunWith
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(ComposeUiTestRunner::class)
 class NavigatorTestUtil {

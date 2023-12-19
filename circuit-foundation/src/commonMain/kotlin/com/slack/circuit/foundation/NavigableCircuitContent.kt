@@ -59,8 +59,13 @@ public fun NavigableCircuitContent(
       // We retain the record's retained state registry if the back stack
       // contains the record
       val record = provider.record
-      val retainChecker =
-        remember(backstack, record) { CanRetainChecker { backstack.contains(record) } }
+      val retainChecker = remember(backstack, record) {
+        CanRetainChecker {
+          backstack.contains(record).also {
+            println("FOO CanRetainChecker: $it. NavigableCircuitContent: $record. ${backstack.toList()}")
+          }
+        }
+      }
 
       CompositionLocalProvider(LocalCanRetainChecker provides retainChecker) {
         val registry = rememberRetained(key = record.registryKey) { RetainedStateRegistry() }

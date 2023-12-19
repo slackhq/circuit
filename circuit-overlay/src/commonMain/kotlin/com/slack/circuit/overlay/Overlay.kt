@@ -7,7 +7,6 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.runtime.Composable
@@ -177,8 +176,8 @@ public interface Overlay<Result : Any> {
 /**
  * An [Overlay] that can be animated in and more interestingly out _after_ it has returned a
  * [Result]. The [Overlay] is animated in and out by its [enterTransition] and [exitTransition],
- * [AnimatedContent] is executed with with [AnimatedVisibilityScope] so that child animations can
- * be coordinated with the overlay's animations.
+ * [AnimatedContent] is executed with with [AnimatedVisibilityScope] so that child animations can be
+ * coordinated with the overlay's animations.
  */
 public abstract class AnimatedOverlay<Result : Any>(
   public val enterTransition: EnterTransition,
@@ -186,10 +185,12 @@ public abstract class AnimatedOverlay<Result : Any>(
 ) : Overlay<Result> {
   @Composable
   final override fun Content(navigator: OverlayNavigator<Result>) {
-    val scope = object : AnimatedVisibilityScope {
-      @ExperimentalAnimationApi
-      override val transition: Transition<EnterExitState> = updateTransition(EnterExitState.Visible)
-    }
+    val scope =
+      object : AnimatedVisibilityScope {
+        @ExperimentalAnimationApi
+        override val transition: Transition<EnterExitState> =
+          updateTransition(EnterExitState.Visible)
+      }
     with(scope) { AnimatedContent(navigator) }
   }
 

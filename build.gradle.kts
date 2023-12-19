@@ -334,6 +334,7 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 21 }
+      testOptions { targetSdk = 34 }
     }
 
     // Single-variant libraries

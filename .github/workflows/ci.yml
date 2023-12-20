@@ -39,12 +39,16 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
-      - name: Run retained instrumentation tests
-        uses: emulator-wtf/run-tests@v0
+      # Defer these until after the above run, no need to waste resources running them if there are other failures first
+      - name: Run instrumentation tests
+        id: gradle
+        uses: gradle/gradle-build-action@v2
+        env:
+          EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
         with:
-          api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
-          test: circuit-retained/build/outputs/apk/androidTest/release/circuit-retained-release-androidTest.apk
-          outputs-dir: circuit-retained/build/test-results
+          arguments: testReleaseWithEmulatorWtf
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v2

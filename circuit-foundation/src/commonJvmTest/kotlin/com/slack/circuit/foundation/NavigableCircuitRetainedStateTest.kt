@@ -16,6 +16,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.TestContentTags.TAG_COUNT
+import com.slack.circuit.foundation.TestContentTags.TAG_GO_NEXT
+import com.slack.circuit.foundation.TestContentTags.TAG_INCREASE_COUNT
+import com.slack.circuit.foundation.TestContentTags.TAG_LABEL
+import com.slack.circuit.foundation.TestContentTags.TAG_POP
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -25,12 +30,6 @@ import com.slack.circuit.runtime.ui.ui
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-private const val TAG_GO_NEXT = "go"
-private const val TAG_POP = "pop"
-private const val TAG_INCREASE_COUNT = "inc"
-private const val TAG_COUNT = "count"
-private const val TAG_LABEL = "label"
 
 @RunWith(ComposeUiTestRunner::class)
 class NavigableCircuitRetainedStateTest {

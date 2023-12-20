@@ -15,6 +15,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.TestContentTags.TAG_COUNT
+import com.slack.circuit.foundation.TestContentTags.TAG_GO_NEXT
+import com.slack.circuit.foundation.TestContentTags.TAG_INCREASE_COUNT
+import com.slack.circuit.foundation.TestContentTags.TAG_LABEL
+import com.slack.circuit.foundation.TestContentTags.TAG_POP
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -22,12 +27,6 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 import kotlinx.parcelize.Parcelize
-
-internal const val TAG_GO_NEXT = "go"
-internal const val TAG_POP = "pop"
-internal const val TAG_INCREASE_COUNT = "inc"
-internal const val TAG_COUNT = "count"
-internal const val TAG_LABEL = "label"
 
 class NavigableCircuitRetainedStateTestActivity : ComponentActivity() {
 

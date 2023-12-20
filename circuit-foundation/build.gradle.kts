@@ -77,6 +77,14 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+    val androidInstrumentedTest by getting {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.coroutines.android)
+        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.compose.ui.testing.junit)
+      }
+    }
   }
 }
 
@@ -94,10 +102,11 @@ tasks
 
 android {
   namespace = "com.slack.circuit.foundation"
-  testOptions { unitTests { isIncludeAndroidResources = true } }
-}
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+  testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
+}
 
 baselineProfile {
   mergeIntoMain = true

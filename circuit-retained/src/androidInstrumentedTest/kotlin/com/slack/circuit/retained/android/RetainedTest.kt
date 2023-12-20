@@ -119,7 +119,7 @@ class RetainedTest {
     // - text2Enabled
     // - text1
     // - text2
-    assertThat(continuity.peekProviders()).hasSize(1)
+    assertThat(continuity.peekProviders()).hasSize(2)
     assertThat(continuity.peekProviders().values.single()).hasSize(3)
 
     // Now disable the second text

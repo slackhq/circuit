@@ -23,15 +23,11 @@ class NavigableCircuitRetainedStateAndroidTest {
   @Test
   fun retainedStateScopedToBackstack() {
     composeTestRule.run {
-      println("FOO Screen A")
-
       // Current: Screen A. Increase count to 1
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
-
-      println("FOO Screen B")
 
       // Navigate to Screen B. Increase count to 1
       onNodeWithTag(TAG_GO_NEXT).performClick()
@@ -41,12 +37,9 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
-      println("FOO Rotating Screen B")
       scenario.rotateAndBack()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
-
-      println("FOO Screen C")
 
       // Navigate to Screen C. Increase count to 1
       onNodeWithTag(TAG_GO_NEXT).performClick()
@@ -56,19 +49,13 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
-      println("FOO Rotating Screen C")
-
       scenario.rotateAndBack()
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
-      println("FOO Popping to Screen B")
-
       // Pop to Screen B. Increase count from 1 to 2.
       onNodeWithTag(TAG_POP).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
-      println("FOO Screen B")
-
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
@@ -107,7 +94,7 @@ private fun ActivityScenario<out Activity>.rotateAndBack() {
     }
   }
   // Finally set the orientation back to unspecified
-  //onActivity { activity ->
-    //activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
- // }
+  onActivity { activity ->
+    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+  }
 }

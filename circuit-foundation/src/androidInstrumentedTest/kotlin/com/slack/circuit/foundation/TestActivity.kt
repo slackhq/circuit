@@ -37,7 +37,7 @@ class TestActivity : ComponentActivity() {
     val circuit =
       Circuit.Builder()
         .addPresenterFactory { screen, navigator, _ ->
-          TestCountPresenter(screen as TestScreen, navigator, useKeys = true)
+          TestCountPresenter(screen as TestScreen, navigator, useKeys = false)
         }
         .addUiFactory { _, _ -> ui<TestState> { state, modifier -> TestContent(state, modifier) } }
         .build()

@@ -23,15 +23,15 @@ public actual fun rememberCanRetainChecker(): CanRetainChecker {
       } else {
         // Otherwise we always allow retaining for 'child' registries
         true
-      }.also {
-        println("FOO CanRetainChecker: $it for $registry $activity")
       }
     }
   }
 }
 
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-  is Activity -> this
-  is ContextWrapper -> baseContext.findActivity()
-  else -> null
+private tailrec fun Context.findActivity(): Activity? {
+  return when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+  }
 }

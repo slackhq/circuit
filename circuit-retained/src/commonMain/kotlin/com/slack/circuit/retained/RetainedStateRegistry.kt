@@ -90,8 +90,6 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
       list[0]
     } else {
       null
-    }.also {
-      println("FOO: $this. consumeValue for key: $key. $it")
     }
   }
 
@@ -107,8 +105,6 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
           valueProviders[key] = list
         }
       }
-    }.also {
-      println("FOO: $this. registerValue for key:$key")
     }
   }
 
@@ -134,16 +130,11 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
       // Store the values in our retained map
       retained.putAll(values)
     }
-
-    println("FOO: $this. saveAll: $values")
-
     // Clear the value providers now that we've stored the values
     valueProviders.clear()
   }
 
   override fun saveValue(key: String) {
-    println("FOO: $this. save: $key")
-
     val providers = valueProviders[key]
     if (providers != null) {
       retained[key] = providers.map { it.invoke() }
@@ -152,7 +143,6 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun forgetUnclaimedValues() {
-    println("FOO: $this. forgetUnclaimedValues: $retained")
     retained.clear()
   }
 }

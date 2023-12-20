@@ -18,7 +18,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Necessary to run full tests to cover iOS too
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4

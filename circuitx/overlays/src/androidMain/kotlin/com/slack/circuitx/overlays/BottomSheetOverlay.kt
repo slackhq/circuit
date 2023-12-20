@@ -4,6 +4,7 @@ package com.slack.circuitx.overlays
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
@@ -15,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.Overlay
@@ -42,35 +45,67 @@ private constructor(
   private val model: Model,
   private val dismissOnTapOutside: Boolean = true,
   private val onDismiss: (() -> Result)? = null,
+  private val sheetShape: Shape? = null,
+  private val sheetContainerColor: Color? = null,
+  private val dragHandle: (@Composable () -> Unit)? = null,
+  private val skipPartiallyExpandedState: Boolean = false,
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
 ) : Overlay<Result> {
 
   /**
    * Constructs a new [BottomSheetOverlay] that will not dismiss when tapped outside of the sheet.
-   * This means that only the [content] can finish the overlay.
+   * This means that only the [content] can finish the overlay. Additionally the appearance of the
+   * sheet can be customized
+   *
+   * @param sheetContainerColor - set the container color of the ModalBottomSheet
+   * @param dragHandle - customize the drag handle of the sheet
+   * @param skipPartiallyExpandedState - indicates if the Sheet should be expanded per default (if
+   *   it's height exceed the partial height threshold)
    */
   public constructor(
     model: Model,
+    sheetContainerColor: Color? = null,
+    sheetShape: Shape? = null,
+    dragHandle: @Composable (() -> Unit)? = null,
+    skipPartiallyExpandedState: Boolean = false,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
     dismissOnTapOutside = false,
     onDismiss = null,
+    dragHandle = dragHandle,
+    sheetShape = sheetShape,
+    sheetContainerColor = sheetContainerColor,
+    skipPartiallyExpandedState = skipPartiallyExpandedState,
     content = content,
   )
 
   /**
    * Constructs a new [BottomSheetOverlay] that will dismiss when tapped outside of the sheet.
-   * [onDismiss] is required in this case to offer a default value in this event.
+   * [onDismiss] is required in this case to offer a default value in this event. Additionally the
+   * appearance of the sheet can be customized
+   *
+   * @param sheetContainerColor - set the container color of the ModalBottomSheet
+   * @param dragHandle - customize the drag handle of the sheet
+   * @param skipPartiallyExpandedState - indicates if the Sheet should be expanded per default (if
+   *   it's height exceed the partial height threshold)
    */
   public constructor(
     model: Model,
     onDismiss: (() -> Result),
+    sheetContainerColor: Color? = null,
+    sheetShape: Shape? = null,
+    dragHandle: @Composable (() -> Unit)? = null,
+    skipPartiallyExpandedState: Boolean = false,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
     dismissOnTapOutside = true,
     onDismiss = onDismiss,
+    dragHandle = dragHandle,
+    sheetShape = sheetShape,
+    sheetContainerColor = sheetContainerColor,
+    skipPartiallyExpandedState = skipPartiallyExpandedState,
     content = content,
   )
 
@@ -79,6 +114,7 @@ private constructor(
     var hasShown by remember { mutableStateOf(false) }
     val sheetState =
       rememberModalBottomSheetState(
+        skipPartiallyExpanded = skipPartiallyExpandedState,
         confirmValueChange = { newValue ->
           if (hasShown && newValue == SheetValue.Hidden) {
             dismissOnTapOutside
@@ -111,7 +147,9 @@ private constructor(
         }
       },
       sheetState = sheetState,
-      shape = RoundedCornerShape(32.dp),
+      shape = sheetShape ?: RoundedCornerShape(32.dp),
+      containerColor = sheetContainerColor ?: BottomSheetDefaults.ContainerColor,
+      dragHandle = dragHandle ?: { BottomSheetDefaults.DragHandle() },
       // Go edge-to-edge
       windowInsets = WindowInsets(0, 0, 0, 0),
       onDismissRequest = {

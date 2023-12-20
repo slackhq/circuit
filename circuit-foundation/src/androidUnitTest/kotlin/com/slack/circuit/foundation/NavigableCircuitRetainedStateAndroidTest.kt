@@ -2,17 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.pm.ActivityInfo
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
+import com.slack.circuit.foundation.TestContentTags.TAG_COUNT
+import com.slack.circuit.foundation.TestContentTags.TAG_GO_NEXT
+import com.slack.circuit.foundation.TestContentTags.TAG_INCREASE_COUNT
+import com.slack.circuit.foundation.TestContentTags.TAG_LABEL
+import com.slack.circuit.foundation.TestContentTags.TAG_POP
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(ComposeUiTestRunner::class)
 class NavigableCircuitRetainedStateAndroidTest {
 
   @get:Rule
@@ -31,7 +35,7 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
-      scenario.rotateAndBack()
+      scenario.recreate()
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
@@ -43,7 +47,7 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
-      scenario.rotateAndBack()
+      scenario.recreate()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
@@ -55,7 +59,7 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
-      scenario.rotateAndBack()
+      scenario.recreate()
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
@@ -72,7 +76,7 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
       // Now recreate the Activity and assert that the values were retained
-      scenario.rotateAndBack()
+      scenario.recreate()
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
@@ -82,7 +86,7 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
       // Now recreate the Activity and assert that the values were retained
-      scenario.rotateAndBack()
+      scenario.recreate()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
@@ -92,7 +96,7 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
-      scenario.rotateAndBack()
+      scenario.recreate()
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
@@ -101,21 +105,5 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
     }
-  }
-}
-
-@SuppressLint("SourceLockedOrientationActivity")
-private fun ActivityScenario<out Activity>.rotateAndBack() {
-  onActivity { activity ->
-    val metrics = activity.resources.displayMetrics
-    if (metrics.heightPixels > metrics.widthPixels) {
-      activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-    } else {
-      activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-  }
-  // Finally set the orientation back to unspecified
-  onActivity { activity ->
-    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
   }
 }

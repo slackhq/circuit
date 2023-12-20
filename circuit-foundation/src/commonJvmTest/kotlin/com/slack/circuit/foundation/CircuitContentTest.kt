@@ -16,6 +16,8 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.slack.circuit.foundation.TestContentTags.TAG_BUTTON
+import com.slack.circuit.foundation.TestContentTags.TAG_COUNT
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
@@ -23,9 +25,6 @@ import com.slack.circuit.runtime.ui.ui
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-private const val TAG_BUTTON = "Button"
-private const val TAG_COUNT = "Count"
 
 @RunWith(ComposeUiTestRunner::class)
 class CircuitContentTest {

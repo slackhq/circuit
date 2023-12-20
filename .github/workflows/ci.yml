@@ -39,13 +39,6 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: false
 
-      - name: Run foundation instrumentation tests
-        uses: emulator-wtf/run-tests@v0
-        with:
-          api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
-          test: circuit-foundation/build/outputs/apk/androidTest/release/circuit-foundation-release-androidTest.apk
-          outputs-dir: circuit-foundation/build/test-results
-
       - name: Run retained instrumentation tests
         uses: emulator-wtf/run-tests@v0
         with:

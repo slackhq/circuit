@@ -57,7 +57,7 @@ jobs:
         uses: mikepenz/action-junit-report@v2
         if: always() # always run even if the tests fail
         with:
-          report_paths: 'build/test-results/**/*.xml'
+          report_paths: '**/build/test-results/**/*.xml'
 
       - name: (Fail-only) Upload reports
         if: failure()

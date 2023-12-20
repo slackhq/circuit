@@ -31,13 +31,33 @@ jobs:
           distribution: 'zulu'
           java-version: '20'
 
-      - name: Build and run tests
+      - name: Build and run checks
         id: gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug detektMain detektTest :samples:star:benchmark:compileBenchmarkReleaseKotlin --continue --no-configuration-cache
+          arguments: check :samples:star:apk:assembleDebug detektMain detektTest assembleAndroidTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
+
+      - name: Run foundation instrumentation tests
+        uses: emulator-wtf/run-tests@v0
+        with:
+          api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
+          test: circuit-foundation/build/outputs/apk/androidTest/release/circuit-foundation-release-androidTest.apk
+          outputs-dir: circuit-foundation/build/test-results
+
+      - name: Run retained instrumentation tests
+        uses: emulator-wtf/run-tests@v0
+        with:
+          api-token: ${{ secrets.EMULATOR_WTF_TOKEN }}
+          test: circuit-retained/build/outputs/apk/androidTest/release/circuit-retained-release-androidTest.apk
+          outputs-dir: circuit-retained/build/test-results
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v2
+        if: always() # always run even if the tests fail
+        with:
+          report_paths: 'build/test-results/**/*.xml'
 
       - name: (Fail-only) Upload reports
         if: failure()
@@ -50,6 +70,7 @@ jobs:
       - name: Publish snapshot (main branch only)
         if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache
+
   snapshots:
     runs-on: ubuntu-latest
     steps:

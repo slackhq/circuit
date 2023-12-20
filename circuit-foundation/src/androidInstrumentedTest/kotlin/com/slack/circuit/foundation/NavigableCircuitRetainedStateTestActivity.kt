@@ -29,7 +29,7 @@ internal const val TAG_INCREASE_COUNT = "inc"
 internal const val TAG_COUNT = "count"
 internal const val TAG_LABEL = "label"
 
-class TestActivity : ComponentActivity() {
+class NavigableCircuitRetainedStateTestActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

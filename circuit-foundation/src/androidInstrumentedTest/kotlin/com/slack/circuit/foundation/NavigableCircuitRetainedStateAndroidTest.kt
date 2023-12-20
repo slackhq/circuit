@@ -15,9 +15,10 @@ import org.junit.Test
 
 class NavigableCircuitRetainedStateAndroidTest {
 
-  @get:Rule val composeTestRule = createAndroidComposeRule<TestActivity>()
+  @get:Rule
+  val composeTestRule = createAndroidComposeRule<NavigableCircuitRetainedStateTestActivity>()
 
-  private val scenario: ActivityScenario<TestActivity>
+  private val scenario: ActivityScenario<NavigableCircuitRetainedStateTestActivity>
     get() = composeTestRule.activityRule.scenario
 
   @Test

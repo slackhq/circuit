@@ -22,12 +22,17 @@ class NavigableCircuitRetainedStateAndroidTest {
     get() = composeTestRule.activityRule.scenario
 
   @Test
-  fun retainedStateScopedToBackstack() {
+  fun retainedStateScopedToBackstackWithRecreations() {
     composeTestRule.run {
       // Current: Screen A. Increase count to 1
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
+      onNodeWithTag(TAG_COUNT).assertTextEquals("1")
+
+      // Now recreate the Activity and assert that the values were retained
+      scenario.rotateAndBack()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Navigate to Screen B. Increase count to 1
@@ -66,13 +71,28 @@ class NavigableCircuitRetainedStateAndroidTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
+      // Now recreate the Activity and assert that the values were retained
+      scenario.rotateAndBack()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("C")
+      onNodeWithTag(TAG_COUNT).assertTextEquals("0")
+
       // Pop to Screen B. Assert that it's state was retained
       onNodeWithTag(TAG_POP).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
+      // Now recreate the Activity and assert that the values were retained
+      scenario.rotateAndBack()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      onNodeWithTag(TAG_COUNT).assertTextEquals("2")
+
       // Pop to Screen A. Assert that it's state was retained
       onNodeWithTag(TAG_POP).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      onNodeWithTag(TAG_COUNT).assertTextEquals("1")
+
+      // Now recreate the Activity and assert that the values were retained
+      scenario.rotateAndBack()
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 

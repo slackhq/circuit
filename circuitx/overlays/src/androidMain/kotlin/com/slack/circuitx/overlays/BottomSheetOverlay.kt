@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.Overlay
@@ -44,7 +45,7 @@ private constructor(
   private val model: Model,
   private val dismissOnTapOutside: Boolean = true,
   private val onDismiss: (() -> Result)? = null,
-  private val sheetShape: androidx.compose.ui.graphics.Shape? = null,
+  private val sheetShape: Shape? = null,
   private val sheetContainerColor: Color? = null,
   private val dragHandle: (@Composable () -> Unit)? = null,
   private val skipPartiallyExpandedState: Boolean = false,
@@ -64,7 +65,7 @@ private constructor(
   public constructor(
     model: Model,
     sheetContainerColor: Color? = null,
-    sheetShape: androidx.compose.ui.graphics.Shape? = null,
+    sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
@@ -93,7 +94,7 @@ private constructor(
     model: Model,
     onDismiss: (() -> Result),
     sheetContainerColor: Color? = null,
-    sheetShape: androidx.compose.ui.graphics.Shape? = null,
+    sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,

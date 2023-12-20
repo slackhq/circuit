@@ -100,9 +100,7 @@ dependencyResolutionManagement {
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
 
     // emulator.wtf
-    maven(url = "https://maven.emulator.wtf/releases/") {
-      content { includeGroup("wtf.emulator") }
-    }
+    maven(url = "https://maven.emulator.wtf/releases/") { content { includeGroup("wtf.emulator") } }
   }
 }
 

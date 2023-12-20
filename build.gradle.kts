@@ -447,9 +447,7 @@ subprojects {
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
     if (emulatorWtfToken.isPresent) {
-      configure<EwExtension> {
-        token.set(emulatorWtfToken)
-      }
+      configure<EwExtension> { token.set(emulatorWtfToken) }
     }
   }
 }

@@ -9,6 +9,7 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.emulatorWtf)
 }
 
 kotlin {

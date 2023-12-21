@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.rememberEventSink
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -191,27 +192,31 @@ constructor(
     return when {
       animals == null -> PetListScreen.State.Loading
       animals.isEmpty() -> PetListScreen.State.NoAnimals(isRefreshing)
-      else ->
+      else -> {
+        val eventSink =
+          rememberEventSink<PetListScreen.Event> { event ->
+            when (event) {
+              is PetListScreen.Event.ClickAnimal -> {
+                navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+              }
+              is PetListScreen.Event.UpdatedFilters -> {
+                isUpdateFiltersModalShowing = false
+                filters = event.newFilters
+              }
+              PetListScreen.Event.UpdateFilters -> {
+                isUpdateFiltersModalShowing = true
+              }
+              PetListScreen.Event.Refresh -> isRefreshing = true
+            }
+          }
         PetListScreen.State.Success(
           animals = animals.filter { shouldKeep(filters, it) }.toImmutableList(),
           isRefreshing = isRefreshing,
           filters = filters,
           isUpdateFiltersModalShowing = isUpdateFiltersModalShowing,
-        ) { event ->
-          when (event) {
-            is PetListScreen.Event.ClickAnimal -> {
-              navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
-            }
-            is PetListScreen.Event.UpdatedFilters -> {
-              isUpdateFiltersModalShowing = false
-              filters = event.newFilters
-            }
-            PetListScreen.Event.UpdateFilters -> {
-              isUpdateFiltersModalShowing = true
-            }
-            PetListScreen.Event.Refresh -> isRefreshing = true
-          }
-        }
+          eventSink = eventSink,
+        )
+      }
     }
   }
 

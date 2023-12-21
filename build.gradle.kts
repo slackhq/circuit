@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFI
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
@@ -50,6 +51,7 @@ plugins {
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
+  alias(libs.plugins.emulatorWtf) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
@@ -439,6 +441,13 @@ subprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.plugin.mpp.apple.FrameworkCopy>().configureEach {
       @Suppress("INVISIBLE_MEMBER")
       notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
+    }
+  }
+
+  pluginManager.withPlugin("wtf.emulator.gradle") {
+    val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
+    if (emulatorWtfToken.isPresent) {
+      configure<EwExtension> { token.set(emulatorWtfToken) }
     }
   }
 }

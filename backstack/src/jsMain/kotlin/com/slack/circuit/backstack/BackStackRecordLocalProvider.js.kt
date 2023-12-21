@@ -1,10 +1,5 @@
 package com.slack.circuit.backstack
 
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
-
-internal actual val LocalBackStackRecordLocalProviders:
-  ProvidableCompositionLocal<List<BackStackRecordLocalProvider<BackStack.Record>>> =
-  compositionLocalOf {
-    listOf(SaveableStateRegistryBackStackRecordLocalProvider)
-  }
+internal actual val defaultBackStackRecordLocalProviders:
+  List<BackStackRecordLocalProvider<BackStack.Record>> =
+  listOf(SaveableStateRegistryBackStackRecordLocalProvider)

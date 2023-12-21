@@ -33,23 +33,28 @@ jobs:
           java-version: '20'
 
       - name: Build and run checks
-        id: gradle-build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug detektMain detektTest assembleAndroidTest --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
+
+      - name: Build and run checks
+        id: gradle-build
+        run: |
+          ./gradlew --continue --no-configuration-cache \
+              check \
+              :samples:star:apk:assembleDebug \
+              :samples:counter:linkPodReleaseFrameworkIosX64 \
+              detektMain \
+              detektTest \
+              assembleAndroidTest
 
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests
         id: gradle-instrumentation
-        uses: gradle/gradle-build-action@v2
         env:
           EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
-        with:
-          arguments: testReleaseWithEmulatorWtf
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+        run: ./gradlew testReleaseWithEmulatorWtf
 
       - name: (Fail-only) Upload reports
         if: failure()

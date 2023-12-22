@@ -367,9 +367,9 @@ class StaticUiTest(val state: (count: Int) -> CounterState) : BaseUiTest() {
             override val count = count
           }
         }),
-        arrayOf(::AsPokoClass),
+        arrayOf({ count: Int -> AsPokoClass(count) }),
         // Standard data class state. Simplest to stand up
-        arrayOf(::AsDataClass),
+        arrayOf({ count: Int -> AsDataClass(count) }),
       )
     }
   }

@@ -2,13 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.overlay
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
@@ -17,11 +15,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.coroutines.resume
 
 /**
  * An OverlayHost can be used [show] [overlays][Overlay] with content on top of other content. This
@@ -185,13 +183,12 @@ public abstract class AnimatedOverlay<Result : Any>(
 ) : Overlay<Result> {
   @Composable
   final override fun Content(navigator: OverlayNavigator<Result>) {
-    val scope =
-      object : AnimatedVisibilityScope {
-        @ExperimentalAnimationApi
-        override val transition: Transition<EnterExitState> =
-          updateTransition(EnterExitState.Visible)
-      }
-    with(scope) { AnimatedContent(navigator) }
+    AnimatedContent(
+      targetState = Unit,
+      transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+    ) {
+      AnimatedContent(navigator)
+    }
   }
 
   @Composable

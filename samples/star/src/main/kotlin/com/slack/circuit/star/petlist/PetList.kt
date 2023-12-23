@@ -6,20 +6,15 @@ import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -321,9 +316,7 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier
-            .padding(paddingValues)
-            .fillMaxSize(),
+          modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
           isRefreshing = state.isRefreshing,
           eventSink = state.eventSink
@@ -358,9 +351,7 @@ private fun PetListGrid(
     @Suppress("MagicNumber")
     LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(columnSpan),
-      modifier = Modifier
-        .fillMaxSize()
-        .testTag(GRID_TAG),
+      modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = 16.dp,
       horizontalArrangement = spacedBy(16.dp),
       contentPadding = PaddingValues(16.dp),
@@ -393,9 +384,7 @@ private fun PetListGridItem(
 ) {
   val updatedImageUrl = animal.imageUrl ?: R.drawable.star_icon
   ElevatedCard(
-    modifier = modifier
-      .fillMaxWidth()
-      .testTag(CARD_TAG),
+    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(
@@ -406,9 +395,7 @@ private fun PetListGridItem(
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
-        modifier = Modifier
-          .fillMaxWidth()
-          .testTag(IMAGE_TAG),
+        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
@@ -444,30 +431,23 @@ private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters 
     private val model: Model,
     private val onDismiss: () -> Result,
     private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
-  ) : AnimatedOverlay<Result>(
-    enterTransition = fadeIn(),
-    exitTransition = fadeOut()
-  ) {
+  ) : AnimatedOverlay<Result>(enterTransition = fadeIn(), exitTransition = fadeOut()) {
     @Composable
     override fun AnimatedVisibilityScope.AnimatedContent(navigator: OverlayNavigator<Result>) {
       Box(Modifier.fillMaxSize()) {
-        Box(Modifier
-          .fillMaxSize()
-          .background(Color.Black.copy(alpha = 0.5f))
-          .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = { navigator.finish(onDismiss()) }
-          )
+        Box(
+          Modifier.fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f))
+            .clickable(
+              interactionSource = remember { MutableInteractionSource() },
+              indication = null,
+              onClick = { navigator.finish(onDismiss()) }
+            )
         )
         Box(
-          Modifier
-            .fillMaxSize(0.75f)
+          Modifier.fillMaxSize(0.75f)
             .align(Alignment.Center)
-            .animateEnterExit(
-              enter = slideInVertically { it },
-              exit = slideOutVertically { it }
-            ),
+            .animateEnterExit(enter = slideInVertically { it }, exit = slideOutVertically { it }),
           contentAlignment = Alignment.Center
         ) {
           content(model, navigator)

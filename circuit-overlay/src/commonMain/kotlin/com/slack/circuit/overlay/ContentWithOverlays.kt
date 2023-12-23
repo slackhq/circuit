@@ -3,23 +3,18 @@
 package com.slack.circuit.overlay
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.SnapSpec
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.IntSize
 
 /**
  * Renders the given [content] with the ability to show overlays on top of it. This works by
@@ -40,7 +35,6 @@ public fun ContentWithOverlays(
     Box(modifier) {
       content()
       AnimatedContent(
-        modifier = Modifier.fillMaxSize(),
         targetState = overlayHostData,
         transitionSpec = {
           val enter =

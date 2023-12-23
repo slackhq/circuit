@@ -41,16 +41,16 @@ public fun ContentWithOverlays(
             (targetState?.overlay as? AnimatedOverlay)?.enterTransition ?: EnterTransition.None
           val exit =
             (initialState?.overlay as? AnimatedOverlay)?.exitTransition ?: ExitTransition.None
-          (enter togetherWith exit)
-            // Disable the size transform animation
-            .using(SizeTransform(sizeAnimationSpec = { _, _ -> snap(0) }))
-            .also { it.targetContentZIndex = targetState?.let { 1f } ?: -1f }
+          val sizeTransform =
+            if (targetState != null) SizeTransform(clip = true) { _, _ -> snap(0) } else null
+          (enter togetherWith exit).using(sizeTransform).also {
+            it.targetContentZIndex = targetState?.let { 1f } ?: -1f
+          }
         },
         contentAlignment = Alignment.Center
       ) { overlayHostData ->
         when (val overlay = overlayHostData?.overlay) {
-          // If the target state content is empty, the exit transition will be ignored.
-          null -> Box(Modifier)
+          null -> Unit
           is AnimatedOverlay -> with(overlay) { AnimatedContent(overlayHostData::finish) }
           overlay -> overlay.Content(overlayHostData::finish)
         }

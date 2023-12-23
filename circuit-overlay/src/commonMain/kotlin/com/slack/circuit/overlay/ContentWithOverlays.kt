@@ -42,17 +42,17 @@ public fun ContentWithOverlays(
           val exit =
             (initialState?.overlay as? AnimatedOverlay)?.exitTransition ?: ExitTransition.None
           val sizeTransform =
-            if (targetState != null) SizeTransform(clip = true) { _, _ -> snap(0) } else null
+            if (targetState != null) SizeTransform { _, _ -> snap(0) } else null
           (enter togetherWith exit).using(sizeTransform).also {
             it.targetContentZIndex = targetState?.let { 1f } ?: -1f
           }
         },
         contentAlignment = Alignment.Center
-      ) { overlayHostData ->
-        when (val overlay = overlayHostData?.overlay) {
+      ) { data ->
+        when (val overlay = data?.overlay) {
           null -> Unit
-          is AnimatedOverlay -> with(overlay) { AnimatedContent(overlayHostData::finish) }
-          overlay -> overlay.Content(overlayHostData::finish)
+          is AnimatedOverlay -> with(overlay) { AnimatedContent(data::finish) }
+          else -> overlay.Content(data::finish)
         }
       }
     }

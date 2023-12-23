@@ -41,8 +41,7 @@ public fun ContentWithOverlays(
             (targetState?.overlay as? AnimatedOverlay)?.enterTransition ?: EnterTransition.None
           val exit =
             (initialState?.overlay as? AnimatedOverlay)?.exitTransition ?: ExitTransition.None
-          val sizeTransform =
-            if (targetState != null) SizeTransform { _, _ -> snap(0) } else null
+          val sizeTransform = if (targetState != null) SizeTransform { _, _ -> snap(0) } else null
           (enter togetherWith exit).using(sizeTransform).also {
             it.targetContentZIndex = targetState?.let { 1f } ?: -1f
           }

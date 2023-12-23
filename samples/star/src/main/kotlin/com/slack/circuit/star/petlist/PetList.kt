@@ -5,9 +5,22 @@ package com.slack.circuit.star.petlist
 import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -61,6 +74,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -74,8 +88,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.overlay.AnimatedOverlay
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.OverlayHost
+import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -97,7 +113,6 @@ import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.StarTheme
-import com.slack.circuitx.overlays.BottomSheetOverlay
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -306,7 +321,9 @@ internal fun PetList(
         }
       is PetListScreen.State.Success ->
         PetListGrid(
-          modifier = Modifier.padding(paddingValues).fillMaxSize(),
+          modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
           animals = state.animals,
           isRefreshing = state.isRefreshing,
           eventSink = state.eventSink
@@ -341,7 +358,9 @@ private fun PetListGrid(
     @Suppress("MagicNumber")
     LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(columnSpan),
-      modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
+      modifier = Modifier
+        .fillMaxSize()
+        .testTag(GRID_TAG),
       verticalItemSpacing = 16.dp,
       horizontalArrangement = spacedBy(16.dp),
       contentPadding = PaddingValues(16.dp),
@@ -374,7 +393,9 @@ private fun PetListGridItem(
 ) {
   val updatedImageUrl = animal.imageUrl ?: R.drawable.star_icon
   ElevatedCard(
-    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
+    modifier = modifier
+      .fillMaxWidth()
+      .testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(
@@ -385,7 +406,9 @@ private fun PetListGridItem(
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
       AsyncImage(
-        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
+        modifier = Modifier
+          .fillMaxWidth()
+          .testTag(IMAGE_TAG),
         model =
           ImageRequest.Builder(LocalContext.current)
             .data(updatedImageUrl)
@@ -415,9 +438,45 @@ private fun PetListGridItem(
   }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
+  class CardDialogOverlay<Model : Any, Result : Any>(
+    private val model: Model,
+    private val onDismiss: () -> Result,
+    private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
+  ) : AnimatedOverlay<Result>(
+    enterTransition = fadeIn(),
+    exitTransition = fadeOut()
+  ) {
+    @Composable
+    override fun AnimatedVisibilityScope.AnimatedContent(navigator: OverlayNavigator<Result>) {
+      Box(Modifier.fillMaxSize()) {
+        Box(Modifier
+          .fillMaxSize()
+          .background(Color.Black.copy(alpha = 0.5f))
+          .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = { navigator.finish(onDismiss()) }
+          )
+        )
+        Box(
+          Modifier
+            .fillMaxSize(0.75f)
+            .align(Alignment.Center)
+            .animateEnterExit(
+              enter = slideInVertically { it },
+              exit = slideOutVertically { it }
+            ),
+          contentAlignment = Alignment.Center
+        ) {
+          content(model, navigator)
+        }
+      }
+    }
+  }
   return show(
-    BottomSheetOverlay(
+    CardDialogOverlay(
       model = currentFilters,
       onDismiss = { currentFilters },
     ) { initialFilters, overlayNavigator ->

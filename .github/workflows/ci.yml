@@ -18,7 +18,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Necessary to run full tests to cover iOS too
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,13 +32,29 @@ jobs:
           distribution: 'zulu'
           java-version: '20'
 
-      - name: Build and run tests
-        id: gradle
+      - name: Setup Gradle cache
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check :samples:star:apk:assembleDebug detektMain detektTest :samples:star:benchmark:compileBenchmarkReleaseKotlin --continue --no-configuration-cache
           gradle-home-cache-cleanup: true
           cache-read-only: false
+
+      - name: Build and run checks
+        id: gradle-build
+        run: |
+          ./gradlew --continue --no-configuration-cache \
+              check \
+              :samples:star:apk:assembleDebug \
+              :samples:counter:linkPodReleaseFrameworkIosX64 \
+              detektMain \
+              detektTest \
+              assembleAndroidTest
+
+      # Defer these until after the above run, no need to waste resources running them if there are other failures first
+      - name: Run instrumentation tests
+        id: gradle-instrumentation
+        env:
+          EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
+        run: ./gradlew testReleaseWithEmulatorWtf
 
       - name: (Fail-only) Upload reports
         if: failure()
@@ -50,6 +67,7 @@ jobs:
       - name: Publish snapshot (main branch only)
         if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache
+
   snapshots:
     runs-on: ubuntu-latest
     steps:

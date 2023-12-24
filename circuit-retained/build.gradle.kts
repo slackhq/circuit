@@ -8,6 +8,7 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   `java-test-fixtures`
+  alias(libs.plugins.emulatorWtf)
 }
 
 kotlin {

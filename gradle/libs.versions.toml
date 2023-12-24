@@ -13,7 +13,7 @@ coil = "2.5.0"
 compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.6"
+compose-compiler-version = "1.5.7"
 compose-compiler-kotlinVersion = "1.9.21"
 compose-foundation = "1.5.4"
 compose-material = "1.5.4"
@@ -24,7 +24,7 @@ compose-jb = "1.5.11"
 compose-jb-compiler = "1.5.4"
 compose-jb-kotlinVersion = "1.9.21"
 compose-integration-constraintlayout = "1.0.1"
-dagger = "2.49"
+dagger = "2.50"
 datastore = "1.1.0-alpha07"
 dependencyAnalysisPlugin = "1.28.0"
 detekt = "1.23.4"
@@ -32,7 +32,7 @@ dokka = "1.9.10"
 eithernet = "1.8.0"
 jdk = "20"
 kct = "0.4.0"
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 kotlinpoet = "1.15.3"
 kotlinx-coroutines = "1.7.3"
 ksp = "1.9.21-1.0.16"
@@ -40,17 +40,17 @@ ktfmt = "0.46"
 leakcanary = "2.12"
 material = "1.6.1"
 material-composeThemeAdapter = "1.2.1"
-mavenPublish = "0.25.3"
+mavenPublish = "0.26.0"
 molecule = "1.3.1"
 mosaic = "0.10.0"
 moshi = "1.15.0"
 moshix = "0.25.1"
-okhttp = "5.0.0-alpha.11"
+okhttp = "5.0.0-alpha.12"
 paparazzi = "1.3.1"
 retrofit = "2.9.0"
 robolectric = "4.11.1"
 roborazzi = "1.7.0"
-spotless = "6.22.0"
+spotless = "6.23.3"
 sqldelight = "2.0.1"
 telephoto = "0.7.1"
 testParameterInjector = "1.14"
@@ -68,6 +68,7 @@ dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.re
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "0.15.1" }
 ## Here to trigger Renovate updates
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
@@ -240,7 +241,7 @@ testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 # Robolectric/Espresso ship with an old and totally borked version of hamcrest dependency, force a newer one
 testing-hamcrest = "org.hamcrest:hamcrest:2.2"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
-truth = "com.google.truth:truth:1.1.5"
+truth = "com.google.truth:truth:1.2.0"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID

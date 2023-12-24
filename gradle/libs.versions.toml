@@ -195,7 +195,7 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jline = "org.jline:jline:3.24.1"
+jline = "org.jline:jline:3.25.0"
 jsoup = "org.jsoup:jsoup:1.17.1"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }

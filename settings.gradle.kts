@@ -222,7 +222,6 @@ include(
   ":circuitx:android",
   ":circuitx:effects",
   ":circuitx:gesture-navigation",
-  ":circuitx:key-navigation",
   ":circuitx:overlays",
   ":samples:counter",
   ":samples:counter:apps",

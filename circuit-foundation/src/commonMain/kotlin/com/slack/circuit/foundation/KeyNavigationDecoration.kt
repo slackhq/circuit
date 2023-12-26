@@ -1,20 +1,13 @@
-// Copyright (C) 2023 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
-package com.slack.circuitx.keynavigation
+package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onPlaced
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.NavigatorDefaults
 import kotlinx.collections.immutable.ImmutableList
 
 public class KeyNavigationDecoration(

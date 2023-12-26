@@ -38,7 +38,7 @@ import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
-import com.slack.circuitx.keynavigation.KeyNavigationDecoration
+import com.slack.circuit.foundation.KeyNavigationDecoration
 import kotlinx.collections.immutable.persistentListOf
 
 data object DesktopCounterScreen : CounterScreen

@@ -49,7 +49,6 @@ kotlin {
     val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
     val jvmMain by getting {
       dependencies {
-        implementation(projects.circuitx.keyNavigation)
         implementation(compose.desktop.currentOs)
       }
     }

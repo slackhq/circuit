@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
@@ -29,7 +27,8 @@ kotlin {
   // region KMP Targets
   androidTarget()
   jvm()
-  ios()
+  iosX64()
+  iosArm64()
   js {
     moduleName = "counterapp"
     browser()
@@ -37,7 +36,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {

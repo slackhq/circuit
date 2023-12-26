@@ -37,8 +37,7 @@ class CoilRule(
     Coil.setImageLoader {
       contextProvider?.let {
         ImageLoader.Builder(it()).components { add(engineProvider()) }.build()
-      }
-        ?: FakeImageLoader(engineProvider())
+      } ?: FakeImageLoader(engineProvider())
     }
   }
 

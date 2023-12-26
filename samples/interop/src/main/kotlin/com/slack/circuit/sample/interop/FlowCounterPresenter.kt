@@ -11,7 +11,6 @@ import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +41,6 @@ class FlowCounterPresenter : FlowPresenter<Int, CounterScreen.Event> {
           is CounterScreen.Event.Decrement -> {
             count.emit(count.value - 1)
           }
-          else -> Unit
         }
       }
     }

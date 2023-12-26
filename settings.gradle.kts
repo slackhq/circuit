@@ -1,16 +1,25 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import java.util.Locale
-
 dependencyResolutionManagement {
   versionCatalogs {
-    if (System.getenv("DEP_OVERRIDES") == "true") {
-      val overrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }
-      maybeCreate("libs").apply {
-        for ((key, value) in overrides) {
-          val catalogKey = key.removePrefix("DEP_OVERRIDE_").lowercase(Locale.getDefault())
-          println("Overriding $catalogKey with $value")
-          version(catalogKey, value)
+    if (System.getenv("DEP_OVERRIDES") == "true" || System.getProperty("DEP_OVERRIDES") == "true") {
+      // Source both env vars and system props for overrides. System props take precedence.
+      val envOverrides = System.getenv().filterKeys { it.startsWith("DEP_OVERRIDE_") }
+      val systemPropOverrides =
+        System.getProperties()
+          .filterKeys { it.toString().startsWith("DEP_OVERRIDE_") }
+          .entries
+          .associate { (k, v) -> k.toString() to v.toString() }
+      val overrides =
+        (envOverrides + systemPropOverrides).mapKeys { (key, _) ->
+          // Case-sensitive, don't adjust it after removing the prefix!
+          key.removePrefix("DEP_OVERRIDE_")
+        }
+      configureEach {
+        val catalog = this
+        for ((catalogKey, value) in overrides) {
+          println("Overriding $catalogKey with $value in catalog '${catalog.name}'")
+          catalog.version(catalogKey, value)
         }
       }
     }
@@ -89,6 +98,9 @@ dependencyResolutionManagement {
 
     // JB Compose Repo
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
+
+    // emulator.wtf
+    maven(url = "https://maven.emulator.wtf/releases/") { content { includeGroup("wtf.emulator") } }
   }
 }
 
@@ -168,7 +180,7 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.12.6" }
+  plugins { id("com.gradle.enterprise") version "3.15.1" }
 }
 
 plugins { id("com.gradle.enterprise") }
@@ -183,6 +195,12 @@ gradleEnterprise {
 
     tag(if (System.getenv("CI").isNullOrBlank()) "Local" else "CI")
     tag(VERSION_NAME)
+
+    obfuscation {
+      username { "Redacted" }
+      hostname { "Redacted" }
+      ipAddresses { addresses -> addresses.map { "0.0.0.0" } }
+    }
   }
 }
 
@@ -202,6 +220,7 @@ include(
   ":circuit-runtime-ui",
   ":circuit-test",
   ":circuitx:android",
+  ":circuitx:effects",
   ":circuitx:gesture-navigation",
   ":circuitx:key-navigation",
   ":circuitx:overlays",

@@ -13,6 +13,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +25,13 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
+import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.retained.CanRetainChecker
+import com.slack.circuit.retained.LocalCanRetainChecker
+import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistry
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -49,12 +56,68 @@ public fun NavigableCircuitContent(
       unavailableRoute = unavailableRoute,
     )
 
-  if (backstack.size > 0) {
-    @Suppress("SpreadOperator")
+  if (backstack.isEmpty) return
+
+  /*
+   * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
+   * RetainedStateRegistry. If we don't do this, those registries would be stored directly in the
+   * current LocalRetainedStateRegistry value, which will mostly likely be the
+   * continuityRetainedStateRegistry. On Android, that continuityRetainedStateRegistry will drop
+   * any 'unclaimed' values when the host Activity is recreated. Since records on the back stack
+   * aren't attached to composition, they can't claim their retained registries and thus we drop
+   * all of the state for the record. See #1046.
+   *
+   * Using this 'navigation content' registry means that _it_ will be stored in the
+   * continuityRetainedStateRegistry instead, and any back stack record registries stored within
+   * the 'navigation content' registry. The difference is that NavigableCircuitContent
+   * will be attached to composition for the entire lifetime that we care about, and thus will
+   * be able to save/claim the 'navigation content' registry on recreations. Since any back stack
+   * registries are nested in this 'navigation content' registry, everything is
+   * saved/claimed correctly. As a diagram, it looks like this:
+   *                          ┌────────────────┐
+   *                          │ ContinuityRSR  │
+   *                          └───────▲────────┘
+   *                      ┌───────────┴─────────┐
+   *                 ┌────► NavigableContentRSR ◄───────┐
+   *                 │    └───────────▲─────────┘       │
+   *          ┌──────┴──────┐  ┌──────┴──────┐   ┌──────┴──────┐
+   *          │ ScreenA RSR │  │ ScreenB RSR │   │ ScreenC RSR │
+   *          └──────▲──────┘  └──────▲──────┘   └──────▲──────┘
+   * ┌─────────────┐ │         ┌──────┴──────┐   ┌──────┴──────┐
+   * │retainedState├─┤         │retainedState│   │retainedState│
+   * └─────────────┘ │         └─────────────┘   └─────────────┘
+   * ┌─────────────┐ │
+   * │retainedState├─┘         (RSR = RetainedStateRegistry)
+   * └─────────────┘
+   */
+  val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
+  val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
+
+  CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) { provider ->
-      val values = providedValues[provider.record]?.provideValues()
-      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-      CompositionLocalProvider(*providedLocals) { provider.content(provider.record) }
+      // We retain the record's retained state registry for as long as the back stack
+      // contains the record
+      val record = provider.record
+      val recordInBackStackRetainChecker =
+        remember(backstack, record) { CanRetainChecker { record in backstack } }
+
+      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+        val values = providedValues[record]?.provideValues()
+        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+
+        // Now provide a new registry to the content for it to store any retained state in,
+        // along with a retain checker which is always true (as upstream registries will
+        // maintain the lifetime), and the other provided values
+        val recordRetainedStateRegistry =
+          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides recordRetainedStateRegistry,
+          LocalCanRetainChecker provides CanRetainChecker.Always,
+          *providedLocals,
+        ) {
+          provider.content(record)
+        }
+      }
     }
   }
 }
@@ -115,7 +178,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
               )
-            },
+            }
         )
       }
     }
@@ -128,6 +191,12 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
       }
     }
 }
+
+/** The maximum radix available for conversion to and from strings. */
+private const val MaxSupportedRadix = 36
+
+private val Record.registryKey: String
+  get() = "_registry_${key}"
 
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {

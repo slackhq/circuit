@@ -22,7 +22,7 @@ public fun Navigator.onNavEvent(event: NavEvent) {
 /** A sealed navigation interface intended to be used when making a navigation callback. */
 public sealed interface NavEvent : CircuitUiEvent {
   /** Corresponds to [Navigator.pop]. */
-  public object Pop : NavEvent
+  public data object Pop : NavEvent
 
   /** Corresponds to [Navigator.goTo]. */
   public data class GoTo(internal val screen: Screen) : NavEvent

@@ -80,7 +80,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
           val windowSizeClass = calculateWindowSizeClass(this)
           CompositionLocalProvider(
-            LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass
+            LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass,
           ) {
             CircuitCompositionLocals(circuit) {
               ContentWithOverlays {

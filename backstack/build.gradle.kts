@@ -1,10 +1,9 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.kotlin.atomicfu)
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   alias(libs.plugins.baselineprofile)
@@ -14,7 +13,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  ios()
+  iosX64()
+  iosArm64()
   iosSimulatorArm64()
   js {
     moduleName = property("POM_ARTIFACT_ID").toString()
@@ -22,11 +22,12 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
       dependencies {
+        implementation(libs.atomicfu)
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(libs.coroutines)

@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import com.slack.circuit.sample.counter.CounterScreen
 
 /** A simple presenter that uses a listener for signaling count changes. */
 class SimpleCounterPresenter {
@@ -66,7 +65,6 @@ fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> 
       when (event) {
         is CounterScreen.Event.Increment -> increment()
         is CounterScreen.Event.Decrement -> decrement()
-        else -> Unit
       }
     }
   }

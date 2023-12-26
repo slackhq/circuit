@@ -1,8 +1,9 @@
 package com.slack.circuit.backstack
 
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
-
-internal actual val LocalBackStackRecordLocalProviders:
-  ProvidableCompositionLocal<List<BackStackRecordLocalProvider<BackStack.Record>>>
-  get() = compositionLocalOf { emptyList() }
+/**
+ * This is specifically a get() rather than a statically initialized property. The Kotlin/Native
+ * optimizer seems to trip up otherwise: https://github.com/slackhq/circuit/issues/1075
+ */
+internal actual val defaultBackStackRecordLocalProviders:
+  List<BackStackRecordLocalProvider<BackStack.Record>>
+  get() = listOf(SaveableStateRegistryBackStackRecordLocalProvider)

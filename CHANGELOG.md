@@ -1,6 +1,119 @@
 Changelog
 =========
 
+0.17.1
+------
+
+_2023-12-05_
+
+- **Enhancement**: Commonize `SaveableStateRegistryBackStackRecordLocalProvider` to be supported across all currently supported platforms.
+- **Fix**: Fix `LocalBackStackRecordLocalProviders` always returning a new composition local.
+- Update `androidx.compose.compiler:compiler` to `1.5.5`
+- Update KotlinPoet to `1.15.3`
+- Update Dagger to `2.49`
+
+Special thanks to [@alexvanyo](https://github.com/alexvanyo) for contributing to this release.
+
+0.17.0
+------
+
+_2023-11-28_
+
+## **New**: circuitx-effects artifact
+
+The circuitx-effects artifact provides some effects for use with logging/analytics. These effects
+are typically used in Circuit presenters for tracking `impressions` and will run only once until
+forgotten based on the current circuit-retained strategy.
+
+```kotlin
+dependencies {
+  implementation("com.slack.circuit:circuitx-effects:<version>")
+}
+```
+
+Docs: https://slackhq.github.io/circuit/circuitx/#effects
+
+## **New**: Add codegen mode to support both Anvil and Hilt
+
+Circuit's code gen artifact now supports generating for Hilt projects. See the docs for usage instructions: https://slackhq.github.io/circuit/code-gen/
+
+## Misc
+
+- Decompose various `CircuitContent` internals like `rememberPresenter()`, `rememberUi`, etc for reuse.
+- Make `CircuitContent()` overload that accepts a pre-constructed presenter/ui parameters public to allow for more control over content.
+- [samples] Update README to include the interop sample.
+- [samples] Various bugfixes to samples.
+- [docs] Link sources in kdocs.
+- [docs] Nest CircuitX artifacts in kdocs ToC.
+- Update uuid to `0.8.2`.
+- Update KotlinPoet to `1.15.1`.
+- Update to Compose Multiplatform `1.5.11`.
+- Update to Kotlin `1.9.21`.
+- Update to KSP `1.9.21-1.0.15`.
+- Update to compose-compiler (multiplatform) `1.5.4`.
+- Update to Molecule `1.3.1`.
+
+Special thanks to [@jamiesanson](https://github.com/jamiesanson), [@frett](https://github.com/frett), and [@bryanstern](https://github.com/BryanStern) for contributing to this release!
+
+0.16.1
+------
+
+_2023-11-09_
+
+- **Fix**: Fix retained value not recalculating if inputs changed.
+- Build against KSP `1.9.20-1.0.14`.
+
+0.16.0
+------
+
+_2023-11-01_
+
+- **New**: `circut-retained` is now enabled automatically in `CircuitCompositionLocals` by default, we still allowing overriding it with no-op implementation.
+- Update to Kotlin `1.9.20`.
+- Update Compose Multiplatform to `1.5.2`.
+- Update `agp` to `8.1.2`.
+- Update `androidx.activity` to `1.8.0`.
+- Update `benchmark` to `1.2.0`.
+- Update `coil` to `2.5.0`.
+- Update `compose.material3` to `1.1.2`.
+- Update `compose.material` to `1.5.4`.
+- Update `compose.runtime` to `1.5.4`.
+- Update `compose.ui` to `1.5.4`.
+- Update `roborazzi` to `1.6.0`.
+
+
+0.15.0
+------
+
+_2023-09-20_
+
+## **New**: Allow retained state to be retained whilst UIs and Presenters are on the back stack.
+
+Originally, `circuit-retained` was implemented as a solution for preserving arbitrary data across configuration changes on Android. With this change it now also acts as a solution for retaining state _across the back stack_, meaning that traversing the backstack no longer causes restored contents to re-run through their empty states anymore.
+
+To support this, each back stack entry now has its own `RetainedStateRegistry` instance.
+
+Note that `circuit-retained` is still optional for now, but we are considering making it part of `CircuitCompositionLocals` in the future. Please let us know your thoughts in this issue: https://github.com/slackhq/circuit/issues/891.
+
+Full details + demos can be found in https://github.com/slackhq/circuit/pull/888. Big thank you to [@chrisbanes](https://github.com/chrisbanes) for the implementation!
+
+## Other changes
+
+- **New**: Add `collectAsRetainedState` utility function, analogous to `collectAsState` but will retain the previous value across configuration changes and back stack entries.
+- **Enhancement**: Optimize `rememberRetained` with a port of the analogous optimization in `rememberSaveable`. See [#850](https://github.com/slackhq/circuit/pull/850).
+- **Enhancement**: `Presenter` and `Ui` interfaces are now annotated as `@Stable`.
+- **Fix**: Fix `GestureNavigationDecoration` function parameter order.
+- **Fix**: `BackHandler` on iOS now has the proper file name.
+- **Fix**: Key the `presenter.present()` in `CircuitContent` on the `Screen` rather than the `presenter` itself, which fixes a severe issue that prevented `currentCompositeKeyHash` from working correctly on `rememberRetained` and `rememberSaveable` uses.
+- Update CM compiler to `1.5.2`.
+- Update CM to `1.5.1`.
+- Update `androidx.compose.animation` to `1.5.1`.
+- Update `androidx.compose.foundation` to `1.5.1`.
+- Update `androidx.compose.runtime` to `1.5.1`.
+- Update `androidx.compose.material` to `1.5.1`.
+- Update `androidx.lifecycle` to `2.6.2`.
+- Update `androidx.annotation` to `1.7.0`.
+
 0.14.1
 ------
 

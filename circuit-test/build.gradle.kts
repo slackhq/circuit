@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -14,7 +12,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  ios()
+  iosX64()
+  iosArm64()
   iosSimulatorArm64()
   js {
     moduleName = property("POM_ARTIFACT_ID").toString()
@@ -22,7 +21,13 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+    }
+  }
+
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -37,14 +42,16 @@ kotlin {
 
     commonTest { dependencies { implementation(libs.coroutines.test) } }
 
-    val jvmTest by getting {
-      dependencies {
-        implementation(libs.junit)
-        implementation(libs.truth)
-        implementation(libs.testing.testParameterInjector)
+    val commonJvmTest =
+      maybeCreate("commonJvmTest").apply {
+        dependencies {
+          implementation(libs.junit)
+          implementation(libs.truth)
+          implementation(libs.testing.testParameterInjector)
+        }
       }
-    }
-    val androidUnitTest by getting { dependsOn(jvmTest) }
+    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val androidUnitTest by getting { dependsOn(commonJvmTest) }
   }
 }
 

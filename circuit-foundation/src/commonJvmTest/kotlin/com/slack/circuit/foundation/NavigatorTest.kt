@@ -7,10 +7,8 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
-import kotlinx.parcelize.Parcelize
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @Parcelize private data object TestScreen : Screen
 
@@ -18,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 
 @Parcelize private data object TestScreen3 : Screen
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(ComposeUiTestRunner::class)
 class NavigatorTest {
   @Test
   fun errorWhenBackstackIsEmpty() {

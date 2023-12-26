@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.overlay
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
@@ -164,6 +169,30 @@ public fun interface OverlayNavigator<Result : Any> {
  */
 public interface Overlay<Result : Any> {
   @Composable public fun Content(navigator: OverlayNavigator<Result>)
+}
+
+/**
+ * An [Overlay] that can be animated in and more interestingly out _after_ it has returned a
+ * [Result]. The [Overlay] is animated in and out by its [enterTransition] and [exitTransition],
+ * [AnimatedContent] is executed with with [AnimatedVisibilityScope] so that child animations can be
+ * coordinated with the overlay's animations.
+ */
+public abstract class AnimatedOverlay<Result : Any>(
+  public val enterTransition: EnterTransition,
+  public val exitTransition: ExitTransition,
+) : Overlay<Result> {
+  @Composable
+  final override fun Content(navigator: OverlayNavigator<Result>) {
+    AnimatedContent(
+      targetState = Unit,
+      transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+    ) {
+      AnimatedContent(navigator)
+    }
+  }
+
+  @Composable
+  public abstract fun AnimatedVisibilityScope.AnimatedContent(navigator: OverlayNavigator<Result>)
 }
 
 /** A [ProvidableCompositionLocal] to expose the current [OverlayHost] in the composition tree. */

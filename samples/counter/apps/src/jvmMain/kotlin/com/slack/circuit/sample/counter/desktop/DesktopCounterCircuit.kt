@@ -28,6 +28,7 @@ import androidx.compose.ui.window.application
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.KeyNavigationDecoration
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.CircuitContext
@@ -38,7 +39,6 @@ import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
-import com.slack.circuit.foundation.KeyNavigationDecoration
 import kotlinx.collections.immutable.persistentListOf
 
 data object DesktopCounterScreen : CounterScreen

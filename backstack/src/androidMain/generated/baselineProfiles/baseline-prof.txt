@@ -18,12 +18,7 @@ HSPLcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel$Factory;->
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalProviderViewModel$Factory;->create(Ljava/lang/Class;Landroidx/lifecycle/viewmodel/CreationExtras;)Landroidx/lifecycle/ViewModel;
 Lcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt;-><clinit>()V
-HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt;->getLocalBackStackRecordLocalProviders()Landroidx/compose/runtime/ProvidableCompositionLocal;
-Lcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt$LocalBackStackRecordLocalProviders$1;
-HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt$LocalBackStackRecordLocalProviders$1;-><clinit>()V
-HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt$LocalBackStackRecordLocalProviders$1;-><init>()V
-HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt$LocalBackStackRecordLocalProviders$1;->invoke()Ljava/lang/Object;
-HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt$LocalBackStackRecordLocalProviders$1;->invoke()Ljava/util/List;
+HSPLcom/slack/circuit/backstack/BackStackRecordLocalProvider_androidKt;->getDefaultBackStackRecordLocalProviders()Ljava/util/List;
 Lcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;-><clinit>()V
 HSPLcom/slack/circuit/backstack/BackStackRecordLocalSaveableStateRegistry;-><init>(Landroidx/compose/runtime/snapshots/SnapshotStateMap;)V

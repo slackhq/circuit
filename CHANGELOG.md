@@ -1,6 +1,22 @@
 Changelog
 =========
 
+0.18.0
+------
+
+_2023-12-29_
+
+- **New**: Support animating an overlay out after returning a result with `AnimatedOverlay`.
+- **Fix**: Fix dropping back stack retained state on Android Activity rotations.
+- **Enhancement**: Add ability to customize `ModalBottomSheet` appearance in `BottomSheetOverlay`.
+- Update Kotlin to `1.9.22`.
+- Update KSP to `1.9.22-1.0.16`.
+- Update Dagger to `2.50`.
+- Update kotlinx-collections-immutable to `0.3.7`.
+- Update AndroidX Activity to `1.8.2`.
+
+Special thanks to [@ChrisBanes](https://github.com/ChrisBanes), [@chriswiesner](https://github.com/chriswiesner), and [@BryanStern](https://github.com/BryanStern) for contributing to this release!
+
 0.17.1
 ------
 

@@ -95,33 +95,27 @@ class ProvidedValuesLifetimeTest {
       // Pop to Screen B
       onNodeWithTag(TestContentTags.TAG_POP).performClick()
 
-      mainClock.advanceTimeBy(1_000)
-      waitForIdle()
-
-      // Half-way through pop, both screens should be visible
+      // Part-way through pop, both screens should be visible
+      mainClock.advanceTimeByFrame()
       onAllNodesWithTag(TestContentTags.TAG_LABEL)
         .assertCountEquals(2)
         .assertAny(hasTextExactly("C"))
         .assertAny(hasTextExactly("B"))
 
       mainClock.advanceTimeBy(1_000)
-      waitForIdle()
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals("B")
 
       // Pop to Screen A
       onNodeWithTag(TestContentTags.TAG_POP).performClick()
 
-      mainClock.advanceTimeBy(1_000)
-      waitForIdle()
-
-      // Half-way through pop, both screens should be visible
+      // Part-way through pop, both screens should be visible
+      mainClock.advanceTimeByFrame()
       onAllNodesWithTag(TestContentTags.TAG_LABEL)
         .assertCountEquals(2)
         .assertAny(hasTextExactly("B"))
         .assertAny(hasTextExactly("A"))
 
       mainClock.advanceTimeBy(1_000)
-      waitForIdle()
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals("A")
     }
   }

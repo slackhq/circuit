@@ -102,7 +102,9 @@ public fun NavigableCircuitContent(
         remember(backstack, record) { CanRetainChecker { record in backstack } }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        val values = providedValues[record]?.provideValues()
+        // Remember the `providedValues` lookup because this composition can live longer than
+        // the record is present in the backstack, if the decoration is animated for example.
+        val values = remember(record) { providedValues[record] }?.provideValues()
         val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
         // Now provide a new registry to the content for it to store any retained state in,

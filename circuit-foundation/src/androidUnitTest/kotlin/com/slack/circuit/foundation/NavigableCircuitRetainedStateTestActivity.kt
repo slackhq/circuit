@@ -6,9 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.test.TestCountPresenter
-import com.slack.circuit.test.TestScreen
-import com.slack.circuit.test.createTestCircuit
+import com.slack.circuit.internal.test.TestCountPresenter
+import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.internal.test.createTestCircuit
 
 class NavigableCircuitRetainedStateTestActivity : ComponentActivity() {
 

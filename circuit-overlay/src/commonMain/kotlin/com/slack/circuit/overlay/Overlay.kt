@@ -185,7 +185,7 @@ public abstract class AnimatedOverlay<Result : Any>(
   final override fun Content(navigator: OverlayNavigator<Result>) {
     AnimatedContent(
       targetState = Unit,
-      transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+      transitionSpec = { enterTransition togetherWith exitTransition },
     ) {
       AnimatedContent(navigator)
     }

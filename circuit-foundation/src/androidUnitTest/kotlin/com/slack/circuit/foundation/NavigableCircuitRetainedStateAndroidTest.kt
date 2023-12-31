@@ -7,11 +7,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
-import com.slack.circuit.foundation.TestContentTags.TAG_COUNT
-import com.slack.circuit.foundation.TestContentTags.TAG_GO_NEXT
-import com.slack.circuit.foundation.TestContentTags.TAG_INCREASE_COUNT
-import com.slack.circuit.foundation.TestContentTags.TAG_LABEL
-import com.slack.circuit.foundation.TestContentTags.TAG_POP
+import com.slack.circuit.test.TestContentTags.TAG_COUNT
+import com.slack.circuit.test.TestContentTags.TAG_GO_NEXT
+import com.slack.circuit.test.TestContentTags.TAG_INCREASE_COUNT
+import com.slack.circuit.test.TestContentTags.TAG_LABEL
+import com.slack.circuit.test.TestContentTags.TAG_POP
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

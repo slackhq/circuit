@@ -22,6 +22,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 
 object TestContentTags {
+  const val TAG_ROOT = "root"
   const val TAG_GO_NEXT = "go"
   const val TAG_POP = "pop"
   const val TAG_INCREASE_COUNT = "inc"
@@ -55,7 +56,7 @@ sealed class TestScreen(val label: String) : Screen {
 
 @Composable
 fun TestContent(state: TestState, modifier: Modifier = Modifier) {
-  Column(modifier = modifier) {
+  Column(modifier = modifier.testTag(TestContentTags.TAG_ROOT)) {
     BasicText(text = state.label, modifier = Modifier.testTag(TestContentTags.TAG_LABEL))
 
     BasicText(text = "${state.count}", modifier = Modifier.testTag(TestContentTags.TAG_COUNT))

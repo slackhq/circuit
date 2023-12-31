@@ -15,7 +15,8 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
-import com.slack.circuit.internal.test.TestCountPresenter
+import com.slack.circuit.internal.test.TestContentTags.TAG_POP
+import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
 import org.junit.Rule
@@ -29,17 +30,37 @@ class GestureNavigationSaveableStateTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-  @Test fun saveableStateScopedToBackstackWithKeys() = saveableStateScopedToBackstack(true)
+  @Test
+  fun saveableStateScopedToBackstackWithKeysAndBackSwipes() {
+    saveableStateScopedToBackstack(true) {
+      composeTestRule.activityRule.scenario.performBackSwipeGesture()
+    }
+  }
 
-  @Test fun saveableStateScopedToBackstackWithoutKeys() = saveableStateScopedToBackstack(false)
+  @Test
+  fun saveableStateScopedToBackstackWithoutKeysAndBackSwipes() {
+    saveableStateScopedToBackstack(false) {
+      composeTestRule.activityRule.scenario.performBackSwipeGesture()
+    }
+  }
 
-  private fun saveableStateScopedToBackstack(useKeys: Boolean) {
+  @Test
+  fun saveableStateScopedToBackstackWithKeysAndBackPress() {
+    saveableStateScopedToBackstack(true) {
+      composeTestRule.onTopNavigationRecordNodeWithTag(TAG_POP).performClick()
+    }
+  }
+
+  @Test
+  fun saveableStateScopedToBackstackWithoutKeysAndBackPress() {
+    saveableStateScopedToBackstack(false) {
+      composeTestRule.onTopNavigationRecordNodeWithTag(TAG_POP).performClick()
+    }
+  }
+
+  private fun saveableStateScopedToBackstack(useKeys: Boolean, pop: () -> Unit) {
     composeTestRule.run {
-      val circuit =
-        createTestCircuit(
-          useKeys = useKeys,
-          rememberType = TestCountPresenter.RememberType.Saveable
-        )
+      val circuit = createTestCircuit(useKeys = useKeys, rememberType = RememberType.Saveable)
 
       setContent {
         CircuitCompositionLocals(circuit) {
@@ -78,7 +99,7 @@ class GestureNavigationSaveableStateTest {
       onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Pop to Screen B. Increase count from 1 to 2.
-      composeTestRule.activityRule.scenario.performBackSwipeGesture()
+      pop()
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("1")
       onTopNavigationRecordNodeWithTag(TAG_INCREASE_COUNT).performClick()
@@ -90,12 +111,12 @@ class GestureNavigationSaveableStateTest {
       onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
       // Pop to Screen B. Assert that it's state was saved
-      composeTestRule.activityRule.scenario.performBackSwipeGesture()
+      pop()
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
       // Pop to Screen A. Assert that it's state was saved
-      composeTestRule.activityRule.scenario.performBackSwipeGesture()
+      pop()
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("1")
 

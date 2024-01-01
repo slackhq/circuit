@@ -10,6 +10,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
@@ -30,7 +31,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -69,15 +69,22 @@ private class AndroidPredictiveNavigationDecoration(
       var showPrevious by remember { mutableStateOf(false) }
       var recordPoppedFromGesture by remember { mutableStateOf<T?>(null) }
 
-      if (previous != null) {
+      val transition = updateTransition(targetState = current, label = "GestureNavDecoration")
+
+      if (previous != null && !transition.isStateBeingAnimated(previous)) {
+        // We display the 'previous' item in the back stack for when the user performs a gesture
+        // to go back.
+        // We only display it here if the transition is not running. When the transition is
+        // running, the record's movable content will still be attached to the
+        // AnimatedContent below. If we call it here too, we will invoke a new copy of
+        // the content (and thus dropping all state). The if statement above keeps the states
+        // exclusive, so that the movable content is only used once at a time.
         OptionalLayout(shouldLayout = { showPrevious }) { content(previous) }
       }
 
       // Remember the previous stack depth so we know if the navigation is going "back".
-      var prevStackDepth by rememberSaveable { mutableIntStateOf(backStackDepth) }
+      var prevStackDepth by remember { mutableIntStateOf(backStackDepth) }
       SideEffect { prevStackDepth = backStackDepth }
-
-      val transition = updateTransition(targetState = current, label = "GestureNavDecoration")
 
       LaunchedEffect(transition.currentState) {
         // When the current state has changed (i.e. any transition has completed),
@@ -87,7 +94,6 @@ private class AndroidPredictiveNavigationDecoration(
       }
 
       transition.AnimatedContent(
-        modifier = modifier,
         transitionSpec = {
           // Mirror the forward and backward transitions of activities in Android 33
           when {
@@ -149,6 +155,10 @@ private class AndroidPredictiveNavigationDecoration(
 private const val FIVE_PERCENT = 0.05f
 private val SlightlyRight = { width: Int -> (width * FIVE_PERCENT).toInt() }
 private val SlightlyLeft = { width: Int -> 0 - (width * FIVE_PERCENT).toInt() }
+
+private fun <T> Transition<T>.isStateBeingAnimated(state: T): Boolean {
+  return isRunning && (currentState == state || targetState == state)
+}
 
 /**
  * Implements most of the treatment specified at

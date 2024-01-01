@@ -453,9 +453,7 @@ subprojects {
     // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects
     // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
     // that would include benchmarks.
-    tasks.register("ciConnectedCheck") {
-      dependsOn("connectedCheck")
-    }
+    tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
   }
 }
 

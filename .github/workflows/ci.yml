@@ -50,11 +50,26 @@ jobs:
               assembleAndroidTest
 
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
-      - name: Run instrumentation tests
+      - name: Run instrumentation tests via emulator.wtf (main repo only)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         id: gradle-instrumentation
         env:
           EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
         run: ./gradlew testReleaseWithEmulatorWtf
+
+      # Forks cannot run emulator.wtf tests due to not being able to use repo secrets, so for them
+      # we run the tests via the android-emulator-runner action instead
+      - name: Run instrumentation tests (from forks only)
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        id: gradle-instrumentation-fork
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 21
+          arch: x86_64
+          disable-animations: true
+          disk-size: 6000M
+          heap-size: 600M
+          script: ./gradlew ciConnectedCheck --daemon
 
       - name: (Fail-only) Upload reports
         if: failure()

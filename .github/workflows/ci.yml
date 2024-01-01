@@ -59,7 +59,7 @@ jobs:
 
       # Forks cannot run emulator.wtf tests due to not being able to use repo secrets, so for them
       # we run the tests via the android-emulator-runner action instead
-      - name: Run instrumentation tests (from forks only)
+      - name: Run instrumentation tests via local emulator (from forks only)
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         id: gradle-instrumentation-fork
         uses: reactivecircus/android-emulator-runner@v2

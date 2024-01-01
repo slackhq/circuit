@@ -178,8 +178,8 @@ public interface Overlay<Result : Any> {
  * coordinated with the overlay's animations.
  */
 public abstract class AnimatedOverlay<Result : Any>(
-  public val enterTransition: EnterTransition,
-  public val exitTransition: ExitTransition,
+  public val enterTransition: EnterTransition = EnterTransition.None,
+  public val exitTransition: ExitTransition = ExitTransition.None,
 ) : Overlay<Result> {
   @Composable
   final override fun Content(navigator: OverlayNavigator<Result>) {

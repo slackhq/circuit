@@ -204,7 +204,7 @@ subprojects {
       }
     }
 
-    if (!project.path.startsWith(":samples")) {
+    if (!project.path.startsWith(":samples") && !project.path.startsWith(":internal")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }
     }
 

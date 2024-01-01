@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.18.1
+------
+
+_2024-01-01_
+
+- **Fix**: Fix popped Record's `ProvidedValues` lifetime. See [#1065](https://github.com/slackhq/circuit/issues/1065) for more details.
+- **Fix**: Fix `GestureNavDecoration` dropping saveable/retained state on back gestures. See [#1089](https://github.com/slackhq/circuit/pull/1089) for more details.
+
+Special thanks to [@ChrisBanes](https://github.com/chrisbanes) and [@dandc87](https://github.com/dandc87) for contributing to this release!
+
 0.18.0
 ------
 

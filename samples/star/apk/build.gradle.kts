@@ -35,4 +35,5 @@ baselineProfile {
 dependencies {
   api(projects.samples.star)
   implementation(libs.androidx.profileinstaller)
+  baselineProfile(projects.samples.star.benchmark)
 }

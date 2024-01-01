@@ -134,7 +134,7 @@ HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitConte
 HPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1;->invoke(Lcom/slack/circuit/foundation/RecordContentProvider;Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1$1;
-HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1$1;-><init>(Lkotlinx/collections/immutable/ImmutableMap;Lcom/slack/circuit/backstack/BackStack$Record;Lcom/slack/circuit/foundation/RecordContentProvider;)V
+HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1$1;-><init>(Lcom/slack/circuit/backstack/BackStack$Record;Lkotlinx/collections/immutable/ImmutableMap;Lcom/slack/circuit/foundation/RecordContentProvider;)V
 HPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1$1;->invoke(Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/foundation/NavigableCircuitContentKt$NavigableCircuitContent$2$1$1$1;

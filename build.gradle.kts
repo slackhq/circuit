@@ -328,7 +328,9 @@ subprojects {
       // https://issuetracker.google.com/issues/243267012
       disable += "Instantiatable"
       checkTestSources = true
+      lintConfig = rootProject.file("config/lint/lint.xml")
     }
+    dependencies { add("lintChecks", libs.lints.compose) }
   }
 
   // Android library config

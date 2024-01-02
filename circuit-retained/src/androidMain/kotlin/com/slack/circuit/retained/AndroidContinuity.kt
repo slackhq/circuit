@@ -82,6 +82,7 @@ public fun continuityRetainedStateRegistry(
   factory: ViewModelProvider.Factory = ContinuityViewModel.Factory,
   canRetainChecker: CanRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
 ): RetainedStateRegistry {
+  @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
 
   remember(vm, canRetainChecker) {

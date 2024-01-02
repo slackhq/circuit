@@ -204,7 +204,7 @@ subprojects {
       }
     }
 
-    if (!project.path.startsWith(":samples")) {
+    if (!project.path.startsWith(":samples") && !project.path.startsWith(":internal")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }
     }
 
@@ -449,6 +449,11 @@ subprojects {
     if (emulatorWtfToken.isPresent) {
       configure<EwExtension> { token.set(emulatorWtfToken) }
     }
+    // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper
+    // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects
+    // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
+    // that would include benchmarks.
+    tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
   }
 }
 

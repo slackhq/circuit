@@ -54,10 +54,14 @@ kotlin {
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
         implementation(libs.coroutines.test)
+
+        implementation(projects.internalTestUtils)
       }
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest)
+
         dependencies {
           implementation(libs.compose.ui.testing.junit)
           implementation(libs.junit)
@@ -95,7 +99,6 @@ tasks
     compilerOptions {
       freeCompilerArgs.addAll(
         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-Xexpect-actual-classes" // used for Parcelize in tests
       )
     }
   }

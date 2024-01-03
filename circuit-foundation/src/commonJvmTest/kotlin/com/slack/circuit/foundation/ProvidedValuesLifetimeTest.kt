@@ -72,11 +72,17 @@ class ProvidedValuesLifetimeTest {
       // Navigate to Screen B
       onNodeWithTag(TestContentTags.TAG_GO_NEXT).performClick()
       mainClock.advanceTimeBy(1_000)
+      waitForIdle()
+      mainClock.advanceTimeBy(1_000)
+      waitForIdle()
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals("Local B")
 
       // Navigate to Screen C
       onNodeWithTag(TestContentTags.TAG_GO_NEXT).performClick()
       mainClock.advanceTimeBy(1_000)
+      waitForIdle()
+      mainClock.advanceTimeBy(1_000)
+      waitForIdle()
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals("Local C")
 
       // Pop to Screen B

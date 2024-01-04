@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  Counter
+//
+//  Created by Zac Sweers on 1/4/24.
+//
+
 import SwiftUI
 import counter
 

@@ -9,7 +9,7 @@ import SwiftUI
 import counter
 
 struct ContentView: View {
-  @ObservedObject var presenter = SwiftCounterPresenter()
+  @ObservedObject var presenter = SwiftPresenter<CounterScreenState>(delegate: SwiftSupportKt.doNewCounterPresenter())
 
   var body: some View {
     NavigationView {
@@ -47,21 +47,15 @@ struct ContentView: View {
 }
 
 // TODO we hide all this behind the Circuit UI interface somehow? Then we can pass it state only
-class SwiftCounterPresenter: BasePresenter<CounterScreenState> {
-  init() {
-    super.init(
-        delegate: SwiftPresenter(delegate: SwiftSupportKt.doNewCounterPresenter())
-    )
-  }
-}
-
-class BasePresenter<T: AnyObject>: ObservableObject {
+class SwiftPresenter<T: AnyObject>: ObservableObject {
   @Published
   private(set) var state: T? = nil
-  private let delegate: SwiftPresenter<T>
+  private let delegate: SupportSwiftPresenter<T>
 
-  init(delegate: SwiftPresenter<T>) {
-    self.delegate = delegate
+  // TODO the raw type here is not nice. Will Kotlin eventually expose these? Maybe we should
+  //  generate wrappers?
+  init(delegate: Circuit_runtime_presenterPresenter) {
+    self.delegate = SupportSwiftPresenter(delegate: delegate)
   }
 
   @MainActor

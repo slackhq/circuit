@@ -57,7 +57,8 @@ class SwiftCounterPresenter: BasePresenter<CounterScreenState> {
 }
 
 class BasePresenter<T: AnyObject>: ObservableObject {
-  @Published var state: T? = nil
+  @Published
+  private(set) var state: T? = nil
   private let delegate: SwiftPresenter<T>
 
   init(delegate: SwiftPresenter<T>) {

@@ -59,8 +59,10 @@ class BasePresenter<T: AnyObject>: ObservableObject {
   @Published var state: T? = nil
 
   init(delegate: SwiftPresenter<T>) {
-    delegate.subscribe { state in
-      self.state = state
+    delegate.subscribe { [weak self] newState in
+        DispatchQueue.main.async {
+            self?.state = newState
+        }
     }
   }
 }

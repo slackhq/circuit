@@ -49,10 +49,9 @@ struct ContentView: View {
 // TODO we hide all this behind the Circuit UI interface somehow? Then we can pass it state only
 class SwiftCounterPresenter: BasePresenter<CounterScreenState> {
   init() {
-    // TODO why can't swift infer these generics?
     super.init(
-      delegate: SwiftSupportKt.asSwiftPresenter(SwiftSupportKt.doNewCounterPresenter())
-        as! SwiftPresenter<CounterScreenState>)
+        delegate: SwiftPresenter(delegate: SwiftSupportKt.doNewCounterPresenter())
+    )
   }
 }
 

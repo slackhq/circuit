@@ -14,7 +14,9 @@ struct ContentView: View {
   var body: some View {
     NavigationView {
       VStack(alignment: .center) {
-        Text("Count \(presenter.state?.count ?? 0)")
+        let count = presenter.state?.count ?? 0
+        Text("Count \(count)")
+          .foregroundStyle(count >= 0 ? Color.primary : Color.red)
           .font(.system(size: 36))
         HStack(spacing: 10) {
           Button(action: {

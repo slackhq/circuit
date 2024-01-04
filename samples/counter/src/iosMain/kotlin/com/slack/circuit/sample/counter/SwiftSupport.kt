@@ -25,8 +25,10 @@ fun <UiState : CircuitUiState> Presenter<UiState>.asSwiftPresenter(): SwiftPrese
 class SwiftPresenter<UiState : CircuitUiState>
 internal constructor(
   private val delegate: Presenter<UiState>,
-  // TODO what's the right thing here? Can we get a scope from the UI? Should it be exposed via Circuit?
+  // TODO what's the right thing here? Can we get a scope from the UI? Should it be exposed via
+  // Circuit?
   scope: CoroutineScope = MainScope()
 ) {
-  val state: StateFlow<UiState> = scope.launchMolecule(RecompositionMode.Immediate) { delegate.present() }
+  val state: StateFlow<UiState> =
+    scope.launchMolecule(RecompositionMode.Immediate) { delegate.present() }
 }

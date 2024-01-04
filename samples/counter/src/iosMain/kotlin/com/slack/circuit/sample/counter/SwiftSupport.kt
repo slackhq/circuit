@@ -3,17 +3,12 @@
 package com.slack.circuit.sample.counter
 
 import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
+import app.cash.molecule.moleculeFlow
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 fun newCounterPresenter() = presenterOf { CounterPresenter(Navigator.NoOp) }
 
@@ -29,11 +24,6 @@ class SwiftPresenter<UiState : CircuitUiState>
 internal constructor(
   private val delegate: Presenter<UiState>,
 ) {
-  // TODO ew globalscope
-  @OptIn(DelicateCoroutinesApi::class)
-  fun subscribe(block: (UiState) -> Unit): Job {
-    return GlobalScope.launch(Dispatchers.IO) {
-      launchMolecule(RecompositionMode.Immediate) { delegate.present() }.collect { block(it) }
-    }
-  }
+  // TODO StateFlow would be nice here
+  val state: Flow<UiState> = moleculeFlow(RecompositionMode.Immediate) { delegate.present() }
 }

@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.library)
+  alias(libs.plugins.skie)
 }
 
 version = "1.0.0-SNAPSHOT"

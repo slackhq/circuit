@@ -40,12 +40,13 @@ struct ContentView: View {
         }
       }
       .navigationBarTitle("Counter")
+    }.task {
+        await presenter.activate()
     }
   }
 }
 
 // TODO we hide all this behind the Circuit UI interface somehow? Then we can pass it state only
-@MainActor
 class SwiftCounterPresenter: BasePresenter<CounterScreenState> {
   init() {
     // TODO why can't swift infer these generics?
@@ -57,12 +58,16 @@ class SwiftCounterPresenter: BasePresenter<CounterScreenState> {
 
 class BasePresenter<T: AnyObject>: ObservableObject {
   @Published var state: T? = nil
+  private let delegate: SwiftPresenter<T>
 
   init(delegate: SwiftPresenter<T>) {
-    delegate.subscribe { [weak self] newState in
-        DispatchQueue.main.async {
-            self?.state = newState
-        }
+    self.delegate = delegate
+  }
+
+  @MainActor
+  func activate() async {
+    for await state in self.delegate.state {
+      self.state = state
     }
   }
 }

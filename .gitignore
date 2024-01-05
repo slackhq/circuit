@@ -30,6 +30,7 @@ site/
 temp-clone/
 
 .externalNativeBuild
+!samples/counter/apps/iosApp/Counter.xcodeproj/project.xcworkspace/
 
 ##########################################################################################
 # Imported from https://github.com/github/gitignore/blob/main/Swift.gitignore

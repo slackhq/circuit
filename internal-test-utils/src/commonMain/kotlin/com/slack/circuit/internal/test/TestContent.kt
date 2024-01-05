@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -33,16 +34,17 @@ object TestContentTags {
 fun createTestCircuit(
   useKeys: Boolean = false,
   rememberType: TestCountPresenter.RememberType = TestCountPresenter.RememberType.Standard,
+  presenter: (Screen, Navigator) -> Presenter<*> = { screen, navigator ->
+    TestCountPresenter(
+      screen = screen as TestScreen,
+      navigator = navigator,
+      useKeys = useKeys,
+      rememberType = rememberType
+    )
+  }
 ): Circuit =
   Circuit.Builder()
-    .addPresenterFactory { screen, navigator, _ ->
-      TestCountPresenter(
-        screen = screen as TestScreen,
-        navigator = navigator,
-        useKeys = useKeys,
-        rememberType = rememberType
-      )
-    }
+    .addPresenterFactory { screen, navigator, _ -> presenter(screen, navigator) }
     .addUiFactory { _, _ -> ui<TestState> { state, modifier -> TestContent(state, modifier) } }
     .build()
 
@@ -105,6 +107,9 @@ class TestCountPresenter(
         RememberType.Saveable -> {
           rememberSaveable(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
         }
+        RememberType.ViewModel -> {
+          rememberViewModel(key = "count".takeIf { useKeys })
+        }
       }
 
     return TestState(count, screen.label) { event ->
@@ -126,8 +131,11 @@ class TestCountPresenter(
     Standard,
     Retained,
     Saveable,
+    ViewModel,
   }
 }
+
+@Composable expect fun rememberViewModel(key: String?): MutableIntState
 
 data class TestState(val count: Int, val label: String, val eventSink: (TestEvent) -> Unit) :
   CircuitUiState

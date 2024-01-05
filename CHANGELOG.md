@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.18.2
+------
+
+_2024-01-05_
+
+- **Fix**: Fix lifetime of `Record`s' `ViewModelStores`. This fully fixes [#1065](https://github.com/slackhq/circuit/issues/1065).
+- Update Molecule to `1.3.2`.
+- Update Jetbrains' compose-compiler to `1.5.7.1`.
+
+Special thanks to [@dandc87](https://github.com/dandc87) for contributing to this release!
+
 0.18.1
 ------
 

@@ -1,13 +1,22 @@
+//
+//  ContentView.swift
+//  Counter
+//
+//  Created by Zac Sweers on 1/4/24.
+//
+
 import SwiftUI
 import counter
 
 struct ContentView: View {
-  @ObservedObject var presenter = SwiftCounterPresenter()
+  @ObservedObject var presenter = SwiftPresenter<CounterScreenState>(delegate: SwiftSupportKt.doNewCounterPresenter())
 
   var body: some View {
     NavigationView {
       VStack(alignment: .center) {
-        Text("Count \(presenter.state?.count ?? 0)")
+        let count = presenter.state?.count ?? 0
+        Text("Count \(count)")
+          .foregroundStyle(count >= 0 ? Color.primary : Color.red)
           .font(.system(size: 36))
         HStack(spacing: 10) {
           Button(action: {
@@ -31,26 +40,27 @@ struct ContentView: View {
         }
       }
       .navigationBarTitle("Counter")
+    }.task {
+        await presenter.activate()
     }
   }
 }
 
 // TODO we hide all this behind the Circuit UI interface somehow? Then we can pass it state only
-@MainActor
-class SwiftCounterPresenter: BasePresenter<CounterScreenState> {
-  init() {
-    // TODO why can't swift infer these generics?
-    super.init(
-      delegate: SwiftSupportKt.asSwiftPresenter(SwiftSupportKt.doNewCounterPresenter())
-        as! SwiftPresenter<CounterScreenState>)
+class SwiftPresenter<T: AnyObject>: ObservableObject {
+  @Published
+  private(set) var state: T? = nil
+  private let delegate: SupportSwiftPresenter<T>
+
+  // TODO the raw type here is not nice. Will Kotlin eventually expose these? Maybe we should
+  //  generate wrappers?
+  init(delegate: Circuit_runtime_presenterPresenter) {
+    self.delegate = SupportSwiftPresenter(delegate: delegate)
   }
-}
 
-class BasePresenter<T: AnyObject>: ObservableObject {
-  @Published var state: T? = nil
-
-  init(delegate: SwiftPresenter<T>) {
-    delegate.subscribe { state in
+  @MainActor
+  func activate() async {
+    for await state in self.delegate.state {
       self.state = state
     }
   }

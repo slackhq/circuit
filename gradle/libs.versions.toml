@@ -10,6 +10,7 @@ anvil = "2.4.8"
 atomicfu = "0.23.1"
 benchmark = "1.2.2"
 coil = "2.5.0"
+coil3 = "3.0.0-alpha01"
 compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
@@ -100,7 +101,6 @@ androidx-browser = { module = "androidx.browser:browser", version.ref = "android
 ####### Compose
 # You must enable the SlackProperties.enableCompose property to use these.
 androidx-compose-accompanist-appCompatThemeAdapter = { module = "com.google.accompanist:accompanist-appcompat-theme", version.ref = "accompanist" }
-androidx-compose-accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanist" }
 androidx-compose-accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 androidx-compose-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 androidx-compose-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
@@ -171,6 +171,9 @@ clikt = "com.github.ajalt.clikt:clikt:4.2.1"
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
+coil3 = { module = "io.coil-kt:coil", version.ref = "coil3" }
+coil3-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil3" }
+coil3-test = { module = "io.coil-kt:coil-test", version.ref = "coil3" }
 
 compose-compilerJb = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "compose-jb-compiler" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }

@@ -135,7 +135,12 @@ kotlin {
         implementation(libs.testing.hamcrest)
       }
     }
-    jvmMain { dependsOn(commonJvm) }
+    jvmMain {
+      dependsOn(commonJvm)
+      dependencies {
+        implementation(libs.sqldelight.driver.jdbc)
+      }
+    }
     jvmTest { dependsOn(commonJvmTest) }
 
     configureEach {
@@ -145,6 +150,7 @@ kotlin {
             "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+          "-Xexpect-actual-classes"
         )
 
         if (project.hasProperty("circuit.enableComposeCompilerReports")) {

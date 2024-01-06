@@ -90,6 +90,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       onNavEvent = { event -> state.eventSink(ChildNav(event)) }
     )
   }
+  // TODO expect/actual this
   ReportDrawnWhen { contentComposed }
 }
 

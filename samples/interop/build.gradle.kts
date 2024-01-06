@@ -33,7 +33,7 @@ dependencies {
   implementation(libs.androidx.compose.accompanist.swiperefresh)
   implementation(libs.androidx.compose.accompanist.systemUi)
   debugImplementation(libs.androidx.compose.ui.tooling)
-  implementation(libs.androidx.compose.material.material3.windowSizeClass)
+  implementation(libs.windowSizeClass)
   implementation(libs.bundles.androidx.activity)
   implementation(libs.kotlinx.immutable)
   implementation(libs.rxjava)

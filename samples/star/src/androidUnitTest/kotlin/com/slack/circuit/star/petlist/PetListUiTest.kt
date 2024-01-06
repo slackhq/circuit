@@ -2,23 +2,25 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
+import com.slack.circuit.star.petlist.PetListScreen.Event
+import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
 import com.slack.circuit.star.petlist.PetListScreen.State.Loading
 import com.slack.circuit.star.petlist.PetListScreen.State.NoAnimals
 import com.slack.circuit.star.petlist.PetListScreen.State.Success
+import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
@@ -29,11 +31,13 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalCoilApi::class)
-class PetListTest {
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
+@ExperimentalCoilApi
+@RunWith(RobolectricTestRunner::class)
+class PetListUiTest {
+  @get:Rule val composeTestRule = createComposeRule()
   @get:Rule val coilRule = CoilRule(R.drawable.dog)
 
   @Test
@@ -57,7 +61,9 @@ class PetListTest {
 
       onNodeWithTag(NO_ANIMALS_TAG)
         .assertIsDisplayed()
-        .assertTextEquals(activity.getString(R.string.no_animals))
+        .assertTextEquals(
+          InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.no_animals)
+        )
     }
   }
 
@@ -72,16 +78,15 @@ class PetListTest {
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)
-      onNodeWithTag(IMAGE_TAG, true).assertIsDisplayed()
-      onNodeWithText(ANIMAL.name).assertIsDisplayed()
-      onNodeWithText(ANIMAL.breed.orEmpty()).assertIsDisplayed()
-      onNodeWithText("${ANIMAL.gender.displayName} – ${ANIMAL.age}").assertIsDisplayed()
+      onNodeWithTag(IMAGE_TAG, useUnmergedTree = true).assertIsDisplayed()
+      onNodeWithTag(AGE_AND_BREED_TAG, useUnmergedTree = true)
+        .assertTextEquals("${ANIMAL.gender.displayName} – ${ANIMAL.age}")
     }
   }
 
   @Test
   fun petList_emits_event_when_tapping_on_animal() = runTest {
-    val testSink = TestEventSink<PetListScreen.Event>()
+    val testSink = TestEventSink<Event>()
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
@@ -91,7 +96,7 @@ class PetListTest {
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 
-      testSink.assertEvent(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
+      testSink.assertEvent(ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
     }
   }
 

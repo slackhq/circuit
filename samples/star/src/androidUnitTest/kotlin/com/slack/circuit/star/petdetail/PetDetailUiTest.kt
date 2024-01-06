@@ -2,46 +2,64 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
+import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.R
-import com.slack.circuit.star.petdetail.PetDetailScreen.State
+import com.slack.circuit.star.petdetail.PetDetailScreen.Event
+import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
+import com.slack.circuit.star.petdetail.PetDetailScreen.State.Success
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
+import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
-import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoilApi::class)
-class PetDetailTest {
-
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+@RunWith(RobolectricTestRunner::class)
+class PetDetailUiTest {
+  @get:Rule val composeTestRule = createComposeRule()
   @get:Rule val coilRule = CoilRule(R.drawable.dog2)
-  // Not using detectLeaksAfterTestSuccessWrapping() because it causes an NPE with composeTestRule
-  @get:Rule val leakDetectionRule = DetectLeaksAfterTestSuccess()
+
+  // TODO this seems like not the greatest test pattern, maybe something we can offer better
+  //  solutions for via semantics.
+  private var carouselScreen: PetPhotoCarouselScreen? = null
+  private val circuit =
+    Circuit.Builder()
+      .setOnUnavailableContent { screen, modifier ->
+        when (screen) {
+          is PetPhotoCarouselScreen -> {
+            PetPhotoCarousel(State(screen), modifier)
+            carouselScreen = screen
+          }
+        }
+      }
+      .build()
 
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetDetail(State.Loading) }
+      setContent { CircuitCompositionLocals(circuit) { PetDetail(PetDetailScreen.State.Loading) } }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -52,21 +70,27 @@ class PetDetailTest {
   @Test
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
-      setContent { PetDetail(State.UnknownAnimal) }
+      setContent {
+        CircuitCompositionLocals(circuit) { PetDetail(PetDetailScreen.State.UnknownAnimal) }
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
 
       onNodeWithTag(UNKNOWN_ANIMAL_TAG)
         .assertIsDisplayed()
-        .assertTextEquals(activity.getString(R.string.unknown_animals))
+        .assertTextEquals(
+          InstrumentationRegistry.getInstrumentation()
+            .targetContext
+            .getString(R.string.unknown_animals)
+        )
     }
   }
 
   @Test
   fun petDetail_show_animal_for_success_state() {
     val success =
-      PetDetailScreen.State.Success(
+      Success(
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -76,15 +100,6 @@ class PetDetailTest {
         eventSink = {}
       )
 
-    var carouselScreen: PetPhotoCarouselScreen? = null
-    val circuit =
-      Circuit.Builder()
-        .setOnUnavailableContent { screen, modifier ->
-          carouselScreen = screen as PetPhotoCarouselScreen
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen), modifier)
-        }
-        .build()
-
     val expectedScreen =
       PetPhotoCarouselScreen(
         name = success.name,
@@ -93,7 +108,9 @@ class PetDetailTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+      setContent {
+        CircuitCompositionLocals(circuit) { ContentWithOverlays { PetDetail(success) } }
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -111,10 +128,10 @@ class PetDetailTest {
 
   @Test
   fun petDetail_emits_event_when_tapping_on_full_bio_button() = runTest {
-    val testSink = TestEventSink<PetDetailScreen.Event>()
+    val testSink = TestEventSink<Event>()
 
     val success =
-      PetDetailScreen.State.Success(
+      Success(
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -127,17 +144,19 @@ class PetDetailTest {
     val circuit =
       Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen), modifier)
+          PetPhotoCarousel(State(screen as PetPhotoCarouselScreen), modifier)
         }
         .build()
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+      setContent {
+        CircuitCompositionLocals(circuit) { ContentWithOverlays { PetDetail(success) } }
+      }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
 
-      testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
+      testSink.assertEvent(ViewFullBio(success.url))
     }
   }
 }

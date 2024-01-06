@@ -6,8 +6,9 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.compose)
+  alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.moshiGradlePlugin)
@@ -15,8 +16,6 @@ plugins {
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
-  // TODO why is it not enough to just have the runtime dep?
-  alias(libs.plugins.molecule)
 }
 
 kotlin {
@@ -28,25 +27,26 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        implementation(libs.androidx.datastore.preferences)
         implementation(libs.coil3)
         implementation(libs.coil3.compose)
-        implementation(libs.okio)
-        implementation(projects.circuitCodegenAnnotations)
-        implementation(projects.circuitFoundation)
-        implementation(projects.circuitOverlay)
-        implementation(projects.circuitRetained)
-        implementation(projects.circuitx.gestureNavigation)
-        implementation(projects.circuitx.overlays)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
         implementation(libs.compose.uiUtil)
-        implementation(libs.androidx.datastore.preferences)
         implementation(libs.kotlinx.immutable)
+        implementation(libs.okio)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
+        implementation(libs.windowSizeClass)
+        implementation(projects.circuitCodegenAnnotations)
+        implementation(projects.circuitFoundation)
+        implementation(projects.circuitOverlay)
+        implementation(projects.circuitRetained)
+        implementation(projects.circuitx.gestureNavigation)
+        implementation(projects.circuitx.overlays)
       }
     }
     commonTest {
@@ -61,6 +61,8 @@ kotlin {
     val commonJvm by creating {
       dependsOn(commonMain.get())
       dependencies {
+        api(libs.anvil.annotations)
+        api(libs.anvil.annotations.optional)
         implementation(libs.eithernet)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
@@ -68,7 +70,6 @@ kotlin {
         implementation(libs.retrofit.converters.moshi)
         implementation(libs.dagger)
         implementation(libs.jsoup)
-        implementation(libs.androidx.compose.material.material3.windowSizeClass)
         implementation(libs.compose.material.icons)
         implementation(libs.compose.material.iconsExtended)
         val kapt by configurations.getting
@@ -121,7 +122,7 @@ kotlin {
       }
     }
     val androidInstrumentedTest by getting {
-      dependsOn(commonJvmTest)
+      // Annoyingly cannot depend on commonJvmTest
       dependencies {
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.leakcanary.android.instrumentation)
@@ -129,6 +130,9 @@ kotlin {
         implementation(libs.coroutines.test)
         implementation(projects.circuitTest)
         implementation(projects.samples.star.coilRule)
+        implementation(libs.junit)
+        implementation(libs.truth)
+        implementation(libs.testing.hamcrest)
       }
     }
     jvmMain { dependsOn(commonJvm) }

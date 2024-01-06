@@ -34,6 +34,7 @@ baselineProfile {
 
 dependencies {
   api(projects.samples.star)
+  implementation(libs.leakcanary.android)
   implementation(libs.androidx.profileinstaller)
   baselineProfile(projects.samples.star.benchmark)
 }

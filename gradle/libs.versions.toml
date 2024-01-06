@@ -171,9 +171,9 @@ clikt = "com.github.ajalt.clikt:clikt:4.2.1"
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
-coil3 = { module = "io.coil-kt:coil", version.ref = "coil3" }
-coil3-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil3" }
-coil3-test = { module = "io.coil-kt:coil-test", version.ref = "coil3" }
+coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
+coil3-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
+coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
 
 compose-compilerJb = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "compose-jb-compiler" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
@@ -198,6 +198,7 @@ detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
+eithernet-testFixtures = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
 jline = "org.jline:jline:3.25.0"

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.runtime
 
+import com.slack.circuit.runtime.internal.NoOpMap
 import kotlin.reflect.KClass
 
 /**
@@ -16,9 +17,9 @@ public class CircuitContext
 @InternalCircuitApi
 public constructor(
   public val parent: CircuitContext?,
-) {
   // Don't expose the raw map.
-  private val tags = mutableMapOf<KClass<*>, Any>()
+  private val tags: MutableMap<KClass<*>, Any> = mutableMapOf(),
+) {
 
   /** Returns the tag attached with [type] as a key, or null if no tag is attached with that key. */
   public fun <T : Any> tag(type: KClass<T>): T? {
@@ -55,5 +56,12 @@ public constructor(
   /** Clears all the current tags. */
   public fun clearTags() {
     tags.clear()
+  }
+
+  public companion object {
+    /** An empty context */
+    @Suppress("UNCHECKED_CAST")
+    @OptIn(InternalCircuitApi::class)
+    public val EMPTY: CircuitContext = CircuitContext(null, NoOpMap as MutableMap<KClass<*>, Any>)
   }
 }

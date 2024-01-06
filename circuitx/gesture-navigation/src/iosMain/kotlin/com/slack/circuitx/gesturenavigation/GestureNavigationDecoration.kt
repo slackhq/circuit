@@ -5,6 +5,7 @@ package com.slack.circuitx.gesturenavigation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -121,12 +122,16 @@ private class IosGestureNavigationDecoration(
 
       val transition = updateTransition(targetState = current, label = "GestureNavDecoration")
 
-      if (previous != null) {
-        // Previous content is only visible if the swipe-dismiss offset != 0
+      if (previous != null && !transition.isStateBeingAnimated(previous)) {
+        // We display the 'previous' item in the back stack for when the user performs a gesture
+        // to go back.
+        // We only display it here if the transition is not running. When the transition is
+        // running, the record's movable content will still be attached to the
+        // AnimatedContent below. If we call it here too, we will invoke a new copy of
+        // the content (and thus dropping all state). The if statement above keeps the states
+        // exclusive, so that the movable content is only used once at a time.
         val showPrevious by
-          remember(dismissState) {
-            derivedStateOf { dismissState.offset.value != 0f || transition.isRunning }
-          }
+          remember(dismissState) { derivedStateOf { dismissState.offset.value != 0f } }
 
         OptionalLayout(
           shouldLayout = { showPrevious },
@@ -305,4 +310,8 @@ private fun rememberDismissState(
   return rememberSaveable(inputs, saver = DismissState.Saver(confirmStateChange)) {
     DismissState(initialValue, confirmStateChange)
   }
+}
+
+private fun <T> Transition<T>.isStateBeingAnimated(state: T): Boolean {
+  return isRunning && (currentState == state || targetState == state)
 }

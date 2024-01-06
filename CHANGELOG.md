@@ -1,6 +1,124 @@
 Changelog
 =========
 
+0.18.2
+------
+
+_2024-01-05_
+
+- **Fix**: Fix lifetime of `Record`s' `ViewModelStores`. This fully fixes [#1065](https://github.com/slackhq/circuit/issues/1065).
+- Update Molecule to `1.3.2`.
+- Update Jetbrains' compose-compiler to `1.5.7.1`.
+
+Special thanks to [@dandc87](https://github.com/dandc87) for contributing to this release!
+
+0.18.1
+------
+
+_2024-01-01_
+
+- **Fix**: Fix popped Record's `ProvidedValues` lifetime. See [#1065](https://github.com/slackhq/circuit/issues/1065) for more details.
+- **Fix**: Fix `GestureNavDecoration` dropping saveable/retained state on back gestures. See [#1089](https://github.com/slackhq/circuit/pull/1089) for more details.
+
+Special thanks to [@ChrisBanes](https://github.com/chrisbanes) and [@dandc87](https://github.com/dandc87) for contributing to this release!
+
+0.18.0
+------
+
+_2023-12-29_
+
+- **New**: Support animating an overlay out after returning a result with `AnimatedOverlay`.
+- **Fix**: Fix dropping back stack retained state on Android Activity rotations.
+- **Enhancement**: Add ability to customize `ModalBottomSheet` appearance in `BottomSheetOverlay`.
+- Update Kotlin to `1.9.22`.
+- Update KSP to `1.9.22-1.0.16`.
+- Update Dagger to `2.50`.
+- Update kotlinx-collections-immutable to `0.3.7`.
+- Update AndroidX Activity to `1.8.2`.
+
+Special thanks to [@ChrisBanes](https://github.com/ChrisBanes), [@chriswiesner](https://github.com/chriswiesner), and [@BryanStern](https://github.com/BryanStern) for contributing to this release!
+
+0.17.1
+------
+
+_2023-12-05_
+
+- **Enhancement**: Commonize `SaveableStateRegistryBackStackRecordLocalProvider` to be supported across all currently supported platforms.
+- **Fix**: Fix `LocalBackStackRecordLocalProviders` always returning a new composition local.
+- Update `androidx.compose.compiler:compiler` to `1.5.5`
+- Update KotlinPoet to `1.15.3`
+- Update Dagger to `2.49`
+
+Special thanks to [@alexvanyo](https://github.com/alexvanyo) for contributing to this release.
+
+0.17.0
+------
+
+_2023-11-28_
+
+## **New**: circuitx-effects artifact
+
+The circuitx-effects artifact provides some effects for use with logging/analytics. These effects
+are typically used in Circuit presenters for tracking `impressions` and will run only once until
+forgotten based on the current circuit-retained strategy.
+
+```kotlin
+dependencies {
+  implementation("com.slack.circuit:circuitx-effects:<version>")
+}
+```
+
+Docs: https://slackhq.github.io/circuit/circuitx/#effects
+
+## **New**: Add codegen mode to support both Anvil and Hilt
+
+Circuit's code gen artifact now supports generating for Hilt projects. See the docs for usage instructions: https://slackhq.github.io/circuit/code-gen/
+
+## Misc
+
+- Decompose various `CircuitContent` internals like `rememberPresenter()`, `rememberUi`, etc for reuse.
+- Make `CircuitContent()` overload that accepts a pre-constructed presenter/ui parameters public to allow for more control over content.
+- [samples] Update README to include the interop sample.
+- [samples] Various bugfixes to samples.
+- [docs] Link sources in kdocs.
+- [docs] Nest CircuitX artifacts in kdocs ToC.
+- Update uuid to `0.8.2`.
+- Update KotlinPoet to `1.15.1`.
+- Update to Compose Multiplatform `1.5.11`.
+- Update to Kotlin `1.9.21`.
+- Update to KSP `1.9.21-1.0.15`.
+- Update to compose-compiler (multiplatform) `1.5.4`.
+- Update to Molecule `1.3.1`.
+
+Special thanks to [@jamiesanson](https://github.com/jamiesanson), [@frett](https://github.com/frett), and [@bryanstern](https://github.com/BryanStern) for contributing to this release!
+
+0.16.1
+------
+
+_2023-11-09_
+
+- **Fix**: Fix retained value not recalculating if inputs changed.
+- Build against KSP `1.9.20-1.0.14`.
+
+0.16.0
+------
+
+_2023-11-01_
+
+- **New**: `circut-retained` is now enabled automatically in `CircuitCompositionLocals` by default, we still allowing overriding it with no-op implementation.
+- Update to Kotlin `1.9.20`.
+- Update Compose Multiplatform to `1.5.2`.
+- Update `agp` to `8.1.2`.
+- Update `androidx.activity` to `1.8.0`.
+- Update `benchmark` to `1.2.0`.
+- Update `coil` to `2.5.0`.
+- Update `compose.material3` to `1.1.2`.
+- Update `compose.material` to `1.5.4`.
+- Update `compose.runtime` to `1.5.4`.
+- Update `compose.ui` to `1.5.4`.
+- Update `roborazzi` to `1.6.0`.
+
+
 0.15.0
 ------
 

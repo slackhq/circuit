@@ -30,9 +30,39 @@ site/
 temp-clone/
 
 .externalNativeBuild
-Podfile.lock
-**/Pods/*
-**/*.xcworkspace/*
-**/*.xcodeproj/*
-!samples/counter/apps/Counter.xcodeproj/project.pbxproj
-*.podspec
+!samples/counter/apps/iosApp/Counter.xcodeproj/project.xcworkspace/
+
+##########################################################################################
+# Imported from https://github.com/github/gitignore/blob/main/Swift.gitignore
+##########################################################################################
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## User settings
+xcuserdata/
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+# Package.pins
+# Package.resolved
+# *.xcodeproj
+#
+# Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
+# hence it is not needed unless you have added a package configuration file to your project
+# .swiftpm

@@ -1,6 +1,6 @@
-// Copyright (C) 2022 Slack Technologies, LLC
+// Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 plugins {
   alias(libs.plugins.agp.library)
@@ -8,13 +8,15 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   `java-test-fixtures`
+  alias(libs.plugins.emulatorWtf)
 }
 
 kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  ios()
+  iosX64()
+  iosArm64()
   iosSimulatorArm64()
   js {
     moduleName = property("POM_ARTIFACT_ID").toString()
@@ -22,7 +24,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -43,22 +45,22 @@ kotlin {
 
     val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
 
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
-      }
+    // Necessary because android instrumented tests cannot share a source set with jvm tests for
+    // some reason
+    // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1695237854727929
+    val commonJvmTest: KotlinDependencyHandler.() -> Unit = {
+      implementation(libs.junit)
+      implementation(libs.truth)
+    }
 
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val jvmTest by getting { dependencies { commonJvmTest() } }
 
     // TODO export this in Android too when it's supported in kotlin projects
     val jvmMain by getting { dependencies.add("testFixturesApi", projects.circuitTest) }
 
     val androidInstrumentedTest by getting {
-      dependsOn(commonJvmTest)
       dependencies {
+        commonJvmTest()
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
         implementation(projects.circuitRetained)
@@ -68,9 +70,13 @@ kotlin {
         implementation(libs.androidx.compose.ui.ui)
         implementation(libs.androidx.compose.material.material)
         implementation(libs.leakcanary.android.instrumentation)
-        implementation(libs.junit)
-        implementation(libs.truth)
       }
+    }
+  }
+
+  targets.configureEach {
+    compilations.configureEach {
+      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
     }
   }
 }

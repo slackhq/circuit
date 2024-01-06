@@ -9,9 +9,6 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
-import com.squareup.anvil.annotations.ContributesMultibinding
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import kotlin.reflect.KClass
 
 /**
@@ -19,8 +16,9 @@ import kotlin.reflect.KClass
  * annotated, the type's corresponding factory will be generated and keyed with the defined [screen]
  * .
  *
- * The generated factories are then contributed to Anvil via [ContributesMultibinding] and scoped
- * with the provided [scope] key.
+ * The generated factories are then contributed to Anvil via
+ * [com.squareup.anvil.annotations.ContributesMultibinding] and scoped with the provided [scope]
+ * key.
  *
  * ## Classes
  *
@@ -90,8 +88,9 @@ import kotlin.reflect.KClass
  * ## Assisted injection
  *
  * Any type that is offered in [Presenter.Factory] and [Ui.Factory] can be offered as an assisted
- * injection to types using Dagger [AssistedInject]. For these cases, the [AssistedFactory]
- * -annotated interface should be annotated with [CircuitInject] instead of the enclosing class.
+ * injection to types using Dagger [dagger.assisted.AssistedInject]. For these cases, the
+ * [dagger.assisted.AssistedFactory] -annotated interface should be annotated with [CircuitInject]
+ * instead of the enclosing class.
  *
  * Types available for assisted injection are:
  * - [Screen] – the screen key used to create the [Presenter] or [Ui].
@@ -125,7 +124,7 @@ import kotlin.reflect.KClass
  * ```
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-public annotation class CircuitInject(
+public expect annotation class CircuitInject(
   val screen: KClass<out Screen>,
   val scope: KClass<*>,
 )

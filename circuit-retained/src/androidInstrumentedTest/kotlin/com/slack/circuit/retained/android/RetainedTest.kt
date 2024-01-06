@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import kotlinx.coroutines.flow.MutableStateFlow
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
@@ -117,8 +119,8 @@ class RetainedTest {
     // - text2Enabled
     // - text1
     // - text2
-    assertThat(continuity.peekProviders()).hasSize(1)
-    assertThat(continuity.peekProviders().values.single()).hasSize(3)
+    assertThat(continuity.peekProviders()).hasSize(2)
+    assertThat(continuity.peekProviders().values.sumOf { it.size }).isEqualTo(3)
 
     // Now disable the second text
     composeTestRule.onNodeWithTag("TAG_BUTTON").performClick()
@@ -210,6 +212,74 @@ class RetainedTest {
   @Test fun nestedRegistriesWithPopAndPushWithKeys() = nestedRegistriesWithPopAndPush(true)
 
   @Test fun nestedRegistriesWithPopAndPushNoKeys() = nestedRegistriesWithPopAndPush(false)
+
+  @Test
+  fun singleInput() {
+    val inputState = MutableStateFlow("first input")
+    val content =
+      @Composable {
+        val input by inputState.collectAsState()
+        InputsContent(input)
+      }
+    setActivityContent(content)
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).performTextInput("Text_Remember")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained")
+    // Check that our input worked
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("Text_Remember")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
+    // Restart the activity
+    scenario.recreate()
+    // Compose our content
+    setActivityContent(content)
+    // Input didn't change, was the text saved
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
+  }
+
+  @Test
+  fun changingInput() {
+    val inputState = MutableStateFlow("first input")
+    val content =
+      @Composable {
+        val input by inputState.collectAsState()
+        InputsContent(input)
+      }
+    setActivityContent(content)
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).performTextInput("Text_Remember")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained")
+    // Check that our input worked
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("Text_Remember")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
+    // New input
+    inputState.value = "second input"
+    // Was the text reset with the input change
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
+  }
+
+  @Test
+  fun recreateWithChangingInput() {
+    val inputState = MutableStateFlow("first input")
+    val content =
+      @Composable {
+        val input by inputState.collectAsState()
+        InputsContent(input)
+      }
+    setActivityContent(content)
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).performTextInput("Text_Remember")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained")
+    // Check that our input worked
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("Text_Remember")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
+    // Restart the activity
+    scenario.recreate()
+    inputState.value = "second input"
+    // Compose our content
+    setActivityContent(content)
+    // Was the text reset with the input change
+    composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
+  }
 
   private fun nestedRegistriesWithPopAndPush(useKeys: Boolean) {
     val content = @Composable { NestedRetainWithPushAndPop(useKeys = useKeys) }
@@ -429,5 +499,25 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
         NestedRetainLevel1(useKeys)
       }
     }
+  }
+}
+
+@Composable
+private fun InputsContent(input: String) {
+  var text1 by remember(input) { mutableStateOf("") }
+  var retainedText: String by rememberRetained(input) { mutableStateOf("") }
+  Column {
+    TextField(
+      modifier = Modifier.testTag(TAG_REMEMBER),
+      value = text1,
+      onValueChange = { text1 = it },
+      label = {}
+    )
+    TextField(
+      modifier = Modifier.testTag(TAG_RETAINED_1),
+      value = retainedText,
+      onValueChange = { retainedText = it },
+      label = {}
+    )
   }
 }

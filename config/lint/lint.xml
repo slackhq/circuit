@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+  <issue id="ComposeNamingUppercase,ComposeNamingLowercase">
+    <option name="allowed-composable-function-names" value=".*Presenter" />
+  </issue>
+</lint>

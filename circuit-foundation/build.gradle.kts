@@ -1,6 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -16,7 +15,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  ios()
+  iosX64()
+  iosArm64()
   iosSimulatorArm64()
   js {
     moduleName = property("POM_ARTIFACT_ID").toString()
@@ -24,7 +24,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) targetHierarchy.default()
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -54,16 +54,24 @@ kotlin {
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
         implementation(libs.coroutines.test)
+
+        implementation(projects.internalTestUtils)
       }
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest)
+
         dependencies {
+          implementation(libs.compose.ui.testing.junit)
           implementation(libs.junit)
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val jvmTest by getting {
+      dependsOn(commonJvmTest)
+      dependencies { implementation(compose.desktop.currentOs) }
+    }
     val androidUnitTest by getting {
       dependsOn(commonJvmTest)
       dependencies {
@@ -73,6 +81,14 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+    val androidInstrumentedTest by getting {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.coroutines.android)
+        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.compose.ui.testing.junit)
+      }
+    }
   }
 }
 
@@ -80,15 +96,20 @@ tasks
   .withType<KotlinCompile>()
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
-    compilerOptions { freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi") }
+    compilerOptions {
+      freeCompilerArgs.addAll(
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+      )
+    }
   }
 
 android {
   namespace = "com.slack.circuit.foundation"
-  testOptions { unitTests { isIncludeAndroidResources = true } }
-}
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+  testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
+}
 
 baselineProfile {
   mergeIntoMain = true

@@ -98,6 +98,9 @@ dependencyResolutionManagement {
 
     // JB Compose Repo
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
+
+    // emulator.wtf
+    maven(url = "https://maven.emulator.wtf/releases/") { content { includeGroup("wtf.emulator") } }
   }
 }
 
@@ -217,6 +220,7 @@ include(
   ":circuit-runtime-ui",
   ":circuit-test",
   ":circuitx:android",
+  ":circuitx:effects",
   ":circuitx:gesture-navigation",
   ":circuitx:overlays",
   ":samples:counter",
@@ -228,6 +232,7 @@ include(
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
+  ":internal-test-utils",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

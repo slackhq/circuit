@@ -1,9 +1,6 @@
 androidx.annotation:annotation
 androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime
-com.google.dagger:dagger
-com.squareup.anvil:annotations
-javax.inject:javax.inject
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-stdlib-jdk7

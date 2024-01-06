@@ -12,6 +12,7 @@ import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import java.net.URI
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
@@ -25,6 +26,7 @@ import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFI
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
@@ -49,6 +51,7 @@ plugins {
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
+  alias(libs.plugins.emulatorWtf) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
@@ -201,7 +204,7 @@ subprojects {
       }
     }
 
-    if (!project.path.startsWith(":samples")) {
+    if (!project.path.startsWith(":samples") && !project.path.startsWith(":internal")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }
     }
 
@@ -231,6 +234,7 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
 
     tasks.withType<DokkaTaskPartial>().configureEach {
+      moduleName.set(project.path.removePrefix(":").replace(":", "/"))
       outputDirectory.set(layout.buildDirectory.dir("docs/partial"))
       dokkaSourceSets.configureEach {
         val readMeProvider = project.layout.projectDirectory.file("README.md")
@@ -250,6 +254,18 @@ subprojects {
           suppress.set(true)
         }
         // AndroidX and Android docs are automatically added by the Dokka plugin.
+
+        // Add source links
+        sourceLink {
+          localDirectory.set(layout.projectDirectory.dir("src").asFile)
+          val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
+          remoteUrl.set(
+            providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
+              URI("$scmUrl/tree/main/$relPath/src").toURL()
+            }
+          )
+          remoteLineSuffix.set("#L")
+        }
       }
     }
 
@@ -312,7 +328,9 @@ subprojects {
       // https://issuetracker.google.com/issues/243267012
       disable += "Instantiatable"
       checkTestSources = true
+      lintConfig = rootProject.file("config/lint/lint.xml")
     }
+    dependencies { add("lintChecks", libs.lints.compose) }
   }
 
   // Android library config
@@ -320,6 +338,7 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 21 }
+      testOptions { targetSdk = 34 }
     }
 
     // Single-variant libraries
@@ -408,7 +427,10 @@ subprojects {
           dependencies {
             // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
             implementation(
-              platform("org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}")
+              // https://youtrack.jetbrains.com/issue/KT-58759
+              project.dependencies.platform(
+                "org.jetbrains.kotlin:kotlin-bom:${libs.versions.kotlin.get()}"
+              )
             )
           }
         }
@@ -422,6 +444,18 @@ subprojects {
       @Suppress("INVISIBLE_MEMBER")
       notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
     }
+  }
+
+  pluginManager.withPlugin("wtf.emulator.gradle") {
+    val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
+    if (emulatorWtfToken.isPresent) {
+      configure<EwExtension> { token.set(emulatorWtfToken) }
+    }
+    // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper
+    // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects
+    // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
+    // that would include benchmarks.
+    tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
   }
 }
 

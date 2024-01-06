@@ -9,32 +9,34 @@ import androidx.compose.runtime.setValue
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-// TODO expect/actual this
-class ConditionalSystemUiColors(
+private class ConditionalSystemUiColorsImpl(
   private val systemUiController: SystemUiController,
   initialStatusBarDarkContent: Boolean,
   initialNavBarDarkContent: Boolean,
-) {
+) : ConditionalSystemUiColors {
   private var storedStatusBarDarkContent by mutableStateOf(initialStatusBarDarkContent)
   private var storedNavBarDarkContent by mutableStateOf(initialNavBarDarkContent)
 
-  fun save() {
+  override fun save() {
     storedStatusBarDarkContent = systemUiController.statusBarDarkContentEnabled
     storedNavBarDarkContent = systemUiController.navigationBarDarkContentEnabled
   }
 
-  fun restore() {
+  override fun restore() {
     systemUiController.statusBarDarkContentEnabled = storedStatusBarDarkContent
     systemUiController.navigationBarDarkContentEnabled = storedNavBarDarkContent
   }
 }
 
+@Composable
+actual fun rememberConditionalSystemUiColors(): ConditionalSystemUiColors = rememberConditionalSystemUiColors(rememberSystemUiController())
+
 // TODO if dark mode changes during this, it will restore the wrong colors. What do we do?
 @Composable
-fun rememberConditionalSystemUiColors(
-  systemUiController: SystemUiController = rememberSystemUiController()
+private fun rememberConditionalSystemUiColors(
+  systemUiController: SystemUiController
 ): ConditionalSystemUiColors {
-  return ConditionalSystemUiColors(
+  return ConditionalSystemUiColorsImpl(
     systemUiController,
     systemUiController.statusBarDarkContentEnabled,
     systemUiController.navigationBarDarkContentEnabled

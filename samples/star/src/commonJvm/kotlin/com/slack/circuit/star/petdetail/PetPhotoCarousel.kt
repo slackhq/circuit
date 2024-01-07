@@ -35,11 +35,11 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -50,9 +50,11 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.star.common.ImmutableListParceler
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
+import com.slack.circuit.star.parcel.CommonParcelize
+import com.slack.circuit.star.parcel.CommonTypeParceler
+import com.slack.circuit.star.parcel.ImmutableListParceler
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
@@ -60,13 +62,10 @@ import com.slack.circuitx.overlays.showFullScreenOverlay
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.parcel.CommonTypeParceler
-import com.slack.circuit.star.parcel.ImmutableListParceler
-import kotlin.math.absoluteValue
 
 /*
  * This is a trivial example of a photo carousel used in the pet detail screen. We'd normally likely
@@ -126,13 +125,12 @@ internal object PetPhotoCarouselTestConstants {
 @Composable
 internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
   val (name, photoUrls, photoUrlMemoryCacheKey) = state
-  val context = LocalContext.current
   // Prefetch images
   LaunchedEffect(Unit) {
     for (url in photoUrls) {
       if (url.isBlank()) continue
-      val request = ImageRequest.Builder(context).data(url).build()
-      context.imageLoader.enqueue(request)
+      val request = ImageRequest.Builder(PlatformContext.INSTANCE).data(url).build()
+      SingletonImageLoader.get(PlatformContext.INSTANCE).enqueue(request)
     }
   }
 
@@ -262,6 +260,7 @@ private fun PhotoPager(
             .build(),
         contentDescription = name,
         contentScale = ContentScale.Crop,
+        imageLoader = SingletonImageLoader.get(PlatformContext.INSTANCE)
       )
     }
   }

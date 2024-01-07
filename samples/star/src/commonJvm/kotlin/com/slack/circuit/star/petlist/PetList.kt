@@ -40,7 +40,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -62,28 +61,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
-import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.star.R
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
@@ -102,7 +101,6 @@ import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
-import com.slack.circuitx.overlays.BottomSheetOverlay
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -110,7 +108,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
-import com.slack.circuit.star.parcel.CommonParcelize
 
 @Immutable
 data class PetListAnimal(
@@ -295,7 +292,7 @@ internal fun PetList(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             modifier = Modifier.testTag(NO_ANIMALS_TAG),
-            text = stringResource(id = R.string.no_animals)
+            text = Strings.NO_ANIMALS
           )
         }
       is Success ->
@@ -366,7 +363,8 @@ private fun PetListGridItem(
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {}
 ) {
-  val updatedImageUrl = animal.imageUrl ?: R.drawable.star_icon
+  // TODO pick a different fallback
+  val updatedImageUrl = animal.imageUrl // ?: R.drawable.star_icon
   ElevatedCard(
     modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -388,6 +386,7 @@ private fun PetListGridItem(
             .build(),
         contentDescription = animal.name,
         contentScale = ContentScale.Crop,
+        imageLoader = SingletonImageLoader.get(PlatformContext.INSTANCE),
       )
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
@@ -407,23 +406,6 @@ private fun PetListGridItem(
       }
     }
   }
-}
-
-private suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
-  return show(
-    BottomSheetOverlay(
-      model = currentFilters,
-      onDismiss = { currentFilters },
-    ) { initialFilters, overlayNavigator ->
-      Surface(Modifier.fillMaxWidth()) {
-        UpdateFiltersSheet(
-          initialFilters,
-          Modifier.padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
-          overlayNavigator::finish
-        )
-      }
-    }
-  )
 }
 
 @VisibleForTesting

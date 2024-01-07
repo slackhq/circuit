@@ -4,6 +4,7 @@ package com.slack.circuit.star.di
 
 import android.app.Activity
 import android.content.Context
+import coil3.ImageLoader
 import com.slack.circuit.star.data.DataModule
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.annotations.optional.SingleIn
@@ -23,6 +24,7 @@ import javax.inject.Provider
 @SingleIn(AppScope::class)
 interface AppComponent {
   val activityProviders: Map<Class<out Activity>, @JvmSuppressWildcards Provider<Activity>>
+  val imageLoader: ImageLoader
 
   @Component.Factory
   interface Factory {

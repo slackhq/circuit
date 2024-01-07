@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
@@ -43,11 +42,12 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.star.R
 import com.slack.circuit.star.common.BackPressNavIcon
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.navigation.CustomTabsIntentScreen
+import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
@@ -64,7 +64,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import com.slack.circuit.star.parcel.CommonParcelize
 
 @CommonParcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) :
@@ -191,7 +190,7 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
   ) {
     Text(
       modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
-      text = stringResource(id = R.string.unknown_animals)
+      text = Strings.UNKNOWN_ANIMALS
     )
   }
 }

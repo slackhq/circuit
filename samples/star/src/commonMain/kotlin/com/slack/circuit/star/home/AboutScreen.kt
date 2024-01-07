@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,18 +17,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.star.R
+import com.slack.circuit.star.common.Platform
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.parcel.CommonParcelize
+import com.slack.circuit.star.ui.StarTheme
 
 @CommonParcelize
 data object AboutScreen : Screen {
@@ -51,12 +50,12 @@ fun About(modifier: Modifier = Modifier) {
       ) {
         Icon(
           modifier = Modifier.size(96.dp),
-          painter = painterResource(R.drawable.star_icon),
+          painter = Platform.appIconPainter(),
           contentDescription = "STAR icon",
           tint = Color.Unspecified
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stringResource(id = R.string.about_screen), textAlign = TextAlign.Justify)
+        Text(text = Strings.ABOUT_SCREEN, textAlign = TextAlign.Justify)
       }
     }
   )

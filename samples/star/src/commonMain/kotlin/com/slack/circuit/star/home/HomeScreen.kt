@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
-import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,8 +34,7 @@ import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.parcel.CommonTypeParceler
-import com.slack.circuit.star.parcel.ImmutableListParceler
+import com.slack.circuit.star.common.Platform
 
 @CommonParcelize
 data object HomeScreen : Screen {
@@ -92,8 +90,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       onNavEvent = { event -> state.eventSink(ChildNav(event)) }
     )
   }
-  // TODO expect/actual this
-  ReportDrawnWhen { contentComposed }
+  Platform.ReportDrawnWhen { contentComposed }
 }
 
 @Composable

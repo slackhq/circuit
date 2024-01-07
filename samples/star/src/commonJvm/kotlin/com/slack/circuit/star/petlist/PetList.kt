@@ -65,9 +65,9 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -371,14 +371,14 @@ private fun PetListGridItem(
       AsyncImage(
         modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
         model =
-          ImageRequest.Builder(PlatformContext.INSTANCE)
+          ImageRequest.Builder(LocalPlatformContext.current)
             .data(updatedImageUrl)
             .memoryCacheKey(animal.imageUrl)
             .crossfade(AnimationConstants.DefaultDurationMillis)
             .build(),
         contentDescription = animal.name,
         contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(PlatformContext.INSTANCE),
+        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
       )
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name

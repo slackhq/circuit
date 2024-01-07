@@ -79,11 +79,10 @@ object DataModule {
     return okHttpClient.newBuilder().addInterceptor(authInterceptor).build()
   }
 
-  @Authenticated
   @Provides
   @SingleIn(AppScope::class)
-  fun provideAuthedOkHttpClient(
-    @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
+  fun provideHttpClient(
+    okHttpClientLazy: dagger.Lazy<OkHttpClient>,
   ): HttpClient {
     return HttpClient(
       object : HttpClientEngineFactory<OkHttpConfig> {

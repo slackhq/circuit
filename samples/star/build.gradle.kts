@@ -147,10 +147,13 @@ kotlin {
     configureEach {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)
       compilerOptions {
+        optIn.addAll(
+          "coil3.annotation.ExperimentalCoilApi",
+          "androidx.compose.material.ExperimentalMaterialApi",
+          "androidx.compose.material3.ExperimentalMaterial3Api",
+          "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        )
         freeCompilerArgs.addAll(
-          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
           "-Xexpect-actual-classes"
         )
 

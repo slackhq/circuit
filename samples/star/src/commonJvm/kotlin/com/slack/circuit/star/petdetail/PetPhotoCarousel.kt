@@ -38,9 +38,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -125,12 +125,13 @@ internal object PetPhotoCarouselTestConstants {
 @Composable
 internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
   val (name, photoUrls, photoUrlMemoryCacheKey) = state
+  val context = LocalPlatformContext.current
   // Prefetch images
   LaunchedEffect(Unit) {
     for (url in photoUrls) {
       if (url.isBlank()) continue
-      val request = ImageRequest.Builder(PlatformContext.INSTANCE).data(url).build()
-      SingletonImageLoader.get(PlatformContext.INSTANCE).enqueue(request)
+      val request = ImageRequest.Builder(context).data(url).build()
+      SingletonImageLoader.get(context).enqueue(request)
     }
   }
 
@@ -249,7 +250,7 @@ private fun PhotoPager(
       AsyncImage(
         modifier = Modifier.fillMaxWidth(),
         model =
-          ImageRequest.Builder(PlatformContext.INSTANCE)
+          ImageRequest.Builder(LocalPlatformContext.current)
             .data(photoUrl)
             .apply {
               if (page == 0) {
@@ -260,7 +261,7 @@ private fun PhotoPager(
             .build(),
         contentDescription = name,
         contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(PlatformContext.INSTANCE)
+        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current)
       )
     }
   }

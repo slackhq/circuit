@@ -7,10 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,25 +39,24 @@ fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun About(modifier: Modifier = Modifier) {
-  Scaffold(
-    modifier = modifier.fillMaxSize().padding(16.dp),
-    content = { padding ->
-      Column(
-        modifier = Modifier.fillMaxSize().padding(padding),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-      ) {
-        Icon(
-          modifier = Modifier.size(96.dp),
-          painter = painterResource("star_icon.png"),
-          contentDescription = "STAR icon",
-          tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = Strings.ABOUT_SCREEN, textAlign = TextAlign.Justify)
-      }
-    }
-  )
+  Column(
+    modifier = modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    Icon(
+      modifier = Modifier.size(96.dp),
+      painter = painterResource("star_icon.png"),
+      contentDescription = "STAR icon",
+      tint = Color.Unspecified
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+      text = Strings.ABOUT_SCREEN,
+      textAlign = TextAlign.Justify,
+      modifier = Modifier.widthIn(max = 400.dp)
+    )
+  }
 }
 
 // TODO this breaks kapt because it's only on desktop and not other platforms

@@ -14,9 +14,6 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.CompositionLocalProvider
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -30,7 +27,6 @@ import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.imageviewer.ImageViewerAwareNavDecoration
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
-import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
@@ -45,7 +41,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 @ActivityKey(MainActivity::class)
 class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {
 
-  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
@@ -78,21 +73,16 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           }
           val circuitNavigator = rememberCircuitNavigator(backstack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
-          val windowSizeClass = calculateWindowSizeClass()
-          CompositionLocalProvider(
-            LocalWindowWidthSizeClass provides windowSizeClass.widthSizeClass,
-          ) {
-            CircuitCompositionLocals(circuit) {
-              ContentWithOverlays {
-                NavigableCircuitContent(
-                  navigator = navigator,
-                  backstack = backstack,
-                  decoration =
-                    ImageViewerAwareNavDecoration(
-                      GestureNavigationDecoration(onBackInvoked = navigator::pop)
-                    )
-                )
-              }
+          CircuitCompositionLocals(circuit) {
+            ContentWithOverlays {
+              NavigableCircuitContent(
+                navigator = navigator,
+                backstack = backstack,
+                decoration =
+                  ImageViewerAwareNavDecoration(
+                    GestureNavigationDecoration(onBackInvoked = navigator::pop)
+                  )
+              )
             }
           }
         }

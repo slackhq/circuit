@@ -227,6 +227,7 @@ private fun ShowAnimalLandscape(
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
     ) {
       petDetailDescriptions(state)
     }
@@ -276,7 +277,11 @@ private fun LazyListScope.petDetailDescriptions(state: Success) {
   }
 
   item(state.description) {
-    ExpandableText(text = state.description, style = MaterialTheme.typography.bodyLarge, initiallyExpanded = true)
+    ExpandableText(
+      text = state.description,
+      style = MaterialTheme.typography.bodyLarge,
+      initiallyExpanded = true
+    )
   }
 
   item(state.url) {

@@ -18,7 +18,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -60,7 +62,6 @@ import com.slack.circuit.star.parcel.ImmutableListParceler
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
-import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
@@ -119,7 +120,7 @@ internal object PetPhotoCarouselTestConstants {
 }
 
 @Suppress("DEPRECATION") // https://github.com/google/accompanist/issues/1551
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
 internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
@@ -140,7 +141,7 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
   val columnModifier =
-    when (LocalWindowWidthSizeClass.current) {
+    when (calculateWindowSizeClass().widthSizeClass) {
       WindowWidthSizeClass.Medium,
       WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
       else -> modifier.fillMaxSize()

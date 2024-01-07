@@ -24,6 +24,16 @@ ksp {
 }
 ```
 
+If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect 
+annotations in common with actual typealias declarations in JVM source sets), you can match on just 
+annotation short names alone to support this case via `circuit.codegen.lenient` mode.
+
+```kotlin
+ksp {
+  arg("circuit.codegen.lenient", "true")
+}
+```
+
 ## Usage
 
 The primary entry point is the `CircuitInject` annotation.

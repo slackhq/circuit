@@ -1092,7 +1092,7 @@ class CircuitSymbolProcessorTest {
     ) { messages ->
       assertThat(messages)
         .contains(
-          "Factory must be for a UI or Presenter class, but was test.Favorites. Supertypes: [Any]"
+          "Factory must be for a UI or Presenter class, but was test.Favorites."
         )
     }
   }

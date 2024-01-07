@@ -99,6 +99,7 @@ allprojects {
         "**/circuit/backstack/**/*.kt",
         "**/HorizontalPagerIndicator.kt",
         "**/FilterList.kt",
+        "**/Remove.kt",
       )
     }
   }

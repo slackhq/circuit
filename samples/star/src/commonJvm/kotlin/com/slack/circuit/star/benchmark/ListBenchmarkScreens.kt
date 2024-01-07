@@ -31,11 +31,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
 
-@CommonParcelize
-data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
-  data class State(val useNestedContent: Boolean) : CircuitUiState
-}
-
 class ListBenchmarksPresenter
 @AssistedInject
 constructor(@Assisted private val screen: ListBenchmarksScreen) : Presenter<State> {

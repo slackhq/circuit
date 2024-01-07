@@ -9,6 +9,9 @@ import coil3.annotation.DelicateCoilApi
 import coil3.annotation.ExperimentalCoilApi
 import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.resource
 import org.junit.rules.ExternalResource
 
 /**
@@ -36,6 +39,18 @@ class CoilRule(
     operator fun invoke(
       image: Image,
     ) = CoilRule(factory = defaultFactory(image))
+
+    /**
+     * A custom invoke that just uses a custom [imageResourcePath] to default in a
+     * [FakeImageLoaderEngine].
+     */
+    @OptIn(ExperimentalResourceApi::class)
+    operator fun invoke(
+      imageResourcePath: String,
+    ): CoilRule {
+      val bytes = runBlocking { resource(imageResourcePath).readBytes() }
+      return CoilRule(factory = defaultFactory(createImageFromBytes(bytes)))
+    }
   }
 }
 
@@ -45,3 +60,5 @@ private fun defaultFactory(image: Image = FakeImage()): SingletonImageLoader.Fac
       .components { add(FakeImageLoaderEngine.Builder().default(image).build()) }
       .build()
   }
+
+internal expect fun createImageFromBytes(bytes: ByteArray): Image

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import com.google.devtools.ksp.gradle.KspTaskJvm
 import java.util.Locale
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -45,6 +46,7 @@ kotlin {
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
+        @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitOverlay)

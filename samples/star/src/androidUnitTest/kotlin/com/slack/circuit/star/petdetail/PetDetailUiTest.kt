@@ -10,14 +10,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sample.coil.test.invoke
-import com.slack.circuit.star.R
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State.Success
@@ -38,7 +37,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()
-  @get:Rule val coilRule = CoilRule(R.drawable.dog2)
+  @get:Rule val coilRule = CoilRule("dog2.jpg")
 
   // TODO this seems like not the greatest test pattern, maybe something we can offer better
   //  solutions for via semantics.
@@ -78,11 +77,7 @@ class PetDetailUiTest {
 
       onNodeWithTag(UNKNOWN_ANIMAL_TAG)
         .assertIsDisplayed()
-        .assertTextEquals(
-          InstrumentationRegistry.getInstrumentation()
-            .targetContext
-            .getString(R.string.unknown_animals)
-        )
+        .assertTextEquals(Strings.UNKNOWN_ANIMALS)
     }
   }
 

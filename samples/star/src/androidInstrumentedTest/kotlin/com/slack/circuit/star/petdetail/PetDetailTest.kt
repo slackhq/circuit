@@ -16,7 +16,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sample.coil.test.invoke
-import com.slack.circuit.star.R
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
@@ -33,7 +33,7 @@ import org.junit.Test
 class PetDetailTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-  @get:Rule val coilRule = CoilRule(R.drawable.dog2)
+  @get:Rule val coilRule = CoilRule("dog2.jpg")
   // Not using detectLeaksAfterTestSuccessWrapping() because it causes an NPE with composeTestRule
   @get:Rule val leakDetectionRule = DetectLeaksAfterTestSuccess()
 
@@ -58,7 +58,7 @@ class PetDetailTest {
 
       onNodeWithTag(UNKNOWN_ANIMAL_TAG)
         .assertIsDisplayed()
-        .assertTextEquals(activity.getString(R.string.unknown_animals))
+        .assertTextEquals(Strings.UNKNOWN_ANIMALS)
     }
   }
 

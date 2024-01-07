@@ -13,7 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sample.coil.test.invoke
-import com.slack.circuit.star.R
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
 import com.slack.circuit.star.petlist.PetListScreen.State.Loading
@@ -33,7 +33,7 @@ import org.junit.Test
 class PetListTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-  @get:Rule val coilRule = CoilRule(R.drawable.dog)
+  @get:Rule val coilRule = CoilRule("dog.jpg")
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
@@ -54,9 +54,7 @@ class PetListTest {
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
 
-      onNodeWithTag(NO_ANIMALS_TAG)
-        .assertIsDisplayed()
-        .assertTextEquals(activity.getString(R.string.no_animals))
+      onNodeWithTag(NO_ANIMALS_TAG).assertIsDisplayed().assertTextEquals(Strings.NO_ANIMALS)
     }
   }
 

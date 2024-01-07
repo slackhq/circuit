@@ -3,11 +3,13 @@
 package com.slack.circuit.sample.coil.test
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import androidx.annotation.DrawableRes
 import androidx.test.platform.app.InstrumentationRegistry
+import coil3.Image
 import coil3.asCoilImage
 
 /** A custom invoke that just uses a custom [drawable] to default in a [FakeImageLoader]. */
@@ -40,4 +42,8 @@ private fun wrapInLayer(drawable: Drawable): Drawable {
 
     override fun getIntrinsicHeight() = drawable.intrinsicHeight
   }
+}
+
+internal actual fun createImageFromBytes(bytes: ByteArray): Image {
+  return BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asCoilImage()
 }

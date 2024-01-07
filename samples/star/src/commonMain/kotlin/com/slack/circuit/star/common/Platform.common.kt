@@ -3,10 +3,7 @@
 package com.slack.circuit.star.common
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.painter.Painter
 
 expect object Platform {
   @Composable fun ReportDrawnWhen(predicate: () -> Boolean)
-
-  @Composable fun appIconPainter(): Painter
 }

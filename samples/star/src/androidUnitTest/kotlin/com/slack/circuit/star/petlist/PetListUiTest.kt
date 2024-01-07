@@ -9,11 +9,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sample.coil.test.invoke
-import com.slack.circuit.star.R
+import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
 import com.slack.circuit.star.petlist.PetListScreen.Event
@@ -39,7 +38,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetListUiTest {
   @get:Rule val composeTestRule = createComposeRule()
-  @get:Rule val coilRule = CoilRule(R.drawable.dog)
+  @get:Rule val coilRule = CoilRule("dog.jpg")
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
@@ -60,11 +59,7 @@ class PetListUiTest {
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
 
-      onNodeWithTag(NO_ANIMALS_TAG)
-        .assertIsDisplayed()
-        .assertTextEquals(
-          InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.no_animals)
-        )
+      onNodeWithTag(NO_ANIMALS_TAG).assertIsDisplayed().assertTextEquals(Strings.NO_ANIMALS)
     }
   }
 

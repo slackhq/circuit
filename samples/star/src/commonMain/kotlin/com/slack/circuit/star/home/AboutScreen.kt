@@ -21,10 +21,11 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.parcel.CommonParcelize
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
 @CommonParcelize
 data object AboutScreen : Screen {
@@ -35,6 +36,7 @@ data object AboutScreen : Screen {
 @Composable
 fun AboutPresenter(): AboutScreen.State = AboutScreen.State
 
+@OptIn(ExperimentalResourceApi::class)
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun About(modifier: Modifier = Modifier) {
@@ -48,7 +50,7 @@ fun About(modifier: Modifier = Modifier) {
       ) {
         Icon(
           modifier = Modifier.size(96.dp),
-          painter = Platform.appIconPainter(),
+          painter = painterResource("star_icon.png"),
           contentDescription = "STAR icon",
           tint = Color.Unspecified
         )

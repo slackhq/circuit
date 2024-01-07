@@ -30,9 +30,5 @@ kotlin {
   }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  compilerOptions {
-    optIn.addAll(
-      "coil3.annotation.ExperimentalCoilApi",
-    )
-  }
+  compilerOptions { optIn.addAll("coil3.annotation.ExperimentalCoilApi") }
 }

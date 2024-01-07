@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -389,14 +388,13 @@ private fun PetListGridItem(
   }
 }
 
-@VisibleForTesting
 @Composable
 internal fun UpdateFiltersSheet(
   initialFilters: Filters,
   modifier: Modifier = Modifier,
   onDismiss: (Filters) -> Unit = {}
 ) {
-  Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+  Column(modifier.fillMaxWidth(), verticalArrangement = spacedBy(16.dp)) {
     val genderOptions = remember {
       SnapshotStateMap<Gender, Boolean>().apply {
         for (gender in Gender.entries) {
@@ -447,7 +445,7 @@ private fun <T : Enum<T>> FilterOptions(
 ) {
   Column(modifier) {
     Text(name, style = MaterialTheme.typography.titleMedium)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FlowRow(horizontalArrangement = spacedBy(8.dp)) {
       options.keys
         .sortedBy { it.ordinal }
         .forEach { key ->

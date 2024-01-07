@@ -2,16 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.coil.test
 
-import coil.ComponentRegistry
-import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
-import coil.request.Disposable
-import coil.request.ImageRequest
-import coil.request.ImageResult
-import coil.test.FakeImageLoaderEngine
+import coil3.ComponentRegistry
+import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
+import coil3.request.Disposable
+import coil3.request.ImageRequest
+import coil3.request.ImageRequest.Defaults
+import coil3.request.ImageResult
+import coil3.test.FakeImageLoaderEngine
 import kotlinx.coroutines.CompletableDeferred
 
 /**
@@ -23,7 +23,7 @@ import kotlinx.coroutines.CompletableDeferred
 @OptIn(ExperimentalCoilApi::class)
 internal class FakeImageLoader(engine: FakeImageLoaderEngine) : ImageLoader {
 
-  override val defaults = DefaultRequestOptions()
+  override val defaults = Defaults.DEFAULT
   override val components = ComponentRegistry.Builder().add(engine).build()
   override val memoryCache: MemoryCache?
     get() = null

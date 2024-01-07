@@ -11,8 +11,8 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import coil.annotation.ExperimentalCoilApi
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sample.coil.test.invoke
 import com.slack.circuit.star.R
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
@@ -30,7 +30,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoilApi::class)
 class PetListTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 

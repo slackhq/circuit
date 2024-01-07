@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.annotation.ExperimentalCoilApi
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sample.coil.test.invoke
 import com.slack.circuit.star.R
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL

@@ -153,9 +153,7 @@ kotlin {
           "androidx.compose.material3.ExperimentalMaterial3Api",
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
-        freeCompilerArgs.addAll(
-          "-Xexpect-actual-classes"
-        )
+        freeCompilerArgs.addAll("-Xexpect-actual-classes")
 
         if (project.hasProperty("circuit.enableComposeCompilerReports")) {
           val metricsDir =

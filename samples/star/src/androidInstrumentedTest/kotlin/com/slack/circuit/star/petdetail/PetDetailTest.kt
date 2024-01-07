@@ -11,11 +11,11 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
-import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sample.coil.test.invoke
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -30,7 +30,6 @@ import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoilApi::class)
 class PetDetailTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()

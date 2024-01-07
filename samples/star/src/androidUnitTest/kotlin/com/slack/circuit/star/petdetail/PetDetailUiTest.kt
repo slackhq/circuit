@@ -11,12 +11,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.platform.app.InstrumentationRegistry
-import coil.annotation.ExperimentalCoilApi
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sample.coil.test.invoke
 import com.slack.circuit.star.R
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
@@ -35,7 +35,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalCoilApi::class)
 @RunWith(RobolectricTestRunner::class)
 class PetDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()

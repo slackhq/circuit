@@ -68,7 +68,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
       options = RoborazziRule.Options(outputDirectoryPath = "src/test/snapshots/images")
     )
 
-  @get:Rule val coilRule = CoilRule(contextProvider = composeTestRule::activity)
+  @get:Rule val coilRule = CoilRule()
 
   @Before
   fun setup() {

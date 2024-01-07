@@ -2,11 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
@@ -27,16 +38,34 @@ fun main() {
     val initialBackStack = persistentListOf<Screen>(HomeScreen)
     val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
     val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
-    val windowState = rememberWindowState(width = 1200.dp, height = 800.dp)
+    val windowState =
+      rememberWindowState(
+        width = 1200.dp,
+        height = 800.dp,
+        position = WindowPosition(Alignment.Center)
+      )
+    var darkMode by remember { mutableStateOf(false) }
     Window(
       title = "STAR",
       state = windowState,
       onCloseRequest = ::exitApplication,
       // In lieu of a global shortcut handler, we best-effort with this
       // https://github.com/JetBrains/compose-multiplatform/issues/914
-      onKeyEvent = {
-        when (it.key) {
-          Key.Escape -> {
+      onKeyEvent = { event ->
+        when {
+          // Cmd+W
+          event.key == Key.W && event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+            exitApplication()
+            true
+          }
+          // Cmd+U
+          // Toggles dark mode
+          event.key == Key.U && event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+            darkMode = !darkMode
+            true
+          }
+          // Backpress ish
+          event.key == Key.Escape -> {
             if (backStack.size > 1) {
               navigator.pop()
               true
@@ -48,7 +77,7 @@ fun main() {
         }
       }
     ) {
-      MaterialTheme {
+      MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()) {
         CircuitCompositionLocals(component.circuit) {
           ContentWithOverlays {
             NavigableCircuitContent(

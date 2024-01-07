@@ -15,7 +15,7 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -135,6 +135,8 @@ fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
   }
 }
 
+val jvmTargetVersion = libs.versions.jvmTarget
+
 subprojects {
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
@@ -145,7 +147,9 @@ subprojects {
       }
     }
 
-    tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
+    tasks.withType<JavaCompile>().configureEach {
+      options.release.set(jvmTargetVersion.map(String::toInt))
+    }
 
     // This is the default base plugin applied on all projects, so safe to add this hook here
     configureComposeBom(dependencies)
@@ -158,7 +162,7 @@ subprojects {
       compilerOptions {
         allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(JVM_11)
+          jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
           // Stub gen copies args from the parent compilation
           if (this@configureEach !is KaptGenerateStubsTask) {
             freeCompilerArgs.addAll(

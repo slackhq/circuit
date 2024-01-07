@@ -5,4 +5,5 @@ package com.slack.circuit.star.ui
 import androidx.compose.runtime.Composable
 
 @Composable
-actual fun rememberConditionalSystemUiColors(): ConditionalSystemUiColors = ConditionalSystemUiColors.None
+actual fun rememberConditionalSystemUiColors(): ConditionalSystemUiColors =
+  ConditionalSystemUiColors.None

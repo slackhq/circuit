@@ -11,9 +11,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.slack.circuit.star.di.AppScope
 import com.squareup.anvil.annotations.ContributesBinding
 import com.squareup.anvil.annotations.optional.SingleIn
-import kotlinx.coroutines.flow.first
 import java.time.Instant
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
 
 /**
  * A simple [TokenStorage] that uses `DataStore` to store [AuthenticationResponse] for reuse across
@@ -31,8 +31,7 @@ data class AuthenticationData(val tokenType: String, val expiration: Instant, va
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 class TokenStorageImpl @Inject constructor(storage: Storage<Preferences>) : TokenStorage {
-  private val datastore =
-    PreferenceDataStoreFactory.create(storage = storage)
+  private val datastore = PreferenceDataStoreFactory.create(storage = storage)
 
   override suspend fun updateAuthData(authData: AuthenticationData) {
     datastore.edit { prefs ->

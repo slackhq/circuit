@@ -24,10 +24,9 @@ interface BaseUiModule {
     fun provideImageLoader(
       @ApplicationContext context: Context,
       httpClient: dagger.Lazy<HttpClient>
-    ): ImageLoader = ImageLoader.Builder(context)
-      .components {
-        add(NetworkFetcher.Factory(lazy { httpClient.get() }))
-      }
-      .build()
+    ): ImageLoader =
+      ImageLoader.Builder(context)
+        .components { add(NetworkFetcher.Factory(lazy { httpClient.get() })) }
+        .build()
   }
 }

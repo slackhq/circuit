@@ -6,13 +6,14 @@ import androidx.compose.runtime.Composable
 
 interface ConditionalSystemUiColors {
   fun save()
+
   fun restore()
 
   object None : ConditionalSystemUiColors {
     override fun save() {}
+
     override fun restore() {}
   }
 }
 
-@Composable
-expect fun rememberConditionalSystemUiColors(): ConditionalSystemUiColors
+@Composable expect fun rememberConditionalSystemUiColors(): ConditionalSystemUiColors

@@ -140,9 +140,7 @@ kotlin {
     }
     jvmMain {
       dependsOn(commonJvm)
-      dependencies {
-        implementation(libs.sqldelight.driver.jdbc)
-      }
+      dependencies { implementation(libs.sqldelight.driver.jdbc) }
     }
     jvmTest { dependsOn(commonJvmTest) }
 
@@ -150,20 +148,21 @@ kotlin {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)
       compilerOptions {
         freeCompilerArgs.addAll(
-            "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
           "-Xexpect-actual-classes"
         )
 
         if (project.hasProperty("circuit.enableComposeCompilerReports")) {
           val metricsDir =
-              project.layout.buildDirectory.dir("compose_metrics").get().asFile.absolutePath
+            project.layout.buildDirectory.dir("compose_metrics").get().asFile.absolutePath
           freeCompilerArgs.addAll(
-              "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
-              "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir")
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir"
+          )
         }
       }
     }

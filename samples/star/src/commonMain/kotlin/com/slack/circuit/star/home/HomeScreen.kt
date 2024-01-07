@@ -27,14 +27,14 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
+import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.common.Platform
 
 @CommonParcelize
 data object HomeScreen : Screen {

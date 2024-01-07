@@ -79,7 +79,8 @@ import kotlinx.coroutines.launch
 @CommonParcelize
 data class PetPhotoCarouselScreen(
   val name: String,
-  @CommonTypeParceler<ImmutableList<String>, ImmutableListParceler> val photoUrls: ImmutableList<String>,
+  @CommonTypeParceler<ImmutableList<String>, ImmutableListParceler>
+  val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
   data class State(
@@ -103,8 +104,7 @@ data class PetPhotoCarouselScreen(
 //  screen type?
 class PetPhotoCarouselPresenter
 @AssistedInject
-constructor(@Assisted private val screen: PetPhotoCarouselScreen) :
-  Presenter<State> {
+constructor(@Assisted private val screen: PetPhotoCarouselScreen) : Presenter<State> {
 
   @Composable override fun present() = State(screen)
 

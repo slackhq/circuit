@@ -188,10 +188,7 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
     modifier = Modifier.padding(paddingValues).fillMaxSize(),
     contentAlignment = Alignment.Center
   ) {
-    Text(
-      modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG),
-      text = Strings.UNKNOWN_ANIMALS
-    )
+    Text(modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG), text = Strings.UNKNOWN_ANIMALS)
   }
 }
 

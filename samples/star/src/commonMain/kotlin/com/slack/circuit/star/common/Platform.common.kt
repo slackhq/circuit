@@ -1,14 +1,12 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 
 expect object Platform {
-  @Composable
-  fun ReportDrawnWhen(predicate: () -> Boolean)
+  @Composable fun ReportDrawnWhen(predicate: () -> Boolean)
 
-  @Composable
-  fun appIconPainter(): Painter
+  @Composable fun appIconPainter(): Painter
 }

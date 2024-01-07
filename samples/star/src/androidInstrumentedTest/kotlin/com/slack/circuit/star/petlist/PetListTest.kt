@@ -85,9 +85,7 @@ class PetListTest {
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
-      setContent {
-        PetList(Success(animals, isRefreshing = false, eventSink = testSink))
-      }
+      setContent { PetList(Success(animals, isRefreshing = false, eventSink = testSink)) }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 

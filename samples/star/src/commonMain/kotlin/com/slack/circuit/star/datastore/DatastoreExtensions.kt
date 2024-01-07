@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.datastore
 
 import androidx.datastore.core.Storage
@@ -6,7 +8,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.PreferencesSerializer
 import okio.FileSystem
 import okio.Path
-
 
 private const val PREFERENCES_EXTENSION = "preferences_pb"
 

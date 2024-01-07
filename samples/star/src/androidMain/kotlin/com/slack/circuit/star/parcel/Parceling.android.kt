@@ -1,5 +1,8 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 @file:Suppress(
-  "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING")
+  "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING"
+)
 
 package com.slack.circuit.star.parcel
 
@@ -15,11 +18,12 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
 actual typealias CommonParcelize = Parcelize
+
 actual typealias CommonParcelable = Parcelable
 
 actual typealias CommonParceler<T> = Parceler<T>
 
-actual typealias CommonTypeParceler<T,P> = TypeParceler<T, P>
+actual typealias CommonTypeParceler<T, P> = TypeParceler<T, P>
 
 @Suppress("DEPRECATION") // Will use the non-deprecated one when it works
 actual object ImmutableListParceler : Parceler<ImmutableList<*>> {

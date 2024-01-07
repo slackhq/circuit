@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
 import com.slack.circuit.overlay.OverlayHost
@@ -18,7 +20,5 @@ class Filters(
   val sizes: ImmutableSet<Size> = Size.entries.asIterable().toImmutableSet()
 ) : CommonParcelable
 
-/**
- * Indirection for showing filters in the pet list screen.
- */
+/** Indirection for showing filters in the pet list screen. */
 expect suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters

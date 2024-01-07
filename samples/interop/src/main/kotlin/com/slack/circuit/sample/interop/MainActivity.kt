@@ -77,8 +77,7 @@ class MainActivity : AppCompatActivity() {
               UiSource.entries[selectedUiIndex]
             )
           }
-        val useColumn =
-          calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
+        val useColumn = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
 
         val menus: @Composable () -> Unit = {
           Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {

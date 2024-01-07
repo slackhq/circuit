@@ -42,14 +42,12 @@ import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
+import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.ui.StarTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.parcel.CommonTypeParceler
-import com.slack.circuit.star.parcel.ImmutableListParceler
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState

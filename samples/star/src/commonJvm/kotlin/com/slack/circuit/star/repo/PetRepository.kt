@@ -6,6 +6,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.slack.circuit.star.data.PetfinderApi
+import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.ImmutableListAdapter
@@ -18,6 +19,11 @@ import com.slack.eithernet.ApiResult
 import com.slack.eithernet.retryWithExponentialBackoff
 import com.squareup.anvil.annotations.ContributesBinding
 import com.squareup.anvil.annotations.optional.SingleIn
+import java.time.Duration
+import java.time.Instant
+import java.util.Locale
+import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -26,12 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.Duration
-import java.time.Instant
-import java.util.Locale
-import javax.inject.Inject
-import kotlin.LazyThreadSafetyMode.NONE
-import com.slack.circuit.star.db.Animal as DbAnimal
 
 interface PetRepository {
   suspend fun refreshData()

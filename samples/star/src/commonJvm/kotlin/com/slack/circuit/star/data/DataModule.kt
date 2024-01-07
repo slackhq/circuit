@@ -37,12 +37,13 @@ object DataModule {
   @SingleIn(AppScope::class)
   fun provideOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder()
-        .addInterceptor(
-            HttpLoggingInterceptor().apply {
-              level = HttpLoggingInterceptor.Level.BASIC
-              redactHeader("Authorization")
-            })
-        .build()
+      .addInterceptor(
+        HttpLoggingInterceptor().apply {
+          level = HttpLoggingInterceptor.Level.BASIC
+          redactHeader("Authorization")
+        }
+      )
+      .build()
   }
 
   /** Qualifier to denote that a provided type is authenticated. */
@@ -51,26 +52,26 @@ object DataModule {
   @Provides
   @SingleIn(AppScope::class)
   fun provideRetrofit(
-      moshi: Moshi,
-      okHttpClientLazy: dagger.Lazy<OkHttpClient>,
+    moshi: Moshi,
+    okHttpClientLazy: dagger.Lazy<OkHttpClient>,
   ): Retrofit {
     return Retrofit.Builder()
-        .addCallAdapterFactory(ApiResultCallAdapterFactory)
-        .addConverterFactory(ApiResultConverterFactory)
-        .addConverterFactory(JsoupConverter.newFactory(PetBioParser::parse))
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl("https://api.petfinder.com/v2/")
-        .callFactory { okHttpClientLazy.get().newCall(it) }
-        .build()
+      .addCallAdapterFactory(ApiResultCallAdapterFactory)
+      .addConverterFactory(ApiResultConverterFactory)
+      .addConverterFactory(JsoupConverter.newFactory(PetBioParser::parse))
+      .addConverterFactory(MoshiConverterFactory.create(moshi))
+      .baseUrl("https://api.petfinder.com/v2/")
+      .callFactory { okHttpClientLazy.get().newCall(it) }
+      .build()
   }
 
   @Authenticated
   @Provides
   @SingleIn(AppScope::class)
   fun provideAuthedOkHttpClient(
-      baseRetrofit: Retrofit,
-      tokenStorage: TokenStorage,
-      okHttpClient: OkHttpClient,
+    baseRetrofit: Retrofit,
+    tokenStorage: TokenStorage,
+    okHttpClient: OkHttpClient,
   ): OkHttpClient {
     val authApi = baseRetrofit.create<PetfinderAuthApi>()
     val tokenManager = TokenManager(authApi, tokenStorage)
@@ -82,33 +83,35 @@ object DataModule {
   @Provides
   @SingleIn(AppScope::class)
   fun provideAuthedOkHttpClient(
-      @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
+    @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
   ): HttpClient {
     return HttpClient(
-        object : HttpClientEngineFactory<OkHttpConfig> {
-          override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
-            return OkHttpEngine(
-                OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block))
-          }
-        }) {
-          install(HttpRequestRetry) {
-            retryOnExceptionOrServerErrors(maxRetries = 2)
-            exponentialDelay()
-          }
+      object : HttpClientEngineFactory<OkHttpConfig> {
+        override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
+          return OkHttpEngine(
+            OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block)
+          )
         }
+      }
+    ) {
+      install(HttpRequestRetry) {
+        retryOnExceptionOrServerErrors(maxRetries = 2)
+        exponentialDelay()
+      }
+    }
   }
 
   @Provides
   @SingleIn(AppScope::class)
   fun providePetfinderApi(
-      baseRetrofit: Retrofit,
-      @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
+    baseRetrofit: Retrofit,
+    @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
   ): PetfinderApi {
     @Suppress("RemoveExplicitTypeArguments") // Necessary for R8
     return baseRetrofit
-        .newBuilder()
-        .callFactory { okHttpClientLazy.get().newCall(it) }
-        .build()
-        .create<PetfinderApi>()
+      .newBuilder()
+      .callFactory { okHttpClientLazy.get().newCall(it) }
+      .build()
+      .create<PetfinderApi>()
   }
 }

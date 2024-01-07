@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.parcel
 
 import kotlinx.collections.immutable.ImmutableList
@@ -20,5 +22,6 @@ expect annotation class CommonTypeParceler<T, P : CommonParceler<in T>>()
 // For Android Parceler
 expect interface CommonParceler<T>
 
-expect object ImmutableListParceler: CommonParceler<ImmutableList<*>>
-expect object ImmutableSetParceler: CommonParceler<ImmutableSet<*>>
+expect object ImmutableListParceler : CommonParceler<ImmutableList<*>>
+
+expect object ImmutableSetParceler : CommonParceler<ImmutableSet<*>>

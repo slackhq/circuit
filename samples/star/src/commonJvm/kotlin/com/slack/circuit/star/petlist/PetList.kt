@@ -290,10 +290,7 @@ internal fun PetList(
         }
       is NoAnimals ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-            modifier = Modifier.testTag(NO_ANIMALS_TAG),
-            text = Strings.NO_ANIMALS
-          )
+          Text(modifier = Modifier.testTag(NO_ANIMALS_TAG), text = Strings.NO_ANIMALS)
         }
       is Success ->
         PetListGrid(
@@ -315,10 +312,7 @@ private fun PetListGrid(
   eventSink: (Event) -> Unit,
 ) {
   val pullRefreshState =
-    rememberPullRefreshState(
-      refreshing = isRefreshing,
-      onRefresh = { eventSink(Refresh) }
-    )
+    rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { eventSink(Refresh) })
   Box(modifier = modifier.pullRefresh(pullRefreshState)) {
     @Suppress("MagicNumber")
     val columnSpan =
@@ -344,9 +338,7 @@ private fun PetListGrid(
         val animal = animals[index]
         // TODO eventually animate item placement once it's implemented
         //  https://issuetracker.google.com/issues/257034719
-        PetListGridItem(animal) {
-          eventSink(ClickAnimal(animal.id, animal.imageUrl))
-        }
+        PetListGridItem(animal) { eventSink(ClickAnimal(animal.id, animal.imageUrl)) }
       }
     }
     PullRefreshIndicator(

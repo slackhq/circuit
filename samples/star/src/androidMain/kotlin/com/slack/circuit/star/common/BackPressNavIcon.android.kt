@@ -10,15 +10,15 @@ import androidx.compose.ui.Modifier
 
 @Composable
 actual fun BackPressNavIcon(
-    modifier: Modifier,
-    onClick: (() -> Unit)?,
-    iconButtonContent: @Composable () -> Unit,
+  modifier: Modifier,
+  onClick: (() -> Unit)?,
+  iconButtonContent: @Composable () -> Unit,
 ) {
   val backPressOwner = LocalOnBackPressedDispatcherOwner.current
   val finalOnClick = remember {
     onClick
-        ?: backPressOwner?.onBackPressedDispatcher?.let { dispatcher -> dispatcher::onBackPressed }
-        ?: error("No local LocalOnBackPressedDispatcherOwner found.")
+      ?: backPressOwner?.onBackPressedDispatcher?.let { dispatcher -> dispatcher::onBackPressed }
+      ?: error("No local LocalOnBackPressedDispatcherOwner found.")
   }
   IconButton(modifier = modifier, onClick = finalOnClick) { iconButtonContent() }
 }

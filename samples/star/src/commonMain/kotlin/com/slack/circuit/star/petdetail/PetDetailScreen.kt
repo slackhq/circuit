@@ -276,7 +276,7 @@ private fun LazyListScope.petDetailDescriptions(state: Success) {
   }
 
   item(state.description) {
-    ExpandableText(text = state.description, style = MaterialTheme.typography.bodyLarge)
+    ExpandableText(text = state.description, style = MaterialTheme.typography.bodyLarge, initiallyExpanded = true)
   }
 
   item(state.url) {

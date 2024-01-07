@@ -42,9 +42,10 @@ fun ExpandableText(
   showMoreStyle: SpanStyle = SpanStyle(fontWeight = FontWeight.W500),
   showLessText: String = " Show Less",
   showLessStyle: SpanStyle = showMoreStyle,
-  textAlign: TextAlign? = null
+  textAlign: TextAlign? = null,
+  initiallyExpanded: Boolean = false,
 ) {
-  var isExpanded by remember { mutableStateOf(false) }
+  var isExpanded by remember { mutableStateOf(initiallyExpanded) }
   var clickable by remember { mutableStateOf(false) }
   var lastCharIndex by remember { mutableStateOf(0) }
   Box(modifier = Modifier.clickable(clickable) { isExpanded = !isExpanded }.then(modifier)) {

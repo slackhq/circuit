@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
@@ -43,10 +41,11 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
+import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.navigation.CustomTabsIntentScreen
+import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
@@ -128,7 +127,7 @@ constructor(
                 screen.photoUrlMemoryCacheKey,
                 bioText ?: animal.description
               ) {
-                navigator.goTo(CustomTabsIntentScreen(animal.url))
+                navigator.goTo(OpenUrlScreen(animal.url))
               }
             }
           }
@@ -208,7 +207,7 @@ private fun ShowAnimal(
       )
     }
   }
-  return when (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+  return when (Platform.isLandscape()) {
     true -> ShowAnimalLandscape(state, padding, carouselContent)
     false -> ShowAnimalPortrait(state, padding, carouselContent)
   }

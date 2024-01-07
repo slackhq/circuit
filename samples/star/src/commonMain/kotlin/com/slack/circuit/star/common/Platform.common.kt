@@ -6,4 +6,6 @@ import androidx.compose.runtime.Composable
 
 expect object Platform {
   @Composable fun ReportDrawnWhen(predicate: () -> Boolean)
+
+  @Composable fun isLandscape(): Boolean
 }

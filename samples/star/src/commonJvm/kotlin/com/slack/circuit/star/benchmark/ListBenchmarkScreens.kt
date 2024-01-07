@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.benchmark
 
-import androidx.activity.compose.ReportDrawnWhen
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
@@ -26,14 +23,15 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen.State
+import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.parcel.CommonParcelize
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
+@CommonParcelize
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
   data class State(val useNestedContent: Boolean) : CircuitUiState
 }
@@ -72,10 +70,10 @@ fun ListBenchmarks(
     }
   }
   contentComposed = true
-  ReportDrawnWhen { contentComposed }
+  Platform.ReportDrawnWhen { contentComposed }
 }
 
-@Parcelize
+@CommonParcelize
 data class ListBenchmarksItemScreen(val index: Int) : Screen {
   data class State(val index: Int) : CircuitUiState
 }
@@ -131,8 +129,8 @@ fun ListBenchmarksItem(
   )
 }
 
-@Preview
-@Composable
-fun ListBenchmarksItemPreview() {
-  Box { ListBenchmarksItem(ListBenchmarksItemScreen.State(0)) }
-}
+// @Preview
+// @Composable
+// fun ListBenchmarksItemPreview() {
+//  Box { ListBenchmarksItem(ListBenchmarksItemScreen.State(0)) }
+// }

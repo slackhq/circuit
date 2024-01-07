@@ -43,20 +43,15 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
-import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.parcel.CommonTypeParceler
-import com.slack.circuit.star.parcel.ImmutableListParceler
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.ui.HorizontalPagerIndicator
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import dagger.assisted.Assisted
@@ -64,7 +59,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 /*
@@ -75,31 +69,6 @@ import kotlinx.coroutines.launch
  * This differs from some other screens by only displaying the input screen directly as static
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
-// TODO expect/actual this
-@CommonParcelize
-data class PetPhotoCarouselScreen(
-  val name: String,
-  @CommonTypeParceler<ImmutableList<String>, ImmutableListParceler>
-  val photoUrls: ImmutableList<String>,
-  val photoUrlMemoryCacheKey: String?,
-) : Screen {
-  data class State(
-    val name: String,
-    val photoUrls: ImmutableList<String>,
-    val photoUrlMemoryCacheKey: String?,
-  ) : CircuitUiState {
-    companion object {
-      operator fun invoke(screen: PetPhotoCarouselScreen): State {
-        return State(
-          name = screen.name,
-          photoUrls = screen.photoUrls.toImmutableList(),
-          photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-        )
-      }
-    }
-  }
-}
-
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
 //  screen type?
 class PetPhotoCarouselPresenter
@@ -120,7 +89,7 @@ internal object PetPhotoCarouselTestConstants {
 }
 
 @Suppress("DEPRECATION") // https://github.com/google/accompanist/issues/1551
-@OptIn(ExperimentalFoundationApi::class, com.google.accompanist.pager.ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
 internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {

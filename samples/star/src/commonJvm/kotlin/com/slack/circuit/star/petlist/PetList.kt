@@ -46,7 +46,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -72,17 +71,13 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
-import com.slack.circuit.runtime.CircuitUiEvent
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
@@ -108,48 +103,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
-
-@Immutable
-data class PetListAnimal(
-  val id: Long,
-  val name: String,
-  val imageUrl: String?,
-  val breed: String?,
-  val gender: Gender,
-  val size: Size,
-  val age: String,
-)
-
-@CommonParcelize
-data object PetListScreen : Screen {
-  sealed interface State : CircuitUiState {
-    val isRefreshing: Boolean
-
-    data object Loading : State {
-      override val isRefreshing: Boolean = false
-    }
-
-    data class NoAnimals(override val isRefreshing: Boolean) : State
-
-    data class Success(
-      val animals: ImmutableList<PetListAnimal>,
-      override val isRefreshing: Boolean,
-      val filters: Filters = Filters(),
-      val isUpdateFiltersModalShowing: Boolean = false,
-      val eventSink: (Event) -> Unit = {},
-    ) : State
-  }
-
-  sealed interface Event : CircuitUiEvent {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
-
-    data object Refresh : Event
-
-    data object UpdateFilters : Event
-
-    data class UpdatedFilters(val newFilters: Filters) : Event
-  }
-}
 
 class PetListPresenter
 @AssistedInject

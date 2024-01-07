@@ -31,18 +31,14 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.RecordContentProvider
-import com.slack.circuit.runtime.CircuitUiEvent
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.Dismissed
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.ui.StarTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -52,26 +48,6 @@ import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
-
-@CommonParcelize
-data class ImageViewerScreen(
-  val id: String,
-  val url: String,
-  val placeholderKey: String?,
-) : Screen {
-  data class State(
-    val id: String,
-    val url: String,
-    val placeholderKey: String?,
-    val eventSink: (Event) -> Unit,
-  ) : CircuitUiState
-
-  sealed interface Event : CircuitUiEvent {
-    data object Close : Event
-
-    data object NoOp : Event // Weird but necessary because of the reuse in bottom sheet
-  }
-}
 
 class ImageViewerPresenter
 @AssistedInject

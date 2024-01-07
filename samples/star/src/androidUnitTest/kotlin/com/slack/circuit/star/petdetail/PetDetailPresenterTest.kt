@@ -3,7 +3,7 @@
 package com.slack.circuit.star.petdetail
 
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.star.navigation.CustomTabsIntentScreen
+import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
 import com.slack.circuit.star.petdetail.PetDetailScreen.State.Success
@@ -64,7 +64,7 @@ class PetDetailPresenterTest {
       check(successState is Success)
 
       successState.eventSink(ViewFullBio(animal.url))
-      assertThat(navigator.awaitNextScreen()).isEqualTo(CustomTabsIntentScreen(animal.url))
+      assertThat(navigator.awaitNextScreen()).isEqualTo(OpenUrlScreen(animal.url))
     }
   }
 }

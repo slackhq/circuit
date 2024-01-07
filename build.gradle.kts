@@ -95,7 +95,10 @@ allprojects {
     format("license") {
       licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
       target("src/**/*.kt")
-      targetExclude("**/circuit/backstack/**/*.kt")
+      targetExclude(
+        "**/circuit/backstack/**/*.kt",
+        "**/HorizontalPagerIndicator.kt",
+      )
     }
   }
   configure<SpotlessExtension> {

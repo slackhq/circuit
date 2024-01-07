@@ -33,16 +33,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-interface PetRepository {
-  suspend fun refreshData()
-
-  fun animalsFlow(): Flow<List<DbAnimal>?>
-
-  suspend fun getAnimal(id: Long): DbAnimal?
-
-  suspend fun getAnimalBio(id: Long): String?
-}
-
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 class PetRepositoryImpl

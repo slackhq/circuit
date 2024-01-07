@@ -28,7 +28,7 @@ import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.imageviewer.ImageViewerAwareNavDecoration
-import com.slack.circuit.star.navigation.CustomTabsIntentScreen
+import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.LocalWindowWidthSizeClass
 import com.slack.circuit.star.ui.StarTheme
@@ -102,12 +102,12 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
 
   private fun goTo(screen: AndroidScreen) =
     when (screen) {
-      is CustomTabsIntentScreen -> goTo(screen)
+      is OpenUrlScreen -> goTo(screen)
       is IntentScreen -> screen.startWith(this)
       else -> error("Unknown AndroidScreen: $screen")
     }
 
-  private fun goTo(screen: CustomTabsIntentScreen) {
+  private fun goTo(screen: OpenUrlScreen) {
     val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
     CustomTabsIntent.Builder()
       .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)

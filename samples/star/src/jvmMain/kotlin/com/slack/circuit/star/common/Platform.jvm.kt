@@ -9,4 +9,9 @@ actual object Platform {
   actual fun ReportDrawnWhen(predicate: () -> Boolean) {
     // No-op
   }
+
+  @Composable
+  actual fun isLandscape(): Boolean {
+    return true
+  }
 }

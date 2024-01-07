@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.common
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 
 actual object Platform {
@@ -10,8 +13,9 @@ actual object Platform {
     // No-op
   }
 
+  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   @Composable
   actual fun isLandscape(): Boolean {
-    return true
+    return calculateWindowSizeClass().widthSizeClass > WindowWidthSizeClass.Compact
   }
 }

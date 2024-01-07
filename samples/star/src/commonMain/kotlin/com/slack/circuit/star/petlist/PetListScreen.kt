@@ -4,7 +4,6 @@ package com.slack.circuit.star.petlist
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -291,7 +290,6 @@ internal fun PetList(
   }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: ImmutableList<PetListAnimal>,

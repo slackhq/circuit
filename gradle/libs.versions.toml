@@ -32,6 +32,7 @@ detekt = "1.23.4"
 dokka = "1.9.10"
 eithernet = "1.8.0"
 jdk = "20"
+jvmTarget = "11"
 kct = "0.4.0"
 kotlin = "1.9.22"
 kotlinpoet = "1.15.3"
@@ -194,6 +195,7 @@ compose-material-material3 = { module = "org.jetbrains.compose.material3:materia
 
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 coroutines-rxjava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx3", version.ref = "kotlinx-coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 

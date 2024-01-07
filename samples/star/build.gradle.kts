@@ -1,17 +1,20 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.dsl.LibraryExtension
 import com.google.devtools.ksp.gradle.KspTaskJvm
 import java.util.Locale
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.kotlin.kapt)
-  alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.moshiGradlePlugin)
   alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
@@ -19,9 +22,23 @@ plugins {
   alias(libs.plugins.sqldelight)
 }
 
+// Cannot enable both Desktop and Android w/ kapt due to
+// https://youtrack.jetbrains.com/issue/KT-30878
+val buildDesktop = project.hasProperty("circuit.buildDesktop")
+
+if (!buildDesktop) {
+  apply(plugin = libs.plugins.agp.library.get().pluginId)
+  apply(plugin = libs.plugins.kotlin.plugin.parcelize.get().pluginId)
+}
+
 kotlin {
-  androidTarget { publishLibraryVariants("release") }
-  jvm()
+  if (!buildDesktop) {
+    androidTarget { publishLibraryVariants("release") }
+    jvm()
+  } else {
+    jvm { withJava() }
+  }
+  jvmToolchain(libs.versions.jdk.get().toInt())
 
   applyDefaultHierarchyTemplate()
 
@@ -39,6 +56,7 @@ kotlin {
         implementation(libs.compose.ui)
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.uiUtil)
+        implementation(libs.coroutines)
         implementation(libs.kotlinx.immutable)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
@@ -57,8 +75,8 @@ kotlin {
     }
     commonTest {
       dependencies {
-        implementation(libs.kotlin.test)
         implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
         implementation(projects.circuitTest)
@@ -69,16 +87,16 @@ kotlin {
       dependencies {
         api(libs.anvil.annotations)
         api(libs.anvil.annotations.optional)
-        implementation(libs.eithernet)
-        implementation(libs.okhttp)
-        implementation(libs.okhttp.loggingInterceptor)
-        implementation(libs.ktor.client.engine.okhttp)
-        implementation(libs.retrofit)
-        implementation(libs.retrofit.converters.moshi)
-        implementation(libs.dagger)
-        implementation(libs.jsoup)
         implementation(libs.compose.material.icons)
         implementation(libs.compose.material.iconsExtended)
+        implementation(libs.dagger)
+        implementation(libs.eithernet)
+        implementation(libs.jsoup)
+        implementation(libs.ktor.client.engine.okhttp)
+        implementation(libs.okhttp)
+        implementation(libs.okhttp.loggingInterceptor)
+        implementation(libs.retrofit)
+        implementation(libs.retrofit.converters.moshi)
         val kapt by configurations.getting
         kapt.dependencies.addLater(libs.dagger.compiler)
       }
@@ -86,63 +104,70 @@ kotlin {
     val commonJvmTest by creating {
       dependsOn(commonTest.get())
       dependencies {
-        implementation(libs.junit)
-        implementation(libs.truth)
-        implementation(libs.testing.hamcrest)
         implementation(dependencies.testFixtures(libs.eithernet))
-      }
-    }
-    androidMain {
-      dependsOn(commonJvm)
-      dependencies {
-        implementation(libs.androidx.appCompat)
-        implementation(libs.androidx.browser)
-        implementation(libs.androidx.compose.accompanist.flowlayout)
-        implementation(libs.androidx.compose.accompanist.pager)
-        implementation(libs.androidx.compose.accompanist.pager.indicators)
-        implementation(libs.androidx.compose.accompanist.systemUi)
-        implementation(libs.androidx.compose.integration.activity)
-        implementation(libs.androidx.compose.integration.activity)
-        implementation(libs.androidx.compose.ui.tooling)
-        implementation(libs.sqldelight.driver.android)
-        implementation(libs.telephoto.zoomableImageCoil)
-        implementation(projects.circuitx.android)
-      }
-    }
-    val androidUnitTest by getting {
-      dependsOn(commonJvmTest)
-      dependencies {
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.robolectric)
-        implementation(libs.androidx.loader)
-        implementation(libs.testing.espresso.core)
-        implementation(libs.androidx.compose.ui.testing.manifest)
-        implementation(libs.leakcanary.android.instrumentation)
-        implementation(projects.samples.star.coilRule)
-        // TODO eventually use KMP support (Android and JVM)
-        //  https://github.com/takahirom/roborazzi#experimental-feature-compose-desktop-support
-        implementation(libs.roborazzi)
-        implementation(libs.roborazzi.compose)
-        implementation(libs.roborazzi.rules)
-      }
-    }
-    val androidInstrumentedTest by getting {
-      // Annoyingly cannot depend on commonJvmTest
-      dependencies {
-        implementation(libs.androidx.compose.ui.testing.manifest)
-        implementation(libs.leakcanary.android.instrumentation)
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.coroutines.test)
-        implementation(projects.circuitTest)
-        implementation(projects.samples.star.coilRule)
         implementation(libs.junit)
-        implementation(libs.truth)
         implementation(libs.testing.hamcrest)
+        implementation(libs.truth)
+      }
+    }
+    if (!buildDesktop) {
+      androidMain {
+        dependsOn(commonJvm)
+        dependencies {
+          implementation(libs.androidx.appCompat)
+          implementation(libs.androidx.browser)
+          implementation(libs.androidx.compose.accompanist.flowlayout)
+          implementation(libs.androidx.compose.accompanist.pager)
+          implementation(libs.androidx.compose.accompanist.pager.indicators)
+          implementation(libs.androidx.compose.accompanist.systemUi)
+          implementation(libs.androidx.compose.integration.activity)
+          implementation(libs.androidx.compose.integration.activity)
+          implementation(libs.androidx.compose.ui.tooling)
+          implementation(libs.coroutines.android)
+          implementation(libs.sqldelight.driver.android)
+          implementation(libs.telephoto.zoomableImageCoil)
+          implementation(projects.circuitx.android)
+        }
+      }
+      val androidUnitTest by getting {
+        dependsOn(commonJvmTest)
+        dependencies {
+          implementation(libs.androidx.compose.ui.testing.junit)
+          implementation(libs.androidx.compose.ui.testing.manifest)
+          implementation(libs.androidx.loader)
+          implementation(libs.leakcanary.android.instrumentation)
+          implementation(libs.robolectric)
+          // TODO eventually use KMP support (Android and JVM)
+          //  https://github.com/takahirom/roborazzi#experimental-feature-compose-desktop-support
+          implementation(libs.roborazzi)
+          implementation(libs.roborazzi.compose)
+          implementation(libs.roborazzi.rules)
+          implementation(libs.testing.espresso.core)
+          implementation(projects.samples.star.coilRule)
+        }
+      }
+      val androidInstrumentedTest by getting {
+        // Annoyingly cannot depend on commonJvmTest
+        dependencies {
+          implementation(libs.androidx.compose.ui.testing.junit)
+          implementation(libs.androidx.compose.ui.testing.manifest)
+          implementation(libs.coroutines.test)
+          implementation(libs.junit)
+          implementation(libs.leakcanary.android.instrumentation)
+          implementation(libs.testing.hamcrest)
+          implementation(libs.truth)
+          implementation(projects.circuitTest)
+          implementation(projects.samples.star.coilRule)
+        }
       }
     }
     jvmMain {
       dependsOn(commonJvm)
-      dependencies { implementation(libs.sqldelight.driver.jdbc) }
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(libs.coroutines.swing)
+        implementation(libs.sqldelight.driver.jdbc)
+      }
     }
     jvmTest { dependsOn(commonJvmTest) }
 
@@ -150,9 +175,9 @@ kotlin {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)
       compilerOptions {
         optIn.addAll(
-          "coil3.annotation.ExperimentalCoilApi",
           "androidx.compose.material.ExperimentalMaterialApi",
           "androidx.compose.material3.ExperimentalMaterial3Api",
+          "coil3.annotation.ExperimentalCoilApi",
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
         freeCompilerArgs.addAll("-Xexpect-actual-classes")
@@ -167,23 +192,35 @@ kotlin {
             "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir"
           )
         }
+
+        if (this is KotlinJvmCompilerOptions) {
+          jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
+        }
       }
     }
   }
 }
 
-android {
-  namespace = "com.slack.circuit.star"
+if (!buildDesktop) {
+  configure<LibraryExtension> {
+    namespace = "com.slack.circuit.star"
 
-  defaultConfig {
-    minSdk = 28
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    testApplicationId = "com.slack.circuit.star.apk.androidTest"
+    defaultConfig {
+      minSdk = 28
+      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+      testApplicationId = "com.slack.circuit.star.apk.androidTest"
+    }
+
+    testOptions { unitTests.isIncludeAndroidResources = true }
+    testBuildType = "release"
   }
-
-  testOptions { unitTests.isIncludeAndroidResources = true }
-  testBuildType = "release"
+} else {
+  tasks.withType<JavaCompile>().configureEach {
+    options.release.set(libs.versions.jvmTarget.map { it.toInt() })
+  }
 }
+
+compose.desktop { application { mainClass = "com.slack.circuit.star.MainKt" } }
 
 sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
 

@@ -64,9 +64,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.parcelize.Parcelize
+import com.slack.circuit.star.parcel.CommonParcelize
 
-@Parcelize
+@CommonParcelize
 data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) :
   com.slack.circuit.runtime.screen.Screen {
   sealed interface State : CircuitUiState {

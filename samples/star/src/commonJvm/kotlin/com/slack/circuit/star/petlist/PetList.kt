@@ -110,7 +110,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
-import kotlinx.parcelize.Parcelize
+import com.slack.circuit.star.parcel.CommonParcelize
 
 @Immutable
 data class PetListAnimal(
@@ -123,7 +123,7 @@ data class PetListAnimal(
   val age: String,
 )
 
-@Parcelize
+@CommonParcelize
 data object PetListScreen : Screen {
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean

@@ -47,13 +47,15 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.parcelize.Parcelize
+import com.slack.circuit.star.parcel.CommonParcelize
+import com.slack.circuit.star.parcel.CommonTypeParceler
+import com.slack.circuit.star.parcel.ImmutableListParceler
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 
-@Parcelize
+@CommonParcelize
 data class ImageViewerScreen(
   val id: String,
   val url: String,

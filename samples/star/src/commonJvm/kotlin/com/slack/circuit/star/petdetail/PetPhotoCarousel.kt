@@ -63,8 +63,9 @@ import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.TypeParceler
+import com.slack.circuit.star.parcel.CommonParcelize
+import com.slack.circuit.star.parcel.CommonTypeParceler
+import com.slack.circuit.star.parcel.ImmutableListParceler
 import kotlin.math.absoluteValue
 
 /*
@@ -76,10 +77,10 @@ import kotlin.math.absoluteValue
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
 // TODO expect/actual this
-@Parcelize
+@CommonParcelize
 data class PetPhotoCarouselScreen(
   val name: String,
-  @TypeParceler<ImmutableList<String>, ImmutableListParceler> val photoUrls: ImmutableList<String>,
+  @CommonTypeParceler<ImmutableList<String>, ImmutableListParceler> val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
   data class State(

@@ -27,9 +27,9 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.R
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.ui.StarTheme
-import kotlinx.parcelize.Parcelize
+import com.slack.circuit.star.parcel.CommonParcelize
 
-@Parcelize
+@CommonParcelize
 data object AboutScreen : Screen {
   object State : CircuitUiState
 }

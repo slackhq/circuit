@@ -34,9 +34,11 @@ import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.ui.StarTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.parcelize.Parcelize
+import com.slack.circuit.star.parcel.CommonParcelize
+import com.slack.circuit.star.parcel.CommonTypeParceler
+import com.slack.circuit.star.parcel.ImmutableListParceler
 
-@Parcelize
+@CommonParcelize
 data object HomeScreen : Screen {
   data class State(
     val navItems: ImmutableList<BottomNavItem> =

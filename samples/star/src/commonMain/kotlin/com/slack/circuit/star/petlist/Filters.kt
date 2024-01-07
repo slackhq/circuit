@@ -4,12 +4,16 @@ import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
+import com.slack.circuit.star.parcel.CommonParcelize
+import com.slack.circuit.star.parcel.CommonParcelable
+import com.slack.circuit.star.parcel.CommonTypeParceler
+import com.slack.circuit.star.parcel.ImmutableListParceler
+import com.slack.circuit.star.parcel.ImmutableSetParceler
 
-// TODO KMP this
-@Parcelize
+@CommonParcelize
 class Filters(
-  @TypeParceler<ImmutableSet<Gender>, ImmutableSetParceler>
+  @CommonTypeParceler<ImmutableSet<Gender>, ImmutableSetParceler>
   val genders: ImmutableSet<Gender> = Gender.entries.asIterable().toImmutableSet(),
-  @TypeParceler<ImmutableSet<Size>, ImmutableSetParceler>
+  @CommonTypeParceler<ImmutableSet<Size>, ImmutableSetParceler>
   val sizes: ImmutableSet<Size> = Size.entries.asIterable().toImmutableSet()
-) : Parcelable
+) : CommonParcelable

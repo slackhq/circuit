@@ -44,6 +44,7 @@ class CoilRule(
      * A custom invoke that just uses a custom [imageResourcePath] to default in a
      * [FakeImageLoaderEngine].
      */
+    // TODO reading a path from another project doesn't appear to be supported
     @OptIn(ExperimentalResourceApi::class)
     operator fun invoke(
       imageResourcePath: String,

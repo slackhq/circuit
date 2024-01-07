@@ -26,7 +26,6 @@ dependencies {
   implementation(libs.androidx.compose.ui.util)
   implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.androidx.compose.material.icons)
-  implementation(libs.androidx.compose.material.iconsExtended)
   implementation(libs.androidx.compose.accompanist.pager)
   implementation(libs.androidx.compose.accompanist.pager.indicators)
   implementation(libs.androidx.compose.accompanist.flowlayout)

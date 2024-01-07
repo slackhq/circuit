@@ -14,7 +14,7 @@ import org.robolectric.RobolectricTestRunner
 class TokenStorageTest {
   @Test
   fun basicStore() = runTest {
-    val tokenStorage = TokenStorageImpl(ApplicationProvider.getApplicationContext())
+    val tokenStorage = TokenStorageImpl(TokenStorageModule.provideDatastoreStorage(ApplicationProvider.getApplicationContext()))
     assertThat(tokenStorage.getAuthData()).isNull()
     val inputData = AuthenticationData("Bearer", Instant.EPOCH.plusSeconds(1000), "token")
     tokenStorage.updateAuthData(inputData)

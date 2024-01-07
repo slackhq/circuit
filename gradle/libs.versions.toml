@@ -121,7 +121,6 @@ androidx-compose-integration-materialThemeAdapter = { module = "com.google.andro
 androidx-compose-integration-rxjava3 = { module = "androidx.compose.runtime:runtime-rxjava3", version.ref = "compose-runtime" }
 # Material design icons
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "compose-material" }
-androidx-compose-material-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-material" }
 androidx-compose-material-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
 androidx-compose-material-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 # Runtime artifact, must be manually applied.

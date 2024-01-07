@@ -23,6 +23,7 @@ kotlin {
         api(libs.junit)
         api(libs.coil3)
         api(libs.coil3.test)
+        implementation(libs.compose.runtime) // Required for the compose compiler
         @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
       }
     }

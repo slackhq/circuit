@@ -25,6 +25,8 @@ plugins {
 // Cannot enable both Desktop and Android w/ kapt due to
 // https://youtrack.jetbrains.com/issue/KT-30878
 val buildDesktop = project.hasProperty("circuit.buildDesktop")
+// Roborazzi annoyingly depends on JVM tasks too
+val recordingSnapshots = project.gradle.startParameter.taskNames.any { it.contains("roborazzi", ignoreCase = true) }
 
 if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
@@ -34,7 +36,9 @@ if (!buildDesktop) {
 kotlin {
   if (!buildDesktop) {
     androidTarget { publishLibraryVariants("release") }
-    jvm()
+    if (!recordingSnapshots) {
+      jvm()
+    }
   } else {
     jvm { withJava() }
   }
@@ -88,7 +92,6 @@ kotlin {
         api(libs.anvil.annotations)
         api(libs.anvil.annotations.optional)
         implementation(libs.compose.material.icons)
-        implementation(libs.compose.material.iconsExtended)
         implementation(libs.dagger)
         implementation(libs.eithernet)
         implementation(libs.jsoup)
@@ -161,15 +164,17 @@ kotlin {
         }
       }
     }
-    jvmMain {
-      dependsOn(commonJvm)
-      dependencies {
-        implementation(compose.desktop.currentOs)
-        implementation(libs.coroutines.swing)
-        implementation(libs.sqldelight.driver.jdbc)
+    if (!recordingSnapshots) {
+      jvmMain {
+        dependsOn(commonJvm)
+        dependencies {
+          implementation(compose.desktop.currentOs)
+          implementation(libs.coroutines.swing)
+          implementation(libs.sqldelight.driver.jdbc)
+        }
       }
+      jvmTest { dependsOn(commonJvmTest) }
     }
-    jvmTest { dependsOn(commonJvmTest) }
 
     configureEach {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -204,6 +209,10 @@ kotlin {
 if (!buildDesktop) {
   configure<LibraryExtension> {
     namespace = "com.slack.circuit.star"
+
+    // Hack to get these resources visible to tests
+    sourceSets["test"].resources.srcDirs("src/commonTest/resources")
+    sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
 
     defaultConfig {
       minSdk = 28

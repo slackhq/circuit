@@ -49,6 +49,11 @@ jobs:
               detektTest \
               assembleAndroidTest
 
+      - name: Verify STAR desktop builds
+        id: gradle-build-star-desktop
+        run: |
+          ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
+
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository

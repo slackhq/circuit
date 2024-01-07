@@ -18,4 +18,6 @@ actual object Platform {
     val (w, h) = LocalWindowInfo.current.containerSize
     return w > h
   }
+
+  actual val type: PlatformType = PlatformType.JVM
 }

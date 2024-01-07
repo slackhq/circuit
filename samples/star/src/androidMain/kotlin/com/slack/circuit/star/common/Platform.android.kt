@@ -17,4 +17,6 @@ actual object Platform {
   actual fun isLandscape(): Boolean {
     return LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   }
+
+  actual val type: PlatformType = PlatformType.JVM
 }

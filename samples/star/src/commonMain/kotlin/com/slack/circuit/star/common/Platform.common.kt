@@ -8,4 +8,11 @@ expect object Platform {
   @Composable fun ReportDrawnWhen(predicate: () -> Boolean)
 
   @Composable fun isLandscape(): Boolean
+
+  val type: PlatformType
+}
+
+enum class PlatformType {
+  JVM,
+  ANDROID
 }

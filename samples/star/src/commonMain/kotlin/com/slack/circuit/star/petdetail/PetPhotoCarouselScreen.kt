@@ -51,6 +51,8 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.star.common.Platform
+import com.slack.circuit.star.common.PlatformType
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
@@ -214,20 +216,25 @@ private fun PhotoPager(
     modifier = modifier,
     contentPadding = PaddingValues(16.dp),
   ) { page ->
-    val overlayHost = LocalOverlayHost.current
     val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
-    val scope = rememberStableCoroutineScope()
 
+    // TODO implement full screen overlay on non-android targets
     val clickableModifier =
-      photoUrl?.let { url ->
-        Modifier.clickable {
-          scope.launch {
-            overlayHost.showFullScreenOverlay(
-              ImageViewerScreen(id = url, url = url, placeholderKey = name)
-            )
+      if (Platform.type == PlatformType.ANDROID) {
+        val scope = rememberStableCoroutineScope()
+        val overlayHost = LocalOverlayHost.current
+        photoUrl?.let { url ->
+          Modifier.clickable {
+            scope.launch {
+              overlayHost.showFullScreenOverlay(
+                ImageViewerScreen(id = url, url = url, placeholderKey = name)
+              )
+            }
           }
-        }
-      } ?: Modifier
+        } ?: Modifier
+      } else {
+        Modifier
+      }
     Card(
       modifier =
         clickableModifier.aspectRatio(1f).graphicsLayer {

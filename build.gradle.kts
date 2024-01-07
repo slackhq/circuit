@@ -98,6 +98,7 @@ allprojects {
       targetExclude(
         "**/circuit/backstack/**/*.kt",
         "**/HorizontalPagerIndicator.kt",
+        "**/FilterList.kt",
       )
     }
   }

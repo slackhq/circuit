@@ -1,8 +1,8 @@
-// Copyright (C) 2022 Slack Technologies, LLC
+// Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -40,11 +40,15 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.di.AppScope
+import com.slack.circuit.star.di.Assisted
+import com.slack.circuit.star.di.AssistedFactory
+import com.slack.circuit.star.di.AssistedInject
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
@@ -59,14 +63,10 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.ExpandableText
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import kotlinx.collections.immutable.ImmutableList
 
 @CommonParcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) :
-  com.slack.circuit.runtime.screen.Screen {
+data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
   sealed interface State : CircuitUiState {
     data object Loading : State
 
@@ -93,7 +93,7 @@ internal fun Animal.toPetDetailState(
   description: String = this.description,
   eventSink: (Event) -> Unit
 ): State {
-  return PetDetailScreen.State.Success(
+  return Success(
     url = url,
     photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
@@ -221,11 +221,11 @@ private fun ShowAnimalLandscape(
 ) {
   Row(
     modifier = Modifier.padding(padding),
-    horizontalArrangement = spacedBy(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     carouselContent()
     LazyColumn(
-      verticalArrangement = spacedBy(16.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       petDetailDescriptions(state)
@@ -242,7 +242,7 @@ private fun ShowAnimalPortrait(
   LazyColumn(
     modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
     contentPadding = PaddingValues(16.dp),
-    verticalArrangement = spacedBy(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     item { carouselContent() }
@@ -256,8 +256,8 @@ private fun LazyListScope.petDetailDescriptions(state: Success) {
   item(state.tags.hashCode()) {
     FlowRow(
       modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = spacedBy(8.dp, Alignment.CenterHorizontally),
-      verticalArrangement = spacedBy(8.dp, Alignment.Top),
+      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+      verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
     ) {
       state.tags.forEach { tag ->
         Surface(

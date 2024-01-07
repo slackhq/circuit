@@ -206,6 +206,8 @@ afterEvaluate {
   }
 }
 
+ksp { arg("circuit.codegen.lenient", "true") }
+
 dependencies {
   for (target in kspTargets) {
     val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target

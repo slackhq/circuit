@@ -11,5 +11,5 @@ import javax.inject.Inject
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
-class InjectedTokenStorageImpl @Inject constructor(storage: Storage<Preferences>) :
+class InjectedTokenStorage @Inject constructor(storage: Storage<Preferences>) :
   TokenStorage by TokenStorageImpl(storage)

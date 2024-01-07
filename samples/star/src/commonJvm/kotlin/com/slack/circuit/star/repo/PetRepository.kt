@@ -14,15 +14,11 @@ import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
-import com.slack.circuit.star.di.AppScope
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.retryWithExponentialBackoff
-import com.squareup.anvil.annotations.ContributesBinding
-import com.squareup.anvil.annotations.optional.SingleIn
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
-import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -33,11 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
-class PetRepositoryImpl
-@Inject
-constructor(
+class PetRepositoryImpl(
   sqliteDriverFactory: SqlDriverFactory,
   private val petFinderApi: PetfinderApi,
 ) : PetRepository {

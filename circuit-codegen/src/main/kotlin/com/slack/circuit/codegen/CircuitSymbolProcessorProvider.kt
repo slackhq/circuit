@@ -124,6 +124,8 @@ private class CircuitSymbolProcessor(
   private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
 
+  private val lenient = options["circuit.codegen.lenient"]?.toBoolean() ?: false
+
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
     val codegenMode =
@@ -379,7 +381,12 @@ private class CircuitSymbolProcessor(
         cd.checkVisibility(logger) {
           return null
         }
-        val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
+        val isAssisted =
+          if (lenient) {
+            cd.annotations.any { it.shortName.asString().contains("AssistedFactory") }
+          } else {
+            cd.isAnnotationPresent(AssistedFactory::class)
+          }
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {
@@ -411,8 +418,10 @@ private class CircuitSymbolProcessor(
             ?: run {
               logger.error(
                 "Factory must be for a UI or Presenter class, but was " +
-                  "${targetClass.qualifiedName?.asString()}. " +
-                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}",
+                  "${targetClass.qualifiedName?.asString()}.\n" +
+                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}.\n" +
+                  "isAssisted? ${isAssisted}\n" +
+                  "CD annotations: ${cd.annotations.toList().joinToString { it.annotationType.resolve().toTypeName().toString() }}",
                 targetClass
               )
               return null

@@ -26,7 +26,8 @@ plugins {
 // https://youtrack.jetbrains.com/issue/KT-30878
 val buildDesktop = project.hasProperty("circuit.buildDesktop")
 // Roborazzi annoyingly depends on JVM tasks too
-val recordingSnapshots = project.gradle.startParameter.taskNames.any { it.contains("roborazzi", ignoreCase = true) }
+val recordingSnapshots =
+  project.gradle.startParameter.taskNames.any { it.contains("roborazzi", ignoreCase = true) }
 
 if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
@@ -211,6 +212,7 @@ if (!buildDesktop) {
     namespace = "com.slack.circuit.star"
 
     // Hack to get these resources visible to tests
+    // https://kotlinlang.slack.com/archives/C3PQML5NU/p1696283778314299?thread_ts=1696283403.197389&cid=C3PQML5NU
     sourceSets["test"].resources.srcDirs("src/commonTest/resources")
     sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
 

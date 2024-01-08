@@ -18,5 +18,5 @@ actual object Platform {
     return LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
   }
 
-  actual val type: PlatformType = PlatformType.JVM
+  actual val type: PlatformType = PlatformType.ANDROID
 }

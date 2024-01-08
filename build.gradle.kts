@@ -458,18 +458,18 @@ subprojects {
 
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
-    if (emulatorWtfToken.isPresent) {
-      configure<EwExtension> {
-        token.set(emulatorWtfToken)
-        devices.set(
-          listOf(
-            mapOf(
-              "model" to "Pixel2Atd",
-              "version" to "30",
-              "atd" to "true",
-            )
+    configure<EwExtension> {
+      devices.set(
+        listOf(
+          mapOf(
+            "model" to "Pixel2Atd",
+            "version" to "30",
+            "atd" to "true",
           )
         )
+      )
+      if (emulatorWtfToken.isPresent) {
+        token.set(emulatorWtfToken)  
       }
     }
     // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper

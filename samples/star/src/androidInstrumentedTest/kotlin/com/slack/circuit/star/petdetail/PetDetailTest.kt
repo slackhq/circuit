@@ -14,6 +14,7 @@ import androidx.compose.ui.test.swipeUp
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
@@ -91,7 +92,9 @@ class PetDetailTest {
       )
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+      setContent {
+        ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+      }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()

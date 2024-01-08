@@ -26,9 +26,13 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.AppComponent
 import com.slack.circuit.star.home.HomeScreen
+import com.slack.circuit.star.navigation.OpenUrlScreen
+import java.awt.Desktop
+import java.net.URI
 import kotlinx.collections.immutable.persistentListOf
 
 fun main() {
@@ -37,7 +41,18 @@ fun main() {
   application {
     val initialBackStack = persistentListOf<Screen>(HomeScreen)
     val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
-    val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
+    val circuitNavigator = rememberCircuitNavigator(backStack, ::exitApplication)
+    val navigator =
+      remember(circuitNavigator) {
+        object : Navigator by circuitNavigator {
+          override fun goTo(screen: Screen) {
+            when (screen) {
+              is OpenUrlScreen -> openUrl(screen.url)
+              else -> circuitNavigator.goTo(screen)
+            }
+          }
+        }
+      }
     val windowState =
       rememberWindowState(
         width = 1200.dp,
@@ -89,4 +104,9 @@ fun main() {
       }
     }
   }
+}
+
+private fun openUrl(url: String) {
+  val desktop = Desktop.getDesktop()
+  desktop.browse(URI.create(url))
 }

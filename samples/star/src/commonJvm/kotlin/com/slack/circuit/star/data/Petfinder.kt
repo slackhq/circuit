@@ -6,10 +6,11 @@ import androidx.annotation.Keep
 import com.slack.eithernet.ApiResult
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.time.Instant
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -166,7 +167,7 @@ suspend fun TokenStorage.updateAuthData(response: AuthenticationResponse) {
   updateAuthData(
     AuthenticationData(
       response.tokenType,
-      Instant.now().plusSeconds(response.expiresIn),
+      Clock.System.now().plus(response.expiresIn.seconds),
       response.accessToken
     )
   )
@@ -193,7 +194,7 @@ class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: 
           refreshToken()
           return authenticate(request, isAfterRefresh)
         }
-    if (Instant.now().isAfter(expiration)) {
+    if (Clock.System.now() > expiration) {
       check(!isAfterRefresh)
       refreshToken()
       return authenticate(request, isAfterRefresh)

@@ -16,9 +16,6 @@ import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.retryWithExponentialBackoff
-import java.time.Duration
-import java.time.Instant
-import java.util.Locale
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +25,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 class PetRepositoryImpl(
   sqliteDriverFactory: SqlDriverFactory,
@@ -110,7 +109,7 @@ class PetRepositoryImpl(
             // Names are sometimes all caps
             name =
               animal.name.lowercase().replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
+                if (it.isLowerCase()) it.titlecase() else it.toString()
               },
             url = animal.url,
             photoUrls = animal.photos.map { it.full }.toImmutableList(),
@@ -128,8 +127,8 @@ class PetRepositoryImpl(
                 .toImmutableList(),
             description = animal.description.orEmpty(),
             primaryBreed = animal.breeds.primary,
-            gender = Gender.valueOf(animal.gender.uppercase(Locale.US)),
-            size = Size.valueOf(animal.size.uppercase(Locale.US)),
+            gender = Gender.valueOf(animal.gender.uppercase()),
+            size = Size.valueOf(animal.size.uppercase()),
             age = animal.age,
           )
         )
@@ -177,11 +176,12 @@ class PetRepositoryImpl(
     val lastUpdate =
       starDb.starQueries.lastUpdate(operation).executeAsOneOrNull()?.timestamp ?: return true
     val timestamp = currentTimestamp()
-    return Duration.between(Instant.ofEpochSecond(timestamp), Instant.ofEpochSecond(lastUpdate))
-      .toDays() > 1
+
+    return (Instant.fromEpochSeconds(lastUpdate) - Instant.fromEpochSeconds(timestamp))
+      .inWholeDays > 1
   }
 
   private fun currentTimestamp(): Long {
-    return Instant.now().epochSecond
+    return Clock.System.now().epochSeconds
   }
 }

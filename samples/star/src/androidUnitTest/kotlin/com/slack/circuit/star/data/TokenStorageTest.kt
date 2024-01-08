@@ -4,8 +4,9 @@ package com.slack.circuit.star.data
 
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import java.time.Instant
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -19,7 +20,8 @@ class TokenStorageTest {
         TokenStorageModule.provideDatastoreStorage(ApplicationProvider.getApplicationContext())
       )
     assertThat(tokenStorage.getAuthData()).isNull()
-    val inputData = AuthenticationData("Bearer", Instant.EPOCH.plusSeconds(1000), "token")
+    val inputData =
+      AuthenticationData("Bearer", Instant.fromEpochMilliseconds(0) + 1000.seconds, "token")
     tokenStorage.updateAuthData(inputData)
     assertThat(tokenStorage.getAuthData()).isEqualTo(inputData)
   }

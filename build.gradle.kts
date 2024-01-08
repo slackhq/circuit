@@ -469,7 +469,7 @@ subprojects {
         )
       )
       if (emulatorWtfToken.isPresent) {
-        token.set(emulatorWtfToken)  
+        token.set(emulatorWtfToken)
       }
     }
     // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper

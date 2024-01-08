@@ -174,6 +174,8 @@ kotlin {
         dependencies {
           implementation(compose.desktop.currentOs)
           implementation(libs.coroutines.swing)
+          // Used for an in-memory datastore
+          implementation(libs.okio.fakefilesystem)
           implementation(libs.sqldelight.driver.jdbc)
         }
       }

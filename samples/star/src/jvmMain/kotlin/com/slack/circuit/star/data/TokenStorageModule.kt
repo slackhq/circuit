@@ -7,10 +7,11 @@ import androidx.datastore.preferences.core.Preferences
 import com.slack.circuit.star.datastore.createStorage
 import com.slack.circuit.star.di.AppScope
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module
 import dagger.Provides
-import kotlin.io.path.createTempDirectory
-import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
+import okio.fakefilesystem.FakeFileSystem
 
 // TODO better reconcile this with the android version
 @ContributesTo(AppScope::class)
@@ -18,12 +19,14 @@ import okio.Path.Companion.toOkioPath
 object TokenStorageModule {
   private const val TOKEN_STORAGE_FILE_NAME = "TokenManager"
 
+  @SingleIn(AppScope::class)
   @Provides
   fun provideDatastoreStorage(): Storage<Preferences> {
-    return createStorage {
-      createTempDirectory("star-datastore")
-        .resolve("$TOKEN_STORAGE_FILE_NAME.preferences_pb")
-        .toOkioPath()
+    // Use a FakeFileSystem to just keep it in-memory.
+    return createStorage(FakeFileSystem()) {
+      val dir = "/tokenstorage".toPath()
+      createDirectory(dir)
+      dir.resolve("$TOKEN_STORAGE_FILE_NAME.preferences_pb")
     }
   }
 }

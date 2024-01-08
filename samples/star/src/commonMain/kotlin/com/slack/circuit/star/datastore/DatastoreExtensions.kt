@@ -14,9 +14,9 @@ private const val PREFERENCES_EXTENSION = "preferences_pb"
 val Path.extension: String
   get() = name.substringAfterLast('.', "")
 
-fun createStorage(producePath: () -> Path): Storage<Preferences> {
-  return OkioStorage(FileSystem.SYSTEM, PreferencesSerializer) {
-    val path = producePath()
+fun createStorage(fs: FileSystem, producePath: FileSystem.() -> Path): Storage<Preferences> {
+  return OkioStorage(fs, PreferencesSerializer) {
+    val path = fs.producePath()
     check(path.extension == PREFERENCES_EXTENSION) {
       "File extension for file: $path does not match required extension for" +
         " Preferences file: $PREFERENCES_EXTENSION"

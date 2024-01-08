@@ -10,8 +10,10 @@ import com.slack.circuit.star.datastore.createStorage
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module
 import dagger.Provides
+import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 
 @ContributesTo(AppScope::class)
@@ -19,8 +21,11 @@ import okio.Path.Companion.toOkioPath
 object TokenStorageModule {
   private const val TOKEN_STORAGE_FILE_NAME = "TokenManager"
 
+  @SingleIn(AppScope::class)
   @Provides
   fun provideDatastoreStorage(@ApplicationContext context: Context): Storage<Preferences> {
-    return createStorage { context.preferencesDataStoreFile(TOKEN_STORAGE_FILE_NAME).toOkioPath() }
+    return createStorage(FileSystem.SYSTEM) {
+      context.preferencesDataStoreFile(TOKEN_STORAGE_FILE_NAME).toOkioPath()
+    }
   }
 }

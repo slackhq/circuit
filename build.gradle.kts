@@ -464,7 +464,7 @@ subprojects {
         devices.set(
           listOf(
             mapOf(
-              "model" to "NexusLowRes",
+              "model" to "Pixel2Atd",
               "version" to "30",
               "atd" to "true",
             )

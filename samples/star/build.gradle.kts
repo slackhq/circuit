@@ -25,9 +25,12 @@ plugins {
 // Cannot enable both Desktop and Android w/ kapt due to
 // https://youtrack.jetbrains.com/issue/KT-30878
 val buildDesktop = project.hasProperty("circuit.buildDesktop")
-// Roborazzi annoyingly depends on JVM tasks too
-val recordingSnapshots =
-  project.gradle.startParameter.taskNames.any { it.contains("roborazzi", ignoreCase = true) }
+
+// Roborazzi and check annoyingly depend on JVM tasks too
+val disableJvmTarget =
+  project.gradle.startParameter.taskNames.any {
+    it.contains("roborazzi", ignoreCase = true) || it == "check"
+  }
 
 if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
@@ -35,13 +38,13 @@ if (!buildDesktop) {
 }
 
 kotlin {
-  if (!buildDesktop) {
+  if (buildDesktop) {
+    jvm { withJava() }
+  } else {
     androidTarget { publishLibraryVariants("release") }
-    if (!recordingSnapshots) {
+    if (!disableJvmTarget) {
       jvm()
     }
-  } else {
-    jvm { withJava() }
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
 
@@ -165,7 +168,7 @@ kotlin {
         }
       }
     }
-    if (!recordingSnapshots) {
+    if (!disableJvmTarget) {
       jvmMain {
         dependsOn(commonJvm)
         dependencies {

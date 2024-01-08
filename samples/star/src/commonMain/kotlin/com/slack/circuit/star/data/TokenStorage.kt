@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import java.time.Instant
 import kotlinx.coroutines.flow.first
+import kotlinx.datetime.Instant
 
 /**
  * A simple [TokenStorage] that uses `DataStore` to store `AuthenticationResponse` for reuse across
@@ -29,7 +29,7 @@ class TokenStorageImpl(storage: Storage<Preferences>) : TokenStorage {
 
   override suspend fun updateAuthData(authData: AuthenticationData) {
     datastore.edit { prefs ->
-      prefs[expirationKey] = authData.expiration.toEpochMilli()
+      prefs[expirationKey] = authData.expiration.toEpochMilliseconds()
       prefs[authTokenTypeKey] = authData.tokenType
       prefs[authTokenKey] = authData.token
     }
@@ -40,7 +40,7 @@ class TokenStorageImpl(storage: Storage<Preferences>) : TokenStorage {
     val tokenType = datastore.data.first()[authTokenTypeKey]
     val token = datastore.data.first()[authTokenKey]
     return if (expiration != null && tokenType != null && token != null) {
-      AuthenticationData(tokenType, Instant.ofEpochMilli(expiration), token)
+      AuthenticationData(tokenType, Instant.fromEpochMilliseconds(expiration), token)
     } else {
       null
     }

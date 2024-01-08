@@ -66,6 +66,7 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
+        implementation(libs.kotlinx.datetime)
         implementation(libs.kotlinx.immutable)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)

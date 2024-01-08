@@ -113,7 +113,6 @@ kotlin {
       dependencies {
         implementation(dependencies.testFixtures(libs.eithernet))
         implementation(libs.junit)
-        implementation(libs.testing.hamcrest)
         implementation(libs.truth)
       }
     }
@@ -161,7 +160,6 @@ kotlin {
           implementation(libs.coroutines.test)
           implementation(libs.junit)
           implementation(libs.leakcanary.android.instrumentation)
-          implementation(libs.testing.hamcrest)
           implementation(libs.truth)
           implementation(projects.circuitTest)
           implementation(projects.samples.star.coilRule)

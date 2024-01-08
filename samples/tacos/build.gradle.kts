@@ -52,7 +52,6 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.molecule.runtime)
   testImplementation(libs.robolectric)
-  testImplementation(libs.testing.hamcrest)
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
   testImplementation(projects.circuitTest)

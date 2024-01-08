@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -104,6 +103,7 @@ import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.FilterList
+import com.slack.circuit.star.ui.Pets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -259,7 +259,7 @@ internal fun PetList(
           if (state is Success) {
             IconButton(onClick = { state.eventSink(UpdateFilters) }) {
               Icon(
-                imageVector = Icons.Default.FilterList,
+                imageVector = FilterList,
                 contentDescription = "Filter pet list",
                 tint = MaterialTheme.colorScheme.onBackground
               )
@@ -345,7 +345,7 @@ private fun PetListGridItem(
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {}
 ) {
-  val updatedImageUrl = animal.imageUrl ?: rememberVectorPainter(Icons.Default.Warning)
+  val updatedImageUrl = animal.imageUrl ?: rememberVectorPainter(Pets)
   ElevatedCard(
     modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),

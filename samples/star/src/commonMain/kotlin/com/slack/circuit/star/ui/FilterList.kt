@@ -15,13 +15,11 @@
  */
 package com.slack.circuit.star.ui
 
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
-@Suppress("UnusedReceiverParameter")
-val Icons.Filled.FilterList: ImageVector
+val FilterList: ImageVector
   get() {
     if (_filterList != null) {
       return _filterList!!

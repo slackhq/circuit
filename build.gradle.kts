@@ -100,6 +100,7 @@ allprojects {
         "**/HorizontalPagerIndicator.kt",
         "**/FilterList.kt",
         "**/Remove.kt",
+        "**/Pets.kt",
       )
     }
   }

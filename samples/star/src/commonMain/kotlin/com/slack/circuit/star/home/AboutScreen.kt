@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
@@ -54,7 +55,7 @@ fun About(modifier: Modifier = Modifier) {
     Text(
       text = Strings.ABOUT_SCREEN,
       textAlign = TextAlign.Justify,
-      modifier = Modifier.widthIn(max = 400.dp)
+      modifier = Modifier.widthIn(max = 400.dp).padding(horizontal = 16.dp)
     )
   }
 }

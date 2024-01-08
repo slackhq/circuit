@@ -216,8 +216,9 @@ if (!buildDesktop) {
   configure<LibraryExtension> {
     namespace = "com.slack.circuit.star"
 
-    // Hack to get these resources visible to tests
+    // Hack to get these resources visible to other source sets
     // https://kotlinlang.slack.com/archives/C3PQML5NU/p1696283778314299?thread_ts=1696283403.197389&cid=C3PQML5NU
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
     sourceSets["test"].resources.srcDirs("src/commonTest/resources")
     sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
 

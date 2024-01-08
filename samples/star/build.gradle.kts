@@ -20,6 +20,7 @@ plugins {
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
+  alias(libs.plugins.emulatorWtf)
 }
 
 // Cannot enable both Desktop and Android w/ kapt due to

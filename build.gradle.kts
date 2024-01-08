@@ -459,7 +459,18 @@ subprojects {
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
     if (emulatorWtfToken.isPresent) {
-      configure<EwExtension> { token.set(emulatorWtfToken) }
+      configure<EwExtension> {
+        token.set(emulatorWtfToken)
+        devices.set(
+          listOf(
+            mapOf(
+              "model" to "NexusLowRes",
+              "version" to "30",
+              "atd" to "true",
+            )
+          )
+        )
+      }
     }
     // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper
     // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects

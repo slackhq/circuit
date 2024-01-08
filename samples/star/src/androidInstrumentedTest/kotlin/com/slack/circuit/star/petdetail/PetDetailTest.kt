@@ -40,7 +40,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetDetail(State.Loading) }
+      setContent { ContentWithOverlays { PetDetail(State.Loading) } }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -51,7 +51,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
-      setContent { PetDetail(State.UnknownAnimal) }
+      setContent { ContentWithOverlays { PetDetail(State.UnknownAnimal) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
@@ -65,7 +65,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_animal_for_success_state() {
     val success =
-      PetDetailScreen.State.Success(
+      State.Success(
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -115,7 +115,7 @@ class PetDetailTest {
     val testSink = TestEventSink<PetDetailScreen.Event>()
 
     val success =
-      PetDetailScreen.State.Success(
+      State.Success(
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -133,7 +133,9 @@ class PetDetailTest {
         .build()
 
     composeTestRule.run {
-      setContent { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+      setContent {
+        ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+      }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()

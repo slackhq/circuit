@@ -124,6 +124,8 @@ private class CircuitSymbolProcessor(
   private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
 
+  private val lenient = options["circuit.codegen.lenient"]?.toBoolean() ?: false
+
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
     val codegenMode =
@@ -375,23 +377,28 @@ private class CircuitSymbolProcessor(
           }
       }
       InstantiationType.CLASS -> {
-        val cd = annotatedElement as KSClassDeclaration
-        cd.checkVisibility(logger) {
+        val declaration = annotatedElement as KSClassDeclaration
+        declaration.checkVisibility(logger) {
           return null
         }
-        val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
+        val isAssisted =
+          if (lenient) {
+            declaration.annotations.any { it.shortName.asString().contains("AssistedFactory") }
+          } else {
+            declaration.isAnnotationPresent(AssistedFactory::class)
+          }
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {
-          val creatorFunction = cd.getAllFunctions().filter { it.isAbstract }.single()
+          val creatorFunction = declaration.getAllFunctions().filter { it.isAbstract }.single()
           creatorOrConstructor = creatorFunction
           targetClass = creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
           targetClass.checkVisibility(logger) {
             return null
           }
         } else {
-          creatorOrConstructor = cd.primaryConstructor
-          targetClass = cd
+          creatorOrConstructor = declaration.primaryConstructor
+          targetClass = declaration
         }
         val useProvider =
           !isAssisted && creatorOrConstructor?.isAnnotationPresent(Inject::class) == true
@@ -409,10 +416,16 @@ private class CircuitSymbolProcessor(
             }
             .firstOrNull()
             ?: run {
+              val annotationsString =
+                declaration.annotations.toList().joinToString {
+                  it.annotationType.resolve().toTypeName().toString()
+                }
               logger.error(
                 "Factory must be for a UI or Presenter class, but was " +
-                  "${targetClass.qualifiedName?.asString()}. " +
-                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}",
+                  "${targetClass.qualifiedName?.asString()}.\n" +
+                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}.\n" +
+                  "isAssisted? ${isAssisted}\n" +
+                  "Annotations: $annotationsString}",
                 targetClass
               )
               return null
@@ -442,7 +455,9 @@ private class CircuitSymbolProcessor(
             CodeBlock.of("provider.get()")
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
-            constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
+            constructorParams.add(
+              ParameterSpec.builder("factory", declaration.toClassName()).build()
+            )
             CodeBlock.of(
               "factory.%L(%L)",
               creatorOrConstructor!!.simpleName.getShortName(),

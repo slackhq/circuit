@@ -55,7 +55,6 @@ kotlin {
         implementation(libs.androidx.compose.integration.activity)
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
         implementation(libs.androidx.compose.material.icons)
-        implementation(libs.androidx.compose.material.iconsExtended)
         implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }

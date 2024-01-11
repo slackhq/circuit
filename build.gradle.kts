@@ -15,7 +15,7 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -95,7 +95,13 @@ allprojects {
     format("license") {
       licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
       target("src/**/*.kt")
-      targetExclude("**/circuit/backstack/**/*.kt")
+      targetExclude(
+        "**/circuit/backstack/**/*.kt",
+        "**/HorizontalPagerIndicator.kt",
+        "**/FilterList.kt",
+        "**/Remove.kt",
+        "**/Pets.kt",
+      )
     }
   }
   configure<SpotlessExtension> {
@@ -131,6 +137,8 @@ fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
   }
 }
 
+val jvmTargetVersion = libs.versions.jvmTarget
+
 subprojects {
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
@@ -141,7 +149,9 @@ subprojects {
       }
     }
 
-    tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
+    tasks.withType<JavaCompile>().configureEach {
+      options.release.set(jvmTargetVersion.map(String::toInt))
+    }
 
     // This is the default base plugin applied on all projects, so safe to add this hook here
     configureComposeBom(dependencies)
@@ -154,7 +164,7 @@ subprojects {
       compilerOptions {
         allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(JVM_11)
+          jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
           // Stub gen copies args from the parent compilation
           if (this@configureEach !is KaptGenerateStubsTask) {
             freeCompilerArgs.addAll(
@@ -448,8 +458,19 @@ subprojects {
 
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
-    if (emulatorWtfToken.isPresent) {
-      configure<EwExtension> { token.set(emulatorWtfToken) }
+    configure<EwExtension> {
+      devices.set(
+        listOf(
+          mapOf(
+            "model" to "Pixel2Atd",
+            "version" to "30",
+            "atd" to "true",
+          )
+        )
+      )
+      if (emulatorWtfToken.isPresent) {
+        token.set(emulatorWtfToken)
+      }
     }
     // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper
     // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects

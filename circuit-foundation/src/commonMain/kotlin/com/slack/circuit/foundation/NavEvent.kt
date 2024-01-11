@@ -25,8 +25,8 @@ public sealed interface NavEvent : CircuitUiEvent {
   public data object Pop : NavEvent
 
   /** Corresponds to [Navigator.goTo]. */
-  public data class GoTo(internal val screen: Screen) : NavEvent
+  public data class GoTo(val screen: Screen) : NavEvent
 
   /** Corresponds to [Navigator.resetRoot]. */
-  public data class ResetRoot(internal val newRoot: Screen) : NavEvent
+  public data class ResetRoot(val newRoot: Screen) : NavEvent
 }

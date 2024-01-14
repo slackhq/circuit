@@ -10,7 +10,7 @@ anvil = "2.4.9"
 atomicfu = "0.23.1"
 benchmark = "1.2.2"
 coil = "2.5.0"
-coil3 = "3.0.0-alpha01"
+coil3 = "3.0.0-alpha02"
 compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository

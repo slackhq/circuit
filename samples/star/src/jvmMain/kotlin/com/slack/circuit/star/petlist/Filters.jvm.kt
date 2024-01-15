@@ -13,44 +13,17 @@ import androidx.compose.ui.window.DialogProperties
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuitx.overlays.AlertDialogOverlay
+import com.slack.circuitx.overlays.DialogOverlay
 
 /** Indirection for showing filters in the pet list screen. */
 actual suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
   return show(
-    DialogOverlay(
+    AlertDialogOverlay(
       model = currentFilters,
       onDismiss = { currentFilters },
     ) { initialFilters, overlayNavigator ->
       UpdateFiltersSheet(initialFilters, Modifier.padding(32.dp), overlayNavigator::finish)
     }
   )
-}
-
-// TODO maybe move this to circuitx-overlay
-class DialogOverlay<Model : Any, Result : Any>(
-  private val model: Model,
-  private val onDismiss: (() -> Result)? = null,
-  private val properties: DialogProperties = DialogProperties(),
-  private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
-) : Overlay<Result> {
-  @Composable
-  override fun Content(navigator: OverlayNavigator<Result>) {
-    Dialog(
-      content = {
-        Surface(
-          shape = AlertDialogDefaults.shape,
-          color = AlertDialogDefaults.containerColor,
-          tonalElevation = AlertDialogDefaults.TonalElevation,
-        ) {
-          content(model, navigator::finish)
-        }
-      },
-      properties = properties,
-      onDismissRequest = {
-        // This is apparently as close as we can get to an "onDismiss" callback, which
-        // unfortunately has no animation
-        navigator.finish(onDismiss!!.invoke())
-      },
-    )
-  }
 }

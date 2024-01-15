@@ -4,7 +4,7 @@ package com.slack.circuit.star.di
 
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.fetch.NetworkFetcher
+import coil3.network.NetworkFetcher
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module

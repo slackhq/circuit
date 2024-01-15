@@ -34,11 +34,12 @@ public fun ContentWithOverlays(
 ) {
   val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
   val overlayState by remember {
-    derivedStateOf {
-      overlayHostData?.let { OverlayState.SHOWING } ?: OverlayState.HIDDEN
-    }
+    derivedStateOf { overlayHostData?.let { OverlayState.SHOWING } ?: OverlayState.HIDDEN }
   }
-  CompositionLocalProvider(LocalOverlayHost provides overlayHost, LocalOverlayState provides overlayState) {
+  CompositionLocalProvider(
+    LocalOverlayHost provides overlayHost,
+    LocalOverlayState provides overlayState
+  ) {
     Box(modifier) {
       content()
       AnimatedContent(

@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.overlays
 
 import androidx.compose.material3.AlertDialogDefaults
@@ -8,9 +10,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
 
-/**
- * An overlay that shows a [Dialog].
- */
+/** An overlay that shows a [Dialog]. */
 public class BasicDialogOverlay<Model : Any, Result : Any>(
   private val model: Model,
   private val onDismiss: (() -> Result)? = null,

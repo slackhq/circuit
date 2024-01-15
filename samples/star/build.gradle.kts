@@ -94,7 +94,7 @@ kotlin {
     commonTest {
       dependencies {
         implementation(libs.coroutines.test)
-        implementation(kotlin("test"))
+        implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
         implementation(libs.okio.fakefilesystem)
@@ -223,9 +223,12 @@ if (!buildDesktop) {
 
     // Hack to get these resources visible to other source sets
     // https://kotlinlang.slack.com/archives/C3PQML5NU/p1696283778314299?thread_ts=1696283403.197389&cid=C3PQML5NU
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-    sourceSets["test"].resources.srcDirs("src/commonTest/resources")
-    sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
+    // Disabled during sync because it breaks source sets
+    if (!System.getProperty("idea.sync.active", "false").toBoolean()) {
+      sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+      sourceSets["test"].resources.srcDirs("src/commonTest/resources")
+      sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
+    }
 
     defaultConfig {
       minSdk = 28

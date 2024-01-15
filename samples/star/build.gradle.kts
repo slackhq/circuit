@@ -177,6 +177,7 @@ kotlin {
           // Used for an in-memory datastore
           implementation(libs.okio.fakefilesystem)
           implementation(libs.sqldelight.driver.jdbc)
+          implementation(libs.appDirs)
         }
       }
       jvmTest { dependsOn(commonJvmTest) }

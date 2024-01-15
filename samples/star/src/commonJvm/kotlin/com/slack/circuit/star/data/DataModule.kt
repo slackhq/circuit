@@ -18,11 +18,15 @@ import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.plugins.HttpRequestRetry
 import javax.inject.Qualifier
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okio.FileSystem
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+
+private const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
 
 @ContributesTo(AppScope::class)
 @Module
@@ -35,8 +39,15 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideOkHttpClient(): OkHttpClient {
+  fun provideHttpCache(appDirs: StarAppDirs): Cache {
+    return Cache(appDirs.userCache / "http_cache", MAX_CACHE_SIZE, appDirs.fs)
+  }
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideOkHttpClient(cache: Cache): OkHttpClient {
     return OkHttpClient.Builder()
+      .cache(cache)
       .addInterceptor(
         HttpLoggingInterceptor().apply {
           level = HttpLoggingInterceptor.Level.BASIC
@@ -113,4 +124,6 @@ object DataModule {
       .build()
       .create<PetfinderApi>()
   }
+
+  @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 }

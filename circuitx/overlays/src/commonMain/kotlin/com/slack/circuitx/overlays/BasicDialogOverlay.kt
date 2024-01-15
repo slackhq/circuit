@@ -11,7 +11,7 @@ import com.slack.circuit.overlay.OverlayNavigator
 /**
  * An overlay that shows a [Dialog].
  */
-public class DialogOverlay<Model : Any, Result : Any>(
+public class BasicDialogOverlay<Model : Any, Result : Any>(
   private val model: Model,
   private val onDismiss: (() -> Result)? = null,
   private val properties: DialogProperties = DialogProperties(),

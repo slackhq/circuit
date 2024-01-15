@@ -1,43 +1,46 @@
 package com.slack.circuitx.overlays
 
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuitx.overlays.DialogResult.Cancel
+import com.slack.circuitx.overlays.DialogResult.Confirm
+import com.slack.circuitx.overlays.DialogResult.Dismiss
 
 /**
- * An overlay that shows an [AlertDialog].
+ * An overlay that shows an [AlertDialog] with configurable inputs.
+ *
+ * @see AlertDialog for docs on the parameters
  */
-@ExperimentalMaterial3Api
-public class AlertDialogOverlay<Model : Any, Result : Any>(
-  private val model: Model,
-  private val onDismiss: (() -> Result)? = null,
-  private val properties: DialogProperties = DialogProperties(),
-  private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
-) : Overlay<Result> {
+public class AlertDialogOverlay(
+  private val confirmButtonText: @Composable () -> Unit,
+  private val icon: @Composable (() -> Unit)? = null,
+  private val title: @Composable (() -> Unit)? = null,
+  private val text: @Composable (() -> Unit)? = null,
+  private val dismissButtonText: (@Composable () -> Unit)?,
+  private val dismissOnBackPress: Boolean = true,
+  private val dismissOnClickOutside: Boolean = true,
+) : Overlay<DialogResult> {
   @Composable
-  override fun Content(navigator: OverlayNavigator<Result>) {
+  override fun Content(navigator: OverlayNavigator<DialogResult>) {
     AlertDialog(
-      content = {
-        Surface(
-          shape = AlertDialogDefaults.shape,
-          color = AlertDialogDefaults.containerColor,
-          tonalElevation = AlertDialogDefaults.TonalElevation,
-        ) {
-          content(model, navigator::finish)
-        }
-      },
-      properties = properties,
-      onDismissRequest = {
-        // This is apparently as close as we can get to an "onDismiss" callback, which
-        // unfortunately has no animation
-        navigator.finish(onDismiss!!.invoke())
-      },
+      onDismissRequest = { navigator.finish(Dismiss) },
+      icon = icon,
+      title = title,
+      text = text,
+      confirmButton = { Button(onClick = { navigator.finish(Confirm) }) { confirmButtonText() } },
+      dismissButton =
+        dismissButtonText?.let { dismissButtonText ->
+          { Button(onClick = { navigator.finish(Cancel) }) { dismissButtonText() } }
+        },
+      properties =
+        DialogProperties(
+          dismissOnClickOutside = dismissOnClickOutside,
+          dismissOnBackPress = dismissOnBackPress,
+        ),
     )
   }
 }

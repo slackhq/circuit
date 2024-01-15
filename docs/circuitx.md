@@ -166,7 +166,7 @@ dependencies {
 }
 ```
 
-### BottomSheetOverlay
+### `BottomSheetOverlay`
 
 `BottomSheetOverlay` is an overlay that shows a bottom sheet with a strongly-typed API for the input
 model to the sheet content and result type. This allows you to easily use a bottom sheet to prompt
@@ -199,7 +199,26 @@ fun ActionsSheet(actions: List<Action>, onActionClicked: (Action) -> Unit) {
 }
 ```
 
-### FullScreenOverlay
+### Dialog Overlays
+
+`AlertDialogOverlay` is an overlay that shows a simple confirmation dialog with configurable inputs. This acts more or less as an `Overlay` shim over the Material 3 `AlertDialog` API.
+
+```kotlin
+/** A hypothetical confirmation dialog. */
+suspend fun OverlayHost.showConfirmationDialog(): Action {
+  return show(
+    AlertDialogOverlay(
+      titleText = { Text("Are you sure?") },
+      confirmButtonText = { Text("Yes") },
+      dismissButtonText = { Text("No") },
+    )
+  )
+}
+```
+
+There are also more generic `BasicAlertDialog` and `BasicDialog` implementations that allow more customization.
+
+### `FullScreenOverlay`
 
 Sometimes it's useful to have a full-screen overlay that can be used to show a screen in full above
 the current content. This API is fairly simple to use and just takes a `Screen` input of what

@@ -86,9 +86,11 @@ kotlin {
     commonTest {
       dependencies {
         implementation(libs.coroutines.test)
-        implementation(libs.kotlin.test)
+        implementation(kotlin("test"))
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
+        implementation(libs.okio.fakefilesystem)
+        implementation(libs.testing.assertk)
         implementation(projects.circuitTest)
       }
     }
@@ -192,7 +194,7 @@ kotlin {
           "coil3.annotation.ExperimentalCoilApi",
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
-        freeCompilerArgs.addAll("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
 
         if (project.hasProperty("circuit.enableComposeCompilerReports")) {
           val metricsDir =

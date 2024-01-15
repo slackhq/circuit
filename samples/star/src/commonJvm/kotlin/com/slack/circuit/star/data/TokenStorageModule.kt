@@ -11,7 +11,6 @@ import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module
 import dagger.Provides
 
-// TODO better reconcile this with the android version
 @ContributesTo(AppScope::class)
 @Module
 object TokenStorageModule {

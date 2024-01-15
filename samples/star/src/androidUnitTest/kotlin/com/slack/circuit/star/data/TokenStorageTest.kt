@@ -2,22 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data
 
-import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
+import okio.fakefilesystem.FakeFileSystem
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+// TODO eventually move to commonTest
 @RunWith(RobolectricTestRunner::class)
 class TokenStorageTest {
   @Test
   fun basicStore() = runTest {
     val tokenStorage =
       TokenStorageImpl(
-        TokenStorageModule.provideDatastoreStorage(ApplicationProvider.getApplicationContext())
+        TokenStorageModule.provideDatastoreStorage(FakeStarAppDirs(FakeFileSystem()))
       )
     assertThat(tokenStorage.getAuthData()).isNull()
     val inputData =

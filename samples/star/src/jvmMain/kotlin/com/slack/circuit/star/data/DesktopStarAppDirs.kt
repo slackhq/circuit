@@ -18,21 +18,15 @@ class DesktopStarAppDirs @Inject constructor(override val fs: FileSystem) : Star
   private val appDirs = AppDirsFactory.getInstance()
 
   override val userConfig: Path by lazy {
-    appDirs.getUserConfigDir(APP_NAME, APP_VERSION, APP_AUTHOR).toPath().also {
-      fs.createDirectories(it)
-    }
+    appDirs.getUserConfigDir(APP_NAME, APP_VERSION, APP_AUTHOR).toPath().also(fs::createDirectories)
   }
 
   override val userData: Path by lazy {
-    appDirs.getUserDataDir(APP_NAME, APP_VERSION, APP_AUTHOR).toPath().also {
-      fs.createDirectories(it)
-    }
+    appDirs.getUserDataDir(APP_NAME, APP_VERSION, APP_AUTHOR).toPath().also(fs::createDirectories)
   }
 
   override val userCache: Path by lazy {
-    appDirs.getUserCacheDir(APP_NAME, APP_VERSION, APP_AUTHOR).toPath().also {
-      fs.createDirectories(it)
-    }
+    appDirs.getUserCacheDir(APP_NAME, APP_VERSION, APP_AUTHOR).toPath().also(fs::createDirectories)
   }
 
   private companion object {

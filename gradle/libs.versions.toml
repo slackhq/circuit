@@ -161,6 +161,10 @@ androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-beta01"
 anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 anvil-annotations-optional = { module = "com.squareup.anvil:annotations-optional", version.ref = "anvil" }
 
+# Utilities for local storage dirs on Desktop
+# https://github.com/harawata/appdirs
+appDirs = "net.harawata:appdirs:1.2.2"
+
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
@@ -267,6 +271,7 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
+testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.2.0"

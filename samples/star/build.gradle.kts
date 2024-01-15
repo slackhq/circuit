@@ -49,7 +49,15 @@ kotlin {
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("jvmCommon") {
+        withAndroidTarget()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -89,10 +97,12 @@ kotlin {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
+        implementation(libs.okio.fakefilesystem)
+        implementation(libs.testing.assertk)
         implementation(projects.circuitTest)
       }
     }
-    val commonJvm by creating {
+    maybeCreate("jvmCommonMain").apply {
       dependsOn(commonMain.get())
       dependencies {
         api(libs.anvil.annotations)
@@ -110,7 +120,7 @@ kotlin {
         kapt.dependencies.addLater(libs.dagger.compiler)
       }
     }
-    val commonJvmTest by creating {
+    maybeCreate("jvmCommonTest").apply {
       dependsOn(commonTest.get())
       dependencies {
         implementation(dependencies.testFixtures(libs.eithernet))
@@ -120,7 +130,6 @@ kotlin {
     }
     if (!buildDesktop) {
       androidMain {
-        dependsOn(commonJvm)
         dependencies {
           implementation(libs.androidx.appCompat)
           implementation(libs.androidx.browser)
@@ -138,7 +147,6 @@ kotlin {
         }
       }
       val androidUnitTest by getting {
-        dependsOn(commonJvmTest)
         dependencies {
           implementation(libs.androidx.compose.ui.testing.junit)
           implementation(libs.androidx.compose.ui.testing.manifest)
@@ -170,16 +178,13 @@ kotlin {
     }
     if (!disableJvmTarget) {
       jvmMain {
-        dependsOn(commonJvm)
         dependencies {
           implementation(compose.desktop.currentOs)
           implementation(libs.coroutines.swing)
-          // Used for an in-memory datastore
-          implementation(libs.okio.fakefilesystem)
           implementation(libs.sqldelight.driver.jdbc)
+          implementation(libs.appDirs)
         }
       }
-      jvmTest { dependsOn(commonJvmTest) }
     }
 
     configureEach {
@@ -191,7 +196,7 @@ kotlin {
           "coil3.annotation.ExperimentalCoilApi",
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
-        freeCompilerArgs.addAll("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
 
         if (project.hasProperty("circuit.enableComposeCompilerReports")) {
           val metricsDir =
@@ -218,9 +223,12 @@ if (!buildDesktop) {
 
     // Hack to get these resources visible to other source sets
     // https://kotlinlang.slack.com/archives/C3PQML5NU/p1696283778314299?thread_ts=1696283403.197389&cid=C3PQML5NU
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-    sourceSets["test"].resources.srcDirs("src/commonTest/resources")
-    sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
+    // Disabled during sync because it breaks source sets
+    if (!System.getProperty("idea.sync.active", "false").toBoolean()) {
+      sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+      sourceSets["test"].resources.srcDirs("src/commonTest/resources")
+      sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
+    }
 
     defaultConfig {
       minSdk = 28

@@ -4,12 +4,16 @@ package com.slack.circuit.star.di
 
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.disk.DiskCache
 import coil3.network.NetworkFetcher
+import com.slack.circuit.star.data.StarAppDirs
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module
 import dagger.Provides
 import io.ktor.client.HttpClient
+
+private const val MAX_CACHE_SIZE = 1024L * 1024L * 100L // 100 MB
 
 @ContributesTo(AppScope::class)
 @Module
@@ -18,9 +22,17 @@ object CoilModule {
   @Provides
   fun provideImageLoader(
     @ApplicationContext platformContext: PlatformContext,
-    httpClient: dagger.Lazy<HttpClient>
+    httpClient: dagger.Lazy<HttpClient>,
+    starAppDirs: StarAppDirs,
   ): ImageLoader =
     ImageLoader.Builder(platformContext)
+      .diskCache {
+        DiskCache.Builder()
+          .directory(starAppDirs.userCache / "image_cache")
+          .fileSystem(starAppDirs.fs)
+          .maxSizeBytes(MAX_CACHE_SIZE)
+          .build()
+      }
       .components { add(NetworkFetcher.Factory(lazy { httpClient.get() })) }
       .build()
 }

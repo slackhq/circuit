@@ -10,8 +10,6 @@ import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module
 import dagger.Provides
-import okio.Path.Companion.toPath
-import okio.fakefilesystem.FakeFileSystem
 
 // TODO better reconcile this with the android version
 @ContributesTo(AppScope::class)
@@ -21,10 +19,9 @@ object TokenStorageModule {
 
   @SingleIn(AppScope::class)
   @Provides
-  fun provideDatastoreStorage(): Storage<Preferences> {
-    // Use a FakeFileSystem to just keep it in-memory.
-    return createStorage(FakeFileSystem()) {
-      val dir = "/tokenstorage".toPath()
+  fun provideDatastoreStorage(appDirs: StarAppDirs): Storage<Preferences> {
+    return createStorage(appDirs.fs) {
+      val dir = appDirs.userConfig / "token_storage"
       createDirectory(dir)
       dir.resolve("$TOKEN_STORAGE_FILE_NAME.preferences_pb")
     }

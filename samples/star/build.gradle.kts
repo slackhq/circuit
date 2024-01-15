@@ -49,7 +49,15 @@ kotlin {
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("jvmCommon") {
+        withAndroidTarget()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -94,7 +102,7 @@ kotlin {
         implementation(projects.circuitTest)
       }
     }
-    val commonJvm by creating {
+    maybeCreate("jvmCommonMain").apply {
       dependsOn(commonMain.get())
       dependencies {
         api(libs.anvil.annotations)
@@ -112,7 +120,7 @@ kotlin {
         kapt.dependencies.addLater(libs.dagger.compiler)
       }
     }
-    val commonJvmTest by creating {
+    maybeCreate("jvmCommonTest").apply {
       dependsOn(commonTest.get())
       dependencies {
         implementation(dependencies.testFixtures(libs.eithernet))
@@ -122,7 +130,6 @@ kotlin {
     }
     if (!buildDesktop) {
       androidMain {
-        dependsOn(commonJvm)
         dependencies {
           implementation(libs.androidx.appCompat)
           implementation(libs.androidx.browser)
@@ -140,7 +147,6 @@ kotlin {
         }
       }
       val androidUnitTest by getting {
-        dependsOn(commonJvmTest)
         dependencies {
           implementation(libs.androidx.compose.ui.testing.junit)
           implementation(libs.androidx.compose.ui.testing.manifest)
@@ -172,17 +178,13 @@ kotlin {
     }
     if (!disableJvmTarget) {
       jvmMain {
-        dependsOn(commonJvm)
         dependencies {
           implementation(compose.desktop.currentOs)
           implementation(libs.coroutines.swing)
-          // Used for an in-memory datastore
-          implementation(libs.okio.fakefilesystem)
           implementation(libs.sqldelight.driver.jdbc)
           implementation(libs.appDirs)
         }
       }
-      jvmTest { dependsOn(commonJvmTest) }
     }
 
     configureEach {

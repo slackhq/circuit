@@ -32,9 +32,7 @@ class OverlayTest {
   fun overlayHasData() = runTest {
     moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
-        LaunchedEffect(overlayHost) {
-          overlayHost.show(TestOverlay())
-        }
+        LaunchedEffect(overlayHost) { overlayHost.show(TestOverlay()) }
         overlayHost.currentOverlayData
       }
       .distinctUntilChanged()
@@ -51,9 +49,7 @@ class OverlayTest {
         val overlayHost = rememberOverlayHost()
         val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
         key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }
-        LaunchedEffect(overlayHost) {
-          overlayHost.show(testOverlay)
-        }
+        LaunchedEffect(overlayHost) { overlayHost.show(testOverlay) }
         overlayHostData
       }
       .distinctUntilChanged()
@@ -67,9 +63,7 @@ class OverlayTest {
 
   @Test
   fun overlayStateIsUnavailableByDefault() = runTest {
-    moleculeFlow(RecompositionMode.Immediate) {
-      LocalOverlayState.current
-    }
+    moleculeFlow(RecompositionMode.Immediate) { LocalOverlayState.current }
       .test { assertEquals(UNAVAILABLE, awaitItem()) }
   }
 }

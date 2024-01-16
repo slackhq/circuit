@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.overlays
 
-public sealed interface DialogResult {
-  public data object Confirm : DialogResult
+/** An enum representing the possible results of an [AlertDialogOverlay]. */
+public enum class DialogResult {
+  /** The user confirmed the action. */
+  Confirm,
 
-  public data object Cancel : DialogResult
+  /** The user canceled the action (i.e. clicked the dismiss button). */
+  Cancel,
 
-  public data object Dismiss : DialogResult
+  /** The user dismissed the dialog (i.e. clicked outside of the dialog). */
+  Dismiss,
 }

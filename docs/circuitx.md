@@ -201,16 +201,16 @@ fun ActionsSheet(actions: List<Action>, onActionClicked: (Action) -> Unit) {
 
 ### Dialog Overlays
 
-`AlertDialogOverlay` is an overlay that shows a simple confirmation dialog with configurable inputs. This acts more or less as an `Overlay` shim over the Material 3 `AlertDialog` API.
+`alertDialogOverlay` is function that returns an Overlay that shows a simple confirmation dialog with configurable inputs. This acts more or less as an `Overlay` shim over the Material 3 `AlertDialog` API.
 
 ```kotlin
 /** A hypothetical confirmation dialog. */
 suspend fun OverlayHost.showConfirmationDialog(): Action {
   return show(
-    AlertDialogOverlay(
+    alertDialogOverlay(
       titleText = { Text("Are you sure?") },
-      confirmButtonText = { Text("Yes") },
-      dismissButtonText = { Text("No") },
+      confirmButton = { onClick -> Button(onClick = onClick) { Text("Yes") } },
+      dismissButton = { onClick -> Button(onClick = onClick) { Text("No") } },
     )
   )
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.overlays
 
-/** An enum representing the possible results of an [AlertDialogOverlay]. */
+/** An enum representing the possible results of an [alertDialogOverlay]. */
 public enum class DialogResult {
   /** The user confirmed the action. */
   Confirm,

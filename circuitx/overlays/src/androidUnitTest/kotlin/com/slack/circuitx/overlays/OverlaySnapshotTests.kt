@@ -4,6 +4,7 @@ package com.slack.circuitx.overlays
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,7 +69,10 @@ class OverlaySnapshotTests {
         }
       }
 
-      captureScreenRoboImage(roborazziOptions = roborazziOptions)
+      captureScreenRoboImage(
+        roborazziOptions = roborazziOptions,
+        filePath = "src/androidUnitTest/snapshots/images/alertDialogOverlay.png"
+      )
     }
   }
 
@@ -84,8 +88,10 @@ class OverlaySnapshotTests {
                   BottomSheetOverlay<String, Unit>(
                     model = "This is a bottom sheet",
                   ) { model, _ ->
-                    Box(Modifier.height(200.dp)) {
-                      Text(model, modifier = Modifier.align(Alignment.Center))
+                    Box(Modifier.height(200.dp).fillMaxWidth()) {
+                      Button(modifier = Modifier.align(Alignment.Center), onClick = {}) {
+                        Text(model)
+                      }
                     }
                   }
                 )
@@ -96,7 +102,10 @@ class OverlaySnapshotTests {
       }
 
       composeTestRule.waitForIdle()
-      captureScreenRoboImage(roborazziOptions = roborazziOptions)
+      captureScreenRoboImage(
+        roborazziOptions = roborazziOptions,
+        filePath = "src/androidUnitTest/snapshots/images/bottomsheet.png"
+      )
     }
   }
 }

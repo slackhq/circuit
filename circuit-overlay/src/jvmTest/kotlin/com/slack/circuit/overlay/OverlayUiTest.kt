@@ -22,13 +22,12 @@ class OverlayUiTest {
 
   @Test
   fun overlayStateLifecycle() {
-    val testOverlay = TestOverlay()
     var shouldShow by mutableStateOf(false)
     compose.setContent {
       ContentWithOverlays {
         if (shouldShow) {
           OverlayEffect {
-            it.show(testOverlay)
+            it.show(TestOverlay())
             shouldShow = false
           }
         }
@@ -43,15 +42,18 @@ class OverlayUiTest {
       compose.onNodeWithTag(OVERLAY_STATE_TAG).assertTextContains("State: $expected")
     }
 
-    // Initial state
-    assertState(HIDDEN)
+    repeat(3) {
+      println("Iteration $it")
+      // Initial state
+      assertState(HIDDEN)
 
-    // Show it
-    shouldShow = true
-    assertState(SHOWING)
+      // Show it
+      shouldShow = true
+      assertState(SHOWING)
 
-    // Finish it
-    testOverlay.finish("Done!")
-    assertState(HIDDEN)
+      // Hide it again
+      shouldShow = false
+      assertState(HIDDEN)
+    }
   }
 }

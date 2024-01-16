@@ -3,7 +3,9 @@
 package com.slack.circuitx.overlays
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.DialogProperties
 import com.slack.circuit.overlay.Overlay
@@ -20,7 +22,15 @@ public class BasicAlertDialogOverlay<Model : Any, Result : Any>(
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
     AlertDialog(
-      content = { content(model, navigator::finish) },
+      content = {
+        Surface(
+          shape = AlertDialogDefaults.shape,
+          color = AlertDialogDefaults.containerColor,
+          tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+          content(model, navigator::finish)
+        }
+      },
       properties = properties,
       onDismissRequest = {
         // This is apparently as close as we can get to an "onDismiss" callback, which

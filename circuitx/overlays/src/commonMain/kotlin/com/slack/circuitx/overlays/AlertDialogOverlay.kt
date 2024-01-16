@@ -23,8 +23,7 @@ public class AlertDialogOverlay(
   private val title: @Composable (() -> Unit)? = null,
   private val text: @Composable (() -> Unit)? = null,
   private val dismissButtonText: (@Composable () -> Unit)?,
-  private val dismissOnBackPress: Boolean = true,
-  private val dismissOnClickOutside: Boolean = true,
+  private val properties: DialogProperties = DialogProperties(),
 ) : Overlay<DialogResult> {
   @Composable
   override fun Content(navigator: OverlayNavigator<DialogResult>) {
@@ -38,11 +37,7 @@ public class AlertDialogOverlay(
         dismissButtonText?.let { dismissButtonText ->
           { Button(onClick = { navigator.finish(Cancel) }) { dismissButtonText() } }
         },
-      properties =
-        DialogProperties(
-          dismissOnClickOutside = dismissOnClickOutside,
-          dismissOnBackPress = dismissOnBackPress,
-        ),
+      properties = properties,
     )
   }
 }

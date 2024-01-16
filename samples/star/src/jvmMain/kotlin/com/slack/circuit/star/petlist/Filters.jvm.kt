@@ -13,7 +13,7 @@ actual suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
   return show(
     BasicAlertDialogOverlay(
       model = currentFilters,
-      onDismiss = { currentFilters },
+      onDismissRequest = { currentFilters },
     ) { initialFilters, overlayNavigator ->
       UpdateFiltersSheet(initialFilters, Modifier.padding(32.dp), overlayNavigator::finish)
     }

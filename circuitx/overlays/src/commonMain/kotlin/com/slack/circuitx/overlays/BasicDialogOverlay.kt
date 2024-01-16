@@ -13,7 +13,7 @@ import com.slack.circuit.overlay.OverlayNavigator
 /** An overlay that shows a [Dialog]. */
 public class BasicDialogOverlay<Model : Any, Result : Any>(
   private val model: Model,
-  private val onDismiss: (() -> Result)? = null,
+  private val onDismissRequest: () -> Result,
   private val properties: DialogProperties = DialogProperties(),
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
 ) : Overlay<Result> {
@@ -33,7 +33,7 @@ public class BasicDialogOverlay<Model : Any, Result : Any>(
       onDismissRequest = {
         // This is apparently as close as we can get to an "onDismiss" callback, which
         // unfortunately has no animation
-        navigator.finish(onDismiss!!.invoke())
+        navigator.finish(onDismissRequest())
       },
     )
   }

@@ -2,15 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.overlays
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -80,7 +84,9 @@ class OverlaySnapshotTests {
                   BottomSheetOverlay<String, Unit>(
                     model = "This is a bottom sheet",
                   ) { model, _ ->
-                    Text(model)
+                    Box(Modifier.height(200.dp)) {
+                      Text(model, modifier = Modifier.align(Alignment.Center))
+                    }
                   }
                 )
               }

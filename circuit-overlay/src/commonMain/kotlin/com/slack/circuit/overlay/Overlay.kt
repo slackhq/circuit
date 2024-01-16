@@ -169,6 +169,7 @@ public fun interface OverlayNavigator<Result : Any> {
  * For common overlays, it's useful to create a common `Overlay` subtype that can be reused. For
  * example: `BottomSheetOverlay`, `ModalOverlay`, `TooltipOverlay`, etc.
  */
+@Stable
 public interface Overlay<Result : Any> {
   @Composable public fun Content(navigator: OverlayNavigator<Result>)
 }

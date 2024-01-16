@@ -70,7 +70,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.overlay.LocalOverlayHost
+import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -234,9 +234,8 @@ internal fun PetList(
   modifier: Modifier = Modifier,
 ) {
   if (state is Success && state.isUpdateFiltersModalShowing) {
-    val overlayHost = LocalOverlayHost.current
-    LaunchedEffect(state) {
-      val result = overlayHost.updateFilters(state.filters)
+    OverlayEffect(state) { host ->
+      val result = host.updateFilters(state.filters)
       state.eventSink(UpdatedFilters(result))
     }
   }

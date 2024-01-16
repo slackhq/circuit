@@ -48,6 +48,7 @@ import kotlinx.coroutines.sync.withLock
  * ```
  */
 @Stable
+@SubclassOptInRequired(ReadOnlyOverlayApi::class)
 public interface OverlayHost {
   /**
    * The current [OverlayHostData] or null if no overlay is currently showing.
@@ -78,6 +79,7 @@ public interface OverlayHost {
 /** Returns a remembered an [OverlayHost] that can be used to show overlays. */
 @Composable public fun rememberOverlayHost(): OverlayHost = remember { OverlayHostImpl() }
 
+@OptIn(ReadOnlyOverlayApi::class)
 private class OverlayHostImpl : OverlayHost {
   /**
    * Only one [Overlay] can be shown at a time. Since a suspending Mutex is a fair queue, this
@@ -167,6 +169,7 @@ public fun interface OverlayNavigator<Result : Any> {
  * For common overlays, it's useful to create a common `Overlay` subtype that can be reused. For
  * example: `BottomSheetOverlay`, `ModalOverlay`, `TooltipOverlay`, etc.
  */
+@Stable
 public interface Overlay<Result : Any> {
   @Composable public fun Content(navigator: OverlayNavigator<Result>)
 }

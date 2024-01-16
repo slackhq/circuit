@@ -47,12 +47,12 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
+import com.slack.circuit.overlay.LocalOverlayState
+import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.star.common.Platform
-import com.slack.circuit.star.common.PlatformType
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
@@ -220,7 +220,7 @@ private fun PhotoPager(
 
     // TODO implement full screen overlay on non-android targets
     val clickableModifier =
-      if (Platform.type == PlatformType.ANDROID) {
+      if (LocalOverlayState.current != UNAVAILABLE) {
         val scope = rememberStableCoroutineScope()
         val overlayHost = LocalOverlayHost.current
         photoUrl?.let { url ->

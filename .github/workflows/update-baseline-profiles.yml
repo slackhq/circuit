@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   update-baseline-profiles:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4

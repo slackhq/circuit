@@ -44,7 +44,7 @@ class ProvidedValuesLifetimeTest {
 
       val circuit =
         createTestCircuit(
-          presenter = { screen, navigator -> TestPresenter(screen as TestScreen, navigator) },
+          presenter = { screen, navigator -> TestPresenter(screen as TestScreen, navigator) }
         )
 
       setContent {
@@ -53,7 +53,7 @@ class ProvidedValuesLifetimeTest {
           val navigator =
             rememberCircuitNavigator(
               backstack = backstack,
-              onRootPop = {} // no-op for tests
+              onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(
             navigator = navigator,
@@ -62,7 +62,7 @@ class ProvidedValuesLifetimeTest {
               providedValuesForBackStack(
                 backStack = backstack,
                 stackLocalProviders = persistentListOf(TestBackStackRecordLocalProvider),
-              )
+              ),
           )
         }
       }
@@ -121,10 +121,8 @@ class ProvidedValuesLifetimeTest {
     val LocalWithDefault = compositionLocalOf { "Default" }
   }
 
-  class TestPresenter(
-    private val screen: TestScreen,
-    private val navigator: Navigator,
-  ) : Presenter<TestState> {
+  class TestPresenter(private val screen: TestScreen, private val navigator: Navigator) :
+    Presenter<TestState> {
     @Composable
     override fun present(): TestState {
       var count by remember { mutableIntStateOf(0) }

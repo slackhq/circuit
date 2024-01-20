@@ -169,7 +169,7 @@ pluginManagement {
         includeModule("com.github.ben-manes", "gradle-versions-plugin")
         includeModule(
           "com.github.ben-manes.versions",
-          "com.github.ben-manes.versions.gradle.plugin"
+          "com.github.ben-manes.versions.gradle.plugin",
         )
         includeModule("com.gradle", "gradle-enterprise-gradle-plugin")
         includeModule("com.gradle.enterprise", "com.gradle.enterprise.gradle.plugin")

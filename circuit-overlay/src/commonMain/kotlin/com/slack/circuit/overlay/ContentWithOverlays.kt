@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 public fun ContentWithOverlays(
   modifier: Modifier = Modifier,
   overlayHost: OverlayHost = rememberOverlayHost(),
-  content: @Composable () -> Unit
+  content: @Composable () -> Unit,
 ) {
   val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
   val overlayState by remember {
@@ -38,7 +38,7 @@ public fun ContentWithOverlays(
   }
   CompositionLocalProvider(
     LocalOverlayHost provides overlayHost,
-    LocalOverlayState provides overlayState
+    LocalOverlayState provides overlayState,
   ) {
     Box(modifier) {
       content()
@@ -54,7 +54,7 @@ public fun ContentWithOverlays(
             it.targetContentZIndex = targetState?.let { 1f } ?: -1f
           }
         },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
       ) { data ->
         when (val overlay = data?.overlay) {
           null -> Unit

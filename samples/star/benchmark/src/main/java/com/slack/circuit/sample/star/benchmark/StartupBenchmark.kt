@@ -20,7 +20,7 @@ class StartupBenchmark {
       packageName = "com.slack.circuit.sample.star.apk",
       metrics = listOf(StartupTimingMetric()),
       iterations = 5,
-      startupMode = StartupMode.COLD
+      startupMode = StartupMode.COLD,
     ) {
       pressHome()
       startActivityAndWait()

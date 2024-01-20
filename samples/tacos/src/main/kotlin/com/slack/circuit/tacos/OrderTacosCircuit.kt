@@ -69,7 +69,7 @@ data object OrderTacosScreen : Screen {
     val isNextEnabled: Boolean,
     val isNextVisible: Boolean,
     val isFooterVisible: Boolean,
-    val eventSink: (Event) -> Unit
+    val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
@@ -95,7 +95,7 @@ private const val TACO_BASE_PRICE = 999
 data class OrderDetails(
   val filling: Ingredient = Ingredient(""),
   val toppings: Set<Ingredient> = persistentSetOf(),
-  val ingredientsCost: Cents = 0
+  val ingredientsCost: Cents = 0,
 ) {
   val baseCost: Cents = TACO_BASE_PRICE
 }
@@ -110,7 +110,7 @@ internal class OrderTacosPresenter(
   private val confirmationProducer: OrderStep.StateProducer<ConfirmationOrderStep.OrderState>,
   private val summaryProducer: OrderStep.StateProducer<SummaryOrderStep.SummaryState>,
   private val initialStep: OrderStep = FillingsOrderStep,
-  private val initialOrderDetails: OrderDetails = OrderDetails()
+  private val initialOrderDetails: OrderDetails = OrderDetails(),
 ) : Presenter<OrderTacosScreen.State> {
   @Composable
   override fun present(): OrderTacosScreen.State {
@@ -139,7 +139,7 @@ internal class OrderTacosPresenter(
       isPreviousVisible = currentStep.index in 1..2,
       isNextEnabled = isNextEnabled,
       isNextVisible = currentStep.index < 2,
-      isFooterVisible = currentStep != SummaryOrderStep
+      isFooterVisible = currentStep != SummaryOrderStep,
     ) { navEvent ->
       // process navigation event from child order step
       processNavigation(currentStep, navEvent) { currentStep = it }
@@ -150,7 +150,7 @@ internal class OrderTacosPresenter(
   private fun produceOrderStepState(
     orderStep: OrderStep,
     orderDetails: OrderDetails,
-    eventSink: (OrderStep.Event) -> Unit
+    eventSink: (OrderStep.Event) -> Unit,
   ): OrderStep.State =
     when (orderStep) {
       is FillingsOrderStep -> fillingsProducer(orderDetails, eventSink)
@@ -163,16 +163,13 @@ internal class OrderTacosPresenter(
 private fun processNavigation(
   currentStep: OrderStep,
   navEvent: OrderTacosScreen.Event,
-  onNavEvent: (OrderStep) -> Unit
+  onNavEvent: (OrderStep) -> Unit,
 ) {
   val newIndex = currentStep.index + navEvent.indexModifier
   onNavEvent(orderSteps[newIndex])
 }
 
-private fun updateOrder(
-  event: OrderStep.UpdateOrder,
-  currentOrder: OrderDetails,
-): OrderDetails {
+private fun updateOrder(event: OrderStep.UpdateOrder, currentOrder: OrderDetails): OrderDetails {
   val newFilling =
     when (event) {
       is OrderStep.UpdateOrder.SetFilling -> event.ingredient
@@ -189,7 +186,7 @@ private fun updateOrder(
   return OrderDetails(
     ingredientsCost = newIngredientsCost,
     filling = newFilling,
-    toppings = newToppings.toImmutableSet()
+    toppings = newToppings.toImmutableSet(),
   )
 }
 
@@ -212,10 +209,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
         title = { Text(stringResource(state.headerResId)) },
         modifier = Modifier,
         navigationIcon = {
-          NavigationButton(
-            direction = Direction.LEFT,
-            visible = state.isPreviousVisible,
-          ) {
+          NavigationButton(direction = Direction.LEFT, visible = state.isPreviousVisible) {
             state.eventSink(OrderTacosScreen.Event.Previous)
           }
         },
@@ -227,7 +221,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
           ) {
             state.eventSink(OrderTacosScreen.Event.Next)
           }
-        }
+        },
       )
     },
     bottomBar = {
@@ -238,7 +232,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
       ) {
         state.eventSink(OrderTacosScreen.Event.ProcessOrder)
       }
-    }
+    },
   ) { padding ->
     val stepModifier = Modifier.padding(padding)
     when (state.stepState) {
@@ -261,7 +255,7 @@ private fun NavigationButton(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   visible: Boolean = true,
-  onClick: () -> Unit
+  onClick: () -> Unit,
 ) {
   if (!visible) return
 
@@ -337,7 +331,7 @@ internal fun PreviewOrderTacosUi() {
     ToppingsOrderStep.State.AvailableToppings(
       selected = persistentSetOf(toppings.first()),
       list = toppings,
-      eventSink = {}
+      eventSink = {},
     )
   Surface {
     TacoTheme {
@@ -350,7 +344,7 @@ internal fun PreviewOrderTacosUi() {
           isNextVisible = true,
           isNextEnabled = false,
           isFooterVisible = true,
-          eventSink = {}
+          eventSink = {},
         )
       )
     }

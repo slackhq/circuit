@@ -57,7 +57,7 @@ fun main() {
       rememberWindowState(
         width = 1200.dp,
         height = 800.dp,
-        position = WindowPosition(Alignment.Center)
+        position = WindowPosition(Alignment.Center),
       )
     var darkMode by remember { mutableStateOf(false) }
     Window(
@@ -90,15 +90,12 @@ fun main() {
           }
           else -> false
         }
-      }
+      },
     ) {
       MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()) {
         CircuitCompositionLocals(component.circuit) {
           ContentWithOverlays {
-            NavigableCircuitContent(
-              navigator = navigator,
-              backstack = backStack,
-            )
+            NavigableCircuitContent(navigator = navigator, backstack = backStack)
           }
         }
       }

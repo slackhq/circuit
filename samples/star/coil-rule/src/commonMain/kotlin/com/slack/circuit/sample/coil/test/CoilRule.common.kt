@@ -22,9 +22,8 @@ import org.junit.rules.ExternalResource
  *   fake instance.
  */
 @ExperimentalCoilApi
-class CoilRule(
-  private val factory: SingletonImageLoader.Factory = defaultFactory(),
-) : ExternalResource() {
+class CoilRule(private val factory: SingletonImageLoader.Factory = defaultFactory()) :
+  ExternalResource() {
   override fun before() {
     SingletonImageLoader.setSafe(factory)
   }
@@ -36,9 +35,7 @@ class CoilRule(
 
   companion object {
     /** A custom invoke that just uses a custom [image] to default in a [FakeImageLoaderEngine]. */
-    operator fun invoke(
-      image: Image,
-    ) = CoilRule(factory = defaultFactory(image))
+    operator fun invoke(image: Image) = CoilRule(factory = defaultFactory(image))
 
     /**
      * A custom invoke that just uses a custom [imageResourcePath] to default in a
@@ -46,9 +43,7 @@ class CoilRule(
      */
     // TODO reading a path from another project doesn't appear to be supported
     @OptIn(ExperimentalResourceApi::class)
-    operator fun invoke(
-      imageResourcePath: String,
-    ): CoilRule {
+    operator fun invoke(imageResourcePath: String): CoilRule {
       val bytes = runBlocking { resource(imageResourcePath).readBytes() }
       return CoilRule(factory = defaultFactory(createImageFromBytes(bytes)))
     }

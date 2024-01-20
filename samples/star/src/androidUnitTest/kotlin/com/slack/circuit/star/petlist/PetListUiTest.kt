@@ -102,7 +102,7 @@ class PetListUiTest {
         breed = "Australian Terrier",
         gender = MALE,
         size = SMALL,
-        age = "12"
+        age = "12",
       )
   }
 }

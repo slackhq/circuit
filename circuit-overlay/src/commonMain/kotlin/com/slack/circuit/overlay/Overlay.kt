@@ -98,7 +98,7 @@ private class OverlayHostImpl : OverlayHost {
           currentOverlayData =
             OverlayHostDataImpl(
               overlay as Overlay<Any>,
-              continuation as CancellableContinuation<Any>
+              continuation as CancellableContinuation<Any>,
             )
         }
       } finally {

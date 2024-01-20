@@ -13,7 +13,7 @@ data class Ingredient(
   val name: String,
   val calories: Int = 0,
   val diet: Diet = Diet.NONE,
-  val charge: Cents = 0
+  val charge: Cents = 0,
 )
 
 /** Dietary label. Used to mark an ingredient with the most strict diet that it satisfies. */

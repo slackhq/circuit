@@ -13,7 +13,5 @@ import javax.inject.Inject
 @ContributesBinding(AppScope::class)
 class InjectedPetRepository
 @Inject
-constructor(
-  sqliteDriverFactory: SqlDriverFactory,
-  private val petFinderApi: PetfinderApi,
-) : PetRepository by PetRepositoryImpl(sqliteDriverFactory, petFinderApi)
+constructor(sqliteDriverFactory: SqlDriverFactory, private val petFinderApi: PetfinderApi) :
+  PetRepository by PetRepositoryImpl(sqliteDriverFactory, petFinderApi)

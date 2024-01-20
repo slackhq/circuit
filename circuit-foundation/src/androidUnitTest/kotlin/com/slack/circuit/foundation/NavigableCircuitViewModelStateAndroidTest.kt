@@ -171,7 +171,7 @@ class NavigableCircuitViewModelStateAndroidTest {
 
   private fun ComposeTestRule.onEachFrameWhileMultipleScreens(
     matcher: SemanticsMatcher,
-    block: ComposeTestRule.() -> Unit
+    block: ComposeTestRule.() -> Unit,
   ) {
     var i = 0
     while (true) {

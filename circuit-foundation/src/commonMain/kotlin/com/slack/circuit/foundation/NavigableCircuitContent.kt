@@ -180,7 +180,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
               )
-            }
+            },
         )
       }
     }
@@ -214,7 +214,7 @@ public object NavigatorDefaults {
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
-      content: @Composable (T) -> Unit
+      content: @Composable (T) -> Unit,
     ) {
       // Remember the previous stack depth so we know if the navigation is going "back".
       val prevStackDepth = rememberSaveable { mutableStateOf(backStackDepth) }
@@ -257,7 +257,7 @@ public object NavigatorDefaults {
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
-      content: @Composable (T) -> Unit
+      content: @Composable (T) -> Unit,
     ) {
       content(args.first())
     }

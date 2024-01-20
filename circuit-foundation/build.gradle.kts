@@ -97,9 +97,7 @@ tasks
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
     compilerOptions {
-      freeCompilerArgs.addAll(
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-      )
+      freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
   }
 

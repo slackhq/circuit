@@ -74,7 +74,7 @@ public class GestureNavigationProperties(
 @OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecoration(
   fallback: NavDecoration,
-  onBackInvoked: () -> Unit
+  onBackInvoked: () -> Unit,
 ): NavDecoration = IosGestureNavigationDecoration(onBackInvoked = onBackInvoked)
 
 /**
@@ -157,13 +157,11 @@ private class IosGestureNavigationDecoration(
           when {
             // adding to back stack
             backStackDepth > prevStackDepth -> {
-              slideInHorizontally(
-                  initialOffsetX = End,
-                )
+              slideInHorizontally(initialOffsetX = End)
                 .togetherWith(
                   slideOutHorizontally { width ->
                     -(properties.enterOffsetFraction * width).roundToInt()
-                  },
+                  }
                 )
             }
 
@@ -177,9 +175,7 @@ private class IosGestureNavigationDecoration(
                 slideInHorizontally { width ->
                     -(properties.enterOffsetFraction * width).roundToInt()
                   }
-                  .togetherWith(
-                    slideOutHorizontally(targetOffsetX = End),
-                  )
+                  .togetherWith(slideOutHorizontally(targetOffsetX = End))
                   .apply { targetContentZIndex = -1f }
               }
             }
@@ -231,10 +227,7 @@ private fun SwipeableContent(
           .swipeable(
             state = state,
             anchors =
-              mapOf(
-                0f to DismissValue.Default,
-                width.toFloat() to DismissValue.DismissedToEnd,
-              ),
+              mapOf(0f to DismissValue.Default, width.toFloat() to DismissValue.DismissedToEnd),
             thresholds = { _, _ -> dismissThreshold },
             orientation = Orientation.Horizontal,
             enabled = swipeEnabled,
@@ -245,11 +238,9 @@ private fun SwipeableContent(
                 factorAtMin = SwipeableDefaults.StiffResistanceFactor,
                 factorAtMax = SwipeableDefaults.StandardResistanceFactor,
               ),
-          ),
+          )
     ) {
-      Box(
-        modifier = Modifier.offset { IntOffset(x = state.offset.value.roundToInt(), y = 0) },
-      ) {
+      Box(modifier = Modifier.offset { IntOffset(x = state.offset.value.roundToInt(), y = 0) }) {
         content()
       }
     }
@@ -257,13 +248,9 @@ private fun SwipeableContent(
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-private class SwipeDismissNestedScrollConnection(
-  private val state: DismissState,
-) : NestedScrollConnection {
-  override fun onPreScroll(
-    available: Offset,
-    source: NestedScrollSource,
-  ): Offset =
+private class SwipeDismissNestedScrollConnection(private val state: DismissState) :
+  NestedScrollConnection {
+  override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
     when {
       available.x < 0 && source == NestedScrollSource.Drag -> {
         // If we're being swiped back to origin, let the SwipeDismiss handle it first
@@ -291,10 +278,7 @@ private class SwipeDismissNestedScrollConnection(
       else -> Velocity.Zero
     }
 
-  override suspend fun onPostFling(
-    consumed: Velocity,
-    available: Velocity,
-  ): Velocity {
+  override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
     state.performFling(velocity = available.x)
     return available
   }

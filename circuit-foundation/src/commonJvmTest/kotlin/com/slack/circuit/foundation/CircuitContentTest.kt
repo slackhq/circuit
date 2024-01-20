@@ -64,7 +64,7 @@ class CircuitContentTest {
     Column(modifier) {
       BasicText(
         text = "Increment count",
-        modifier = Modifier.clickable { count++ }.testTag(TAG_INCREASE_COUNT)
+        modifier = Modifier.clickable { count++ }.testTag(TAG_INCREASE_COUNT),
       )
       CircuitContent(screen)
     }

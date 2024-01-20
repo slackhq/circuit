@@ -68,7 +68,7 @@ class OrderTacosPresenterTest {
         toppingsProducer = { _, _ -> ToppingsOrderStep.State.Loading },
         confirmationProducer = { _, _ -> error("wrong step") },
         summaryProducer = { _, _ -> error("wrong step") },
-        initialStep = ToppingsOrderStep
+        initialStep = ToppingsOrderStep,
       )
 
     moleculeFlow(RecompositionMode.Immediate) { presenter.present() }

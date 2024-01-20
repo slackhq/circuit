@@ -11,11 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 actual fun rememberViewModel(key: String?): MutableIntState {
-  return viewModel<TestStateViewModel>(
-      key = key,
-      factory = TestStateViewModel.Factory,
-    )
-    .counterState
+  return viewModel<TestStateViewModel>(key = key, factory = TestStateViewModel.Factory).counterState
 }
 
 private class TestStateViewModel : ViewModel() {

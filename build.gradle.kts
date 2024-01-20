@@ -87,7 +87,7 @@ allprojects {
       endWithNewline()
       licenseHeaderFile(
         rootProject.file("spotless/spotless.kt"),
-        "(import|plugins|buildscript|dependencies|pluginManagement|dependencyResolutionManagement)"
+        "(import|plugins|buildscript|dependencies|pluginManagement|dependencyResolutionManagement)",
       )
     }
     // Apply license formatting separately for kotlin files so we can prevent it from overwriting
@@ -194,7 +194,7 @@ subprojects {
               if (suppressComposeKotlinVersion) {
                 freeCompilerArgs.addAll(
                   "-P",
-                  "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+                  "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
                 )
               }
             }
@@ -411,7 +411,7 @@ subprojects {
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion"
+              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
             )
           }
         }
@@ -459,15 +459,7 @@ subprojects {
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
     configure<EwExtension> {
-      devices.set(
-        listOf(
-          mapOf(
-            "model" to "Pixel2Atd",
-            "version" to "30",
-            "atd" to "true",
-          )
-        )
-      )
+      devices.set(listOf(mapOf("model" to "Pixel2Atd", "version" to "30", "atd" to "true")))
       if (emulatorWtfToken.isPresent) {
         token.set(emulatorWtfToken)
       }

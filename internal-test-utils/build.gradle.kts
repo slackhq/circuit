@@ -41,7 +41,7 @@ kotlin {
       compilerOptions.configure {
         freeCompilerArgs.addAll(
           "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-          "-Xexpect-actual-classes" // used for Parcelize in tests
+          "-Xexpect-actual-classes", // used for Parcelize in tests
         )
       }
     }

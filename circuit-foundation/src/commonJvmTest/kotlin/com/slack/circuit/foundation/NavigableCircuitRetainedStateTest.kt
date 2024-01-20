@@ -38,7 +38,7 @@ class NavigableCircuitRetainedStateTest {
           val navigator =
             rememberCircuitNavigator(
               backstack = backstack,
-              onRootPop = {} // no-op for tests
+              onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(navigator = navigator, backstack = backstack)
         }

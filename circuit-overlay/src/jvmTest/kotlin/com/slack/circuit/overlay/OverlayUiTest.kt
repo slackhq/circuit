@@ -35,7 +35,7 @@ class OverlayUiTest {
         }
         Text(
           text = "State: ${LocalOverlayState.current}",
-          modifier = Modifier.testTag(OVERLAY_STATE_TAG)
+          modifier = Modifier.testTag(OVERLAY_STATE_TAG),
         )
       }
     }

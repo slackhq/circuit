@@ -39,9 +39,9 @@ fun createTestCircuit(
       screen = screen as TestScreen,
       navigator = navigator,
       useKeys = useKeys,
-      rememberType = rememberType
+      rememberType = rememberType,
     )
-  }
+  },
 ): Circuit =
   Circuit.Builder()
     .addPresenterFactory { screen, navigator, _ -> presenter(screen, navigator) }
@@ -68,7 +68,7 @@ fun TestContent(state: TestState, modifier: Modifier = Modifier) {
       modifier =
         Modifier.testTag(TestContentTags.TAG_INCREASE_COUNT).clickable {
           state.eventSink(TestEvent.IncreaseCount)
-        }
+        },
     )
 
     BasicText(
@@ -76,14 +76,14 @@ fun TestContent(state: TestState, modifier: Modifier = Modifier) {
       modifier =
         Modifier.testTag(TestContentTags.TAG_POP).clickable {
           state.eventSink(TestEvent.PopNavigation)
-        }
+        },
     )
     BasicText(
       text = "Go to next",
       modifier =
         Modifier.testTag(TestContentTags.TAG_GO_NEXT).clickable {
           state.eventSink(TestEvent.GoToNextScreen)
-        }
+        },
     )
   }
 }

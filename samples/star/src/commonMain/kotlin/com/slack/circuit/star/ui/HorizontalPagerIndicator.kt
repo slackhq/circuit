@@ -100,7 +100,7 @@ fun HorizontalPagerIndicator(
     indicatorHeight = indicatorHeight,
     indicatorWidth = indicatorWidth,
     spacing = spacing,
-    indicatorShape = indicatorShape
+    indicatorShape = indicatorShape,
   )
 }
 
@@ -141,18 +141,14 @@ private fun HorizontalPagerIndicator(
           val scrollPosition =
             ((next - position) * offset.absoluteValue + position).coerceIn(
               0f,
-              (pageCount - 1).coerceAtLeast(0).toFloat()
+              (pageCount - 1).coerceAtLeast(0).toFloat(),
             )
 
           IntOffset(x = ((spacingPx + indicatorWidthPx) * scrollPosition).toInt(), y = 0)
         }
         .size(width = indicatorWidth, height = indicatorHeight)
         .then(
-          if (pageCount > 0)
-            Modifier.background(
-              color = activeColor,
-              shape = indicatorShape,
-            )
+          if (pageCount > 0) Modifier.background(color = activeColor, shape = indicatorShape)
           else Modifier
         )
     )

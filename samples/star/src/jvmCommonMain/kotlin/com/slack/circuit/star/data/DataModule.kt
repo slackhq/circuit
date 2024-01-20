@@ -62,10 +62,7 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideRetrofit(
-    moshi: Moshi,
-    okHttpClientLazy: dagger.Lazy<OkHttpClient>,
-  ): Retrofit {
+  fun provideRetrofit(moshi: Moshi, okHttpClientLazy: dagger.Lazy<OkHttpClient>): Retrofit {
     return Retrofit.Builder()
       .addCallAdapterFactory(ApiResultCallAdapterFactory)
       .addConverterFactory(ApiResultConverterFactory)
@@ -92,9 +89,7 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideHttpClient(
-    okHttpClientLazy: dagger.Lazy<OkHttpClient>,
-  ): HttpClient {
+  fun provideHttpClient(okHttpClientLazy: dagger.Lazy<OkHttpClient>): HttpClient {
     return HttpClient(
       object : HttpClientEngineFactory<OkHttpConfig> {
         override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {

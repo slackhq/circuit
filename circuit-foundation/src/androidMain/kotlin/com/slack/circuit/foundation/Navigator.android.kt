@@ -24,10 +24,7 @@ public fun rememberCircuitNavigator(
   enableBackHandler: Boolean = true,
 ): Navigator {
   val navigator =
-    rememberCircuitNavigator(
-      backstack = backstack,
-      onRootPop = backDispatcherRootPop(),
-    )
+    rememberCircuitNavigator(backstack = backstack, onRootPop = backDispatcherRootPop())
   BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
 
   return navigator

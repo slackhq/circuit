@@ -29,7 +29,7 @@ class JsoupConverter<T> private constructor(private val convertBody: (ResponseBo
         override fun responseBodyConverter(
           type: Type,
           annotations: Array<Annotation>,
-          retrofit: Retrofit
+          retrofit: Retrofit,
         ): Converter<ResponseBody, *>? {
           return if (annotations.any { it is JSoupEndpoint }) {
             converter

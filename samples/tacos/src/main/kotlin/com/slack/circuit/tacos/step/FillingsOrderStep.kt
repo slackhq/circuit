@@ -33,7 +33,7 @@ data object FillingsOrderStep : OrderStep {
     data class AvailableFillings(
       val selected: Ingredient? = null,
       val list: ImmutableList<Ingredient>,
-      val eventSink: (Event) -> Unit
+      val eventSink: (Event) -> Unit,
     ) : State
   }
 
@@ -47,7 +47,7 @@ internal class FillingsProducerImpl(private val repository: IngredientsRepositor
   @Composable
   override fun invoke(
     orderDetails: OrderDetails,
-    eventSink: (OrderStep.Event) -> Unit
+    eventSink: (OrderStep.Event) -> Unit,
   ): FillingsOrderStep.State {
     val ingredients by
       produceState<ImmutableList<Ingredient>?>(null) { value = repository.getFillings() }
@@ -93,7 +93,7 @@ private fun Loading(modifier: Modifier = Modifier) {
 @Composable
 private fun FillingsList(
   state: FillingsOrderStep.State.AvailableFillings,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   val scrollState = rememberScrollState()
   Column(modifier = modifier.verticalScroll(scrollState).fillMaxWidth()) {
@@ -113,11 +113,11 @@ private fun Filling(
   ingredient: Ingredient,
   isSelected: Boolean,
   modifier: Modifier = Modifier,
-  onSelect: () -> Unit
+  onSelect: () -> Unit,
 ) {
   Row(
     modifier = modifier.clickable(onClick = onSelect),
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     RadioButton(selected = isSelected, modifier = Modifier, onClick = onSelect)
     OrderIngredient(ingredient)

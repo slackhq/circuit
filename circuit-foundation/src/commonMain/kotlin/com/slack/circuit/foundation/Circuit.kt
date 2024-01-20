@@ -74,7 +74,7 @@ public class Circuit private constructor(builder: Builder) {
   public fun presenter(
     screen: Screen,
     navigator: Navigator,
-    context: CircuitContext = CircuitContext(null).also { it.circuit = this }
+    context: CircuitContext = CircuitContext(null).also { it.circuit = this },
   ): Presenter<*>? {
     return nextPresenter(null, screen, navigator, context)
   }
@@ -83,7 +83,7 @@ public class Circuit private constructor(builder: Builder) {
     skipPast: Presenter.Factory?,
     screen: Screen,
     navigator: Navigator,
-    context: CircuitContext
+    context: CircuitContext,
   ): Presenter<*>? {
     val start = presenterFactories.indexOf(skipPast) + 1
     for (i in start until presenterFactories.size) {
@@ -99,7 +99,7 @@ public class Circuit private constructor(builder: Builder) {
   @OptIn(InternalCircuitApi::class)
   public fun ui(
     screen: Screen,
-    context: CircuitContext = CircuitContext(null).also { it.circuit = this }
+    context: CircuitContext = CircuitContext(null).also { it.circuit = this },
   ): Ui<*>? {
     return nextUi(null, screen, context)
   }
@@ -186,7 +186,7 @@ private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier)
     BasicText(
       "Route not available: $screen",
       modifier.background(Color.Red),
-      style = TextStyle(color = Color.Yellow)
+      style = TextStyle(color = Color.Yellow),
     )
   }
 

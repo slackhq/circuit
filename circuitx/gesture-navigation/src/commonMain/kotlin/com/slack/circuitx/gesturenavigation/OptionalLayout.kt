@@ -28,7 +28,7 @@ internal fun OptionalLayout(
       // If we're not visible, don't measure, layout (or draw)
       .let { if (shouldLayout()) it else it.emptyLayout() }
       // Content in the back stack should not be interactive until they're on top
-      .pointerInput(Unit) {},
+      .pointerInput(Unit) {}
   ) {
     content()
   }

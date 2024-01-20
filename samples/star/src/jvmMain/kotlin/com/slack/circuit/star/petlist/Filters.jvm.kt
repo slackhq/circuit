@@ -11,10 +11,9 @@ import com.slack.circuitx.overlays.BasicAlertDialogOverlay
 /** Indirection for showing filters in the pet list screen. */
 actual suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
   return show(
-    BasicAlertDialogOverlay(
-      model = currentFilters,
-      onDismissRequest = { currentFilters },
-    ) { initialFilters, overlayNavigator ->
+    BasicAlertDialogOverlay(model = currentFilters, onDismissRequest = { currentFilters }) {
+      initialFilters,
+      overlayNavigator ->
       UpdateFiltersSheet(initialFilters, Modifier.padding(32.dp), overlayNavigator::finish)
     }
   )

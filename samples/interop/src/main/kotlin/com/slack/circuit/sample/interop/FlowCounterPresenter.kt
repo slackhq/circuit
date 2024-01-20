@@ -28,10 +28,7 @@ fun interface FlowPresenter<UiState : Any, UiEvent : Any> {
 class FlowCounterPresenter : FlowPresenter<Int, CounterScreen.Event> {
   private val count = MutableStateFlow(0)
 
-  override fun present(
-    scope: CoroutineScope,
-    events: Flow<CounterScreen.Event>,
-  ): StateFlow<Int> {
+  override fun present(scope: CoroutineScope, events: Flow<CounterScreen.Event>): StateFlow<Int> {
     scope.launch {
       events.collect {
         when (it) {

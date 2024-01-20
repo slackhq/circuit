@@ -58,19 +58,13 @@ constructor(
   @CircuitInject(ImageViewerScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {
-    fun create(
-      screen: ImageViewerScreen,
-      navigator: Navigator,
-    ): ImageViewerPresenter
+    fun create(screen: ImageViewerScreen, navigator: Navigator): ImageViewerPresenter
   }
 
   @Composable
   override fun present(): State {
-    return State(
-      id = screen.id,
-      url = screen.url,
-      placeholderKey = screen.placeholderKey,
-    ) { event ->
+    return State(id = screen.id, url = screen.url, placeholderKey = screen.placeholderKey) { event
+      ->
       when (event) {
         Close -> navigator.pop()
         NoOp -> {}
@@ -103,7 +97,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
     Surface(
       modifier.fillMaxSize().animateContentSize(),
       color = Color.Black.copy(alpha = backgroundAlpha),
-      contentColor = Color.White
+      contentColor = Color.White,
     ) {
       Box(Modifier.fillMaxSize()) {
         // Image + scrim
@@ -131,14 +125,10 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
         }
 
         // TODO pick color based on if image is underneath it or not. Similar to badges
-        AnimatedVisibility(
-          showChrome,
-          enter = fadeIn(),
-          exit = fadeOut(),
-        ) {
+        AnimatedVisibility(showChrome, enter = fadeIn(), exit = fadeOut()) {
           BackPressNavIcon(
             Modifier.align(Alignment.TopStart).padding(8.dp).statusBarsPadding(),
-            onClick = { state.eventSink(Close) }
+            onClick = { state.eventSink(Close) },
           )
         }
       }
@@ -158,7 +148,7 @@ class ImageViewerAwareNavDecoration(
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
-    content: @Composable (T) -> Unit
+    content: @Composable (T) -> Unit,
   ) {
     val firstArg = args.firstOrNull()
     val decoration =

@@ -40,6 +40,6 @@ internal fun rememberConditionalSystemUiColors(
   return ConditionalSystemUiColors(
     systemUiController,
     systemUiController.statusBarDarkContentEnabled,
-    systemUiController.navigationBarDarkContentEnabled
+    systemUiController.navigationBarDarkContentEnabled,
   )
 }

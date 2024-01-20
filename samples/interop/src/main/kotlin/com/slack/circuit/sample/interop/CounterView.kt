@@ -72,6 +72,6 @@ fun CounterViewComposable(state: CounterScreen.State, modifier: Modifier = Modif
         setOnDecrementClickListener { eventSink(CounterScreen.Event.Decrement) }
       }
     },
-    update = { view -> view.setState(state.count) }
+    update = { view -> view.setState(state.count) },
   )
 }

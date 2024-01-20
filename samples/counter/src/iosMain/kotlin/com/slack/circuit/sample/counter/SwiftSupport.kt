@@ -22,7 +22,7 @@ class SupportSwiftPresenter<UiState : CircuitUiState>(
   private val delegate: Presenter<UiState>,
   // TODO what's the right thing here? Can we get a scope from the UI? Should it be exposed via
   //  Circuit?
-  scope: CoroutineScope
+  scope: CoroutineScope,
 ) {
   constructor(delegate: Presenter<UiState>) : this(delegate, MainScope())
 

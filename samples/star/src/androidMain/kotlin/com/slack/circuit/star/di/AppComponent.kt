@@ -13,12 +13,7 @@ import javax.inject.Provider
 
 @MergeComponent(
   scope = AppScope::class,
-  modules =
-    [
-      BaseUiModule::class,
-      CircuitModule::class,
-      DataModule::class,
-    ]
+  modules = [BaseUiModule::class, CircuitModule::class, DataModule::class],
 )
 @SingleIn(AppScope::class)
 interface AppComponent : CommonAppComponent {

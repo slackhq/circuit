@@ -72,7 +72,7 @@ class PetDetailTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = persistentListOf("dog", "terrier", "male"),
-        eventSink = {}
+        eventSink = {},
       )
 
     var carouselScreen: PetPhotoCarouselScreen? = null
@@ -88,7 +88,7 @@ class PetDetailTest {
       PetPhotoCarouselScreen(
         name = success.name,
         photoUrls = success.photoUrls,
-        photoUrlMemoryCacheKey = null
+        photoUrlMemoryCacheKey = null,
       )
 
     composeTestRule.run {
@@ -122,7 +122,7 @@ class PetDetailTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = persistentListOf("dog", "terrier", "male"),
-        eventSink = testSink
+        eventSink = testSink,
       )
 
     val circuit =

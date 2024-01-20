@@ -22,7 +22,7 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
 
   override fun registerValue(
     key: String,
-    valueProvider: RetainedValueProvider
+    valueProvider: RetainedValueProvider,
   ): RetainedStateRegistry.Entry {
     return delegate.registerValue(key, valueProvider)
   }
@@ -64,7 +64,7 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
 @Composable
 public actual fun continuityRetainedStateRegistry(
   key: String,
-  canRetainChecker: CanRetainChecker
+  canRetainChecker: CanRetainChecker,
 ): RetainedStateRegistry =
   continuityRetainedStateRegistry(key, ContinuityViewModel.Factory, canRetainChecker)
 
@@ -80,7 +80,7 @@ public actual fun continuityRetainedStateRegistry(
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
   factory: ViewModelProvider.Factory = ContinuityViewModel.Factory,
-  canRetainChecker: CanRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
+  canRetainChecker: CanRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker(),
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)

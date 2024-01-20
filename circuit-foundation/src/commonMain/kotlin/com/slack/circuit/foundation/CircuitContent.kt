@@ -146,7 +146,7 @@ public inline fun rememberEventListener(
   screen: Screen,
   context: CircuitContext = CircuitContext.EMPTY,
   startOnInit: Boolean = true,
-  factory: EventListener.Factory? = null
+  factory: EventListener.Factory? = null,
 ): EventListener {
   return remember(screen, context) {
     (factory?.create(screen, context) ?: EventListener.NONE).also {
@@ -170,7 +170,7 @@ public inline fun rememberPresenter(
   navigator: Navigator = Navigator.NoOp,
   context: CircuitContext = CircuitContext.EMPTY,
   eventListener: EventListener = EventListener.NONE,
-  factory: Presenter.Factory
+  factory: Presenter.Factory,
 ): Presenter<CircuitUiState>? =
   remember(eventListener, screen, navigator, context) {
     eventListener.onBeforeCreatePresenter(screen, navigator, context)
@@ -191,7 +191,7 @@ public inline fun rememberUi(
   screen: Screen,
   context: CircuitContext = CircuitContext.EMPTY,
   eventListener: EventListener = EventListener.NONE,
-  factory: Ui.Factory
+  factory: Ui.Factory,
 ): Ui<CircuitUiState>? =
   remember(eventListener, screen, context) {
     eventListener.onBeforeCreateUi(screen, context)

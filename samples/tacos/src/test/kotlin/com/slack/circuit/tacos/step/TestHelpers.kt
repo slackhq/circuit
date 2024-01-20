@@ -19,13 +19,7 @@ internal class FakeOrderStepParent(
   toppings: Set<Ingredient> = emptySet(),
 ) {
   private val validations = ArrayDeque<OrderStep.Validation>()
-  var orderDetails by
-    mutableStateOf(
-      OrderDetails(
-        filling = filling,
-        toppings = toppings,
-      )
-    )
+  var orderDetails by mutableStateOf(OrderDetails(filling = filling, toppings = toppings))
     private set
 
   fun childEvent(event: OrderStep.Event) {

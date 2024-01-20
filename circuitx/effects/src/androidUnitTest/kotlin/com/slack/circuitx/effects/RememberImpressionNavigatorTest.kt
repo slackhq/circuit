@@ -136,10 +136,7 @@ class RememberImpressionNavigatorTest {
   @Parcelize private data object TestResetScreen : Screen
 
   @Composable
-  private fun RememberImpressionNavigatorContent(
-    vararg inputs: Any?,
-    impression: () -> Unit,
-  ) {
+  private fun RememberImpressionNavigatorContent(vararg inputs: Any?, impression: () -> Unit) {
     val navigator =
       rememberImpressionNavigator(*inputs, navigator = fakeNavigator) {
         delay(1)
@@ -150,10 +147,7 @@ class RememberImpressionNavigatorTest {
         text = "GoTo",
         modifier = Modifier.testTag(TAG_GOTO).clickable { navigator.goTo(TestGoToScreen) },
       )
-      BasicText(
-        text = "Pop",
-        modifier = Modifier.testTag(TAG_POP).clickable { navigator.pop() },
-      )
+      BasicText(text = "Pop", modifier = Modifier.testTag(TAG_POP).clickable { navigator.pop() })
       BasicText(
         text = "Reset",
         modifier = Modifier.testTag(TAG_RESET).clickable { navigator.resetRoot(TestResetScreen) },
@@ -166,9 +160,7 @@ class RememberImpressionNavigatorTest {
     mainClock.advanceTimeByFrame()
   }
 
-  private fun ComposeContentTestRule.setRetainedContent(
-    content: @Composable () -> Unit,
-  ) {
+  private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit) {
     setContent {
       CompositionLocalProvider(
         LocalRetainedStateRegistry provides registry,

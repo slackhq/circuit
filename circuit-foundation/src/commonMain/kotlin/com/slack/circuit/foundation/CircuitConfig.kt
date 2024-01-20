@@ -13,7 +13,7 @@ public typealias CircuitConfig = Circuit
 
 @Deprecated(
   "Use CircuitContext.circuit instead",
-  ReplaceWith("circuit", "com.slack.circuit.foundation.circuit")
+  ReplaceWith("circuit", "com.slack.circuit.foundation.circuit"),
 )
 public var CircuitContext.config: Circuit
   get() = circuit

@@ -205,7 +205,7 @@ kotlin {
             "-P",
             "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir"
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir",
           )
         }
 

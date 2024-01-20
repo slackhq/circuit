@@ -108,9 +108,8 @@ internal class BackStackRecordLocalProviderViewModel : ViewModel() {
   }
 }
 
-private class NestedRememberObserver(
-  private val onCompletelyForgotten: () -> Unit,
-) : RememberObserver {
+private class NestedRememberObserver(private val onCompletelyForgotten: () -> Unit) :
+  RememberObserver {
   private var isRememberedForStack: Boolean = false
     set(value) {
       field = value

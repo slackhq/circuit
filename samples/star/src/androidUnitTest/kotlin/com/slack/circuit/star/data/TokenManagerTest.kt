@@ -28,7 +28,7 @@ class TokenManagerTest {
   fun expires() = runTest {
     apiController.enqueue(
       PetfinderAuthApi::authenticate,
-      ApiResult.success(AuthenticationResponse("Bearer", 1000, "queuedToken"))
+      ApiResult.success(AuthenticationResponse("Bearer", 1000, "queuedToken")),
     )
     val tokenStorage =
       FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 0, "token")) }

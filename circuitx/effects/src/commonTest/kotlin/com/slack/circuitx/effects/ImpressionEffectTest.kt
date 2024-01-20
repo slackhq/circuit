@@ -40,7 +40,7 @@ internal interface ImpressionEffectTestShared {
 
 /** Shared implementation of unit tests for [ImpressionEffect] and [LaunchedImpressionEffect]. */
 @OptIn(
-  ExperimentalCoroutinesApi::class, // For advanceUntilIdle()
+  ExperimentalCoroutinesApi::class // For advanceUntilIdle()
 )
 @Ignore // Only run the actual uses of this.
 internal class ImpressionEffectTestSharedImpl : ImpressionEffectTestShared {
@@ -149,9 +149,7 @@ internal class ImpressionEffectTestSharedImpl : ImpressionEffectTestShared {
 
   /** Simulating a screen with this. */
   @Composable
-  private fun setRetainedContent(
-    content: @Composable () -> Unit = {},
-  ) {
+  private fun setRetainedContent(content: @Composable () -> Unit = {}) {
     CompositionLocalProvider(
       LocalRetainedStateRegistry provides registry,
       LocalCanRetainChecker provides CanRetainChecker.Always,

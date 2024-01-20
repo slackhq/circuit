@@ -62,7 +62,7 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         modifier = Modifier.align(Alignment.CenterHorizontally),
         text = "Count: ${state.count}",
         style = MaterialTheme.typography.h3,
-        color = color
+        color = color,
       )
       Spacer(modifier = Modifier.height(16.dp))
       Row {
@@ -74,12 +74,9 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         }
         Button(
           onClick = { state.eventSink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
-          modifier = Modifier.padding(2.dp)
+          modifier = Modifier.padding(2.dp),
         ) {
-          Text(
-            modifier = Modifier.padding(4.dp),
-            text = "Prime?",
-          )
+          Text(modifier = Modifier.padding(4.dp), text = "Prime?")
         }
         Button(
           modifier = Modifier.padding(2.dp),
@@ -110,7 +107,7 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
       } else {
         Text(
           modifier = Modifier.align(Alignment.CenterHorizontally),
-          text = "${state.number} is not a prime number."
+          text = "${state.number} is not a prime number.",
         )
       }
       Spacer(modifier = Modifier.height(16.dp))
@@ -169,10 +166,7 @@ fun main() = application {
           navigator = navigator,
           backstack = backStack,
           modifier =
-            Modifier.backHandler(
-              enabled = backStack.size > 1,
-              onBack = { navigator.pop() },
-            )
+            Modifier.backHandler(enabled = backStack.size > 1, onBack = { navigator.pop() }),
         )
       }
     }

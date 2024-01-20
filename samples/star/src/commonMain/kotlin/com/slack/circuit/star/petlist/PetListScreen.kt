@@ -142,10 +142,8 @@ data object PetListScreen : Screen {
 
 class PetListPresenter
 @AssistedInject
-constructor(
-  @Assisted private val navigator: Navigator,
-  private val petRepo: PetRepository,
-) : Presenter<State> {
+constructor(@Assisted private val navigator: Navigator, private val petRepo: PetRepository) :
+  Presenter<State> {
   @Composable
   override fun present(): State {
     var isRefreshing by remember { mutableStateOf(false) }
@@ -214,7 +212,7 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     breed = primaryBreed,
     gender = gender,
     size = size,
-    age = age
+    age = age,
   )
 }
 
@@ -229,10 +227,7 @@ internal object PetListTestConstants {
 
 @CircuitInject(PetListScreen::class, AppScope::class)
 @Composable
-internal fun PetList(
-  state: State,
-  modifier: Modifier = Modifier,
-) {
+internal fun PetList(state: State, modifier: Modifier = Modifier) {
   if (state is Success && state.isUpdateFiltersModalShowing) {
     OverlayEffect(state) { host ->
       val result = host.updateFilters(state.filters)
@@ -260,7 +255,7 @@ internal fun PetList(
               Icon(
                 imageVector = FilterList,
                 contentDescription = "Filter pet list",
-                tint = MaterialTheme.colorScheme.onBackground
+                tint = MaterialTheme.colorScheme.onBackground,
               )
             }
           }
@@ -273,7 +268,7 @@ internal fun PetList(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator(
             modifier = Modifier.testTag(PROGRESS_TAG),
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
           )
         }
       is NoAnimals ->
@@ -285,7 +280,7 @@ internal fun PetList(
           modifier = Modifier.padding(paddingValues).fillMaxSize(),
           animals = state.animals,
           isRefreshing = state.isRefreshing,
-          eventSink = state.eventSink
+          eventSink = state.eventSink,
         )
     }
   }
@@ -320,10 +315,7 @@ private fun PetListGrid(
       horizontalArrangement = spacedBy(spacing),
       contentPadding = PaddingValues(spacing),
     ) {
-      items(
-        count = animals.size,
-        key = { i -> animals[i].id },
-      ) { index ->
+      items(count = animals.size, key = { i -> animals[i].id }) { index ->
         val animal = animals[index]
         // TODO eventually animate item placement once it's implemented
         //  https://issuetracker.google.com/issues/257034719
@@ -333,7 +325,7 @@ private fun PetListGrid(
     PullRefreshIndicator(
       modifier = Modifier.align(Alignment.TopCenter),
       refreshing = isRefreshing,
-      state = pullRefreshState
+      state = pullRefreshState,
     )
   }
 }
@@ -342,7 +334,7 @@ private fun PetListGrid(
 private fun PetListGridItem(
   animal: PetListAnimal,
   modifier: Modifier = Modifier,
-  onClick: () -> Unit = {}
+  onClick: () -> Unit = {},
 ) {
   val updatedImageUrl = animal.imageUrl ?: rememberVectorPainter(Pets)
   ElevatedCard(
@@ -392,7 +384,7 @@ private fun PetListGridItem(
 internal fun UpdateFiltersSheet(
   initialFilters: Filters,
   modifier: Modifier = Modifier,
-  onDismiss: (Filters) -> Unit = {}
+  onDismiss: (Filters) -> Unit = {},
 ) {
   Column(modifier.fillMaxWidth(), verticalArrangement = spacedBy(16.dp)) {
     val genderOptions = remember {
@@ -428,7 +420,7 @@ internal fun UpdateFiltersSheet(
               sizes = sizeOptions.filterValues { it }.keys.toImmutableSet(),
             )
           onDismiss(newFilters)
-        }
+        },
       ) {
         Text("Save")
       }
@@ -455,7 +447,7 @@ private fun <T : Enum<T>> FilterOptions(
             selected,
             onClick = { options[key] = !selected },
             label = { Text(key.name.lowercase().capitalize(Locale.current)) },
-            leadingIcon = if (selected) leadingIcon else null
+            leadingIcon = if (selected) leadingIcon else null,
           )
         }
     }

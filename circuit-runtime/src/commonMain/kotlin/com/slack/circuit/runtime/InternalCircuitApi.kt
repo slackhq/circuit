@@ -21,6 +21,6 @@ package com.slack.circuit.runtime
     "This is an internal Circuit API that " +
       "should not be used from outside of com.slack.circuit. No compatibility guarantees are provided. " +
       "It is recommended to report your use-case of internal API to Circuit issue tracker, " +
-      "so a stable API could be provided instead"
+      "so a stable API could be provided instead",
 )
 public annotation class InternalCircuitApi

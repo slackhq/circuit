@@ -58,7 +58,7 @@ public fun <R : BackStack.Record> providedValuesForBackStack(
                 }
                 stackLocalProviders.forEach { add(key(it) { it.providedValuesFor(record) }) }
               }
-            )
+            ),
           )
         }
       }

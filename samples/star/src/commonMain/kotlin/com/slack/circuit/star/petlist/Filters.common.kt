@@ -17,7 +17,7 @@ class Filters(
   @CommonTypeParceler<ImmutableSet<Gender>, ImmutableSetParceler>
   val genders: ImmutableSet<Gender> = Gender.entries.asIterable().toImmutableSet(),
   @CommonTypeParceler<ImmutableSet<Size>, ImmutableSetParceler>
-  val sizes: ImmutableSet<Size> = Size.entries.asIterable().toImmutableSet()
+  val sizes: ImmutableSet<Size> = Size.entries.asIterable().toImmutableSet(),
 ) : CommonParcelable
 
 /** Indirection for showing filters in the pet list screen. */

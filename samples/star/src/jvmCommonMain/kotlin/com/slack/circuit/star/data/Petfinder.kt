@@ -33,7 +33,7 @@ interface PetfinderAuthApi {
   suspend fun authenticate(
     @Field("client_id") clientId: String = API_KEY,
     @Field("client_secret") secret: String = SECRET,
-    @Field("grant_type") grantType: String = "client_credentials"
+    @Field("grant_type") grantType: String = "client_credentials",
   ): ApiResult<AuthenticationResponse, Unit>
 }
 
@@ -44,7 +44,7 @@ interface PetfinderApi {
     @Query("sort") sort: String = "-recent", // recent, -recent, distance, -distance,
     @Query("limit") limit: Int = 100, // (default: 20, max: 100)
     @Query("page") page: Int = 1,
-    @Query("organization") organization: String = "NY835"
+    @Query("organization") organization: String = "NY835",
   ): ApiResult<AnimalsResponse, Unit>
 
   @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): ApiResult<Animal, Unit>
@@ -129,14 +129,14 @@ data class Breeds(
   val primary: String? = null,
   val secondary: String? = null,
   val mixed: Boolean = false,
-  val unknown: Boolean = false
+  val unknown: Boolean = false,
 )
 
 @JsonClass(generateAdapter = true)
 data class Colors(
   val primary: String? = null,
   val secondary: String? = null,
-  val tertiary: String? = null
+  val tertiary: String? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -168,7 +168,7 @@ suspend fun TokenStorage.updateAuthData(response: AuthenticationResponse) {
     AuthenticationData(
       response.tokenType,
       Clock.System.now().plus(response.expiresIn.seconds),
-      response.accessToken
+      response.accessToken,
     )
   )
 }

@@ -29,10 +29,7 @@ class CircuitCounterPresenter : Presenter<CounterScreen.State> {
 
 @Parcelize
 data object CounterScreen : Screen {
-  data class State(
-    val count: Int,
-    val eventSink: (Event) -> Unit = {},
-  ) : CircuitUiState
+  data class State(val count: Int, val eventSink: (Event) -> Unit = {}) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
 

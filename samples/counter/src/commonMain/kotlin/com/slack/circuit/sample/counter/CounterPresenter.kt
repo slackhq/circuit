@@ -48,10 +48,7 @@ private fun isPrime(value: Int): Boolean {
 // Unfortunately can't make this multiplatform by itself because plugin.parcelize doesn't play nice
 // in multiplatform android library projects
 interface CounterScreen : Screen {
-  data class State(
-    val count: Int,
-    val eventSink: (Event) -> Unit = {},
-  ) : CircuitUiState
+  data class State(val count: Int, val eventSink: (Event) -> Unit = {}) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data class GoTo(val screen: Screen) : Event
@@ -63,11 +60,8 @@ interface CounterScreen : Screen {
 }
 
 interface PrimeScreen : Screen {
-  data class State(
-    val number: Int,
-    val isPrime: Boolean,
-    val eventSink: (Event) -> Unit = {},
-  ) : CircuitUiState
+  data class State(val number: Int, val isPrime: Boolean, val eventSink: (Event) -> Unit = {}) :
+    CircuitUiState
 
   sealed interface Event {
     data object Pop : Event

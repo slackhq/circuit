@@ -19,7 +19,7 @@ public interface EventListener {
   public fun onBeforeCreatePresenter(
     screen: Screen,
     navigator: Navigator,
-    context: CircuitContext
+    context: CircuitContext,
   ) {}
 
   /**
@@ -30,7 +30,7 @@ public interface EventListener {
     screen: Screen,
     navigator: Navigator,
     presenter: Presenter<*>?,
-    context: CircuitContext
+    context: CircuitContext,
   ) {}
 
   /** Called just before creating a [Ui] for a given [screen]. */
@@ -46,7 +46,7 @@ public interface EventListener {
     screen: Screen,
     presenter: Presenter<*>?,
     ui: Ui<*>?,
-    context: CircuitContext
+    context: CircuitContext,
   ) {}
 
   /**

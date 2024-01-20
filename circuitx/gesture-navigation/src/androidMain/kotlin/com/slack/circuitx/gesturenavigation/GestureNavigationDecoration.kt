@@ -44,7 +44,7 @@ import kotlinx.collections.immutable.ImmutableList
 
 public actual fun GestureNavigationDecoration(
   fallback: NavDecoration,
-  onBackInvoked: () -> Unit
+  onBackInvoked: () -> Unit,
 ): NavDecoration =
   when {
     Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavigationDecoration(onBackInvoked)
@@ -52,9 +52,8 @@ public actual fun GestureNavigationDecoration(
   }
 
 @RequiresApi(34)
-private class AndroidPredictiveNavigationDecoration(
-  private val onBackInvoked: () -> Unit,
-) : NavDecoration {
+private class AndroidPredictiveNavigationDecoration(private val onBackInvoked: () -> Unit) :
+  NavDecoration {
   @Composable
   override fun <T> DecoratedContent(
     args: ImmutableList<T>,
@@ -117,7 +116,7 @@ private class AndroidPredictiveNavigationDecoration(
             // Root reset. Crossfade
             else -> fadeIn() togetherWith fadeOut()
           }
-        },
+        }
       ) { record ->
         var swipeProgress by remember { mutableFloatStateOf(0f) }
 
@@ -166,29 +165,23 @@ private fun <T> Transition<T>.isStateBeingAnimated(state: T): Boolean {
  *
  * The only piece missing is the vertical shift.
  */
-private fun Modifier.predictiveBackMotion(
-  shape: Shape,
-  progress: () -> Float,
-): Modifier = graphicsLayer {
-  val p = progress()
-  // If we're at progress 0f, skip setting any parameters
-  if (p == 0f) return@graphicsLayer
+private fun Modifier.predictiveBackMotion(shape: Shape, progress: () -> Float): Modifier =
+  graphicsLayer {
+    val p = progress()
+    // If we're at progress 0f, skip setting any parameters
+    if (p == 0f) return@graphicsLayer
 
-  translationX = -(8.dp * p).toPx()
-  shadowElevation = 6.dp.toPx()
+    translationX = -(8.dp * p).toPx()
+    shadowElevation = 6.dp.toPx()
 
-  val scale = lerp(1f, 0.9f, p.absoluteValue)
-  scaleX = scale
-  scaleY = scale
-  transformOrigin =
-    TransformOrigin(
-      pivotFractionX = if (p > 0) 1f else 0f,
-      pivotFractionY = 0.5f,
-    )
+    val scale = lerp(1f, 0.9f, p.absoluteValue)
+    scaleX = scale
+    scaleY = scale
+    transformOrigin = TransformOrigin(pivotFractionX = if (p > 0) 1f else 0f, pivotFractionY = 0.5f)
 
-  this.shape = shape
-  clip = true
-}
+    this.shape = shape
+    clip = true
+  }
 
 @RequiresApi(34)
 @Composable

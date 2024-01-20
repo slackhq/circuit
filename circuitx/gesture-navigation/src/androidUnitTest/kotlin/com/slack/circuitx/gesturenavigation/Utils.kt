@@ -13,7 +13,7 @@ import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.internal.test.TestContentTags
 
 internal fun SemanticsNodeInteractionsProvider.onTopNavigationRecordNodeWithTag(
-  testTag: String,
+  testTag: String
 ): SemanticsNodeInteraction =
   onAllNodes(hasTestTag(testTag) and hasParent(hasTestTag(TestContentTags.TAG_ROOT)), false)
     // first is always on top
@@ -25,12 +25,7 @@ internal fun BackEventCompat.copy(
   progress: Float = this.progress,
   swipeEdge: Int = this.swipeEdge,
 ): BackEventCompat =
-  BackEventCompat(
-    touchX = touchX,
-    touchY = touchY,
-    progress = progress,
-    swipeEdge = swipeEdge,
-  )
+  BackEventCompat(touchX = touchX, touchY = touchY, progress = progress, swipeEdge = swipeEdge)
 
 internal fun ActivityScenario<ComponentActivity>.performBackSwipeGesture() {
   onActivity { activity ->
@@ -39,7 +34,7 @@ internal fun ActivityScenario<ComponentActivity>.performBackSwipeGesture() {
         touchX = 0f,
         touchY = activity.window.decorView.height / 2f,
         progress = 0f,
-        swipeEdge = BackEventCompat.EDGE_LEFT
+        swipeEdge = BackEventCompat.EDGE_LEFT,
       )
 
     with(activity.onBackPressedDispatcher) {

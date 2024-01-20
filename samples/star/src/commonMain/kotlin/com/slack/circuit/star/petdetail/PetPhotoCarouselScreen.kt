@@ -187,7 +187,7 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
       pagerState = pagerState,
       pageCount = totalPhotos,
       modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
-      activeColor = MaterialTheme.colorScheme.onBackground
+      activeColor = MaterialTheme.colorScheme.onBackground,
     )
   }
 
@@ -268,7 +268,7 @@ private fun PhotoPager(
             .build(),
         contentDescription = name,
         contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current)
+        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
       )
     }
   }

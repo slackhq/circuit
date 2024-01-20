@@ -26,7 +26,7 @@ class StarAppComponentFactory : AppComponentFactory() {
   override fun instantiateActivityCompat(
     cl: ClassLoader,
     className: String,
-    intent: Intent?
+    intent: Intent?,
   ): Activity {
     return getInstance(cl, className, activityProviders)
       ?: super.instantiateActivityCompat(cl, className, intent)

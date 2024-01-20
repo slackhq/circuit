@@ -13,15 +13,14 @@ import com.slack.circuitx.overlays.BottomSheetOverlay
 /** Indirection for showing filters in the pet list screen. */
 actual suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
   return show(
-    BottomSheetOverlay(
-      model = currentFilters,
-      onDismiss = { currentFilters },
-    ) { initialFilters, overlayNavigator ->
+    BottomSheetOverlay(model = currentFilters, onDismiss = { currentFilters }) {
+      initialFilters,
+      overlayNavigator ->
       Surface(Modifier.fillMaxWidth()) {
         UpdateFiltersSheet(
           initialFilters,
           Modifier.padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
-          overlayNavigator::finish
+          overlayNavigator::finish,
         )
       }
     }

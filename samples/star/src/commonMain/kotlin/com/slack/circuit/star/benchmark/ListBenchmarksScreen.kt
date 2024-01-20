@@ -52,10 +52,7 @@ private const val ITEM_COUNT = 100
 
 @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
 @Composable
-fun ListBenchmarks(
-  state: State,
-  modifier: Modifier = Modifier,
-) {
+fun ListBenchmarks(state: State, modifier: Modifier = Modifier) {
   var contentComposed by rememberRetained { mutableStateOf(false) }
   if (state.useNestedContent) {
     LazyColumn(modifier.systemBarsPadding()) {
@@ -101,18 +98,12 @@ constructor(
 
 @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)
 @Composable
-fun ListBenchmarksItem(
-  state: ListBenchmarksItemScreen.State,
-  modifier: Modifier = Modifier,
-) {
+fun ListBenchmarksItem(state: ListBenchmarksItemScreen.State, modifier: Modifier = Modifier) {
   ListBenchmarksItem(state.index, modifier)
 }
 
 @Composable
-fun ListBenchmarksItem(
-  index: Int,
-  modifier: Modifier = Modifier,
-) {
+fun ListBenchmarksItem(index: Int, modifier: Modifier = Modifier) {
   ListItem(
     headlineContent = { Text("Item $index") },
     leadingContent = {
@@ -125,7 +116,7 @@ fun ListBenchmarksItem(
         text = index.toString(),
       )
     },
-    modifier = modifier
+    modifier = modifier,
   )
 }
 

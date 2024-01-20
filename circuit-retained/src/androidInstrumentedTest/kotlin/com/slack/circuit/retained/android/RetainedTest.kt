@@ -101,7 +101,7 @@ class RetainedTest {
         Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = text1)
         Button(
           modifier = Modifier.testTag("TAG_BUTTON"),
-          onClick = { text2Enabled = !text2Enabled }
+          onClick = { text2Enabled = !text2Enabled },
         ) {
           Text("Toggle")
         }
@@ -371,13 +371,13 @@ private fun KeyContent(key: String?) {
       modifier = Modifier.testTag(TAG_REMEMBER),
       value = text1,
       onValueChange = { text1 = it },
-      label = {}
+      label = {},
     )
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_1),
       value = retainedText,
       onValueChange = { retainedText = it },
-      label = {}
+      label = {},
     )
   }
 }
@@ -395,19 +395,19 @@ private fun MultipleRetains(useKeys: Boolean) {
       modifier = Modifier.testTag(TAG_RETAINED_1),
       value = retainedText1,
       onValueChange = { retainedText1 = it },
-      label = {}
+      label = {},
     )
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_2),
       value = retainedText2,
       onValueChange = { retainedText2 = it },
-      label = {}
+      label = {},
     )
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_3),
       value = retainedInt.toString(),
       onValueChange = { retainedInt = it.toInt() },
-      label = {}
+      label = {},
     )
   }
 }
@@ -422,7 +422,7 @@ private fun NestedRetains(useKeys: Boolean) {
       modifier = Modifier.testTag(TAG_RETAINED_1),
       value = retainedText1,
       onValueChange = { retainedText1 = it },
-      label = {}
+      label = {},
     )
 
     val nestedRegistryLevel1 = rememberRetained { RetainedStateRegistry() }
@@ -441,7 +441,7 @@ private fun NestedRetainLevel1(useKeys: Boolean) {
     modifier = Modifier.testTag(TAG_RETAINED_2),
     value = retainedText2,
     onValueChange = { retainedText2 = it },
-    label = {}
+    label = {},
   )
 
   val nestedRegistry = rememberRetained { RetainedStateRegistry() }
@@ -459,7 +459,7 @@ private fun NestedRetainLevel2(useKeys: Boolean) {
     modifier = Modifier.testTag(TAG_RETAINED_3),
     value = retainedInt.toString(),
     onValueChange = { retainedInt = it.toInt() },
-    label = {}
+    label = {},
   )
 }
 
@@ -473,21 +473,21 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
       modifier = Modifier.testTag(TAG_RETAINED_1),
       value = retainedText1,
       onValueChange = { retainedText1 = it },
-      label = {}
+      label = {},
     )
 
     val showNestedContent = rememberRetained { mutableStateOf(false) }
 
     Button(
       onClick = { showNestedContent.value = false },
-      modifier = Modifier.testTag(TAG_BUTTON_HIDE)
+      modifier = Modifier.testTag(TAG_BUTTON_HIDE),
     ) {
       Text(text = "Hide child")
     }
 
     Button(
       onClick = { showNestedContent.value = true },
-      modifier = Modifier.testTag(TAG_BUTTON_SHOW)
+      modifier = Modifier.testTag(TAG_BUTTON_SHOW),
     ) {
       Text(text = "Show child")
     }
@@ -511,13 +511,13 @@ private fun InputsContent(input: String) {
       modifier = Modifier.testTag(TAG_REMEMBER),
       value = text1,
       onValueChange = { text1 = it },
-      label = {}
+      label = {},
     )
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_1),
       value = retainedText,
       onValueChange = { retainedText = it },
-      label = {}
+      label = {},
     )
   }
 }

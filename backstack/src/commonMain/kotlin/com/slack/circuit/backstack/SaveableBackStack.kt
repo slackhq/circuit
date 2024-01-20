@@ -82,7 +82,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               args = list[1] as Map<String, Any?>,
               key = list[2] as String,
             )
-          }
+          },
         )
     }
   }
@@ -97,7 +97,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               @Suppress("UNCHECKED_CAST") Record.Saver.restore(it as List<Any>)!!
             }
           }
-        }
+        },
       )
   }
 }

@@ -43,7 +43,7 @@ fun main() {
         LocalLayoutDirection provides LayoutDirection.Ltr,
         LocalViewConfiguration provides DefaultViewConfiguration(Density(1.0f)),
         LocalInputModeManager provides InputModeManagerObject,
-        LocalFontFamilyResolver provides fontFamilyResolver
+        LocalFontFamilyResolver provides fontFamilyResolver,
       ) {
         CircuitCompositionLocals(circuit) { CircuitContent(BrowserCounterScreen) }
       }

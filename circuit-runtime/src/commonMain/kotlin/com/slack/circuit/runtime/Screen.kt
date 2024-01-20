@@ -7,6 +7,6 @@ import kotlin.DeprecationLevel.ERROR
 @Deprecated(
   "Use Screen from the new package instead",
   ReplaceWith("Screen", "com.slack.circuit.runtime.screen.Screen"),
-  ERROR
+  ERROR,
 )
 public typealias Screen = com.slack.circuit.runtime.screen.Screen

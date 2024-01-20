@@ -42,7 +42,7 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
       rememberSaveable(
         record,
         saver = BackStackRecordLocalSaveableStateRegistry.Saver,
-        key = record.key
+        key = record.key,
       ) {
         BackStackRecordLocalSaveableStateRegistry(mutableStateMapOf())
       }
@@ -102,7 +102,7 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   override fun registerProvider(
     key: String,
-    valueProvider: () -> Any?
+    valueProvider: () -> Any?,
   ): SaveableStateRegistry.Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
     synchronized(lock) { valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider) }
@@ -149,7 +149,7 @@ private class BackStackRecordLocalSaveableStateRegistry(
           BackStackRecordLocalSaveableStateRegistry(
             mutableStateMapOf<String, List<Any?>>().apply { putAll(value) }
           )
-        }
+        },
       )
   }
 }

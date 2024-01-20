@@ -29,7 +29,7 @@ public fun rememberCircuitNavigator(
 
 internal class NavigatorImpl(
   private val backstack: BackStack<out Record>,
-  private val onRootPop: () -> Unit
+  private val onRootPop: () -> Unit,
 ) : Navigator {
 
   init {

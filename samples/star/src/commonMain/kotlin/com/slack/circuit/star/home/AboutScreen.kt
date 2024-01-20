@@ -49,13 +49,13 @@ fun About(modifier: Modifier = Modifier) {
       modifier = Modifier.size(96.dp),
       painter = painterResource("star_icon.png"),
       contentDescription = "STAR icon",
-      tint = Color.Unspecified
+      tint = Color.Unspecified,
     )
     Spacer(modifier = Modifier.height(16.dp))
     Text(
       text = Strings.ABOUT_SCREEN,
       textAlign = TextAlign.Justify,
-      modifier = Modifier.widthIn(max = 400.dp).padding(horizontal = 16.dp)
+      modifier = Modifier.widthIn(max = 400.dp).padding(horizontal = 16.dp),
     )
   }
 }

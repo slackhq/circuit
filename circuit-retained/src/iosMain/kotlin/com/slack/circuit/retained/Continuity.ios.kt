@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 @Composable
 public actual fun continuityRetainedStateRegistry(
   key: String,
-  canRetainChecker: CanRetainChecker
+  canRetainChecker: CanRetainChecker,
 ): RetainedStateRegistry {
   return RetainedStateRegistryImpl(null)
 }

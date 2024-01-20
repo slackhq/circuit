@@ -43,7 +43,7 @@ class PetRepositoryImpl(
         ImmutableListAdapter(":"),
         EnumColumnAdapter(),
         EnumColumnAdapter(),
-      )
+      ),
     )
 
   override suspend fun refreshData() {
@@ -122,7 +122,7 @@ class PetRepositoryImpl(
                   animal.breeds.secondary,
                   animal.gender,
                   animal.size,
-                  animal.status
+                  animal.status,
                 )
                 .toImmutableList(),
             description = animal.description.orEmpty(),

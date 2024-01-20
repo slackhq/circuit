@@ -79,7 +79,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
       val name: String,
       val description: String,
       val tags: ImmutableList<String>,
-      val eventSink: (Event) -> Unit
+      val eventSink: (Event) -> Unit,
     ) : State
   }
 
@@ -91,7 +91,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
   description: String = this.description,
-  eventSink: (Event) -> Unit
+  eventSink: (Event) -> Unit,
 ): State {
   return Success(
     url = url,
@@ -100,7 +100,7 @@ internal fun Animal.toPetDetailState(
     name = name,
     description = description,
     tags = tags,
-    eventSink
+    eventSink,
   )
 }
 
@@ -125,7 +125,7 @@ constructor(
               title = animal.name
               animal.toPetDetailState(
                 screen.photoUrlMemoryCacheKey,
-                bioText ?: animal.description
+                bioText ?: animal.description,
               ) {
                 navigator.goTo(OpenUrlScreen(animal.url))
               }
@@ -172,11 +172,11 @@ private fun TopBar(state: State) {
 private fun Loading(paddingValues: PaddingValues) {
   Box(
     modifier = Modifier.padding(paddingValues).fillMaxSize(),
-    contentAlignment = Alignment.Center
+    contentAlignment = Alignment.Center,
   ) {
     CircularProgressIndicator(
       modifier = Modifier.testTag(PROGRESS_TAG),
-      color = MaterialTheme.colorScheme.onSurface
+      color = MaterialTheme.colorScheme.onSurface,
     )
   }
 }
@@ -185,17 +185,14 @@ private fun Loading(paddingValues: PaddingValues) {
 private fun UnknownAnimal(paddingValues: PaddingValues) {
   Box(
     modifier = Modifier.padding(paddingValues).fillMaxSize(),
-    contentAlignment = Alignment.Center
+    contentAlignment = Alignment.Center,
   ) {
     Text(modifier = Modifier.testTag(UNKNOWN_ANIMAL_TAG), text = Strings.UNKNOWN_ANIMALS)
   }
 }
 
 @Composable
-private fun ShowAnimal(
-  state: Success,
-  padding: PaddingValues,
-) {
+private fun ShowAnimal(state: Success, padding: PaddingValues) {
   val carouselContent = remember {
     movableContentOf {
       CircuitContent(
@@ -219,15 +216,12 @@ private fun ShowAnimalLandscape(
   padding: PaddingValues,
   carouselContent: @Composable () -> Unit,
 ) {
-  Row(
-    modifier = Modifier.padding(padding),
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-  ) {
+  Row(modifier = Modifier.padding(padding), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
     carouselContent()
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
+      modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
     ) {
       petDetailDescriptions(state)
     }
@@ -269,7 +263,7 @@ private fun LazyListScope.petDetailDescriptions(state: Success) {
             modifier = Modifier.padding(12.dp),
             text = tag.capitalize(LocaleList.current),
             color = MaterialTheme.colorScheme.onTertiary,
-            style = MaterialTheme.typography.labelLarge
+            style = MaterialTheme.typography.labelLarge,
           )
         }
       }
@@ -280,7 +274,7 @@ private fun LazyListScope.petDetailDescriptions(state: Success) {
     ExpandableText(
       text = state.description,
       style = MaterialTheme.typography.bodyLarge,
-      initiallyExpanded = true
+      initiallyExpanded = true,
     )
   }
 
@@ -289,7 +283,7 @@ private fun LazyListScope.petDetailDescriptions(state: Success) {
       Text(
         modifier = Modifier.testTag(FULL_BIO_TAG),
         text = "Full bio on Petfinder ➡",
-        style = MaterialTheme.typography.headlineSmall
+        style = MaterialTheme.typography.headlineSmall,
       )
     }
   }

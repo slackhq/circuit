@@ -61,7 +61,7 @@ public fun LaunchedImpressionEffect(vararg inputs: Any?, impression: suspend () 
 public fun rememberImpressionNavigator(
   vararg inputs: Any?,
   navigator: Navigator,
-  impression: suspend () -> Unit
+  impression: suspend () -> Unit,
 ): Navigator {
   var navigated by rememberRetained { mutableIntStateOf(0) }
   val navigatedInput = remember { navigated }
@@ -69,10 +69,7 @@ public fun rememberImpressionNavigator(
   return remember(navigator) { OnNavEventNavigator(navigator) { navigated++ } }
 }
 
-private class OnNavEventNavigator(
-  val delegate: Navigator,
-  val onNavEvent: () -> Unit,
-) : Navigator {
+private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) : Navigator {
 
   override fun goTo(screen: Screen) {
     onNavEvent()

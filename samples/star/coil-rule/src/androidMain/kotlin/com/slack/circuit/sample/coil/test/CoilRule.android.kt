@@ -13,9 +13,8 @@ import coil3.Image
 import coil3.asCoilImage
 
 /** A custom invoke that just uses a custom [drawable] to default in a [FakeImageLoader]. */
-operator fun CoilRule.Companion.invoke(
-  drawable: Drawable,
-) = invoke(image = wrapIfNecessary(drawable).asCoilImage())
+operator fun CoilRule.Companion.invoke(drawable: Drawable) =
+  invoke(image = wrapIfNecessary(drawable).asCoilImage())
 
 /** A custom invoke that just uses a custom Drawable [id] to default in a [FakeImageLoader]. */
 operator fun CoilRule.Companion.invoke(

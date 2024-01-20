@@ -48,7 +48,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
         breed = "Australian Terrier",
         gender = MALE,
         size = SMALL,
-        age = "12"
+        age = "12",
       )
 
     const val SNAPSHOT_TAG = "snapshot_tag"
@@ -65,7 +65,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     RoborazziRule(
       composeRule = composeTestRule,
       captureRoot = composeTestRule.onRoot(),
-      options = RoborazziRule.Options(outputDirectoryPath = "src/test/snapshots/images")
+      options = RoborazziRule.Options(outputDirectoryPath = "src/test/snapshots/images"),
     )
 
   @get:Rule val coilRule = CoilRule()

@@ -124,7 +124,4 @@ import kotlin.reflect.KClass
  * ```
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-public expect annotation class CircuitInject(
-  val screen: KClass<out Screen>,
-  val scope: KClass<*>,
-)
+public expect annotation class CircuitInject(val screen: KClass<out Screen>, val scope: KClass<*>)

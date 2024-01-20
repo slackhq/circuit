@@ -87,9 +87,7 @@ class ImpressionEffectScrollTest {
     }
   }
 
-  private fun ComposeContentTestRule.setRetainedContent(
-    content: @Composable () -> Unit = {},
-  ) {
+  private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit = {}) {
     setContent {
       CompositionLocalProvider(
         LocalRetainedStateRegistry provides registry,

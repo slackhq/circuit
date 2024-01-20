@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 public fun OverlayEffect(
   vararg keys: Any?,
   fallback: (@Composable () -> Unit)? = null,
-  block: suspend CoroutineScope.(host: OverlayHost) -> Unit
+  block: suspend CoroutineScope.(host: OverlayHost) -> Unit,
 ) {
   if (LocalOverlayState.current == UNAVAILABLE) {
     fallback?.invoke()

@@ -79,7 +79,7 @@ fun ExpandableText(
         }
       },
       style = style,
-      textAlign = textAlign
+      textAlign = textAlign,
     )
   }
 }

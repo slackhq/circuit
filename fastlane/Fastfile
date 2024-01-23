@@ -16,6 +16,7 @@ platform :ios do
       swiftformat(
         path: project,
         swiftversion: "5.0",
+        config: ".swiftformat",
         lint: true
       )
     end
@@ -33,7 +34,8 @@ platform :ios do
 
       swiftformat(
         path: project,
-        swiftversion: "5.0"
+        swiftversion: "5.0",
+        config: ".swiftformat",
       )
     end
   end

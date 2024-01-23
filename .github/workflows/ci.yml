@@ -32,6 +32,10 @@ jobs:
           distribution: 'zulu'
           java-version: '20'
 
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: Setup Gradle cache
         uses: gradle/gradle-build-action@v2
         with:
@@ -53,6 +57,12 @@ jobs:
         id: gradle-build-star-desktop
         run: |
           ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
+
+      - name: Run lint on iOS samples
+        run: bundle exec fastlane ios lint
+
+      - name: Build iOS samples
+        run: bundle exec fastlane ios build
 
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)

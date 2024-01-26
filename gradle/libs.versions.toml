@@ -27,7 +27,6 @@ compose-jb-kotlinVersion = "1.9.22"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.50"
 datastore = "1.1.0-beta01"
-dependencyAnalysisPlugin = "1.29.0"
 detekt = "1.23.4"
 dokka = "1.9.10"
 eithernet = "1.8.0"
@@ -68,7 +67,6 @@ agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
-dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

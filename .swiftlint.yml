@@ -1,0 +1,20 @@
+cyclomatic_complexity:
+    warning: 15
+    error: 20
+
+function_body_length:
+    warning: 75
+    error: 100
+
+line_length:
+    warning: 150
+    error: 200
+    ignores_function_declarations: true
+    ignores_comments: true
+    ignores_urls: true
+
+disabled_rules:
+    - todo
+
+opt_in_rules:
+    - sorted_imports

@@ -1,0 +1,61 @@
+skip_docs
+
+platform :ios do
+  projects = ["samples/counter/apps/iosApp"]
+
+  lane :lint do
+    for project in projects
+      swiftlint(
+        mode: :lint,
+        path: project,
+        strict: true,
+        raise_if_swiftlint_error: true,
+        config_file: ".swiftlint.yml"
+      )
+
+      swiftformat(
+        path: project,
+        swiftversion: "5.0",
+        config: ".swiftformat",
+        lint: true
+      )
+    end
+  end
+
+  lane :lint_fix do
+    for project in projects
+      swiftlint(
+        mode: :fix,
+        path: project,
+        strict: true,
+        raise_if_swiftlint_error: true,
+        config_file: ".swiftlint.yml"
+      )
+
+      swiftformat(
+        path: project,
+        swiftversion: "5.0",
+        config: ".swiftformat",
+      )
+    end
+  end
+
+  lane :build_counter do |options|
+    setup_ci if ENV['CI']
+    # Clear any existing Xcode derived data, so that we're starting from fresh
+    clear_derived_data if ENV['CI']
+
+    build_app(
+      project: "samples/counter/apps/iosApp/Counter.xcodeproj",
+      buildlog_path: "samples/counter/apps/iosApp/build/fastlane-buildlog",
+      # We do not have signing setup, so turn off any related settings
+      skip_package_ipa: true,
+      skip_codesigning: true,
+    )
+  end
+
+  lane :build do
+    build_counter
+  end
+
+end

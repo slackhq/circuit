@@ -7,6 +7,7 @@ androidx.annotation:annotation
 androidx.arch.core:core-common
 androidx.arch.core:core-runtime
 androidx.autofill:autofill
+androidx.collection:collection-jvm
 androidx.collection:collection
 androidx.compose.animation:animation-android
 androidx.compose.animation:animation-core-android

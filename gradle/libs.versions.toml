@@ -31,7 +31,7 @@ dependencyAnalysisPlugin = "1.29.0"
 detekt = "1.23.4"
 dokka = "1.9.10"
 eithernet = "1.8.0"
-jdk = "20"
+jdk = "21"
 jvmTarget = "11"
 kct = "0.4.0"
 kotlin = "1.9.22"
@@ -112,7 +112,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.10.01" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.01.00" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }

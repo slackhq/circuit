@@ -5,8 +5,8 @@
 //  Created by Zac Sweers on 1/4/24.
 //
 
-import SwiftUI
 import counter
+import SwiftUI
 
 struct ContentView: View {
   @ObservedObject var presenter = SwiftPresenter<CounterScreenState>(delegate: SwiftSupportKt.doNewCounterPresenter())
@@ -19,18 +19,19 @@ struct ContentView: View {
           .foregroundStyle(count >= 0 ? Color.primary : Color.red)
           .font(.system(size: 36))
         HStack(spacing: 10) {
-          Button(action: {
+          Button {
             presenter.state?.eventSink(CounterScreenEventDecrement.shared)
-          }) {
+          } label: {
             Text("-")
               .font(.system(size: 36, weight: .black, design: .monospaced))
           }
           .padding()
           .foregroundColor(.white)
           .background(Color.blue)
-          Button(action: {
+
+          Button {
             presenter.state?.eventSink(CounterScreenEventIncrement.shared)
-          }) {
+          } label: {
             Text("+")
               .font(.system(size: 36, weight: .black, design: .monospaced))
           }
@@ -41,18 +42,18 @@ struct ContentView: View {
       }
       .navigationBarTitle("Counter")
     }.task {
-        await presenter.activate()
+      await presenter.activate()
     }
   }
 }
 
-// TODO we hide all this behind the Circuit UI interface somehow? Then we can pass it state only
+// TODO: we hide all this behind the Circuit UI interface somehow? Then we can pass it state only
 class SwiftPresenter<T: AnyObject>: ObservableObject {
   @Published
-  private(set) var state: T? = nil
+  private(set) var state: T?
   private let delegate: SupportSwiftPresenter<T>
 
-  // TODO the raw type here is not nice. Will Kotlin eventually expose these? Maybe we should
+  // TODO: the raw type here is not nice. Will Kotlin eventually expose these? Maybe we should
   //  generate wrappers?
   init(delegate: Circuit_runtime_presenterPresenter) {
     self.delegate = SupportSwiftPresenter(delegate: delegate)
@@ -60,7 +61,7 @@ class SwiftPresenter<T: AnyObject>: ObservableObject {
 
   @MainActor
   func activate() async {
-    for await state in self.delegate.state {
+    for await state in delegate.state {
       self.state = state
     }
   }

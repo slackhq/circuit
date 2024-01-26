@@ -19,7 +19,7 @@ compose-compiler-kotlinVersion = "1.9.22"
 compose-foundation = "1.5.4"
 compose-material = "1.5.4"
 compose-material3 = "1.1.2"
-compose-runtime = "1.5.4"
+compose-runtime = "1.6.0"
 compose-ui = "1.6.0"
 compose-jb = "1.5.11"
 compose-jb-compiler = "1.5.7.1"
@@ -27,11 +27,10 @@ compose-jb-kotlinVersion = "1.9.22"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.50"
 datastore = "1.1.0-beta01"
-dependencyAnalysisPlugin = "1.29.0"
 detekt = "1.23.4"
 dokka = "1.9.10"
 eithernet = "1.8.0"
-jdk = "20"
+jdk = "21"
 jvmTarget = "11"
 kct = "0.4.0"
 kotlin = "1.9.22"
@@ -68,7 +67,6 @@ agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
-dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysisPlugin" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
@@ -112,7 +110,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.10.01" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.01.00" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }

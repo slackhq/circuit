@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build:
     # Necessary to run full tests to cover iOS too
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,7 +30,16 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '20'
+          java-version: '21'
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: '3.2.2'
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.0.1'
 
       - name: Setup Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -54,6 +63,12 @@ jobs:
         run: |
           ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
 
+      - name: Run lint on iOS samples
+        run: bundle exec fastlane ios lint
+
+      - name: Build iOS samples
+        run: bundle exec fastlane ios build
+
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -69,7 +84,8 @@ jobs:
         id: gradle-instrumentation-fork
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 21
+          # Use API 28 for star samples
+          api-level: 28
           arch: x86_64
           disable-animations: true
           disk-size: 6000M
@@ -103,7 +119,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '20'
+          java-version: '21'
 
       - name: Verify Snapshots
         id: gradle-snapshots

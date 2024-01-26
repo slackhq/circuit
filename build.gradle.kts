@@ -46,7 +46,6 @@ plugins {
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.versionsPlugin)
-  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
@@ -469,14 +468,5 @@ subprojects {
     // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
     // that would include benchmarks.
     tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
-  }
-}
-
-dependencyAnalysis {
-  abi {
-    exclusions {
-      ignoreInternalPackages()
-      ignoreGeneratedCode()
-    }
   }
 }

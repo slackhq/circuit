@@ -55,9 +55,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   }
 
   public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?) {
-    resultKey?.let {
-      topRecord?.pendingResultKey = it
-    }
+    resultKey?.let { topRecord?.pendingResultKey = it }
     push(Record(screen, args))
   }
 
@@ -84,15 +82,16 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   ) : BackStack.Record {
     internal val logKey = screen::class.simpleName
     /**
-     * A [Channel] of pending results. Note we use this instead of a
-     * [CompletableDeferred] because we may push and pop back to a given record multiple times, and
-     * thus need to be able to push and receive multiple results.
+     * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
+     * we may push and pop back to a given record multiple times, and thus need to be able to push
+     * and receive multiple results.
      *
      * TODO what's the right behavior here?
-     *  - Capacity 1 + overflow drop oldest: we only care about the most recent result
-     *  - Conflated: only take one result until the presenter takes it.
+     * - Capacity 1 + overflow drop oldest: we only care about the most recent result
+     * - Conflated: only take one result until the presenter takes it.
      */
-    private val pendingResultChannel = Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val pendingResultChannel =
+      Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     internal var pendingResultKey: String? = null
 
@@ -128,13 +127,14 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
           restore = { list ->
             @Suppress("UNCHECKED_CAST")
             Record(
-              screen = list[0] as Screen,
-              args = list[1] as Map<String, Any?>,
-              key = list[2] as String,
-            ).also {
-              it._pendingResult = list[3] as? PopResult?
-              it.pendingResultKey = list[4] as? String?
-            }
+                screen = list[0] as Screen,
+                args = list[1] as Map<String, Any?>,
+                key = list[2] as String,
+              )
+              .also {
+                it._pendingResult = list[3] as? PopResult?
+                it.pendingResultKey = list[4] as? String?
+              }
           },
         )
     }

@@ -38,13 +38,13 @@ class NavigableCircuitSaveableStateTest {
 
       setContent {
         CircuitCompositionLocals(circuit) {
-          val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
+          val backStack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
           val navigator =
             rememberCircuitNavigator(
-              backStack = backstack,
+              backStack = backStack,
               onRootPop = {}, // no-op for tests
             )
-          NavigableCircuitContent(navigator = navigator, backStack = backstack)
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }
       }
 

@@ -10,9 +10,9 @@ A new navigable content surface is handled via the `NavigableCircuitContent` fun
 
 ```kotlin
 setContent {
-  val backstack = rememberSaveableBackStack { push(HomeScreen) }
-  val navigator = rememberCircuitNavigator(backstack)
-  NavigableCircuitContent(navigator, backstack)
+  val backStack = rememberSaveableBackStack { push(HomeScreen) }
+  val navigator = rememberCircuitNavigator(backStack)
+  NavigableCircuitContent(navigator, backStack)
 }
 ```
 
@@ -35,7 +35,7 @@ If you want to have custom behavior for when back is pressed on the root screen 
 
 ```kotlin
 setContent {
-  val backstack = rememberSaveableBackStack { push(HomeScreen) }
+  val backStack = rememberSaveableBackStack { push(HomeScreen) }
   BackHandler(onBack = { /* do something on root */ })
   // The Navigator's internal BackHandler will take precedence until it is at the root screen.
   val navigator = rememberCircuitNavigator(backstack)

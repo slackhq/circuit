@@ -60,13 +60,13 @@ class NavResultTest {
     composeTestRule.run {
       setContent {
         CircuitCompositionLocals(circuit) {
-          val backstack = rememberSaveableBackStack { push(TestResultScreen("Initial")) }
+          val backStack = rememberSaveableBackStack { push(TestResultScreen("Initial")) }
           val navigator =
             rememberCircuitNavigator(
-              backStack = backstack,
+              backStack = backStack,
               onRootPop = {}, // no-op for tests
             )
-          NavigableCircuitContent(navigator = navigator, backStack = backstack)
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }
       }
 

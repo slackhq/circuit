@@ -21,29 +21,29 @@ import org.junit.runner.RunWith
 class NavigatorTest {
   @Test
   fun errorWhenBackstackIsEmpty() {
-    val backstack = SaveableBackStack()
-    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backstack) {} }
+    val backStack = SaveableBackStack()
+    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backStack) {} }
     assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
   }
 
   @Test
   fun popAtRoot() {
-    val backstack = SaveableBackStack()
-    backstack.push(TestScreen)
-    backstack.push(TestScreen)
+    val backStack = SaveableBackStack()
+    backStack.push(TestScreen)
+    backStack.push(TestScreen)
 
     var onRootPop = 0
-    val navigator = NavigatorImpl(backstack) { onRootPop++ }
+    val navigator = NavigatorImpl(backStack) { onRootPop++ }
 
-    assertThat(backstack).hasSize(2)
+    assertThat(backStack).hasSize(2)
     assertThat(onRootPop).isEqualTo(0)
 
     navigator.pop()
-    assertThat(backstack).hasSize(1)
+    assertThat(backStack).hasSize(1)
     assertThat(onRootPop).isEqualTo(0)
 
     navigator.pop()
-    assertThat(backstack).hasSize(1)
+    assertThat(backStack).hasSize(1)
     assertThat(onRootPop).isEqualTo(1)
   }
 

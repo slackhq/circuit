@@ -346,20 +346,22 @@ private fun PetListGridItem(
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
       ),
   ) {
-    Column(modifier = Modifier.clickable { onClick() }) {
+    Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
-      AsyncImage(
-        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
-        model =
-          Builder(LocalPlatformContext.current)
-            .data(updatedImageUrl)
-            .memoryCacheKey(animal.imageUrl)
-            .crossfade(AnimationConstants.DefaultDurationMillis)
-            .build(),
-        contentDescription = animal.name,
-        contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-      )
+      animal.imageUrl?.let {
+        AsyncImage(
+          modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
+          model =
+            Builder(LocalPlatformContext.current)
+              .data(updatedImageUrl)
+              .memoryCacheKey(animal.imageUrl)
+              .crossfade(AnimationConstants.DefaultDurationMillis)
+              .build(),
+          contentDescription = animal.name,
+          contentScale = ContentScale.Crop,
+          imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+        )
+      }
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
         Text(text = animal.name, style = MaterialTheme.typography.labelLarge)

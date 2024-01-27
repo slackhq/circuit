@@ -9,6 +9,7 @@ import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -36,15 +37,26 @@ internal class NavigatorImpl(
     check(!backstack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goTo(screen: Screen) = backstack.push(screen)
+  override fun goToForResult(screen: Screen, resultKey: String?) {
+    backstack.push(screen, resultKey)
+  }
 
-  override fun pop(): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     if (backstack.isAtRoot) {
       onRootPop()
       return null
     }
 
-    return backstack.pop()?.screen
+    return backstack.pop(result)?.screen
+  }
+
+  override fun peek(): Screen? {
+    return backstack.topRecord?.screen
+  }
+
+  override suspend fun awaitResult(key: String): PopResult? {
+    val record = backstack.topRecord ?: error("No top record to await result.")
+    return record.awaitResult(key)
   }
 
   override fun resetRoot(newRoot: Screen): List<Screen> {

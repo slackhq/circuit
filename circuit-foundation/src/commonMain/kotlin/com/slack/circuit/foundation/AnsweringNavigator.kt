@@ -36,13 +36,13 @@ public fun <T : PopResult> rememberAnsweringNavigator(
     navigator.peek() ?: error("Navigator must have a top screen at start.")
   }
 
-  // Current top screen of the navigator
-  val currentTopScreen by remember { derivedStateOf { navigator.peek() } }
+  // Current top record of the navigator
+  val currentTopRecord by remember { derivedStateOf { navigator.peek() } }
 
-  // Track whether we've actually gone to the next screen yet
+  // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
 
-  if (launched && currentTopScreen == topAtStart) {
+  if (launched && currentTopRecord == topAtStart) {
     // Collect the result
     LaunchedEffect(key) {
       // If we get a null result here, it's because either the real navigator

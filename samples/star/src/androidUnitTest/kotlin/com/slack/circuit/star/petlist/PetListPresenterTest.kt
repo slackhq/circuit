@@ -3,7 +3,6 @@
 package com.slack.circuit.star.petlist
 
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
@@ -19,16 +18,13 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import kotlinx.parcelize.Parcelize
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PetListPresenterTest {
-  @Parcelize object TestScreen : Screen
-
-  private val navigator = FakeNavigator(TestScreen)
+  private val navigator = FakeNavigator()
 
   @Test
   fun `present - emit loading state then no animals state`() = runTest {
@@ -69,7 +65,7 @@ class PetListPresenterTest {
 
       val clickAnimal = ClickAnimal(123L, "key")
       successState.eventSink(clickAnimal)
-      assertThat(navigator.peek())
+      assertThat(navigator.awaitNextScreen())
         .isEqualTo(PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey))
     }
   }

@@ -17,6 +17,7 @@ package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -38,13 +39,13 @@ public interface BackStack<R : Record> : Iterable<R> {
    * Push a new [Screen] onto the back stack. This will be enveloped in a [Record] and the new
    * record will become the top of the stack.
    */
-  public fun push(screen: Screen)
+  public fun push(screen: Screen, resultKey: String? = null)
 
   /**
    * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
    * successful or `null` if no entry was popped.
    */
-  public fun pop(): R?
+  public fun pop(result: PopResult? = null): R?
 
   /**
    * Pop records off the top of the backstack until one is found that matches the given predicate.
@@ -53,6 +54,7 @@ public interface BackStack<R : Record> : Iterable<R> {
     while (topRecord?.let(predicate) == false) pop()
   }
 
+  @Stable
   public interface Record {
     /**
      * A value that identifies this record uniquely, even if it shares the same [screen] with
@@ -65,6 +67,8 @@ public interface BackStack<R : Record> : Iterable<R> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
+
+    public suspend fun awaitResult(key: String): PopResult?
   }
 }
 

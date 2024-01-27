@@ -171,7 +171,6 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
 
     val filtersScreenNavigator =
       rememberAnsweringNavigator(navigator, FiltersScreen.Result::class) {
-        println("RESULTS Received result: $it")
         filters = it.filters
       }
 

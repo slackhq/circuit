@@ -39,6 +39,7 @@ kotlin {
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
         api(libs.compose.ui)
+        implementation(libs.uuid)
       }
     }
     val androidMain by getting {

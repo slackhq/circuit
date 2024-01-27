@@ -33,6 +33,8 @@ object CoilModule {
           .maxSizeBytes(MAX_CACHE_SIZE)
           .build()
       }
+      // Disable noisy logging
+      .logger(null)
       .components { add(NetworkFetcher.Factory(lazy { httpClient.get() })) }
       .build()
 }

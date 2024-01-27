@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -70,16 +71,22 @@ public fun rememberImpressionNavigator(
 }
 
 private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) : Navigator {
-
   override fun goTo(screen: Screen) {
     onNavEvent()
     delegate.goTo(screen)
   }
 
-  override fun pop(): Screen? {
+  override fun goToForResult(screen: Screen, resultKey: String?) {
+    onNavEvent()
+    return delegate.goToForResult(screen, resultKey)
+  }
+
+  override fun pop(result: PopResult?): Screen? {
     onNavEvent()
     return delegate.pop()
   }
+
+  override suspend fun awaitResult(key: String) = delegate.awaitResult(key)
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
     onNavEvent()

@@ -52,6 +52,7 @@ class NavResultTest {
 
   // TODO
   //  - Only caller gets the result back
+  //  - Preserved on config changes
   //  - ???
 
   @Test

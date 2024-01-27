@@ -14,6 +14,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 
@@ -49,8 +50,17 @@ public fun CircuitContent(
           return emptyList()
         }
 
-        override fun pop(): Screen? {
-          onNavEvent(NavEvent.Pop)
+        override fun goToForResult(screen: Screen, resultKey: String?) {
+          onNavEvent(NavEvent.GoToForResult(screen, resultKey))
+        }
+
+        override fun pop(result: PopResult?): Screen? {
+          onNavEvent(NavEvent.Pop(result))
+          return null
+        }
+
+        override suspend fun awaitResult(key: String): PopResult? {
+          // TODO can this ever work?
           return null
         }
       }

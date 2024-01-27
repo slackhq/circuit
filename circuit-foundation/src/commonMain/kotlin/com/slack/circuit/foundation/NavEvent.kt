@@ -30,7 +30,7 @@ public sealed interface NavEvent : CircuitUiEvent {
   public data class GoTo(val screen: Screen) : NavEvent
 
   /** Corresponds to [Navigator.goToForResult]. */
-  public data class GoToForResult(val screen: Screen, val resultKey: String) : NavEvent
+  public data class GoToForResult(val screen: Screen, val resultKey: String?) : NavEvent
 
   /** Corresponds to [Navigator.resetRoot]. */
   public data class ResetRoot(val newRoot: Screen) : NavEvent

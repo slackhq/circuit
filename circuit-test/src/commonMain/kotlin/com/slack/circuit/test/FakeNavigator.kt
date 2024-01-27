@@ -4,6 +4,7 @@ package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -27,14 +28,25 @@ public class FakeNavigator : Navigator {
   private val navigatedScreens = Turbine<Screen>()
   private val newRoots = Turbine<Screen>()
   private val pops = Turbine<Unit>()
+  private val results = Turbine<PopResult>()
 
   override fun goTo(screen: Screen) {
     navigatedScreens.add(screen)
   }
 
-  override fun pop(): Screen? {
+  override fun goToForResult(screen: Screen, resultKey: String?) {
+    // TODO track resultKey and make awaitResult respect it?
+    navigatedScreens.add(screen)
+  }
+
+  override fun pop(result: PopResult?): Screen? {
     pops.add(Unit)
-    return null
+    result?.let(results::add)
+    return pop()
+  }
+
+  override suspend fun awaitResult(key: String): PopResult {
+    return results.awaitItem()
   }
 
   override fun resetRoot(newRoot: Screen): List<Screen> {

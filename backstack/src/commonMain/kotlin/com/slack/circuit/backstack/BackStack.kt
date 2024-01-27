@@ -39,7 +39,7 @@ public interface BackStack<R : Record> : Iterable<R> {
    * Push a new [Screen] onto the back stack. This will be enveloped in a [Record] and the new
    * record will become the top of the stack.
    */
-  public fun push(screen: Screen, resultKey: String? = null)
+  public fun push(screen: Screen)
 
   /**
    * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was

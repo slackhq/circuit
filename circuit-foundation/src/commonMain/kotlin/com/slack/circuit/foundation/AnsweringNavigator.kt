@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.benasher44.uuid.uuid4
+import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -56,7 +57,13 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val answeringNavigator = remember {
     object : GoToNavigator {
       override fun goTo(screen: Screen) {
-        navigator.goToForResult(screen, key)
+        navigator.peek()?.let { record ->
+          if (record is SaveableBackStack.ResultRecord) {
+            record.setResultKey(key)
+          }
+        }
+
+        navigator.goTo(screen)
         launched = true
       }
     }

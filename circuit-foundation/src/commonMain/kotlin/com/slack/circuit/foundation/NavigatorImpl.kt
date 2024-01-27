@@ -37,8 +37,8 @@ internal class NavigatorImpl(
     check(!backstack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goToForResult(screen: Screen, resultKey: String?) {
-    backstack.push(screen, resultKey)
+  override fun goTo(screen: Screen) {
+    backstack.push(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
@@ -50,8 +50,8 @@ internal class NavigatorImpl(
     return backstack.pop(result)?.screen
   }
 
-  override fun peek(): Screen? {
-    return backstack.topRecord?.screen
+  override fun peek(): Record? {
+    return backstack.topRecord
   }
 
   override suspend fun awaitResult(key: String): PopResult? {

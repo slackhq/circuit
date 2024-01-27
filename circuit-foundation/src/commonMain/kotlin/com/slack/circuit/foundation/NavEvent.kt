@@ -16,7 +16,6 @@ public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is NavEvent.Pop -> pop(event.result)
     is NavEvent.GoTo -> goTo(event.screen)
-    is NavEvent.GoToForResult -> goToForResult(event.screen, event.resultKey)
     is NavEvent.ResetRoot -> resetRoot(event.newRoot)
   }
 }
@@ -28,9 +27,6 @@ public sealed interface NavEvent : CircuitUiEvent {
 
   /** Corresponds to [Navigator.goTo]. */
   public data class GoTo(val screen: Screen) : NavEvent
-
-  /** Corresponds to [Navigator.goToForResult]. */
-  public data class GoToForResult(val screen: Screen, val resultKey: String?) : NavEvent
 
   /** Corresponds to [Navigator.resetRoot]. */
   public data class ResetRoot(val newRoot: Screen) : NavEvent

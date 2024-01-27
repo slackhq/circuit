@@ -48,7 +48,7 @@ internal class FullScreenOverlay<S : Screen>(
   override fun Content(navigator: OverlayNavigator<Unit>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
-      DispatchingOverlayNavigator(screen, navigator) { callbacks.onFinish() }
+      DispatchingOverlayNavigator(navigator, callbacks::onFinish)
     }
 
     BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
@@ -61,7 +61,6 @@ internal class FullScreenOverlay<S : Screen>(
  * called.
  */
 internal class DispatchingOverlayNavigator(
-  private val screen: Screen,
   private val overlayNavigator: OverlayNavigator<Unit>,
   private val onPop: () -> Unit,
 ) : Navigator {
@@ -69,11 +68,7 @@ internal class DispatchingOverlayNavigator(
     error("goTo() is not supported in full screen overlays!")
   }
 
-  override fun goToForResult(screen: Screen, resultKey: String?) {
-    error("goToForResult() is not supported in full screen overlays!")
-  }
-
-  override fun peek() = screen
+  override fun peek() = null
 
   override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(Unit)

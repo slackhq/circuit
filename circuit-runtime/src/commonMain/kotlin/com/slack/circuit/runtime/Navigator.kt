@@ -3,6 +3,7 @@
 package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -15,18 +16,13 @@ public interface GoToNavigator {
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
 public interface Navigator : GoToNavigator {
-  public override fun goTo(screen: Screen) {
-    goToForResult(screen, null)
-  }
-
-  public fun goToForResult(screen: Screen, resultKey: String? = null)
+  public override fun goTo(screen: Screen)
 
   public fun pop(result: PopResult? = null): Screen?
 
-  /** Returns the current [Screen] at the top of the back stack. */
-  // TODO expose a record instead?
+  /** Returns the current [BackStack.Record] at the top of the back stack. */
   // TODO should this be nullable?
-  public fun peek(): Screen?
+  public fun peek(): BackStack.Record?
 
   public suspend fun awaitResult(key: String): PopResult?
 
@@ -52,11 +48,9 @@ public interface Navigator : GoToNavigator {
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
 
-    override fun goToForResult(screen: Screen, resultKey: String?) {}
-
     override fun pop(result: PopResult?): Screen? = null
 
-    override fun peek(): Screen? = null
+    override fun peek(): BackStack.Record? = null
 
     override suspend fun awaitResult(key: String): PopResult? = null
 

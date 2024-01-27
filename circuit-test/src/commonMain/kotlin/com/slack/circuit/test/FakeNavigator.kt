@@ -3,6 +3,7 @@
 package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -34,19 +35,15 @@ public class FakeNavigator(initialScreen: Screen? = null) : Navigator {
     navigatedScreens.add(screen)
   }
 
-  override fun goToForResult(screen: Screen, resultKey: String?) {
-    // TODO track resultKey and make awaitResult respect it?
-    navigatedScreens.add(screen)
-  }
-
   override fun pop(result: PopResult?): Screen? {
     pops.add(Unit)
     result?.let(results::add)
     return navigatedScreens.removeLastOrNull()
   }
 
-  override fun peek(): Screen? {
-    return navigatedScreens.lastOrNull()
+  override fun peek(): BackStack.Record? {
+    // TODO can this be implemented?
+    return null
   }
 
   override suspend fun awaitResult(key: String): PopResult {

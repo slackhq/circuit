@@ -77,11 +77,6 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
     delegate.goTo(screen)
   }
 
-  override fun goToForResult(screen: Screen, resultKey: String?) {
-    onNavEvent()
-    return delegate.goToForResult(screen, resultKey)
-  }
-
   override fun pop(result: PopResult?): Screen? {
     onNavEvent()
     return delegate.pop()

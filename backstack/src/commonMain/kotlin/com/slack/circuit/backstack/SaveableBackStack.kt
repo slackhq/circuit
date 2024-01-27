@@ -50,37 +50,43 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public override fun push(screen: Screen, resultKey: String?) {
-    push(screen, emptyMap(), resultKey)
+  public override fun push(screen: Screen) {
+    return push(screen, emptyMap())
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?) {
-    resultKey?.let { topRecord?.pendingResultKey = it }
+  public fun push(screen: Screen, args: Map<String, Any?>) {
     push(Record(screen, args))
   }
 
   public override fun push(record: Record) {
     entryList.add(0, record)
     // Clear the cached pending result from the previous top record
-    // TODO this may not be enough. See TODO on _pendingResult
-    entryList.getOrNull(1)?._pendingResult = null
+    // TODO this may not be enough. See TODO in clearPendingResult()
+    entryList.getOrNull(1)?.clearPendingResult()
   }
 
   override fun pop(result: PopResult?): Record? {
     val popped = entryList.removeFirstOrNull()
     result?.let {
       // Send the pending result to our new top record
-      topRecord?._pendingResult = it
+      topRecord?.updatePendingResult(it)
     }
     return popped
   }
 
-  public data class Record(
-    override val screen: Screen,
-    val args: Map<String, Any?> = emptyMap(),
-    override val key: String = uuid4().toString(),
-  ) : BackStack.Record {
-    internal val logKey = screen::class.simpleName
+  public interface ResultRecord {
+    public fun setResultKey(key: String)
+
+    public fun clearResultKey()
+
+    public fun updatePendingResult(result: PopResult)
+
+    public fun clearPendingResult()
+
+    public suspend fun awaitResult(key: String): PopResult?
+  }
+
+  internal class ResultRecordImpl : ResultRecord {
     /**
      * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
      * we may push and pop back to a given record multiple times, and thus need to be able to push
@@ -96,13 +102,24 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
     internal var pendingResultKey: String? = null
 
     internal var _pendingResult: PopResult? = null
-      set(value) {
-        field = value
-        // TODO do we clear the channel's value here too?
-        if (value != null) {
-          pendingResultChannel.trySend(value)
-        }
-      }
+
+    override fun setResultKey(key: String) {
+      pendingResultKey = key
+    }
+
+    override fun clearResultKey() {
+      pendingResultKey = null
+    }
+
+    override fun updatePendingResult(result: PopResult) {
+      _pendingResult = result
+      pendingResultChannel.trySend(result)
+    }
+
+    override fun clearPendingResult() {
+      _pendingResult = null
+      // TODO do we clear the channel's value here too?
+    }
 
     override suspend fun awaitResult(key: String): PopResult? {
       return if (key == pendingResultKey) {
@@ -111,6 +128,21 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
         null
       }
     }
+  }
+
+  public data class Record
+  internal constructor(
+    override val screen: Screen,
+    val args: Map<String, Any?>,
+    override val key: String,
+    private val resultRecord: ResultRecordImpl,
+  ) : BackStack.Record, ResultRecord by resultRecord {
+
+    public constructor(
+      screen: Screen,
+      args: Map<String, Any?> = emptyMap(),
+      key: String = uuid4().toString(),
+    ) : this(screen, args, key, ResultRecordImpl())
 
     internal companion object {
       val Saver: Saver<Record, List<Any>> =
@@ -121,8 +153,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               add(value.args)
               add(value.key)
               // TODO this seems brittle if they ever get out of sync and order changes
-              value._pendingResult?.let { add(it) }
-              value.pendingResultKey?.let { add(it) }
+              value.resultRecord._pendingResult?.let { add(it) }
+              value.resultRecord.pendingResultKey?.let { add(it) }
             }
           },
           restore = { list ->
@@ -132,9 +164,9 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
                 args = list[1] as Map<String, Any?>,
                 key = list[2] as String,
               )
-              .also {
-                it._pendingResult = list.getOrNull(3) as? PopResult?
-                it.pendingResultKey = list.getOrNull(4) as? String?
+              .also { record ->
+                (list.getOrNull(3) as? PopResult?)?.let(record.resultRecord::updatePendingResult)
+                (list.getOrNull(4) as? String?)?.let(record.resultRecord::setResultKey)
               }
           },
         )

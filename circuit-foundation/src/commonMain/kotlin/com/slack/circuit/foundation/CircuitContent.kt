@@ -9,6 +9,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
@@ -50,21 +51,16 @@ public fun CircuitContent(
           return emptyList()
         }
 
-        override fun goToForResult(screen: Screen, resultKey: String?) {
-          onNavEvent(NavEvent.GoToForResult(screen, resultKey))
-        }
-
         override fun pop(result: PopResult?): Screen? {
           onNavEvent(NavEvent.Pop(result))
           return null
         }
 
-        override fun peek(): Screen = screen
+        // TODO can this ever work?
+        override fun peek(): BackStack.Record? = null
 
-        override suspend fun awaitResult(key: String): PopResult? {
-          // TODO can this ever work?
-          return null
-        }
+        // TODO can this ever work?
+        override suspend fun awaitResult(key: String): PopResult? = null
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

@@ -3,8 +3,6 @@
 package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
-import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -31,9 +29,6 @@ public class FakeNavigator(initialScreen: Screen? = null) : Navigator {
   private val newRoots = Turbine<Screen>()
   private val pops = Turbine<Unit>()
   private val results = Turbine<PopResult>()
-
-  // TODO can this be implemented?
-  @DelicateCircuitApi override val backStack: BackStack<out BackStack.Record>? = null
 
   override fun goTo(screen: Screen) {
     navigatedScreens.add(screen)

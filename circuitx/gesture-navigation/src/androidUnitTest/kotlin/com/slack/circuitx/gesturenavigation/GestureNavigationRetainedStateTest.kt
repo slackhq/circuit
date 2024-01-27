@@ -72,7 +72,7 @@ class GestureNavigationRetainedStateTest {
             )
           NavigableCircuitContent(
             navigator = navigator,
-            backstack = backstack,
+            backStack = backstack,
             decoration = GestureNavigationDecoration(onBackInvoked = navigator::pop),
           )
         }

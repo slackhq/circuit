@@ -95,7 +95,7 @@ fun main() {
       MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()) {
         CircuitCompositionLocals(component.circuit) {
           ContentWithOverlays {
-            NavigableCircuitContent(navigator = navigator, backstack = backStack)
+            NavigableCircuitContent(navigator = navigator, backStack = backStack)
           }
         }
       }

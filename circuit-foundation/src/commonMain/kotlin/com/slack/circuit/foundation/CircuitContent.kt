@@ -9,10 +9,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -40,13 +38,10 @@ public fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  val localNavigator = LocalNavigator.current
+  val localNavigator = LocalBackStack.current
   val navigator =
     remember(onNavEvent, localNavigator) {
       object : Navigator {
-        @DelicateCircuitApi
-        override val backStack: BackStack<out BackStack.Record>? = localNavigator?.backStack
-
         override fun goTo(screen: Screen) {
           onNavEvent(NavEvent.GoTo(screen))
         }

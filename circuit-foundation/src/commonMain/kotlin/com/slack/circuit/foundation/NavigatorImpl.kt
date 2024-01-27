@@ -8,7 +8,6 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
-import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -29,9 +28,8 @@ public fun rememberCircuitNavigator(
   return remember { NavigatorImpl(backStack, onRootPop) }
 }
 
-@OptIn(DelicateCircuitApi::class)
 internal class NavigatorImpl(
-  override val backStack: BackStack<out Record>,
+  private val backStack: BackStack<out Record>,
   private val onRootPop: () -> Unit,
 ) : Navigator {
 

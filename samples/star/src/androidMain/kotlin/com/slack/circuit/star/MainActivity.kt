@@ -77,7 +77,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
             ContentWithOverlays {
               NavigableCircuitContent(
                 navigator = navigator,
-                backstack = backstack,
+                backStack = backstack,
                 decoration =
                   ImageViewerAwareNavDecoration(
                     GestureNavigationDecoration(onBackInvoked = navigator::pop)

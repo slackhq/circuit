@@ -12,7 +12,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.benasher44.uuid.uuid4
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -36,14 +35,13 @@ private val UnusableRecord =
   }
 
 // TODO what about one that takes an AnsweringScreen<T> where T is the PopResult?
-@OptIn(DelicateCircuitApi::class)
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   navigator: Navigator,
   resultType: KClass<T>,
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
-  val backStack = navigator.backStack ?: return navigator
+  val backStack = LocalBackStack.current ?: return navigator
 
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen

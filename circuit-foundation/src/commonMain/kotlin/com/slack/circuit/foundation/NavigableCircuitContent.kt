@@ -42,22 +42,22 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 public fun NavigableCircuitContent(
   navigator: Navigator,
-  backstack: BackStack<out Record>,
+  backStack: BackStack<out Record>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backstack),
+  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
   val activeContentProviders =
-    backstack.buildCircuitContentProviders(
+    backStack.buildCircuitContentProviders(
       navigator = navigator,
       circuit = circuit,
       unavailableRoute = unavailableRoute,
     )
 
-  if (backstack.isEmpty) return
+  if (backStack.isEmpty) return
 
   /*
    * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
@@ -95,12 +95,12 @@ public fun NavigableCircuitContent(
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
-    decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) { provider ->
+    decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       // We retain the record's retained state registry for as long as the back stack
       // contains the record
       val record = provider.record
       val recordInBackStackRetainChecker =
-        remember(backstack, record) { CanRetainChecker { record in backstack } }
+        remember(backStack, record) { CanRetainChecker { record in backStack } }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Remember the `providedValues` lookup because this composition can live longer than
@@ -116,7 +116,7 @@ public fun NavigableCircuitContent(
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides recordRetainedStateRegistry,
           LocalCanRetainChecker provides CanRetainChecker.Always,
-          LocalNavigator provides navigator,
+          LocalBackStack provides backStack,
           *providedLocals,
         ) {
           provider.content(record)
@@ -267,7 +267,7 @@ public object NavigatorDefaults {
 }
 
 /**
- * Internal API to access the [Navigator] from within a [CircuitContent] composable, useful for
- * cases where we create nested nav handling.
+ * Internal API to access the [BackStack] from within a [CircuitContent] or
+ * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
  */
-internal val LocalNavigator = compositionLocalOf<Navigator?> { null }
+internal val LocalBackStack = compositionLocalOf<BackStack<out Record>?> { null }

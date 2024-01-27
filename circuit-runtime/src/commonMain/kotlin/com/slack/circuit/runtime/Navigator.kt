@@ -3,7 +3,6 @@
 package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
-import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -19,8 +18,6 @@ public interface Navigator : GoToNavigator {
   public override fun goTo(screen: Screen)
 
   public fun pop(result: PopResult? = null): Screen?
-
-  @DelicateCircuitApi public val backStack: BackStack<out BackStack.Record>?
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -42,8 +39,6 @@ public interface Navigator : GoToNavigator {
   public fun resetRoot(newRoot: Screen): List<Screen>
 
   public object NoOp : Navigator {
-    @DelicateCircuitApi override val backStack: BackStack<out BackStack.Record>? = null
-
     override fun goTo(screen: Screen) {}
 
     override fun pop(result: PopResult?): Screen? = null

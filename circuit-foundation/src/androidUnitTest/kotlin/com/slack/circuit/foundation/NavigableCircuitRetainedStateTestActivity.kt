@@ -25,7 +25,7 @@ class NavigableCircuitRetainedStateTestActivity : ComponentActivity() {
             backstack = backstack,
             onRootPop = {}, // no-op for tests
           )
-        NavigableCircuitContent(navigator = navigator, backstack = backstack)
+        NavigableCircuitContent(navigator = navigator, backStack = backstack)
       }
     }
   }

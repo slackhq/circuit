@@ -57,7 +57,7 @@ class ProvidedValuesLifetimeTest {
             )
           NavigableCircuitContent(
             navigator = navigator,
-            backstack = backstack,
+            backStack = backstack,
             providedValues =
               providedValuesForBackStack(
                 backStack = backstack,

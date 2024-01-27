@@ -70,6 +70,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -88,8 +89,9 @@ import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
+import com.slack.circuit.star.petlist.PetListScreen.Event.GoToFiltersScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event.Refresh
-import com.slack.circuit.star.petlist.PetListScreen.Event.UpdateFilters
+import com.slack.circuit.star.petlist.PetListScreen.Event.ShowFiltersOverlay
 import com.slack.circuit.star.petlist.PetListScreen.Event.UpdatedFilters
 import com.slack.circuit.star.petlist.PetListScreen.State
 import com.slack.circuit.star.petlist.PetListScreen.State.Loading
@@ -134,7 +136,9 @@ data object PetListScreen : Screen {
 
     data object Refresh : Event
 
-    data object UpdateFilters : Event
+    data object ShowFiltersOverlay : Event
+
+    data object GoToFiltersScreen : Event
 
     data class UpdatedFilters(val newFilters: Filters) : Event
   }
@@ -165,6 +169,12 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
     var isUpdateFiltersModalShowing by rememberSaveable { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
 
+    val filtersScreenNavigator =
+      rememberAnsweringNavigator(navigator, FiltersScreen.Result::class) {
+        println("RESULTS Received result: $it")
+        filters = it.filters
+      }
+
     val animals = animalState
     return when {
       animals == null -> Loading
@@ -184,8 +194,11 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
               isUpdateFiltersModalShowing = false
               filters = event.newFilters
             }
-            UpdateFilters -> {
+            ShowFiltersOverlay -> {
               isUpdateFiltersModalShowing = true
+            }
+            GoToFiltersScreen -> {
+              filtersScreenNavigator.goTo(FiltersScreen(filters))
             }
             Refresh -> isRefreshing = true
           }
@@ -251,7 +264,11 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
         scrollBehavior = scrollBehavior,
         actions = {
           if (state is Success) {
-            IconButton(onClick = { state.eventSink(UpdateFilters) }) {
+            IconButton(
+              // TODO can we add onClick _and_ onLongClick so we can support both
+              //  screen and overlay impls? Modifier.combinedClickable doesn't work
+              onClick = { state.eventSink(GoToFiltersScreen) }
+            ) {
               Icon(
                 imageVector = FilterList,
                 contentDescription = "Filter pet list",

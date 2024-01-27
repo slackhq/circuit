@@ -3,14 +3,32 @@
 package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+
+/** A Navigator that only supports [goTo]. */
+@Stable
+public interface GoToNavigator {
+  public fun goTo(screen: Screen)
+}
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
-public interface Navigator {
-  public fun goTo(screen: Screen)
+public interface Navigator : GoToNavigator {
+  public override fun goTo(screen: Screen) {
+    goToForResult(screen, null)
+  }
 
-  public fun pop(): Screen?
+  public fun goToForResult(screen: Screen, resultKey: String? = null)
+
+  public fun pop(result: PopResult? = null): Screen?
+
+  /** Returns the current [Screen] at the top of the back stack. */
+  // TODO expose a record instead?
+  // TODO should this be nullable?
+  public fun peek(): Screen? = null
+
+  public suspend fun awaitResult(key: String): PopResult?
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -34,7 +52,11 @@ public interface Navigator {
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
 
-    override fun pop(): Screen? = null
+    override fun goToForResult(screen: Screen, resultKey: String?) {}
+
+    override fun pop(result: PopResult?): Screen? = null
+
+    override suspend fun awaitResult(key: String): PopResult? = null
 
     override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }

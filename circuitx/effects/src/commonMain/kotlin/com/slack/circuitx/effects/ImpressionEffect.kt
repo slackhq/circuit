@@ -70,7 +70,8 @@ public fun rememberImpressionNavigator(
   return remember(navigator) { OnNavEventNavigator(navigator) { navigated++ } }
 }
 
-private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) : Navigator {
+private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) :
+  Navigator by delegate {
   override fun goTo(screen: Screen) {
     onNavEvent()
     delegate.goTo(screen)
@@ -85,8 +86,6 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
     onNavEvent()
     return delegate.pop()
   }
-
-  override suspend fun awaitResult(key: String) = delegate.awaitResult(key)
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
     onNavEvent()

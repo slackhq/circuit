@@ -120,6 +120,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               add(value.screen)
               add(value.args)
               add(value.key)
+              // TODO this seems brittle if they ever get out of sync and order changes
               value._pendingResult?.let { add(it) }
               value.pendingResultKey?.let { add(it) }
             }
@@ -132,8 +133,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
                 key = list[2] as String,
               )
               .also {
-                it._pendingResult = list[3] as? PopResult?
-                it.pendingResultKey = list[4] as? String?
+                it._pendingResult = list.getOrNull(3) as? PopResult?
+                it.pendingResultKey = list.getOrNull(4) as? String?
               }
           },
         )

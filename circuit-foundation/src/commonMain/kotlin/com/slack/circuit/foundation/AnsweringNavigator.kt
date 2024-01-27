@@ -31,6 +31,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen
   val topAtStart = rememberSaveable {
+    // TODO in tests our FakeNavigator usually has no screens. Should we gracefully degrade?
     navigator.peek() ?: error("Navigator must have a top screen at start.")
   }
 

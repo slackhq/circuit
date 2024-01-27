@@ -59,6 +59,8 @@ public fun CircuitContent(
           return null
         }
 
+        override fun peek(): Screen = screen
+
         override suspend fun awaitResult(key: String): PopResult? {
           // TODO can this ever work?
           return null

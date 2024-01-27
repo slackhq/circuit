@@ -26,7 +26,7 @@ public interface Navigator : GoToNavigator {
   /** Returns the current [Screen] at the top of the back stack. */
   // TODO expose a record instead?
   // TODO should this be nullable?
-  public fun peek(): Screen? = null
+  public fun peek(): Screen?
 
   public suspend fun awaitResult(key: String): PopResult?
 
@@ -55,6 +55,8 @@ public interface Navigator : GoToNavigator {
     override fun goToForResult(screen: Screen, resultKey: String?) {}
 
     override fun pop(result: PopResult?): Screen? = null
+
+    override fun peek(): Screen? = null
 
     override suspend fun awaitResult(key: String): PopResult? = null
 

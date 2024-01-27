@@ -46,10 +46,6 @@ public class FakeNavigator(initialScreen: Screen? = null) : Navigator {
     return null
   }
 
-  override suspend fun awaitResult(key: String): PopResult {
-    return results.awaitItem()
-  }
-
   override fun resetRoot(newRoot: Screen): List<Screen> {
     newRoots.add(newRoot)
     // Note: to simulate popping off the backstack, screens should be returned in the reverse

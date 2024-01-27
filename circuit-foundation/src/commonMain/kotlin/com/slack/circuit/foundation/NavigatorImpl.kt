@@ -54,11 +54,6 @@ internal class NavigatorImpl(
     return backstack.topRecord
   }
 
-  override suspend fun awaitResult(key: String): PopResult? {
-    val record = backstack.topRecord ?: error("No top record to await result.")
-    return record.awaitResult(key)
-  }
-
   override fun resetRoot(newRoot: Screen): List<Screen> {
     return buildList(backstack.size) {
       backstack.popUntil { record ->

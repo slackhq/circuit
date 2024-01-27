@@ -58,9 +58,6 @@ public fun CircuitContent(
 
         // TODO can this ever work?
         override fun peek(): BackStack.Record? = null
-
-        // TODO can this ever work?
-        override suspend fun awaitResult(key: String): PopResult? = null
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

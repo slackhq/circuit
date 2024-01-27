@@ -24,8 +24,6 @@ public interface Navigator : GoToNavigator {
   // TODO should this be nullable?
   public fun peek(): BackStack.Record?
 
-  public suspend fun awaitResult(key: String): PopResult?
-
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
    *
@@ -51,8 +49,6 @@ public interface Navigator : GoToNavigator {
     override fun pop(result: PopResult?): Screen? = null
 
     override fun peek(): BackStack.Record? = null
-
-    override suspend fun awaitResult(key: String): PopResult? = null
 
     override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }

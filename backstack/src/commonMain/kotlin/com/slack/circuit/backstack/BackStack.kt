@@ -67,8 +67,6 @@ public interface BackStack<R : Record> : Iterable<R> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
-
-    public suspend fun awaitResult(key: String): PopResult?
   }
 }
 

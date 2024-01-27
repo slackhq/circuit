@@ -76,10 +76,6 @@ internal class DispatchingOverlayNavigator(
     return null
   }
 
-  override suspend fun awaitResult(key: String): PopResult {
-    error("awaitResult() is not supported in full screen overlays!")
-  }
-
   override fun resetRoot(newRoot: Screen): List<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }

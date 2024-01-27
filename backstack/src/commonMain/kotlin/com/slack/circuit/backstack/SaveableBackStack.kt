@@ -22,9 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import com.benasher44.uuid.uuid4
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
 
 @Composable
 public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
@@ -38,6 +35,7 @@ public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): Saveab
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
+@OptIn(InternalBackStackApi::class)
 public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   private val entryList = mutableStateListOf<Record>()
@@ -72,62 +70,6 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
       topRecord?.updatePendingResult(it)
     }
     return popped
-  }
-
-  public interface ResultRecord {
-    public fun setResultKey(key: String)
-
-    public fun clearResultKey()
-
-    public fun updatePendingResult(result: PopResult)
-
-    public fun clearPendingResult()
-
-    public suspend fun awaitResult(key: String): PopResult?
-  }
-
-  internal class ResultRecordImpl : ResultRecord {
-    /**
-     * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
-     * we may push and pop back to a given record multiple times, and thus need to be able to push
-     * and receive multiple results.
-     *
-     * TODO what's the right behavior here?
-     * - Capacity 1 + overflow drop oldest: we only care about the most recent result
-     * - Conflated: only take one result until the presenter takes it.
-     */
-    private val pendingResultChannel =
-      Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-
-    internal var pendingResultKey: String? = null
-
-    internal var _pendingResult: PopResult? = null
-
-    override fun setResultKey(key: String) {
-      pendingResultKey = key
-    }
-
-    override fun clearResultKey() {
-      pendingResultKey = null
-    }
-
-    override fun updatePendingResult(result: PopResult) {
-      _pendingResult = result
-      pendingResultChannel.trySend(result)
-    }
-
-    override fun clearPendingResult() {
-      _pendingResult = null
-      // TODO do we clear the channel's value here too?
-    }
-
-    override suspend fun awaitResult(key: String): PopResult? {
-      return if (key == pendingResultKey) {
-        pendingResultChannel.receive()
-      } else {
-        null
-      }
-    }
   }
 
   public data class Record

@@ -11,7 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.benasher44.uuid.uuid4
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.InternalBackStackApi
+import com.slack.circuit.backstack.ResultRecord
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -19,22 +21,58 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 
+/**
+ * Because we can't return early or return null inside the rememberSaveable block in
+ * [rememberAnsweringNavigator], we use this instance as a marker for when we can't use it.
+ */
+private val UnusableRecord =
+  object : BackStack.Record, ResultRecord {
+    override val key: String
+      get() = "empty"
+
+    override val screen: Screen
+      get() = error("No screen")
+
+    @InternalBackStackApi override fun setResultKey(key: String) {}
+
+    @InternalBackStackApi override fun clearResultKey() {}
+
+    @InternalBackStackApi override fun updatePendingResult(result: PopResult) {}
+
+    @InternalBackStackApi override fun clearPendingResult() {}
+
+    override suspend fun awaitResult(key: String) = null
+  }
+
 // TODO what about one that takes an AnsweringScreen<T> where T is the PopResult?
+@OptIn(InternalBackStackApi::class)
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   navigator: Navigator,
   resultType: KClass<T>,
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
-  // Key for the resultKey, so we can track who owns this requested result
-  val key = rememberSaveable { uuid4().toString() }
 
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen
-  val topAtStart = rememberSaveable {
-    // TODO in tests our FakeNavigator usually has no screens. Should we gracefully degrade?
-    navigator.peek() ?: error("Navigator must have a top screen at start.")
+  val initialRecord = rememberSaveable {
+    // TODO is gracefully degrading the right thing to do here?
+    when (val peeked = navigator.peek()) {
+      null -> {
+        println("Navigator must have a top screen at start.")
+        UnusableRecord
+      }
+      !is ResultRecord -> {
+        println("BackStack records must support result handling but was ${peeked::class}")
+        UnusableRecord
+      }
+      else -> peeked
+    }
   }
+  if (initialRecord == UnusableRecord) return navigator
+
+  // Key for the resultKey, so we can track who owns this requested result
+  val key = rememberSaveable { uuid4().toString() }
 
   // Current top record of the navigator
   val currentTopRecord by remember { derivedStateOf { navigator.peek() } }
@@ -42,13 +80,13 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
 
-  if (launched && currentTopRecord == topAtStart) {
-    // Collect the result
+  // Collect the result if we've launched and now returned to the initial record
+  if (launched && currentTopRecord == initialRecord) {
     LaunchedEffect(key) {
       // If we get a null result here, it's because either the real navigator
       // doesn't support results or something's wrong
       // TODO better to crash here?
-      val result = navigator.awaitResult(key) ?: return@LaunchedEffect
+      val result = initialRecord.awaitResult(key) ?: return@LaunchedEffect
       if (resultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
       }
@@ -57,12 +95,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val answeringNavigator = remember {
     object : GoToNavigator {
       override fun goTo(screen: Screen) {
-        navigator.peek()?.let { record ->
-          if (record is SaveableBackStack.ResultRecord) {
-            record.setResultKey(key)
-          }
-        }
-
+        initialRecord.setResultKey(key)
         navigator.goTo(screen)
         launched = true
       }

@@ -13,6 +13,7 @@ import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -47,7 +48,7 @@ internal class FullScreenOverlay<S : Screen>(
   override fun Content(navigator: OverlayNavigator<Unit>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
-      DispatchingOverlayNavigator(navigator) { callbacks.onFinish() }
+      DispatchingOverlayNavigator(screen, navigator) { callbacks.onFinish() }
     }
 
     BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
@@ -60,6 +61,7 @@ internal class FullScreenOverlay<S : Screen>(
  * called.
  */
 internal class DispatchingOverlayNavigator(
+  private val screen: Screen,
   private val overlayNavigator: OverlayNavigator<Unit>,
   private val onPop: () -> Unit,
 ) : Navigator {
@@ -67,10 +69,20 @@ internal class DispatchingOverlayNavigator(
     error("goTo() is not supported in full screen overlays!")
   }
 
-  override fun pop(): Screen? {
+  override fun goToForResult(screen: Screen, resultKey: String?) {
+    error("goToForResult() is not supported in full screen overlays!")
+  }
+
+  override fun peek() = screen
+
+  override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(Unit)
     onPop()
     return null
+  }
+
+  override suspend fun awaitResult(key: String): PopResult {
+    error("awaitResult() is not supported in full screen overlays!")
   }
 
   override fun resetRoot(newRoot: Screen): List<Screen> {

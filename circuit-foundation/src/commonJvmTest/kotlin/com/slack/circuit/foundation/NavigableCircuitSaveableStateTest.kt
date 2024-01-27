@@ -41,7 +41,7 @@ class NavigableCircuitSaveableStateTest {
           val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
           val navigator =
             rememberCircuitNavigator(
-              backstack = backstack,
+              backStack = backstack,
               onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(navigator = navigator, backstack = backstack)

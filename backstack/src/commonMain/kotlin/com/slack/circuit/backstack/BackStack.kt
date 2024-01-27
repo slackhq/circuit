@@ -33,13 +33,13 @@ public interface BackStack<R : Record> : Iterable<R> {
   public val topRecord: R?
 
   /** Push a new [Record] onto the back stack. The new record will become the top of the stack. */
-  public fun push(record: R)
+  public fun push(record: R, resultKey: String? = null)
 
   /**
    * Push a new [Screen] onto the back stack. This will be enveloped in a [Record] and the new
    * record will become the top of the stack.
    */
-  public fun push(screen: Screen)
+  public fun push(screen: Screen, resultKey: String? = null)
 
   /**
    * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
@@ -67,6 +67,8 @@ public interface BackStack<R : Record> : Iterable<R> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
+
+    public suspend fun awaitResult(key: String): PopResult?
   }
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -39,9 +40,13 @@ public fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
+  val localNavigator = LocalNavigator.current
   val navigator =
-    remember(onNavEvent) {
+    remember(onNavEvent, localNavigator) {
       object : Navigator {
+        @DelicateCircuitApi
+        override val backStack: BackStack<out BackStack.Record>? = localNavigator?.backStack
+
         override fun goTo(screen: Screen) {
           onNavEvent(NavEvent.GoTo(screen))
         }
@@ -55,9 +60,6 @@ public fun CircuitContent(
           onNavEvent(NavEvent.Pop(result))
           return null
         }
-
-        // TODO can this ever work?
-        override fun peek(): BackStack.Record? = null
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

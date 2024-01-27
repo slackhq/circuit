@@ -6,12 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -64,11 +66,11 @@ internal class DispatchingOverlayNavigator(
   private val overlayNavigator: OverlayNavigator<Unit>,
   private val onPop: () -> Unit,
 ) : Navigator {
+  @DelicateCircuitApi override val backStack: BackStack<out BackStack.Record>? = null
+
   override fun goTo(screen: Screen) {
     error("goTo() is not supported in full screen overlays!")
   }
-
-  override fun peek() = null
 
   override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(Unit)

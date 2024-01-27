@@ -13,6 +13,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
@@ -115,6 +116,7 @@ public fun NavigableCircuitContent(
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides recordRetainedStateRegistry,
           LocalCanRetainChecker provides CanRetainChecker.Always,
+          LocalNavigator provides navigator,
           *providedLocals,
         ) {
           provider.content(record)
@@ -263,3 +265,9 @@ public object NavigatorDefaults {
     }
   }
 }
+
+/**
+ * Internal API to access the [Navigator] from within a [CircuitContent] composable, useful for
+ * cases where we create nested nav handling.
+ */
+internal val LocalNavigator = compositionLocalOf<Navigator?> { null }

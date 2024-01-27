@@ -8,6 +8,7 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
+import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -15,52 +16,49 @@ import com.slack.circuit.runtime.screen.Screen
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
- * @param backstack The backing [BackStack] to navigate.
+ * @param backStack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(
-  backstack: BackStack<out Record>,
+  backStack: BackStack<out Record>,
   onRootPop: () -> Unit,
 ): Navigator {
-  return remember { NavigatorImpl(backstack, onRootPop) }
+  return remember { NavigatorImpl(backStack, onRootPop) }
 }
 
+@OptIn(DelicateCircuitApi::class)
 internal class NavigatorImpl(
-  private val backstack: BackStack<out Record>,
+  override val backStack: BackStack<out Record>,
   private val onRootPop: () -> Unit,
 ) : Navigator {
 
   init {
-    check(!backstack.isEmpty) { "Backstack size must not be empty." }
+    check(!backStack.isEmpty) { "Backstack size must not be empty." }
   }
 
   override fun goTo(screen: Screen) {
-    backstack.push(screen)
+    backStack.push(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
-    if (backstack.isAtRoot) {
+    if (backStack.isAtRoot) {
       onRootPop()
       return null
     }
 
-    return backstack.pop(result)?.screen
-  }
-
-  override fun peek(): Record? {
-    return backstack.topRecord
+    return backStack.pop(result)?.screen
   }
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
-    return buildList(backstack.size) {
-      backstack.popUntil { record ->
+    return buildList(backStack.size) {
+      backStack.popUntil { record ->
         add(record.screen)
         false
       }
-      backstack.push(newRoot)
+      backStack.push(newRoot)
     }
   }
 
@@ -70,19 +68,19 @@ internal class NavigatorImpl(
 
     other as NavigatorImpl
 
-    if (backstack != other.backstack) return false
+    if (backStack != other.backStack) return false
     if (onRootPop != other.onRootPop) return false
 
     return true
   }
 
   override fun hashCode(): Int {
-    var result = backstack.hashCode()
+    var result = backStack.hashCode()
     result = 31 * result + onRootPop.hashCode()
     return result
   }
 
   override fun toString(): String {
-    return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
+    return "NavigatorImpl(backStack=$backStack, onRootPop=$onRootPop)"
   }
 }

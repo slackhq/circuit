@@ -62,7 +62,7 @@ class NavResultTest {
           val backstack = rememberSaveableBackStack { push(TestResultScreen("Initial")) }
           val navigator =
             rememberCircuitNavigator(
-              backstack = backstack,
+              backStack = backstack,
               onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(navigator = navigator, backstack = backstack)
@@ -87,6 +87,7 @@ class NavResultTest {
         }
       }
       repeat(10) {
+        println("Popping $count, iteration $it")
         with(onNodeWithTag(TAG_TEXT)) {
           performTextClearance()
           count++

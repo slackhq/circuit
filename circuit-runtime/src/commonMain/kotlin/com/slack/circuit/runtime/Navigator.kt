@@ -20,9 +20,7 @@ public interface Navigator : GoToNavigator {
 
   public fun pop(result: PopResult? = null): Screen?
 
-  /** Returns the current [BackStack.Record] at the top of the back stack. */
-  // TODO should this be nullable?
-  public fun peek(): BackStack.Record?
+  @DelicateCircuitApi public val backStack: BackStack<out BackStack.Record>?
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -44,11 +42,11 @@ public interface Navigator : GoToNavigator {
   public fun resetRoot(newRoot: Screen): List<Screen>
 
   public object NoOp : Navigator {
+    @DelicateCircuitApi override val backStack: BackStack<out BackStack.Record>? = null
+
     override fun goTo(screen: Screen) {}
 
     override fun pop(result: PopResult?): Screen? = null
-
-    override fun peek(): BackStack.Record? = null
 
     override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }

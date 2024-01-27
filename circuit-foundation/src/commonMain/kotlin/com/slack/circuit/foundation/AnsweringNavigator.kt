@@ -12,8 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.benasher44.uuid.uuid4
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.InternalBackStackApi
-import com.slack.circuit.backstack.ResultRecord
+import com.slack.circuit.runtime.DelicateCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -26,44 +25,33 @@ import kotlinx.coroutines.CoroutineScope
  * [rememberAnsweringNavigator], we use this instance as a marker for when we can't use it.
  */
 private val UnusableRecord =
-  object : BackStack.Record, ResultRecord {
+  object : BackStack.Record {
     override val key: String
       get() = "empty"
 
     override val screen: Screen
       get() = error("No screen")
 
-    @InternalBackStackApi override fun setResultKey(key: String) {}
-
-    @InternalBackStackApi override fun clearResultKey() {}
-
-    @InternalBackStackApi override fun updatePendingResult(result: PopResult) {}
-
-    @InternalBackStackApi override fun clearPendingResult() {}
-
     override suspend fun awaitResult(key: String) = null
   }
 
 // TODO what about one that takes an AnsweringScreen<T> where T is the PopResult?
-@OptIn(InternalBackStackApi::class)
+@OptIn(DelicateCircuitApi::class)
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   navigator: Navigator,
   resultType: KClass<T>,
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
+  val backStack = navigator.backStack ?: return navigator
 
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen
   val initialRecord = rememberSaveable {
     // TODO is gracefully degrading the right thing to do here?
-    when (val peeked = navigator.peek()) {
+    when (val peeked = backStack.topRecord) {
       null -> {
         println("Navigator must have a top screen at start.")
-        UnusableRecord
-      }
-      !is ResultRecord -> {
-        println("BackStack records must support result handling but was ${peeked::class}")
         UnusableRecord
       }
       else -> peeked
@@ -75,7 +63,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val key = rememberSaveable { uuid4().toString() }
 
   // Current top record of the navigator
-  val currentTopRecord by remember { derivedStateOf { navigator.peek() } }
+  val currentTopRecord by remember { derivedStateOf { backStack.topRecord } }
 
   // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
@@ -95,8 +83,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val answeringNavigator = remember {
     object : GoToNavigator {
       override fun goTo(screen: Screen) {
-        initialRecord.setResultKey(key)
-        navigator.goTo(screen)
+        backStack.push(screen, key)
         launched = true
       }
     }

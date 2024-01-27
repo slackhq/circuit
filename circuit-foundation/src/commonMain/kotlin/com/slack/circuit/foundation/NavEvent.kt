@@ -5,6 +5,7 @@ package com.slack.circuit.foundation
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -13,8 +14,9 @@ import com.slack.circuit.runtime.screen.Screen
  */
 public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
-    NavEvent.Pop -> pop()
+    is NavEvent.Pop -> pop(event.result)
     is NavEvent.GoTo -> goTo(event.screen)
+    is NavEvent.GoToForResult -> goToForResult(event.screen, event.resultKey)
     is NavEvent.ResetRoot -> resetRoot(event.newRoot)
   }
 }
@@ -22,10 +24,13 @@ public fun Navigator.onNavEvent(event: NavEvent) {
 /** A sealed navigation interface intended to be used when making a navigation callback. */
 public sealed interface NavEvent : CircuitUiEvent {
   /** Corresponds to [Navigator.pop]. */
-  public data object Pop : NavEvent
+  public data class Pop(val result: PopResult? = null) : NavEvent
 
   /** Corresponds to [Navigator.goTo]. */
   public data class GoTo(val screen: Screen) : NavEvent
+
+  /** Corresponds to [Navigator.goToForResult]. */
+  public data class GoToForResult(val screen: Screen, val resultKey: String) : NavEvent
 
   /** Corresponds to [Navigator.resetRoot]. */
   public data class ResetRoot(val newRoot: Screen) : NavEvent

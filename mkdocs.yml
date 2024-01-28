@@ -53,11 +53,14 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.superfences
   - pymdownx.emoji
+  - pymdownx.tabbed:
+      alternate_style: true
   - tables
   - admonition
 
 nav:
   - 'Introduction': index.md
+  - 'Tutorial': tutorial.md
   - 'Setting up Circuit': setup.md
   - 'States and Events': states-and-events.md
   - 'Screen': screen.md

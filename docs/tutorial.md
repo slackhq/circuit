@@ -438,4 +438,4 @@ Finally, let's handle this event in our presenter.
 
 ## Conclusion
 
-This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](api-reference.md), and check out other Circuit tools like circuit-retained, CircuitX, overlays, testing, and more.
+This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](api-reference.md), and check out other Circuit tools like circuit-retained, CircuitX, overlays, testing, multiplatform, and more.

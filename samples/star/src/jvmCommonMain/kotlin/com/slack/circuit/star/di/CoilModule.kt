@@ -5,7 +5,9 @@ package com.slack.circuit.star.di
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
+import coil3.network.CacheStrategy
 import coil3.network.NetworkFetcher
+import coil3.network.ktor.asNetworkClient
 import com.slack.circuit.star.data.StarAppDirs
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
@@ -35,6 +37,13 @@ object CoilModule {
       }
       // Disable noisy logging
       .logger(null)
-      .components { add(NetworkFetcher.Factory(lazy { httpClient.get() })) }
+      .components {
+        add(
+          NetworkFetcher.Factory(
+            lazy { httpClient.get().asNetworkClient() },
+            lazy { CacheStrategy() },
+          )
+        )
+      }
       .build()
 }

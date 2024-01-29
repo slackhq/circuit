@@ -40,9 +40,7 @@ public class FakeNavigator(initialScreen: Screen? = null) : Navigator {
     return navigatedScreens.removeLastOrNull()
   }
 
-  override fun peek(): Screen? {
-    error("peek() is not supported in FakeNavigator!")
-  }
+  override fun peek(): Screen? = navigatedScreens.lastOrNull()
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
     newRoots.add(newRoot)

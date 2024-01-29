@@ -50,7 +50,7 @@ internal class NavigatorImpl(
     return backStack.pop(result)?.screen
   }
 
-  override fun peek(): Screen? = backstack.firstOrNull()?.screen
+  override fun peek(): Screen? = backStack.firstOrNull()?.screen
 
   override fun resetRoot(newRoot: Screen): List<Screen> {
     return buildList(backStack.size) {

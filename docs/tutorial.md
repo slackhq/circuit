@@ -7,6 +7,14 @@ Note this assumes some prior experience with Compose. See these resources for mo
 
 ## Setup
 
+You can do this tutorial in one of two ways:
+
+### 1. Build out of the `tutorial` sample
+
+Clone the circuit repo and work out of the `:samples:tutorial:multiplatform` module. This has all your dependencies set up and ready to go, along with some reusable common code to save you some boilerplate. You can see an implementation of this tutorial there as well. The entry point is `main.kt`.
+
+### 2. Start from scratch
+
 First, set up Compose in your project. See the following guides for more information:
 
 - [Android](https://developer.android.com/jetpack/compose/setup)
@@ -91,6 +99,7 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
       }
     }
     
+    // Write one or use EmailItem from ui.kt
     @Composable
     private fun EmailItem(email: Email, modifier: Modifier = Modifier) {
       // ...
@@ -297,8 +306,9 @@ Next, let's define a Presenter and UI for this screen.
 === "UI"
     ```kotlin
     @Composable
-    fun DetailContent(state: DetailScreen.State, modifier: Modifier = Modifier) {
+    fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
       // ...
+      // Write one or use EmailDetailContent from ui.kt
     }
     ```
 
@@ -329,7 +339,7 @@ We can then wire these detail components to our `Circuit` instance.
       Circuit.Builder()
         // ...
         .addPresenterFactory(DetailPresenter.Factory(emailRepository))
-        .addUi<DetailScreen, DetailScreen.State> { state, modifier -> DetailContent(state, modifier) }
+        .addUi<DetailScreen, DetailScreen.State> { state, modifier -> EmailDetail(state, modifier) }
         .build()
     ```
 
@@ -364,7 +374,7 @@ Let's add a `Navigator` property to our presenter and create a factory for our i
         .addPresenterFactory(InboxPresenter.Factory(emailRepository))
         .addUi<InboxScreen, InboxScreen.State> { state, modifier -> Inbox(state, modifier) }
         .addPresenterFactory(DetailPresenter.Factory(emailRepository))
-        .addUi<DetailScreen, DetailScreen.State> { state, modifier -> DetailContent(state, modifier) }
+        .addUi<DetailScreen, DetailScreen.State> { state, modifier -> EmailDetail(state, modifier) }
         .build()
     ```
 
@@ -411,6 +421,7 @@ Now that we have an event, let's emit it from our UI.
       }
     }
 
+    // Write one or use EmailItem from ui.kt
     private fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit) {
       // ...
     }
@@ -459,7 +470,7 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
 === "DetailContent"
     ```kotlin
     @Composable
-    fun DetailContent(state: DetailScreen.State, modifier: Modifier = Modifier) {
+    fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
       Column(modifier = modifier) {
         IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
           Icon(Icons.Default.ArrowBack, contentDescription = "Back")

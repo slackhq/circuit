@@ -232,6 +232,7 @@ include(
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
+  ":samples:tutorial:multiplatform",
   ":internal-test-utils",
 )
 

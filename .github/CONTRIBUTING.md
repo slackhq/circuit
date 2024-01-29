@@ -22,3 +22,9 @@ formatter, use the `spotlessApply` command.
 ```bash
 ./gradlew spotlessApply
 ```
+
+### iOS
+
+To build any of the iOS checks, you must do the following:
+1. Run `bundle install` to set up fastlane.
+2. Have `swiftformat` installed. You can install it via `brew install swiftformat`.

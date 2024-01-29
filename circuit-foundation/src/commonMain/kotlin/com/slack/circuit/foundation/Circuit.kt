@@ -140,7 +140,7 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     public inline fun <reified S : Screen, UiState : CircuitUiState> addUi(
-      crossinline content: @Composable (state: UiState, modifier: Modifier) -> Unit,
+      crossinline content: @Composable (state: UiState, modifier: Modifier) -> Unit
     ): Builder = apply {
       addUiFactory { screen, _ ->
         if (screen is S) {
@@ -163,8 +163,9 @@ public class Circuit private constructor(builder: Builder) {
       uiFactories.addAll(factories)
     }
 
-    public inline fun <reified S : Screen, UiState: CircuitUiState> addPresenter(
-      crossinline factory: (screen: Screen, navigator: Navigator, context: CircuitContext) -> Presenter<UiState>
+    public inline fun <reified S : Screen, UiState : CircuitUiState> addPresenter(
+      crossinline factory:
+        (screen: Screen, navigator: Navigator, context: CircuitContext) -> Presenter<UiState>
     ): Builder = apply {
       addPresenterFactory { screen, navigator, context ->
         if (screen is S) {
@@ -175,7 +176,7 @@ public class Circuit private constructor(builder: Builder) {
       }
     }
 
-    public inline fun <reified S : Screen, UiState: CircuitUiState> addPresenter(
+    public inline fun <reified S : Screen, UiState : CircuitUiState> addPresenter(
       presenter: Presenter<UiState>
     ): Builder = apply {
       addPresenterFactory { screen, _, _ ->

@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.common
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -25,12 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-/**
- * A simple email item to show in a list.
- */
+/** A simple email item to show in a list. */
 @Composable
 fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-  Row(modifier.clickable(onClick = onClick).padding(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+  Row(
+    modifier.clickable(onClick = onClick).padding(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
     Image(
       Icons.Default.Person,
       modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.Magenta).padding(4.dp),
@@ -68,9 +71,7 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
 @Composable
 @Preview
 private fun EmailItemPreview() {
-  EmailItem(
-    email = EmailRepository.DEMO
-  )
+  EmailItem(email = EmailRepository.DEMO)
 }
 
 @Composable

@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.impl
 
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,10 +16,8 @@ import com.slack.circuit.tutorial.common.EmailItem
 import com.slack.circuit.tutorial.common.EmailRepository
 
 data object InboxScreen : Screen {
-  data class State(
-    val emails: List<Email>,
-    val eventSink: (Event) -> Unit
-  ) : CircuitUiState
+  data class State(val emails: List<Email>, val eventSink: (Event) -> Unit) : CircuitUiState
+
   sealed class Event : CircuitUiEvent {
     data class EmailClicked(val emailId: String) : Event()
   }
@@ -25,7 +25,7 @@ data object InboxScreen : Screen {
 
 class InboxPresenter(
   private val navigator: Navigator,
-  private val emailRepository: EmailRepository
+  private val emailRepository: EmailRepository,
 ) : Presenter<InboxScreen.State> {
   @Composable
   override fun present(): InboxScreen.State {
@@ -35,8 +35,13 @@ class InboxPresenter(
       }
     }
   }
+
   class Factory(private val emailRepository: EmailRepository) : Presenter.Factory {
-    override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>? {
+    override fun create(
+      screen: Screen,
+      navigator: Navigator,
+      context: CircuitContext,
+    ): Presenter<*>? {
       return when (screen) {
         InboxScreen -> return InboxPresenter(navigator, emailRepository)
         else -> null
@@ -50,9 +55,7 @@ fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
   LazyColumn(modifier = modifier) {
     items(state.emails.size) { index ->
       val email = state.emails[index]
-      EmailItem(email) {
-        state.eventSink(InboxScreen.Event.EmailClicked(email.id))
-      }
+      EmailItem(email) { state.eventSink(InboxScreen.Event.EmailClicked(email.id)) }
     }
   }
 }

@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.impl
 
 import androidx.compose.material3.MaterialTheme
@@ -22,11 +24,8 @@ fun main() {
   application {
     Window(title = "STAR", onCloseRequest = ::exitApplication) {
       MaterialTheme {
-        val backStack = rememberSaveableBackStack {
-          push(InboxScreen)
-        }
-        val navigator =
-          rememberCircuitNavigator(backStack, ::exitApplication)
+        val backStack = rememberSaveableBackStack { push(InboxScreen) }
+        val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
         CircuitCompositionLocals(circuit) {
           NavigableCircuitContent(navigator = navigator, backstack = backStack)
         }

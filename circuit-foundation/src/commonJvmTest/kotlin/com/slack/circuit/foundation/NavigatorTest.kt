@@ -7,11 +7,11 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.internal.test.Parcelize
 import com.slack.circuit.runtime.popUntil
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.test.assertEquals
 
 @Parcelize private data object TestScreen : Screen
 

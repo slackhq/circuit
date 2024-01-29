@@ -54,8 +54,8 @@ public fun CircuitContent(
           return null
         }
 
-        override fun peek(): Screen? {
-          return null
+        override fun peek(): Screen {
+          return screen
         }
       }
     }

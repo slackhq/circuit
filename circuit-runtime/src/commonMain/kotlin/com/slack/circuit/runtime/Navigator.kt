@@ -12,6 +12,10 @@ public interface Navigator {
 
   public fun pop(): Screen?
 
+  /**
+   * Returns current top most screen of backstack,
+   * or null if backstack is empty.
+   */
   public fun peek(): Screen?
 
   /**

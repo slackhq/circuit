@@ -67,7 +67,8 @@ Conventionally, this is written as a nested `State` class inside your `Screen` a
       val subject: String,
       val body: String,
       val sender: String,
-      val timestamp: Long
+      val timestamp: String,
+      val recipients: List<String>,
     )
     ```
 
@@ -82,14 +83,15 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
 === "Inbox"
     ```kotlin
     @Composable
-    fun Inbox(state: State, modifier: Modifier = Modifier) {
+    fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
       LazyColumn(modifier = modifier) {
-        items(state.emails) { email ->
-          EmailItem(email)
+        items(state.emails.size) { index ->
+          EmailItem(state.emails[index])
         }
       }
     }
     
+    @Composable
     private fun EmailItem(email: Email, modifier: Modifier = Modifier) {
       // ...
     }
@@ -101,18 +103,19 @@ Next, let's define a `Presenter` for our `InboxScreen`. Circuit presenters are r
 
 === "InboxPresenter"
     ```kotlin
-    class InboxPresenter : Presenter<InboxScreen> {
+    class InboxPresenter : Presenter<InboxScreen.State> {
       @Composable
-      override fun present(): State {
-        return State(
+      override fun present(): InboxScreen.State {
+        return InboxScreen.State(
           emails = listOf(
             Email(
               id = "1",
-              subject = "Hello, world!",
-              body = "This is a test email.",
-              sender = "ali@example.com",
-              timestamp = Clock.System.now().toEpochMilliseconds()
-            ),
+              subject = "Meeting re-sched!",
+              body = "Hey, I'm going to be out of the office tomorrow. Can we reschedule?",
+              sender = "Ali Connors",
+              timestamp = "3:00 PM",
+              recipients = listOf("all@example.com"),
+              ),
             // ... more emails
           )
         )
@@ -168,9 +171,11 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` and
         // ...
         .build()
 
-      singleWindowApplication(title = "Inbox") {
-        CircuitCompositionLocals(circuit) {
-          // ...
+      application {
+        Window(title = "Inbox", onCloseRequest = ::exitApplication) {
+          CircuitCompositionLocals(circuit) {
+            // ...
+          }
         }
       }
     }
@@ -254,9 +259,15 @@ Like with `Circuit`, this is usually a one-time setup in your application at its
 
 Now that we have navigation set up, let's add a detail screen to our app to navigate to. First, let's define a `DetailScreen` and state.
 
-=== "DetailScreen"
+=== "Android"
     ```kotlin
     @Parcelize
+    data class DetailScreen(val emailId: String) : Screen {
+      data class State(val email: Email) : CircuitUiState
+    }
+    ```
+=== "Multiplatform"
+    ```kotlin
     data class DetailScreen(val emailId: String) : Screen {
       data class State(val email: Email) : CircuitUiState
     }
@@ -272,13 +283,13 @@ Next, let's define a Presenter and UI for this screen.
 === "Presenter"
     ```kotlin
     class DetailPresenter(
-      private val emailId: DetailScreen,
+      private val screen: DetailScreen,
       private val emailRepository: EmailRepository
     ) : Presenter<DetailScreen.State> {
       @Composable
       override fun present(): DetailScreen.State {
-        val email = emailRepository.getEmail(emailId)
-        return State(email)
+        val email = emailRepository.getEmail(screen.emailId)
+        return DetailScreen.State(email)
       }
     }
     ```
@@ -287,18 +298,7 @@ Next, let's define a Presenter and UI for this screen.
     ```kotlin
     @Composable
     fun DetailContent(state: DetailScreen.State, modifier: Modifier = Modifier) {
-      Column {
-        Text(
-          text = state.email.subject,
-          style = MaterialTheme.typography.h6,
-          modifier = Modifier.padding(16.dp)
-        )
-        Text(
-          text = state.email.body,
-          style = MaterialTheme.typography.body1,
-          modifier = Modifier.padding(16.dp)
-        )
-      }
+      // ...
     }
     ```
 
@@ -344,7 +344,7 @@ Let's add a `Navigator` property to our presenter and create a factory for our i
     class InboxPresenter(
       private val navigator: Navigator,
       private val emailRepository: EmailRepository
-    ) : Presenter<InboxScreen> {
+    ) : Presenter<InboxScreen.State> {
       // ...
       class Factory(private val emailRepository: EmailRepository) : Presenter.Factory {
         override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>? {
@@ -400,11 +400,12 @@ Now that we have an event, let's emit it from our UI.
 === "Inbox.kt"
     ```kotlin
     @Composable
-    fun Inbox(state: State, modifier: Modifier = Modifier) {
+    fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
       LazyColumn(modifier = modifier) {
-        items(state.emails) { email ->
+        items(state.emails.size) { index ->
+          val email = state.emails[index]
           EmailItem(email) {
-            state.eventSink(EmailClicked(email.id))
+            state.eventSink(InboxScreen.Event.EmailClicked(email.id))
           }
         }
       }
@@ -422,11 +423,11 @@ Finally, let's handle this event in our presenter.
     class InboxPresenter(
       private val navigator: Navigator,
       private val emailRepository: EmailRepository
-    ) : Presenter<InboxScreen> {
+    ) : Presenter<InboxScreen.State> {
       @Composable
-      override fun present(): State {
+      override fun present(): InboxScreen.State {
         val emails = emailRepository.getEmails()
-        return State(emails) { event ->
+        return InboxScreen.State(emails) { event ->
           when (event) {
             // Navigate to the detail screen when an email is clicked
             is EmailClicked -> navigator.goTo(DetailScreen(event.emailId))
@@ -436,6 +437,60 @@ Finally, let's handle this event in our presenter.
     }
     ```
 
+This demonstrates how we can navigate forward in our app and pass data with it. Let's see how we can navigate back.
+
+## Navigating back
+
+Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` is `Navigator.pop()`, which pops the back stack back to the previous screen. To use this, let's add a back button to our detail screen and wire it up to a `Navigator`.
+
+=== "DetailScreen"
+    ```kotlin
+    data class DetailScreen(val emailId: String) : Screen {
+      data class State(
+        val email: Email,
+        val eventSink: (Event) -> Unit
+      ) : CircuitUiState
+      sealed class Event : CircuitUiEvent {
+        data object BackClicked : Event()
+      }
+    }
+    ```
+
+=== "DetailContent"
+    ```kotlin
+    @Composable
+    fun DetailContent(state: DetailScreen.State, modifier: Modifier = Modifier) {
+      Column(modifier = modifier) {
+        IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
+          Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+        }
+        // Remaining detail UI...
+      }
+    }
+    ```
+
+=== "DetailPresenter"
+    ```kotlin
+    class DetailPresenter(
+      private val screen: DetailScreen,
+      private val navigator: Navigator,
+      private val emailRepository: EmailRepository,
+    ) : Presenter<DetailScreen.State> {
+      @Composable
+      override fun present(): DetailScreen.State {
+        val email = emailRepository.getEmail(screen.emailId)
+        return DetailScreen.State(email) { event ->
+          when (event) {
+            DetailScreen.Event.BackClicked -> navigator.pop()
+          }
+        }
+      }
+      // ...
+    }
+    ```
+
+On Android, `NavigableCircuitContent` automatically hooks into `BackHandler` to automatically pop on system back presses. On Desktop, it's recommended to wire the ESC key.
+
 ## Conclusion
 
-This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](api-reference.md), and check out other Circuit tools like circuit-retained, CircuitX, overlays, testing, multiplatform, and more.
+This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](../api/0.x/index.html), and check out other Circuit tools like circuit-retained, CircuitX, factory code gen, overlays, testing, multiplatform, and more.

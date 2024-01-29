@@ -304,7 +304,7 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: ImmutableList<PetListAnimal>,
@@ -335,9 +335,9 @@ private fun PetListGrid(
     ) {
       items(count = animals.size, key = { i -> animals[i].id }) { index ->
         val animal = animals[index]
-        // TODO eventually animate item placement once it's implemented
-        //  https://issuetracker.google.com/issues/257034719
-        PetListGridItem(animal) { eventSink(ClickAnimal(animal.id, animal.imageUrl)) }
+        PetListGridItem(animal, modifier = Modifier.animateItemPlacement()) {
+          eventSink(ClickAnimal(animal.id, animal.imageUrl))
+        }
       }
     })
     PullRefreshIndicator(

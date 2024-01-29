@@ -40,6 +40,10 @@ public class FakeNavigator(initialScreen: Screen? = null) : Navigator {
     return navigatedScreens.removeLastOrNull()
   }
 
+  override fun peek(): Screen? {
+    error("peek() is not supported in FakeNavigator!")
+  }
+
   override fun resetRoot(newRoot: Screen): List<Screen> {
     newRoots.add(newRoot)
     // Note: to simulate popping off the backstack, screens should be returned in the reverse

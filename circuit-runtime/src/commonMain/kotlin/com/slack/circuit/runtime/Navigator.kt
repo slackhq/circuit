@@ -19,6 +19,9 @@ public interface Navigator : GoToNavigator {
 
   public fun pop(result: PopResult? = null): Screen?
 
+  /** Returns current top most screen of backstack, or null if backstack is empty. */
+  public fun peek(): Screen?
+
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
    *
@@ -43,16 +46,13 @@ public interface Navigator : GoToNavigator {
 
     override fun pop(result: PopResult?): Screen? = null
 
+    override fun peek(): Screen? = null
+
     override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }
 }
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
-  while (true) {
-    val screen = pop() ?: break
-    if (predicate(screen)) {
-      break
-    }
-  }
+  while (peek()?.let(predicate) == false) pop()
 }

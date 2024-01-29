@@ -55,6 +55,10 @@ public fun CircuitContent(
           onNavEvent(NavEvent.Pop(result))
           return null
         }
+
+        override fun peek(): Screen {
+          return screen
+        }
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

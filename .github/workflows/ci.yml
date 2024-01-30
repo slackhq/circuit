@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build:
     # Necessary to run full tests to cover iOS too
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v4

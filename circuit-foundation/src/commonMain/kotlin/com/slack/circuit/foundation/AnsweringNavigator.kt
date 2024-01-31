@@ -65,13 +65,13 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val key = rememberSaveable { uuid4().toString() }
 
   // Current top record of the navigator
-  val currentTopRecord by remember { derivedStateOf { currentBackStack.topRecord!!.key } }
+  val currentTopRecordKey by remember { derivedStateOf { currentBackStack.topRecord!!.key } }
 
   // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
 
   // Collect the result if we've launched and now returned to the initial record
-  if (launched && currentTopRecord == initialRecordKey) {
+  if (launched && currentTopRecordKey == initialRecordKey) {
     val record = currentBackStack.topRecord!!
     LaunchedEffect(key) {
       val result = record.awaitResult(key) ?: return@LaunchedEffect

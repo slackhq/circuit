@@ -134,8 +134,9 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
                 key = list[2] as String,
               )
               .also { record ->
-                (list.getOrNull(3) as? PopResult?)?.let(record::sendResult)
+                // NOTE order matters here, prepareForResult() clears the buffer
                 (list.getOrNull(4) as? String?)?.let(record::prepareForResult)
+                (list.getOrNull(3) as? PopResult?)?.let(record::sendResult)
               }
           },
         )

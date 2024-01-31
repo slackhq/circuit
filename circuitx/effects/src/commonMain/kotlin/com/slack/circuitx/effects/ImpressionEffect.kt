@@ -70,8 +70,7 @@ public fun rememberImpressionNavigator(
   return remember(navigator) { OnNavEventNavigator(navigator) { navigated++ } }
 }
 
-private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) :
-  Navigator by delegate {
+private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) : Navigator {
   override fun goTo(screen: Screen) {
     onNavEvent()
     delegate.goTo(screen)

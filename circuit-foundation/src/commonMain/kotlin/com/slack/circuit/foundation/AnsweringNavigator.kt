@@ -20,14 +20,26 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 
+/**
+ * Returns whether or not answering navigation is available. This is essentially a proxy for whether
+ * or not this composition is running within a [NavigableCircuitContent].
+ */
 @Composable public fun answeringNavigationAvailable(): Boolean = LocalBackStack.current != null
 
+/**
+ * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
+ * more information.
+ */
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
   noinline block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator = rememberAnsweringNavigator(fallbackNavigator, T::class, block)
 
+/**
+ * Returns a [GoToNavigator] that answers with the given [resultType] or defaults to
+ * [fallbackNavigator] if no back stack is available to pass results through.
+ */
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
@@ -38,6 +50,10 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   return rememberAnsweringNavigator(backStack, resultType, block)
 }
 
+/**
+ * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
+ * more information.
+ */
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
@@ -46,6 +62,32 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   return rememberAnsweringNavigator(backStack, T::class, block)
 }
 
+/**
+ * Returns a [GoToNavigator] that answers with the given [resultType] using the given [backStack].
+ *
+ * Handling of the result type [T] should be handled in the [block] parameter and is guaranteed to
+ * only be called _at most_ once. It may never be called if the navigated screen never pops with a
+ * result (of equivalent type) back.
+ *
+ * Note that [resultType] is a simple instance check, so subtypes may also be valid answers.
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * val pickPhotoNavigator = rememberAnsweringNavigator(backStack, PickPhotoScreen.Result::class) { result: PickPhotoScreen.Result ->
+ *   // Do something with the result!
+ * }
+ *
+ * return State(...) { event ->
+ *   when (event) {
+ *     is PickPhoto -> pickPhotoNavigator.goTo(PickPhotoScreen)
+ *   }
+ * }
+ *
+ * // In PickPhotoScreen
+ * navigator.pop(PickPhotoScreen.Result(...))
+ * ```
+ */
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,

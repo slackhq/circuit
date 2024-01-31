@@ -39,25 +39,7 @@ public fun CircuitContent(
 ) {
   val navigator =
     remember(onNavEvent) {
-      object : Navigator {
-        override fun goTo(screen: Screen) {
-          onNavEvent(NavEvent.GoTo(screen))
-        }
-
-        override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot))
-          return emptyList()
-        }
-
-        override fun pop(): Screen? {
-          onNavEvent(NavEvent.Pop)
-          return null
-        }
-
-        override fun peek(): Screen {
-          return screen
-        }
-      }
+      Navigator.navEventNavigator(screen, onNavEvent)
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)
 }

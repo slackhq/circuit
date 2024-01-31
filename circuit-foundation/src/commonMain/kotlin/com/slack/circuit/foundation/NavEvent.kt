@@ -19,6 +19,31 @@ public fun Navigator.onNavEvent(event: NavEvent) {
   }
 }
 
+public fun Navigator.Companion.navEventNavigator(
+  screen: Screen,
+  onNavEvent: (event: NavEvent) -> Unit,
+): Navigator {
+  return object : Navigator {
+    override fun goTo(screen: Screen) {
+      onNavEvent(NavEvent.GoTo(screen))
+    }
+
+    override fun resetRoot(newRoot: Screen): List<Screen> {
+      onNavEvent(NavEvent.ResetRoot(newRoot))
+      return emptyList()
+    }
+
+    override fun pop(): Screen? {
+      onNavEvent(NavEvent.Pop)
+      return null
+    }
+
+    override fun peek(): Screen {
+      return screen
+    }
+  }
+}
+
 /** A sealed navigation interface intended to be used when making a navigation callback. */
 public sealed interface NavEvent : CircuitUiEvent {
   /** Corresponds to [Navigator.pop]. */

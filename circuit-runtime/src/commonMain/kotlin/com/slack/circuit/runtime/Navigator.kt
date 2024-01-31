@@ -43,6 +43,8 @@ public interface Navigator {
 
     override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
   }
+
+  public companion object
 }
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */

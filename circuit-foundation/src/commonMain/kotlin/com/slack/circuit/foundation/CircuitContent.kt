@@ -37,10 +37,7 @@ public fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  val navigator =
-    remember(onNavEvent) {
-      Navigator.navEventNavigator(screen, onNavEvent)
-    }
+  val navigator = remember(onNavEvent) { Navigator.navEventNavigator(screen, onNavEvent) }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)
 }
 

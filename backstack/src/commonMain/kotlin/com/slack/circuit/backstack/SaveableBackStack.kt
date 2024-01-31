@@ -23,6 +23,7 @@ import com.benasher44.uuid.uuid4
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
@@ -61,7 +62,6 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   public override fun push(record: Record, resultKey: String?) {
     entryList.add(0, record)
     // Clear the cached pending result from the previous top record
-    // TODO this may not be enough. See TODO in prepareForResult()
     entryList.getOrNull(1)?.apply { resultKey?.let(::prepareForResult) }
   }
 
@@ -93,16 +93,14 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
     private var resultKey: String? = null
 
-    private var cachedResult: PopResult? = null
-
     internal fun prepareForResult(key: String) {
       resultKey = key
-      cachedResult = null
-      // TODO do we clear the channel's value here too?
+      readResult()
     }
 
+    private fun readResult() = resultChannel.tryReceive().getOrNull()
+
     internal fun sendResult(result: PopResult) {
-      cachedResult = result
       resultChannel.trySend(result)
     }
 
@@ -124,7 +122,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               add(value.args)
               add(value.key)
               // TODO this seems brittle if they ever get out of sync and order changes
-              value.cachedResult?.let(::add)
+              value.readResult()?.let(::add)
               value.resultKey?.let(::add)
             }
           },

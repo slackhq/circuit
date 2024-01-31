@@ -175,7 +175,7 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
     var filters by rememberSaveable { mutableStateOf(Filters()) }
 
     val filtersScreenNavigator =
-      rememberAnsweringNavigator(navigator, FiltersScreen.Result::class) { filters = it.filters }
+      rememberAnsweringNavigator<FiltersScreen.Result>(navigator) { filters = it.filters }
 
     val animals = animalState
     return when {

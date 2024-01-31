@@ -22,7 +22,7 @@ fun main() {
       .addUi<DetailScreen, DetailScreen.State> { state, modifier -> EmailDetail(state, modifier) }
       .build()
   application {
-    Window(title = "STAR", onCloseRequest = ::exitApplication) {
+    Window(title = "Tutorial", onCloseRequest = ::exitApplication) {
       MaterialTheme {
         val backStack = rememberSaveableBackStack { push(InboxScreen) }
         val navigator = rememberCircuitNavigator(backStack, ::exitApplication)

@@ -63,6 +63,8 @@ jobs:
         run: |
           ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
 
+      - run: brew install swiftlint
+
       - name: Run lint on iOS samples
         run: bundle exec fastlane ios lint
 

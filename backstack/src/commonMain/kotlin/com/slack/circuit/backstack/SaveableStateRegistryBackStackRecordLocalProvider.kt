@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -85,7 +86,8 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   // This check for SaveableBackStack.Record is so that we can use support LocalRecord in Navigator
   // It's a little awkward but not sure how to better support types with custom Savers
-  override fun canBeSaved(value: Any): Boolean = value is SaveableBackStack.Record || parentRegistry?.canBeSaved(value) != false
+  override fun canBeSaved(value: Any): Boolean =
+    value is SaveableBackStack.Record || parentRegistry?.canBeSaved(value) != false
 
   override fun consumeRestored(key: String): Any? =
     restored.remove(key)?.let { list ->
@@ -145,11 +147,13 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   companion object {
     val Saver =
-      Saver<BackStackRecordLocalSaveableStateRegistry, Map<String, List<Any?>>>(
+      mapSaver(
         save = { value -> value.performSave() },
         restore = { value ->
           BackStackRecordLocalSaveableStateRegistry(
-            mutableStateMapOf<String, List<Any?>>().apply { putAll(value) }
+            mutableStateMapOf<String, List<Any?>>().apply {
+              @Suppress("UNCHECKED_CAST") putAll(value as Map<String, List<Any?>>)
+            }
           )
         },
       )

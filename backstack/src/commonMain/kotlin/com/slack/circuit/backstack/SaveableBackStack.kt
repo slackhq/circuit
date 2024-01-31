@@ -18,12 +18,13 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.benasher44.uuid.uuid4
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
@@ -114,29 +115,28 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
     }
 
     internal companion object {
-      val Saver: Saver<Record, List<Any>> =
-        Saver(
+      val Saver =
+        mapSaver(
           save = { value ->
-            buildList {
-              add(value.screen)
-              add(value.args)
-              add(value.key)
-              // TODO this seems brittle if they ever get out of sync and order changes
-              value.resultKey?.let(::add)
-              value.readResult()?.let(::add)
+            buildMap {
+              put("screen", value.screen)
+              put("args", value.args)
+              put("key", value.key)
+              put("resultKey", value.resultKey)
+              put("result", value.readResult())
             }
           },
-          restore = { list ->
+          restore = { map ->
             @Suppress("UNCHECKED_CAST")
             Record(
-                screen = list[0] as Screen,
-                args = list[1] as Map<String, Any?>,
-                key = list[2] as String,
+                screen = map["screen"] as Screen,
+                args = map["args"] as Map<String, Any?>,
+                key = map["key"] as String,
               )
-              .also { record ->
+              .apply {
                 // NOTE order matters here, prepareForResult() clears the buffer
-                (list.getOrNull(3) as? String?)?.let(record::prepareForResult)
-                (list.getOrNull(4) as? PopResult?)?.let(record::sendResult)
+                (map["resultKey"] as? String?)?.let(::prepareForResult)
+                (map["result"] as? PopResult?)?.let(::sendResult)
               }
           },
         )
@@ -145,13 +145,11 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   internal companion object {
     val Saver =
-      Saver<SaveableBackStack, List<Any>>(
+      listSaver(
         save = { value -> value.entryList.map { with(Record.Saver) { save(it)!! } } },
         restore = { list ->
           SaveableBackStack().also { backStack ->
-            list.mapTo(backStack.entryList) {
-              @Suppress("UNCHECKED_CAST") Record.Saver.restore(it as List<Any>)!!
-            }
+            list.mapTo(backStack.entryList) { Record.Saver.restore(it)!! }
           }
         },
       )

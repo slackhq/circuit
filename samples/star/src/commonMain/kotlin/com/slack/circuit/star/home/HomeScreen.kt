@@ -15,9 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
@@ -70,6 +72,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   var contentComposed by rememberRetained { mutableStateOf(false) }
+
   Scaffold(
     modifier = modifier.fillMaxWidth(),
     contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -82,13 +85,13 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       }
     },
   ) { paddingValues ->
-    contentComposed = true
     val screen = state.navItems[state.selectedIndex].screen
     CircuitContent(
       screen,
       modifier = Modifier.padding(paddingValues),
       onNavEvent = { event -> state.eventSink(ChildNav(event)) },
     )
+    contentComposed = true
   }
   Platform.ReportDrawnWhen { contentComposed }
 }

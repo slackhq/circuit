@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build:
     # Necessary to run full tests to cover iOS too
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,6 +62,8 @@ jobs:
         id: gradle-build-star-desktop
         run: |
           ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
+
+      - run: brew install swiftlint
 
       - name: Run lint on iOS samples
         run: bundle exec fastlane ios lint

@@ -4,6 +4,7 @@ package com.slack.circuit.star.petlist
 
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -57,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -337,7 +339,6 @@ private fun PetListGridItem(
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
 ) {
-  val updatedImageUrl = animal.imageUrl ?: rememberVectorPainter(Pets)
   ElevatedCard(
     modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -349,18 +350,29 @@ private fun PetListGridItem(
   ) {
     Column(modifier = Modifier.clickable { onClick() }) {
       // Image
-      AsyncImage(
-        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
-        model =
-          Builder(LocalPlatformContext.current)
-            .data(updatedImageUrl)
-            .memoryCacheKey(animal.imageUrl)
-            .crossfade(AnimationConstants.DefaultDurationMillis)
-            .build(),
-        contentDescription = animal.name,
-        contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-      )
+      val imageModifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG)
+      if (animal.imageUrl == null) {
+        Image(
+          rememberVectorPainter(Pets),
+          modifier = imageModifier.padding(8.dp),
+          contentDescription = animal.name,
+          contentScale = ContentScale.Crop,
+          colorFilter = ColorFilter.tint(LocalContentColor.current),
+        )
+      } else {
+        AsyncImage(
+          modifier = imageModifier,
+          model =
+            Builder(LocalPlatformContext.current)
+              .data(animal.imageUrl)
+              .memoryCacheKey(animal.imageUrl)
+              .crossfade(AnimationConstants.DefaultDurationMillis)
+              .build(),
+          contentDescription = animal.name,
+          contentScale = ContentScale.Crop,
+          imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+        )
+      }
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
         Text(text = animal.name, style = MaterialTheme.typography.labelLarge)

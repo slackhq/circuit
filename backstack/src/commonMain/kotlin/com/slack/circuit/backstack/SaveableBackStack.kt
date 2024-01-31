@@ -114,8 +114,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
       }
     }
 
-    internal companion object {
-      val Saver =
+    public companion object {
+      public val Saver: Saver<Record, Any> =
         mapSaver(
           save = { value ->
             buildMap {

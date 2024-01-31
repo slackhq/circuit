@@ -10,7 +10,10 @@ plugins {
 }
 
 kotlin {
-  jvm { mainRun { mainClass.set("com.slack.circuit.tutorial.MainKt") } }
+  jvm {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    mainRun { mainClass.set("com.slack.circuit.tutorial.MainKt") }
+  }
   jvmToolchain(libs.versions.jdk.get().toInt())
 
   applyDefaultHierarchyTemplate()

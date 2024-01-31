@@ -83,7 +83,9 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   private val lock = SynchronizedObject()
 
-  override fun canBeSaved(value: Any): Boolean = parentRegistry?.canBeSaved(value) != false
+  // This check for SaveableBackStack.Record is so that we can use support LocalRecord in Navigator
+  // It's a little awkward but not sure how to better support types with custom Savers
+  override fun canBeSaved(value: Any): Boolean = value is SaveableBackStack.Record || parentRegistry?.canBeSaved(value) != false
 
   override fun consumeRestored(key: String): Any? =
     restored.remove(key)?.let { list ->

@@ -43,6 +43,10 @@ setContent {
 }
 ```
 
+## Results
+
+TODO
+
 ## Nested Navigation
 
 Navigation carries special semantic value in `CircuitContent` as well, where it’s common for UIs to want to curry navigation events emitted by nested UIs. For this case, there’s a `CircuitContent` overload that accepts an optional onNavEvent callback that you must then forward to a Navigator instance.

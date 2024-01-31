@@ -122,8 +122,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               add(value.args)
               add(value.key)
               // TODO this seems brittle if they ever get out of sync and order changes
-              value.readResult()?.let(::add)
               value.resultKey?.let(::add)
+              value.readResult()?.let(::add)
             }
           },
           restore = { list ->
@@ -135,8 +135,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
               )
               .also { record ->
                 // NOTE order matters here, prepareForResult() clears the buffer
-                (list.getOrNull(4) as? String?)?.let(record::prepareForResult)
-                (list.getOrNull(3) as? PopResult?)?.let(record::sendResult)
+                (list.getOrNull(3) as? String?)?.let(record::prepareForResult)
+                (list.getOrNull(4) as? PopResult?)?.let(record::sendResult)
               }
           },
         )

@@ -38,9 +38,8 @@ public fun CircuitContent(
   unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  val localNavigator = LocalBackStack.current
   val navigator =
-    remember(onNavEvent, localNavigator) {
+    remember(onNavEvent) {
       object : Navigator {
         override fun goTo(screen: Screen) {
           onNavEvent(NavEvent.GoTo(screen))

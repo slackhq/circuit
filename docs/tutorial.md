@@ -3,7 +3,11 @@ Tutorial
 
 This tutorial will help you ramp up to Circuit with a simple email app.
 
-Note this assumes some prior experience with Compose. See these resources for more information: TODO
+Note this assumes some prior experience with Compose. See these resources for more information:
+
+- (Android) [Get started with Jetpack Compose](https://developer.android.com/jetpack/compose/documentation)
+- (Android) [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
+- (Multiplatform) [Get started with Compose Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html)
 
 ## Setup
 
@@ -30,7 +34,7 @@ Next, add the `circuit-foundation` dependency. This includes all the core Circui
     }
     ```
 
-TODO for more details see setup
+See [setup docs](setup.md) for more information.
 
 ## Create a `Screen`
 
@@ -54,7 +58,7 @@ Let's start with a simple `Screen` that represents an inbox list:
 
 ## Design your state
 
-Next, let's define some state for our `InboxScreen`. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should _stable_ or _immutable_ (TODO link), and directly renderable by your UIs. As such, you should design them to be as simple as possible.
+Next, let's define some state for our `InboxScreen`. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should [_stable_ or _immutable_](https://developer.android.com/jetpack/compose/performance/stability), and directly renderable by your UIs. As such, you should design them to be as simple as possible.
 
 Conventionally, this is written as a nested `State` class inside your `Screen` and _must_ extend `CircuitUiState`.
 

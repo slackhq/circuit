@@ -382,9 +382,9 @@ Now that we have a `Navigator` in our inbox presenter, we can use it to navigate
 
 ## Events
 
-So far, we've only covered _state_. State is produced by the presenter and consumed by the UI. That's only half of the UDF picture though! Events are the opposite: they're produced by the UI and consumed by the presenter. Events are how you can trigger actions in your app, such as navigation. _This completes the circuit._
+So far, we've covered _state_. State is produced by the presenter and consumed by the UI. That's only half of the UDF picture though! _Events_ are the inverse: they're produced by the UI and consumed by the presenter. Events are how you can trigger actions in your app, such as navigation. _This completes the circuit._
 
-Events in Circuit are a little unconventional in Circuit doesn't actually provide first-party infrastructure for pipelining events from the UI to presenters. Instead, we use an _event sink property_ pattern, where states contain a trailing `eventSink` function that accepts events and can be emitted to by the UI.
+Events in Circuit are a little unconventional in that Circuit doesn't provide structured APIs for pipelining events from the UI to presenters. Instead, we use an _event sink property_ pattern, where states contain a trailing `eventSink` function that accepts events and can be emitted to by the UI.
 
 This provides many benefits, see the [events](states-and-events.md) guide for more information.
 

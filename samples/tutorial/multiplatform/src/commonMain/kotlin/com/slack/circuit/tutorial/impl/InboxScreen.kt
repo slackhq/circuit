@@ -4,6 +4,8 @@ package com.slack.circuit.tutorial.impl
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -29,7 +31,9 @@ class InboxPresenter(
 ) : Presenter<InboxScreen.State> {
   @Composable
   override fun present(): InboxScreen.State {
-    return InboxScreen.State(emails = emailRepository.getEmails()) { event ->
+    val emails by
+      produceState<List<Email>>(initialValue = emptyList()) { value = emailRepository.getEmails() }
+    return InboxScreen.State(emails) { event ->
       when (event) {
         is InboxScreen.Event.EmailClicked -> navigator.goTo(DetailScreen(event.emailId))
       }

@@ -136,8 +136,24 @@ Next, let's define a `Presenter` for our `InboxScreen`. Circuit presenters are r
     }
     ```
 
-!!! note
-    This is a trivial implementation that returns a static list of emails. In a real app, you'd likely fetch this data from a repository or other data source.
+This is a trivial implementation that returns a static list of emails. In a real app, you'd likely fetch this data from a repository or other data source. In our tutorial code in the repo, we've added a simple `EmailRepository` that you can use to fetch emails. It exposes a suspending `getEmails()` function that returns a list of emails.
+
+This is also a good opportunity to see where using compose in our presentation logic shines, as we can use Compose's advanced state management to make our presenter logic more expressive and easy to understand.
+
+=== "InboxPresenter"
+    ```kotlin
+    class InboxPresenter(private val emailRepository: EmailRepository) : Presenter<InboxScreen.State> {
+      @Composable
+      override fun present(): InboxScreen.State {
+        val emails by produceState<List<Email>>(initialValue = emptyList()) {
+          value = emailRepository.getEmails()
+        }
+        // Or a flow!
+        // val emails by emailRepository.getEmailsFlow().collectAsState(initial = emptyList())
+        return InboxScreen.State(emails)
+      }
+    }
+    ```
 
 ## Wiring it up
 
@@ -145,9 +161,10 @@ Now that we have a `Screen`, `State`, `Ui`, and `Presenter`, let's wire them up 
 
 === "Circuit instance"
     ```kotlin
+    val emailRepository = EmailRepository()
     val circuit: Circuit =
       Circuit.Builder()
-        .addPresenter<InboxScreen, InboxScreen.State>(InboxPresenter())
+        .addPresenter<InboxScreen, InboxScreen.State>(InboxPresenter(emailRepository))
         .addUi<InboxScreen, InboxScreen.State> { state, modifier -> Inbox(state, modifier) }
         .build()
     ```
@@ -225,8 +242,6 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` and
 Under the hood, this instantiates the corresponding `Presenter` and `Ui` from the local `Circuit` instance and connects them together. All you need to do is pass in the `Screen` you want to render!
 
 This is the most basic way to render a `Screen`. These can be top-level UIs or nested within other UIs. You can even have multiple `CircuitContent` instances in the same composition.
-
-TODO need an example of managing state in the presenter
 
 ## Adding navigation to our app
 

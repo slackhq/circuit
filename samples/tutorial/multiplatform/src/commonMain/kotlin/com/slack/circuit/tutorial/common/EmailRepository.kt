@@ -18,7 +18,8 @@ class EmailRepository {
 
   private val emails = listOf(DEMO).associateBy { it.id }
 
-  fun getEmails(): List<Email> {
+  @Suppress("RedundantSuspendModifier") // Just for demonstration purposes
+  suspend fun getEmails(): List<Email> {
     return emails.values.toList()
   }
 

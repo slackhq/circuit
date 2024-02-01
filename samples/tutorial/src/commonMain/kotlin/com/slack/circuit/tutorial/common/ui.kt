@@ -55,7 +55,7 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
         )
       }
 
-      Text(text = email.subject, style = MaterialTheme.typography.labelMedium)
+      Text(text = email.subject, style = MaterialTheme.typography.labelLarge)
       Text(
         text = email.body,
         maxLines = 2,

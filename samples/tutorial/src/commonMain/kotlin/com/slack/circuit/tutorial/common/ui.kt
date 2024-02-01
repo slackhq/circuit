@@ -44,7 +44,7 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
         Text(
           text = email.sender,
           modifier = Modifier.weight(1f),
-          style = MaterialTheme.typography.titleSmall,
+          style = MaterialTheme.typography.titleMedium,
           fontWeight = FontWeight.Bold,
         )
 
@@ -55,12 +55,12 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
         )
       }
 
-      Text(text = email.subject, style = MaterialTheme.typography.labelSmall)
+      Text(text = email.subject, style = MaterialTheme.typography.labelMedium)
       Text(
         text = email.body,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         modifier = Modifier.alpha(0.5f),
       )
     }

@@ -32,7 +32,11 @@ public interface Navigator {
    * val loginScreens = navigator.resetRoot(HomeScreen)
    * ```
    */
-  public fun resetRoot(newRoot: Screen): List<Screen>
+  public fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean = false,
+    restoreState: Boolean = false,
+  ): List<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
@@ -41,7 +45,11 @@ public interface Navigator {
 
     override fun peek(): Screen? = null
 
-    override fun resetRoot(newRoot: Screen): List<Screen> = emptyList()
+    override fun resetRoot(
+      newRoot: Screen,
+      saveState: Boolean,
+      restoreState: Boolean,
+    ): List<Screen> = emptyList()
   }
 }
 

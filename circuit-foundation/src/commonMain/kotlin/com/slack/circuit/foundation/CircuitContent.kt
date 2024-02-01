@@ -44,8 +44,12 @@ public fun CircuitContent(
           onNavEvent(NavEvent.GoTo(screen))
         }
 
-        override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot))
+        override fun resetRoot(
+          newRoot: Screen,
+          saveState: Boolean,
+          restoreState: Boolean,
+        ): List<Screen> {
+          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
           return emptyList()
         }
 

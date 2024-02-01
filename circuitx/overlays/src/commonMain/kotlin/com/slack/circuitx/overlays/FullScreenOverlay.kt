@@ -76,7 +76,7 @@ internal class DispatchingOverlayNavigator(
 
   override fun peek(): Screen = currentScreen
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }
 }

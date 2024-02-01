@@ -29,7 +29,10 @@ class NavigableCircuitRetainedStateTest {
   @Test fun retainedStateScopedToBackstackWithKeys() = retainedStateScopedToBackstack(true)
 
   @Test fun retainedStateScopedToBackstackWithoutKeys() = retainedStateScopedToBackstack(false)
-  @Test fun retainedStateScopedToBackstackResetRootsWithoutKeys() = retainedStateScopedToBackstackResetRoots(false)
+
+  @Test
+  fun retainedStateScopedToBackstackResetRootsWithoutKeys() =
+    retainedStateScopedToBackstackResetRoots(false)
 
   private fun retainedStateScopedToBackstack(useKeys: Boolean) {
     composeTestRule.run {
@@ -98,7 +101,12 @@ class NavigableCircuitRetainedStateTest {
 
   private fun retainedStateScopedToBackstackResetRoots(useKeys: Boolean) {
     composeTestRule.run {
-      val circuit = createTestCircuit(useKeys = useKeys, rememberType = RememberType.Retained)
+      val circuit = createTestCircuit(
+        useKeys = useKeys,
+        rememberType = RememberType.Retained,
+        saveStateOnRootChange = true,
+        restoreStateOnRootChange = true,
+      )
 
       setContent {
         CircuitCompositionLocals(circuit) {

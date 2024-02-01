@@ -49,7 +49,7 @@ internal class NavigatorImpl(
 
   override fun peek(): Screen? = backstack.firstOrNull()?.screen
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     return buildList(backstack.size) {
       backstack.popUntil { record ->
         add(record.screen)

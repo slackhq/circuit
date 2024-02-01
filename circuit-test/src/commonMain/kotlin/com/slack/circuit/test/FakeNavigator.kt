@@ -41,7 +41,7 @@ public class FakeNavigator : Navigator {
     error("peek() is not supported in FakeNavigator!")
   }
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     newRoots.add(newRoot)
     val oldScreens = buildList {
       val channel = navigatedScreens.asChannel()

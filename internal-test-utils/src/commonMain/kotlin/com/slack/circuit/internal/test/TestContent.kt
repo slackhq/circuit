@@ -36,12 +36,16 @@ object TestContentTags {
 fun createTestCircuit(
   useKeys: Boolean = false,
   rememberType: TestCountPresenter.RememberType = TestCountPresenter.RememberType.Standard,
+  saveStateOnRootChange: Boolean = false,
+  restoreStateOnRootChange: Boolean = false,
   presenter: (Screen, Navigator) -> Presenter<*> = { screen, navigator ->
     TestCountPresenter(
       screen = screen as TestScreen,
       navigator = navigator,
       useKeys = useKeys,
       rememberType = rememberType,
+      saveStateOnRootChange = saveStateOnRootChange,
+      restoreStateOnRootChange = restoreStateOnRootChange,
     )
   },
 ): Circuit =
@@ -93,14 +97,18 @@ fun TestContent(state: TestState, modifier: Modifier = Modifier) {
 
     BasicText(
       text = "Reset to Root Alpha",
-      modifier = Modifier.testTag(TestContentTags.TAG_RESET_ROOT_ALPHA)
-        .clickable { state.eventSink(TestEvent.ResetRootAlpha) },
+      modifier =
+        Modifier.testTag(TestContentTags.TAG_RESET_ROOT_ALPHA).clickable {
+          state.eventSink(TestEvent.ResetRootAlpha)
+        },
     )
 
     BasicText(
       text = "Reset to Root Beta",
-      modifier = Modifier.testTag(TestContentTags.TAG_RESET_ROOT_BETA)
-        .clickable { state.eventSink(TestEvent.ResetRootBeta) },
+      modifier =
+        Modifier.testTag(TestContentTags.TAG_RESET_ROOT_BETA).clickable {
+          state.eventSink(TestEvent.ResetRootBeta)
+        },
     )
   }
 }
@@ -110,6 +118,8 @@ class TestCountPresenter(
   private val navigator: Navigator,
   private val useKeys: Boolean,
   private val rememberType: RememberType,
+  private val saveStateOnRootChange: Boolean = false,
+  private val restoreStateOnRootChange: Boolean = false,
 ) : Presenter<TestState> {
   @Composable
   override fun present(): TestState {
@@ -144,8 +154,10 @@ class TestCountPresenter(
             else -> error("Can't navigate from $screen")
           }
         }
-        TestEvent.ResetRootAlpha -> navigator.resetRoot(TestScreen.RootAlpha)
-        TestEvent.ResetRootBeta -> navigator.resetRoot(TestScreen.RootBeta)
+        TestEvent.ResetRootAlpha ->
+          navigator.resetRoot(TestScreen.RootAlpha, saveStateOnRootChange, restoreStateOnRootChange)
+        TestEvent.ResetRootBeta ->
+          navigator.resetRoot(TestScreen.RootBeta, saveStateOnRootChange, restoreStateOnRootChange)
       }
     }
   }
@@ -170,8 +182,7 @@ sealed interface TestEvent {
 
   data object IncreaseCount : TestEvent
 
-  data object ResetRootAlpha: TestEvent
+  data object ResetRootAlpha : TestEvent
 
-  data object ResetRootBeta: TestEvent
-
+  data object ResetRootBeta : TestEvent
 }

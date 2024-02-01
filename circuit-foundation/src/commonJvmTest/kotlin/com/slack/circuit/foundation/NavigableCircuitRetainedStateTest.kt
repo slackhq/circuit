@@ -170,6 +170,7 @@ class NavigableCircuitRetainedStateTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("Root Beta")
 
       // Navigate to Screen A, and increase count to 2
+      onNodeWithTag(TAG_GO_NEXT).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()

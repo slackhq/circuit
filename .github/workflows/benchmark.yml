@@ -42,7 +42,7 @@ jobs:
 
       - name: Build benchmark
         id: gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: ':samples:star:apk:assembleBenchmarkRelease :samples:star:benchmark:compileBenchmarkReleaseSources'
           gradle-home-cache-cleanup: true

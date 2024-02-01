@@ -42,7 +42,7 @@ jobs:
           xcode-version: '15.2'
 
       - name: Setup Gradle cache
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-home-cache-cleanup: true
           cache-read-only: false
@@ -125,7 +125,7 @@ jobs:
 
       - name: Verify Snapshots
         id: gradle-snapshots
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: verifyRoborazzi
           gradle-home-cache-cleanup: true

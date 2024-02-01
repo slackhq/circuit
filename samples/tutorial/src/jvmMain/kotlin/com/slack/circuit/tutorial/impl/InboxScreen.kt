@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.impl
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -57,9 +61,11 @@ class InboxPresenter(
 
 @Composable
 fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
-  LazyColumn(modifier = modifier) {
-    items(state.emails) { email ->
-      EmailItem(email) { state.eventSink(InboxScreen.Event.EmailClicked(email.id)) }
+  Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
+    LazyColumn(modifier = Modifier.padding(innerPadding)) {
+      items(state.emails) { email ->
+        EmailItem(email) { state.eventSink(InboxScreen.Event.EmailClicked(email.id)) }
+      }
     }
   }
 }

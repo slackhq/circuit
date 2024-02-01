@@ -15,7 +15,11 @@ You can do this tutorial in one of two ways:
 
 ### 1. Build out of the `tutorial` sample
 
-Clone the circuit repo and work out of the `:samples:tutorial:multiplatform` module. This has all your dependencies set up and ready to go, along with some reusable common code to save you some boilerplate. You can see an implementation of this tutorial there as well. The entry point is `main.kt`. To run the main function, you can run `./gradlew :samples:tutorial:multiplatform:run`.
+Clone the circuit repo and work out of the `:samples:tutorial` module. This has all your dependencies set up and ready to go, along with some reusable common code to save you some boilerplate. You can see an implementation of this tutorial there as well.
+
+This can be run on Android or Desktop.
+- The Desktop entry point is `main.kt`. To run the main function, you can run `./gradlew :samples:tutorial:run`.
+- The Android entry point is `MainActivity`. Run `./gradlew :samples:tutorial:installDebug` to install it on a device or emulator.
 
 ### 2. Start from scratch
 

@@ -232,7 +232,7 @@ include(
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
-  ":samples:tutorial:multiplatform",
+  ":samples:tutorial",
   ":internal-test-utils",
 )
 

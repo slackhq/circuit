@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.common
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,14 +68,8 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
 }
 
 @Composable
-@Preview
-private fun EmailItemPreview() {
-  EmailItem(email = EmailRepository.DEMO)
-}
-
-@Composable
 fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) {
-  Column(modifier) {
+  Column(modifier.padding(16.dp)) {
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
       Image(
         Icons.Default.Person,
@@ -112,10 +105,4 @@ fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) {
     Divider(modifier = Modifier.padding(vertical = 16.dp))
     Text(text = email.body, style = MaterialTheme.typography.bodyMedium)
   }
-}
-
-@Preview
-@Composable
-private fun EmailDetailContentPreview() {
-  EmailDetailContent(EmailRepository.DEMO)
 }

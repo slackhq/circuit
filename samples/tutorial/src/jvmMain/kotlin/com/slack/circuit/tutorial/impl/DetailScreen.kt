@@ -9,7 +9,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.runtime.CircuitContext
@@ -61,10 +67,22 @@ class DetailPresenter(
 
 @Composable
 fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
-  Column(modifier = modifier.padding(16.dp), verticalArrangement = spacedBy(16.dp)) {
-    IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
-      Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+  val subject by remember { derivedStateOf { state.email.subject } }
+  Scaffold(
+    modifier = modifier,
+    topBar = {
+      TopAppBar(
+        title = { Text(subject) },
+        navigationIcon = {
+          IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
+            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+          }
+        },
+      )
+    },
+  ) { innerPadding ->
+    Column(modifier = Modifier.padding(innerPadding), verticalArrangement = spacedBy(16.dp)) {
+      EmailDetailContent(state.email)
     }
-    EmailDetailContent(state.email, modifier)
   }
 }

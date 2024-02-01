@@ -27,6 +27,8 @@ object TestContentTags {
   const val TAG_GO_NEXT = "go"
   const val TAG_POP = "pop"
   const val TAG_INCREASE_COUNT = "inc"
+  const val TAG_RESET_ROOT_ALPHA = "reset_alpha"
+  const val TAG_RESET_ROOT_BETA = "reset_beta"
   const val TAG_COUNT = "count"
   const val TAG_LABEL = "label"
 }
@@ -54,6 +56,10 @@ sealed class TestScreen(val label: String) : Screen {
   @Parcelize data object ScreenB : TestScreen("B")
 
   @Parcelize data object ScreenC : TestScreen("C")
+
+  @Parcelize data object RootAlpha : TestScreen("Root Alpha")
+
+  @Parcelize data object RootBeta : TestScreen("Root Beta")
 }
 
 @Composable
@@ -70,7 +76,6 @@ fun TestContent(state: TestState, modifier: Modifier = Modifier) {
           state.eventSink(TestEvent.IncreaseCount)
         },
     )
-
     BasicText(
       text = "Pop",
       modifier =
@@ -84,6 +89,18 @@ fun TestContent(state: TestState, modifier: Modifier = Modifier) {
         Modifier.testTag(TestContentTags.TAG_GO_NEXT).clickable {
           state.eventSink(TestEvent.GoToNextScreen)
         },
+    )
+
+    BasicText(
+      text = "Reset to Root Alpha",
+      modifier = Modifier.testTag(TestContentTags.TAG_RESET_ROOT_ALPHA)
+        .clickable { state.eventSink(TestEvent.ResetRootAlpha) },
+    )
+
+    BasicText(
+      text = "Reset to Root Beta",
+      modifier = Modifier.testTag(TestContentTags.TAG_RESET_ROOT_BETA)
+        .clickable { state.eventSink(TestEvent.ResetRootBeta) },
     )
   }
 }
@@ -118,11 +135,17 @@ class TestCountPresenter(
         TestEvent.PopNavigation -> navigator.pop()
         TestEvent.GoToNextScreen -> {
           when (screen) {
-            is TestScreen.ScreenA -> navigator.goTo(TestScreen.ScreenB)
-            is TestScreen.ScreenB -> navigator.goTo(TestScreen.ScreenC)
+            // Root screens all go to ScreenA
+            TestScreen.RootAlpha -> navigator.goTo(TestScreen.ScreenA)
+            TestScreen.RootBeta -> navigator.goTo(TestScreen.ScreenA)
+            // Otherwise each screen navigates to the next screen
+            TestScreen.ScreenA -> navigator.goTo(TestScreen.ScreenB)
+            TestScreen.ScreenB -> navigator.goTo(TestScreen.ScreenC)
             else -> error("Can't navigate from $screen")
           }
         }
+        TestEvent.ResetRootAlpha -> navigator.resetRoot(TestScreen.RootAlpha)
+        TestEvent.ResetRootBeta -> navigator.resetRoot(TestScreen.RootBeta)
       }
     }
   }
@@ -146,4 +169,9 @@ sealed interface TestEvent {
   data object PopNavigation : TestEvent
 
   data object IncreaseCount : TestEvent
+
+  data object ResetRootAlpha: TestEvent
+
+  data object ResetRootBeta: TestEvent
+
 }

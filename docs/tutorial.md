@@ -522,4 +522,4 @@ On Android, `NavigableCircuitContent` automatically hooks into `BackHandler` to 
 
 ## Conclusion
 
-This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](../api/0.x/index.html), and check out other Circuit tools like circuit-retained, CircuitX, factory code gen, overlays, testing, multiplatform, and more.
+This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](../api/0.x/index.html), and check out other Circuit tools like [circuit-retained](https://slackhq.github.io/circuit/presenter/#retention), [CircuitX](https://slackhq.github.io/circuit/circuitx/), [factory code gen](https://slackhq.github.io/circuit/code-gen/), [overlays](https://slackhq.github.io/circuit/overlays/), [testing](https://slackhq.github.io/circuit/testing/), [multiplatform](https://slackhq.github.io/circuit/setup/#platform-support), and more.

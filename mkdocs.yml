@@ -33,6 +33,9 @@ theme:
   font:
     text: 'Lato'
     code: 'Fira Code'
+  features:
+    - content.code.copy
+    - content.code.select
 
 extra_css:
   - 'css/app.css'

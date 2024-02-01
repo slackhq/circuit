@@ -31,12 +31,11 @@ First, set up Compose in your project. See the following guides for more informa
 
 Next, add the `circuit-foundation` dependency. This includes all the core Circuit artifacts.
 
-=== "build.gradle.kts"
-    ```kotlin
-    dependencies {
-      implementation("com.slack.circuit:circuit-foundation:<version>")
-    }
-    ```
+```kotlin title="build.gradle.kts"
+dependencies {
+  implementation("com.slack.circuit:circuit-foundation:<version>")
+}
+```
 
 See [setup docs](setup.md) for more information.
 
@@ -66,8 +65,8 @@ Next, let's define some state for our `InboxScreen`. Circuit uses unidirectional
 
 Conventionally, this is written as a nested `State` class inside your `Screen` and _must_ extend `CircuitUiState` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html)).
 
-=== "InboxScreen.kt"
-    ```kotlin
+=== "InboxScreen"
+    ```kotlin title="InboxScreen.kt" hl_lines="2-4"
     data object InboxScreen : Screen {
       data class State(
         val emails: List<Email>
@@ -75,8 +74,8 @@ Conventionally, this is written as a nested `State` class inside your `Screen` a
     }
     ```
 
-=== "Email.kt"
-    ```kotlin
+=== "Email"
+    ```kotlin title="Email.kt"
     @Immutable
     data class Email(
       val id: String,
@@ -96,98 +95,93 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
 
 // TODO side by side screenshot?
 
-=== "Inbox"
-    ```kotlin
-    @Composable
-    fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
-      Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-          items(state.emails) { email ->
-            EmailItem(email)
-          }
-        }
+```kotlin title="Inbox.kt"
+@Composable
+fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
+  Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
+    LazyColumn(modifier = Modifier.padding(innerPadding)) {
+      items(state.emails) { email ->
+        EmailItem(email)
       }
     }
-    
-    // Write one or use EmailItem from ui.kt
-    @Composable
-    private fun EmailItem(email: Email, modifier: Modifier = Modifier) {
-      // ...
-    }
-    ```
+  }
+}
+
+// Write one or use EmailItem from ui.kt
+@Composable
+private fun EmailItem(email: Email, modifier: Modifier = Modifier) {
+  // ...
+}
+```
 
 
 For more complex UIs with dependencies, you can create a class that implements the `Ui` interface ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html)). This is rarely necessary though, and we won't use this in the tutorial.
 
-=== "Inbox"
-    ```kotlin
-    class InboxUi(...) : Ui<InboxScreen.State> {
-      @Composable
-      override fun Content(state: InboxScreen.State, modifier: Modifier) {
-        LazyColumn(modifier = modifier) {
-          items(state.emails) { email ->
-            EmailItem(email)
-          }
-        }
+```kotlin title="InboxUi.kt" hl_lines="1 2 3 9 10"
+class InboxUi(...) : Ui<InboxScreen.State> {
+  @Composable
+  override fun Content(state: InboxScreen.State, modifier: Modifier) {
+    LazyColumn(modifier = modifier) {
+      items(state.emails) { email ->
+        EmailItem(email)
       }
     }
-    ```
+  }
+}
+```
 
 ## Implement your presenter
 
 Next, let's define a `Presenter` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html)) for our `InboxScreen`. Circuit presenters are responsible for computing and emitting state.
 
-=== "InboxPresenter"
-    ```kotlin
-    class InboxPresenter : Presenter<InboxScreen.State> {
-      @Composable
-      override fun present(): InboxScreen.State {
-        return InboxScreen.State(
-          emails = listOf(
-            Email(
-              id = "1",
-              subject = "Meeting re-sched!",
-              body = "Hey, I'm going to be out of the office tomorrow. Can we reschedule?",
-              sender = "Ali Connors",
-              timestamp = "3:00 PM",
-              recipients = listOf("all@example.com"),
-              ),
-            // ... more emails
-          )
-        )
-      }
-    }
-    ```
+```kotlin title="InboxPresenter.kt"
+class InboxPresenter : Presenter<InboxScreen.State> {
+  @Composable
+  override fun present(): InboxScreen.State {
+    return InboxScreen.State(
+      emails = listOf(
+        Email(
+          id = "1",
+          subject = "Meeting re-sched!",
+          body = "Hey, I'm going to be out of the office tomorrow. Can we reschedule?",
+          sender = "Ali Connors",
+          timestamp = "3:00 PM",
+          recipients = listOf("all@example.com"),
+          ),
+        // ... more emails
+      )
+    )
+  }
+}
+```
 
 This is a trivial implementation that returns a static list of emails. In a real app, you'd likely fetch this data from a repository or other data source. In our tutorial code in the repo, we've added a simple `EmailRepository` that you can use to fetch emails. It exposes a suspending `getEmails()` function that returns a list of emails.
 
 This is also a good opportunity to see where using compose in our presentation logic shines, as we can use Compose's advanced state management to make our presenter logic more expressive and easy to understand.
 
-=== "InboxPresenter"
-    ```kotlin
-    class InboxPresenter(private val emailRepository: EmailRepository) : Presenter<InboxScreen.State> {
-      @Composable
-      override fun present(): InboxScreen.State {
-        val emails by produceState<List<Email>>(initialValue = emptyList()) {
-          value = emailRepository.getEmails()
-        }
-        // Or a flow!
-        // val emails by emailRepository.getEmailsFlow().collectAsState(initial = emptyList())
-        return InboxScreen.State(emails)
-      }
+```kotlin title="InboxPresenter.kt" hl_lines="4-8"
+class InboxPresenter(private val emailRepository: EmailRepository) : Presenter<InboxScreen.State> {
+  @Composable
+  override fun present(): InboxScreen.State {
+    val emails by produceState<List<Email>>(initialValue = emptyList()) {
+      value = emailRepository.getEmails()
     }
-    ```
+    // Or a flow!
+    // val emails by emailRepository.getEmailsFlow().collectAsState(initial = emptyList())
+    return InboxScreen.State(emails)
+  }
+}
+```
 
 Analogous to `Ui`, you can also define simple/dependency-less presenters as just a top-level function.
 
-=== "InboxPresenter"
-    ```kotlin
-    @Composable
-    fun InboxPresenter(): InboxScreen.State {
-      val emails = ...
-      return InboxScreen.State(emails)
-    }
-    ```
+```kotlin title="InboxPresenter.kt"
+@Composable
+fun InboxPresenter(): InboxScreen.State {
+  val emails = ...
+  return InboxScreen.State(emails)
+}
+```
 
 !!! tip
     Generally, Circuit presenters are implemented as classes and Circuit UIs are implemented as top-level functions. You can mix and match as needed for a given use case. Under the hood, Circuit will wrap all top-level functions into a class for you.
@@ -196,15 +190,14 @@ Analogous to `Ui`, you can also define simple/dependency-less presenters as just
 
 Now that we have a `Screen`, `State`, `Ui`, and `Presenter`, let's wire them up together. Circuit accomplishes this with the `Circuit` class ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/index.html)), which is responsible for connecting screens to their corresponding presenters and UIs. These are created with a simple builder pattern.
 
-=== "Circuit instance"
-    ```kotlin
-    val emailRepository = EmailRepository()
-    val circuit: Circuit =
-      Circuit.Builder()
-        .addPresenter<InboxScreen, InboxScreen.State>(InboxPresenter(emailRepository))
-        .addUi<InboxScreen, InboxScreen.State> { state, modifier -> Inbox(state, modifier) }
-        .build()
-    ```
+```kotlin title="Creating a Circuit instance"
+val emailRepository = EmailRepository()
+val circuit: Circuit =
+  Circuit.Builder()
+    .addPresenter<InboxScreen, InboxScreen.State>(InboxPresenter(emailRepository))
+    .addUi<InboxScreen, InboxScreen.State> { state, modifier -> Inbox(state, modifier) }
+    .build()
+```
 
 This instance should usually live on your application's DI graph.
 
@@ -214,7 +207,7 @@ This instance should usually live on your application's DI graph.
 Once you have this instance, you can plug it into `CircuitCompositionLocals` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html)) and be on your way. This is usually a one-time setup in your application at its primary entry point.
 
 === "Android"
-    ```kotlin
+    ```kotlin title="MainActivity.kt"
     class MainActivity {
       override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -232,7 +225,7 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` ([d
     ```
 
 === "Desktop"
-    ```kotlin
+    ```kotlin title="main.kt"
     fun main() {
       val circuit = Circuit.Builder()
         // ...
@@ -249,7 +242,7 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` ([d
     ```
 
 === "JS"
-    ```kotlin
+    ```kotlin title="main.kt"
     fun main() {
       val circuit = Circuit.Builder()
         // ...
@@ -269,12 +262,11 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` ([d
 
 `CircuitContent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-content.html)) is a simple composable that takes a `Screen` and renders it.
 
-=== "main.kt"
-    ```kotlin
-    CircuitCompositionLocals(circuit) {
-      CircuitContent(InboxScreen)
-    }
-    ```
+```kotlin title="CircuitContent"
+CircuitCompositionLocals(circuit) {
+  CircuitContent(InboxScreen)
+}
+```
 
 Under the hood, this instantiates the corresponding `Presenter` and `Ui` from the local `Circuit` instance and connects them together. All you need to do is pass in the `Screen` you want to render!
 
@@ -284,55 +276,52 @@ This is the most basic way to render a `Screen`. These can be top-level UIs or n
 
 An architecture isn't complete without navigation. Circuit provides a simple navigation API that's focused around a simple `BackStack` ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-back-stack/index.html)) that is navigated via a `Navigator` interface ([docs]()). In most cases, you can use the built-in `SaveableBackStack` implementation ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html)), which is saved and restored in accordance with whatever the platform's `rememberSaveable` implementation is.
 
-=== "main.kt"
-    ```kotlin
-    val backStack = rememberSaveableBackStack { 
-      // Push your root screen
-      push(InboxScreen)
-    }
-    val navigator = rememberCircuitNavigator(backStack) {
-      // Do something when the root screen is popped, usually exiting the app
-    }
-    ```
+```kotlin title="Creating a backstack and navigator"
+val backStack = rememberSaveableBackStack { 
+  // Push your root screen
+  push(InboxScreen)
+}
+val navigator = rememberCircuitNavigator(backStack) {
+  // Do something when the root screen is popped, usually exiting the app
+}
+```
 
 Once you have these two components created, you can pass them to an advanced version of `CircuitContent` that supports navigation called `NavigableCircuitContent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-navigable-circuit-content.html)).
 
-=== "main.kt"
-    ```kotlin
-    NavigableCircuitContent(navigator = navigator, backstack = backStack)
-    ```
+```kotlin title="NavigableCircuitContent"
+NavigableCircuitContent(navigator = navigator, backstack = backStack)
+```
 
 This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens ([`NavDecoration`](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html)) and fallback behavior with unavailable routes.
 
 Like with `Circuit`, this is usually a one-time setup in your application at its primary entry point.
 
-=== "main.kt"
-    ```kotlin
-    val backStack = rememberSaveableBackStack {
-      // Push your root screen
-      push(InboxScreen)
-    }
-    val navigator = rememberCircuitNavigator(backStack) {
-      // Do something when the root screen is popped, usually exiting the app
-    }
-    CircuitCompositionLocals(circuit) {
-      NavigableCircuitContent(navigator = navigator, backstack = backStack)
-    }
-    ```
+```kotlin title="Putting it all together"
+val backStack = rememberSaveableBackStack {
+  // Push your root screen
+  push(InboxScreen)
+}
+val navigator = rememberCircuitNavigator(backStack) {
+  // Do something when the root screen is popped, usually exiting the app
+}
+CircuitCompositionLocals(circuit) {
+  NavigableCircuitContent(navigator = navigator, backstack = backStack)
+}
+```
 
 ## Add a detail screen
 
 Now that we have navigation set up, let's add a detail screen to our app to navigate to. First, let's define a `DetailScreen` and state.
 
 === "Android"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt"
     @Parcelize
     data class DetailScreen(val emailId: String) : Screen {
       data class State(val email: Email) : CircuitUiState
     }
     ```
 === "Multiplatform"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt"
     data class DetailScreen(val emailId: String) : Screen {
       data class State(val email: Email) : CircuitUiState
     }
@@ -346,7 +335,7 @@ Notice that this time we use a `data class` instead of a `data object`. This is 
 Next, let's define a Presenter and UI for this screen.
 
 === "Presenter"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt"
     class DetailPresenter(
       private val screen: DetailScreen,
       private val emailRepository: EmailRepository
@@ -360,7 +349,7 @@ Next, let's define a Presenter and UI for this screen.
     ```
 
 === "UI"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt"
     @Composable
     fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
       // ...
@@ -370,34 +359,32 @@ Next, let's define a Presenter and UI for this screen.
 
 Note that we're injecting the `DetailScreen` into our `Presenter` so we can get the email ID. This is where Circuit's factory pattern comes into play. Let's define a factory for our `DetailPresenter`.
 
-=== "DetailPresenter"
-    ```kotlin
-    class DetailPresenter(...) : Presenter<DetailScreen.State> {
-      // ...
-      class Factory(private val emailRepository: EmailRepository) : Presenter.Factory {
-        override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>? {
-          return when (screen) {
-            is DetailScreen -> return DetailPresenter(screen, emailRepository)
-            else -> null
-          }
-        }
+```kotlin title="DetailScreen.kt" hl_lines="3-10"
+class DetailPresenter(...) : Presenter<DetailScreen.State> {
+  // ...
+  class Factory(private val emailRepository: EmailRepository) : Presenter.Factory {
+    override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>? {
+      return when (screen) {
+        is DetailScreen -> return DetailPresenter(screen, emailRepository)
+        else -> null
       }
     }
-    ```
+  }
+}
+```
 
 Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.
 
 We can then wire these detail components to our `Circuit` instance too.
 
-=== "Circuit instance"
-    ```kotlin
-    val circuit: Circuit =
-      Circuit.Builder()
-        // ...
-        .addPresenterFactory(DetailPresenter.Factory(emailRepository))
-        .addUi<DetailScreen, DetailScreen.State> { state, modifier -> EmailDetail(state, modifier) }
-        .build()
-    ```
+```kotlin hl_lines="4-5"
+val circuit: Circuit =
+  Circuit.Builder()
+    // ...
+    .addPresenterFactory(DetailPresenter.Factory(emailRepository))
+    .addUi<DetailScreen, DetailScreen.State> { state, modifier -> EmailDetail(state, modifier) }
+    .build()
+```
 
 ## Navigate to the detail screen
 
@@ -406,7 +393,7 @@ Now that we have a detail screen, let's navigate to it from our inbox list. As y
 Let's add a `Navigator` property to our presenter and create a factory for our inbox screen now.
 
 === "InboxPresenter"
-    ```kotlin
+    ```kotlin title="InboxPresenter.kt"
     class InboxPresenter(
       private val navigator: Navigator,
       private val emailRepository: EmailRepository
@@ -424,7 +411,7 @@ Let's add a `Navigator` property to our presenter and create a factory for our i
     ```
 
 === "Circuit instance"
-    ```kotlin
+    ```kotlin hl_lines="3-4"
     val circuit: Circuit =
       Circuit.Builder()
         .addPresenterFactory(InboxPresenter.Factory(emailRepository))
@@ -448,62 +435,59 @@ Let's add an event to our inbox screen for when the user clicks on an email.
 
 Events must implement `CircuitUiEvent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html)) and are usually modeled as a `sealed interface` hierarchy, where each subtype is a different event type.
 
-=== "InboxScreen"
-    ```kotlin
-    data object InboxScreen : Screen {
-      data class State(
-        val emails: List<Email>,
-        val eventSink: (Event) -> Unit
-      ) : CircuitUiState
-      sealed class Event : CircuitUiEvent {
-        data class EmailClicked(val emailId: String) : Event()
-      }
-    }
-    ```
+```kotlin title="InboxScreen.kt" hl_lines="4 6-8"
+data object InboxScreen : Screen {
+  data class State(
+    val emails: List<Email>,
+    val eventSink: (Event) -> Unit
+  ) : CircuitUiState
+  sealed class Event : CircuitUiEvent {
+    data class EmailClicked(val emailId: String) : Event()
+  }
+}
+```
 
 Now that we have an event, let's emit it from our UI.
 
-=== "Inbox.kt"
-    ```kotlin
-    @Composable
-    fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
-      Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-          items(state.emails) { email ->
-            EmailItem(email) {
-              state.eventSink(InboxScreen.Event.EmailClicked(email.id))
-            }
-          }
+```kotlin title="Inbox.kt" hl_lines="6-8 15"
+@Composable
+fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
+  Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
+    LazyColumn(modifier = Modifier.padding(innerPadding)) {
+      items(state.emails) { email ->
+        EmailItem(email) {
+          state.eventSink(InboxScreen.Event.EmailClicked(email.id))
         }
       }
     }
+  }
+}
 
-    // Write one or use EmailItem from ui.kt
-    private fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit) {
-      // ...
-    }
-    ```
+// Write one or use EmailItem from ui.kt
+private fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit) {
+  // ...
+}
+```
 
 Finally, let's handle this event in our presenter.
 
-=== "InboxPresenter"
-    ```kotlin
-    class InboxPresenter(
-      private val navigator: Navigator,
-      private val emailRepository: EmailRepository
-    ) : Presenter<InboxScreen.State> {
-      @Composable
-      override fun present(): InboxScreen.State {
-        val emails = emailRepository.getEmails()
-        return InboxScreen.State(emails) { event ->
-          when (event) {
-            // Navigate to the detail screen when an email is clicked
-            is EmailClicked -> navigator.goTo(DetailScreen(event.emailId))
-          }
-        }
+```kotlin title="InboxPresenter.kt" hl_lines="8-13"
+class InboxPresenter(
+  private val navigator: Navigator,
+  private val emailRepository: EmailRepository
+) : Presenter<InboxScreen.State> {
+  @Composable
+  override fun present(): InboxScreen.State {
+    // ...
+    return InboxScreen.State(emails) { event ->
+      when (event) {
+        // Navigate to the detail screen when an email is clicked
+        is EmailClicked -> navigator.goTo(DetailScreen(event.emailId))
       }
     }
-    ```
+  }
+}
+```
 
 This demonstrates how we can navigate forward in our app and pass data with it. Let's see how we can navigate back.
 
@@ -512,7 +496,7 @@ This demonstrates how we can navigate forward in our app and pass data with it. 
 Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` is `Navigator.pop()`, which pops the back stack back to the previous screen. To use this, let's add a back button to our detail screen and wire it up to a `Navigator`.
 
 === "DetailScreen"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt" hl_lines="4 6-8"
     data class DetailScreen(val emailId: String) : Screen {
       data class State(
         val email: Email,
@@ -525,7 +509,7 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
     ```
 
 === "DetailContent"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt" hl_lines="8-12"
     @Composable
     fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
       Scaffold(
@@ -547,7 +531,7 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
     ```
 
 === "DetailPresenter"
-    ```kotlin
+    ```kotlin title="DetailScreen.kt" hl_lines="11"
     class DetailPresenter(
       private val screen: DetailScreen,
       private val navigator: Navigator,
@@ -555,7 +539,7 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
     ) : Presenter<DetailScreen.State> {
       @Composable
       override fun present(): DetailScreen.State {
-        val email = emailRepository.getEmail(screen.emailId)
+        // ...
         return DetailScreen.State(email) { event ->
           when (event) {
             DetailScreen.Event.BackClicked -> navigator.pop()

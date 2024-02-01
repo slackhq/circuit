@@ -111,7 +111,7 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
     ```
 
 
-For more complex UIs with dependencies, you can create a class that implements the `Ui` interface ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html)). This is rarely necessary though!
+For more complex UIs with dependencies, you can create a class that implements the `Ui` interface ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html)). This is rarely necessary though, and we won't use this in the tutorial.
 
 === "Inbox"
     ```kotlin

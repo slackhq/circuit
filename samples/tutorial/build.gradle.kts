@@ -49,19 +49,13 @@ kotlin {
         implementation(libs.material)
       }
     }
-    jvmMain {
-      dependencies {
-        implementation(compose.desktop.currentOs)
-      }
-    }
+    jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
 
     configureEach {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)
       compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
-        optIn.add(
-          "androidx.compose.material3.ExperimentalMaterial3Api"
-        )
+        optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
         }

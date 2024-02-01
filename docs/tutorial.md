@@ -100,9 +100,11 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
     ```kotlin
     @Composable
     fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
-      LazyColumn(modifier = modifier) {
-        items(state.emails) { email ->
-          EmailItem(email)
+      Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+          items(state.emails) { email ->
+            EmailItem(email)
+          }
         }
       }
     }
@@ -465,10 +467,12 @@ Now that we have an event, let's emit it from our UI.
     ```kotlin
     @Composable
     fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
-      LazyColumn(modifier = modifier) {
-        items(state.emails) { email ->
-          EmailItem(email) {
-            state.eventSink(InboxScreen.Event.EmailClicked(email.id))
+      Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+          items(state.emails) { email ->
+            EmailItem(email) {
+              state.eventSink(InboxScreen.Event.EmailClicked(email.id))
+            }
           }
         }
       }
@@ -524,10 +528,19 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
     ```kotlin
     @Composable
     fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
-      Column(modifier = modifier) {
-        IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
-          Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-        }
+      Scaffold(
+        modifier = modifier,
+        topBar = {
+          TopAppBar(
+            title = { Text(state.email.subject) },
+            navigationIcon = {
+              IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+              }
+            },
+          )
+        },
+      ) { innerPadding ->
         // Remaining detail UI...
       }
     }

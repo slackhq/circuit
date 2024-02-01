@@ -67,12 +67,11 @@ class DetailPresenter(
 
 @Composable
 fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
-  val subject by remember { derivedStateOf { state.email.subject } }
   Scaffold(
     modifier = modifier,
     topBar = {
       TopAppBar(
-        title = { Text(subject) },
+        title = { Text(state.email.subject) },
         navigationIcon = {
           IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
             Icon(Icons.Default.ArrowBack, contentDescription = "Back")

@@ -58,7 +58,7 @@ Let's start with a simple `Screen` that represents an inbox list:
 
 ## Design your state
 
-Next, let's define some state for our `InboxScreen`. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should [_stable_ or _immutable_](https://developer.android.com/jetpack/compose/performance/stability), and directly renderable by your UIs. As such, you should design them to be as simple as possible.
+Next, let's define some state for our `InboxScreen`. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should be [_stable_ or _immutable_](https://developer.android.com/jetpack/compose/performance/stability), and directly renderable by your UIs. As such, you should design them to be as simple as possible.
 
 Conventionally, this is written as a nested `State` class inside your `Screen` and _must_ extend `CircuitUiState`.
 

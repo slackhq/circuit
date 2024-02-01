@@ -53,6 +53,12 @@ public interface BackStack<R : Record> : Iterable<R> {
     while (topRecord?.let(predicate) == false) pop()
   }
 
+  /** TODO */
+  public fun saveState()
+
+  /** TODO */
+  public fun restoreState(screen: Screen): Boolean
+
   public interface Record {
     /**
      * A value that identifies this record uniquely, even if it shares the same [screen] with

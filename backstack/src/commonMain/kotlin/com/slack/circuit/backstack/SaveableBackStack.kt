@@ -38,6 +38,10 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   private val entryList = mutableStateListOf<Record>()
 
+  // TODO: make this lazy?
+  // TODO: make this map limited in size?
+  private val stateStore = mutableMapOf<Screen, List<Record>>()
+
   override val size: Int
     get() = entryList.size
 
@@ -59,6 +63,23 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   }
 
   override fun pop(): Record? = entryList.removeFirstOrNull()
+
+  override fun saveState() {
+    val rootScreen = entryList.last().screen
+    stateStore[rootScreen] = entryList.toList()
+  }
+
+  override fun restoreState(screen: Screen): Boolean {
+    val stored = stateStore[screen]
+    if (!stored.isNullOrEmpty()) {
+      // Add the store state into the entry list
+      entryList.addAll(stored)
+      // Clear the stored state
+      stateStore.remove(screen)
+      return true
+    }
+    return false
+  }
 
   public data class Record(
     override val screen: Screen,

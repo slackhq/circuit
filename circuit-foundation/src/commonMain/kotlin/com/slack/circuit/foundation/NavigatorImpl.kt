@@ -51,7 +51,7 @@ internal class NavigatorImpl(
   override fun peek(): Screen? = backstack.firstOrNull()?.screen
 
   override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
-    val currentStack = backstack.toList()
+    val currentStack = backstack.map(Record::screen)
 
     // Run this in a mutable snapshot (bit like a transaction)
     Snapshot.withMutableSnapshot {
@@ -66,8 +66,7 @@ internal class NavigatorImpl(
       }
     }
 
-    // The old impl return the list in reverse order, so we need to be consistent
-    return currentStack.map { it.screen }.asReversed()
+    return currentStack
   }
 
   override fun equals(other: Any?): Boolean {

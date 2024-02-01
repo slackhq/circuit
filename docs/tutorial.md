@@ -97,8 +97,8 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
     @Composable
     fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
       LazyColumn(modifier = modifier) {
-        items(state.emails.size) { index ->
-          EmailItem(state.emails[index])
+        items(state.emails) { email ->
+          EmailItem(email)
         }
       }
     }
@@ -431,8 +431,7 @@ Now that we have an event, let's emit it from our UI.
     @Composable
     fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
       LazyColumn(modifier = modifier) {
-        items(state.emails.size) { index ->
-          val email = state.emails[index]
+        items(state.emails) { email ->
           EmailItem(email) {
             state.eventSink(InboxScreen.Event.EmailClicked(email.id))
           }

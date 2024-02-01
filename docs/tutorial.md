@@ -38,7 +38,7 @@ See [setup docs](setup.md) for more information.
 
 ## Create a `Screen`
 
-The primary entry points in Circuit are `Screen`s. These are the navigational building blocks of your app. A `Screen` is a simple data class or data object that represents a unique location in your app. For example, a `Screen` could represent an inbox list, an email detail, or a settings screen.
+The primary entry points in Circuit are `Screen`s ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html)). These are the navigational building blocks of your app. A `Screen` is a simple data class or data object that represents a unique location in your app. For example, a `Screen` could represent an inbox list, an email detail, or a settings screen.
 
 Let's start with a simple `Screen` that represents an inbox list:
 
@@ -53,14 +53,14 @@ Let's start with a simple `Screen` that represents an inbox list:
     data object InboxScreen : Screen
     ```
 
-!!! note
+!!! tip
     `Screen` is `Parcelable` on Android. You should use the Parcelize plugin to annotate your screens with `@Parcelize`.
 
 ## Design your state
 
 Next, let's define some state for our `InboxScreen`. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should be [_stable_ or _immutable_](https://developer.android.com/jetpack/compose/performance/stability), and directly renderable by your UIs. As such, you should design them to be as simple as possible.
 
-Conventionally, this is written as a nested `State` class inside your `Screen` and _must_ extend `CircuitUiState`.
+Conventionally, this is written as a nested `State` class inside your `Screen` and _must_ extend `CircuitUiState` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html)).
 
 === "InboxScreen.kt"
     ```kotlin
@@ -110,9 +110,26 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
     }
     ```
 
+
+For more complex UIs with dependencies, you can create a class that implements the `Ui` interface ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html)). This is rarely necessary though!
+
+=== "Inbox"
+    ```kotlin
+    class InboxUi(...) : Ui<InboxScreen.State> {
+      @Composable
+      override fun Content(state: InboxScreen.State, modifier: Modifier) {
+        LazyColumn(modifier = modifier) {
+          items(state.emails) { email ->
+            EmailItem(email)
+          }
+        }
+      }
+    }
+    ```
+
 ## Implement your presenter
 
-Next, let's define a `Presenter` for our `InboxScreen`. Circuit presenters are responsible for computing and emitting state.
+Next, let's define a `Presenter` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html)) for our `InboxScreen`. Circuit presenters are responsible for computing and emitting state.
 
 === "InboxPresenter"
     ```kotlin
@@ -155,9 +172,23 @@ This is also a good opportunity to see where using compose in our presentation l
     }
     ```
 
+Analogous to `Ui`, you can also define simple/dependency-less presenters as just a top-level function.
+
+=== "InboxPresenter"
+    ```kotlin
+    @Composable
+    fun InboxPresenter(): InboxScreen.State {
+      val emails = ...
+      return InboxScreen.State(emails)
+    }
+    ```
+
+!!! tip
+    Generally, Circuit presenters are implemented as classes and Circuit UIs are implemented as top-level functions. You can mix and match as needed for a given use case. Under the hood, Circuit will wrap all top-level functions into a class for you.
+
 ## Wiring it up
 
-Now that we have a `Screen`, `State`, `Ui`, and `Presenter`, let's wire them up together. Circuit accomplishes this with the `Circuit` class, which is responsible for connecting screens to their corresponding presenters and UIs.
+Now that we have a `Screen`, `State`, `Ui`, and `Presenter`, let's wire them up together. Circuit accomplishes this with the `Circuit` class ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/index.html)), which is responsible for connecting screens to their corresponding presenters and UIs. These are created with a simple builder pattern.
 
 === "Circuit instance"
     ```kotlin
@@ -174,7 +205,7 @@ This instance should usually live on your application's DI graph.
 !!! note
     This is a simple example that uses the `addPresenter` and `addUi` functions. In a real app, you'd likely use a `Presenter.Factory` and `Ui.Factory` to create your presenters and UIs dynamically.
 
-Once you have this instance, you can plug it into `CircuitCompositionLocals` and be on your way. This is usually a one-time setup in your application at its primary entry point.
+Once you have this instance, you can plug it into `CircuitCompositionLocals` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html)) and be on your way. This is usually a one-time setup in your application at its primary entry point.
 
 === "Android"
     ```kotlin
@@ -230,7 +261,7 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` and
 
 ## `CircuitContent`
 
-`CircuitContent` is a simple composable that takes a `Screen` and renders it.
+`CircuitContent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-content.html)) is a simple composable that takes a `Screen` and renders it.
 
 === "main.kt"
     ```kotlin
@@ -245,7 +276,7 @@ This is the most basic way to render a `Screen`. These can be top-level UIs or n
 
 ## Adding navigation to our app
 
-An architecture isn't complete without navigation. Circuit provides a simple navigation API that's focused around a simple `BackStack` that is navigated via a `Navigator` interface. In most cases, you can use the built-in `SaveableBackStack` implementation, which is saved and restored in accordance with whatever the platform's `rememberSaveable` implementation is.
+An architecture isn't complete without navigation. Circuit provides a simple navigation API that's focused around a simple `BackStack` ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-back-stack/index.html)) that is navigated via a `Navigator` interface ([docs]()). In most cases, you can use the built-in `SaveableBackStack` implementation ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html)), which is saved and restored in accordance with whatever the platform's `rememberSaveable` implementation is.
 
 === "main.kt"
     ```kotlin
@@ -258,14 +289,14 @@ An architecture isn't complete without navigation. Circuit provides a simple nav
     }
     ```
 
-Once you have these two components created, you can pass them to an advanced version of `CircuitContent` that supports navigation called `NavigableCircuitContent`.
+Once you have these two components created, you can pass them to an advanced version of `CircuitContent` that supports navigation called `NavigableCircuitContent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-navigable-circuit-content.html)).
 
 === "main.kt"
     ```kotlin
     NavigableCircuitContent(navigator = navigator, backstack = backStack)
     ```
 
-This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens (`NavDecoration`) and fallback behavior with unavailable routes.
+This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens ([`NavDecoration`](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html)) and fallback behavior with unavailable routes.
 
 Like with `Circuit`, this is usually a one-time setup in your application at its primary entry point.
 
@@ -304,7 +335,7 @@ Now that we have navigation set up, let's add a detail screen to our app to navi
 Notice that this time we use a `data class` instead of a `data object`. This is because we want to be able to pass in an `emailId` to the screen. We'll use this to fetch the email from our data layer.
 
 !!! warning
-    You should keep `Screen` parameters as simple as possible, and derive any additional data you need from your data layer.
+    You should keep `Screen` parameters as simple as possible and derive any additional data you need from your data layer instead.
 
 Next, let's define a Presenter and UI for this screen.
 
@@ -350,7 +381,7 @@ Note that we're injecting the `DetailScreen` into our `Presenter` so we can get 
 
 Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.
 
-We can then wire these detail components to our `Circuit` instance.
+We can then wire these detail components to our `Circuit` instance too.
 
 === "Circuit instance"
     ```kotlin
@@ -409,7 +440,7 @@ This provides many benefits, see the [events](states-and-events.md) guide for mo
 
 Let's add an event to our inbox screen for when the user clicks on an email.
 
-Events must implement `CircuitUiEvent` and are usually modeled as a `sealed interface` hierarchy, where each subtype is a different event type.
+Events must implement `CircuitUiEvent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html)) and are usually modeled as a `sealed interface` hierarchy, where each subtype is a different event type.
 
 === "InboxScreen"
     ```kotlin
@@ -518,7 +549,7 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
     }
     ```
 
-On Android, `NavigableCircuitContent` automatically hooks into `BackHandler` to automatically pop on system back presses. On Desktop, it's recommended to wire the ESC key.
+On Android, `NavigableCircuitContent` automatically hooks into [BackHandler](https://developer.android.com/reference/kotlin/androidx/activity/compose/package-summary#BackHandler(kotlin.Boolean,kotlin.Function0)) to automatically pop on system back presses. On Desktop, it's recommended to wire the ESC key.
 
 ## Conclusion
 

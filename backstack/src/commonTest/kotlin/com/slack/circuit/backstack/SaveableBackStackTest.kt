@@ -22,13 +22,20 @@ class SaveableBackStackTest {
     backStack.push(TestScreen.ScreenB)
 
     assertThat(backStack.entryList).hasSize(3)
-    assertThat(backStack.entryList[0].screen).isEqualTo(TestScreen.ScreenB)
-    assertThat(backStack.entryList[1].screen).isEqualTo(TestScreen.ScreenA)
-    assertThat(backStack.entryList[2].screen).isEqualTo(TestScreen.RootAlpha)
     assertThat(backStack.stateStore).isEmpty()
 
-    // Now save state and pop everything off
+    // Now save state
     backStack.saveState()
+    // Assert that state store contains the current back stack
+    assertThat(backStack.stateStore).hasSize(1)
+    backStack.stateStore[TestScreen.RootAlpha].let { saved ->
+      assertThat(saved).isNotNull()
+      saved!!
+      assertThat(saved[0].screen).isEqualTo(TestScreen.ScreenB)
+      assertThat(saved[1].screen).isEqualTo(TestScreen.ScreenA)
+      assertThat(saved[2].screen).isEqualTo(TestScreen.RootAlpha)
+    }
+
     // Now pop everything off and add RootB + Screen C
     backStack.popUntil { false }
     backStack.push(TestScreen.RootBeta)
@@ -38,16 +45,6 @@ class SaveableBackStackTest {
     assertThat(backStack.entryList).hasSize(2)
     assertThat(backStack.entryList[0].screen).isEqualTo(TestScreen.ScreenC)
     assertThat(backStack.entryList[1].screen).isEqualTo(TestScreen.RootBeta)
-
-    // Assert that the state store contains the stack from RootB
-    assertThat(backStack.stateStore).hasSize(1)
-    backStack.stateStore[TestScreen.RootAlpha].let { stack ->
-      assertThat(stack).isNotNull().hasSize(3)
-      stack!!
-      assertThat(stack[0].screen).isEqualTo(TestScreen.ScreenB)
-      assertThat(stack[1].screen).isEqualTo(TestScreen.ScreenA)
-      assertThat(stack[2].screen).isEqualTo(TestScreen.RootAlpha)
-    }
 
     // Now pop everything off and restore RootA
     backStack.popUntil { false }

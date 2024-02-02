@@ -18,8 +18,7 @@ concurrency:
 
 jobs:
   build:
-    # Necessary to run full tests to cover iOS too
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,15 +30,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          ruby-version: '3.2.2'
-
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '15.2'
 
       - name: Setup Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -53,7 +43,6 @@ jobs:
           ./gradlew --continue --no-configuration-cache \
               check \
               :samples:star:apk:assembleDebug \
-              :samples:counter:linkReleaseFrameworkIosX64 \
               detektMain \
               detektTest \
               assembleAndroidTest
@@ -63,14 +52,6 @@ jobs:
         run: |
           ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
 
-      - run: brew install swiftlint
-
-      - name: Run lint on iOS samples
-        run: bundle exec fastlane ios lint
-
-      - name: Build iOS samples
-        run: bundle exec fastlane ios build
-
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -78,6 +59,12 @@ jobs:
         env:
           EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
         run: ./gradlew testReleaseWithEmulatorWtf
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm        
 
       # Forks cannot run emulator.wtf tests due to not being able to use repo secrets, so for them
       # we run the tests via the android-emulator-runner action instead
@@ -105,9 +92,49 @@ jobs:
           path: |
             **/build/reports/**
 
-      - name: Publish snapshot (main branch only)
-        if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
-        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache
+  build-ios:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+
+      - name: Install JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: '3.2.2'
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.2'
+
+      - name: Setup Gradle cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
+
+      - run: brew install swiftlint
+
+      - name: Run lint on iOS samples
+        run: bundle exec fastlane ios lint
+
+      - name: Run iOS Simulator tests
+        id: gradle-ios-tests
+        run: |
+          ./gradlew --continue --no-configuration-cache \
+              iosSimulatorArm64Test
+
+      - name: Build iOS samples
+        run: bundle exec fastlane ios build
 
   snapshots:
     runs-on: ubuntu-latest
@@ -142,3 +169,27 @@ jobs:
           path: |
             **/build/reports/**
             **/src/test/snapshots/**/*_compare.png
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build, build-ios, snapshots]
+    if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Gradle cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: false
+
+      - name: Publish snapshot (main branch only)
+        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache

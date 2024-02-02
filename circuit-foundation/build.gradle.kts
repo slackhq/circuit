@@ -71,7 +71,10 @@ kotlin {
       }
     val jvmTest by getting {
       dependsOn(commonJvmTest)
-      dependencies { implementation(compose.desktop.currentOs) }
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(libs.picnic)
+      }
     }
     val androidUnitTest by getting {
       dependsOn(commonJvmTest)

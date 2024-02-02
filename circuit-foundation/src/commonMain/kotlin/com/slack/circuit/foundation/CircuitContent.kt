@@ -44,8 +44,12 @@ public fun CircuitContent(
           onNavEvent(NavEvent.GoTo(screen))
         }
 
-        override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot))
+        override fun resetRoot(
+          newRoot: Screen,
+          saveState: Boolean,
+          restoreState: Boolean,
+        ): List<Screen> {
+          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
           return emptyList()
         }
 
@@ -54,9 +58,9 @@ public fun CircuitContent(
           return null
         }
 
-        override fun peek(): Screen {
-          return screen
-        }
+        override fun peek(): Screen = screen
+
+        override fun peekBackStack(): List<Screen> = listOf(screen)
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

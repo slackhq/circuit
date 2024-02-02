@@ -81,12 +81,12 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
     return delegate.pop()
   }
 
-  override fun peek(): Screen? {
-    return delegate.peek()
-  }
+  override fun peek(): Screen? = delegate.peek()
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun peekBackStack(): List<Screen> = delegate.peekBackStack()
+
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     onNavEvent()
-    return delegate.resetRoot(newRoot)
+    return delegate.resetRoot(newRoot, saveState, restoreState)
   }
 }

@@ -28,5 +28,9 @@ public sealed interface NavEvent : CircuitUiEvent {
   public data class GoTo(val screen: Screen) : NavEvent
 
   /** Corresponds to [Navigator.resetRoot]. */
-  public data class ResetRoot(val newRoot: Screen) : NavEvent
+  public data class ResetRoot(
+    val newRoot: Screen,
+    val saveState: Boolean,
+    val restoreState: Boolean,
+  ) : NavEvent
 }

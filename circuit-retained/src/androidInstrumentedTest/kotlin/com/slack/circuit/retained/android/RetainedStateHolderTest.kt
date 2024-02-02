@@ -47,7 +47,7 @@ class RetainedStateHolderTest {
       around(composeTestRule)
     }
 
-  private val restorationTester = StateRestorationTester(composeTestRule)
+  private val restorationTester = RetainedStateRestorationTester(composeTestRule)
 
   @Test
   fun stateIsRestoredWhenGoBackToScreen1() {
@@ -108,7 +108,7 @@ class RetainedStateHolderTest {
       restorableNumber = -1
     }
 
-    restorationTester.emulateSavedInstanceStateRestore()
+    restorationTester.emulateRetainedInstanceStateRestore()
 
     composeTestRule.runOnIdle {
       assertThat(number).isEqualTo(2)
@@ -142,7 +142,7 @@ class RetainedStateHolderTest {
       restorableNumberOnScreen2 = -1
     }
 
-    restorationTester.emulateSavedInstanceStateRestore()
+    restorationTester.emulateRetainedInstanceStateRestore()
 
     composeTestRule.runOnIdle {
       assertThat(numberOnScreen2).isEqualTo(2)
@@ -181,7 +181,7 @@ class RetainedStateHolderTest {
       restorableNumberOnScreen1 = -1
     }
 
-    restorationTester.emulateSavedInstanceStateRestore()
+    restorationTester.emulateRetainedInstanceStateRestore()
 
     // switch back to screen1
     composeTestRule.runOnIdle { screen = Screens.Screen1 }

@@ -101,6 +101,7 @@ allprojects {
         "**/Remove.kt",
         "**/Pets.kt",
         "**/RetainedStateHolder*.kt",
+        "**/RetainedStateRestorationTester.kt",
       )
     }
   }

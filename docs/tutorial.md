@@ -292,7 +292,7 @@ Once you have these two components created, you can pass them to an advanced ver
 NavigableCircuitContent(navigator = navigator, backstack = backStack)
 ```
 
-This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens ([`NavDecoration`](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html)) and fallback behavior with unavailable routes.
+This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens ([`NavDecoration`](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html)) and fallback behavior with `Circuit.Builder.onUnavailableRoute` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/on-unavailable-content.html)).
 
 Like with `Circuit`, this is usually a one-time setup in your application at its primary entry point.
 

@@ -68,9 +68,9 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   override fun pop(result: PopResult?): Record? {
     val popped = entryList.removeFirstOrNull()
-    result?.let {
-      // Send the pending result to our new top record
-      topRecord?.sendResult(it)
+    if (result != null) {
+      // Send the pending result to our new top record, but only if it's expecting one
+      topRecord?.apply { if (expectingResult()) sendResult(result) }
     }
     return popped
   }
@@ -93,6 +93,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
       Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private var resultKey: String? = null
+
+    internal fun expectingResult(): Boolean = resultKey != null
 
     internal fun prepareForResult(key: String) {
       resultKey = key

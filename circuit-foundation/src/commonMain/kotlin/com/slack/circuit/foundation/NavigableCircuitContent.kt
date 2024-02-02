@@ -3,7 +3,6 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
@@ -39,7 +38,6 @@ import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
-import kotlin.math.sign
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -219,9 +217,19 @@ public object NavigatorDefaults {
   // Mirrors the forward and backward transitions of activities in Android 34
   public object DefaultDecoration : NavDecoration {
 
-    private val forward: ContentTransform = computeTransition(1)
+    /**
+     * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
+     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+     * time.
+     */
+    public val forward: ContentTransform by lazy { computeTransition(1) }
 
-    private val backward: ContentTransform = computeTransition(-1)
+    /**
+     * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
+     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+     * time.
+     */
+    public val backward: ContentTransform by lazy { computeTransition(-1) }
 
     private fun computeTransition(sign: Int): ContentTransform {
       val enterTransition =
@@ -260,21 +268,6 @@ public object NavigatorDefaults {
       return enterTransition togetherWith exitTransition
     }
 
-    private fun AnimatedContentTransitionScope<*>.transitionFor(
-      diff: Int,
-      sameRoot: Boolean,
-    ): ContentTransform {
-      return when {
-        sameRoot && diff > 0 -> forward
-        sameRoot && diff < 0 -> backward
-        else -> fadeIn() togetherWith fadeOut()
-      }.using(
-        // Disable clipping since the faded slide-in/out should
-        // be displayed out of bounds.
-        SizeTransform(clip = false)
-      )
-    }
-
     @Composable
     override fun <T> DecoratedContent(
       args: ImmutableList<T>,
@@ -289,9 +282,17 @@ public object NavigatorDefaults {
           // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
           // the transitionSpec recomposing. The states are available as `targetState` and
           // `initialState`
-          transitionFor(
-            diff = targetState.size - initialState.size,
-            sameRoot = targetState.lastOrNull() == initialState.lastOrNull(),
+          val diff = targetState.size - initialState.size
+          val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
+
+          when {
+            sameRoot && diff > 0 -> forward
+            sameRoot && diff < 0 -> backward
+            else -> fadeIn() togetherWith fadeOut()
+          }.using(
+            // Disable clipping since the faded slide-in/out should
+            // be displayed out of bounds.
+            SizeTransform(clip = false)
           )
         },
       ) {

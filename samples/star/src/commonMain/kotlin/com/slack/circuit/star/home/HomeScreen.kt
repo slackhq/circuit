@@ -28,6 +28,7 @@ import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.foundation.rememberPresenter
 import com.slack.circuit.foundation.rememberUi
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -88,9 +89,9 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       }
     },
   ) { paddingValues ->
-    val saveableStateHolder = rememberSaveableStateHolder()
+    val saveableStateHolder = rememberRetainedStateHolder()
     val currentScreen = state.navItems[state.selectedIndex].screen
-    saveableStateHolder.SaveableStateProvider(currentScreen) {
+    saveableStateHolder.RetainedStateProvider(currentScreen) {
       val circuit = requireNotNull(LocalCircuit.current)
       val ui = rememberUi(currentScreen, factory = circuit::ui)
       val presenter =

@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -29,6 +30,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,6 +57,30 @@ class NavResultTest {
   //  - Preserved on config changes
   //  - ???
 
+  private fun ComposeContentTestRule.goToNext(count: AtomicInteger) {
+    with(onNodeWithTag(TAG_TEXT)) {
+      performTextClearance()
+      performTextInput(count.toString())
+    }
+    onNodeWithTag(TAG_GO_NEXT).performClick()
+    with(onNodeWithTag(TAG_TEXT)) {
+      assertTextEquals(count.toString())
+      performTextClearance()
+      count.incrementAndGet()
+      performTextInput(count.toString())
+    }
+  }
+
+  private fun ComposeContentTestRule.popBack(count: AtomicInteger) {
+    with(onNodeWithTag(TAG_TEXT)) {
+      performTextClearance()
+      count.incrementAndGet()
+      performTextInput(count.toString())
+    }
+    onNodeWithTag(TAG_POP).performClick()
+    with(onNodeWithTag(TAG_TEXT)) { assertTextEquals(count.toString()) }
+  }
+
   @Test
   fun simplePushAndPop() {
     composeTestRule.run {
@@ -72,31 +98,11 @@ class NavResultTest {
 
       // Push 10 screens up, incrementing the count and passing on its updated value each time
       // Then pop 10 screens down, decrementing the count and passing on its updated value each time
-      var count = 0
+      // Then do it one more time to make sure we can re-launch from the same screen
+      val count = AtomicInteger()
       onNodeWithTag(TAG_TEXT).assertTextEquals("Initial")
-      repeat(10) {
-        with(onNodeWithTag(TAG_TEXT)) {
-          performTextClearance()
-          performTextInput(count.toString())
-        }
-        onNodeWithTag(TAG_GO_NEXT).performClick()
-        with(onNodeWithTag(TAG_TEXT)) {
-          assertTextEquals(count.toString())
-          performTextClearance()
-          count++
-          performTextInput(count.toString())
-        }
-      }
-      repeat(10) {
-        println("Popping $count, iteration $it")
-        with(onNodeWithTag(TAG_TEXT)) {
-          performTextClearance()
-          count++
-          performTextInput(count.toString())
-        }
-        onNodeWithTag(TAG_POP).performClick()
-        with(onNodeWithTag(TAG_TEXT)) { assertTextEquals(count.toString()) }
-      }
+      repeat(10) { goToNext(count) }
+      repeat(10) { popBack(count) }
     }
   }
 }

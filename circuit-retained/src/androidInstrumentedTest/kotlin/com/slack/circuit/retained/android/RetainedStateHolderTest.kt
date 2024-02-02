@@ -25,24 +25,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.rules.RuleChain
 
 // TODO adapt for retained more
-@RunWith(AndroidJUnit4::class)
 class RetainedStateHolderTest {
 
-  @get:Rule val rule = createAndroidComposeRule<Activity>()
+  private val composeTestRule = createAndroidComposeRule<Activity>()
 
-  private val restorationTester = StateRestorationTester(rule)
+  @get:Rule
+  val rule =
+    RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
+      around(composeTestRule)
+    }
+
+  private val restorationTester = StateRestorationTester(composeTestRule)
 
   @Test
   fun stateIsRestoredWhenGoBackToScreen1() {
@@ -63,21 +68,21 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(numberOnScreen1).isEqualTo(0)
       assertThat(restorableNumberOnScreen1).isEqualTo(1)
       screen = Screens.Screen2
     }
 
     // wait for the screen switch to apply
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       numberOnScreen1 = -1
       restorableNumberOnScreen1 = -1
       // switch back to screen1
       screen = Screens.Screen1
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(numberOnScreen1).isEqualTo(2)
       assertThat(restorableNumberOnScreen1).isEqualTo(1)
     }
@@ -96,7 +101,7 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(number).isEqualTo(0)
       assertThat(restorableNumber).isEqualTo(1)
       number = -1
@@ -105,7 +110,7 @@ class RetainedStateHolderTest {
 
     restorationTester.emulateSavedInstanceStateRestore()
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(number).isEqualTo(2)
       assertThat(restorableNumber).isEqualTo(1)
     }
@@ -127,10 +132,10 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle { screen = Screens.Screen2 }
+    composeTestRule.runOnIdle { screen = Screens.Screen2 }
 
     // wait for the screen switch to apply
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(numberOnScreen2).isEqualTo(0)
       assertThat(restorableNumberOnScreen2).isEqualTo(1)
       numberOnScreen2 = -1
@@ -139,7 +144,7 @@ class RetainedStateHolderTest {
 
     restorationTester.emulateSavedInstanceStateRestore()
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(numberOnScreen2).isEqualTo(2)
       assertThat(restorableNumberOnScreen2).isEqualTo(1)
     }
@@ -164,14 +169,14 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(numberOnScreen1).isEqualTo(0)
       assertThat(restorableNumberOnScreen1).isEqualTo(1)
       screen = Screens.Screen2
     }
 
     // wait for the screen switch to apply
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       numberOnScreen1 = -1
       restorableNumberOnScreen1 = -1
     }
@@ -179,9 +184,9 @@ class RetainedStateHolderTest {
     restorationTester.emulateSavedInstanceStateRestore()
 
     // switch back to screen1
-    rule.runOnIdle { screen = Screens.Screen1 }
+    composeTestRule.runOnIdle { screen = Screens.Screen1 }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(numberOnScreen1).isEqualTo(2)
       assertThat(restorableNumberOnScreen1).isEqualTo(1)
     }
@@ -206,19 +211,19 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(restorableNumberOnScreen1).isEqualTo(0)
       restorableNumberOnScreen1 = -1
       restorableStateHolder!!.removeState(Screens.Screen1)
       screen = Screens.Screen2
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       // switch back to screen1
       screen = Screens.Screen1
     }
 
-    rule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
+    composeTestRule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
   }
 
   @Test
@@ -240,19 +245,19 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(restorableNumberOnScreen1).isEqualTo(0)
       restorableNumberOnScreen1 = -1
       screen = Screens.Screen2
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       // switch back to screen1
       restorableStateHolder!!.removeState(Screens.Screen1)
       screen = Screens.Screen1
     }
 
-    rule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
+    composeTestRule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
   }
 
   @Test
@@ -260,7 +265,7 @@ class RetainedStateHolderTest {
     var showFirstPage by mutableStateOf(true)
     var firstPageState: MutableState<Int>? = null
 
-    rule.setContent {
+    composeTestRule.setContent {
       val holder = rememberRetainedStateHolder()
       holder.RetainedStateProvider(showFirstPage) {
         if (showFirstPage) {
@@ -269,7 +274,7 @@ class RetainedStateHolderTest {
       }
     }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       assertThat(firstPageState!!.value).isEqualTo(0)
       // change the value, so we can assert this change will be restored
       firstPageState!!.value = 1
@@ -277,12 +282,12 @@ class RetainedStateHolderTest {
       showFirstPage = false
     }
 
-    rule.runOnIdle {
-      rule.activity.doFakeSave()
+    composeTestRule.runOnIdle {
+      composeTestRule.activity.doFakeSave()
       showFirstPage = true
     }
 
-    rule.runOnIdle { assertThat(firstPageState!!.value).isEqualTo(1) }
+    composeTestRule.runOnIdle { assertThat(firstPageState!!.value).isEqualTo(1) }
   }
 
   @Test
@@ -290,16 +295,16 @@ class RetainedStateHolderTest {
     var showFirstPage by mutableStateOf(true)
     val registry = RetainedStateRegistry(emptyMap())
 
-    rule.setContent {
+    composeTestRule.setContent {
       CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
         val holder = rememberRetainedStateHolder()
         holder.RetainedStateProvider(showFirstPage) {}
       }
     }
 
-    rule.runOnIdle { showFirstPage = false }
+    composeTestRule.runOnIdle { showFirstPage = false }
 
-    rule.runOnIdle {
+    composeTestRule.runOnIdle {
       val savedData = registry.saveAll()
       assertThat(savedData).isEqualTo(emptyMap<String, List<Any?>>())
     }

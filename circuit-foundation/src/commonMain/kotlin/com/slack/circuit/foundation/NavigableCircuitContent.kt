@@ -223,16 +223,14 @@ public object NavigatorDefaults {
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
      * time.
      */
-    @InternalCircuitApi
-    public val forward: ContentTransform by lazy { computeTransition(1) }
+    @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
 
     /**
      * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
      * time.
      */
-    @InternalCircuitApi
-    public val backward: ContentTransform by lazy { computeTransition(-1) }
+    @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
 
     private fun computeTransition(sign: Int): ContentTransform {
       val enterTransition =

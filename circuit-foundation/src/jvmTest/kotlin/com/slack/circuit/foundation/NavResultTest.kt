@@ -101,8 +101,10 @@ class NavResultTest {
       // Then do it one more time to make sure we can re-launch from the same screen
       val count = AtomicInteger()
       onNodeWithTag(TAG_TEXT).assertTextEquals("Initial")
-      repeat(10) { goToNext(count) }
-      repeat(10) { popBack(count) }
+      repeat(2) {
+        repeat(10) { goToNext(count) }
+        repeat(10) { popBack(count) }
+      }
     }
   }
 }

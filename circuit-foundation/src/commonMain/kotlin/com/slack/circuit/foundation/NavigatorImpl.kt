@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
@@ -52,14 +53,25 @@ internal class NavigatorImpl(
 
   override fun peek(): Screen? = backStack.firstOrNull()?.screen
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
-    return buildList(backStack.size) {
-      backStack.popUntil { record ->
-        add(record.screen)
-        false
+  override fun peekBackStack(): List<Screen> = backStack.map { it.screen }
+
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+    val currentStack = backStack.map(Record::screen)
+
+    // Run this in a mutable snapshot (bit like a transaction)
+    Snapshot.withMutableSnapshot {
+      if (saveState) backStack.saveState()
+      // Pop everything off the back stack
+      backStack.popUntil { false }
+
+      // If we're not restoring state, or the restore didn't work, we need to push the new root
+      // onto the stack
+      if (!restoreState || !backStack.restoreState(newRoot)) {
+        backStack.push(newRoot)
       }
-      backStack.push(newRoot)
     }
+
+    return currentStack
   }
 
   override fun equals(other: Any?): Boolean {

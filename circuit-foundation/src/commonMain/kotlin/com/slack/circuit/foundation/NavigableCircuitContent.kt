@@ -3,10 +3,15 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -17,10 +22,9 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
@@ -33,6 +37,7 @@ import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -205,12 +210,67 @@ private val Record.registryKey: String
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {
 
-  private const val FIVE_PERCENT = 0.05f
-  private val SlightlyRight = { width: Int -> (width * FIVE_PERCENT).toInt() }
-  private val SlightlyLeft = { width: Int -> 0 - (width * FIVE_PERCENT).toInt() }
+  private val FastOutExtraSlowInEasing = CubicBezierEasing(0.208333f, 0.82f, 0.25f, 1f)
+  private val AccelerateEasing = CubicBezierEasing(0.3f, 0f, 1f, 1f)
+  private const val DEBUG_MULTIPLIER = 1
+  private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
+  private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
   /** The default [NavDecoration] used in navigation. */
+  // Mirrors the forward and backward transitions of activities in Android 34
   public object DefaultDecoration : NavDecoration {
+
+    /**
+     * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
+     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+     * time.
+     */
+    @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
+
+    /**
+     * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
+     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+     * time.
+     */
+    @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
+
+    private fun computeTransition(sign: Int): ContentTransform {
+      val enterTransition =
+        fadeIn(
+          animationSpec =
+            tween(durationMillis = SHORT_DURATION, delayMillis = 50, easing = LinearEasing)
+        ) +
+          slideInHorizontally(
+            initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+          ) +
+          expandHorizontally(
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+            initialWidth = { (it * .9f).toInt() },
+            expandFrom = Alignment.Start,
+          )
+
+      val exitTransition =
+        fadeOut(
+          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = AccelerateEasing)
+        ) +
+          slideOutHorizontally(
+            targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+          ) +
+          shrinkHorizontally(
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+            targetWidth = { (it * .9f).toInt() },
+            shrinkTowards = Alignment.End,
+          )
+
+      return enterTransition togetherWith exitTransition
+    }
+
     @Composable
     override fun <T> DecoratedContent(
       args: ImmutableList<T>,
@@ -218,28 +278,21 @@ public object NavigatorDefaults {
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {
-      // Remember the previous stack depth so we know if the navigation is going "back".
-      val prevStackDepth = rememberSaveable { mutableStateOf(backStackDepth) }
-      val diff = backStackDepth - prevStackDepth.value
-      prevStackDepth.value = backStackDepth
+      @OptIn(InternalCircuitApi::class)
       AnimatedContent(
         targetState = args,
         modifier = modifier,
         transitionSpec = {
-          // Mirror the forward and backward transitions of activities in Android 33
+          // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+          // the transitionSpec recomposing. The states are available as `targetState` and
+          // `initialState`
+          val diff = targetState.size - initialState.size
+          val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
+
           when {
-            diff > 0 -> {
-              (slideInHorizontally(tween(), SlightlyRight) + fadeIn()) togetherWith
-                slideOutHorizontally(tween(), SlightlyLeft) + fadeOut()
-            }
-            diff < 0 -> {
-              (slideInHorizontally(tween(), SlightlyLeft) + fadeIn()) togetherWith
-                slideOutHorizontally(tween(), SlightlyRight) + fadeOut()
-            }
-            else -> {
-              // Crossfade if there was no diff
-              fadeIn() togetherWith fadeOut()
-            }
+            sameRoot && diff > 0 -> forward
+            sameRoot && diff < 0 -> backward
+            else -> fadeIn() togetherWith fadeOut()
           }.using(
             // Disable clipping since the faded slide-in/out should
             // be displayed out of bounds.

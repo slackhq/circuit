@@ -138,6 +138,9 @@ class ProvidedValuesLifetimeTest {
               else -> error("Can't navigate from $screen")
             }
           }
+          else -> {
+            /* no-op */
+          }
         }
       }
     }

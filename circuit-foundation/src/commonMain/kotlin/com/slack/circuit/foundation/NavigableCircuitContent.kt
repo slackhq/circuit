@@ -22,10 +22,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
@@ -262,10 +260,13 @@ public object NavigatorDefaults {
       return enterTransition togetherWith exitTransition
     }
 
-    private fun AnimatedContentTransitionScope<*>.transitionFor(diff: Int): ContentTransform {
+    private fun AnimatedContentTransitionScope<*>.transitionFor(
+      diff: Int,
+      sameRoot: Boolean,
+    ): ContentTransform {
       return when {
-        diff > 0 -> forward
-        diff < 0 -> backward
+        sameRoot && diff > 0 -> forward
+        sameRoot && diff < 0 -> backward
         else -> fadeIn() togetherWith fadeOut()
       }.using(
         // Disable clipping since the faded slide-in/out should
@@ -281,14 +282,18 @@ public object NavigatorDefaults {
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {
-      // Remember the previous stack depth so we know if the navigation is going "back".
-      val prevStackDepth = rememberSaveable { mutableStateOf(backStackDepth) }
-      val diff = backStackDepth - prevStackDepth.value
-      prevStackDepth.value = backStackDepth
       AnimatedContent(
         targetState = args,
         modifier = modifier,
-        transitionSpec = { transitionFor(diff) },
+        transitionSpec = {
+          // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+          // the transitionSpec recomposing. The states are available as `targetState` and
+          // `initialState`
+          transitionFor(
+            diff = targetState.size - initialState.size,
+            sameRoot = targetState.lastOrNull() == initialState.lastOrNull(),
+          )
+        },
       ) {
         content(it.first())
       }

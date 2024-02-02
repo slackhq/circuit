@@ -7,6 +7,7 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
   alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
 kotlin {
@@ -44,7 +45,13 @@ kotlin {
         api(libs.androidx.compose.runtime)
       }
     }
-    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
+    val commonTest by getting {
+      dependencies {
+        implementation(libs.kotlin.test)
+        implementation(libs.testing.assertk)
+        implementation(projects.internalTestUtils)
+      }
+    }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependencies {

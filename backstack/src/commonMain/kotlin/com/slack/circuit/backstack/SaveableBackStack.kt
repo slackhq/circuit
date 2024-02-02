@@ -36,11 +36,9 @@ public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): Saveab
  */
 public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
-  private val entryList = mutableStateListOf<Record>()
-
-  // TODO: make this lazy?
-  // TODO: make this map limited in size?
-  private val stateStore = mutableMapOf<Screen, List<Record>>()
+  // Both visible for testing
+  internal val entryList = mutableStateListOf<Record>()
+  internal val stateStore = mutableMapOf<Screen, List<Record>>()
 
   override val size: Int
     get() = entryList.size
@@ -110,12 +108,30 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   internal companion object {
     val Saver =
-      Saver<SaveableBackStack, List<Any>>(
-        save = { value -> value.entryList.map { with(Record.Saver) { save(it)!! } } },
-        restore = { list ->
+      Saver<SaveableBackStack, List<List<Any>>>(
+        save = { value ->
+          buildList {
+            with(Record.Saver) {
+              // First list is the entry list
+              add(value.entryList.mapNotNull { save(it) })
+              // Now add any stacks from the state store
+              value.stateStore.values.forEach { records -> add(records.mapNotNull { save(it) }) }
+            }
+          }
+        },
+        restore = { value ->
+          @Suppress("UNCHECKED_CAST")
           SaveableBackStack().also { backStack ->
-            list.mapTo(backStack.entryList) {
-              @Suppress("UNCHECKED_CAST") Record.Saver.restore(it as List<Any>)!!
+            value.forEachIndexed { index, list ->
+              if (index == 0) {
+                // The first list is the entry list
+                list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
+              } else {
+                // Any list after that is from the state store
+                val records = list.mapNotNull { Record.Saver.restore(it as List<Any>) }
+                // The key is always the root screen (i.e. last item)
+                backStack.stateStore[records.last().screen] = records
+              }
             }
           }
         },

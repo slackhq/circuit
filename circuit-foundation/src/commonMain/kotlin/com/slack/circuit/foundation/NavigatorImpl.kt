@@ -50,6 +50,8 @@ internal class NavigatorImpl(
 
   override fun peek(): Screen? = backstack.firstOrNull()?.screen
 
+  override fun peekBackStack(): List<Screen> = backstack.map { it.screen }
+
   override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     val currentStack = backstack.map(Record::screen)
 

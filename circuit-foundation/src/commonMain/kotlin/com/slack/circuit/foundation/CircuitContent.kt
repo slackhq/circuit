@@ -58,9 +58,9 @@ public fun CircuitContent(
           return null
         }
 
-        override fun peek(): Screen {
-          return screen
-        }
+        override fun peek(): Screen = screen
+
+        override fun peekBackStack(): List<Screen> = listOf(screen)
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

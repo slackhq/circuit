@@ -38,7 +38,11 @@ public class FakeNavigator : Navigator {
   }
 
   override fun peek(): Screen? {
-    error("peek() is not supported in FakeNavigator!")
+    error("peek() is not supported in FakeNavigator")
+  }
+
+  override fun peekBackStack(): List<Screen> {
+    error("peekBackStack() is not supported in FakeNavigator")
   }
 
   override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {

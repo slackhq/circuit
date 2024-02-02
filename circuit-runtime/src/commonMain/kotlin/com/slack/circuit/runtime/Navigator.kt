@@ -15,6 +15,9 @@ public interface Navigator {
   /** Returns current top most screen of backstack, or null if backstack is empty. */
   public fun peek(): Screen?
 
+  /** Returns the current back stack. */
+  public fun peekBackStack(): List<Screen>
+
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
    *
@@ -75,12 +78,36 @@ public interface Navigator {
 
     override fun peek(): Screen? = null
 
+    override fun peekBackStack(): List<Screen> = emptyList()
+
     override fun resetRoot(
       newRoot: Screen,
       saveState: Boolean,
       restoreState: Boolean,
     ): List<Screen> = emptyList()
   }
+}
+
+/**
+ * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
+ *
+ * This is useful in preventing the user from returning to a completed workflow, such as a tutorial,
+ * wizard, or authentication flow.
+ *
+ * This version of the function provides easy to lambdas for [saveState] and [restoreState] allowing
+ * computation of the values based on the current root screen.
+ */
+public inline fun Navigator.resetRoot(
+  newRoot: Screen,
+  saveState: (currentRoot: Screen?) -> Boolean = { false },
+  restoreState: (currentRoot: Screen?) -> Boolean = { false },
+): List<Screen> {
+  val root = peekBackStack().lastOrNull()
+  return resetRoot(
+    newRoot = newRoot,
+    saveState = saveState(root),
+    restoreState = restoreState(root),
+  )
 }
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */

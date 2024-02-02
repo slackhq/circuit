@@ -28,8 +28,12 @@ public fun Navigator.Companion.navEventNavigator(
       onNavEvent(NavEvent.GoTo(screen))
     }
 
-    override fun resetRoot(newRoot: Screen): List<Screen> {
-      onNavEvent(NavEvent.ResetRoot(newRoot))
+    override fun resetRoot(
+      newRoot: Screen,
+      saveState: Boolean,
+      restoreState: Boolean,
+    ): List<Screen> {
+      onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
       return emptyList()
     }
 
@@ -38,9 +42,9 @@ public fun Navigator.Companion.navEventNavigator(
       return null
     }
 
-    override fun peek(): Screen {
-      return screen
-    }
+    override fun peek(): Screen = screen
+
+    override fun peekBackStack(): List<Screen> = listOf(screen)
   }
 }
 
@@ -53,5 +57,9 @@ public sealed interface NavEvent : CircuitUiEvent {
   public data class GoTo(val screen: Screen) : NavEvent
 
   /** Corresponds to [Navigator.resetRoot]. */
-  public data class ResetRoot(val newRoot: Screen) : NavEvent
+  public data class ResetRoot(
+    val newRoot: Screen,
+    val saveState: Boolean,
+    val restoreState: Boolean,
+  ) : NavEvent
 }

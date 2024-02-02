@@ -5,7 +5,6 @@ package com.slack.circuitx.gesturenavigation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -120,9 +119,13 @@ private class IosGestureNavigationDecoration(
           }
       }
 
-      val transition = updateTransition(targetState = current, label = "GestureNavDecoration")
+      val transition =
+        updateTransition(
+          targetState = GestureNavTransitionHolder(current, backStackDepth, args.last()),
+          label = "GestureNavDecoration",
+        )
 
-      if (previous != null && !transition.isStateBeingAnimated(previous)) {
+      if (previous != null && !transition.isStateBeingAnimated { it.record == previous }) {
         // We display the 'previous' item in the back stack for when the user performs a gesture
         // to go back.
         // We only display it here if the transition is not running. When the transition is
@@ -154,9 +157,12 @@ private class IosGestureNavigationDecoration(
 
       transition.AnimatedContent(
         transitionSpec = {
+          val diff = targetState.backStackDepth - initialState.backStackDepth
+          val sameRoot = targetState.rootRecord == initialState.rootRecord
+
           when {
             // adding to back stack
-            backStackDepth > prevStackDepth -> {
+            sameRoot && diff > 0 -> {
               slideInHorizontally(initialOffsetX = End)
                 .togetherWith(
                   slideOutHorizontally { width ->
@@ -166,7 +172,7 @@ private class IosGestureNavigationDecoration(
             }
 
             // come back from back stack
-            backStackDepth < prevStackDepth -> {
+            sameRoot && diff < 0 -> {
               if (offsetWhenPopped != 0f) {
                 // If the record change was caused by a swipe gesture, let's
                 // jump cut
@@ -185,13 +191,13 @@ private class IosGestureNavigationDecoration(
           }
         },
         modifier = modifier,
-      ) { record ->
+      ) { holder ->
         SwipeableContent(
           state = dismissState,
-          swipeEnabled = backStackDepth > 1,
-          nestedScrollEnabled = backStackDepth > 1 && properties.swipeBackFromNestedScroll,
+          swipeEnabled = holder.backStackDepth > 1,
+          nestedScrollEnabled = holder.backStackDepth > 1 && properties.swipeBackFromNestedScroll,
           dismissThreshold = properties.swipeThreshold,
-          content = { content(record) },
+          content = { content(holder.record) },
         )
       }
 
@@ -294,8 +300,4 @@ private fun rememberDismissState(
   return rememberSaveable(inputs, saver = DismissState.Saver(confirmStateChange)) {
     DismissState(initialValue, confirmStateChange)
   }
-}
-
-private fun <T> Transition<T>.isStateBeingAnimated(state: T): Boolean {
-  return isRunning && (currentState == state || targetState == state)
 }

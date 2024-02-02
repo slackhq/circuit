@@ -36,8 +36,8 @@ public interface Navigator {
    *
    * The [saveState] and [restoreState] parameters enable functionality what is commonly called
    * 'multiple back stacks'. By optionally saving, and later restoring the back stack, you can
-   * enable different root screens to have their own back stacks. A common use case is with
-   * the bottom navigation bar UX pattern.
+   * enable different root screens to have their own back stacks. A common use case is with the
+   * bottom navigation bar UX pattern.
    *
    * ``` kotlin
    * navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)

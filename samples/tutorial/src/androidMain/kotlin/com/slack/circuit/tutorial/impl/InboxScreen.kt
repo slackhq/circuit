@@ -66,7 +66,10 @@ fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
   Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
     LazyColumn(modifier = Modifier.padding(innerPadding)) {
       items(state.emails) { email ->
-        EmailItem(email) { state.eventSink(InboxScreen.Event.EmailClicked(email.id)) }
+        EmailItem(
+          email = email,
+          onClick = { state.eventSink(InboxScreen.Event.EmailClicked(email.id)) },
+        )
       }
     }
   }

@@ -89,9 +89,9 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
       }
     },
   ) { paddingValues ->
-    val saveableStateHolder = rememberRetainedStateHolder()
+    val saveableStateHolder = rememberSaveableStateHolder()
     val currentScreen = state.navItems[state.selectedIndex].screen
-    saveableStateHolder.RetainedStateProvider(currentScreen) {
+    saveableStateHolder.SaveableStateProvider(currentScreen) {
       val circuit = requireNotNull(LocalCircuit.current)
       val ui = rememberUi(currentScreen, factory = circuit::ui)
       val presenter =

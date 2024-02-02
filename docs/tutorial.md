@@ -95,7 +95,7 @@ Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable f
 
 // TODO side by side screenshot?
 
-```kotlin title="Inbox.kt"
+```kotlin title="InboxScreen.kt"
 @Composable
 fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
   Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
@@ -134,7 +134,7 @@ class InboxUi(...) : Ui<InboxScreen.State> {
 
 Next, let's define a `Presenter` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html)) for our `InboxScreen`. Circuit presenters are responsible for computing and emitting state.
 
-```kotlin title="InboxPresenter.kt"
+```kotlin title="InboxScreen.kt"
 class InboxPresenter : Presenter<InboxScreen.State> {
   @Composable
   override fun present(): InboxScreen.State {
@@ -159,7 +159,7 @@ This is a trivial implementation that returns a static list of emails. In a real
 
 This is also a good opportunity to see where using compose in our presentation logic shines, as we can use Compose's advanced state management to make our presenter logic more expressive and easy to understand.
 
-```kotlin title="InboxPresenter.kt" hl_lines="4-8"
+```kotlin title="InboxScreen.kt" hl_lines="4-8"
 class InboxPresenter(private val emailRepository: EmailRepository) : Presenter<InboxScreen.State> {
   @Composable
   override fun present(): InboxScreen.State {
@@ -175,7 +175,7 @@ class InboxPresenter(private val emailRepository: EmailRepository) : Presenter<I
 
 Analogous to `Ui`, you can also define simple/dependency-less presenters as just a top-level function.
 
-```kotlin title="InboxPresenter.kt"
+```kotlin title="InboxScreen.kt"
 @Composable
 fun InboxPresenter(): InboxScreen.State {
   val emails = ...
@@ -393,7 +393,7 @@ Now that we have a detail screen, let's navigate to it from our inbox list. As y
 Let's add a `Navigator` property to our presenter and create a factory for our inbox screen now.
 
 === "InboxPresenter"
-    ```kotlin title="InboxPresenter.kt"
+    ```kotlin title="InboxScreen.kt"
     class InboxPresenter(
       private val navigator: Navigator,
       private val emailRepository: EmailRepository
@@ -449,7 +449,7 @@ data object InboxScreen : Screen {
 
 Now that we have an event, let's emit it from our UI.
 
-```kotlin title="Inbox.kt" hl_lines="6-8 15"
+```kotlin title="InboxScreen.kt" hl_lines="6-8 15"
 @Composable
 fun Inbox(state: InboxScreen.State, modifier: Modifier = Modifier) {
   Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->
@@ -471,7 +471,7 @@ private fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -
 
 Finally, let's handle this event in our presenter.
 
-```kotlin title="InboxPresenter.kt" hl_lines="8-13"
+```kotlin title="InboxScreen.kt" hl_lines="8-13"
 class InboxPresenter(
   private val navigator: Navigator,
   private val emailRepository: EmailRepository

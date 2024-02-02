@@ -62,6 +62,14 @@ kotlin {
   }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+  compilerOptions {
+    // Need to disable, due to 'duplicate library name' warning
+    // https://youtrack.jetbrains.com/issue/KT-51110
+    allWarningsAsErrors = false
+  }
+}
+
 android { namespace = "com.slack.circuit.backstack" }
 
 androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }

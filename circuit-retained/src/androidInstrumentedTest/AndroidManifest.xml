@@ -2,5 +2,6 @@
 
     <application>
         <activity android:name="androidx.activity.ComponentActivity"/>
+        <activity android:name="com.slack.circuit.retained.android.RetainedStateHolderTest$Activity"/>
     </application>
 </manifest>

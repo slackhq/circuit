@@ -108,6 +108,10 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
     }
 
     override suspend fun awaitResult(key: String): PopResult? {
+      val mismatched = if (key != resultKey) " (mismatched)" else ""
+      println(
+        "awaitResult: $mismatched\n\tkey =      ${key.take(8)}\n\texpected = ${resultKey?.take(8)}"
+      )
       return if (key == resultKey) {
         resultKey = null
         resultChannel.receive()

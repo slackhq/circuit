@@ -114,10 +114,11 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 
   // Collect the result if we've launched and now returned to the initial record
   if (launched && currentTopRecordKey == initialRecordKey) {
-    val record = currentBackStack.topRecord!!
     LaunchedEffect(key) {
-      val result = record.awaitResult(key) ?: return@LaunchedEffect
+      println("⚡️${initialRecordKey.take(8)} is awaiting result with $key")
+      val result = currentBackStack.topRecord!!.awaitResult(key) ?: return@LaunchedEffect
       if (currentResultType.isInstance(result)) {
+        println("✅ Answering with result: $result")
         @Suppress("UNCHECKED_CAST") block(result as T)
       }
     }

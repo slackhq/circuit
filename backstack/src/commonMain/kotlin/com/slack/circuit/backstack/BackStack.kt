@@ -53,10 +53,22 @@ public interface BackStack<R : Record> : Iterable<R> {
     while (topRecord?.let(predicate) == false) pop()
   }
 
-  /** TODO */
+  /**
+   * Saves the current back stack entry list in an internal state store. It can be later restored by
+   * the root screen to [restoreState].
+   *
+   * This call will overwrite any existing stored state with the same root screen.
+   */
   public fun saveState()
 
-  /** TODO */
+  /**
+   * Restores the saved state with the given [screen], adding it on top of the existing entry list.
+   * If you wish to replace the current entry list, you should [pop] all of the existing entries off
+   * before calling this function.
+   *
+   * @param screen The root screen which was previously saved using [saveState].
+   * @return Returns true if there was any back stack state to restore.
+   */
   public fun restoreState(screen: Screen): Boolean
 
   public interface Record {

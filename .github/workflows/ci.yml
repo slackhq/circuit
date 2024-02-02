@@ -92,7 +92,10 @@ jobs:
           disable-animations: true
           disk-size: 6000M
           heap-size: 600M
-          script: ./gradlew ciConnectedCheck --daemon
+          script: |
+            ./gradlew ciConnectedCheck \
+              # Disable benchmark tests as they do not work on emulators
+              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=none
 
       - name: (Fail-only) Upload reports
         if: failure()

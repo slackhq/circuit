@@ -36,6 +36,7 @@ import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -222,6 +223,7 @@ public object NavigatorDefaults {
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
      * time.
      */
+    @InternalCircuitApi
     public val forward: ContentTransform by lazy { computeTransition(1) }
 
     /**
@@ -229,6 +231,7 @@ public object NavigatorDefaults {
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
      * time.
      */
+    @InternalCircuitApi
     public val backward: ContentTransform by lazy { computeTransition(-1) }
 
     private fun computeTransition(sign: Int): ContentTransform {
@@ -275,6 +278,7 @@ public object NavigatorDefaults {
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {
+      @OptIn(InternalCircuitApi::class)
       AnimatedContent(
         targetState = args,
         modifier = modifier,

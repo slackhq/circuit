@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.runtime.InternalCircuitApi
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 
@@ -87,6 +88,7 @@ private class AndroidPredictiveNavigationDecoration(private val onBackInvoked: (
         recordPoppedFromGesture = null
       }
 
+      @OptIn(InternalCircuitApi::class)
       transition.AnimatedContent(
         transitionSpec = {
           val diff = targetState.backStackDepth - initialState.backStackDepth

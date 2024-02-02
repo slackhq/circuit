@@ -47,7 +47,7 @@ internal class FullScreenOverlay<S : Screen>(
   override fun Content(navigator: OverlayNavigator<Unit>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
-      DispatchingOverlayNavigator(navigator) { callbacks.onFinish() }
+      DispatchingOverlayNavigator(screen, navigator) { callbacks.onFinish() }
     }
 
     BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
@@ -60,6 +60,7 @@ internal class FullScreenOverlay<S : Screen>(
  * called.
  */
 internal class DispatchingOverlayNavigator(
+  private val currentScreen: Screen,
   private val overlayNavigator: OverlayNavigator<Unit>,
   private val onPop: () -> Unit,
 ) : Navigator {
@@ -73,7 +74,11 @@ internal class DispatchingOverlayNavigator(
     return null
   }
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun peek(): Screen = currentScreen
+
+  override fun peekBackStack(): List<Screen> = listOf(currentScreen)
+
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }
 }

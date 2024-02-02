@@ -44,7 +44,13 @@ kotlin {
         api(libs.androidx.compose.runtime)
       }
     }
-    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
+    val commonTest by getting {
+      dependencies {
+        implementation(libs.kotlin.test)
+        implementation(libs.testing.assertk)
+        implementation(projects.internalTestUtils)
+      }
+    }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependencies {
@@ -53,6 +59,14 @@ kotlin {
         }
       }
     val jvmTest by getting { dependsOn(commonJvmTest) }
+  }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+  compilerOptions {
+    // Need to disable, due to 'duplicate library name' warning
+    // https://youtrack.jetbrains.com/issue/KT-51110
+    allWarningsAsErrors = false
   }
 }
 

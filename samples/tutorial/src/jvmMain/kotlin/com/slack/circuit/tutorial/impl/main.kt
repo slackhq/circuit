@@ -27,7 +27,7 @@ fun main() {
         val backStack = rememberSaveableBackStack { push(InboxScreen) }
         val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
         CircuitCompositionLocals(circuit) {
-          NavigableCircuitContent(navigator = navigator, backstack = backStack)
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }
       }
     }

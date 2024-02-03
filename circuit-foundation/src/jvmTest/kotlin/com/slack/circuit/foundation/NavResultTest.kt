@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +35,6 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.ui
 import kotlin.test.fail
 import org.junit.Rule
 import org.junit.Test
@@ -50,18 +50,19 @@ class NavResultTest {
 
   private val circuit =
     Circuit.Builder()
-      .addPresenterFactory { screen, navigator, _ ->
-        TestResultPresenter(navigator, screen as TestResultScreen)
+      .addPresenter<TestResultScreen, TestResultScreen.State> { screen, navigator, _ ->
+        TestResultPresenter(navigator, screen)
       }
-      .addUiFactory { _, _ ->
-        ui<TestResultScreen.State> { state, modifier -> TestResultContent(state, modifier) }
+      .addUi<TestResultScreen, TestResultScreen.State> { state, modifier ->
+        TestResultContent(state, modifier)
+      }
+      .addPresenter<WrapperScreen, WrapperScreen.State> { _, navigator, _ ->
+        WrapperPresenter(navigator)
+      }
+      .addUi<WrapperScreen, WrapperScreen.State> { state, modifier ->
+        WrapperContent(state, modifier)
       }
       .build()
-
-  // TODO
-  //  - Only caller gets the result back
-  //  - Preserved on config changes
-  //  - ???
 
   @Test
   fun simplePushAndPop() {
@@ -73,8 +74,8 @@ class NavResultTest {
       // Then do it one more time to make sure we can re-launch from the same screen
       onNodeWithTag(TAG_TEXT).assertTextEquals("root")
       repeat(2) {
-        repeat(10) { innerIteration -> goToNext(answer = true, count = innerIteration) }
-        repeat(10) { innerIteration -> popBack(expectAnswer = true, count = innerIteration) }
+        repeat(10) { innerIteration -> goToNext(answer = true, nextCount = innerIteration) }
+        repeat(10) { innerIteration -> popBack(expectAnswer = true, prevCount = innerIteration) }
       }
     }
   }
@@ -106,6 +107,33 @@ class NavResultTest {
     }
   }
 
+  @Test
+  fun onlyTheCallerGetsTheResult() {
+    lateinit var backStackRef: SaveableBackStack
+    composeTestRule.run {
+      setContent {
+        CircuitCompositionLocals(circuit) {
+          val backStack = rememberSaveableBackStack {
+            push(WrapperScreen)
+            backStackRef = this
+          }
+          val navigator =
+            rememberCircuitNavigator(
+              backStack = backStack,
+              onRootPop = {}, // no-op for tests
+            )
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        }
+      }
+
+      dumpState(backStackRef)
+      goToNext(answer = true, 0)
+      dumpState(backStackRef)
+      popBack(expectAnswer = true, 1)
+      dumpState(backStackRef)
+    }
+  }
+
   private fun ComposeContentTestRule.setUpTestContent(): SaveableBackStack {
     lateinit var returnedStack: SaveableBackStack
     setContent {
@@ -125,11 +153,11 @@ class NavResultTest {
     return returnedStack
   }
 
-  private fun ComposeContentTestRule.goToNext(answer: Boolean, count: Int) {
-    println("➕ Pushing next from $count to ${count + 1}")
+  private fun ComposeContentTestRule.goToNext(answer: Boolean, nextCount: Int) {
+    println("➕ Pushing next from ${nextCount - 1} to $nextCount")
     with(onNodeWithTag(TAG_TEXT)) {
       performTextClearance()
-      performTextInput(count.toString())
+      performTextInput(nextCount.toString())
     }
     if (answer) {
       onNodeWithTag(TAG_GO_NEXT).performClick()
@@ -138,15 +166,15 @@ class NavResultTest {
     }
     with(onNodeWithTag(TAG_TEXT)) {
       // Assert we got the new count on the other side
-      assertTextEquals(count.toString())
+      assertTextEquals(nextCount.toString())
       performTextClearance()
-      performTextInput((count + 1).toString())
+      performTextInput((nextCount + 1).toString())
     }
   }
 
-  private fun ComposeContentTestRule.popBack(expectAnswer: Boolean, count: Int) {
+  private fun ComposeContentTestRule.popBack(expectAnswer: Boolean, prevCount: Int) {
     val incremented = getCurrentText().toInt() + 1
-    println("➖ Popping back from $count to ${if (expectAnswer) incremented else count}")
+    println("➖ Popping back from $prevCount to ${if (expectAnswer) incremented else prevCount}")
     with(onNodeWithTag(TAG_TEXT)) {
       performTextClearance()
       performTextInput(incremented.toString())
@@ -157,10 +185,12 @@ class NavResultTest {
         if (expectAnswer) {
           assertTextEquals(incremented.toString())
         } else {
-          assertTextEquals(count.toString())
+          assertTextEquals(prevCount.toString())
         }
       } catch (_: Throwable) {
-        fail("Expected '${if (expectAnswer) incremented else count}', got '${getCurrentText()}'")
+        fail(
+          "Expected '${if (expectAnswer) incremented else prevCount}', got '${getCurrentText()}'"
+        )
       }
     }
   }
@@ -209,7 +239,7 @@ class NavResultTest {
                 val stateString =
                   """
                     ${record.screen::class.simpleName}
-                    input=${(record.screen as TestResultScreen).input}
+                    input=${(record.screen as? TestResultScreen)?.input}
                     ⬅ expectingResult=${record.expectingResult()}
                     value=${if (i == 0) getCurrentText() else "undefined"}
                   """
@@ -247,10 +277,23 @@ class TestResultPresenter(private val navigator: Navigator, private val screen: 
   @Composable
   override fun present(): TestResultScreen.State {
     var text by remember { mutableStateOf(screen.input) }
+
+    // See docs on UnscrupulousResultListenerEffect for details on these surrounding error calls
+    rememberAnsweringNavigator<TestResultScreen.Result>(navigator) {
+      error("This should never be called")
+    }
+    UnscrupulousResultListenerEffect()
+
+    // The real next navigator
     val nextNavigator =
-      rememberAnsweringNavigator(navigator, TestResultScreen.Result::class) { result ->
+      rememberAnsweringNavigator<TestResultScreen.Result>(navigator) { result ->
         text = result.output
       }
+
+    UnscrupulousResultListenerEffect()
+    rememberAnsweringNavigator<TestResultScreen.Result>(navigator) {
+      error("This should never be called")
+    }
 
     return TestResultScreen.State(text) { event ->
       when (event) {
@@ -269,6 +312,20 @@ class TestResultPresenter(private val navigator: Navigator, private val screen: 
           navigator.goTo(TestResultScreen(text, answer = false))
         }
       }
+    }
+  }
+}
+
+/**
+ * A composable that attempts to listen for a result that it should never receive. We pepper these
+ * around in test presenters to ensure that results are only given to the original callers.
+ */
+@Composable
+fun UnscrupulousResultListenerEffect() {
+  val record = LocalBackStack.current!!.topRecord!!
+  LaunchedEffect(Unit) {
+    record.awaitResult("a key that definitely doesn't match")?.let {
+      error("This should never be called")
     }
   }
 }
@@ -299,5 +356,28 @@ fun TestResultContent(state: TestResultScreen.State, modifier: Modifier = Modifi
       modifier =
         Modifier.testTag(TAG_POP).clickable { state.eventSink(TestResultScreen.Event.Back) },
     )
+  }
+}
+
+data object WrapperScreen : Screen {
+  data class State(val navigator: Navigator) : CircuitUiState
+}
+
+class WrapperPresenter(private val navigator: Navigator) : Presenter<WrapperScreen.State> {
+  @Composable
+  override fun present(): WrapperScreen.State {
+    UnscrupulousResultListenerEffect()
+    rememberAnsweringNavigator<TestResultScreen.Result>(navigator) {
+      error("This should never be called")
+    }
+    return WrapperScreen.State(navigator)
+  }
+}
+
+@Composable
+fun WrapperContent(state: WrapperScreen.State, modifier: Modifier = Modifier) {
+  Column(modifier = modifier) {
+    BasicText(text = "Wrapper")
+    CircuitContent(screen = TestResultScreen("root", answer = true), navigator = state.navigator)
   }
 }

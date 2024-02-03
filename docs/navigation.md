@@ -45,7 +45,41 @@ setContent {
 
 ## Results
 
-TODO
+In some cases, it makes sense for a screen to return a result to the previous screen. This is done by using the an _answering Navigator_ pattern in Circuit.
+
+The primary entry point for requesting a result is the `rememberAnsweringNavigator` API, which takes a `Navigator` or `BackStack` and `PopResult` type and returns a navigator that can go to a screen and await a result.
+
+Result types must implement `PopResult` and are used to carry data back to the previous screen.
+
+The returned navigator should be used to navigate to the screen that will return the result. The target screen can then `pop` the result back to the previous screen and Circuit will automatically deliver this result to the previous screen's receiver.
+
+```kotlin
+var photoUrl by remember { mutableStateOf<String?>(null) }
+val takePhotoNavigator = rememberAnsweringNavigator<TakePhotoScreen.Result>(navigator) { result ->
+  photoUrl = result.url
+}
+
+// Elsewhere
+takePhotoNavigator.goTo(TakePhotoScreen)
+
+// In TakePhotoScreen.kt
+data object TakePhotoScreen : Screen {
+  @Parcelize
+  data class Result(val url: String) : PopResult
+}
+
+class TakePhotoPresenter {
+  @Composable fun present(): State {
+    // ...
+    navigator.pop(result = TakePhotoScreen.Result(newFilters))
+  }
+}
+```
+
+Circuit automatically manages saving/restoring result states and ensuring that results are only delivered to the original receiver that requested it. If the target screen does not pop back a result, the previous screen's receiver will just never receive one.
+
+!!! note "When to use an `Overlay` vs navigating to a `Screen` with result?"
+    See this doc in [Overlays](https://slackhq.github.io/circuit/overlays/overlays/#overlay-vs-popresult)!
 
 ## Nested Navigation
 

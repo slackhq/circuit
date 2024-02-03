@@ -49,7 +49,7 @@ public interface Navigator : GoToNavigator {
    * enable different root screens to have their own back stacks. A common use case is with the
    * bottom navigation bar UX pattern.
    *
-   * ``` kotlin
+   * ```kotlin
    * navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
    * // User navigates to a details screen
    * navigator.push(EntityDetails(id = foo))

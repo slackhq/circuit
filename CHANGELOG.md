@@ -81,6 +81,7 @@ On top of Circuit's existing docs, we've added a new tutorial to help you get st
 - Refreshed iOS Counter sample using SPM and SKIE.
 - Convert STAR sample to KMP. Starting with Android and Desktop.
 - Fix baseline profiles packaging. Due to a bug in the baseline profile plugin, we were not packaging the baseline profiles in the artifacts. This is now fixed.
+- Mark `BackStack.Record` as `@Stable`.
 - Update the default decoration to better match the android 34 transitions.
 - Update androidx.lifecycle to `2.7.0`.
 - Update to compose multiplatform to `1.5.12`.

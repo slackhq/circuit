@@ -31,12 +31,12 @@ kotlin {
         implementation(libs.coroutines)
       }
     }
-    val commonTest by getting {
+    commonTest {
       dependencies {
+        implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
-        implementation(libs.coroutines.test)
       }
     }
     val commonJvmTest =
@@ -46,7 +46,13 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    val jvmTest by getting {
+      dependsOn(commonJvmTest)
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(libs.compose.test.junit4)
+      }
+    }
   }
 }
 

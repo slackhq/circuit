@@ -33,7 +33,7 @@ public fun <T> StateFlow<T>.collectAsRetainedState(
 @Composable
 public fun <T : R, R> Flow<T>.collectAsRetainedState(
   initial: R,
-  context: CoroutineContext = EmptyCoroutineContext
+  context: CoroutineContext = EmptyCoroutineContext,
 ): State<R> =
   produceRetainedState(initial, this, context) {
     if (context == EmptyCoroutineContext) {

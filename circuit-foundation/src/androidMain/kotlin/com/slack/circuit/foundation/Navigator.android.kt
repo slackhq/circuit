@@ -13,22 +13,19 @@ import com.slack.circuit.runtime.Navigator
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent]. Delegates
  * onRootPop to the [LocalOnBackPressedDispatcherOwner].
  *
- * @param backstack The backing [BackStack] to navigate.
+ * @param backStack The backing [BackStack] to navigate.
  * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
  *   back handler. Defaults to true.
  * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(
-  backstack: BackStack<out Record>,
+  backStack: BackStack<out Record>,
   enableBackHandler: Boolean = true,
 ): Navigator {
   val navigator =
-    rememberCircuitNavigator(
-      backstack = backstack,
-      onRootPop = backDispatcherRootPop(),
-    )
-  BackHandler(enabled = enableBackHandler && backstack.size > 1, onBack = navigator::pop)
+    rememberCircuitNavigator(backStack = backStack, onRootPop = backDispatcherRootPop())
+  BackHandler(enabled = enableBackHandler && backStack.size > 1, onBack = navigator::pop)
 
   return navigator
 }

@@ -29,7 +29,7 @@ jobs:
           lfs: 'true'
 
       - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
 
       - name: Check LFS files
         uses: actionsdesk/lfs-warning@v3.2
@@ -38,7 +38,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '20'
+          java-version: '21'
 
       - name: Build benchmark
         id: gradle
@@ -49,7 +49,7 @@ jobs:
           cache-read-only: false
 
       - name: AVD cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: avd-cache
         with:
           path: |
@@ -81,7 +81,7 @@ jobs:
           script: ./gradlew :samples:star:benchmark:connectedBenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.slack.circuit.sample.star.benchmark.NestedContentListBenchmark
 
       - name: Upload build reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: reports-benchmark
           path: |

@@ -39,7 +39,25 @@ kotlin {
     }
 
     val iosMain by getting { dependencies { api(libs.compose.material.material) } }
+
+    val androidUnitTest by getting {
+      dependencies {
+        implementation(projects.internalTestUtils)
+
+        implementation(libs.robolectric)
+        implementation(libs.androidx.compose.foundation)
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
+      }
+    }
   }
 }
 
-android { namespace = "com.slack.circuitx.gesturenavigation" }
+android {
+  namespace = "com.slack.circuitx.gesturenavigation"
+
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
+
+  testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
+}

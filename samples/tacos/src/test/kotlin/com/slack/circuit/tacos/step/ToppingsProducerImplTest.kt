@@ -45,7 +45,7 @@ class ToppingsProducerImplTest {
         producer(
           orderDetails = parent.orderDetails,
           minimumToppings = 1,
-          eventSink = parent::childEvent
+          eventSink = parent::childEvent,
         )
       }
       .test {
@@ -83,7 +83,7 @@ class ToppingsProducerImplTest {
           producer(
             orderDetails = parent.orderDetails,
             minimumToppings = 1,
-            eventSink = parent::childEvent
+            eventSink = parent::childEvent,
           )
         }
         .test {

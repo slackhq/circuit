@@ -110,7 +110,7 @@ private class RetainableHolder<T>(
   private var canRetainChecker: CanRetainChecker,
   private var key: String,
   private var value: T,
-  private var inputs: Array<out Any?>
+  private var inputs: Array<out Any?>,
 ) : RetainedValueProvider, RememberObserver {
   private var entry: RetainedStateRegistry.Entry? = null
 

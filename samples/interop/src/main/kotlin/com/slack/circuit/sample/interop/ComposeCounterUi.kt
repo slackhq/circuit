@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,20 +30,20 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
         modifier = Modifier.align(Alignment.CenterHorizontally),
         text = "Count: ${state.count}",
         style = MaterialTheme.typography.displayLarge,
-        color = color
+        color = color,
       )
       Spacer(modifier = Modifier.height(16.dp))
       Button(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = { state.eventSink(CounterScreen.Event.Increment) }
+        onClick = { state.eventSink(CounterScreen.Event.Increment) },
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
       }
       Button(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = { state.eventSink(CounterScreen.Event.Decrement) }
+        onClick = { state.eventSink(CounterScreen.Event.Decrement) },
       ) {
-        Icon(rememberVectorPainter(Icons.Filled.Remove), "Decrement")
+        Icon(rememberVectorPainter(Remove), "Decrement")
       }
     }
   }

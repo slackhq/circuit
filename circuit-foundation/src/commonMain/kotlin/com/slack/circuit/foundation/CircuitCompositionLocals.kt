@@ -21,7 +21,7 @@ import com.slack.circuit.runtime.CircuitContext
 public fun CircuitCompositionLocals(
   circuit: Circuit,
   retainedStateRegistry: RetainedStateRegistry = continuityRetainedStateRegistry(),
-  content: @Composable () -> Unit
+  content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
     LocalCircuit provides circuit,

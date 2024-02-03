@@ -30,11 +30,7 @@ class ConfirmationProducerTest {
   @Test
   fun `confirmationProducer - emitted state contains expected calorie count`() = runTest {
     val filling = testFillings.first()
-    val details =
-      OrderDetails(
-        filling = filling,
-        toppings = testToppings.toSet(),
-      )
+    val details = OrderDetails(filling = filling, toppings = testToppings.toSet())
     val expectedCalorieCount =
       filling.calories + testToppings.fold(0) { acc, topping -> acc + topping.calories }
 
@@ -47,15 +43,11 @@ class ConfirmationProducerTest {
 class ConfirmationProducerDietTest(
   private val expectedDiet: Diet,
   private val filling: Ingredient,
-  private val toppings: List<Ingredient>
+  private val toppings: List<Ingredient>,
 ) {
   @Test
   fun `confirmationProducer - emitted state contains expected diet`() = runTest {
-    val details =
-      OrderDetails(
-        filling = filling,
-        toppings = toppings.toSet(),
-      )
+    val details = OrderDetails(filling = filling, toppings = toppings.toSet())
 
     moleculeFlow(RecompositionMode.Immediate) { confirmationProducer(details) }
       .test { awaitItem().run { assertThat(diet).isEqualTo(expectedDiet) } }

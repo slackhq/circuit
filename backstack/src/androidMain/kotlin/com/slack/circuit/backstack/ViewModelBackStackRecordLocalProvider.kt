@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 private fun Context.findActivity(): Activity? {
@@ -56,25 +57,14 @@ internal object ViewModelBackStackRecordLocalProvider :
       )
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
     val activity = LocalContext.current.findActivity()
-    remember(record, viewModelStore) {
-      object : RememberObserver {
-        override fun onAbandoned() {
-          disposeIfNotChangingConfiguration()
-        }
-
-        override fun onForgotten() {
-          disposeIfNotChangingConfiguration()
-        }
-
-        override fun onRemembered() {}
-
-        fun disposeIfNotChangingConfiguration() {
+    val observer =
+      remember(record, viewModelStore) {
+        NestedRememberObserver {
           if (activity?.isChangingConfigurations != true) {
             containerViewModel.removeViewModelStoreOwnerForKey(record.key)?.clear()
           }
         }
       }
-    }
     return remember(viewModelStore) {
       val list =
         persistentListOf<ProvidedValue<*>>(
@@ -85,7 +75,11 @@ internal object ViewModelBackStackRecordLocalProvider :
         )
       @Suppress("ObjectLiteralToLambda")
       object : ProvidedValues {
-        @Composable override fun provideValues() = list
+        @Composable
+        override fun provideValues(): PersistentList<ProvidedValue<*>> {
+          remember { observer.UiRememberObserver() }
+          return list
+        }
       }
     }
   }
@@ -111,5 +105,48 @@ internal class BackStackRecordLocalProviderViewModel : ViewModel() {
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
       return create(modelClass)
     }
+  }
+}
+
+private class NestedRememberObserver(private val onCompletelyForgotten: () -> Unit) :
+  RememberObserver {
+  private var isRememberedForStack: Boolean = false
+    set(value) {
+      field = value
+      recomputeState()
+    }
+
+  private var isRememberedForUi: Boolean = false
+    set(value) {
+      field = value
+      recomputeState()
+    }
+
+  private fun recomputeState() {
+    if (!isRememberedForUi && !isRememberedForStack) {
+      onCompletelyForgotten()
+    }
+  }
+
+  inner class UiRememberObserver : RememberObserver {
+    override fun onRemembered() {
+      isRememberedForUi = true
+    }
+
+    override fun onAbandoned() = onForgotten()
+
+    override fun onForgotten() {
+      isRememberedForUi = false
+    }
+  }
+
+  override fun onRemembered() {
+    isRememberedForStack = true
+  }
+
+  override fun onAbandoned() = onForgotten()
+
+  override fun onForgotten() {
+    isRememberedForStack = false
   }
 }

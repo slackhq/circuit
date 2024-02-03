@@ -16,7 +16,6 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.key
 import kotlinx.collections.immutable.ImmutableList
@@ -53,18 +52,18 @@ public fun <R : BackStack.Record> providedValuesForBackStack(
             CompositeProvidedValues(
               buildList(stackLocalProviders.size + 1) {
                 if (includeDefaults) {
-                  LocalBackStackRecordLocalProviders.current.forEach {
+                  defaultBackStackRecordLocalProviders.forEach {
                     add(key(it) { it.providedValuesFor(record) })
                   }
                 }
                 stackLocalProviders.forEach { add(key(it) { it.providedValuesFor(record) }) }
               }
-            )
+            ),
           )
         }
       }
     }
     .toImmutableMap()
 
-internal expect val LocalBackStackRecordLocalProviders:
-  ProvidableCompositionLocal<List<BackStackRecordLocalProvider<BackStack.Record>>>
+internal expect val defaultBackStackRecordLocalProviders:
+  List<BackStackRecordLocalProvider<BackStack.Record>>

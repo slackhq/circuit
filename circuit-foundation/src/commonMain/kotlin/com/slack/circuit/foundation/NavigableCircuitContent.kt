@@ -3,33 +3,41 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
+import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -39,41 +47,81 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 public fun NavigableCircuitContent(
   navigator: Navigator,
-  backstack: BackStack<out Record>,
+  backStack: BackStack<out Record>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backstack),
+  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
   val activeContentProviders =
-    backstack.buildCircuitContentProviders(
+    backStack.buildCircuitContentProviders(
       navigator = navigator,
       circuit = circuit,
       unavailableRoute = unavailableRoute,
     )
 
-  if (backstack.size > 0) {
-    decoration.DecoratedContent(activeContentProviders, backstack.size, modifier) { provider ->
-      // We retain the record's retained state registry if the back stack
+  if (backStack.isEmpty) return
+
+  /*
+   * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
+   * RetainedStateRegistry. If we don't do this, those registries would be stored directly in the
+   * current LocalRetainedStateRegistry value, which will mostly likely be the
+   * continuityRetainedStateRegistry. On Android, that continuityRetainedStateRegistry will drop
+   * any 'unclaimed' values when the host Activity is recreated. Since records on the back stack
+   * aren't attached to composition, they can't claim their retained registries and thus we drop
+   * all of the state for the record. See #1046.
+   *
+   * Using this 'navigation content' registry means that _it_ will be stored in the
+   * continuityRetainedStateRegistry instead, and any back stack record registries stored within
+   * the 'navigation content' registry. The difference is that NavigableCircuitContent
+   * will be attached to composition for the entire lifetime that we care about, and thus will
+   * be able to save/claim the 'navigation content' registry on recreations. Since any back stack
+   * registries are nested in this 'navigation content' registry, everything is
+   * saved/claimed correctly. As a diagram, it looks like this:
+   *                          ┌────────────────┐
+   *                          │ ContinuityRSR  │
+   *                          └───────▲────────┘
+   *                      ┌───────────┴─────────┐
+   *                 ┌────► NavigableContentRSR ◄───────┐
+   *                 │    └───────────▲─────────┘       │
+   *          ┌──────┴──────┐  ┌──────┴──────┐   ┌──────┴──────┐
+   *          │ ScreenA RSR │  │ ScreenB RSR │   │ ScreenC RSR │
+   *          └──────▲──────┘  └──────▲──────┘   └──────▲──────┘
+   * ┌─────────────┐ │         ┌──────┴──────┐   ┌──────┴──────┐
+   * │retainedState├─┤         │retainedState│   │retainedState│
+   * └─────────────┘ │         └─────────────┘   └─────────────┘
+   * ┌─────────────┐ │
+   * │retainedState├─┘         (RSR = RetainedStateRegistry)
+   * └─────────────┘
+   */
+  val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
+  val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
+
+  CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+    decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
+      // We retain the record's retained state registry for as long as the back stack
       // contains the record
       val record = provider.record
-      val retainChecker =
-        remember(backstack, record) { CanRetainChecker { backstack.contains(record) } }
+      val recordInBackStackRetainChecker =
+        remember(backStack, record) { CanRetainChecker { record in backStack } }
 
-      CompositionLocalProvider(LocalCanRetainChecker provides retainChecker) {
-        val registry = rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
-
-        val values = providedValues[record]?.provideValues()
+      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+        // Remember the `providedValues` lookup because this composition can live longer than
+        // the record is present in the backstack, if the decoration is animated for example.
+        val values = remember(record) { providedValues[record] }?.provideValues()
         val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
-        // Now provide the registry to the content, along with a retain checker
-        // which is always true (as any state is managed by the parent registry), and the other
-        // provided values
+        // Now provide a new registry to the content for it to store any retained state in,
+        // along with a retain checker which is always true (as upstream registries will
+        // maintain the lifetime), and the other provided values
+        val recordRetainedStateRegistry =
+          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
         CompositionLocalProvider(
-          LocalRetainedStateRegistry provides registry,
+          LocalRetainedStateRegistry provides recordRetainedStateRegistry,
           LocalCanRetainChecker provides CanRetainChecker.Always,
+          LocalBackStack provides backStack,
           *providedLocals,
         ) {
           provider.content(record)
@@ -139,7 +187,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
               )
-            }
+            },
         )
       }
     }
@@ -153,47 +201,98 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
     }
 }
 
+/** The maximum radix available for conversion to and from strings. */
+private const val MaxSupportedRadix = 36
+
 private val Record.registryKey: String
   get() = "_registry_${key}"
 
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {
 
-  private const val FIVE_PERCENT = 0.05f
-  private val SlightlyRight = { width: Int -> (width * FIVE_PERCENT).toInt() }
-  private val SlightlyLeft = { width: Int -> 0 - (width * FIVE_PERCENT).toInt() }
+  private val FastOutExtraSlowInEasing = CubicBezierEasing(0.208333f, 0.82f, 0.25f, 1f)
+  private val AccelerateEasing = CubicBezierEasing(0.3f, 0f, 1f, 1f)
+  private const val DEBUG_MULTIPLIER = 1
+  private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
+  private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
   /** The default [NavDecoration] used in navigation. */
+  // Mirrors the forward and backward transitions of activities in Android 34
   public object DefaultDecoration : NavDecoration {
+
+    /**
+     * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
+     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+     * time.
+     */
+    @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
+
+    /**
+     * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
+     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+     * time.
+     */
+    @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
+
+    private fun computeTransition(sign: Int): ContentTransform {
+      val enterTransition =
+        fadeIn(
+          animationSpec =
+            tween(durationMillis = SHORT_DURATION, delayMillis = 50, easing = LinearEasing)
+        ) +
+          slideInHorizontally(
+            initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+          ) +
+          expandHorizontally(
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+            initialWidth = { (it * .9f).toInt() },
+            expandFrom = Alignment.Start,
+          )
+
+      val exitTransition =
+        fadeOut(
+          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = AccelerateEasing)
+        ) +
+          slideOutHorizontally(
+            targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+          ) +
+          shrinkHorizontally(
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+            targetWidth = { (it * .9f).toInt() },
+            shrinkTowards = Alignment.End,
+          )
+
+      return enterTransition togetherWith exitTransition
+    }
+
     @Composable
     override fun <T> DecoratedContent(
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
-      content: @Composable (T) -> Unit
+      content: @Composable (T) -> Unit,
     ) {
-      // Remember the previous stack depth so we know if the navigation is going "back".
-      val prevStackDepth = rememberSaveable { mutableStateOf(backStackDepth) }
-      val diff = backStackDepth - prevStackDepth.value
-      prevStackDepth.value = backStackDepth
+      @OptIn(InternalCircuitApi::class)
       AnimatedContent(
         targetState = args,
         modifier = modifier,
         transitionSpec = {
-          // Mirror the forward and backward transitions of activities in Android 33
+          // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+          // the transitionSpec recomposing. The states are available as `targetState` and
+          // `initialState`
+          val diff = targetState.size - initialState.size
+          val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
+
           when {
-            diff > 0 -> {
-              (slideInHorizontally(tween(), SlightlyRight) + fadeIn()) togetherWith
-                slideOutHorizontally(tween(), SlightlyLeft) + fadeOut()
-            }
-            diff < 0 -> {
-              (slideInHorizontally(tween(), SlightlyLeft) + fadeIn()) togetherWith
-                slideOutHorizontally(tween(), SlightlyRight) + fadeOut()
-            }
-            else -> {
-              // Crossfade if there was no diff
-              fadeIn() togetherWith fadeOut()
-            }
+            sameRoot && diff > 0 -> forward
+            sameRoot && diff < 0 -> backward
+            else -> fadeIn() togetherWith fadeOut()
           }.using(
             // Disable clipping since the faded slide-in/out should
             // be displayed out of bounds.
@@ -213,9 +312,15 @@ public object NavigatorDefaults {
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
-      content: @Composable (T) -> Unit
+      content: @Composable (T) -> Unit,
     ) {
       content(args.first())
     }
   }
 }
+
+/**
+ * Internal API to access the [BackStack] from within a [CircuitContent] or
+ * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
+ */
+internal val LocalBackStack = compositionLocalOf<BackStack<out Record>?> { null }

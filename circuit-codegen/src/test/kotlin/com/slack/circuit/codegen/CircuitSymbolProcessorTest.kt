@@ -28,7 +28,7 @@ class CircuitSymbolProcessorTest {
 
       annotation class AppScope
     """
-        .trimIndent()
+        .trimIndent(),
     )
   private val singletonComponent =
     kotlin(
@@ -38,7 +38,7 @@ class CircuitSymbolProcessorTest {
 
             annotation class SingletonComponent
           """
-        .trimIndent()
+        .trimIndent(),
     )
   private val screens =
     kotlin(
@@ -56,7 +56,7 @@ class CircuitSymbolProcessorTest {
         data class State(val count: Int) : CircuitUiState
       }
     """
-        .trimIndent()
+        .trimIndent(),
     )
 
   @Test
@@ -78,7 +78,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/HomeFactory.kt",
       expectedContent =
@@ -101,7 +101,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -124,7 +124,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -147,7 +147,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -170,7 +170,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -194,7 +194,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -217,7 +217,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/HomeFactory.kt",
       expectedContent =
@@ -239,7 +239,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -262,7 +262,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -284,7 +284,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -307,7 +307,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -330,7 +330,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -356,7 +356,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -377,7 +377,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -404,7 +404,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -428,7 +428,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -464,7 +464,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
@@ -487,7 +487,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -509,7 +509,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/HomePresenterFactory.kt",
       expectedContent =
@@ -536,7 +536,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -558,7 +558,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
@@ -585,7 +585,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -608,7 +608,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
@@ -635,7 +635,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -660,7 +660,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
@@ -686,7 +686,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -712,7 +712,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
@@ -741,7 +741,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -778,7 +778,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
@@ -806,7 +806,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -845,7 +845,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
@@ -871,7 +871,7 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -910,7 +910,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactoryModule.kt",
       expectedContent =
@@ -936,7 +936,7 @@ class CircuitSymbolProcessorTest {
               Presenter.Factory
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -961,7 +961,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         ),
       generatedFilePath = "test/HomeFactoryModule.kt",
       expectedContent =
@@ -983,7 +983,7 @@ class CircuitSymbolProcessorTest {
           public abstract fun bindHomeFactory(homeFactory: HomeFactory): Ui.Factory
         }
       """
-          .trimIndent()
+          .trimIndent(),
     )
   }
 
@@ -1048,7 +1048,7 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         )
     ) { messages ->
       assertThat(messages).contains("TODO")
@@ -1076,13 +1076,11 @@ class CircuitSymbolProcessorTest {
             }
           }
         """
-            .trimIndent()
+            .trimIndent(),
         )
     ) { messages ->
       assertThat(messages)
-        .contains(
-          "Factory must be for a UI or Presenter class, but was test.Favorites. Supertypes: [Any]"
-        )
+        .contains("Factory must be for a UI or Presenter class, but was test.Favorites.")
     }
   }
 
@@ -1105,7 +1103,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         )
     ) { messages ->
       assertThat(messages).contains("TODO")
@@ -1130,7 +1128,7 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-            .trimIndent()
+            .trimIndent(),
         )
     ) { messages ->
       assertThat(messages).contains("UI composable functions must have a Modifier parameter!")
@@ -1146,7 +1144,7 @@ class CircuitSymbolProcessorTest {
     sourceFile: SourceFile,
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
-    codegenMode: CodegenMode = CodegenMode.ANVIL
+    codegenMode: CodegenMode = CodegenMode.ANVIL,
   ) {
     val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
     val result = compilation.compile()
@@ -1160,7 +1158,7 @@ class CircuitSymbolProcessorTest {
   private fun assertProcessingError(
     sourceFile: SourceFile,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
-    body: (messages: String) -> Unit
+    body: (messages: String) -> Unit,
   ) {
     val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
     val result = compilation.compile()
@@ -1170,7 +1168,7 @@ class CircuitSymbolProcessorTest {
 
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
-    codegenMode: CodegenMode
+    codegenMode: CodegenMode,
   ): KotlinCompilation =
     KotlinCompilation().apply {
       sources =

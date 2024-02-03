@@ -16,6 +16,9 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.slack.circuit.internal.test.Parcelize
+import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
+import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
@@ -23,9 +26,6 @@ import com.slack.circuit.runtime.ui.ui
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-private const val TAG_BUTTON = "Button"
-private const val TAG_COUNT = "Count"
 
 @RunWith(ComposeUiTestRunner::class)
 class CircuitContentTest {
@@ -46,42 +46,42 @@ class CircuitContentTest {
       setContent { CircuitCompositionLocals(circuit) { CountStateBug() } }
 
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
-      onNodeWithTag(TAG_BUTTON).performClick()
+      onNodeWithTag(TAG_INCREASE_COUNT).performClick()
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
     }
   }
-}
 
-@Parcelize
-data class CountScreen(val count: Int) : Screen {
-  data class State(val count: Int) : CircuitUiState
-}
-
-@Composable
-private fun CountStateBug(modifier: Modifier = Modifier) {
-  var count by remember { mutableIntStateOf(0) }
-  val screen = CountScreen(count)
-
-  Column(modifier) {
-    BasicText(
-      text = "Increment count",
-      modifier = Modifier.clickable { count++ }.testTag(TAG_BUTTON)
-    )
-    CircuitContent(screen)
+  @Parcelize
+  private data class CountScreen(val count: Int) : Screen {
+    data class State(val count: Int) : CircuitUiState
   }
-}
 
-@Composable
-private fun Count(state: CountScreen.State, modifier: Modifier) {
-  BasicText(text = state.count.toString(), modifier = modifier.testTag(TAG_COUNT))
-}
-
-class CountPresenter(private val screen: CountScreen) : Presenter<CountScreen.State> {
   @Composable
-  override fun present(): CountScreen.State {
-    // This is a contrived example to force the edge case.
-    // TL;DR Keyless remembers remain bound across presenter instances in the eyes of compose.
-    val myCount = remember { screen.count }
-    return CountScreen.State(myCount)
+  private fun CountStateBug(modifier: Modifier = Modifier) {
+    var count by remember { mutableIntStateOf(0) }
+    val screen = CountScreen(count)
+
+    Column(modifier) {
+      BasicText(
+        text = "Increment count",
+        modifier = Modifier.clickable { count++ }.testTag(TAG_INCREASE_COUNT),
+      )
+      CircuitContent(screen)
+    }
+  }
+
+  @Composable
+  private fun Count(state: CountScreen.State, modifier: Modifier) {
+    BasicText(text = state.count.toString(), modifier = modifier.testTag(TAG_COUNT))
+  }
+
+  private class CountPresenter(private val screen: CountScreen) : Presenter<CountScreen.State> {
+    @Composable
+    override fun present(): CountScreen.State {
+      // This is a contrived example to force the edge case.
+      // TL;DR Keyless remembers remain bound across presenter instances in the eyes of compose.
+      val myCount = remember { screen.count }
+      return CountScreen.State(myCount)
+    }
   }
 }

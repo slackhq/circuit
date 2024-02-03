@@ -26,7 +26,7 @@ tasks
     compilerOptions {
       freeCompilerArgs.addAll(
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
       )
     }
   }
@@ -52,7 +52,6 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.molecule.runtime)
   testImplementation(libs.robolectric)
-  testImplementation(libs.testing.hamcrest)
   testImplementation(libs.truth)
   testImplementation(libs.turbine)
   testImplementation(projects.circuitTest)

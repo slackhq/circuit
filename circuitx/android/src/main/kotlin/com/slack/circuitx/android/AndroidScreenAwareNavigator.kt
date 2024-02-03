@@ -94,5 +94,5 @@ public fun rememberAndroidScreenAwareNavigator(delegate: Navigator, context: Con
 @Composable
 public fun rememberAndroidScreenAwareNavigator(
   delegate: Navigator,
-  starter: AndroidScreenStarter
+  starter: AndroidScreenStarter,
 ): Navigator = remember(delegate) { AndroidScreenAwareNavigator(delegate, starter) }

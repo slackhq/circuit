@@ -14,6 +14,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 
@@ -44,15 +45,23 @@ public fun CircuitContent(
           onNavEvent(NavEvent.GoTo(screen))
         }
 
-        override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot))
+        override fun resetRoot(
+          newRoot: Screen,
+          saveState: Boolean,
+          restoreState: Boolean,
+        ): List<Screen> {
+          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
           return emptyList()
         }
 
-        override fun pop(): Screen? {
-          onNavEvent(NavEvent.Pop)
+        override fun pop(result: PopResult?): Screen? {
+          onNavEvent(NavEvent.Pop(result))
           return null
         }
+
+        override fun peek(): Screen = screen
+
+        override fun peekBackStack(): List<Screen> = listOf(screen)
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)
@@ -146,7 +155,7 @@ public inline fun rememberEventListener(
   screen: Screen,
   context: CircuitContext = CircuitContext.EMPTY,
   startOnInit: Boolean = true,
-  factory: EventListener.Factory? = null
+  factory: EventListener.Factory? = null,
 ): EventListener {
   return remember(screen, context) {
     (factory?.create(screen, context) ?: EventListener.NONE).also {
@@ -170,7 +179,7 @@ public inline fun rememberPresenter(
   navigator: Navigator = Navigator.NoOp,
   context: CircuitContext = CircuitContext.EMPTY,
   eventListener: EventListener = EventListener.NONE,
-  factory: Presenter.Factory
+  factory: Presenter.Factory,
 ): Presenter<CircuitUiState>? =
   remember(eventListener, screen, navigator, context) {
     eventListener.onBeforeCreatePresenter(screen, navigator, context)
@@ -191,7 +200,7 @@ public inline fun rememberUi(
   screen: Screen,
   context: CircuitContext = CircuitContext.EMPTY,
   eventListener: EventListener = EventListener.NONE,
-  factory: Ui.Factory
+  factory: Ui.Factory,
 ): Ui<CircuitUiState>? =
   remember(eventListener, screen, context) {
     eventListener.onBeforeCreateUi(screen, context)

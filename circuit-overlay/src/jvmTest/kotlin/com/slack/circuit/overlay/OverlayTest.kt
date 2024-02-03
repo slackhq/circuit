@@ -2,23 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.overlay
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
+import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.runTest
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class OverlayTest {
   @Test
   fun noOverlayMeansNullData() = runTest {
@@ -34,13 +32,7 @@ class OverlayTest {
   fun overlayHasData() = runTest {
     moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
-        LaunchedEffect(overlayHost) {
-          overlayHost.show(
-            object : Overlay<String> {
-              @Composable override fun Content(navigator: OverlayNavigator<String>) {}
-            }
-          )
-        }
+        LaunchedEffect(overlayHost) { overlayHost.show(TestOverlay()) }
         overlayHost.currentOverlayData
       }
       .distinctUntilChanged()
@@ -52,32 +44,26 @@ class OverlayTest {
 
   @Test
   fun overlayFinishedHasNullDataAgain() = runTest {
-    val resultState = mutableStateOf<String?>(null)
+    val testOverlay = TestOverlay()
     moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
         val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
         key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }
-        LaunchedEffect(overlayHost) {
-          overlayHost.show(
-            object : Overlay<String> {
-              @Composable
-              override fun Content(navigator: OverlayNavigator<String>) {
-                val resultStateValue = resultState.value
-                if (resultStateValue != null) {
-                  navigator.finish(resultStateValue)
-                }
-              }
-            }
-          )
-        }
+        LaunchedEffect(overlayHost) { overlayHost.show(testOverlay) }
         overlayHostData
       }
       .distinctUntilChanged()
       .test {
         assertNull(awaitItem())
         assertNotNull(awaitItem())
-        resultState.value = "Done!"
+        testOverlay.finish("Done!")
         assertNull(awaitItem())
       }
+  }
+
+  @Test
+  fun overlayStateIsUnavailableByDefault() = runTest {
+    moleculeFlow(RecompositionMode.Immediate) { LocalOverlayState.current }
+      .test { assertEquals(UNAVAILABLE, awaitItem()) }
   }
 }

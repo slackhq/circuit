@@ -20,5 +20,5 @@ import com.slack.circuit.foundation.NavigatorDefaults
  */
 public expect fun GestureNavigationDecoration(
   fallback: NavDecoration = NavigatorDefaults.DefaultDecoration,
-  onBackInvoked: () -> Unit
+  onBackInvoked: () -> Unit,
 ): NavDecoration

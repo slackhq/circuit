@@ -39,6 +39,7 @@ kotlin {
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
         api(libs.compose.ui)
+        implementation(libs.uuid)
       }
     }
     val androidMain by getting {
@@ -54,6 +55,8 @@ kotlin {
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
         implementation(libs.coroutines.test)
+
+        implementation(projects.internalTestUtils)
       }
     }
     val commonJvmTest =
@@ -68,7 +71,10 @@ kotlin {
       }
     val jvmTest by getting {
       dependsOn(commonJvmTest)
-      dependencies { implementation(compose.desktop.currentOs) }
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(libs.picnic)
+      }
     }
     val androidUnitTest by getting {
       dependsOn(commonJvmTest)
@@ -79,6 +85,14 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+    val androidInstrumentedTest by getting {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.coroutines.android)
+        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.compose.ui.testing.junit)
+      }
+    }
   }
 }
 
@@ -87,19 +101,17 @@ tasks
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
     compilerOptions {
-      freeCompilerArgs.addAll(
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-Xexpect-actual-classes" // used for Parcelize in tests
-      )
+      freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
   }
 
 android {
   namespace = "com.slack.circuit.foundation"
-  testOptions { unitTests { isIncludeAndroidResources = true } }
-}
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+  testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
+}
 
 baselineProfile {
   mergeIntoMain = true

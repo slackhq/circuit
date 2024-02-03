@@ -11,9 +11,7 @@ import org.junit.runner.notification.RunNotifier
  *
  * Internally, this delegates to a platform specific runner.
  */
-class ComposeUiTestRunner(
-  klass: Class<*>,
-) : Runner() {
+class ComposeUiTestRunner(klass: Class<*>) : Runner() {
   private val delegateRunner = createRunner(klass)
 
   override fun getDescription(): Description = delegateRunner.description

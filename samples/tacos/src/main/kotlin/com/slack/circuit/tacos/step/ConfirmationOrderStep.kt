@@ -73,7 +73,7 @@ private fun determineDiet(filling: Ingredient, toppings: Set<Ingredient>): Diet 
 
   // Iterate over the list of toppings and determine the highest common dietary level
   // VEGAN being the highest, NONE being the lowest
-  val diet = toppings.fold(Diet.values().last(), updater)
+  val diet = toppings.fold(Diet.entries.last(), updater)
 
   // Check if the filling impacts the dietary level...
   return updater(diet, filling)
@@ -82,7 +82,7 @@ private fun determineDiet(filling: Ingredient, toppings: Set<Ingredient>): Diet 
 @Composable
 internal fun ConfirmationUi(
   state: ConfirmationOrderStep.OrderState,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   with(state) {
     val summary = buildSummary(filling)
@@ -95,16 +95,13 @@ internal fun ConfirmationUi(
           text = stringResource(R.string.confirm_step_details),
           fontWeight = FontWeight.Bold,
           fontSize = 20.sp,
-          modifier = Modifier.padding(bottom = 8.dp)
+          modifier = Modifier.padding(bottom = 8.dp),
         )
         Text(text = summary, modifier = Modifier.padding(bottom = 4.dp))
         toppings.forEachIndexed { i, topping ->
           Row(modifier = Modifier.padding(start = 8.dp)) {
             Text(text = "${i + 1}.", modifier = Modifier.padding(end = 4.dp))
-            Text(
-              text = topping,
-              fontWeight = FontWeight.Bold,
-            )
+            Text(text = topping, fontWeight = FontWeight.Bold)
           }
         }
         Text(text = extra, modifier = Modifier.padding(top = 4.dp))
@@ -117,13 +114,13 @@ internal fun ConfirmationUi(
           Text(
             text = stringResource(R.string.confirm_step_charge_breakdown),
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 4.dp)
+            modifier = Modifier.padding(bottom = 4.dp),
           )
 
           Box(modifier = Modifier.align(Alignment.End).fillMaxWidth()) {
             Text(
               text = stringResource(R.string.confirm_step_taco),
-              modifier = Modifier.align(Alignment.CenterStart)
+              modifier = Modifier.align(Alignment.CenterStart),
             )
             Text(text = "$$baseCost", modifier = Modifier.align(Alignment.CenterEnd))
           }
@@ -131,7 +128,7 @@ internal fun ConfirmationUi(
           Box(modifier = Modifier.align(Alignment.End).fillMaxWidth()) {
             Text(
               text = stringResource(R.string.confirm_step_extras),
-              modifier = Modifier.align(Alignment.CenterStart)
+              modifier = Modifier.align(Alignment.CenterStart),
             )
             Text(text = "$$ingredientsCost", modifier = Modifier.align(Alignment.CenterEnd))
           }

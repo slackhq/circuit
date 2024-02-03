@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -61,7 +62,7 @@ public fun LaunchedImpressionEffect(vararg inputs: Any?, impression: suspend () 
 public fun rememberImpressionNavigator(
   vararg inputs: Any?,
   navigator: Navigator,
-  impression: suspend () -> Unit
+  impression: suspend () -> Unit,
 ): Navigator {
   var navigated by rememberRetained { mutableIntStateOf(0) }
   val navigatedInput = remember { navigated }
@@ -69,23 +70,23 @@ public fun rememberImpressionNavigator(
   return remember(navigator) { OnNavEventNavigator(navigator) { navigated++ } }
 }
 
-private class OnNavEventNavigator(
-  val delegate: Navigator,
-  val onNavEvent: () -> Unit,
-) : Navigator {
-
+private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) : Navigator {
   override fun goTo(screen: Screen) {
     onNavEvent()
     delegate.goTo(screen)
   }
 
-  override fun pop(): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     onNavEvent()
     return delegate.pop()
   }
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun peek(): Screen? = delegate.peek()
+
+  override fun peekBackStack(): List<Screen> = delegate.peekBackStack()
+
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     onNavEvent()
-    return delegate.resetRoot(newRoot)
+    return delegate.resetRoot(newRoot, saveState, restoreState)
   }
 }

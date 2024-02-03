@@ -74,18 +74,17 @@ class MainActivity : AppCompatActivity() {
           remember(selectedUiIndex, selectedPresenterIndex) {
             InteropCounterScreen(
               PresenterSource.entries[selectedPresenterIndex],
-              UiSource.entries[selectedUiIndex]
+              UiSource.entries[selectedUiIndex],
             )
           }
-        val useColumn =
-          calculateWindowSizeClass(this).widthSizeClass == WindowWidthSizeClass.Compact
+        val useColumn = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
 
         val menus: @Composable () -> Unit = {
           Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
             SourceMenu(
               "Presenter Source",
               selectedPresenterIndex,
-              PresenterSource.entries.toTypedArray()
+              PresenterSource.entries.toTypedArray(),
             ) { index ->
               selectedPresenterIndex = index
             }
@@ -115,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             Row(
               modifier = Modifier.padding(paddingValues),
               horizontalArrangement = Arrangement.spacedBy(16.dp),
-              verticalAlignment = Alignment.CenterVertically
+              verticalAlignment = Alignment.CenterVertically,
             ) {
               menus()
               Box(Modifier.weight(1f)) { content(circuitScreen) }
@@ -160,31 +159,23 @@ private fun SourceMenu(
 }
 
 @Composable
-private fun SourceMenuItem(
-  source: Displayable,
-  selectedIndex: Int,
-  onSelected: (Int) -> Unit,
-) {
+private fun SourceMenuItem(source: Displayable, selectedIndex: Int, onSelected: (Int) -> Unit) {
   val isSelected = selectedIndex == source.index
   val style =
     if (isSelected) {
       MaterialTheme.typography.labelLarge.copy(
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.secondary
+        color = MaterialTheme.colorScheme.secondary,
       )
     } else {
       MaterialTheme.typography.labelLarge.copy(
         fontWeight = FontWeight.Normal,
-        color = MaterialTheme.colorScheme.onSurface
+        color = MaterialTheme.colorScheme.onSurface,
       )
     }
   DropdownMenuItem(
     text = {
-      Text(
-        modifier = Modifier.padding(8.dp),
-        text = source.presentationName,
-        style = style,
-      )
+      Text(modifier = Modifier.padding(8.dp), text = source.presentationName, style = style)
     },
     onClick = { onSelected(source.index) },
   )
@@ -193,7 +184,7 @@ private fun SourceMenuItem(
 @Parcelize
 private data class InteropCounterScreen(
   val presenterSource: PresenterSource,
-  val uiSource: UiSource
+  val uiSource: UiSource,
 ) : Screen, Parcelable
 
 @Stable

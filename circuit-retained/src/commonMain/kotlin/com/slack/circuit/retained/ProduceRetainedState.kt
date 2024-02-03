@@ -13,7 +13,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 private class ProduceRetainedStateScopeImpl<T>(
   state: MutableState<T>,
-  override val coroutineContext: CoroutineContext
+  override val coroutineContext: CoroutineContext,
 ) : ProduceStateScope<T>, MutableState<T> by state {
 
   override suspend fun awaitDispose(onDispose: () -> Unit): Nothing {
@@ -54,7 +54,7 @@ private class ProduceRetainedStateScopeImpl<T>(
 @Composable
 public fun <T> produceRetainedState(
   initialValue: T,
-  producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(Unit) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
@@ -92,7 +92,7 @@ public fun <T> produceRetainedState(
 public fun <T> produceRetainedState(
   initialValue: T,
   key1: Any?,
-  producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(key1) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
@@ -131,7 +131,7 @@ public fun <T> produceRetainedState(
   initialValue: T,
   key1: Any?,
   key2: Any?,
-  producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(key1, key2) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
@@ -171,7 +171,7 @@ public fun <T> produceRetainedState(
   key1: Any?,
   key2: Any?,
   key3: Any?,
-  producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(key1, key2, key3) {
@@ -211,7 +211,7 @@ public fun <T> produceRetainedState(
 public fun <T> produceRetainedState(
   initialValue: T,
   vararg keys: Any?,
-  producer: suspend ProduceStateScope<T>.() -> Unit
+  producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
   val result = rememberRetained { mutableStateOf(initialValue) }
   LaunchedEffect(keys = keys) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }

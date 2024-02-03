@@ -35,7 +35,7 @@ data object ToppingsOrderStep : OrderStep {
     data class AvailableToppings(
       val selected: ImmutableSet<Ingredient>,
       val list: ImmutableList<Ingredient>,
-      val eventSink: (Event) -> Unit
+      val eventSink: (Event) -> Unit,
     ) : State
   }
 
@@ -58,7 +58,7 @@ internal class ToppingsProducerImpl(private val repository: IngredientsRepositor
   internal operator fun invoke(
     orderDetails: OrderDetails,
     minimumToppings: Int,
-    eventSink: (OrderStep.Event) -> Unit
+    eventSink: (OrderStep.Event) -> Unit,
   ): ToppingsOrderStep.State {
     val ingredients by
       produceState<ImmutableList<Ingredient>?>(null) { value = repository.getToppings() }
@@ -73,7 +73,7 @@ internal class ToppingsProducerImpl(private val repository: IngredientsRepositor
             event = event,
             plusTopping = { orderDetails.toppings.plus(it) },
             minusTopping = { orderDetails.toppings.minus(it) },
-            eventSink = eventSink
+            eventSink = eventSink,
           )
         }
     }
@@ -84,7 +84,7 @@ private fun updateToppings(
   event: ToppingsOrderStep.Event,
   plusTopping: (Ingredient) -> Set<Ingredient>,
   minusTopping: (Ingredient) -> Set<Ingredient>,
-  eventSink: (OrderStep.Event) -> Unit
+  eventSink: (OrderStep.Event) -> Unit,
 ) {
   val updatedToppings =
     when (event) {
@@ -121,7 +121,7 @@ private fun Loading(modifier: Modifier = Modifier) {
 @Composable
 private fun ToppingsList(
   state: ToppingsOrderStep.State.AvailableToppings,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   val scrollState = rememberScrollState()
   Column(modifier = modifier.verticalScroll(scrollState).fillMaxWidth()) {
@@ -148,11 +148,11 @@ private fun Topping(
   ingredient: Ingredient,
   isSelected: Boolean,
   modifier: Modifier = Modifier,
-  onSelect: (Boolean) -> Unit
+  onSelect: (Boolean) -> Unit,
 ) {
   Row(
     modifier = modifier.clickable { onSelect(!isSelected) },
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     Checkbox(checked = isSelected, modifier = Modifier, onCheckedChange = onSelect)
     OrderIngredient(ingredient)

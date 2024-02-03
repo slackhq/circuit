@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.overlay
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
@@ -43,6 +48,7 @@ import kotlinx.coroutines.sync.withLock
  * ```
  */
 @Stable
+@SubclassOptInRequired(ReadOnlyOverlayApi::class)
 public interface OverlayHost {
   /**
    * The current [OverlayHostData] or null if no overlay is currently showing.
@@ -73,6 +79,7 @@ public interface OverlayHost {
 /** Returns a remembered an [OverlayHost] that can be used to show overlays. */
 @Composable public fun rememberOverlayHost(): OverlayHost = remember { OverlayHostImpl() }
 
+@OptIn(ReadOnlyOverlayApi::class)
 private class OverlayHostImpl : OverlayHost {
   /**
    * Only one [Overlay] can be shown at a time. Since a suspending Mutex is a fair queue, this
@@ -91,7 +98,7 @@ private class OverlayHostImpl : OverlayHost {
           currentOverlayData =
             OverlayHostDataImpl(
               overlay as Overlay<Any>,
-              continuation as CancellableContinuation<Any>
+              continuation as CancellableContinuation<Any>,
             )
         }
       } finally {
@@ -162,8 +169,33 @@ public fun interface OverlayNavigator<Result : Any> {
  * For common overlays, it's useful to create a common `Overlay` subtype that can be reused. For
  * example: `BottomSheetOverlay`, `ModalOverlay`, `TooltipOverlay`, etc.
  */
+@Stable
 public interface Overlay<Result : Any> {
   @Composable public fun Content(navigator: OverlayNavigator<Result>)
+}
+
+/**
+ * An [Overlay] that can be animated in and more interestingly out _after_ it has returned a
+ * [Result]. The [Overlay] is animated in and out by its [enterTransition] and [exitTransition],
+ * [AnimatedContent] is executed with with [AnimatedVisibilityScope] so that child animations can be
+ * coordinated with the overlay's animations.
+ */
+public abstract class AnimatedOverlay<Result : Any>(
+  public val enterTransition: EnterTransition,
+  public val exitTransition: ExitTransition,
+) : Overlay<Result> {
+  @Composable
+  final override fun Content(navigator: OverlayNavigator<Result>) {
+    AnimatedContent(
+      targetState = Unit,
+      transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+    ) {
+      AnimatedContent(navigator)
+    }
+  }
+
+  @Composable
+  public abstract fun AnimatedVisibilityScope.AnimatedContent(navigator: OverlayNavigator<Result>)
 }
 
 /** A [ProvidableCompositionLocal] to expose the current [OverlayHost] in the composition tree. */

@@ -86,7 +86,7 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
       environment.logger,
       environment.codeGenerator,
       environment.options,
-      environment.platforms
+      environment.platforms,
     )
   }
 }
@@ -124,6 +124,8 @@ private class CircuitSymbolProcessor(
   private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
 
+  private val lenient = options["circuit.codegen.lenient"]?.toBoolean() ?: false
+
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
     val codegenMode =
@@ -154,7 +156,7 @@ private class CircuitSymbolProcessor(
         else ->
           logger.error(
             "CircuitInject is only applicable on classes and functions.",
-            annotatedElement
+            annotatedElement,
           )
       }
     }
@@ -234,7 +236,7 @@ private class CircuitSymbolProcessor(
       .writeTo(
         codeGenerator = codeGenerator,
         aggregating = false,
-        originatingKSFiles = originatingFile
+        originatingKSFiles = originatingFile,
       )
 
     val additionalType =
@@ -242,14 +244,14 @@ private class CircuitSymbolProcessor(
         factoryType = factoryData.factoryType,
         factory = ClassName(factoryData.packageName, className + FACTORY),
         scope = scope,
-        topLevelClass = topLevelClass
+        topLevelClass = topLevelClass,
       ) ?: return
 
     FileSpec.get(factoryData.packageName, additionalType)
       .writeTo(
         codeGenerator = codeGenerator,
         aggregating = false,
-        originatingKSFiles = originatingFile
+        originatingKSFiles = originatingFile,
       )
   }
 
@@ -302,7 +304,7 @@ private class CircuitSymbolProcessor(
                 "%M·{·%M(%L)·}",
                 MemberName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "presenterOf"),
                 MemberName(packageName, name),
-                assistedParams
+                assistedParams,
               )
             FactoryType.UI -> {
               // State param is optional
@@ -369,29 +371,34 @@ private class CircuitSymbolProcessor(
                 MemberName(packageName, name),
                 stateParamBlock,
                 modifierParamBlock,
-                assistedParamsBlock
+                assistedParamsBlock,
               )
             }
           }
       }
       InstantiationType.CLASS -> {
-        val cd = annotatedElement as KSClassDeclaration
-        cd.checkVisibility(logger) {
+        val declaration = annotatedElement as KSClassDeclaration
+        declaration.checkVisibility(logger) {
           return null
         }
-        val isAssisted = cd.isAnnotationPresent(AssistedFactory::class)
+        val isAssisted =
+          if (lenient) {
+            declaration.annotations.any { it.shortName.asString().contains("AssistedFactory") }
+          } else {
+            declaration.isAnnotationPresent(AssistedFactory::class)
+          }
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {
-          val creatorFunction = cd.getAllFunctions().filter { it.isAbstract }.single()
+          val creatorFunction = declaration.getAllFunctions().filter { it.isAbstract }.single()
           creatorOrConstructor = creatorFunction
           targetClass = creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
           targetClass.checkVisibility(logger) {
             return null
           }
         } else {
-          creatorOrConstructor = cd.primaryConstructor
-          targetClass = cd
+          creatorOrConstructor = declaration.primaryConstructor
+          targetClass = declaration
         }
         val useProvider =
           !isAssisted && creatorOrConstructor?.isAnnotationPresent(Inject::class) == true
@@ -409,11 +416,17 @@ private class CircuitSymbolProcessor(
             }
             .firstOrNull()
             ?: run {
+              val annotationsString =
+                declaration.annotations.toList().joinToString {
+                  it.annotationType.resolve().toTypeName().toString()
+                }
               logger.error(
                 "Factory must be for a UI or Presenter class, but was " +
-                  "${targetClass.qualifiedName?.asString()}. " +
-                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}",
-                targetClass
+                  "${targetClass.qualifiedName?.asString()}.\n" +
+                  "Supertypes: ${targetClass.getAllSuperTypes().toList()}.\n" +
+                  "isAssisted? ${isAssisted}\n" +
+                  "Annotations: $annotationsString}",
+                targetClass,
               )
               return null
             }
@@ -426,7 +439,7 @@ private class CircuitSymbolProcessor(
               symbols,
               logger,
               screenKSType,
-              allowNavigator = factoryType == FactoryType.PRESENTER
+              allowNavigator = factoryType == FactoryType.PRESENTER,
             )
           }
         codeBlock =
@@ -435,18 +448,20 @@ private class CircuitSymbolProcessor(
             constructorParams.add(
               ParameterSpec.builder(
                   "provider",
-                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName())
+                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName()),
                 )
                 .build()
             )
             CodeBlock.of("provider.get()")
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
-            constructorParams.add(ParameterSpec.builder("factory", cd.toClassName()).build())
+            constructorParams.add(
+              ParameterSpec.builder("factory", declaration.toClassName()).build()
+            )
             CodeBlock.of(
               "factory.%L(%L)",
               creatorOrConstructor!!.simpleName.getShortName(),
-              assistedParams
+              assistedParams,
             )
           } else {
             // Simple constructor call, no injection.
@@ -458,11 +473,7 @@ private class CircuitSymbolProcessor(
   }
 }
 
-private data class AssistedType(
-  val factoryName: String,
-  val type: TypeName,
-  val name: String,
-)
+private data class AssistedType(val factoryName: String, val type: TypeName, val name: String)
 
 /**
  * Returns a [CodeBlock] representation of all named assisted parameters on this
@@ -507,7 +518,7 @@ private fun KSFunctionDeclaration.assistedParameters(
             } else {
               logger.error(
                 "Navigator type mismatch. Navigators are not injectable on this type.",
-                param
+                param,
               )
             }
           }
@@ -663,7 +674,7 @@ private enum class CodegenMode {
             AnnotationSpec.builder(DAGGER_ORIGINATING_ELEMENT)
               .addMember("%L = %T::class", "topLevelClass", topLevelClass)
               .build()
-          }
+          },
         )
 
       val providerAnnotations =

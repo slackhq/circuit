@@ -98,6 +98,9 @@ dependencyResolutionManagement {
 
     // JB Compose Repo
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
+
+    // emulator.wtf
+    maven(url = "https://maven.emulator.wtf/releases/") { content { includeGroup("wtf.emulator") } }
   }
 }
 
@@ -166,7 +169,7 @@ pluginManagement {
         includeModule("com.github.ben-manes", "gradle-versions-plugin")
         includeModule(
           "com.github.ben-manes.versions",
-          "com.github.ben-manes.versions.gradle.plugin"
+          "com.github.ben-manes.versions.gradle.plugin",
         )
         includeModule("com.gradle", "gradle-enterprise-gradle-plugin")
         includeModule("com.gradle.enterprise", "com.gradle.enterprise.gradle.plugin")
@@ -229,6 +232,8 @@ include(
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
+  ":samples:tutorial",
+  ":internal-test-utils",
 )
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance

@@ -45,7 +45,7 @@ private fun buildPresenterFactory(): Presenter.Factory =
       fillingsProducer = FillingsProducerImpl(IngredientsRepositoryImpl),
       toppingsProducer = ToppingsProducerImpl(IngredientsRepositoryImpl),
       confirmationProducer = { details, _ -> confirmationProducer(details) },
-      summaryProducer = { _, sink -> summaryProducer(sink) }
+      summaryProducer = { _, sink -> summaryProducer(sink) },
     )
   }
 

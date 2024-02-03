@@ -28,6 +28,6 @@ public interface NavDecoration {
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
-    content: @Composable (T) -> Unit
+    content: @Composable (T) -> Unit,
   )
 }

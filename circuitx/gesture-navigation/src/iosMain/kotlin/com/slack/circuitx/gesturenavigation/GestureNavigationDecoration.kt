@@ -73,7 +73,7 @@ public class GestureNavigationProperties(
 @OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecoration(
   fallback: NavDecoration,
-  onBackInvoked: () -> Unit
+  onBackInvoked: () -> Unit,
 ): NavDecoration = IosGestureNavigationDecoration(onBackInvoked = onBackInvoked)
 
 /**
@@ -119,14 +119,22 @@ private class IosGestureNavigationDecoration(
           }
       }
 
-      val transition = updateTransition(targetState = current, label = "GestureNavDecoration")
+      val transition =
+        updateTransition(
+          targetState = GestureNavTransitionHolder(current, backStackDepth, args.last()),
+          label = "GestureNavDecoration",
+        )
 
-      if (previous != null) {
-        // Previous content is only visible if the swipe-dismiss offset != 0
+      if (previous != null && !transition.isStateBeingAnimated { it.record == previous }) {
+        // We display the 'previous' item in the back stack for when the user performs a gesture
+        // to go back.
+        // We only display it here if the transition is not running. When the transition is
+        // running, the record's movable content will still be attached to the
+        // AnimatedContent below. If we call it here too, we will invoke a new copy of
+        // the content (and thus dropping all state). The if statement above keeps the states
+        // exclusive, so that the movable content is only used once at a time.
         val showPrevious by
-          remember(dismissState) {
-            derivedStateOf { dismissState.offset.value != 0f || transition.isRunning }
-          }
+          remember(dismissState) { derivedStateOf { dismissState.offset.value != 0f } }
 
         OptionalLayout(
           shouldLayout = { showPrevious },
@@ -149,21 +157,22 @@ private class IosGestureNavigationDecoration(
 
       transition.AnimatedContent(
         transitionSpec = {
+          val diff = targetState.backStackDepth - initialState.backStackDepth
+          val sameRoot = targetState.rootRecord == initialState.rootRecord
+
           when {
             // adding to back stack
-            backStackDepth > prevStackDepth -> {
-              slideInHorizontally(
-                  initialOffsetX = End,
-                )
+            sameRoot && diff > 0 -> {
+              slideInHorizontally(initialOffsetX = End)
                 .togetherWith(
                   slideOutHorizontally { width ->
                     -(properties.enterOffsetFraction * width).roundToInt()
-                  },
+                  }
                 )
             }
 
             // come back from back stack
-            backStackDepth < prevStackDepth -> {
+            sameRoot && diff < 0 -> {
               if (offsetWhenPopped != 0f) {
                 // If the record change was caused by a swipe gesture, let's
                 // jump cut
@@ -172,9 +181,7 @@ private class IosGestureNavigationDecoration(
                 slideInHorizontally { width ->
                     -(properties.enterOffsetFraction * width).roundToInt()
                   }
-                  .togetherWith(
-                    slideOutHorizontally(targetOffsetX = End),
-                  )
+                  .togetherWith(slideOutHorizontally(targetOffsetX = End))
                   .apply { targetContentZIndex = -1f }
               }
             }
@@ -184,13 +191,13 @@ private class IosGestureNavigationDecoration(
           }
         },
         modifier = modifier,
-      ) { record ->
+      ) { holder ->
         SwipeableContent(
           state = dismissState,
-          swipeEnabled = backStackDepth > 1,
-          nestedScrollEnabled = backStackDepth > 1 && properties.swipeBackFromNestedScroll,
+          swipeEnabled = holder.backStackDepth > 1,
+          nestedScrollEnabled = holder.backStackDepth > 1 && properties.swipeBackFromNestedScroll,
           dismissThreshold = properties.swipeThreshold,
-          content = { content(record) },
+          content = { content(holder.record) },
         )
       }
 
@@ -226,10 +233,7 @@ private fun SwipeableContent(
           .swipeable(
             state = state,
             anchors =
-              mapOf(
-                0f to DismissValue.Default,
-                width.toFloat() to DismissValue.DismissedToEnd,
-              ),
+              mapOf(0f to DismissValue.Default, width.toFloat() to DismissValue.DismissedToEnd),
             thresholds = { _, _ -> dismissThreshold },
             orientation = Orientation.Horizontal,
             enabled = swipeEnabled,
@@ -240,11 +244,9 @@ private fun SwipeableContent(
                 factorAtMin = SwipeableDefaults.StiffResistanceFactor,
                 factorAtMax = SwipeableDefaults.StandardResistanceFactor,
               ),
-          ),
+          )
     ) {
-      Box(
-        modifier = Modifier.offset { IntOffset(x = state.offset.value.roundToInt(), y = 0) },
-      ) {
+      Box(modifier = Modifier.offset { IntOffset(x = state.offset.value.roundToInt(), y = 0) }) {
         content()
       }
     }
@@ -252,13 +254,9 @@ private fun SwipeableContent(
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-private class SwipeDismissNestedScrollConnection(
-  private val state: DismissState,
-) : NestedScrollConnection {
-  override fun onPreScroll(
-    available: Offset,
-    source: NestedScrollSource,
-  ): Offset =
+private class SwipeDismissNestedScrollConnection(private val state: DismissState) :
+  NestedScrollConnection {
+  override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
     when {
       available.x < 0 && source == NestedScrollSource.Drag -> {
         // If we're being swiped back to origin, let the SwipeDismiss handle it first
@@ -286,10 +284,7 @@ private class SwipeDismissNestedScrollConnection(
       else -> Velocity.Zero
     }
 
-  override suspend fun onPostFling(
-    consumed: Velocity,
-    available: Velocity,
-  ): Velocity {
+  override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
     state.performFling(velocity = available.x)
     return available
   }

@@ -34,7 +34,7 @@ internal fun Instructions(@StringRes resId: Int, modifier: Modifier = Modifier) 
   Text(
     text = stringResource(resId),
     modifier = modifier.padding(start = 16.dp, bottom = 8.dp),
-    fontStyle = FontStyle.Italic
+    fontStyle = FontStyle.Italic,
   )
 }
 
@@ -59,14 +59,7 @@ internal fun OrderIngredient(ingredient: Ingredient) {
 @Composable
 private fun PreviewOrderIngredient() {
   Surface {
-    OrderIngredient(
-      Ingredient(
-        name = "Apple",
-        calories = 99,
-        diet = Diet.VEGAN,
-        charge = 199,
-      )
-    )
+    OrderIngredient(Ingredient(name = "Apple", calories = 99, diet = Diet.VEGAN, charge = 199))
   }
 }
 
@@ -81,7 +74,7 @@ private fun DietBadge(diet: Diet, modifier: Modifier = Modifier) {
       modifier = Modifier.padding(4.dp),
       fontSize = 6.sp,
       fontWeight = FontWeight.Bold,
-      color = MaterialTheme.colorScheme.surface
+      color = MaterialTheme.colorScheme.surface,
     )
   }
 }
@@ -112,7 +105,7 @@ private fun Calories(calories: Int, modifier: Modifier = Modifier) {
   Text(
     text = stringResource(R.string.common_calories, calories),
     modifier = modifier,
-    fontSize = fontSize
+    fontSize = fontSize,
   )
 }
 

@@ -3,8 +3,8 @@
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  kotlin("native.cocoapods")
   alias(libs.plugins.agp.library)
+  alias(libs.plugins.skie)
 }
 
 version = "1.0.0-SNAPSHOT"
@@ -13,30 +13,12 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
-  iosArm64()
-  iosSimulatorArm64()
   js {
     moduleName = "counterbrowser"
     nodejs()
   }
-  // TODO regular frameworks are not yet supported
-  //  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
-  //    it.binaries.framework {
-  //      baseName = "counter"
-  //      isStatic = true
-  //    }
-  //  }
-
-  cocoapods {
-    summary = "Counter presenter implementation"
-    homepage = "None"
-    ios.deploymentTarget = "14.1"
-    podfile = project.file("apps/Podfile")
-    framework {
-      baseName = "counter"
-      isStatic = true
-    }
+  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+    it.binaries.framework { baseName = "counter" }
   }
   // endregion
 

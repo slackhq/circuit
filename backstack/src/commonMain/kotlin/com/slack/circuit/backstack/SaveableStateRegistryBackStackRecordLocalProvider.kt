@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -42,7 +43,7 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
       rememberSaveable(
         record,
         saver = BackStackRecordLocalSaveableStateRegistry.Saver,
-        key = record.key
+        key = record.key,
       ) {
         BackStackRecordLocalSaveableStateRegistry(mutableStateMapOf())
       }
@@ -102,7 +103,7 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   override fun registerProvider(
     key: String,
-    valueProvider: () -> Any?
+    valueProvider: () -> Any?,
   ): SaveableStateRegistry.Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
     synchronized(lock) { valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider) }
@@ -143,13 +144,15 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   companion object {
     val Saver =
-      Saver<BackStackRecordLocalSaveableStateRegistry, Map<String, List<Any?>>>(
+      mapSaver(
         save = { value -> value.performSave() },
         restore = { value ->
           BackStackRecordLocalSaveableStateRegistry(
-            mutableStateMapOf<String, List<Any?>>().apply { putAll(value) }
+            mutableStateMapOf<String, List<Any?>>().apply {
+              @Suppress("UNCHECKED_CAST") putAll(value as Map<String, List<Any?>>)
+            }
           )
-        }
+        },
       )
   }
 }

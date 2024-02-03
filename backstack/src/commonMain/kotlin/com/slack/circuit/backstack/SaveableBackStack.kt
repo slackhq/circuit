@@ -102,11 +102,8 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
     /**
      * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
      * we may push and pop back to a given record multiple times, and thus need to be able to push
-     * and receive multiple results.
-     *
-     * TODO what's the right behavior here?
-     * - Capacity 1 + overflow drop oldest: we only care about the most recent result
-     * - Conflated: only take one result until the presenter takes it.
+     * and receive multiple results. We use [BufferOverflow.DROP_OLDEST] to ensure we only care
+     * about the most recent result.
      */
     private val resultChannel =
       Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)

@@ -14,3 +14,7 @@ See the README.md files in each sample directory for more information.
   Counter example.
 - `tacos` - A food ordering flow/wizard app demonstrating use of a composite Circuit presenter and
   multiple nested UIs.
+- `tutorial` - A tutorial that walks through the creation of a simple Circuit app. Follow the
+  instructions [here](https://slackhq.github.io/circuit/tutorial/).
+  - Run the Desktop app via `./gradlew :samples:tutorial:run`.
+  - Install the Android app via `./gradlew :samples:tutorial:installDebug`.

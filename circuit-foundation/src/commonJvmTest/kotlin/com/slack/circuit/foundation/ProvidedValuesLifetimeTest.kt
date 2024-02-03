@@ -49,18 +49,18 @@ class ProvidedValuesLifetimeTest {
 
       setContent {
         CircuitCompositionLocals(circuit) {
-          val backstack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
+          val backStack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
           val navigator =
             rememberCircuitNavigator(
-              backstack = backstack,
+              backStack = backStack,
               onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(
             navigator = navigator,
-            backstack = backstack,
+            backStack = backStack,
             providedValues =
               providedValuesForBackStack(
-                backStack = backstack,
+                backStack = backStack,
                 stackLocalProviders = persistentListOf(TestBackStackRecordLocalProvider),
               ),
           )

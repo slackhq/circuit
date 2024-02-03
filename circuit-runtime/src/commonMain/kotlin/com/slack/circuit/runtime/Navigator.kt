@@ -3,14 +3,21 @@
 package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+
+/** A Navigator that only supports [goTo]. */
+@Stable
+public interface GoToNavigator {
+  public fun goTo(screen: Screen)
+}
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
-public interface Navigator {
-  public fun goTo(screen: Screen)
+public interface Navigator : GoToNavigator {
+  public override fun goTo(screen: Screen)
 
-  public fun pop(): Screen?
+  public fun pop(result: PopResult? = null): Screen?
 
   /** Returns current top most screen of backstack, or null if backstack is empty. */
   public fun peek(): Screen?
@@ -42,7 +49,7 @@ public interface Navigator {
    * enable different root screens to have their own back stacks. A common use case is with the
    * bottom navigation bar UX pattern.
    *
-   * ``` kotlin
+   * ```kotlin
    * navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
    * // User navigates to a details screen
    * navigator.push(EntityDetails(id = foo))
@@ -74,7 +81,7 @@ public interface Navigator {
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
 
-    override fun pop(): Screen? = null
+    override fun pop(result: PopResult?): Screen? = null
 
     override fun peek(): Screen? = null
 

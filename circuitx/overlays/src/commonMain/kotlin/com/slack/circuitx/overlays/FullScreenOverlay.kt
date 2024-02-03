@@ -13,6 +13,7 @@ import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -47,7 +48,7 @@ internal class FullScreenOverlay<S : Screen>(
   override fun Content(navigator: OverlayNavigator<Unit>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
-      DispatchingOverlayNavigator(screen, navigator) { callbacks.onFinish() }
+      DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
     }
 
     BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
@@ -68,7 +69,7 @@ internal class DispatchingOverlayNavigator(
     error("goTo() is not supported in full screen overlays!")
   }
 
-  override fun pop(): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(Unit)
     onPop()
     return null

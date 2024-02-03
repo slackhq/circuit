@@ -26,7 +26,7 @@ fun MainActivity.tutorialOnCreate() {
       val backStack = rememberSaveableBackStack { push(InboxScreen) }
       val navigator = rememberCircuitNavigator(backStack)
       CircuitCompositionLocals(circuit) {
-        NavigableCircuitContent(navigator = navigator, backstack = backStack)
+        NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }
   }

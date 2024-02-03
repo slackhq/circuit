@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -143,11 +144,13 @@ private class BackStackRecordLocalSaveableStateRegistry(
 
   companion object {
     val Saver =
-      Saver<BackStackRecordLocalSaveableStateRegistry, Map<String, List<Any?>>>(
+      mapSaver(
         save = { value -> value.performSave() },
         restore = { value ->
           BackStackRecordLocalSaveableStateRegistry(
-            mutableStateMapOf<String, List<Any?>>().apply { putAll(value) }
+            mutableStateMapOf<String, List<Any?>>().apply {
+              @Suppress("UNCHECKED_CAST") putAll(value as Map<String, List<Any?>>)
+            }
           )
         },
       )

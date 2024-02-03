@@ -165,7 +165,7 @@ public class Circuit private constructor(builder: Builder) {
 
     public inline fun <reified S : Screen, UiState : CircuitUiState> addPresenter(
       crossinline factory:
-        (screen: Screen, navigator: Navigator, context: CircuitContext) -> Presenter<UiState>
+        (screen: S, navigator: Navigator, context: CircuitContext) -> Presenter<UiState>
     ): Builder = apply {
       addPresenterFactory { screen, navigator, context ->
         if (screen is S) {

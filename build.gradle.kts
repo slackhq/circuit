@@ -19,12 +19,14 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import wtf.emulator.EwExtension
 
@@ -468,5 +470,17 @@ subprojects {
     // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
     // that would include benchmarks.
     tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
+  }
+
+  // TODO cover until anvil supports 2.0
+  subprojects {
+    pluginManager.withPlugin("com.squareup.anvil") {
+      tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+          progressiveMode.set(false)
+          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        }
+      }
+    }
   }
 }

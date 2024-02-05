@@ -1,6 +1,98 @@
 Changelog
 =========
 
+**Unreleased**
+--------------
+
+### Navigation with results
+
+This release introduces support for inter-screen navigation results. This is useful for scenarios where you want to pass data back to the previous screen after a navigation event, such as when a user selects an item from a list and you want to pass the selected item back to the previous screen.
+
+```kotlin
+var photoUrl by remember { mutableStateOf<String?>(null) }
+val takePhotoNavigator = rememberAnsweringNavigator<TakePhotoScreen.Result>(navigator) { result ->
+  photoUrl = result.url
+}
+
+// Elsewhere
+takePhotoNavigator.goTo(TakePhotoScreen)
+
+// In TakePhotoScreen.kt
+data object TakePhotoScreen : Screen {
+  @Parcelize
+  data class Result(val url: String) : PopResult
+}
+
+class TakePhotoPresenter {
+  @Composable fun present(): State {
+    // ...
+    navigator.pop(result = TakePhotoScreen.Result(newFilters))
+  }
+}
+```
+
+See the [new section in the navigation docs](https://slackhq.github.io/circuit/navigation/#results) for more details, as well as [updates to the Overlays](https://slackhq.github.io/circuit/overlays/overlays/#overlay-vs-popresult) docs that help explain when to use an `Overlay` vs navigating to a `Screen` with a result.
+
+### Support for multiple back stacks
+
+This release introduces support for saving/restoring navigation state on root resets (aka multi back stack). This is useful for scenarios where you want to reset the back stack to a new root but still want to retain the previous back stack's state, such as an app UI that has a persistent bottom navigation bar with different back stacks for each tab.
+
+This works by adding two new optional `saveState` and `restoreState` parameters to `Navigator.resetRoot()`.
+
+```kotlin
+navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
+// User navigates to a details screen
+navigator.push(EntityDetails(id = foo))
+// Later, user clicks on a bottom navigation item
+navigator.resetRoot(HomeNavTab2, saveState = true, restoreState = true)
+// Later, user switches back to the first navigation item
+navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
+// The existing back stack is restored, and EntityDetails(id = foo) will be top of
+// the back stack
+```
+
+There are times when saving and restoring the back stack may not be appropriate, so use this feature only when it makes sense. A common example where it probably does not make sense is launching screens which define a UX flow which has a defined completion, such as onboarding.
+
+### New Tutorial!
+
+On top of Circuit's existing docs, we've added a new tutorial to help you get started with Circuit. It's a step-by-step guide that walks you through building a simple inbox app using Circuit, intended to serve as a sort of small code lab that one could do in 1-2 hours. Check it out [here](https://slackhq.github.io/circuit/tutorial/).
+
+### Overlay Improvements
+
+- **New**: Promote `AlertDialogOverlay`, `BasicAlertDialogOverlay`, and `BasicDialogOverlay` to `circuitx-overlay`.
+- **New**: Add `OverlayEffect` to `circuit-overlay`. This offers a simple composable effect to show an overlay and await a result.
+  ```kotlin
+  OverlayEffect(state) { host ->
+    val result = host.show(AlertDialogOverlay(...))
+    // Do something with the result
+  }
+  ```
+- Add `OverlayState` and `LocalOverlayState` to `circuit-overlay`. This allows you to check the current overlay state (`UNAVAILABLE`, `HIDDEN`, or `SHOWING`).
+- Mark `OverlayHost` as `@ReadOnlyOverlayApi` to indicate that it's not intended for direct implementation by consumers.
+- Mark `Overlay` as `@Stable`.
+
+### Misc
+
+- Make `NavEvent.screen` public.
+- Change `Navigator.popUntil` to be exclusive.
+- Add `Navigator.peek()` to peek the top screen of the back stack.
+- Add `Navigator.peekBackStack()` to peek the top screen of the back stack.
+- Align spelling of back stack parameters across all APIs to `backStack`.
+- Refreshed iOS Counter sample using SPM and SKIE.
+- Convert STAR sample to KMP. Starting with Android and Desktop.
+- Fix baseline profiles packaging. Due to a bug in the baseline profile plugin, we were not packaging the baseline profiles in the artifacts. This is now fixed.
+- Mark `BackStack.Record` as `@Stable`.
+- Update the default decoration to better match the android 34 transitions.
+- Update androidx.lifecycle to `2.7.0`.
+- Update to compose multiplatform to `1.5.12`.
+- Update compose-compiler to `1.5.8`.
+- Update AtomicFu to `0.23.2`.
+- Update Anvil to `2.4.9`.
+- Update KotlinPoet to `1.16.0`.
+- Compile against KSP `1.9.22-1.0.17`.
+
+Special thanks to [@milis92](https://github.com/milis92), [@ChrisBanes](https://github.com/ChrisBanes), and [@vulpeszerda](https://github.com/vulpeszerda) for contributing to this release!
+
 0.18.2
 ------
 
@@ -56,7 +148,7 @@ Special thanks to [@alexvanyo](https://github.com/alexvanyo) for contributing to
 
 _2023-11-28_
 
-## **New**: circuitx-effects artifact
+### **New**: circuitx-effects artifact
 
 The circuitx-effects artifact provides some effects for use with logging/analytics. These effects
 are typically used in Circuit presenters for tracking `impressions` and will run only once until
@@ -70,11 +162,11 @@ dependencies {
 
 Docs: https://slackhq.github.io/circuit/circuitx/#effects
 
-## **New**: Add codegen mode to support both Anvil and Hilt
+### **New**: Add codegen mode to support both Anvil and Hilt
 
 Circuit's code gen artifact now supports generating for Hilt projects. See the docs for usage instructions: https://slackhq.github.io/circuit/code-gen/
 
-## Misc
+### Misc
 
 - Decompose various `CircuitContent` internals like `rememberPresenter()`, `rememberUi`, etc for reuse.
 - Make `CircuitContent()` overload that accepts a pre-constructed presenter/ui parameters public to allow for more control over content.
@@ -124,7 +216,7 @@ _2023-11-01_
 
 _2023-09-20_
 
-## **New**: Allow retained state to be retained whilst UIs and Presenters are on the back stack.
+### **New**: Allow retained state to be retained whilst UIs and Presenters are on the back stack.
 
 Originally, `circuit-retained` was implemented as a solution for preserving arbitrary data across configuration changes on Android. With this change it now also acts as a solution for retaining state _across the back stack_, meaning that traversing the backstack no longer causes restored contents to re-run through their empty states anymore.
 
@@ -134,7 +226,7 @@ Note that `circuit-retained` is still optional for now, but we are considering m
 
 Full details + demos can be found in https://github.com/slackhq/circuit/pull/888. Big thank you to [@chrisbanes](https://github.com/chrisbanes) for the implementation!
 
-## Other changes
+### Other changes
 
 - **New**: Add `collectAsRetainedState` utility function, analogous to `collectAsState` but will retain the previous value across configuration changes and back stack entries.
 - **Enhancement**: Optimize `rememberRetained` with a port of the analogous optimization in `rememberSaveable`. See [#850](https://github.com/slackhq/circuit/pull/850).
@@ -310,7 +402,7 @@ _2023-06-02_
 
 _2023-05-26_
 
-## Preliminary support for iOS targets
+### Preliminary support for iOS targets
 
 Following the announcement of Compose for iOS alpha, this release adds `ios()` and `iosSimulatorArm64()` targets for the Circuit core artifacts. Note that this support doesn't come with any extra APIs yet for iOS, just basic target support only. We're not super sure what direction we want to take with iOS, but encourage others to try it out and let us know what patterns you like. We have updated the Counter sample to include an iOS app target as well, using Circuit for the presentation layer only and SwiftUI for the UI.
 
@@ -318,7 +410,7 @@ Note that circuit-codegen and circuit-codegen-annotations don't support these ye
 
 More details can be found in the PR: https://github.com/slackhq/circuit/pull/583
 
-## Misc
+### Misc
 
 - Use new baseline profile plugin for generating baseline profiles.
 - Misc sample app fixes and updates.
@@ -329,7 +421,7 @@ More details can be found in the PR: https://github.com/slackhq/circuit/pull/583
 
 Note that we unintentionally used an experimental animation API for `NavigatorDefaults.DefaultDecotration`, which may cause R8 issues if you use a newer, experimental version of Compose animation. To avoid issues, copy the animation code and use your own copy compiled against the newest animation APIs. We'll fix this after Compose 1.5.0 is released.
 
-## Dependency updates
+### Dependency updates
 
 ```
 androidx.activity -> 1.7.2
@@ -346,7 +438,7 @@ turbine -> 0.13.0
 
 _2023-04-06_
 
-## [Core] Split up core artifacts.
+### [Core] Split up core artifacts.
 - `circuit-runtime`: common runtime components like `Screen`, `Navigator`, etc.
 - `circuit-runtime-presenter`: the `Presenter` API, depends on `circuit-runtime`.
 - `circuit-runtime-ui`: the `Ui` API, depends on `circuit-runtime`.
@@ -356,7 +448,7 @@ The goal in this is to allow more granular dependencies and easier building agai
 
 Where we think this could really shine is in multiplatform projects where Circuit's UI APIs may be more or less abstracted away in service of using native UI, like in iOS.
 
-### `circuit-runtime` artifact
+#### `circuit-runtime` artifact
 | Before                           | After                                    |
 |----------------------------------|------------------------------------------|
 | com.slack.circuit.CircuitContext | com.slack.circuit.runtime.CircuitContext |
@@ -365,17 +457,17 @@ Where we think this could really shine is in multiplatform projects where Circui
 | com.slack.circuit.Navigator      | com.slack.circuit.runtime.Navigator      |
 | com.slack.circuit.Screen         | com.slack.circuit.runtime.Screen         |
 
-### `circuit-runtime-presenter` artifact
+#### `circuit-runtime-presenter` artifact
 | Before                      | After                                         |
 |-----------------------------|-----------------------------------------------|
 | com.slack.circuit.Presenter | com.slack.circuit.runtime.presenter.Presenter |
 
-### `circuit-runtime-ui` artifact
+#### `circuit-runtime-ui` artifact
 | Before               | After                                  |
 |----------------------|----------------------------------------|
 | com.slack.circuit.Ui | com.slack.circuit.runtime.presenter.Ui |
 
-### `circuit-foundation` artifact
+#### `circuit-foundation` artifact
 | Before                                     | After                                                 |
 |--------------------------------------------|-------------------------------------------------------|
 | com.slack.circuit.CircuitCompositionLocals | com.slack.circuit.foundation.CircuitCompositionLocals |
@@ -390,7 +482,7 @@ Where we think this could really shine is in multiplatform projects where Circui
 | com.slack.circuit.push                     | com.slack.circuit.foundation.push                     |
 | com.slack.circuit.screen                   | com.slack.circuit.foundation.screen                   |
 
-## More Highlights
+### More Highlights
 - [Core] Remove Android-specific `NavigableCircuitContent` and just use common one. Back handling still runs through `BackHandler`, but is now configured in `rememberCircuitNavigator`.
 - [Core] Add `defaultNavDecoration` to `CircuitConfig` to allow for customizing the default `NavDecoration` used in `NavigableCircuitContent`.
 - [Core] Mark `CircuitUiState` as `@Stable` instead of `@Immutable`.

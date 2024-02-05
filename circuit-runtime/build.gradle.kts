@@ -28,6 +28,7 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(libs.coroutines)
+        api(projects.backstack)
         api(projects.circuitRuntimeScreen)
       }
     }

@@ -4,6 +4,7 @@ package com.slack.circuit.test
 
 import app.cash.turbine.Turbine
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -23,38 +24,37 @@ import com.slack.circuit.runtime.screen.Screen
  * }
  * ```
  */
-public class FakeNavigator : Navigator {
-  private val navigatedScreens = Turbine<Screen>()
+public class FakeNavigator(initialScreen: Screen? = null) : Navigator {
+  private val navigatedScreens = ArrayDeque<Screen>().apply { initialScreen?.let(::add) }
   private val newRoots = Turbine<Screen>()
   private val pops = Turbine<Unit>()
+  private val results = Turbine<PopResult>()
 
   override fun goTo(screen: Screen) {
     navigatedScreens.add(screen)
   }
 
-  override fun pop(): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     pops.add(Unit)
-    return null
+    result?.let(results::add)
+    return navigatedScreens.removeLastOrNull()
   }
 
-  override fun peek(): Screen? {
-    error("peek() is not supported in FakeNavigator!")
+  override fun peek(): Screen? = navigatedScreens.lastOrNull()
+
+  override fun peekBackStack(): List<Screen> {
+    error("peekBackStack() is not supported in FakeNavigator")
   }
 
-  override fun resetRoot(newRoot: Screen): List<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     newRoots.add(newRoot)
-    val oldScreens = buildList {
-      val channel = navigatedScreens.asChannel()
-      while (true) {
-        val screen = channel.tryReceive().getOrNull() ?: break
-        add(screen)
-      }
-    }
-
     // Note: to simulate popping off the backstack, screens should be returned in the reverse
     // order that they were added. As the channel returns them in the order they were added, we
     // need to reverse here before returning.
-    return oldScreens.reversed()
+    val oldScreens = navigatedScreens.toList().reversed()
+    navigatedScreens.clear()
+
+    return oldScreens
   }
 
   /**
@@ -62,10 +62,12 @@ public class FakeNavigator : Navigator {
    *
    * For non-coroutines users only.
    */
-  public fun takeNextScreen(): Screen = navigatedScreens.takeItem()
+  public fun takeNextScreen(): Screen = navigatedScreens.removeFirst()
 
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
-  public suspend fun awaitNextScreen(): Screen = navigatedScreens.awaitItem()
+  // TODO suspend isn't necessary here anymore but left for backwards compatibility
+  @Suppress("RedundantSuspendModifier")
+  public suspend fun awaitNextScreen(): Screen = navigatedScreens.removeFirst()
 
   /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
   public suspend fun awaitResetRoot(): Screen = newRoots.awaitItem()
@@ -75,11 +77,11 @@ public class FakeNavigator : Navigator {
 
   /** Asserts that all events so far have been consumed. */
   public fun assertIsEmpty() {
-    navigatedScreens.ensureAllEventsConsumed()
+    check(navigatedScreens.isEmpty())
   }
 
   /** Asserts that no events have been emitted. */
   public fun expectNoEvents() {
-    navigatedScreens.expectNoEvents()
+    check(navigatedScreens.isEmpty())
   }
 }

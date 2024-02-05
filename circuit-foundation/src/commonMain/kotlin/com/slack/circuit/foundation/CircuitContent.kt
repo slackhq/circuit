@@ -14,6 +14,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 
@@ -44,19 +45,23 @@ public fun CircuitContent(
           onNavEvent(NavEvent.GoTo(screen))
         }
 
-        override fun resetRoot(newRoot: Screen): List<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot))
+        override fun resetRoot(
+          newRoot: Screen,
+          saveState: Boolean,
+          restoreState: Boolean,
+        ): List<Screen> {
+          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
           return emptyList()
         }
 
-        override fun pop(): Screen? {
-          onNavEvent(NavEvent.Pop)
+        override fun pop(result: PopResult?): Screen? {
+          onNavEvent(NavEvent.Pop(result))
           return null
         }
 
-        override fun peek(): Screen {
-          return screen
-        }
+        override fun peek(): Screen = screen
+
+        override fun peekBackStack(): List<Screen> = listOf(screen)
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

@@ -69,3 +69,19 @@ ContentWithOverlays {
 ```
 
 This will expose a `LocalOverlayHost` composition local that can be used by UIs to show overlays. This also exposes a `LocalOverlayState` composition local that can be used to check the current overlay state (`UNAVAILABLE`, `HIDDEN`, or `SHOWING`).
+
+## `Overlay` vs `PopResult`
+
+Overlays and navigation results can accomplish similar goals, and you should choose the right one for your use case.
+
+|                                            | `Overlay` | `PopResult` |
+|--------------------------------------------|-----------|-------------|
+| Survives process death                     | ❌         | ✅           |
+| Type-safe                                  | ✅         | 🟡          |
+| Suspend on result                          | ✅         | ❌           |
+| Participates in back stack                 | ❌         | ✅           |
+| Supports non-saveable inputs/outputs       | ✅         | ❌           |
+| Can participate with the caller's UI       | ✅         | ❌           |
+| Can return multiple different result types | ❌         | ✅           |
+
+*`PopResult` is technically type-safe, but it's not as strongly typed as `Overlay` results since there is nothing inherently requiring the target screen to pop a given result type back.

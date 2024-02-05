@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,12 +56,10 @@ data object HomeScreen : Screen {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomePresenter(navigator: Navigator): HomeScreen.State {
-  var selectedIndex by remember { mutableStateOf(0) }
+  var selectedIndex by remember { mutableIntStateOf(0) }
   return HomeScreen.State(selectedIndex = selectedIndex) { event ->
     when (event) {
-      is ClickNavItem -> {
-        selectedIndex = event.index
-      }
+      is ClickNavItem -> selectedIndex = event.index
       is ChildNav -> navigator.onNavEvent(event.navEvent)
     }
   }

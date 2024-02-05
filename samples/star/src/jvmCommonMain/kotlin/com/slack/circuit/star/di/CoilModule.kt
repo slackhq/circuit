@@ -38,12 +38,7 @@ object CoilModule {
       // Disable noisy logging
       .logger(null)
       .components {
-        add(
-          NetworkFetcher.Factory(
-            lazy { httpClient.get().asNetworkClient() },
-            lazy { CacheStrategy() },
-          )
-        )
+        add(NetworkFetcher.Factory({ httpClient.get().asNetworkClient() }, ::CacheStrategy))
       }
       .build()
 }

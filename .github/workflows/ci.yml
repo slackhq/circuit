@@ -31,11 +31,8 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - name: Setup Gradle cache
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build and run checks
         id: gradle-build
@@ -115,11 +112,8 @@ jobs:
         with:
           xcode-version: '15.2'
 
-      - name: Setup Gradle cache
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - run: brew install swiftlint
 
@@ -152,13 +146,12 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Verify Snapshots
         id: gradle-snapshots
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: verifyRoborazzi
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+        run: ./gradlew verifyRoborazzi
 
       - name: (Fail-only) Upload reports
         if: failure()
@@ -184,11 +177,8 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - name: Setup Gradle cache
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Publish snapshot (main branch only)
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache

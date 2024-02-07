@@ -68,16 +68,16 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
-          val backstack = rememberSaveableBackStack {
+          val backStack = rememberSaveableBackStack {
             initialBackstack.forEach { screen -> push(screen) }
           }
-          val circuitNavigator = rememberCircuitNavigator(backstack)
+          val circuitNavigator = rememberCircuitNavigator(backStack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
           CircuitCompositionLocals(circuit) {
             ContentWithOverlays {
               NavigableCircuitContent(
                 navigator = navigator,
-                backstack = backstack,
+                backStack = backStack,
                 decoration =
                   ImageViewerAwareNavDecoration(
                     GestureNavigationDecoration(onBackInvoked = navigator::pop)

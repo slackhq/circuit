@@ -17,6 +17,7 @@ package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -31,20 +32,33 @@ public interface BackStack<R : Record> : Iterable<R> {
   /** The top-most record in the [BackStack], or `null` if the [BackStack] is empty. */
   public val topRecord: R?
 
-  /** Push a new [Record] onto the back stack. The new record will become the top of the stack. */
-  public fun push(record: R)
+  /**
+   * Push a new [Record] onto the back stack. The new record will become the top of the stack.
+   *
+   * @param record The record to push onto the stack.
+   * @param resultKey An optional key that would be used to tag a result produced by this record.
+   *   The previous record on the stack will receive this key.
+   */
+  public fun push(record: R, resultKey: String? = null)
 
   /**
    * Push a new [Screen] onto the back stack. This will be enveloped in a [Record] and the new
    * record will become the top of the stack.
+   *
+   * @param screen The screen to push onto the stack.
+   * @param resultKey An optional key that would be used to tag a result produced by this record.
+   *   The previous record on the stack will receive this key.
    */
-  public fun push(screen: Screen)
+  public fun push(screen: Screen, resultKey: String? = null)
 
   /**
    * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
    * successful or `null` if no entry was popped.
+   *
+   * @param result An optional [PopResult] that will be passed to previous record on the stack after
+   *   this record is removed.
    */
-  public fun pop(): R?
+  public fun pop(result: PopResult? = null): R?
 
   /**
    * Pop records off the top of the backstack until one is found that matches the given predicate.
@@ -53,6 +67,25 @@ public interface BackStack<R : Record> : Iterable<R> {
     while (topRecord?.let(predicate) == false) pop()
   }
 
+  /**
+   * Saves the current back stack entry list in an internal state store. It can be later restored by
+   * the root screen to [restoreState].
+   *
+   * This call will overwrite any existing stored state with the same root screen.
+   */
+  public fun saveState()
+
+  /**
+   * Restores the saved state with the given [screen], adding it on top of the existing entry list.
+   * If you wish to replace the current entry list, you should [pop] all of the existing entries off
+   * before calling this function.
+   *
+   * @param screen The root screen which was previously saved using [saveState].
+   * @return Returns true if there was any back stack state to restore.
+   */
+  public fun restoreState(screen: Screen): Boolean
+
+  @Stable
   public interface Record {
     /**
      * A value that identifies this record uniquely, even if it shares the same [screen] with
@@ -65,6 +98,15 @@ public interface BackStack<R : Record> : Iterable<R> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
+
+    /**
+     * Awaits a [PopResult] produced by the record that previously sat on top of the stack above
+     * this one. Returns null if no result was produced.
+     *
+     * @param key The key that was used to tag the result. This ensures that only the caller that
+     *   requested a result when pushing the previous record can receive it.
+     */
+    public suspend fun awaitResult(key: String): PopResult?
   }
 }
 

@@ -29,7 +29,7 @@ jobs:
           lfs: 'true'
 
       - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
 
       - name: Check LFS files
         uses: actionsdesk/lfs-warning@v3.2
@@ -40,13 +40,12 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Build benchmark
         id: gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: ':samples:star:apk:assembleBenchmarkRelease :samples:star:benchmark:compileBenchmarkReleaseSources'
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+        run: ./gradlew :samples:star:apk:assembleBenchmarkRelease :samples:star:benchmark:compileBenchmarkReleaseSources
 
       - name: AVD cache
         uses: actions/cache@v4

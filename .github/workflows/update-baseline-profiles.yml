@@ -33,11 +33,8 @@ jobs:
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
 
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Generate baseline profiles
         run: ./scripts/update-baseline-profiles.sh
@@ -53,7 +50,7 @@ jobs:
       - name: Create Pull Request
         if: github.event_name == 'workflow_dispatch'
         id: createpr
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.SLACKHQ_MBR_GITHUB_TOKEN }}
           commit-message: 'Update baseline profiles'

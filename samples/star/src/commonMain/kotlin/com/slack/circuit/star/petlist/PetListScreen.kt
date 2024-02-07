@@ -3,7 +3,10 @@
 package com.slack.circuit.star.petlist
 
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -33,12 +37,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -56,10 +60,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -70,6 +77,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -88,8 +96,9 @@ import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
+import com.slack.circuit.star.petlist.PetListScreen.Event.GoToFiltersScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event.Refresh
-import com.slack.circuit.star.petlist.PetListScreen.Event.UpdateFilters
+import com.slack.circuit.star.petlist.PetListScreen.Event.ShowFiltersOverlay
 import com.slack.circuit.star.petlist.PetListScreen.Event.UpdatedFilters
 import com.slack.circuit.star.petlist.PetListScreen.State
 import com.slack.circuit.star.petlist.PetListScreen.State.Loading
@@ -134,7 +143,9 @@ data object PetListScreen : Screen {
 
     data object Refresh : Event
 
-    data object UpdateFilters : Event
+    data object ShowFiltersOverlay : Event
+
+    data object GoToFiltersScreen : Event
 
     data class UpdatedFilters(val newFilters: Filters) : Event
   }
@@ -165,6 +176,9 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
     var isUpdateFiltersModalShowing by rememberSaveable { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
 
+    val filtersScreenNavigator =
+      rememberAnsweringNavigator<FiltersScreen.Result>(navigator) { filters = it.filters }
+
     val animals = animalState
     return when {
       animals == null -> Loading
@@ -184,8 +198,11 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
               isUpdateFiltersModalShowing = false
               filters = event.newFilters
             }
-            UpdateFilters -> {
+            ShowFiltersOverlay -> {
               isUpdateFiltersModalShowing = true
+            }
+            GoToFiltersScreen -> {
+              filtersScreenNavigator.goTo(FiltersScreen(filters))
             }
             Refresh -> isRefreshing = true
           }
@@ -251,7 +268,10 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
         scrollBehavior = scrollBehavior,
         actions = {
           if (state is Success) {
-            IconButton(onClick = { state.eventSink(UpdateFilters) }) {
+            CompositeIconButton(
+              onClick = { state.eventSink(ShowFiltersOverlay) },
+              onLongClick = { state.eventSink(GoToFiltersScreen) },
+            ) {
               Icon(
                 imageVector = FilterList,
                 contentDescription = "Filter pet list",
@@ -286,7 +306,7 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: ImmutableList<PetListAnimal>,
@@ -317,9 +337,9 @@ private fun PetListGrid(
     ) {
       items(count = animals.size, key = { i -> animals[i].id }) { index ->
         val animal = animals[index]
-        // TODO eventually animate item placement once it's implemented
-        //  https://issuetracker.google.com/issues/257034719
-        PetListGridItem(animal) { eventSink(ClickAnimal(animal.id, animal.imageUrl)) }
+        PetListGridItem(animal, modifier = Modifier.animateItemPlacement()) {
+          eventSink(ClickAnimal(animal.id, animal.imageUrl))
+        }
       }
     })
     PullRefreshIndicator(
@@ -336,7 +356,6 @@ private fun PetListGridItem(
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
 ) {
-  val updatedImageUrl = animal.imageUrl ?: rememberVectorPainter(Pets)
   ElevatedCard(
     modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -346,20 +365,31 @@ private fun PetListGridItem(
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
       ),
   ) {
-    Column(modifier = Modifier.clickable { onClick() }) {
+    Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
-      AsyncImage(
-        modifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG),
-        model =
-          Builder(LocalPlatformContext.current)
-            .data(updatedImageUrl)
-            .memoryCacheKey(animal.imageUrl)
-            .crossfade(AnimationConstants.DefaultDurationMillis)
-            .build(),
-        contentDescription = animal.name,
-        contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-      )
+      val imageModifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG)
+      if (animal.imageUrl == null) {
+        Image(
+          rememberVectorPainter(Pets),
+          modifier = imageModifier.padding(8.dp),
+          contentDescription = animal.name,
+          contentScale = ContentScale.Crop,
+          colorFilter = ColorFilter.tint(LocalContentColor.current),
+        )
+      } else {
+        AsyncImage(
+          modifier = imageModifier,
+          model =
+            Builder(LocalPlatformContext.current)
+              .data(animal.imageUrl)
+              .memoryCacheKey(animal.imageUrl)
+              .crossfade(AnimationConstants.DefaultDurationMillis)
+              .build(),
+          contentDescription = animal.name,
+          contentScale = ContentScale.Crop,
+          imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+        )
+      }
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
         Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
@@ -451,5 +481,27 @@ private fun <T : Enum<T>> FilterOptions(
           )
         }
     }
+  }
+}
+
+/** A very simple alternative to `IconButton` that supports [onLongClick] too. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun CompositeIconButton(
+  onClick: () -> Unit,
+  onLongClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  Box(
+    modifier =
+      modifier
+        .minimumInteractiveComponentSize()
+        .size(40.dp)
+        .clip(MaterialTheme.shapes.small)
+        .combinedClickable(onClick = onClick, onLongClick = onLongClick, role = Role.Button),
+    contentAlignment = Alignment.Center,
+  ) {
+    content()
   }
 }

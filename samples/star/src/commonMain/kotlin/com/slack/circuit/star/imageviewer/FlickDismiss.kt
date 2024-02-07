@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -88,9 +89,9 @@ data class FlickToDismissState(
   val rotateOnDrag: Boolean = true,
 ) {
   val offset: Float
-    get() = offsetState.value
+    get() = offsetState.floatValue
 
-  val offsetState = mutableStateOf(0f)
+  val offsetState = mutableFloatStateOf(0f)
 
   /** Distance dragged as a ratio of the content's height. */
   @get:FloatRange(from = -1.0, to = 1.0)
@@ -120,7 +121,7 @@ data class FlickToDismissState(
   internal var contentSize = mutableStateOf(null as IntSize?)
 
   internal val draggableState = DraggableState { dy ->
-    offsetState.value += dy
+    offsetState.floatValue += dy
 
     gestureState =
       when {

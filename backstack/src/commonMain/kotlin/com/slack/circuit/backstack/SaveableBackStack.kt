@@ -18,9 +18,15 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.benasher44.uuid.uuid4
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 
 @Composable
 public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
@@ -36,7 +42,9 @@ public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): Saveab
  */
 public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
-  private val entryList = mutableStateListOf<Record>()
+  // Both visible for testing
+  internal val entryList = mutableStateListOf<Record>()
+  internal val stateStore = mutableMapOf<Screen, List<Record>>()
 
   override val size: Int
     get() = entryList.size
@@ -46,42 +54,108 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public override fun push(screen: Screen) {
-    push(screen, emptyMap())
+  public override fun push(screen: Screen, resultKey: String?) {
+    return push(screen, emptyMap(), resultKey)
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>) {
-    push(Record(screen, args))
+  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?) {
+    push(Record(screen, args), resultKey)
   }
 
-  public override fun push(record: Record) {
+  public override fun push(record: Record, resultKey: String?) {
     entryList.add(0, record)
+    // Clear the cached pending result from the previous top record
+    entryList.getOrNull(1)?.apply { resultKey?.let(::prepareForResult) }
   }
 
-  override fun pop(): Record? = entryList.removeFirstOrNull()
+  override fun pop(result: PopResult?): Record? {
+    val popped = entryList.removeFirstOrNull()
+    if (result != null) {
+      // Send the pending result to our new top record, but only if it's expecting one
+      topRecord?.apply { if (expectingResult()) sendResult(result) }
+    }
+    return popped
+  }
+
+  override fun saveState() {
+    val rootScreen = entryList.last().screen
+    stateStore[rootScreen] = entryList.toList()
+  }
+
+  override fun restoreState(screen: Screen): Boolean {
+    val stored = stateStore[screen]
+    if (!stored.isNullOrEmpty()) {
+      // Add the store state into the entry list
+      entryList.addAll(stored)
+      // Clear the stored state
+      stateStore.remove(screen)
+      return true
+    }
+    return false
+  }
 
   public data class Record(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
     override val key: String = uuid4().toString(),
   ) : BackStack.Record {
+    /**
+     * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
+     * we may push and pop back to a given record multiple times, and thus need to be able to push
+     * and receive multiple results. We use [BufferOverflow.DROP_OLDEST] to ensure we only care
+     * about the most recent result.
+     */
+    private val resultChannel =
+      Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    private var resultKey: String? = null
+
+    internal fun expectingResult(): Boolean = resultKey != null
+
+    internal fun prepareForResult(key: String) {
+      resultKey = key
+      readResult()
+    }
+
+    private fun readResult() = resultChannel.tryReceive().getOrNull()
+
+    internal fun sendResult(result: PopResult) {
+      resultChannel.trySend(result)
+    }
+
+    override suspend fun awaitResult(key: String): PopResult? {
+      return if (key == resultKey) {
+        resultKey = null
+        resultChannel.receive()
+      } else {
+        null
+      }
+    }
+
     internal companion object {
-      val Saver: Saver<Record, List<Any>> =
-        Saver(
+      val Saver: Saver<Record, Any> =
+        mapSaver(
           save = { value ->
-            buildList {
-              add(value.screen)
-              add(value.args)
-              add(value.key)
+            buildMap {
+              put("screen", value.screen)
+              put("args", value.args)
+              put("key", value.key)
+              put("resultKey", value.resultKey)
+              put("result", value.readResult())
             }
           },
-          restore = { list ->
+          restore = { map ->
             @Suppress("UNCHECKED_CAST")
             Record(
-              screen = list[0] as Screen,
-              args = list[1] as Map<String, Any?>,
-              key = list[2] as String,
-            )
+                screen = map["screen"] as Screen,
+                args = map["args"] as Map<String, Any?>,
+                key = map["key"] as String,
+              )
+              .apply {
+                // NOTE order matters here, prepareForResult() clears the buffer
+                (map["resultKey"] as? String?)?.let(::prepareForResult)
+                (map["result"] as? PopResult?)?.let(::sendResult)
+              }
           },
         )
     }
@@ -89,12 +163,30 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
 
   internal companion object {
     val Saver =
-      Saver<SaveableBackStack, List<Any>>(
-        save = { value -> value.entryList.map { with(Record.Saver) { save(it)!! } } },
-        restore = { list ->
+      listSaver<SaveableBackStack, List<Any?>>(
+        save = { value ->
+          buildList {
+            with(Record.Saver) {
+              // First list is the entry list
+              add(value.entryList.mapNotNull { save(it) })
+              // Now add any stacks from the state store
+              value.stateStore.values.forEach { records -> add(records.mapNotNull { save(it) }) }
+            }
+          }
+        },
+        restore = { value ->
+          @Suppress("UNCHECKED_CAST")
           SaveableBackStack().also { backStack ->
-            list.mapTo(backStack.entryList) {
-              @Suppress("UNCHECKED_CAST") Record.Saver.restore(it as List<Any>)!!
+            value.forEachIndexed { index, list ->
+              if (index == 0) {
+                // The first list is the entry list
+                list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
+              } else {
+                // Any list after that is from the state store
+                val records = list.mapNotNull { Record.Saver.restore(it as List<Any>) }
+                // The key is always the root screen (i.e. last item)
+                backStack.stateStore[records.last().screen] = records
+              }
             }
           }
         },

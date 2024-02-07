@@ -10,24 +10,24 @@ anvil = "2.4.9"
 atomicfu = "0.23.2"
 benchmark = "1.2.3"
 coil = "2.5.0"
-coil3 = "3.0.0-alpha02"
+coil3 = "3.0.0-alpha04"
 compose-animation = "1.5.4"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.8"
+compose-compiler-version = "1.5.9"
 compose-compiler-kotlinVersion = "1.9.22"
 compose-foundation = "1.5.4"
 compose-material = "1.5.4"
 compose-material3 = "1.1.2"
-compose-runtime = "1.6.0"
+compose-runtime = "1.6.1"
 compose-ui = "1.5.4"
-compose-jb = "1.5.11"
-compose-jb-compiler = "1.5.7.1"
+compose-jb = "1.5.12"
+compose-jb-compiler = "1.5.8"
 compose-jb-kotlinVersion = "1.9.22"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.50"
 datastore = "1.1.0-beta01"
-detekt = "1.23.4"
+detekt = "1.23.5"
 dokka = "1.9.10"
 eithernet = "1.8.0"
 jdk = "21"
@@ -38,20 +38,21 @@ kotlinpoet = "1.16.0"
 kotlinx-coroutines = "1.7.3"
 ksp = "1.9.22-1.0.17"
 ktfmt = "0.47"
-ktor = "2.3.7"
+ktor = "2.3.8"
 leakcanary = "2.13"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.27.0"
 molecule = "1.3.2"
 mosaic = "0.10.0"
-moshi = "1.15.0"
+moshi = "1.15.1"
 moshix = "0.25.1"
 okhttp = "5.0.0-alpha.12"
 okio = "3.7.0"
 paparazzi = "1.3.2"
+picnic = "0.7.0"
 retrofit = "2.9.0"
 robolectric = "4.11.1"
-roborazzi = "1.8.0"
+roborazzi = "1.9.0"
 skie = "0.6.1"
 spotless = "6.23.3"
 sqldelight = "2.0.1"
@@ -67,7 +68,7 @@ agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
-dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
+dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 emulatorWtf = { id = "wtf.emulator.gradle", version = "0.16.1" }
@@ -110,7 +111,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.01.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.02.00" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
@@ -154,7 +155,7 @@ androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.3.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
 androidx-test-monitor = "androidx.test:monitor:1.6.1"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-beta01"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-rc01"
 
 anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 anvil-annotations-optional = { module = "com.squareup.anvil:annotations-optional", version.ref = "anvil" }
@@ -177,7 +178,8 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
 coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil3-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
-coil3-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coil3" }
+coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+coil3-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
 coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
 
 compose-compilerJb = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "compose-jb-compiler" }
@@ -240,7 +242,7 @@ ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", 
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.2.0"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.3.1"
 
 material = "com.google.android.material:material:1.11.0"
 
@@ -252,6 +254,7 @@ okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
+picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converters-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 retrofit-converters-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
@@ -273,7 +276,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
-truth = "com.google.truth:truth:1.3.0"
+truth = "com.google.truth:truth:1.4.0"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID

@@ -164,7 +164,7 @@ fun main() = application {
       CircuitCompositionLocals(circuit) {
         NavigableCircuitContent(
           navigator = navigator,
-          backstack = backStack,
+          backStack = backStack,
           modifier =
             Modifier.backHandler(enabled = backStack.size > 1, onBack = { navigator.pop() }),
         )

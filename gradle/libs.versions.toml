@@ -11,7 +11,7 @@ atomicfu = "0.23.2"
 benchmark = "1.2.3"
 coil = "2.5.0"
 coil3 = "3.0.0-alpha04"
-compose-animation = "1.6.0"
+compose-animation = "1.6.1"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler-version = "1.5.9"

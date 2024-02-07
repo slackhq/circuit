@@ -11,11 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
 
 /**
  * [Circuit] adapts [presenter factories][Presenter.Factory] to their corresponding
@@ -50,7 +52,7 @@ import com.slack.circuit.runtime.ui.Ui
  * If using navigation, use `NavigableCircuitContent` instead.
  *
  * ```kotlin
- * val backstack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
+ * val backStack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
  * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
  * CircuitCompositionLocals(circuit) {
  *   NavigableCircuitContent(navigator, backstack)
@@ -118,7 +120,7 @@ public class Circuit private constructor(builder: Builder) {
 
   public fun newBuilder(): Builder = Builder(this)
 
-  public class Builder constructor() {
+  public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
@@ -137,6 +139,18 @@ public class Circuit private constructor(builder: Builder) {
       eventListenerFactory = circuit.eventListenerFactory
     }
 
+    public inline fun <reified S : Screen, UiState : CircuitUiState> addUi(
+      crossinline content: @Composable (state: UiState, modifier: Modifier) -> Unit
+    ): Builder = apply {
+      addUiFactory { screen, _ ->
+        if (screen is S) {
+          ui<UiState> { state, modifier -> content(state, modifier) }
+        } else {
+          null
+        }
+      }
+    }
+
     public fun addUiFactory(factory: Ui.Factory): Builder = apply { uiFactories.add(factory) }
 
     public fun addUiFactory(vararg factory: Ui.Factory): Builder = apply {
@@ -147,6 +161,31 @@ public class Circuit private constructor(builder: Builder) {
 
     public fun addUiFactories(factories: Iterable<Ui.Factory>): Builder = apply {
       uiFactories.addAll(factories)
+    }
+
+    public inline fun <reified S : Screen, UiState : CircuitUiState> addPresenter(
+      crossinline factory:
+        (screen: S, navigator: Navigator, context: CircuitContext) -> Presenter<UiState>
+    ): Builder = apply {
+      addPresenterFactory { screen, navigator, context ->
+        if (screen is S) {
+          factory(screen, navigator, context)
+        } else {
+          null
+        }
+      }
+    }
+
+    public inline fun <reified S : Screen, UiState : CircuitUiState> addPresenter(
+      presenter: Presenter<UiState>
+    ): Builder = apply {
+      addPresenterFactory { screen, _, _ ->
+        if (screen is S) {
+          presenter
+        } else {
+          null
+        }
+      }
     }
 
     public fun addPresenterFactory(factory: Presenter.Factory): Builder = apply {

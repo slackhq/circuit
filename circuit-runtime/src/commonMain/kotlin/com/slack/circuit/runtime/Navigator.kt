@@ -119,5 +119,5 @@ public inline fun Navigator.resetRoot(
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
-  while (peek()?.let(predicate) == false) pop()
+  while (peek()?.let(predicate) == false) pop() ?: break // Break on root pop
 }

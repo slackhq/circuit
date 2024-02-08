@@ -33,11 +33,11 @@ internal class ConditionalSystemUiColors(
 // TODO if dark mode changes during this, it will restore the wrong colors. What do we do?
 @Composable
 internal fun rememberConditionalSystemUiColors(
-  systemUiController: SystemBarColorController = rememberSystemBarColorController()
+  systemBarColorController: SystemBarColorController = rememberSystemBarColorController()
 ): ConditionalSystemUiColors {
   return ConditionalSystemUiColors(
-    systemUiController,
-    systemUiController.statusBarDarkContentEnabled,
-    systemUiController.navigationBarDarkContentEnabled,
+    systemBarColorController,
+    systemBarColorController.statusBarDarkContentEnabled,
+    systemBarColorController.navigationBarDarkContentEnabled,
   )
 }

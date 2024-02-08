@@ -91,9 +91,18 @@ See the [states and events](states-and-events.md) guide for more information.
 
 ## Create your UI
 
-Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable function that takes `State` and `Modifier` parameters. It's responsible for rendering the state. You should write this like a standard composable. In this case, we'll use a `LazyColumn` to render a list of emails.
+=== "Inbox"
+    <div class="result" markdown>
+    
+    ![Preview](../images/tutorial_inbox.png){ align=left width=300 }
+    
+    Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable function that 
+    takes `State` and `Modifier` parameters.
 
-// TODO side by side screenshot?
+    It's responsible for rendering the state. You should write this like a standard composable. In 
+    this case, we'll use a `LazyColumn` to render a list of emails.
+    
+    </div>
 
 ```kotlin title="InboxScreen.kt"
 @Composable
@@ -311,7 +320,19 @@ CircuitCompositionLocals(circuit) {
 
 ## Add a detail screen
 
-Now that we have navigation set up, let's add a detail screen to our app to navigate to. First, let's define a `DetailScreen` and state.
+=== "Detail"
+    <div class="result" markdown>
+
+    ![Preview](../images/tutorial_detail.png){ align=left width=300 }
+    
+    Now that we have navigation set up, let's add a detail screen to our app to navigate to.
+
+    This screen will show the content of a specific email from the inbox, and in a real app would 
+    also show content like the chain history.
+    
+    </div>
+
+First, let's define a `DetailScreen` and state.
 
 === "Android"
     ```kotlin title="DetailScreen.kt"

@@ -60,6 +60,8 @@ markdown_extensions:
       alternate_style: true
   - tables
   - admonition
+  - attr_list
+  - md_in_html
 
 nav:
   - 'Introduction': index.md

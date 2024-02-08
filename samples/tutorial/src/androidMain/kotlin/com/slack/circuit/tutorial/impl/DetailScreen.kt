@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -77,7 +77,7 @@ fun EmailDetail(state: DetailScreen.State, modifier: Modifier = Modifier) {
         title = { Text(subject) },
         navigationIcon = {
           IconButton(onClick = { state.eventSink(DetailScreen.Event.BackClicked) }) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
           }
         },
       )

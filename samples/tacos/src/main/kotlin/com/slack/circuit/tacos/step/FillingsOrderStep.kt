@@ -116,10 +116,10 @@ private fun Filling(
   onSelect: () -> Unit,
 ) {
   Row(
-    modifier = modifier.clickable(onClick = onSelect),
+    modifier = modifier.clickable(onClick = onSelect).fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    RadioButton(selected = isSelected, modifier = Modifier, onClick = onSelect)
+    RadioButton(selected = isSelected, onClick = onSelect)
     OrderIngredient(ingredient)
   }
 }

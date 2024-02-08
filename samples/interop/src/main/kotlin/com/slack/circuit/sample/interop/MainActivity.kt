@@ -5,12 +5,14 @@ package com.slack.circuit.sample.interop
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -46,9 +48,10 @@ import com.slack.circuit.runtime.ui.ui
 import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
-  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
 
     val circuit =
       Circuit.Builder()
@@ -104,7 +107,8 @@ class MainActivity : AppCompatActivity() {
           }
         }
 
-        Scaffold { paddingValues ->
+        Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("Circuit Interop") }) }) {
+          paddingValues ->
           if (useColumn) {
             Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
               Box(Modifier.weight(1f)) { content(circuitScreen) }

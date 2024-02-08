@@ -151,7 +151,7 @@ private fun Topping(
   onSelect: (Boolean) -> Unit,
 ) {
   Row(
-    modifier = modifier.clickable { onSelect(!isSelected) },
+    modifier = modifier.clickable { onSelect(!isSelected) }.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Checkbox(checked = isSelected, modifier = Modifier, onCheckedChange = onSelect)

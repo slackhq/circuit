@@ -25,7 +25,10 @@ public fun rememberCircuitNavigator(
 ): Navigator {
   val navigator =
     rememberCircuitNavigator(backStack = backStack, onRootPop = backDispatcherRootPop())
-  BackHandler(enabled = enableBackHandler && backStack.size > 1, onBack = navigator::pop)
+  BackHandler(
+    enabled = enableBackHandler && backStack.size > 1,
+    onBack = onBack(backStack, navigator),
+  )
 
   return navigator
 }
@@ -36,4 +39,11 @@ private fun backDispatcherRootPop(): () -> Unit {
     LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
       ?: error("No OnBackPressedDispatcherOwner found, unable to handle root navigation pops.")
   return onBackPressedDispatcher::onBackPressed
+}
+
+private fun onBack(backStack: BackStack<out Record>, navigator: Navigator): () -> Unit = {
+  // Check the backStack on each call as the `BackHandler` enabled state only updates on composition
+  if (backStack.size > 1) {
+    navigator.pop()
+  }
 }

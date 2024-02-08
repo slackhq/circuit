@@ -100,6 +100,7 @@ allprojects {
         "**/FilterList.kt",
         "**/Remove.kt",
         "**/Pets.kt",
+        "**/SystemUiController.kt",
       )
     }
   }

@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
@@ -40,6 +39,7 @@ import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
 import com.slack.circuit.star.ui.StarTheme
+import com.slack.circuit.star.ui.rememberSystemUiController
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

@@ -102,6 +102,7 @@ fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) {
         }
       }
     }
+    @Suppress("DEPRECATION") // Deprecated in Android but not yet available in CM
     Divider(modifier = Modifier.padding(vertical = 16.dp))
     Text(text = email.body, style = MaterialTheme.typography.bodyMedium)
   }

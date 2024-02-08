@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -248,8 +248,8 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
 }
 
 internal enum class Direction(val icon: ImageVector, @StringRes val descriptionResId: Int) {
-  LEFT(Icons.Filled.ArrowBack, R.string.top_bar_back),
-  RIGHT(Icons.Filled.ArrowForward, R.string.top_bar_forward)
+  LEFT(Icons.AutoMirrored.Filled.ArrowBack, R.string.top_bar_back),
+  RIGHT(Icons.AutoMirrored.Filled.ArrowForward, R.string.top_bar_forward)
 }
 
 @Composable

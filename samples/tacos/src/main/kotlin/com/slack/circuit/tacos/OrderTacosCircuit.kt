@@ -7,7 +7,9 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -224,7 +226,16 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
         },
       )
     },
-    bottomBar = {
+  ) { padding ->
+    Column(Modifier.padding(padding).fillMaxSize()) {
+      val stepModifier = Modifier.weight(1f)
+      when (state.stepState) {
+        is FillingsOrderStep.State -> FillingsUi(state.stepState, modifier = stepModifier)
+        is ToppingsOrderStep.State -> ToppingsUi(state.stepState, modifier = stepModifier)
+        is ConfirmationOrderStep.OrderState ->
+          ConfirmationUi(state.stepState, modifier = stepModifier)
+        is SummaryOrderStep.SummaryState -> SummaryUi(state.stepState, modifier = stepModifier)
+      }
       OrderTotal(
         orderCost = state.orderCost,
         onConfirmationStep = state.stepState is ConfirmationOrderStep.OrderState,
@@ -232,14 +243,6 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
       ) {
         state.eventSink(OrderTacosScreen.Event.ProcessOrder)
       }
-    },
-  ) { padding ->
-    val stepModifier = Modifier.padding(padding)
-    when (state.stepState) {
-      is FillingsOrderStep.State -> FillingsUi(state.stepState, stepModifier)
-      is ToppingsOrderStep.State -> ToppingsUi(state.stepState, stepModifier)
-      is ConfirmationOrderStep.OrderState -> ConfirmationUi(state.stepState, stepModifier)
-      is SummaryOrderStep.SummaryState -> SummaryUi(state.stepState, stepModifier)
     }
   }
 }

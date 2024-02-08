@@ -9,6 +9,7 @@ import com.slack.circuit.runtime.popUntil
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -82,6 +83,25 @@ class NavigatorTest {
 
     assertThat(backStack).hasSize(2)
     assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen2)
+  }
+
+  @Test
+  fun popUntilRoot() {
+    var onRootPopped = false
+    val backStack = SaveableBackStack()
+    backStack.push(TestScreen)
+    backStack.push(TestScreen2)
+    backStack.push(TestScreen3)
+
+    val navigator = NavigatorImpl(backStack) { onRootPopped = true }
+
+    assertThat(backStack).hasSize(3)
+
+    navigator.popUntil { false }
+
+    assertTrue(onRootPopped)
+    assertThat(backStack).hasSize(1)
+    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen)
   }
 
   @Test

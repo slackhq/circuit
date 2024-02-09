@@ -4,6 +4,12 @@ Changelog
 **Unreleased**
 --------------
 
+
+0.19.0
+------
+
+_2024-02-09_
+
 ### Navigation with results
 
 This release introduces support for inter-screen navigation results. This is useful for scenarios where you want to pass data back to the previous screen after a navigation event, such as when a user selects an item from a list and you want to pass the selected item back to the previous screen.

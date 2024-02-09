@@ -37,7 +37,7 @@ class TakePhotoPresenter {
 }
 ```
 
-See the [new section in the navigation docs](https://slackhq.github.io/circuit/navigation/#results) for more details, as well as [updates to the Overlays](https://slackhq.github.io/circuit/overlays/overlays/#overlay-vs-popresult) docs that help explain when to use an `Overlay` vs navigating to a `Screen` with a result.
+See the [new section in the navigation docs](https://slackhq.github.io/circuit/navigation/#results) for more details, as well as [updates to the Overlays](https://slackhq.github.io/circuit/overlays/#overlay-vs-popresult) docs that help explain when to use an `Overlay` vs navigating to a `Screen` with a result.
 
 ### Support for multiple back stacks
 

@@ -86,7 +86,9 @@ On top of Circuit's existing docs, we've added a new tutorial to help you get st
 - Update the default decoration to better match the android 34 transitions.
 - Update androidx.lifecycle to `2.7.0`.
 - Update to compose multiplatform to `1.5.12`.
-- Update compose-compiler to `1.5.8`.
+- Update to compose to `1.6.1`.
+- Update to compose-bom to `2024.02.00`.
+- Update compose-compiler to `1.5.9`.
 - Update AtomicFu to `0.23.2`.
 - Update Anvil to `2.4.9`.
 - Update KotlinPoet to `1.16.0`.

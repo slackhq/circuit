@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
@@ -241,8 +242,8 @@ public object NavigatorDefaults {
         fadeIn(
           animationSpec =
             tween(
-              durationMillis = if (sign > 0) SHORT_DURATION else NORMAL_DURATION,
-              delayMillis = 50,
+              durationMillis = SHORT_DURATION,
+              delayMillis = if (sign > 0) 50 else 0,
               easing = LinearEasing,
             )
         ) +
@@ -251,18 +252,23 @@ public object NavigatorDefaults {
             animationSpec =
               tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
           ) +
-          expandHorizontally(
-            animationSpec =
-              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-            initialWidth = { (it * .9f).toInt() },
-            expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
-          )
+          if (sign > 0) {
+            expandHorizontally(
+              animationSpec =
+                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+              initialWidth = { (it * .9f).toInt() },
+              expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
+            )
+          } else {
+            EnterTransition.None
+          }
 
       val exitTransition =
         fadeOut(
           animationSpec =
             tween(
               durationMillis = if (sign > 0) NORMAL_DURATION else SHORT_DURATION,
+              delayMillis = if (sign > 0) 0 else 50,
               easing = AccelerateEasing,
             )
         ) +

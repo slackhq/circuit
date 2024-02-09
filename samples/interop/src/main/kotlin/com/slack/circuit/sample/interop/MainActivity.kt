@@ -3,7 +3,6 @@
 package com.slack.circuit.sample.interop
 
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,9 +24,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,95 +32,114 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.foundation.rememberPresenter
+import com.slack.circuit.foundation.rememberUi
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
-import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
-  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
+    setContent { InteropSample() }
+  }
+}
 
-    val circuit =
-      Circuit.Builder()
-        .addPresenterFactory { screen, _, context ->
-          when (screen) {
-            is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, context)
-            else -> null
-          }
+internal fun buildCircuit(): Circuit {
+  return Circuit.Builder()
+    .addPresenterFactory { screen, _, context ->
+      when (screen) {
+        is InteropCounterScreen -> screen.presenterSource.createPresenter(screen, context)
+        else -> null
+      }
+    }
+    .addUiFactory { screen, _ ->
+      when (screen) {
+        is InteropCounterScreen -> screen.uiSource.createUi()
+        else -> null
+      }
+    }
+    .build()
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun InteropSample(modifier: Modifier = Modifier) {
+  val circuit = remember { buildCircuit() }
+  CircuitCompositionLocals(circuit) {
+    var selectedPresenterIndex by remember { mutableIntStateOf(0) }
+    var selectedUiIndex by remember { mutableIntStateOf(0) }
+    var count by remember { mutableIntStateOf(0) }
+    val circuitScreen =
+      remember(selectedUiIndex, selectedPresenterIndex) {
+        InteropCounterScreen(
+          PresenterSource.entries[selectedPresenterIndex],
+          UiSource.entries[selectedUiIndex],
+          count,
+        )
+      }
+    val useColumn = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
+
+    val menus: @Composable () -> Unit = {
+      Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
+        SourceMenu(
+          label = PresenterSource.LABEL,
+          selectedIndex = selectedPresenterIndex,
+          sourceValues = PresenterSource.entries.toTypedArray(),
+          onSelected = { index -> selectedPresenterIndex = index },
+          modifier = Modifier.testTag(TestTags.PRESENTER_DROPDOWN),
+        )
+        SourceMenu(
+          label = UiSource.LABEL,
+          selectedIndex = selectedUiIndex,
+          sourceValues = UiSource.entries.toTypedArray(),
+          onSelected = { index -> selectedUiIndex = index },
+          modifier = Modifier.testTag(TestTags.UI_DROPDOWN),
+        )
+      }
+    }
+
+    val content = remember {
+      movableContentOf { screen: Screen ->
+        @Suppress("UNCHECKED_CAST")
+        val presenter =
+          rememberPresenter(screen = screen, factory = circuit::presenter)
+            as Presenter<CounterScreen.State>
+        @Suppress("UNCHECKED_CAST")
+        val ui = rememberUi(screen = screen, factory = circuit::ui) as Ui<CounterScreen.State>
+
+        // Replicate what CircuitContent does but intercept the state
+        // We could also intercept with an event listener or make this a composite presenter,
+        // but for the scope of this sample those aren't necessary.
+        val state = presenter.present()
+        count = state.count
+        ui.Content(state = state, modifier = Modifier)
+      }
+    }
+
+    Scaffold(
+      modifier = modifier.testTag(TestTags.ROOT),
+      topBar = { CenterAlignedTopAppBar(title = { Text("Circuit Interop") }) },
+    ) { paddingValues ->
+      if (useColumn) {
+        Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
+          Box(Modifier.weight(1f)) { content(circuitScreen) }
+          menus()
         }
-        .addUiFactory { screen, _ ->
-          when (screen) {
-            is InteropCounterScreen -> screen.uiSource.createUi()
-            else -> null
-          }
-        }
-        .build()
-
-    setContent {
-      CircuitCompositionLocals(circuit) {
-        var selectedPresenterIndex by remember { mutableIntStateOf(0) }
-        var selectedUiIndex by remember { mutableIntStateOf(0) }
-        val circuitScreen =
-          remember(selectedUiIndex, selectedPresenterIndex) {
-            InteropCounterScreen(
-              PresenterSource.entries[selectedPresenterIndex],
-              UiSource.entries[selectedUiIndex],
-            )
-          }
-        val useColumn = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
-
-        val menus: @Composable () -> Unit = {
-          Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
-            SourceMenu(
-              "Presenter Source",
-              selectedPresenterIndex,
-              PresenterSource.entries.toTypedArray(),
-            ) { index ->
-              selectedPresenterIndex = index
-            }
-            SourceMenu("UI Source", selectedUiIndex, UiSource.entries.toTypedArray()) { index ->
-              selectedUiIndex = index
-            }
-          }
-        }
-
-        val content = remember {
-          movableContentOf { screen: Screen ->
-            // TODO this is necessary because the CircuitContent caches the Ui and Presenter, which
-            //  doesn't play well swapping out the Ui and Presenter sources. Might be nice to make
-            //  them live enough to support this, but also sort of orthogonal to the point of this
-            //  sample.
-            key(screen) { CircuitContent(screen = screen) }
-          }
-        }
-
-        Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("Circuit Interop") }) }) {
-          paddingValues ->
-          if (useColumn) {
-            Column(Modifier.padding(paddingValues), Arrangement.spacedBy(16.dp)) {
-              Box(Modifier.weight(1f)) { content(circuitScreen) }
-              menus()
-            }
-          } else {
-            Row(
-              modifier = Modifier.padding(paddingValues),
-              horizontalArrangement = Arrangement.spacedBy(16.dp),
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              menus()
-              Box(Modifier.weight(1f)) { content(circuitScreen) }
-            }
-          }
+      } else {
+        Row(
+          modifier = Modifier.padding(paddingValues),
+          horizontalArrangement = Arrangement.spacedBy(16.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          menus()
+          Box(Modifier.weight(1f)) { content(circuitScreen) }
         }
       }
     }
@@ -137,11 +153,16 @@ private fun SourceMenu(
   selectedIndex: Int,
   sourceValues: Array<out Displayable>,
   onSelected: (Int) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
   val selectedName: String by
     remember(selectedIndex) { mutableStateOf(sourceValues[selectedIndex].presentationName) }
-  ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+  ExposedDropdownMenuBox(
+    expanded = expanded,
+    onExpandedChange = { expanded = it },
+    modifier = modifier,
+  ) {
     TextField(
       readOnly = true,
       value = selectedName,
@@ -149,7 +170,7 @@ private fun SourceMenu(
       onValueChange = {},
       trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
       colors = ExposedDropdownMenuDefaults.textFieldColors(),
-      modifier = Modifier.menuAnchor(),
+      modifier = Modifier.menuAnchor().testTag(TestTags.currentSourceFor(label)),
     )
     ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       for (source in sourceValues) {
@@ -179,117 +200,12 @@ private fun SourceMenuItem(source: Displayable, selectedIndex: Int, onSelected: 
     }
   DropdownMenuItem(
     text = {
-      Text(modifier = Modifier.padding(8.dp), text = source.presentationName, style = style)
+      Text(
+        modifier = Modifier.padding(8.dp).testTag(TestTags.SOURCE),
+        text = source.presentationName,
+        style = style,
+      )
     },
     onClick = { onSelected(source.index) },
   )
-}
-
-@Parcelize
-private data class InteropCounterScreen(
-  val presenterSource: PresenterSource,
-  val uiSource: UiSource,
-) : Screen, Parcelable
-
-@Stable
-private interface Displayable {
-  val index: Int
-  val presentationName: String
-}
-
-private enum class PresenterSource : Displayable {
-  Circuit {
-    override fun createPresenter(
-      screen: InteropCounterScreen,
-      context: CircuitContext,
-    ): Presenter<CounterScreen.State> {
-      return CircuitCounterPresenter()
-    }
-
-    override val presentationName
-      get() = "Circuit"
-  },
-  Flow {
-    override fun createPresenter(
-      screen: InteropCounterScreen,
-      context: CircuitContext,
-    ): Presenter<CounterScreen.State> {
-      return FlowCounterPresenter().asCircuitPresenter()
-    }
-
-    override val presentationName
-      get() = "Flow -> Circuit"
-  },
-  CircuitToFlow {
-    override fun createPresenter(
-      screen: InteropCounterScreen,
-      context: CircuitContext,
-    ): Presenter<CounterScreen.State> {
-      // Two layers of interop!
-      return Flow.createPresenter(screen, context).asFlowPresenter().asCircuitPresenter()
-    }
-
-    override val presentationName
-      get() = "Circuit -> Flow -> Circuit"
-  },
-  RxJava {
-    override fun createPresenter(
-      screen: InteropCounterScreen,
-      context: CircuitContext,
-    ): Presenter<CounterScreen.State> {
-      return RxCounterPresenter().asCircuitPresenter()
-    }
-
-    override val presentationName
-      get() = "RxJava -> Circuit"
-  },
-  Simple {
-    override fun createPresenter(
-      screen: InteropCounterScreen,
-      context: CircuitContext,
-    ): Presenter<CounterScreen.State> {
-      return SimpleCounterPresenter().asCircuitPresenter()
-    }
-
-    override val presentationName
-      get() = "Simple -> Circuit"
-  };
-
-  abstract fun createPresenter(
-    screen: InteropCounterScreen,
-    context: CircuitContext,
-  ): Presenter<CounterScreen.State>
-
-  open override val index: Int
-    get() = ordinal
-
-  open override val presentationName: String
-    get() = name
-}
-
-enum class UiSource : Displayable {
-  Circuit {
-    override fun createUi(): Ui<CounterScreen.State> {
-      return ui { state, modifier -> Counter(state, modifier) }
-    }
-
-    override val presentationName
-      get() = "Circuit"
-  },
-  View {
-    override fun createUi(): Ui<CounterScreen.State> {
-      return ui { state, modifier -> CounterViewComposable(state, modifier) }
-    }
-
-    override val presentationName
-      get() = "View -> Circuit"
-  };
-
-  abstract fun createUi(): Ui<CounterScreen.State>
-
-  open override val index: Int
-    get() = ordinal
-
-  open override val presentationName: String
-    get() = name
 }

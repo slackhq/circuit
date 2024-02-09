@@ -104,7 +104,7 @@ internal fun CircuitContent(
   val ui = rememberUi(screen, context, eventListener, circuit::ui)
 
   if (ui != null && presenter != null) {
-    (CircuitContent(screen, modifier, presenter, ui, eventListener))
+    (CircuitContent(screen, presenter, ui, modifier, eventListener))
   } else {
     eventListener.onUnavailableContent(screen, presenter, ui, context)
     unavailableContent(screen, modifier)
@@ -114,9 +114,9 @@ internal fun CircuitContent(
 @Composable
 public fun <UiState : CircuitUiState> CircuitContent(
   screen: Screen,
-  modifier: Modifier,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
+  modifier: Modifier = Modifier,
   eventListener: EventListener = EventListener.NONE,
 ) {
   DisposableEffect(screen) {

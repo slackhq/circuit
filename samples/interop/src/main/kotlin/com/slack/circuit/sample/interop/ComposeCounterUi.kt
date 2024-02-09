@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 /** A standard Circuit Counter UI in Compose. */
@@ -27,20 +28,20 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
   Box(modifier.fillMaxSize()) {
     Column(Modifier.align(Alignment.Center)) {
       Text(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier.align(Alignment.CenterHorizontally).testTag(TestTags.COUNT),
         text = "Count: ${state.count}",
         style = MaterialTheme.typography.displayLarge,
         color = color,
       )
       Spacer(modifier = Modifier.height(16.dp))
       Button(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier.align(Alignment.CenterHorizontally).testTag(TestTags.INCREMENT),
         onClick = { state.eventSink(CounterScreen.Event.Increment) },
       ) {
         Icon(rememberVectorPainter(Icons.Filled.Add), "Increment")
       }
       Button(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier.align(Alignment.CenterHorizontally).testTag(TestTags.DECREMENT),
         onClick = { state.eventSink(CounterScreen.Event.Decrement) },
       ) {
         Icon(rememberVectorPainter(Remove), "Decrement")

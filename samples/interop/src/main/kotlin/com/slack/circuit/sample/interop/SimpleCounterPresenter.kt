@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.interop
 
-import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
 
 /** A simple presenter that uses a listener for signaling count changes. */
-class SimpleCounterPresenter {
+class SimpleCounterPresenter(initialCount: Int) {
 
   private var onCountChangedListener: OnCountChangedListener? = null
 
-  private var count = 0
+  internal var count = initialCount
 
   fun increment() {
     count++
@@ -42,24 +42,13 @@ class SimpleCounterPresenter {
 
 fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
   return presenterOf {
-    var count by remember { mutableStateOf(0) }
-    remember {
-      object : RememberObserver {
-        val listener =
-          SimpleCounterPresenter.OnCountChangedListener { newCount -> count = newCount }
-
-        override fun onAbandoned() {
-          setOnCountChangedListener(null)
-        }
-
-        override fun onForgotten() {
-          setOnCountChangedListener(null)
-        }
-
-        override fun onRemembered() {
-          setOnCountChangedListener(listener)
-        }
-      }
+    var count by remember { mutableIntStateOf(this@asCircuitPresenter.count) }
+    val listener = remember {
+      SimpleCounterPresenter.OnCountChangedListener { newCount -> count = newCount }
+    }
+    DisposableEffect(listener) {
+      setOnCountChangedListener(listener)
+      onDispose { setOnCountChangedListener(null) }
     }
     CounterScreen.State(count) { event ->
       when (event) {

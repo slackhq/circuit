@@ -10,8 +10,11 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 /** An RxJava presenter that exposes an [Observable] of count changes. */
-class RxCounterPresenter {
-  private val count = BehaviorSubject.createDefault(0)
+class RxCounterPresenter(initialCount: Int) {
+  private val count = BehaviorSubject.createDefault(initialCount)
+
+  val value: Int
+    get() = count.value!!
 
   fun increment() {
     count.onNext(count.value!! + 1)
@@ -26,7 +29,7 @@ class RxCounterPresenter {
 
 fun RxCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
   return presenterOf {
-    val count by countObservable().subscribeAsState(initial = 0)
+    val count by countObservable().subscribeAsState(initial = value)
     CounterScreen.State(count) { event ->
       when (event) {
         is CounterScreen.Event.Increment -> increment()

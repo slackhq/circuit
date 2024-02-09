@@ -1,0 +1,1489 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Compose-driven architecture for Android apps">
+      
+      
+        <meta name="author" content="Slack">
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../setup/">
+      
+      
+      <link rel="icon" href="../images/slack_logo_small.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
+    
+    
+      
+        <title>Tutorial - Circuit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b4a2bd9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/app.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tutorial" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Circuit" class="md-header__button md-logo" aria-label="Circuit" data-md-component="logo">
+      
+  <img src="../images/slack_logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Circuit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tutorial
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Circuit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Circuit" class="md-nav__button md-logo" aria-label="Circuit" data-md-component="logo">
+      
+  <img src="../images/slack_logo.png" alt="logo">
+
+    </a>
+    Circuit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Circuit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-build-out-of-the-tutorial-sample" class="md-nav__link">
+    1. Build out of the tutorial sample
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-start-from-scratch" class="md-nav__link">
+    2. Start from scratch
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-screen" class="md-nav__link">
+    Create a Screen
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-your-state" class="md-nav__link">
+    Design your state
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-ui" class="md-nav__link">
+    Create your UI
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implement-your-presenter" class="md-nav__link">
+    Implement your presenter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wiring-it-up" class="md-nav__link">
+    Wiring it up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#circuitcontent" class="md-nav__link">
+    CircuitContent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-navigation-to-our-app" class="md-nav__link">
+    Adding navigation to our app
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-detail-screen" class="md-nav__link">
+    Add a detail screen
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigate-to-the-detail-screen" class="md-nav__link">
+    Navigate to the detail screen
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#events" class="md-nav__link">
+    Events
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigating-back" class="md-nav__link">
+    Navigating back
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting up Circuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../states-and-events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    States and Events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Screen
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuit-content/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CircuitContent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Navigation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../presenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Presenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ui
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overlays/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overlays
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../factories/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Factories
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-gen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interop
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CircuitX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/0.x/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/slackhq/circuit/discussions" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Discussions ⏏
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change Log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CoC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-build-out-of-the-tutorial-sample" class="md-nav__link">
+    1. Build out of the tutorial sample
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-start-from-scratch" class="md-nav__link">
+    2. Start from scratch
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-screen" class="md-nav__link">
+    Create a Screen
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-your-state" class="md-nav__link">
+    Design your state
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-ui" class="md-nav__link">
+    Create your UI
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implement-your-presenter" class="md-nav__link">
+    Implement your presenter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wiring-it-up" class="md-nav__link">
+    Wiring it up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#circuitcontent" class="md-nav__link">
+    CircuitContent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-navigation-to-our-app" class="md-nav__link">
+    Adding navigation to our app
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-detail-screen" class="md-nav__link">
+    Add a detail screen
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigate-to-the-detail-screen" class="md-nav__link">
+    Navigate to the detail screen
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#events" class="md-nav__link">
+    Events
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigating-back" class="md-nav__link">
+    Navigating back
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="tutorial">Tutorial<a class="headerlink" href="#tutorial" title="Permanent link">&para;</a></h1>
+<p>This tutorial will help you ramp up to Circuit with a simple email app.</p>
+<p>Note this assumes some prior experience with Compose. See these resources for more information:</p>
+<ul>
+<li>(Android) <a href="https://developer.android.com/jetpack/compose/documentation">Get started with Jetpack Compose</a></li>
+<li>(Android) <a href="https://developer.android.com/jetpack/compose/tutorial">Jetpack Compose Tutorial</a></li>
+<li>(Multiplatform) <a href="https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html">Get started with Compose Multiplatform</a></li>
+</ul>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
+<p>You can do this tutorial in one of two ways:</p>
+<h3 id="1-build-out-of-the-tutorial-sample">1. Build out of the <code>tutorial</code> sample<a class="headerlink" href="#1-build-out-of-the-tutorial-sample" title="Permanent link">&para;</a></h3>
+<p>Clone the circuit repo and work out of the <code>:samples:tutorial</code> module. This has all your dependencies set up and ready to go, along with some reusable common code to save you some boilerplate. You can see an implementation of this tutorial there as well.</p>
+<p>This can be run on Android or Desktop.
+- The Desktop entry point is <code>main.kt</code>. To run the main function, you can run <code>./gradlew :samples:tutorial:run</code>.
+- The Android entry point is <code>MainActivity</code>. Run <code>./gradlew :samples:tutorial:installDebug</code> to install it on a device or emulator.</p>
+<h3 id="2-start-from-scratch">2. Start from scratch<a class="headerlink" href="#2-start-from-scratch" title="Permanent link">&para;</a></h3>
+<p>First, set up Compose in your project. See the following guides for more information:</p>
+<ul>
+<li><a href="https://developer.android.com/jetpack/compose/setup">Android</a><ul>
+<li>Also set up <a href="https://developer.android.com/kotlin/parcelize">Parcelize</a></li>
+</ul>
+</li>
+<li><a href="https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html">Multiplatform</a></li>
+</ul>
+<p>Next, add the <code>circuit-foundation</code> dependency. This includes all the core Circuit artifacts.</p>
+<div class="highlight"><span class="filename">build.gradle.kts</span><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-foundation:&lt;version&gt;&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>See <a href="../setup/">setup docs</a> for more information.</p>
+<h2 id="create-a-screen">Create a <code>Screen</code><a class="headerlink" href="#create-a-screen" title="Permanent link">&para;</a></h2>
+<p>The primary entry points in Circuit are <code>Screen</code>s (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">docs</a>). These are the navigational building blocks of your app. A <code>Screen</code> is a simple data class or data object that represents a unique location in your app. For example, a <code>Screen</code> could represent an inbox list, an email detail, or a settings screen.</p>
+<p>Let&rsquo;s start with a simple <code>Screen</code> that represents an inbox list:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Android</label><label for="__tabbed_1_2">Multiplatform</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code>Screen</code> is <code>Parcelable</code> on Android. You should use the Parcelize plugin to annotate your screens with <code>@Parcelize</code>.</p>
+</div>
+<h2 id="design-your-state">Design your state<a class="headerlink" href="#design-your-state" title="Permanent link">&para;</a></h2>
+<p>Next, let&rsquo;s define some state for our <code>InboxScreen</code>. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should be <a href="https://developer.android.com/jetpack/compose/performance/stability"><em>stable</em> or <em>immutable</em></a>, and directly renderable by your UIs. As such, you should design them to be as simple as possible.</p>
+<p>Conventionally, this is written as a nested <code>State</code> class inside your <code>Screen</code> and <em>must</em> extend <code>CircuitUiState</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">docs</a>).</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">InboxScreen</label><label for="__tabbed_2_2">Email</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="hll"><span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
+</span><span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emails</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Email</span><span class="o">&gt;</span>
+</span><span class="hll"><span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+</span><span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">Email.kt</span><pre><span></span><code><span class="nd">@Immutable</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Email</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">subject</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">body</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">sender</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">timestamp</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">recipients</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>See the <a href="../states-and-events/">states and events</a> guide for more information.</p>
+<h2 id="create-your-ui">Create your UI<a class="headerlink" href="#create-your-ui" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Inbox</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="result" markdown>
+<p><img align="left" alt="Preview" src="../images/tutorial_inbox.png" width="300" /></p>
+<p>Next, let&rsquo;s define a <code>Ui</code> for our <code>InboxScreen</code>. A <code>Ui</code> is a simple composable function that 
+takes <code>State</code> and <code>Modifier</code> parameters.</p>
+<p>It&rsquo;s responsible for rendering the state. You should write this like a standard composable. In 
+this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">Inbox</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Scaffold</span><span class="p">(</span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modifier</span><span class="p">,</span><span class="w"> </span><span class="n">topBar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">TopAppBar</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Inbox&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">innerPadding</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="n">LazyColumn</span><span class="p">(</span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">.</span><span class="na">padding</span><span class="p">(</span><span class="n">innerPadding</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">items</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">emails</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">EmailItem</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Write one or use EmailItem from ui.kt</span>
+<span class="nd">@Composable</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">EmailItem</span><span class="p">(</span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>For more complex UIs with dependencies, you can create a class that implements the <code>Ui</code> interface (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime-ui/com.slack.circuit.runtime.ui/-ui/index.html">docs</a>). This is rarely necessary though, and we won&rsquo;t use this in the tutorial.</p>
+<div class="highlight"><span class="filename">InboxUi.kt</span><pre><span></span><code><span class="hll"><span class="kd">class</span><span class="w"> </span><span class="nc">InboxUi</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">  </span><span class="nd">@Composable</span>
+</span><span class="hll"><span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">Content</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span class="w">    </span><span class="n">LazyColumn</span><span class="p">(</span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">items</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">emails</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">EmailItem</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="hll"><span class="w">  </span><span class="p">}</span>
+</span><span class="hll"><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="implement-your-presenter">Implement your presenter<a class="headerlink" href="#implement-your-presenter" title="Permanent link">&para;</a></h2>
+<p>Next, let&rsquo;s define a <code>Presenter</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html">docs</a>) for our <code>InboxScreen</code>. Circuit presenters are responsible for computing and emitting state.</p>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">InboxPresenter</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">(</span>
+<span class="w">      </span><span class="n">emails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span>
+<span class="w">        </span><span class="n">Email</span><span class="p">(</span>
+<span class="w">          </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="n">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Meeting re-sched!&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hey, I&#39;m going to be out of the office tomorrow. Can we reschedule?&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="n">sender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Ali Connors&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="n">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;3:00 PM&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="n">recipients</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;all@example.com&quot;</span><span class="p">),</span>
+<span class="w">          </span><span class="p">),</span>
+<span class="w">        </span><span class="c1">// ... more emails</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This is a trivial implementation that returns a static list of emails. In a real app, you&rsquo;d likely fetch this data from a repository or other data source. In our tutorial code in the repo, we&rsquo;ve added a simple <code>EmailRepository</code> that you can use to fetch emails. It exposes a suspending <code>getEmails()</code> function that returns a list of emails.</p>
+<p>This is also a good opportunity to see where using compose in our presentation logic shines, as we can use Compose&rsquo;s advanced state management to make our presenter logic more expressive and easy to understand.</p>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">InboxPresenter</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span>
+<span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emails</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceState</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Email</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">initialValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emptyList</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">      </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emailRepository</span><span class="p">.</span><span class="na">getEmails</span><span class="p">()</span>
+</span><span class="hll"><span class="w">    </span><span class="p">}</span>
+</span><span class="hll"><span class="w">    </span><span class="c1">// Or a flow!</span>
+</span><span class="hll"><span class="w">    </span><span class="c1">// val emails by emailRepository.getEmailsFlow().collectAsState(initial = emptyList())</span>
+</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">(</span><span class="n">emails</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Analogous to <code>Ui</code>, you can also define simple/dependency-less presenters as just a top-level function.</p>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">InboxPresenter</span><span class="p">():</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">emails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">(</span><span class="n">emails</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Generally, Circuit presenters are implemented as classes and Circuit UIs are implemented as top-level functions. You can mix and match as needed for a given use case. Under the hood, Circuit will wrap all top-level functions into a class for you.</p>
+</div>
+<h2 id="wiring-it-up">Wiring it up<a class="headerlink" href="#wiring-it-up" title="Permanent link">&para;</a></h2>
+<p>Now that we have a <code>Screen</code>, <code>State</code>, <code>Ui</code>, and <code>Presenter</code>, let&rsquo;s wire them up together. Circuit accomplishes this with the <code>Circuit</code> class (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/index.html">docs</a>), which is responsible for connecting screens to their corresponding presenters and UIs. These are created with a simple builder pattern.</p>
+<div class="highlight"><span class="filename">Creating a Circuit instance</span><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmailRepository</span><span class="p">()</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="p">:</span><span class="w"> </span><span class="n">Circuit</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">addPresenter</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">,</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="p">(</span><span class="n">InboxPresenter</span><span class="p">(</span><span class="n">emailRepository</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">addUi</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">,</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Inbox</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+</code></pre></div>
+<p>This instance should usually live on your application&rsquo;s DI graph.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a simple example that uses the <code>addPresenter</code> and <code>addUi</code> functions. In a real app, you&rsquo;d likely use a <code>Presenter.Factory</code> and <code>Ui.Factory</code> to create your presenters and UIs dynamically.</p>
+</div>
+<p>Once you have this instance, you can plug it into <code>CircuitCompositionLocals</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html">docs</a>) and be on your way. This is usually a one-time setup in your application at its primary entry point.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Android</label><label for="__tabbed_4_2">Desktop</label><label for="__tabbed_4_3">JS</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">MainActivity.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MainActivity</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span><span class="w"> </span><span class="n">Bundle?)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">      </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+
+<span class="w">    </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">main.kt</span><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+
+<span class="w">  </span><span class="n">application</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Window</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Inbox&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">onCloseRequest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">exitApplication</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">main.kt</span><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+
+<span class="w">  </span><span class="n">onWasmReady</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Window</span><span class="p">(</span><span class="s">&quot;Inbox&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="circuitcontent"><code>CircuitContent</code><a class="headerlink" href="#circuitcontent" title="Permanent link">&para;</a></h2>
+<p><code>CircuitContent</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-content.html">docs</a>) is a simple composable that takes a <code>Screen</code> and renders it.</p>
+<div class="highlight"><span class="filename">CircuitContent</span><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">CircuitContent</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Under the hood, this instantiates the corresponding <code>Presenter</code> and <code>Ui</code> from the local <code>Circuit</code> instance and connects them together. All you need to do is pass in the <code>Screen</code> you want to render!</p>
+<p>This is the most basic way to render a <code>Screen</code>. These can be top-level UIs or nested within other UIs. You can even have multiple <code>CircuitContent</code> instances in the same composition.</p>
+<h2 id="adding-navigation-to-our-app">Adding navigation to our app<a class="headerlink" href="#adding-navigation-to-our-app" title="Permanent link">&para;</a></h2>
+<p>An app architecture isn&rsquo;t complete without navigation. Circuit provides a simple navigation API that&rsquo;s focused around a simple <code>BackStack</code> (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-back-stack/index.html">docs</a>) that is navigated via a <code>Navigator</code> interface (<a href="">docs</a>). In most cases, you can use the built-in <code>SaveableBackStack</code> implementation (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html">docs</a>), which is saved and restored in accordance with whatever the platform&rsquo;s <code>rememberSaveable</code> implementation is.</p>
+<div class="highlight"><span class="filename">Creating a backstack and navigator</span><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="c1">// Push your root screen</span>
+<span class="w">  </span><span class="n">push</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Do something when the root screen is popped, usually exiting the app</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Once you have these two components created, you can pass them to an advanced version of <code>CircuitContent</code> that supports navigation called <code>NavigableCircuitContent</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-navigable-circuit-content.html">docs</a>).</p>
+<div class="highlight"><span class="filename">NavigableCircuitContent</span><pre><span></span><code><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+</code></pre></div>
+<p>This composable will automatically manage the backstack and navigation for you, essentially rendering the &ldquo;top&rdquo; of the back stack as your <em>navigator</em> navigates it. This also handles transitions between screens (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html"><code>NavDecoration</code></a>) and fallback behavior with <code>Circuit.Builder.onUnavailableRoute</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/on-unavailable-content.html">docs</a>).</p>
+<p>Like with <code>Circuit</code>, this is usually a one-time setup in your application at its primary entry point.</p>
+<div class="highlight"><span class="filename">Putting it all together</span><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Push your root screen</span>
+<span class="w">  </span><span class="n">push</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Do something when the root screen is popped, usually exiting the app</span>
+<span class="p">}</span>
+<span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="add-a-detail-screen">Add a detail screen<a class="headerlink" href="#add-a-detail-screen" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:1"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Detail</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="result" markdown>
+<p><img align="left" alt="Preview" src="../images/tutorial_detail.png" width="300" /></p>
+<p>Now that we have navigation set up, let&rsquo;s add a detail screen to our app to navigate to.</p>
+<p>This screen will show the content of a specific email from the inbox, and in a real app would 
+also show content like the chain history.</p>
+</div>
+</div>
+</div>
+</div>
+<p>First, let&rsquo;s define a <code>DetailScreen</code> and state.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Android</label><label for="__tabbed_6_2">Multiplatform</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="nd">@Parcelize</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>Notice that this time we use a <code>data class</code> instead of a <code>data object</code>. This is because we want to be able to pass in an <code>emailId</code> to the screen. We&rsquo;ll use this to fetch the email from our data layer.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You should keep <code>Screen</code> parameters as simple as possible and derive any additional data you need from your data layer instead.</p>
+</div>
+<p>Next, let&rsquo;s define a Presenter and UI for this screen.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Presenter</label><label for="__tabbed_7_2">UI</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">DetailPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emailRepository</span><span class="p">.</span><span class="na">getEmail</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">emailId</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">EmailDetail</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="c1">// Write one or use EmailDetailContent from ui.kt</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>Note that we&rsquo;re injecting the <code>DetailScreen</code> into our <code>Presenter</code> so we can get the email ID. This is where Circuit&rsquo;s factory pattern comes into play. Let&rsquo;s define a factory for our <code>DetailPresenter</code>.</p>
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">DetailPresenter</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="hll"><span class="w">  </span><span class="kd">class</span><span class="w"> </span><span class="nc">Factory</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">CircuitContext</span><span class="p">):</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;*&gt;?</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">        </span><span class="k">is</span><span class="w"> </span><span class="n">DetailScreen</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">DetailPresenter</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span><span class="w"> </span><span class="n">emailRepository</span><span class="p">)</span>
+</span><span class="hll"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kc">null</span>
+</span><span class="hll"><span class="w">      </span><span class="p">}</span>
+</span><span class="hll"><span class="w">    </span><span class="p">}</span>
+</span><span class="hll"><span class="w">  </span><span class="p">}</span>
+</span><span class="p">}</span>
+</code></pre></div>
+<p>Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.</p>
+<p>We can then wire these detail components to our <code>Circuit</code> instance too.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="p">:</span><span class="w"> </span><span class="n">Circuit</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="hll"><span class="w">    </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">DetailPresenter</span><span class="p">.</span><span class="na">Factory</span><span class="p">(</span><span class="n">emailRepository</span><span class="p">))</span>
+</span><span class="hll"><span class="w">    </span><span class="p">.</span><span class="na">addUi</span><span class="o">&lt;</span><span class="n">DetailScreen</span><span class="p">,</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">EmailDetail</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</span><span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="navigate-to-the-detail-screen">Navigate to the detail screen<a class="headerlink" href="#navigate-to-the-detail-screen" title="Permanent link">&para;</a></h2>
+<p>Now that we have a detail screen, let&rsquo;s navigate to it from our inbox list. As you can see in our presenter factory above, Circuit also offers access to a <code>Navigator</code> in this <code>create()</code> call that factories can then pass on to their created presenters. </p>
+<p>Let&rsquo;s add a <code>Navigator</code> property to our presenter and create a factory for our inbox screen now.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">InboxPresenter</label><label for="__tabbed_8_2">Circuit instance</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">InboxPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="kd">class</span><span class="w"> </span><span class="nc">Factory</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">CircuitContext</span><span class="p">):</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;*&gt;?</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">InboxScreen</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">InboxPresenter</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">emailRepository</span><span class="p">)</span>
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="p">:</span><span class="w"> </span><span class="n">Circuit</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="hll"><span class="w">    </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">InboxPresenter</span><span class="p">.</span><span class="na">Factory</span><span class="p">(</span><span class="n">emailRepository</span><span class="p">))</span>
+</span><span class="hll"><span class="w">    </span><span class="p">.</span><span class="na">addUi</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">,</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Inbox</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</span><span class="w">    </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">DetailPresenter</span><span class="p">.</span><span class="na">Factory</span><span class="p">(</span><span class="n">emailRepository</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">addUi</span><span class="o">&lt;</span><span class="n">DetailScreen</span><span class="p">,</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">EmailDetail</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>Now that we have a <code>Navigator</code> in our inbox presenter, we can use it to navigate to the detail screen. First, we need to explore how events work in Circuit.</p>
+<h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
+<p>So far, we&rsquo;ve covered <em>state</em>. State is produced by the presenter and consumed by the UI. That&rsquo;s only half of the UDF picture though! <em>Events</em> are the inverse: they&rsquo;re produced by the UI and consumed by the presenter. Events are how you can trigger actions in your app, such as navigation. <em>This completes the circuit.</em></p>
+<p>Events in Circuit are a little unconventional in that Circuit doesn&rsquo;t provide structured APIs for pipelining events from the UI to presenters. Instead, we use an <em>event sink property</em> pattern, where states contain a trailing <code>eventSink</code> function that receives events emitted from the UI.</p>
+<p>This provides many benefits, see the <a href="../states-and-events/">events</a> guide for more information.</p>
+<p>Let&rsquo;s add an event to our inbox screen for when the user clicks on an email.</p>
+<p>Events must implement <code>CircuitUiEvent</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">docs</a>) and are usually modeled as a <code>sealed interface</code> hierarchy, where each subtype is a different event type.</p>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emails</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Email</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span>
+</span><span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+<span class="hll"><span class="w">  </span><span class="kd">sealed</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Event</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">EmailClicked</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Event</span><span class="p">()</span>
+</span><span class="hll"><span class="w">  </span><span class="p">}</span>
+</span><span class="p">}</span>
+</code></pre></div>
+<p>Now that we have an event, let&rsquo;s emit it from our UI.</p>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">Inbox</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Scaffold</span><span class="p">(</span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modifier</span><span class="p">,</span><span class="w"> </span><span class="n">topBar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">TopAppBar</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Inbox&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">innerPadding</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="n">LazyColumn</span><span class="p">(</span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">.</span><span class="na">padding</span><span class="p">(</span><span class="n">innerPadding</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">items</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">emails</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="hll"><span class="w">        </span><span class="n">EmailItem</span><span class="p">(</span>
+</span><span class="hll"><span class="w">          </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">email</span><span class="p">,</span>
+</span><span class="hll"><span class="w">          </span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">Event</span><span class="p">.</span><span class="na">EmailClicked</span><span class="p">(</span><span class="n">email</span><span class="p">.</span><span class="na">id</span><span class="p">))</span><span class="w"> </span><span class="p">},</span>
+</span><span class="w">        </span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="hll"><span class="c1">// Write one or use EmailItem from ui.kt</span>
+</span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">EmailItem</span><span class="p">(</span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">,</span><span class="w"> </span><span class="n">onClick</span><span class="p">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Finally, let&rsquo;s handle this event in our presenter.</p>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">InboxPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="hll"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="p">(</span><span class="n">emails</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+</span><span class="hll"><span class="w">      </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">        </span><span class="c1">// Navigate to the detail screen when an email is clicked</span>
+</span><span class="hll"><span class="w">        </span><span class="k">is</span><span class="w"> </span><span class="n">EmailClicked</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">DetailScreen</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">emailId</span><span class="p">))</span>
+</span><span class="hll"><span class="w">      </span><span class="p">}</span>
+</span><span class="hll"><span class="w">    </span><span class="p">}</span>
+</span><span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This demonstrates how we can navigate forward in our app and pass data with it. Let&rsquo;s see how we can navigate back.</p>
+<h2 id="navigating-back">Navigating back<a class="headerlink" href="#navigating-back" title="Permanent link">&para;</a></h2>
+<p>Naturally, navigation can&rsquo;t be just one way. The opposite of <code>Navigator.goTo()</code> is <code>Navigator.pop()</code>, which pops the back stack back to the previous screen. To use this, let&rsquo;s add a back button to our detail screen and wire it up to a <code>Navigator</code>.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">DetailScreen</label><label for="__tabbed_9_2">DetailContent</label><label for="__tabbed_9_3">DetailPresenter</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">,</span>
+<span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span>
+</span><span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+<span class="hll"><span class="w">  </span><span class="kd">sealed</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Event</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">BackClicked</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Event</span><span class="p">()</span>
+</span><span class="hll"><span class="w">  </span><span class="p">}</span>
+</span><span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">EmailDetail</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Scaffold</span><span class="p">(</span>
+<span class="w">    </span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modifier</span><span class="p">,</span>
+<span class="w">    </span><span class="n">topBar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">TopAppBar</span><span class="p">(</span>
+<span class="w">        </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">email</span><span class="p">.</span><span class="na">subject</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="hll"><span class="w">        </span><span class="n">navigationIcon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">          </span><span class="n">IconButton</span><span class="p">(</span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">Event</span><span class="p">.</span><span class="na">BackClicked</span><span class="p">)</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">            </span><span class="n">Icon</span><span class="p">(</span><span class="n">Icons</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">ArrowBack</span><span class="p">,</span><span class="w"> </span><span class="n">contentDescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Back&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="w">          </span><span class="p">}</span>
+</span><span class="hll"><span class="w">        </span><span class="p">},</span>
+</span><span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">innerPadding</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="c1">// Remaining detail UI...</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">DetailPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailRepository</span><span class="p">:</span><span class="w"> </span><span class="n">EmailRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">State</span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">      </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="hll"><span class="w">        </span><span class="n">DetailScreen</span><span class="p">.</span><span class="na">Event</span><span class="p">.</span><span class="na">BackClicked</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">navigator</span><span class="p">.</span><span class="na">pop</span><span class="p">()</span>
+</span><span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>On Android, <code>NavigableCircuitContent</code> automatically hooks into <a href="https://developer.android.com/reference/kotlin/androidx/activity/compose/package-summary#BackHandler(kotlin.Boolean,kotlin.Function0)">BackHandler</a> to automatically pop on system back presses. On Desktop, it&rsquo;s recommended to wire the ESC key.</p>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the <a href="../api/0.x/index.html">API reference</a>, and check out other Circuit tools like <a href="https://slackhq.github.io/circuit/presenter/#retention">circuit-retained</a>, <a href="https://slackhq.github.io/circuit/circuitx/">CircuitX</a>, <a href="https://slackhq.github.io/circuit/code-gen/">factory code gen</a>, <a href="https://slackhq.github.io/circuit/overlays/">overlays</a>, <a href="https://slackhq.github.io/circuit/navigation/#results">navigation with results</a>, <a href="https://slackhq.github.io/circuit/testing/">testing</a>, <a href="https://slackhq.github.io/circuit/setup/#platform-support">multiplatform</a>, and more.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 Slack Technologies, LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.aecac24b.min.js"></script>
+      
+    
+  </body>
+</html>

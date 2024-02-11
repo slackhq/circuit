@@ -35,6 +35,18 @@ public fun rememberSaveableBackStack(
 ): SaveableBackStack =
   rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
 
+@Composable
+public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
+  require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
+  return rememberSaveable(saver = SaveableBackStack.Saver) {
+    SaveableBackStack(null).apply {
+      for (screen in initialScreens) {
+        push(screen)
+      }
+    }
+  }
+}
+
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].

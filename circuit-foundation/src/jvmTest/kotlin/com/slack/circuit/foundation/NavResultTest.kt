@@ -113,8 +113,7 @@ class NavResultTest {
     composeTestRule.run {
       setContent {
         CircuitCompositionLocals(circuit) {
-          val backStack = rememberSaveableBackStack {
-            push(WrapperScreen)
+          val backStack = rememberSaveableBackStack(WrapperScreen) {
             backStackRef = this
           }
           val navigator =
@@ -138,8 +137,7 @@ class NavResultTest {
     lateinit var returnedStack: SaveableBackStack
     setContent {
       CircuitCompositionLocals(circuit) {
-        val backStack = rememberSaveableBackStack {
-          push(TestResultScreen("root", answer = false))
+        val backStack = rememberSaveableBackStack(TestResultScreen("root", answer = false)) {
           returnedStack = this
         }
         val navigator =

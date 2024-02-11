@@ -17,6 +17,8 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun CircuitContent(
@@ -49,9 +51,9 @@ public fun CircuitContent(
           newRoot: Screen,
           saveState: Boolean,
           restoreState: Boolean,
-        ): List<Screen> {
+        ): ImmutableList<Screen> {
           onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
-          return emptyList()
+          return persistentListOf()
         }
 
         override fun pop(result: PopResult?): Screen? {
@@ -61,7 +63,7 @@ public fun CircuitContent(
 
         override fun peek(): Screen = screen
 
-        override fun peekBackStack(): List<Screen> = listOf(screen)
+        override fun peekBackStack(): ImmutableList<Screen> = persistentListOf(screen)
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent)

@@ -286,10 +286,7 @@ This is the most basic way to render a `Screen`. These can be top-level UIs or n
 An app architecture isn't complete without navigation. Circuit provides a simple navigation API that's focused around a simple `BackStack` ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-back-stack/index.html)) that is navigated via a `Navigator` interface ([docs]()). In most cases, you can use the built-in `SaveableBackStack` implementation ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html)), which is saved and restored in accordance with whatever the platform's `rememberSaveable` implementation is.
 
 ```kotlin title="Creating a backstack and navigator"
-val backStack = rememberSaveableBackStack { 
-  // Push your root screen
-  push(InboxScreen)
-}
+val backStack = rememberSaveableBackStack(root = InboxScreen)
 val navigator = rememberCircuitNavigator(backStack) {
   // Do something when the root screen is popped, usually exiting the app
 }
@@ -306,10 +303,7 @@ This composable will automatically manage the backstack and navigation for you, 
 Like with `Circuit`, this is usually a one-time setup in your application at its primary entry point.
 
 ```kotlin title="Putting it all together"
-val backStack = rememberSaveableBackStack {
-  // Push your root screen
-  push(InboxScreen)
-}
+val backStack = rememberSaveableBackStack(root = InboxScreen)
 val navigator = rememberCircuitNavigator(backStack) {
   // Do something when the root screen is popped, usually exiting the app
 }

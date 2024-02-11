@@ -52,7 +52,7 @@ import com.slack.circuit.runtime.ui.ui
  * If using navigation, use `NavigableCircuitContent` instead.
  *
  * ```kotlin
- * val backStack = rememberSaveableBackStack { push(AddFavoritesScreen()) }
+ * val backStack = rememberSaveableBackStack(root = HomeScreen)
  * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
  * CircuitCompositionLocals(circuit) {
  *   NavigableCircuitContent(navigator, backstack)

@@ -3,7 +3,16 @@ Changelog
 
 **Unreleased**
 --------------
-
+- Fix `FakeNavigator.awaitNextScreen()` not suspending.
+- Fix `FakeNavigator.resetRoot()` not returning the actual popped screens.
+- Make `Navigator.peekBackStack()` and `Navigator.resetRoot()` return `ImmutableList`.
+- Make `BackStack.popUntil()` return the `ImmutableList` of the popped records.
+- Strongly pop events and resetRoot events in `FakeNavigator`. This should offer much more information about the events.
+- Use a real `BackStack` instance in `FakeNavigator` + allow for specifying a user-provided instance.
+- Require an initial root screen to construct `FakeNavigator` unless using a custom `BackStack`.
+  - Note this slightly changes semantics, as now the root screen will not be recorded as the first `goTo` event.
+- Require an initial root screen (or list of screens) for `rememberSaveableBackStack()`.
+- Expose a top-level non-composable `Navigator()` factory function.
 
 0.19.0
 ------

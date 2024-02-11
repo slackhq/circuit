@@ -36,8 +36,12 @@ public fun rememberSaveableBackStack(root: Screen): SaveableBackStack =
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
-public class SaveableBackStack internal constructor(nullableRootRecord: Record?) :
-  BackStack<SaveableBackStack.Record> {
+public class SaveableBackStack
+internal constructor(
+  nullableRootRecord: Record?,
+  // Unused marker just to differentiate the internal constructor on the JVM.
+  @Suppress("UNUSED_PARAMETER") internalConstructorMarker: Any? = null,
+) : BackStack<SaveableBackStack.Record> {
 
   public constructor(initialRecord: Record) : this(nullableRootRecord = initialRecord)
 

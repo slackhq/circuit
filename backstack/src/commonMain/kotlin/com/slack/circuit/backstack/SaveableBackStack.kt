@@ -28,6 +28,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
+/**
+ * Creates and remembers a [SaveableBackStack] with the given [root] screen.
+ *
+ * @param init optional initializer callback to perform extra initialization logic.
+ */
 @Composable
 public fun rememberSaveableBackStack(
   root: Screen,
@@ -35,6 +40,10 @@ public fun rememberSaveableBackStack(
 ): SaveableBackStack =
   rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
 
+/**
+ * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
+ * [initialScreens] must not be empty.
+ */
 @Composable
 public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }

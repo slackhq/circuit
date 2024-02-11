@@ -81,7 +81,11 @@ internal class DispatchingOverlayNavigator(
 
   override fun peekBackStack(): ImmutableList<Screen> = persistentListOf(currentScreen)
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): ImmutableList<Screen> {
+  override fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): ImmutableList<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }
 }

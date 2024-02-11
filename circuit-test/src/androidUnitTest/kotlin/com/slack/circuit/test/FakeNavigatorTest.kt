@@ -20,8 +20,7 @@ class FakeNavigatorTest {
     val oldScreens = navigator.resetRoot(TestScreen3)
 
     assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen1))
-    assertThat(navigator.awaitResetRoot())
-      .isEqualTo(ResetRootEvent(TestScreen3, oldScreens))
+    assertThat(navigator.awaitResetRoot()).isEqualTo(ResetRootEvent(TestScreen3, oldScreens))
     assertThat(navigator.peek()).isEqualTo(TestScreen3)
     assertThat(navigator.peekBackStack()).isEqualTo(listOf(TestScreen3))
   }
@@ -33,8 +32,7 @@ class FakeNavigatorTest {
     val oldScreens = navigator.resetRoot(TestScreen1)
 
     assertThat(oldScreens).containsExactly(TestScreen1)
-    assertThat(navigator.awaitResetRoot())
-      .isEqualTo(ResetRootEvent(TestScreen1, oldScreens))
+    assertThat(navigator.awaitResetRoot()).isEqualTo(ResetRootEvent(TestScreen1, oldScreens))
   }
 }
 

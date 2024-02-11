@@ -86,7 +86,11 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
 
   override fun peekBackStack(): ImmutableList<Screen> = delegate.peekBackStack()
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): ImmutableList<Screen> {
+  override fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): ImmutableList<Screen> {
     onNavEvent()
     return delegate.resetRoot(newRoot, saveState, restoreState)
   }

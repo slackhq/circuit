@@ -14,7 +14,7 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
- * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
+ * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
  * @param backStack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
@@ -26,8 +26,19 @@ public fun rememberCircuitNavigator(
   backStack: BackStack<out Record>,
   onRootPop: () -> Unit,
 ): Navigator {
-  return remember { NavigatorImpl(backStack, onRootPop) }
+  return remember { Navigator(backStack, onRootPop) }
 }
+
+/**
+ * Creates a new [Navigator].
+ *
+ * @param backStack The backing [BackStack] to navigate.
+ * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
+ *   button.
+ * @see NavigableCircuitContent
+ */
+public fun Navigator(backStack: BackStack<out Record>, onRootPop: () -> Unit): Navigator =
+  NavigatorImpl(backStack, onRootPop)
 
 internal class NavigatorImpl(
   private val backStack: BackStack<out Record>,

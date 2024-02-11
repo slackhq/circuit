@@ -29,26 +29,26 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
 @Composable
-public fun rememberSaveableBackStack(initialScreen: Screen): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(initialScreen) }
+public fun rememberSaveableBackStack(root: Screen): SaveableBackStack =
+  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root) }
 
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
-public class SaveableBackStack internal constructor(nullableInitialRecord: Record?) :
+public class SaveableBackStack internal constructor(nullableRootRecord: Record?) :
   BackStack<SaveableBackStack.Record> {
 
-  public constructor(initialRecord: Record) : this(nullableInitialRecord = initialRecord)
+  public constructor(initialRecord: Record) : this(nullableRootRecord = initialRecord)
 
-  public constructor(initialScreen: Screen) : this(Record(initialScreen))
+  public constructor(root: Screen) : this(Record(root))
 
   // Both visible for testing
   internal val entryList = mutableStateListOf<Record>()
   internal val stateStore = mutableMapOf<Screen, List<Record>>()
 
   init {
-    nullableInitialRecord?.let(::push)
+    nullableRootRecord?.let(::push)
   }
 
   override val size: Int

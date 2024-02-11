@@ -45,20 +45,19 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     SaveableBackStack(root)
   )
 
-  private val navigatedScreens = Turbine<Screen>()
-  private val newRoots = Turbine<Screen>()
-  private val pops = Turbine<Unit>()
-  private val results = Turbine<PopResult>()
+  private val goToEvents = Turbine<Screen>()
+  private val resetRootEvents = Turbine<ResetRootEvent>()
+  private val popEvents = Turbine<PopEvent>()
 
   override fun goTo(screen: Screen) {
     delegate.goTo(screen)
-    navigatedScreens.add(screen)
+    goToEvents.add(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
-    pops.add(Unit)
-    result?.let(results::add)
-    return delegate.pop(result)
+    val popped = delegate.pop(result)
+    popEvents.add(PopEvent(popped, result))
+    return popped
   }
 
   override fun resetRoot(
@@ -67,7 +66,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     restoreState: Boolean,
   ): ImmutableList<Screen> {
     val oldScreens = delegate.resetRoot(newRoot, saveState, restoreState)
-    newRoots.add(newRoot)
+    resetRootEvents.add(ResetRootEvent(newRoot, oldScreens, saveState, restoreState))
     return oldScreens
   }
 
@@ -76,24 +75,35 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
    *
    * For non-coroutines users only.
    */
-  public fun takeNextScreen(): Screen = navigatedScreens.takeItem()
+  public fun takeNextScreen(): Screen = goToEvents.takeItem()
 
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
-  public suspend fun awaitNextScreen(): Screen = navigatedScreens.awaitItem()
+  public suspend fun awaitNextScreen(): Screen = goToEvents.awaitItem()
 
   /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
-  public suspend fun awaitResetRoot(): Screen = newRoots.awaitItem()
+  public suspend fun awaitResetRoot(): ResetRootEvent = resetRootEvents.awaitItem()
 
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
-  public suspend fun awaitPop(): Unit = pops.awaitItem()
+  public suspend fun awaitPop(): PopEvent = popEvents.awaitItem()
 
   /** Asserts that all events so far have been consumed. */
   public fun assertIsEmpty() {
-    navigatedScreens.ensureAllEventsConsumed()
+    goToEvents.ensureAllEventsConsumed()
   }
 
   /** Asserts that no events have been emitted. */
   public fun expectNoEvents() {
-    navigatedScreens.expectNoEvents()
+    goToEvents.expectNoEvents()
   }
+
+  /** Represents a recorded [Navigator.pop] event. */
+  public data class PopEvent(val poppedScreen: Screen?, val result: PopResult? = null)
+
+  /** Represents a recorded [Navigator.resetRoot] event. */
+  public data class ResetRootEvent(
+    val newRoot: Screen,
+    val oldScreens: ImmutableList<Screen>,
+    val saveState: Boolean = false,
+    val restoreState: Boolean = false,
+  )
 }

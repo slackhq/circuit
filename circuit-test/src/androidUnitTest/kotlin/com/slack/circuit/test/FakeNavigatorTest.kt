@@ -4,6 +4,7 @@ package com.slack.circuit.test
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.test.FakeNavigator.ResetRootEvent
 import kotlinx.coroutines.test.runTest
 import kotlinx.parcelize.Parcelize
 import org.junit.Test
@@ -19,7 +20,8 @@ class FakeNavigatorTest {
     val oldScreens = navigator.resetRoot(TestScreen3)
 
     assertThat(oldScreens).isEqualTo(listOf(TestScreen2, TestScreen1))
-    assertThat(navigator.awaitResetRoot()).isEqualTo(TestScreen3)
+    assertThat(navigator.awaitResetRoot())
+      .isEqualTo(ResetRootEvent(TestScreen3, oldScreens))
     assertThat(navigator.peek()).isEqualTo(TestScreen3)
     assertThat(navigator.peekBackStack()).isEqualTo(listOf(TestScreen3))
   }
@@ -31,7 +33,8 @@ class FakeNavigatorTest {
     val oldScreens = navigator.resetRoot(TestScreen1)
 
     assertThat(oldScreens).containsExactly(TestScreen1)
-    assertThat(navigator.awaitResetRoot()).isEqualTo(TestScreen1)
+    assertThat(navigator.awaitResetRoot())
+      .isEqualTo(ResetRootEvent(TestScreen1, oldScreens))
   }
 }
 

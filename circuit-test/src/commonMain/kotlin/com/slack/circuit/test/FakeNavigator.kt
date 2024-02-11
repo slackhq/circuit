@@ -15,6 +15,9 @@ import kotlinx.collections.immutable.ImmutableList
 /**
  * A fake [Navigator] that can be used in tests to record and assert navigation events.
  *
+ * This navigator acts as a real navigator for all intents and purposes, navigating either a given
+ * [BackStack] or using a simple real one under the hood if one isn't provided.
+ *
  * Example
  *
  * ```kotlin

@@ -29,22 +29,27 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
 @Composable
-public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) {
-    SaveableBackStack().apply(init).also {
-      check(!it.isEmpty) { "Backstack must be non-empty after init." }
-    }
-  }
+public fun rememberSaveableBackStack(initialScreen: Screen): SaveableBackStack =
+  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(initialScreen) }
 
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
-public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
+public class SaveableBackStack internal constructor(nullableInitialRecord: Record?) :
+  BackStack<SaveableBackStack.Record> {
+
+  public constructor(initialRecord: Record) : this(nullableInitialRecord = initialRecord)
+
+  public constructor(initialScreen: Screen) : this(Record(initialScreen))
 
   // Both visible for testing
   internal val entryList = mutableStateListOf<Record>()
   internal val stateStore = mutableMapOf<Screen, List<Record>>()
+
+  init {
+    nullableInitialRecord?.let(::push)
+  }
 
   override val size: Int
     get() = entryList.size
@@ -176,7 +181,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
         },
         restore = { value ->
           @Suppress("UNCHECKED_CAST")
-          SaveableBackStack().also { backStack ->
+          SaveableBackStack(null).also { backStack ->
             value.forEachIndexed { index, list ->
               if (index == 0) {
                 // The first list is the entry list

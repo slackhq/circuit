@@ -29,8 +29,11 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
 @Composable
-public fun rememberSaveableBackStack(root: Screen): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root) }
+public fun rememberSaveableBackStack(
+  root: Screen,
+  init: SaveableBackStack.() -> Unit = {},
+): SaveableBackStack =
+  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
 
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See

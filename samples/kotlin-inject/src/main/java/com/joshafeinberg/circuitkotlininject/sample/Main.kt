@@ -23,9 +23,9 @@ import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
 
 fun main() = application {
-  val parentComponent = remember { ParentComponent::class.create() }
+  val appComponent = remember { AppComponent::class.create() }
   val circuit = remember {
-    val circuitComponent = AppScopeCircuitComponent::class.create(parentComponent)
+    val circuitComponent = AppScopeCircuitComponent::class.create(appComponent)
     circuitComponent.circuitBuilder().build()
   }
 
@@ -35,14 +35,14 @@ fun main() = application {
 }
 
 @Component
-abstract class ParentComponent {
+abstract class AppComponent {
   @Provides
   fun providesString(): String {
     return "Injected String!"
   }
 }
 
-@MergeCircuitComponent<ParentComponent>(AppScope::class)
+@MergeCircuitComponent<AppComponent>(AppScope::class)
 interface AppScopeCircuitComponent : CircuitComponent
 
 @Scope annotation class AppScope

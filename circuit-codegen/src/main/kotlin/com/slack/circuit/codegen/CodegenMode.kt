@@ -2,6 +2,8 @@ package com.slack.circuit.codegen
 
 import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.PlatformInfo
+import com.slack.circuit.codegen.CircuitNames.INTERNAL_CIRCUIT_API_ANNOTATION
+import com.slack.circuit.codegen.CircuitNames.KOTLIN_INJECT_HINT_ANNOTATION
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -9,6 +11,8 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
+import javax.inject.Inject
 
 internal enum class CodegenMode {
   /**
@@ -73,7 +77,9 @@ internal enum class CodegenMode {
       val moduleAnnotations =
         listOfNotNull(
           AnnotationSpec.builder(CircuitNames.DAGGER_MODULE).build(),
-          AnnotationSpec.builder(CircuitNames.DAGGER_INSTALL_IN).addMember("%T::class", scope).build(),
+          AnnotationSpec.builder(CircuitNames.DAGGER_INSTALL_IN)
+            .addMember("%T::class", scope)
+            .build(),
           topLevelClass?.let {
             AnnotationSpec.builder(CircuitNames.DAGGER_ORIGINATING_ELEMENT)
               .addMember("%L = %T::class", "topLevelClass", topLevelClass)
@@ -114,16 +120,20 @@ internal enum class CodegenMode {
   KOTLIN_INJECT {
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean = true
 
-    override fun produceAdditionalTypeSpec(
-      factory: ClassName,
-      factoryType: FactoryType,
-      scope: TypeName,
-      topLevelClass: ClassName?
-    ): TypeSpec? {
-      TODO()
+    override val injectAnnotations: InjectAnnotations =
+      InjectAnnotations(inject = CircuitNames.KotlinInject.INJECT)
+
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
+      builder.addAnnotation(
+        AnnotationSpec.builder(ClassName("kotlin", "OptIn"))
+          .addMember("%T::class", INTERNAL_CIRCUIT_API_ANNOTATION)
+          .build()
+      )
+      builder.addAnnotation(
+        AnnotationSpec.builder(KOTLIN_INJECT_HINT_ANNOTATION).addMember("%T::class", scope).build()
+      )
     }
-  }
-  ;
+  };
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 
@@ -137,4 +147,8 @@ internal enum class CodegenMode {
   }
 
   abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
+
+  open val injectAnnotations = InjectAnnotations(inject = Inject::class.asClassName())
+
+  data class InjectAnnotations(val inject: ClassName)
 }

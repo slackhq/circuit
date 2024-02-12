@@ -3,10 +3,13 @@ package com.slack.circuit.codegen
 import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.joinToCode
@@ -54,6 +57,7 @@ internal fun KSFunctionDeclaration.assistedParameters(
   logger: KSPLogger,
   screenType: KSType,
   allowNavigator: Boolean,
+  codegenMode: CodegenMode,
 ): CodeBlock {
   return buildSet {
     for (param in parameters) {
@@ -83,6 +87,11 @@ internal fun KSFunctionDeclaration.assistedParameters(
             )
           }
         }
+        type.isInstanceOf(symbols.circuitUiState) ||
+          type.isInstanceOf(symbols.modifier) -> Unit
+        codegenMode == CodegenMode.KOTLIN_INJECT -> {
+          addOrError(AssistedType(param.name!!.asString(), param.type.resolve().toTypeName(), param.name!!.asString()))
+        }
       }
     }
   }
@@ -97,4 +106,10 @@ internal fun KSType.isSameDeclarationAs(type: KSType): Boolean {
 
 internal fun KSType.isInstanceOf(type: KSType): Boolean {
   return type.isAssignableFrom(this)
+}
+internal fun KSAnnotated.getAnnotationsByType(annotationKClass: ClassName): Sequence<KSAnnotation> {
+  return this.annotations.filter {
+    it.shortName.getShortName() == annotationKClass.simpleName && it.annotationType.resolve().declaration
+      .qualifiedName?.asString() == annotationKClass.canonicalName
+  }
 }

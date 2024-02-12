@@ -16,7 +16,6 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
@@ -32,10 +31,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -43,7 +39,6 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Provider
 
 @AutoService(SymbolProcessorProvider::class)
 public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
@@ -86,20 +81,21 @@ private class CircuitSymbolProcessor(
       return emptyList()
     }
 
-    resolver.getSymbolsWithAnnotation(CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
-      annotatedElement ->
-      when (annotatedElement) {
-        is KSClassDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
-        is KSFunctionDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
-        else ->
-          logger.error(
-            "CircuitInject is only applicable on classes and functions.",
-            annotatedElement,
-          )
+    resolver
+      .getSymbolsWithAnnotation(CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName)
+      .forEach { annotatedElement ->
+        when (annotatedElement) {
+          is KSClassDeclaration ->
+            generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
+          is KSFunctionDeclaration ->
+            generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
+          else ->
+            logger.error(
+              "CircuitInject is only applicable on classes and functions.",
+              annotatedElement,
+            )
+        }
       }
-    }
     return emptyList()
   }
 
@@ -115,14 +111,22 @@ private class CircuitSymbolProcessor(
           CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName
       }
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
-    val screenIsObject =
-      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
+    // TODO why does smart cast not work on objects?
+    val screenIsObject = false
+    //      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind ==
+    // ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
     val factoryData =
-      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
-        ?: return
+      computeFactoryData(
+        annotatedElement,
+        symbols,
+        screenKSType,
+        instantiationType,
+        logger,
+        codegenMode,
+      ) ?: return
 
     val className =
       factoryData.className.replaceFirstChar { char ->
@@ -134,7 +138,7 @@ private class CircuitSymbolProcessor(
       TypeSpec.classBuilder(className + CircuitNames.FACTORY)
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(codegenMode.injectAnnotations.inject)
             .addParameters(factoryData.constructorParams)
             .build()
         )
@@ -213,6 +217,7 @@ private class CircuitSymbolProcessor(
     screenKSType: KSType,
     instantiationType: InstantiationType,
     logger: KSPLogger,
+    codegenMode: CodegenMode,
   ): FactoryData? {
     val className: String
     val packageName: String
@@ -236,7 +241,13 @@ private class CircuitSymbolProcessor(
             FactoryType.UI
           }
         val assistedParams =
-          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
+          fd.assistedParameters(
+            symbols = symbols,
+            logger = logger,
+            screenType = screenKSType,
+            allowNavigator = factoryType == FactoryType.PRESENTER,
+            codegenMode = codegenMode,
+          )
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
@@ -290,7 +301,8 @@ private class CircuitSymbolProcessor(
 
               @Suppress("IfThenToElvis") // The elvis is less readable here
               val stateType =
-                if (stateParam == null) CircuitNames.CIRCUIT_UI_STATE else stateParam.type.resolve().toTypeName()
+                if (stateParam == null) CircuitNames.CIRCUIT_UI_STATE
+                else stateParam.type.resolve().toTypeName()
               val stateArg = if (stateParam == null) "_" else "state"
               val stateParamBlock =
                 if (stateParam == null) CodeBlock.of("")
@@ -376,10 +388,11 @@ private class CircuitSymbolProcessor(
             CodeBlock.of("")
           } else {
             creatorOrConstructor?.assistedParameters(
-              symbols,
-              logger,
-              screenKSType,
+              symbols = symbols,
+              logger = logger,
+              screenType = screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
+              codegenMode = codegenMode,
             )
           }
         codeBlock =
@@ -388,7 +401,7 @@ private class CircuitSymbolProcessor(
             constructorParams.add(
               ParameterSpec.builder(
                   "provider",
-                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName()),
+                  ClassName("javax.inject", "Provider").parameterizedBy(targetClass.toClassName()),
                 )
                 .build()
             )
@@ -404,6 +417,20 @@ private class CircuitSymbolProcessor(
               assistedParams,
             )
           } else {
+            if (codegenMode == CodegenMode.KOTLIN_INJECT) {
+              declaration.primaryConstructor?.parameters?.forEach { parameter ->
+                val resolvedType = parameter.type.resolve()
+                if (
+                  !resolvedType.isInstanceOf(symbols.screen) &&
+                    !resolvedType.isInstanceOf(symbols.navigator)
+                ) {
+                  constructorParams.add(
+                    ParameterSpec.builder(parameter.name!!.asString(), resolvedType.toTypeName())
+                      .build()
+                  )
+                }
+              }
+            }
             // Simple constructor call, no injection.
             CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
           }
@@ -470,4 +497,3 @@ private fun TypeSpec.Builder.buildPresenterFactory(
     .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
 }
-

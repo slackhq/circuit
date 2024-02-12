@@ -3,6 +3,14 @@ Changelog
 
 **Unreleased**
 --------------
+
+0.19.1
+------
+
+_2024-02-12_
+
+This is a small bug fix release focused `SaveableBackStack` consistency and `FakeNavigator` API improvements.
+
 - Fix `FakeNavigator.awaitNextScreen()` not suspending.
 - Fix `FakeNavigator.resetRoot()` not returning the actual popped screens.
 - Make `Navigator.peekBackStack()` and `Navigator.resetRoot()` return `ImmutableList`.

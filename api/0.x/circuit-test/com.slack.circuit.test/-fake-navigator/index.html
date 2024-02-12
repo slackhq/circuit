@@ -62,24 +62,58 @@
   <div class="breadcrumbs"><a href="../../index.html">circuit-test</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.test</a><span class="delimiter">/</span><span class="current">FakeNavigator</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Fake</span><wbr><span><span>Navigator</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FakeNavigator</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initialScreen<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/commonMain/kotlin/com/slack/circuit/test/FakeNavigator.kt#L27">source</a>)</span></span></div><p class="paragraph">A fake <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a> that can be used in tests to record and assert navigation events.</p><p class="paragraph">Example</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val navigator = FakeNavigator()<br>val presenter = FavoritesPresenter(navigator)<br><br>presenter.test {<br>  val state = awaitItem()<br>  state.eventSink(AddFavoriteClick)<br>  assertThat(navigator.awaitNextScreen())<br>    .isEqualTo(AddFavoriteScreen)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FakeNavigator</a> : <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/commonMain/kotlin/com/slack/circuit/test/FakeNavigator.kt#L35">source</a>)</span></span></div><p class="paragraph">A fake <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a> that can be used in tests to record and assert navigation events.</p><p class="paragraph">This navigator acts as a real navigator for all intents and purposes, navigating either a given <a href="../../../backstack/com.slack.circuit.backstack/-back-stack/index.html">BackStack</a> or using a simple real one under the hood if one isn't provided.</p><p class="paragraph">Example</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val navigator = FakeNavigator(FavoritesScreen)<br>val presenter = FavoritesPresenter(navigator)<br><br>presenter.test {<br>  val state = awaitItem()<br>  state.eventSink(AddFavoriteClick)<br>  assertThat(navigator.awaitNextScreen())<br>    .isEqualTo(AddFavoriteScreen)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="1599476414%2FConstructors%2F1098370717" anchor-label="FakeNavigator" id="1599476414%2FConstructors%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
+        <div class="table"><a data-name="843513243%2FConstructors%2F1098370717" anchor-label="FakeNavigator" id="843513243%2FConstructors%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-fake-navigator.html"><span>Fake</span><wbr><span><span>Navigator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1599476414%2FConstructors%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="843513243%2FConstructors%2F1098370717"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initialScreen<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">backStack<span class="token operator">: </span><a href="../../../backstack/com.slack.circuit.backstack/-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../../backstack/com.slack.circuit.backstack/-back-stack/-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">root<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1197836945%2FClasslikes%2F1098370717" anchor-label="PopEvent" id="-1197836945%2FClasslikes%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pop-event/index.html"><span>Pop</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1197836945%2FClasslikes%2F1098370717"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pop-event/index.html">PopEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>poppedScreen<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>result<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-pop-result/index.html">PopResult</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents a recorded <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/pop.html">Navigator.pop</a> event.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-676827985%2FClasslikes%2F1098370717" anchor-label="ResetRootEvent" id="-676827985%2FClasslikes%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-reset-root-event/index.html"><span>Reset</span><wbr><span>Root</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-676827985%2FClasslikes%2F1098370717"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-reset-root-event/index.html">ResetRootEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>newRoot<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>oldScreens<span class="token operator">: </span><span data-unresolved-link="kotlinx.collections.immutable/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>saveState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>restoreState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents a recorded <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/reset-root.html">Navigator.resetRoot</a> event.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -128,7 +162,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-pop.html"><span class="token function">awaitPop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="pop.html">pop</a> event or throws if no pops are performed.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-pop.html"><span class="token function">awaitPop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-pop-event/index.html">FakeNavigator.PopEvent</a></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="pop.html">pop</a> event or throws if no pops are performed.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -143,7 +177,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-reset-root.html"><span class="token function">awaitResetRoot</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="reset-root.html">resetRoot</a> or throws if no resets were performed.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-reset-root.html"><span class="token function">awaitResetRoot</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-reset-root-event/index.html">FakeNavigator.ResetRootEvent</a></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="reset-root.html">resetRoot</a> or throws if no resets were performed.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -178,32 +212,32 @@
               </div>
             </div>
           </div>
-<a data-name="-687776792%2FFunctions%2F1098370717" anchor-label="peek" id="-687776792%2FFunctions%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
+<a data-name="-35239517%2FFunctions%2F1098370717" anchor-label="peek" id="-35239517%2FFunctions%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
           <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="peek.html"><span><span>peek</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-687776792%2FFunctions%2F1098370717"></span>
+                  <div><a href="index.html#-35239517%2FFunctions%2F1098370717"><span><span>peek</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-35239517%2FFunctions%2F1098370717"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="peek.html"><span class="token function">peek</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-35239517%2FFunctions%2F1098370717"><span class="token function">peek</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1961382225%2FFunctions%2F1098370717" anchor-label="peekBackStack" id="1961382225%2FFunctions%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
+<a data-name="1038329334%2FFunctions%2F1098370717" anchor-label="peekBackStack" id="1038329334%2FFunctions%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
           <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="peek-back-stack.html"><span>peek</span><wbr><span>Back</span><wbr><span><span>Stack</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1961382225%2FFunctions%2F1098370717"></span>
+                  <div><a href="index.html#1038329334%2FFunctions%2F1098370717"><span>peek</span><wbr><span>Back</span><wbr><span><span>Stack</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1038329334%2FFunctions%2F1098370717"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="peek-back-stack.html"><span class="token function">peekBackStack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1038329334%2FFunctions%2F1098370717"><span class="token function">peekBackStack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.collections.immutable/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -233,7 +267,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="reset-root.html"><span class="token function">resetRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newRoot<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">saveState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">restoreState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="reset-root.html"><span class="token function">resetRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newRoot<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">saveState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">restoreState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.collections.immutable/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>

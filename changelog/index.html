@@ -650,6 +650,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0191" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.19.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0190" class="md-nav__link">
     <span class="md-ellipsis">
       0.19.0
@@ -1228,6 +1237,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0191" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.19.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0190" class="md-nav__link">
     <span class="md-ellipsis">
       0.19.0
@@ -1742,6 +1760,22 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased"><strong>Unreleased</strong><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0191">0.19.1<a class="headerlink" href="#0191" title="Permanent link">&para;</a></h2>
+<p><em>2024-02-12</em></p>
+<p>This is a small bug fix release focused <code>SaveableBackStack</code> consistency and <code>FakeNavigator</code> API improvements.</p>
+<ul>
+<li>Fix <code>FakeNavigator.awaitNextScreen()</code> not suspending.</li>
+<li>Fix <code>FakeNavigator.resetRoot()</code> not returning the actual popped screens.</li>
+<li>Make <code>Navigator.peekBackStack()</code> and <code>Navigator.resetRoot()</code> return <code>ImmutableList</code>.</li>
+<li>Make <code>BackStack.popUntil()</code> return the <code>ImmutableList</code> of the popped records.</li>
+<li>Support <code>FakeNavigator.peekBackStack()</code> return the <code>ImmutableList</code> of the popped records.</li>
+<li>Strongly pop events and resetRoot events in <code>FakeNavigator</code>. This should offer much more information about the events.</li>
+<li>Use a real <code>BackStack</code> instance in <code>FakeNavigator</code> + allow for specifying a user-provided instance.</li>
+<li>Require an initial root screen to construct <code>FakeNavigator</code> unless using a custom <code>BackStack</code>.</li>
+<li>Note this slightly changes semantics, as now the root screen will not be recorded as the first <code>goTo</code> event.</li>
+<li>Require an initial root screen (or list of screens) for <code>rememberSaveableBackStack()</code>.</li>
+<li>Expose a top-level non-composable <code>Navigator()</code> factory function.</li>
+</ul>
 <h2 id="0190">0.19.0<a class="headerlink" href="#0190" title="Permanent link">&para;</a></h2>
 <p><em>2024-02-09</em></p>
 <h3 id="navigation-with-results">Navigation with results<a class="headerlink" href="#navigation-with-results" title="Permanent link">&para;</a></h3>

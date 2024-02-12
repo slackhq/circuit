@@ -226,6 +226,7 @@ Lcom/slack/circuit/foundation/NavigatorImpl;
 HSPLcom/slack/circuit/foundation/NavigatorImpl;-><clinit>()V
 HSPLcom/slack/circuit/foundation/NavigatorImpl;-><init>(Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function0;)V
 Lcom/slack/circuit/foundation/NavigatorImplKt;
+HSPLcom/slack/circuit/foundation/NavigatorImplKt;->Navigator(Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function0;)Lcom/slack/circuit/runtime/Navigator;
 HSPLcom/slack/circuit/foundation/NavigatorImplKt;->rememberCircuitNavigator(Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
 Lcom/slack/circuit/foundation/Navigator_androidKt;
 HSPLcom/slack/circuit/foundation/Navigator_androidKt;->backDispatcherRootPop(Landroidx/compose/runtime/Composer;I)Lkotlin/jvm/functions/Function0;

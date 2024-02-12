@@ -34,6 +34,7 @@ jdk = "21"
 jvmTarget = "11"
 kct = "0.4.0"
 kotlin = "1.9.22"
+kotlinInject = "0.6.3"
 kotlinpoet = "1.16.0"
 kotlinx-coroutines = "1.7.3"
 ksp = "1.9.22-1.0.17"
@@ -220,6 +221,10 @@ jsoup = "org.jsoup:jsoup:1.17.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
+
+kotlin-inject-compiler-ksp = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
+kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
+
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}

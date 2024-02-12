@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.ksp)
@@ -18,12 +20,12 @@ dependencies {
   ksp(libs.kotlin.inject.compiler.ksp)
 }
 
-//dependencies {
+// dependencies {
 //  for (target in kspTargets) {
 //    val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target
 //    add("ksp${targetConfigSuffix}", projects.circuitCodegen)
 //  }
-//}
+// }
 
 ksp {
   arg("circuit.codegen.lenient", "true")

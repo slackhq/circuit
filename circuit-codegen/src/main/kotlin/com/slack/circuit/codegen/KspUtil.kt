@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.codegen
 
 import com.google.devtools.ksp.getVisibility
@@ -60,41 +62,46 @@ internal fun KSFunctionDeclaration.assistedParameters(
   codegenMode: CodegenMode,
 ): CodeBlock {
   return buildSet {
-    for (param in parameters) {
-      fun <E> MutableSet<E>.addOrError(element: E) {
-        val added = add(element)
-        if (!added) {
-          logger.error("Multiple parameters of type $element are not allowed.", param)
-        }
-      }
-
-      val type = param.type.resolve()
-      when {
-        type.isInstanceOf(symbols.screen) -> {
-          if (screenType.isSameDeclarationAs(type)) {
-            addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
-          } else {
-            logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+      for (param in parameters) {
+        fun <E> MutableSet<E>.addOrError(element: E) {
+          val added = add(element)
+          if (!added) {
+            logger.error("Multiple parameters of type $element are not allowed.", param)
           }
         }
-        type.isInstanceOf(symbols.navigator) -> {
-          if (allowNavigator) {
-            addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
-          } else {
-            logger.error(
-              "Navigator type mismatch. Navigators are not injectable on this type.",
-              param,
+
+        val type = param.type.resolve()
+        when {
+          type.isInstanceOf(symbols.screen) -> {
+            if (screenType.isSameDeclarationAs(type)) {
+              addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+            }
+          }
+          type.isInstanceOf(symbols.navigator) -> {
+            if (allowNavigator) {
+              addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error(
+                "Navigator type mismatch. Navigators are not injectable on this type.",
+                param,
+              )
+            }
+          }
+          type.isInstanceOf(symbols.circuitUiState) || type.isInstanceOf(symbols.modifier) -> Unit
+          codegenMode == CodegenMode.KOTLIN_INJECT -> {
+            addOrError(
+              AssistedType(
+                param.name!!.asString(),
+                param.type.resolve().toTypeName(),
+                param.name!!.asString(),
+              )
             )
           }
         }
-        type.isInstanceOf(symbols.circuitUiState) ||
-          type.isInstanceOf(symbols.modifier) -> Unit
-        codegenMode == CodegenMode.KOTLIN_INJECT -> {
-          addOrError(AssistedType(param.name!!.asString(), param.type.resolve().toTypeName(), param.name!!.asString()))
-        }
       }
     }
-  }
     .toList()
     .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
     .joinToCode(",·")
@@ -107,9 +114,11 @@ internal fun KSType.isSameDeclarationAs(type: KSType): Boolean {
 internal fun KSType.isInstanceOf(type: KSType): Boolean {
   return type.isAssignableFrom(this)
 }
+
 internal fun KSAnnotated.getAnnotationsByType(annotationKClass: ClassName): Sequence<KSAnnotation> {
   return this.annotations.filter {
-    it.shortName.getShortName() == annotationKClass.simpleName && it.annotationType.resolve().declaration
-      .qualifiedName?.asString() == annotationKClass.canonicalName
+    it.shortName.getShortName() == annotationKClass.simpleName &&
+      it.annotationType.resolve().declaration.qualifiedName?.asString() ==
+        annotationKClass.canonicalName
   }
 }

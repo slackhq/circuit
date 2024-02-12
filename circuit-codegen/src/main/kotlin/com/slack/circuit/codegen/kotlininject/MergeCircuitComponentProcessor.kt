@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.codegen.kotlininject
 
 import com.google.auto.service.AutoService
@@ -33,9 +35,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import kotlin.reflect.KClass
 
-/**
- * TODO
- */
+/** TODO */
 public class MergeCircuitComponentProcessor(
   private val enabled: Boolean,
   private val codeGenerator: CodeGenerator,
@@ -62,9 +62,7 @@ public class MergeCircuitComponentProcessor(
       resolver
         .getSymbolsWithAnnotation(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION.canonicalName)
         .filterIsInstance<KSClassDeclaration>()
-        .onEach {
-          logger.warn("Found merge circuit component: $it")
-        }
+        .onEach { logger.warn("Found merge circuit component: $it") }
         .map {
           val mergeAnnotation =
             it.getAnnotationsByType(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION).first()
@@ -87,9 +85,7 @@ public class MergeCircuitComponentProcessor(
     resolver
       .getSymbolsWithAnnotation(CircuitNames.KOTLIN_INJECT_HINT_ANNOTATION.canonicalName)
       .filterIsInstance<KSClassDeclaration>()
-      .onEach {
-        logger.warn("Found kotlin inject hint: $it")
-      }
+      .onEach { logger.warn("Found kotlin inject hint: $it") }
       .forEach { clazz ->
         clazz
           .getAnnotationsByType(CircuitNames.KOTLIN_INJECT_HINT_ANNOTATION)

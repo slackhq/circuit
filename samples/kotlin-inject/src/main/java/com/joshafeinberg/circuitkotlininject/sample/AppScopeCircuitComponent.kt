@@ -4,6 +4,7 @@ package com.joshafeinberg.circuitkotlininject.sample
 
 import com.slack.circuit.codegen.annotations.MergeCircuitComponent
 import com.slack.circuit.foundation.di.CircuitComponent
+import me.tatarka.inject.annotations.Component
 
-@MergeCircuitComponent<AppComponent>(AppScope::class)
-interface AppScopeCircuitComponent : CircuitComponent
+@MergeCircuitComponent(AppScope::class)
+abstract class AppScopeCircuitComponent(@Component appComponent: AppComponent) : CircuitComponent

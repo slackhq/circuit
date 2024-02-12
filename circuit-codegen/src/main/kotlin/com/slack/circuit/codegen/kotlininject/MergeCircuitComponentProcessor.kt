@@ -11,6 +11,7 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.slack.circuit.codegen.CircuitNames
@@ -25,13 +26,13 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.ksp.TypeParameterResolver
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
+import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.ksp.toTypeParameterResolver
 import com.squareup.kotlinpoet.ksp.writeTo
 import kotlin.reflect.KClass
 
@@ -60,18 +61,28 @@ public class MergeCircuitComponentProcessor(
       resolver
         .getSymbolsWithAnnotation(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION.canonicalName)
         .filterIsInstance<KSClassDeclaration>()
-        .map {
+        .map { componentClass ->
           val mergeAnnotation =
-            it.getAnnotationsByType(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION).first()
+            componentClass
+              .getAnnotationsByType(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION)
+              .first()
           val scopeType = mergeAnnotation.arguments.first().value as KSType
           val scope = (scopeType.declaration as KSClassDeclaration).toClassName()
-          // Read the ParentComponent off the generic type (which is stored on
-          // annotationType.element)
-          val parentComponent =
-            mergeAnnotation.annotationType.element!!
-              .typeArguments[0]
-              .toTypeName(TypeParameterResolver.EMPTY)
-          MergeComponentData(scope, parentComponent, it)
+
+          // Copy over any parameters to our subclass
+          val classTypeParams = componentClass.typeParameters.toTypeParameterResolver()
+          val parameters =
+            componentClass.primaryConstructor?.parameters.orEmpty().map { param ->
+              ParameterSpec.builder(
+                  param.name!!.getShortName(),
+                  param.type.toTypeName(classTypeParams),
+                )
+                .apply {
+                  addAnnotations(param.annotations.map(KSAnnotation::toAnnotationSpec).asIterable())
+                }
+                .build()
+            }
+          MergeComponentData(scope, componentClass, parameters)
         }
         .toList()
 
@@ -105,8 +116,8 @@ public class MergeCircuitComponentProcessor(
         continue
       }
 
-      val parentComponent = mergeComponent.parentComponent
-      generate(symbols, annotated, contributedFactories, parentComponent)
+      val constructorParams = mergeComponent.constructorParams
+      generate(symbols, annotated, contributedFactories, constructorParams)
     }
     return deferred
   }
@@ -115,7 +126,7 @@ public class MergeCircuitComponentProcessor(
     symbols: CircuitSymbols,
     annotated: KSClassDeclaration,
     contributedFactories: Set<KSClassDeclaration>,
-    parentComponent: TypeName,
+    constructorParams: List<ParameterSpec>,
   ) {
     val annotatedClassName = annotated.toClassName()
 
@@ -143,21 +154,20 @@ public class MergeCircuitComponentProcessor(
       TypeSpec.classBuilder(componentImplName)
         .addAnnotation(CircuitNames.KotlinInject.COMPONENT)
         .addModifiers(KModifier.ABSTRACT)
-        .addSuperinterface(annotatedClassName)
-        .primaryConstructor(
-          FunSpec.constructorBuilder()
-            .addParameter(
-              ParameterSpec.builder("parentComponent", parentComponent)
-                .addAnnotation(CircuitNames.KotlinInject.COMPONENT)
-                .build()
+        .superclass(annotatedClassName)
+        .apply {
+          if (constructorParams.isNotEmpty()) {
+            primaryConstructor(
+              FunSpec.constructorBuilder().addParameters(constructorParams).build()
             )
-            .build()
-        )
-        .addProperty(
-          PropertySpec.builder("parentComponent", parentComponent)
-            .initializer("parentComponent")
-            .build()
-        )
+            for (param in constructorParams) {
+              addProperty(
+                PropertySpec.builder(param.name, param.type).initializer(param.name).build()
+              )
+              addSuperclassConstructorParameter(param.name)
+            }
+          }
+        }
         .addOriginatingKSFile(annotated.containingFile!!)
         .apply {
           contributedFactories.forEach { contributedFactory ->
@@ -204,10 +214,14 @@ public class MergeCircuitComponentProcessor(
     val createFunction =
       FunSpec.builder("create")
         .receiver(KClass::class.asClassName().parameterizedBy(annotatedClassName))
-        .addParameter("parentComponent", parentComponent)
+        .apply {
+          for (param in constructorParams) {
+            addParameter(param.name, param.type)
+          }
+        }
         .returns(annotatedClassName)
         .addStatement(
-          "return %T::class.create(parentComponent)",
+          "return %T::class.create(${constructorParams.joinToString { it.name }})",
           ClassName(annotatedClassName.packageName, componentImplName),
         )
         .addOriginatingKSFile(annotated.containingFile!!)
@@ -223,6 +237,6 @@ public class MergeCircuitComponentProcessor(
 
 internal data class MergeComponentData(
   val scope: ClassName,
-  val parentComponent: TypeName,
   val annotated: KSClassDeclaration,
+  val constructorParams: List<ParameterSpec>,
 )

@@ -23,7 +23,7 @@ fun MainActivity.tutorialOnCreate() {
       .build()
   setContent {
     MaterialTheme {
-      val backStack = rememberSaveableBackStack { push(InboxScreen) }
+      val backStack = rememberSaveableBackStack(InboxScreen)
       val navigator = rememberCircuitNavigator(backStack)
       CircuitCompositionLocals(circuit) {
         NavigableCircuitContent(navigator = navigator, backStack = backStack)

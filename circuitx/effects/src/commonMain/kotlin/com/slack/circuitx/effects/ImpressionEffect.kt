@@ -14,6 +14,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * A side effect that will run an [impression]. This [impression] will run only once until it is
@@ -83,9 +84,13 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
 
   override fun peek(): Screen? = delegate.peek()
 
-  override fun peekBackStack(): List<Screen> = delegate.peekBackStack()
+  override fun peekBackStack(): ImmutableList<Screen> = delegate.peekBackStack()
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): ImmutableList<Screen> {
     onNavEvent()
     return delegate.resetRoot(newRoot, saveState, restoreState)
   }

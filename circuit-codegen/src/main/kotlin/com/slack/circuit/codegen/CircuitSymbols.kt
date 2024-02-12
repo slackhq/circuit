@@ -7,6 +7,8 @@ internal class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitUiState = resolver.loadKSType(CircuitNames.CIRCUIT_UI_STATE.canonicalName)
   val screen = resolver.loadKSType(CircuitNames.SCREEN.canonicalName)
   val navigator = resolver.loadKSType(CircuitNames.NAVIGATOR.canonicalName)
+  val presenterFactory = resolver.loadKSType(CircuitNames.CIRCUIT_PRESENTER_FACTORY.canonicalName)
+  val uiFactory = resolver.loadKSType(CircuitNames.CIRCUIT_UI_FACTORY.canonicalName)
 
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {

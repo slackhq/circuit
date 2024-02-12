@@ -110,7 +110,20 @@ internal enum class CodegenMode {
         .addFunction(providerSpec)
         .build()
     }
-  };
+  },
+  KOTLIN_INJECT {
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean = true
+
+    override fun produceAdditionalTypeSpec(
+      factory: ClassName,
+      factoryType: FactoryType,
+      scope: TypeName,
+      topLevelClass: ClassName?
+    ): TypeSpec? {
+      TODO()
+    }
+  }
+  ;
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 

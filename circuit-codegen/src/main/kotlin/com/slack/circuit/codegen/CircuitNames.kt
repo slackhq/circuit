@@ -12,8 +12,15 @@ internal object CircuitNames {
   const val CIRCUIT_RUNTIME_SCREEN_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.screen"
   const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
   val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
+  const val CIRCUIT_CODEGEN_ANNOTATIONS_PACKAGE = "com.slack.circuit.codegen.annotations"
   val CIRCUIT_INJECT_ANNOTATION =
-    ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
+    ClassName(CIRCUIT_CODEGEN_ANNOTATIONS_PACKAGE, "CircuitInject")
+  val MERGE_CIRCUIT_COMPONENT_ANNOTATION =
+    ClassName(CIRCUIT_CODEGEN_ANNOTATIONS_PACKAGE, "MergeCircuitComponent")
+  val KOTLIN_INJECT_HINT_ANNOTATION =
+    ClassName("$CIRCUIT_CODEGEN_ANNOTATIONS_PACKAGE.internal", "KotlinInjectHint")
+  val INTERNAL_CIRCUIT_API_ANNOTATION =
+    ClassName("com.slack.circuit.runtime", "InternalCircuitApi")
   val CIRCUIT_PRESENTER = ClassName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "Presenter")
   val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
   val CIRCUIT_UI = ClassName(CIRCUIT_RUNTIME_UI_PACKAGE, "Ui")
@@ -31,4 +38,12 @@ internal object CircuitNames {
   const val MODULE = "Module"
   const val FACTORY = "Factory"
   const val CIRCUIT_CODEGEN_MODE = "circuit.codegen.mode"
+
+  object KotlinInject {
+    private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"
+    val INJECT = ClassName(ANNOTATIONS_PACKAGE, "Inject")
+    val COMPONENT = ClassName(ANNOTATIONS_PACKAGE, "Component")
+    val PROVIDES = ClassName(ANNOTATIONS_PACKAGE, "Provides")
+    val INTO_SET = ClassName(ANNOTATIONS_PACKAGE, "IntoSet")
+  }
 }

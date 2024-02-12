@@ -10,7 +10,13 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  // Anvil/Dagger does not support iOS targets
+  iosX64()
+  iosArm64()
+  iosSimulatorArm64()
+  js {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    nodejs()
+  }
   // endregion
 
   applyDefaultHierarchyTemplate()

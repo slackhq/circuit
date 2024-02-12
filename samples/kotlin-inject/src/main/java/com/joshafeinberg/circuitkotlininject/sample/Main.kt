@@ -9,18 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.codegen.annotations.MergeCircuitComponent
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.foundation.di.CircuitComponent
 import com.slack.circuit.foundation.di.circuitBuilder
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Assisted
-import me.tatarka.inject.annotations.Component
-import me.tatarka.inject.annotations.Provides
-import me.tatarka.inject.annotations.Scope
 
 fun main() = application {
   val appComponent = remember { AppComponent::class.create() }
@@ -33,19 +28,6 @@ fun main() = application {
     CircuitCompositionLocals(circuit) { CircuitContent(MyScreen) }
   }
 }
-
-@Component
-abstract class AppComponent {
-  @Provides
-  fun providesString(): String {
-    return "Injected String!"
-  }
-}
-
-@MergeCircuitComponent<AppComponent>(AppScope::class)
-interface AppScopeCircuitComponent : CircuitComponent
-
-@Scope annotation class AppScope
 
 @CircuitInject(MyScreen::class, AppScope::class)
 @Composable

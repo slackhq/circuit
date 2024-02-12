@@ -49,20 +49,17 @@ public class MergeCircuitComponentProcessor(
           CodegenMode.KOTLIN_INJECT.name,
           ignoreCase = true,
         ) ?: false
-      environment.logger.warn("Circuit KotlinInject codegen enabled: $enabled")
       return MergeCircuitComponentProcessor(enabled, environment.codeGenerator, environment.logger)
     }
   }
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
-    logger.warn("Processing merge circuit components")
     if (!enabled) return emptyList()
     // Get all merge circuit component annotations
     val mergeCircuitComponents =
       resolver
         .getSymbolsWithAnnotation(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION.canonicalName)
         .filterIsInstance<KSClassDeclaration>()
-        .onEach { logger.warn("Found merge circuit component: $it") }
         .map {
           val mergeAnnotation =
             it.getAnnotationsByType(CircuitNames.MERGE_CIRCUIT_COMPONENT_ANNOTATION).first()
@@ -85,7 +82,6 @@ public class MergeCircuitComponentProcessor(
     resolver
       .getSymbolsWithAnnotation(CircuitNames.KOTLIN_INJECT_HINT_ANNOTATION.canonicalName)
       .filterIsInstance<KSClassDeclaration>()
-      .onEach { logger.warn("Found kotlin inject hint: $it") }
       .forEach { clazz ->
         clazz
           .getAnnotationsByType(CircuitNames.KOTLIN_INJECT_HINT_ANNOTATION)
@@ -104,13 +100,12 @@ public class MergeCircuitComponentProcessor(
       val contributedFactories = hints[scope] ?: emptySet()
       val annotated = mergeComponent.annotated
       if (contributedFactories.isEmpty()) {
-        logger.warn("No contributed factories found for scope $scope", annotated)
+        // TODO what if we never get contributions in multiple rounds?
         deferred += annotated
         continue
       }
 
       val parentComponent = mergeComponent.parentComponent
-      logger.warn("Generating component for scope $scope with parent component $parentComponent")
       generate(symbols, annotated, contributedFactories, parentComponent)
     }
     return deferred

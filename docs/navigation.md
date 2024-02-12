@@ -54,9 +54,9 @@ Result types must implement `PopResult` and are used to carry data back to the p
 The returned navigator should be used to navigate to the screen that will return the result. The target screen can then `pop` the result back to the previous screen and Circuit will automatically deliver this result to the previous screen's receiver.
 
 ```kotlin
-var photoUrl by remember { mutableStateOf<String?>(null) }
+var photoUri by remember { mutableStateOf<String?>(null) }
 val takePhotoNavigator = rememberAnsweringNavigator<TakePhotoScreen.Result>(navigator) { result ->
-  photoUrl = result.url
+  photoUri = result.uri
 }
 
 // Elsewhere
@@ -65,13 +65,13 @@ takePhotoNavigator.goTo(TakePhotoScreen)
 // In TakePhotoScreen.kt
 data object TakePhotoScreen : Screen {
   @Parcelize
-  data class Result(val url: String) : PopResult
+  data class Result(val uri: String) : PopResult
 }
 
 class TakePhotoPresenter {
   @Composable fun present(): State {
     // ...
-    navigator.pop(result = TakePhotoScreen.Result(newFilters))
+    navigator.pop(result = TakePhotoScreen.Result(photoUri))
   }
 }
 ```

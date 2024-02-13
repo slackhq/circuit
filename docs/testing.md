@@ -6,7 +6,7 @@ Circuit is designed to make testing as easy as possible. Its core components are
 Circuit will have a test artifact containing APIs to aid testing both presenters and composable UIs:
 
 - `Presenter.test()` - an extension function that bridges the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages [Molecule](https://github.com/cashapp/molecule) and [Turbine](https://github.com/cashapp/turbine).
-- `FakeNavigator` - a test fake implementing the Circuit/Navigator interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back).
+- `FakeNavigator` - a test fake implementing the `Navigator` interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back). This acts as a real navigator and exposes recorded information for testing purposes.
 - `TestEventSink` - a generic test fake for recording and asserting event emissions through an event sink function.
 
 ## Installation

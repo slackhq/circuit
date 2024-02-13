@@ -16,8 +16,7 @@ class SaveableBackStackTest {
 
   @Test
   fun test_save_and_restore_backstack_state() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen.RootAlpha)
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
     backStack.push(TestScreen.ScreenA)
     backStack.push(TestScreen.ScreenB)
 
@@ -61,8 +60,7 @@ class SaveableBackStackTest {
 
   @Test
   fun test_saveable_save_and_restore() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen.RootAlpha)
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
     backStack.push(TestScreen.ScreenA)
     backStack.push(TestScreen.ScreenB)
 
@@ -80,8 +78,7 @@ class SaveableBackStackTest {
 
   @Test
   fun test_saveable_save_and_restore_with_backstack_state() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen.RootAlpha)
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
     backStack.push(TestScreen.ScreenA)
     backStack.push(TestScreen.ScreenB)
 

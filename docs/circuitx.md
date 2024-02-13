@@ -32,7 +32,7 @@ with `rememberAndroidScreenAwareNavigator()`.
 class MainActivity : Activity {
   override fun onCreate(savedInstanceState: Bundle?) {
     setContent {
-      val backStack = rememberSaveableBackStack { push(HomeScreen) }
+      val backStack = rememberSaveableBackStack(root = HomeScreen)
       val navigator = rememberAndroidScreenAwareNavigator(
         rememberCircuitNavigator(backstack), // Decorated navigator
         this@MainActivity

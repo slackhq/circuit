@@ -6,7 +6,6 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.runtime.popUntil
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Test
@@ -15,16 +14,8 @@ import org.junit.runner.RunWith
 @RunWith(ComposeUiTestRunner::class)
 class NavigatorTestUtil {
   @Test
-  fun errorWhenBackstackIsEmpty() {
-    val backStack = SaveableBackStack()
-    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backStack) {} }
-    assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
-  }
-
-  @Test
   fun popAtRoot() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen)
 
     var onRootPop = 0
@@ -44,8 +35,7 @@ class NavigatorTestUtil {
 
   @Test
   fun resetRoot() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }
@@ -62,8 +52,7 @@ class NavigatorTestUtil {
 
   @Test
   fun popUntil() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
     backStack.push(TestScreen3)
 
@@ -80,8 +69,7 @@ class NavigatorTestUtil {
   @Test
   fun popUntilRoot() {
     var onRootPopped = false
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
     backStack.push(TestScreen3)
 
@@ -98,8 +86,7 @@ class NavigatorTestUtil {
 
   @Test
   fun peek() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }

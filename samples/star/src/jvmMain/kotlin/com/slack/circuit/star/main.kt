@@ -40,7 +40,7 @@ fun main() {
   SingletonImageLoader.setSafe { component.imageLoader }
   application {
     val initialBackStack = persistentListOf<Screen>(HomeScreen)
-    val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
+    val backStack = rememberSaveableBackStack(initialBackStack)
     val circuitNavigator = rememberCircuitNavigator(backStack, ::exitApplication)
     val navigator =
       remember(circuitNavigator) {

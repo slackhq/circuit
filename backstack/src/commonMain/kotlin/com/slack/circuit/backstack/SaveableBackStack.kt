@@ -28,23 +28,56 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
+/**
+ * Creates and remembers a [SaveableBackStack] with the given [root] screen.
+ *
+ * @param init optional initializer callback to perform extra initialization logic.
+ */
 @Composable
-public fun rememberSaveableBackStack(init: SaveableBackStack.() -> Unit): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) {
-    SaveableBackStack().apply(init).also {
-      check(!it.isEmpty) { "Backstack must be non-empty after init." }
+public fun rememberSaveableBackStack(
+  root: Screen,
+  init: SaveableBackStack.() -> Unit = {},
+): SaveableBackStack =
+  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
+
+/**
+ * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
+ * [initialScreens] must not be empty.
+ */
+@Composable
+public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
+  require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
+  return rememberSaveable(saver = SaveableBackStack.Saver) {
+    SaveableBackStack(null).apply {
+      for (screen in initialScreens) {
+        push(screen)
+      }
     }
   }
+}
 
 /**
  * A [BackStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableBackStack].
  */
-public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
+public class SaveableBackStack
+internal constructor(
+  nullableRootRecord: Record?,
+  // Unused marker just to differentiate the internal constructor on the JVM.
+  @Suppress("UNUSED_PARAMETER") internalConstructorMarker: Any? = null,
+) : BackStack<SaveableBackStack.Record> {
+
+  public constructor(initialRecord: Record) : this(nullableRootRecord = initialRecord)
+
+  public constructor(root: Screen) : this(Record(root))
 
   // Both visible for testing
   internal val entryList = mutableStateListOf<Record>()
   internal val stateStore = mutableMapOf<Screen, List<Record>>()
+
+  init {
+    nullableRootRecord?.let(::push)
+  }
 
   override val size: Int
     get() = entryList.size
@@ -176,7 +209,7 @@ public class SaveableBackStack : BackStack<SaveableBackStack.Record> {
         },
         restore = { value ->
           @Suppress("UNCHECKED_CAST")
-          SaveableBackStack().also { backStack ->
+          SaveableBackStack(null).also { backStack ->
             value.forEachIndexed { index, list ->
               if (index == 0) {
                 // The first list is the entry list

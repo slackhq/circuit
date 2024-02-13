@@ -151,7 +151,7 @@ fun main() = application {
     onCloseRequest = ::exitApplication,
   ) {
     val initialBackStack = persistentListOf<Screen>(DesktopCounterScreen)
-    val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
+    val backStack = rememberSaveableBackStack(initialBackStack)
     val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
 
     val circuit: Circuit =

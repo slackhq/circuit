@@ -29,7 +29,7 @@ class NavigatorBackHandlerTest {
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        val backStack = rememberSaveableBackStack { push(TestScreen.ScreenA) }
+        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }

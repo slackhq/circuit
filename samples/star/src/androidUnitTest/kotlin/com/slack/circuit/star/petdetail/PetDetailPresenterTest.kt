@@ -18,12 +18,11 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PetDetailPresenterTest {
-  private val navigator = FakeNavigator()
-
   @Test
   fun `present - emit loading state then no animal state`() = runTest {
     val repository = TestRepository(emptyList())
     val screen = PetDetailScreen(123L, "key")
+    val navigator = FakeNavigator(screen)
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
@@ -37,6 +36,7 @@ class PetDetailPresenterTest {
     val animal = PetListPresenterTest.animal
     val repository = TestRepository(listOf(animal))
     val screen = PetDetailScreen(animal.id, animal.primaryPhotoUrl)
+    val navigator = FakeNavigator(screen)
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
@@ -55,6 +55,7 @@ class PetDetailPresenterTest {
     val animal = PetListPresenterTest.animal
     val repository = TestRepository(listOf(animal))
     val screen = PetDetailScreen(animal.id, animal.primaryPhotoUrl)
+    val navigator = FakeNavigator(screen)
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {

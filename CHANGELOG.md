@@ -4,6 +4,30 @@ Changelog
 **Unreleased**
 --------------
 
+0.19.1
+------
+
+_2024-02-12_
+
+This is a small bug fix release focused `SaveableBackStack` consistency and `FakeNavigator` API improvements.
+
+- Fix `FakeNavigator.awaitNextScreen()` not suspending.
+- Fix `FakeNavigator.resetRoot()` not returning the actual popped screens.
+- Make `Navigator.peekBackStack()` and `Navigator.resetRoot()` return `ImmutableList`.
+- Make `BackStack.popUntil()` return the `ImmutableList` of the popped records.
+- Support `FakeNavigator.peekBackStack()` return the `ImmutableList` of the popped records.
+- Strongly pop events and resetRoot events in `FakeNavigator`. This should offer much more information about the events.
+- Use a real `BackStack` instance in `FakeNavigator` + allow for specifying a user-provided instance.
+- Require an initial root screen to construct `FakeNavigator` unless using a custom `BackStack`.
+  - Note this slightly changes semantics, as now the root screen will not be recorded as the first `goTo` event.
+- Require an initial root screen (or list of screens) for `rememberSaveableBackStack()`.
+- Expose a top-level non-composable `Navigator()` factory function.
+
+0.19.0
+------
+
+_2024-02-09_
+
 ### Navigation with results
 
 This release introduces support for inter-screen navigation results. This is useful for scenarios where you want to pass data back to the previous screen after a navigation event, such as when a user selects an item from a list and you want to pass the selected item back to the previous screen.
@@ -31,7 +55,7 @@ class TakePhotoPresenter {
 }
 ```
 
-See the [new section in the navigation docs](https://slackhq.github.io/circuit/navigation/#results) for more details, as well as [updates to the Overlays](https://slackhq.github.io/circuit/overlays/overlays/#overlay-vs-popresult) docs that help explain when to use an `Overlay` vs navigating to a `Screen` with a result.
+See the [new section in the navigation docs](https://slackhq.github.io/circuit/navigation/#results) for more details, as well as [updates to the Overlays](https://slackhq.github.io/circuit/overlays/#overlay-vs-popresult) docs that help explain when to use an `Overlay` vs navigating to a `Screen` with a result.
 
 ### Support for multiple back stacks
 
@@ -86,7 +110,9 @@ On top of Circuit's existing docs, we've added a new tutorial to help you get st
 - Update the default decoration to better match the android 34 transitions.
 - Update androidx.lifecycle to `2.7.0`.
 - Update to compose multiplatform to `1.5.12`.
-- Update compose-compiler to `1.5.8`.
+- Update to compose to `1.6.1`.
+- Update to compose-bom to `2024.02.00`.
+- Update compose-compiler to `1.5.9`.
 - Update AtomicFu to `0.23.2`.
 - Update Anvil to `2.4.9`.
 - Update KotlinPoet to `1.16.0`.

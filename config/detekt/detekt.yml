@@ -21,6 +21,10 @@ style:
     ignoreAnnotated:
       - 'Preview'
       - 'androidx.compose.desktop.ui.tooling.preview.Preview'
+  UnusedPrivateProperty:
+    ignoreAnnotated:
+      - 'Component'
+      - 'me.tatarka.inject.annotations.Component'
   # This rule ends up causing more style issues than not
   OptionalWhenBraces:
     active: false

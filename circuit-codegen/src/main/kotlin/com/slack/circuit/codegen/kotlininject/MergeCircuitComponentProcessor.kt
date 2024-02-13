@@ -108,7 +108,7 @@ public class MergeCircuitComponentProcessor(
     val deferred = mutableListOf<KSAnnotated>()
     for (mergeComponent in mergeCircuitComponents) {
       val scope = mergeComponent.scope
-      val contributedFactories = hints[scope] ?: emptySet()
+      val contributedFactories = hints[scope].orEmpty()
       val annotated = mergeComponent.annotated
       if (contributedFactories.isEmpty()) {
         // TODO what if we never get contributions in multiple rounds?

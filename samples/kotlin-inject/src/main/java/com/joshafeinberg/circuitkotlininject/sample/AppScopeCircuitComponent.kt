@@ -6,5 +6,6 @@ import com.slack.circuit.codegen.annotations.MergeCircuitComponent
 import com.slack.circuit.foundation.di.CircuitComponent
 import me.tatarka.inject.annotations.Component
 
+@Suppress("UNUSED_PARAMETER")
 @MergeCircuitComponent(AppScope::class)
 abstract class AppScopeCircuitComponent(@Component appComponent: AppComponent) : CircuitComponent

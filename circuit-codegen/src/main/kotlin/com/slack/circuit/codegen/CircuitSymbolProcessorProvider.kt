@@ -209,7 +209,7 @@ private class CircuitSymbolProcessor(
 
   /** Computes the data needed to generate a factory. */
   // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
-  @Suppress("ComplexMethod", "LongMethod", "ReturnCount")
+  @Suppress("ComplexMethod", "LongMethod", "ReturnCount", "LongParameterList")
   @OptIn(KspExperimental::class)
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,

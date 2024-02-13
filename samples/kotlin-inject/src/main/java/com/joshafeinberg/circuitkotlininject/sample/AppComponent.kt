@@ -7,6 +7,7 @@ import me.tatarka.inject.annotations.Provides
 
 @Component
 abstract class AppComponent {
+  @Suppress("FunctionOnlyReturningConstant")
   @Provides
   fun providesString(): String {
     return "Injected String!"

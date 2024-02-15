@@ -149,18 +149,25 @@ private class RetainableHolder<T>(
     // If the value is a RetainedStateRegistry, we need to take care to retain it.
     // First we tell it to saveAll, to retain it's values. Then we need to tell the host
     // registry to retain the child registry.
-    if (value is RetainedStateRegistry) {
-      (value as RetainedStateRegistry).saveAll()
+    val v = value
+    if (v is RetainedStateRegistry) {
+      v.saveAll()
       registry?.saveValue(key)
     }
 
     if (registry != null && !canRetainChecker.canRetain(registry!!)) {
       entry?.unregister()
+      // If value is a RememberObserver, we notify that it has been forgotten
+      if (v is RememberObserver) v.onForgotten()
     }
   }
 
   override fun onRemembered() {
     register()
+
+    // If value is a RememberObserver, we notify that it has remembered
+    val v = value
+    if (v is RememberObserver) v.onRemembered()
   }
 
   override fun onForgotten() {

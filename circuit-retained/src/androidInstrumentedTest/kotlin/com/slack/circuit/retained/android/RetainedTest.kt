@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -279,6 +280,50 @@ class RetainedTest {
     // Was the text reset with the input change
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
+  }
+
+  @Test
+  fun rememberObserver() {
+    val subject = object : RememberObserver {
+      var onRememberCalled: Int = 0
+        private set
+      var onForgottenCalled: Int = 0
+        private set
+
+      override fun onAbandoned() = Unit
+
+      override fun onForgotten() {
+        onForgottenCalled++
+      }
+
+      override fun onRemembered() {
+        onRememberCalled++
+      }
+    }
+
+    val content = @Composable {
+      rememberRetained { subject }
+      Unit
+    }
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    // Restart the activity
+    scenario.recreate()
+    // Assert that the observer was not forgotten
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Compose our content again
+    setActivityContent(content)
+
+    // TODO: this should be 1
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Now finish the Activity
+    scenario.close()
+    // Assert that the observer was forgotten
+    assertThat(subject.onForgottenCalled).isEqualTo(1)
   }
 
   private fun nestedRegistriesWithPopAndPush(useKeys: Boolean) {

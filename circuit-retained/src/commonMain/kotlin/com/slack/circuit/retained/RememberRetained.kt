@@ -95,7 +95,14 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
       val restored = registry.consumeValue(finalKey) as? RetainableHolder.Value<*>
       val finalValue = restored?.value ?: init()
       val finalInputs = restored?.inputs ?: inputs
-      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, finalInputs, restored != null)
+      RetainableHolder(
+        registry = registry,
+        canRetainChecker = canRetainChecker,
+        key = finalKey,
+        value = finalValue,
+        inputs = finalInputs,
+        hasBeenRestored = restored != null,
+      )
     }
   val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect { holder.update(registry, finalKey, value, inputs) }

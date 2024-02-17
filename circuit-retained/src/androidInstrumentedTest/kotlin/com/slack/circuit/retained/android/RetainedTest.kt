@@ -284,27 +284,30 @@ class RetainedTest {
 
   @Test
   fun rememberObserver() {
-    val subject = object : RememberObserver {
-      var onRememberCalled: Int = 0
-        private set
-      var onForgottenCalled: Int = 0
-        private set
+    val subject =
+      object : RememberObserver {
+        var onRememberCalled: Int = 0
+          private set
 
-      override fun onAbandoned() = Unit
+        var onForgottenCalled: Int = 0
+          private set
 
-      override fun onForgotten() {
-        onForgottenCalled++
+        override fun onAbandoned() = Unit
+
+        override fun onForgotten() {
+          onForgottenCalled++
+        }
+
+        override fun onRemembered() {
+          onRememberCalled++
+        }
       }
 
-      override fun onRemembered() {
-        onRememberCalled++
+    val content =
+      @Composable {
+        rememberRetained { subject }
+        Unit
       }
-    }
-
-    val content = @Composable {
-      rememberRetained { subject }
-      Unit
-    }
     setActivityContent(content)
 
     assertThat(subject.onRememberCalled).isEqualTo(1)

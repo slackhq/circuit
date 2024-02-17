@@ -3,6 +3,7 @@
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.slack.circuit.retained.RetainedStateRegistry.Entry
 
@@ -143,6 +144,8 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun forgetUnclaimedValues() {
+    // Notify any RememberObservers that it has been forgotten
+    retained.asSequence().filterIsInstance<RememberObserver>().forEach { it.onForgotten() }
     retained.clear()
   }
 }

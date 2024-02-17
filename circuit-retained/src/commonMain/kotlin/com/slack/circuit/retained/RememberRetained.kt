@@ -95,7 +95,7 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
       val restored = registry.consumeValue(finalKey) as? RetainableHolder.Value<*>
       val finalValue = restored?.value ?: init()
       val finalInputs = restored?.inputs ?: inputs
-      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, finalInputs)
+      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, finalInputs, restored != null)
     }
   val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect { holder.update(registry, finalKey, value, inputs) }
@@ -111,6 +111,7 @@ private class RetainableHolder<T>(
   private var key: String,
   private var value: T,
   private var inputs: Array<out Any?>,
+  private var hasBeenRestored: Boolean = false,
 ) : RetainedValueProvider, RememberObserver {
   private var entry: RetainedStateRegistry.Entry? = null
 
@@ -123,6 +124,10 @@ private class RetainableHolder<T>(
     if (this.key != key) {
       this.key = key
       entryIsOutdated = true
+    }
+    if (this.value !== value) {
+      // If the value changes, clear the hasBeenRestored flag
+      hasBeenRestored = false
     }
     this.value = value
     this.inputs = inputs
@@ -166,8 +171,10 @@ private class RetainableHolder<T>(
     register()
 
     // If value is a RememberObserver, we notify that it has remembered
-    val v = value
-    if (v is RememberObserver) v.onRemembered()
+    if (!hasBeenRestored) {
+      val v = value
+      if (v is RememberObserver) v.onRemembered()
+    }
   }
 
   override fun onForgotten() {

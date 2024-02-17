@@ -311,21 +311,22 @@ class RetainedTest {
     setActivityContent(content)
 
     assertThat(subject.onRememberCalled).isEqualTo(1)
-    // Restart the activity
-    scenario.recreate()
-    // Assert that the observer was not forgotten
     assertThat(subject.onForgottenCalled).isEqualTo(0)
 
+    // Restart the activity
+    scenario.recreate()
     // Compose our content again
     setActivityContent(content)
 
-    // TODO: this should be 1
-    assertThat(subject.onRememberCalled).isEqualTo(2)
+    // Assert that onRemembered was not called again
+    assertThat(subject.onRememberCalled).isEqualTo(1)
     assertThat(subject.onForgottenCalled).isEqualTo(0)
 
     // Now finish the Activity
     scenario.close()
+
     // Assert that the observer was forgotten
+    assertThat(subject.onRememberCalled).isEqualTo(1)
     assertThat(subject.onForgottenCalled).isEqualTo(1)
   }
 

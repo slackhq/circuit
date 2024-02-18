@@ -48,6 +48,7 @@ import kotlinx.coroutines.sync.withLock
  * ```
  */
 @Stable
+@OptIn(ExperimentalSubclassOptIn::class)
 @SubclassOptInRequired(ReadOnlyOverlayApi::class)
 public interface OverlayHost {
   /**

@@ -36,7 +36,7 @@ jvmTarget = "11"
 kct = "0.5.0-alpha03"
 kotlin = "2.0.0-Beta4"
 kotlinpoet = "1.16.0"
-kotlinx-coroutines = "1.7.3"
+kotlinx-coroutines = "1.8.0"
 ksp = "2.0.0-Beta4-1.0.17"
 ktfmt = "0.47"
 ktor = "2.3.8"
@@ -72,7 +72,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.16.1" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "0.16.2" }
 ## Here to trigger Renovate updates
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
@@ -277,7 +277,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
-truth = "com.google.truth:truth:1.4.0"
+truth = "com.google.truth:truth:1.4.1"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID

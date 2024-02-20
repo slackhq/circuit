@@ -12,6 +12,9 @@ import com.slack.circuit.runtime.ui.Ui
 /**
  * A listener for tracking the state changes of a given [Screen]. This can be used for
  * instrumentation and other telemetry.
+ *
+ * @see <a href="https://publicobject.com/2022/05/01/eventlisteners-are-good/">EventListener is Like
+ *   Logging, But Good</a>
  */
 public interface EventListener {
 

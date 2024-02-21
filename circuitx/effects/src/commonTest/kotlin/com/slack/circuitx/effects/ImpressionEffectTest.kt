@@ -24,7 +24,15 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 
 /** Expected unit tests for [ImpressionEffect] and [LaunchedImpressionEffect]. */
-expect class ImpressionEffectTest : ImpressionEffectTestShared
+expect class ImpressionEffectTest : ImpressionEffectTestShared {
+  @Test override fun recreateImpressionEffect()
+
+  @Test override fun inputChangeImpressionEffect()
+
+  @Test override fun recreateLaunchedImpressionEffect()
+
+  @Test override fun inputChangeLaunchedImpressionEffect()
+}
 
 /** Shared unit tests for [ImpressionEffect] and [LaunchedImpressionEffect]. */
 internal interface ImpressionEffectTestShared {

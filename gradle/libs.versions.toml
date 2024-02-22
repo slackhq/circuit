@@ -14,7 +14,7 @@ coil3 = "3.0.0-alpha04"
 compose-animation = "1.6.1"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.9"
+compose-compiler-version = "1.5.10"
 compose-compiler-kotlinVersion = "1.9.22"
 compose-foundation = "1.6.2"
 compose-material = "1.6.1"

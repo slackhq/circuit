@@ -11,18 +11,18 @@ atomicfu = "0.23.2"
 benchmark = "1.2.3"
 coil = "2.5.0"
 coil3 = "3.0.0-alpha04"
-compose-animation = "1.6.1"
+compose-animation = "1.6.2"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.9"
+compose-compiler-version = "1.5.10"
 compose-compiler-kotlinVersion = "1.9.22"
-compose-foundation = "1.6.1"
-compose-material = "1.6.1"
+compose-foundation = "1.6.2"
+compose-material = "1.6.2"
 compose-material3 = "1.2.0"
-compose-runtime = "1.6.1"
-compose-ui = "1.6.1"
+compose-runtime = "1.6.2"
+compose-ui = "1.6.2"
 compose-jb = "1.6.0-rc01"
-compose-jb-compiler = "1.5.8"
+compose-jb-compiler = "1.5.8.1"
 compose-jb-kotlinVersion = "1.9.22"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.50"
@@ -35,7 +35,7 @@ jvmTarget = "11"
 kct = "0.4.0"
 kotlin = "1.9.22"
 kotlinpoet = "1.16.0"
-kotlinx-coroutines = "1.7.3"
+kotlinx-coroutines = "1.8.0"
 ksp = "1.9.22-1.0.17"
 ktfmt = "0.47"
 ktor = "2.3.8"
@@ -52,11 +52,11 @@ paparazzi = "1.3.2"
 picnic = "0.7.0"
 retrofit = "2.9.0"
 robolectric = "4.11.1"
-roborazzi = "1.9.0"
+roborazzi = "1.10.1"
 skie = "0.6.1"
 spotless = "6.23.3"
 sqldelight = "2.0.1"
-telephoto = "0.7.1"
+telephoto = "0.8.0"
 testParameterInjector = "1.15"
 turbine = "1.0.0"
 versionsPlugin = "0.49.0"
@@ -71,7 +71,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.16.1" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "0.16.2" }
 ## Here to trigger Renovate updates
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
@@ -111,7 +111,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.02.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.02.01" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
@@ -155,7 +155,7 @@ androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.3.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
 androidx-test-monitor = "androidx.test:monitor:1.6.1"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0-rc01"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 
 anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 anvil-annotations-optional = { module = "com.squareup.anvil:annotations-optional", version.ref = "anvil" }
@@ -276,7 +276,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
-truth = "com.google.truth:truth:1.4.0"
+truth = "com.google.truth:truth:1.4.1"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # KMP UUID

@@ -1,5 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION") // TODO migrate!
+
 package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.animation.AnimatedContent

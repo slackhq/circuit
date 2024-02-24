@@ -9,7 +9,7 @@ agp = "8.2.2"
 anvil = "2.4.9"
 atomicfu = "0.23.2"
 benchmark = "1.2.3"
-coil = "2.5.0"
+coil = "2.6.0"
 coil3 = "3.0.0-alpha04"
 compose-animation = "1.6.2"
 # Pre-release versions for testing Kotlin previews can be found here

@@ -1,5 +1,11 @@
+androidx.annotation:annotation-jvm
+androidx.annotation:annotation
+androidx.collection:collection-jvm
+androidx.collection:collection
 com.benasher44:uuid-jvm
 com.benasher44:uuid
+org.jetbrains.compose.annotation-internal:annotation
+org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime-saveable-desktop
 org.jetbrains.compose.runtime:runtime-saveable

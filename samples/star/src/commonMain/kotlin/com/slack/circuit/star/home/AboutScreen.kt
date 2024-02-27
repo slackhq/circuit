@@ -24,6 +24,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.parcel.CommonParcelize
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -47,7 +48,7 @@ fun About(modifier: Modifier = Modifier) {
   ) {
     Icon(
       modifier = Modifier.size(96.dp),
-      painter = painterResource("star_icon.png"),
+      painter = painterResource(DrawableResource("star_icon.png")),
       contentDescription = "STAR icon",
       tint = Color.Unspecified,
     )

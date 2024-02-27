@@ -25,7 +25,11 @@ kotlin {
     browser()
   }
   if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class) wasmJs { browser() }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+      moduleName = property("POM_ARTIFACT_ID").toString()
+      browser()
+    }
   }
   // endregion
 

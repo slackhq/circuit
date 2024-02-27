@@ -24,8 +24,7 @@ kotlin {
     browser()
   }
   if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs { browser() }
+    @OptIn(ExperimentalWasmDsl::class) wasmJs { browser() }
   }
   // endregion
 

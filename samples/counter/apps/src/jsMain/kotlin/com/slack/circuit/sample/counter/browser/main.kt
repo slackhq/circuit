@@ -1,6 +1,5 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-
 package com.slack.circuit.sample.counter.browser
 
 import com.slack.circuit.foundation.Circuit

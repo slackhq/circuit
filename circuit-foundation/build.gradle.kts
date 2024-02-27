@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -18,9 +19,13 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
-  js {
+  js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    nodejs()
+    browser()
+  }
+  if (hasProperty("enableWasm")) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs { browser() }
   }
   // endregion
 

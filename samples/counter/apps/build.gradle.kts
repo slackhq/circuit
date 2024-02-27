@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
@@ -29,10 +31,26 @@ kotlin {
   jvm()
   iosX64()
   iosArm64()
-  js {
-    moduleName = "counterapp"
-    browser()
+  js(IR) {
+    moduleName = "counterApp"
+    browser {
+      commonWebpackConfig {
+        outputFileName = "counterApp.js"
+      }
+    }
     binaries.executable()
+  }
+  if (hasProperty("enableWasm")) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+      moduleName = "counterApp"
+      browser {
+        commonWebpackConfig {
+          outputFileName = "counterApp.js"
+        }
+      }
+      binaries.executable()
+    }
   }
   // endregion
 
@@ -63,6 +81,8 @@ kotlin {
         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)
         implementation(compose.html.core)
+        implementation(compose.ui)
+        implementation(compose.runtime)
       }
     }
   }

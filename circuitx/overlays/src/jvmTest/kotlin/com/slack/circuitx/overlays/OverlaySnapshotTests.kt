@@ -28,14 +28,14 @@ class OverlaySnapshotTests {
   @OptIn(
     ExperimentalTestApi::class,
     ExperimentalRoborazziApi::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class,
   )
   @Test
   fun alertDialog() = runDesktopComposeUiTest {
     setContent {
       MaterialTheme {
-        ContentWithOverlays(Modifier.testTag(SNAPSHOT_TAG)) {
-          Surface {
+        ContentWithOverlays {
+          Surface(Modifier.testTag(SNAPSHOT_TAG)) {
             OverlayEffect {
               it.show(
                 alertDialogOverlay(
@@ -59,6 +59,10 @@ class OverlaySnapshotTests {
       )
 
     waitForIdle()
-    onNodeWithTag(SNAPSHOT_TAG).captureRoboImage(roborazziOptions = roborazziOptions)
+    onNodeWithTag(SNAPSHOT_TAG)
+      .captureRoboImage(
+        roborazziOptions = roborazziOptions,
+        filePath = "src/jvmTest/snapshots/alertDialog.png",
+      )
   }
 }

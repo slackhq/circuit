@@ -426,7 +426,7 @@ private class CircuitSymbolProcessor(
         declaration.checkVisibility(logger) {
           return null
         }
-        val isAssisted = declaration.isAnnotationPresentWithLeniency(AssistedInject::class)
+        val isAssisted = declaration.isAnnotationPresentWithLeniency(AssistedFactory::class)
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {

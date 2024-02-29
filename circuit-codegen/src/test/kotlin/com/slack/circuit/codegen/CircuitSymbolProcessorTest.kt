@@ -1168,7 +1168,9 @@ class CircuitSymbolProcessorTest {
     ) { messages ->
       assertThat(messages)
         .contains(
-          "When using @CircuitInject with an @AssistedInject-annotated class, you must put the @CircuitInject annotation on the @AssistedFactory-annotated nested class (test.Favorites.Factory)."
+          "When using @CircuitInject with an @AssistedInject-annotated class, you must put " +
+            "the @CircuitInject annotation on the @AssistedFactory-annotated nested" +
+            " class (test.Favorites.Factory)."
         )
     }
   }
@@ -1200,7 +1202,8 @@ class CircuitSymbolProcessorTest {
     ) { messages ->
       assertThat(messages)
         .contains(
-          "When using @CircuitInject with an @AssistedInject-annotated class, you must put the @CircuitInject annotation on the @AssistedFactory-annotated nested class."
+          "When using @CircuitInject with an @AssistedInject-annotated class, you must put " +
+            "the @CircuitInject annotation on the @AssistedFactory-annotated nested class."
         )
     }
   }

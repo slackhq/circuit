@@ -8,6 +8,7 @@ import com.google.auto.service.AutoService
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
+import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -46,9 +47,11 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlin.reflect.KClass
 
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
 private const val DAGGER_PACKAGE = "dagger"
@@ -163,6 +166,7 @@ private class CircuitSymbolProcessor(
     return emptyList()
   }
 
+  @OptIn(KspExperimental::class)
   private fun generateFactory(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
@@ -174,6 +178,27 @@ private class CircuitSymbolProcessor(
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
           CIRCUIT_INJECT_ANNOTATION.canonicalName
       }
+
+    // Check that the constructor is injected
+    if (instantiationType == InstantiationType.CLASS) {
+      val declaration = annotatedElement as KSClassDeclaration
+      // Check for an AssistedInject constructor
+      if (declaration.findConstructorAnnotatedWith(AssistedInject::class) != null) {
+        val assistedFactory =
+          declaration.declarations.find {
+            it is KSClassDeclaration && it.isAnnotationPresentWithLeniency(AssistedFactory::class)
+          }
+        val suffix =
+          if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
+        logger.error(
+          "When using @CircuitInject with an @AssistedInject-annotated class, you must " +
+            "put the @CircuitInject annotation on the @AssistedFactory-annotated nested class$suffix.",
+          declaration,
+        )
+        return
+      }
+    }
+
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
     val screenIsObject =
       screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
@@ -253,6 +278,26 @@ private class CircuitSymbolProcessor(
         aggregating = false,
         originatingKSFiles = originatingFile,
       )
+  }
+
+  private fun KSClassDeclaration.findConstructorAnnotatedWith(
+    annotation: KClass<out Annotation>
+  ): KSFunctionDeclaration? {
+    return getConstructors().singleOrNull { constructor ->
+      constructor.isAnnotationPresentWithLeniency(annotation)
+    }
+  }
+
+  @OptIn(KspExperimental::class)
+  private fun KSAnnotated.isAnnotationPresentWithLeniency(
+    annotation: KClass<out Annotation>
+  ): Boolean {
+    val simpleName = annotation.simpleName!!
+    return if (lenient) {
+      annotations.any { it.shortName.asString() == simpleName }
+    } else {
+      isAnnotationPresent(annotation)
+    }
   }
 
   private data class FactoryData(
@@ -381,12 +426,7 @@ private class CircuitSymbolProcessor(
         declaration.checkVisibility(logger) {
           return null
         }
-        val isAssisted =
-          if (lenient) {
-            declaration.annotations.any { it.shortName.asString().contains("AssistedFactory") }
-          } else {
-            declaration.isAnnotationPresent(AssistedFactory::class)
-          }
+        val isAssisted = declaration.isAnnotationPresentWithLeniency(AssistedInject::class)
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {

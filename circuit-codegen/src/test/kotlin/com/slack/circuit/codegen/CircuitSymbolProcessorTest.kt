@@ -349,7 +349,6 @@ class CircuitSymbolProcessorTest {
           import androidx.compose.ui.Modifier
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
-          @Composable
           class Favorites : Ui<FavoritesScreen.State> {
             @Composable
             override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
@@ -398,7 +397,6 @@ class CircuitSymbolProcessorTest {
           import javax.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
-          @Composable
           class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
             @Composable
             override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
@@ -451,7 +449,6 @@ class CircuitSymbolProcessorTest {
           import dagger.assisted.AssistedFactory
           import dagger.assisted.AssistedInject
 
-          @Composable
           class Favorites @AssistedInject constructor(
             @Assisted private val screen: FavoritesScreen,
           ) : Ui<FavoritesScreen.State> {
@@ -708,7 +705,6 @@ class CircuitSymbolProcessorTest {
           import javax.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
-          @Composable
           class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
             @Composable
             override fun present(): FavoritesScreen.State {
@@ -766,7 +762,6 @@ class CircuitSymbolProcessorTest {
           import dagger.assisted.AssistedFactory
           import dagger.assisted.AssistedInject
 
-          @Composable
           class FavoritesPresenter @AssistedInject constructor(
             @Assisted private val screen: FavoritesScreen,
             @Assisted private val navigator: Navigator,
@@ -834,7 +829,6 @@ class CircuitSymbolProcessorTest {
           import dagger.assisted.AssistedInject
           import dagger.hilt.components.SingletonComponent
 
-          @Composable
           class FavoritesPresenter @AssistedInject constructor(
             @Assisted private val screen: FavoritesScreen,
             @Assisted private val navigator: Navigator,
@@ -900,7 +894,6 @@ class CircuitSymbolProcessorTest {
           import dagger.assisted.AssistedInject
           import dagger.hilt.components.SingletonComponent
 
-          @Composable
           class FavoritesPresenter @AssistedInject constructor(
             @Assisted private val screen: FavoritesScreen,
             @Assisted private val navigator: Navigator,
@@ -1019,7 +1012,6 @@ class CircuitSymbolProcessorTest {
 
           }
 
-          @Composable
           class Favorites @AssistedInject constructor(
             @Assisted private val someString: String,
           ) : Ui<FavoritesScreen.State> {
@@ -1041,7 +1033,6 @@ class CircuitSymbolProcessorTest {
 
           }
 
-          @Composable
           class FavoritesPresenter @AssistedInject constructor(
             @Assisted private val someString: String,
           ) : Presenter<FavoritesScreen.State> {
@@ -1078,7 +1069,6 @@ class CircuitSymbolProcessorTest {
           import androidx.compose.ui.Modifier
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
-          @Composable
           class Favorites {
             @Composable
             fun Content(state: FavoritesScreen.State, modifier: Modifier) {

@@ -38,13 +38,11 @@ kotlin {
     browser { commonWebpackConfig { outputFileName = "counterApp.js" } }
     binaries.executable()
   }
-  if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-      moduleName = "counterApp"
-      browser { commonWebpackConfig { outputFileName = "counterApp.js" } }
-      binaries.executable()
-    }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = "counterApp"
+    browser { commonWebpackConfig { outputFileName = "counterApp.js" } }
+    binaries.executable()
   }
   // endregion
 

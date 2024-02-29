@@ -22,19 +22,17 @@ kotlin {
     moduleName = "internal-test-utils"
     browser()
   }
-  if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-      moduleName = property("POM_ARTIFACT_ID").toString()
-      browser()
-    }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = "internal-test-utils"
+    browser()
   }
   // endregion
 
   applyDefaultHierarchyTemplate()
 
   sourceSets {
-    val commonMain by getting {
+    commonMain {
       dependencies {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
@@ -44,6 +42,14 @@ kotlin {
         api(projects.circuitFoundation)
         api(libs.compose.ui)
       }
+    }
+    // We use a common folder instead of a common source set because there is no commonizer
+    // which exposes the browser APIs across these two targets.
+    jsMain {
+      kotlin.srcDir("src/browserMain/kotlin")
+    }
+    val wasmJsMain by getting {
+      kotlin.srcDir("src/browserMain/kotlin")
     }
   }
 

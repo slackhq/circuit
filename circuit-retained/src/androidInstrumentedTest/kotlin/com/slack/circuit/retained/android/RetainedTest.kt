@@ -21,8 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -32,8 +34,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.ContinuityViewModel
+import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
@@ -215,6 +219,14 @@ class RetainedTest {
   @Test fun nestedRegistriesWithPopAndPushNoKeys() = nestedRegistriesWithPopAndPush(false)
 
   @Test
+  fun nestedRegistriesWithPopAndPushAndCannotRetainWithKeys() =
+    nestedRegistriesWithPopAndPushAndCannotRetain(true)
+
+  @Test
+  fun nestedRegistriesWithPopAndPushAndCannotRetainNoKeys() =
+    nestedRegistriesWithPopAndPushAndCannotRetain(false)
+
+  @Test
   fun singleInput() {
     val inputState = MutableStateFlow("first input")
     val content =
@@ -373,6 +385,52 @@ class RetainedTest {
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
     composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertTextContains("Text_Retained2")
+  }
+
+  private fun nestedRegistriesWithPopAndPushAndCannotRetain(useKeys: Boolean) {
+    val content = @Composable { NestedRetainWithPushAndPopAndCannotRetain(useKeys = useKeys) }
+    setActivityContent(content)
+
+    // Assert that Retained 1 is visible & Retained 2 does not exist
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertDoesNotExist()
+
+    // Now click the button to show the child content
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+
+    // Perform our initial text input
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).performTextInput("Text_Retained1")
+    composeTestRule
+      .onNodeWithTag(TAG_RETAINED_2)
+      .assertIsDisplayed()
+      .performTextInput("Text_Retained2")
+
+    // Check that our input worked
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertTextContains("Text_Retained2")
+
+    // Now click the button to hide the nested content (aka a pop)
+    composeTestRule.onNodeWithTag(TAG_BUTTON_HIDE).performClick()
+
+    // Assert that Retained 1 is visible & Retained 2 does not exist
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assertDoesNotExist()
+
+    // Now click the button to show the nested content again (aka a push)
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+
+    // Assert that the child content is _not_ using the retained content since can retain checker is
+    // false
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assert(!hasText("Text_Retained2"))
+
+    // Restart the activity
+    scenario.recreate()
+    // Compose our content
+    setActivityContent(content)
+    // Was the text not saved
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained1")
+    composeTestRule.onNodeWithTag(TAG_RETAINED_2).assert(!hasText("Text_Retained2"))
   }
 
   private fun setActivityContent(content: @Composable () -> Unit) {
@@ -541,11 +599,60 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
       Text(text = "Show child")
     }
 
-    if (showNestedContent.value) {
-      val nestedRegistry = rememberRetained { RetainedStateRegistry() }
+    // Keep the retained state registry around even if showNestedContent becomes false
+    CompositionLocalProvider(LocalCanRetainChecker provides CanRetainChecker.Always) {
+      if (showNestedContent.value) {
+        val nestedRegistry = rememberRetained { RetainedStateRegistry() }
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides nestedRegistry,
+          LocalCanRetainChecker provides CanRetainChecker.Always,
+        ) {
+          NestedRetainLevel1(useKeys)
+        }
+      }
+    }
+  }
+}
 
-      CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistry) {
-        NestedRetainLevel1(useKeys)
+@Composable
+private fun NestedRetainWithPushAndPopAndCannotRetain(useKeys: Boolean) {
+  var retainedText1: String by
+    rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+
+  Column {
+    TextField(
+      modifier = Modifier.testTag(TAG_RETAINED_1),
+      value = retainedText1,
+      onValueChange = { retainedText1 = it },
+      label = {},
+    )
+
+    val showNestedContent = rememberRetained { mutableStateOf(false) }
+
+    Button(
+      onClick = { showNestedContent.value = false },
+      modifier = Modifier.testTag(TAG_BUTTON_HIDE),
+    ) {
+      Text(text = "Hide child")
+    }
+
+    Button(
+      onClick = { showNestedContent.value = true },
+      modifier = Modifier.testTag(TAG_BUTTON_SHOW),
+    ) {
+      Text(text = "Show child")
+    }
+
+    // Keep the retained state registry around even if showNestedContent becomes false
+    CompositionLocalProvider(LocalCanRetainChecker provides CanRetainChecker.Always) {
+      if (showNestedContent.value) {
+        val nestedRegistry = rememberRetained { RetainedStateRegistry() }
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides nestedRegistry,
+          LocalCanRetainChecker provides { false },
+        ) {
+          NestedRetainLevel1(useKeys)
+        }
       }
     }
   }

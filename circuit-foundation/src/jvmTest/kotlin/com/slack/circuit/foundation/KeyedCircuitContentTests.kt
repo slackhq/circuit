@@ -35,12 +35,11 @@ private const val TAG_STATE = "TAG_STATE"
  *
  * Uses:
  * 1. [NavigableCircuitContent]
- * - Expect both ui and presenter to retain based on the record, as you can't change the [Screen]
- *   without a new record instance.
+ * - The ui and presenter are retain based on the record, as the [Screen] can't change without a new
+ *   record instance.
  * 2. [CircuitContent]
  * - a) Each [Screen] instance is a new "page" and would behave the same as
- *   [NavigableCircuitContent]. Where both the ui and presenter retain based on that [Screen]
- *   instance.
+ *   [NavigableCircuitContent], by being keyed on the [Screen] instance.
  * - b) The [Screen] is a model, and it's used to update the current [CircuitContent] state, as if
  *   it were another Compose element. This is potentially common with a "widget" sub-circuit case.
  */

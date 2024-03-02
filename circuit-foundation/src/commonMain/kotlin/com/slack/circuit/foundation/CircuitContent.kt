@@ -82,7 +82,6 @@ public fun CircuitContent(
   key: Any? = screen,
 ) {
   val parent = LocalCircuitContext.current
-
   @OptIn(InternalCircuitApi::class)
   val context =
     remember(screen, navigator, circuit, parent) {

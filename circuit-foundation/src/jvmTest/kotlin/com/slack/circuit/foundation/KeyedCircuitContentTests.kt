@@ -30,22 +30,22 @@ private const val TAG_PRESENTER_RETAINED = "TAG_PRESENTER_RETAINED"
 private const val TAG_STATE = "TAG_STATE"
 
 /**
- * For https://github.com/slackhq/circuit/issues/1169
+ * This is testing the following use cases for using [CircuitContent] based on
+ * https://github.com/slackhq/circuit/issues/1169.
  *
- * `NavigableCircuitContent` I'd expect both ui and presenter to retain based on the record, as you
- * can't change the screen without a new record instance.
- *
- * `CircuitContent` I think there's two uses.
- *
- * a) Each `Screen` instance is a new "page" and would behave the same as `NavigableCircuitContent`.
- * Where both the ui and presenter retain based on that `Screen` instance.
- *
- * b) The `Screen` is a model, and it's used to update the current `CircuitContent` state, as if it
- * were another Compose element. In this case I'd expect the ui and presenter to retain across the
- * same `Screen` type as it changes (or some other key).
+ * Uses:
+ * 1. [NavigableCircuitContent]
+ * - Expect both ui and presenter to retain based on the record, as you can't change the [Screen]
+ *   without a new record instance.
+ * 2. [CircuitContent]
+ * - a) Each [Screen] instance is a new "page" and would behave the same as
+ *   [NavigableCircuitContent]. Where both the ui and presenter retain based on that [Screen]
+ *   instance.
+ * - b) The [Screen] is a model, and it's used to update the current [CircuitContent] state, as if
+ *   it were another Compose element. This is potentially common with a "widget" sub-circuit case.
  */
 @RunWith(ComposeUiTestRunner::class)
-class ContentTests {
+class KeyedCircuitContentTests {
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -169,7 +169,7 @@ class ContentTests {
     lateinit var navigator: Navigator
     setContent {
       CircuitCompositionLocals(circuit) {
-        val backStack = rememberSaveableBackStack { push(screen) }
+        val backStack = rememberSaveableBackStack(screen)
         navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }

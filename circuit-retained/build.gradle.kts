@@ -48,6 +48,7 @@ kotlin {
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
         implementation(libs.androidx.compose.ui.ui)
+        implementation(libs.guava.listenablefuture)
       }
     }
 
@@ -69,15 +70,16 @@ kotlin {
     val androidInstrumentedTest by getting {
       dependencies {
         commonJvmTest()
+        implementation(libs.androidx.compose.foundation)
+        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.androidx.compose.material.material)
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.ui)
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
-        implementation(projects.circuitRetained)
-        implementation(libs.androidx.compose.integration.activity)
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.ui)
-        implementation(libs.androidx.compose.material.material)
+        implementation(libs.guava.listenablefuture)
         implementation(libs.leakcanary.android.instrumentation)
+        implementation(projects.circuitRetained)
       }
     }
   }

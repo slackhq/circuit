@@ -292,7 +292,7 @@ private class CircuitSymbolProcessor(
   }
 
   private fun KSAnnotated.isAnnotationPresentWithLeniency(annotation: KClass<out Annotation>) =
-    getKSAnnotationsWithLeniency(annotation).firstOrNull() != null
+    getKSAnnotationsWithLeniency(annotation).any()
 
   private fun KSAnnotated.getKSAnnotationsWithLeniency(annotation: KClass<out Annotation>) =
     getKSAnnotationsWithLeniency(annotation.asClassName())

@@ -45,7 +45,7 @@ kotlin {
 
 android { namespace = "com.slack.circuit.runtime.presenter" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 baselineProfile {
   mergeIntoMain = true

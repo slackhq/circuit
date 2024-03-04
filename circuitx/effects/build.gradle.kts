@@ -42,6 +42,12 @@ kotlin {
         implementation(projects.circuitFoundation)
       }
     }
+    androidMain {
+      dependencies {
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
+      }
+    }
     val commonTest by getting {
       dependencies {
         implementation(compose.foundation)

@@ -43,12 +43,18 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
+    androidMain {
+      dependencies {
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
+      }
+    }
   }
 }
 
 android { namespace = "com.slack.circuit.runtime" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 baselineProfile {
   mergeIntoMain = true

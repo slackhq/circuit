@@ -8,25 +8,19 @@ import com.google.auto.service.AutoService
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
-import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
-import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.PlatformInfo
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.Visibility
-import com.squareup.anvil.annotations.ContributesMultibinding
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -37,10 +31,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -48,36 +39,6 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import dagger.assisted.AssistedFactory
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Provider
-
-private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
-private const val DAGGER_PACKAGE = "dagger"
-private const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"
-private const val DAGGER_HILT_CODEGEN_PACKAGE = "$DAGGER_HILT_PACKAGE.codegen"
-private const val DAGGER_MULTIBINDINGS_PACKAGE = "$DAGGER_PACKAGE.multibindings"
-private const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
-private const val CIRCUIT_RUNTIME_SCREEN_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.screen"
-private const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
-private val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
-private val CIRCUIT_INJECT_ANNOTATION =
-  ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
-private val CIRCUIT_PRESENTER = ClassName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "Presenter")
-private val CIRCUIT_PRESENTER_FACTORY = CIRCUIT_PRESENTER.nestedClass("Factory")
-private val CIRCUIT_UI = ClassName(CIRCUIT_RUNTIME_UI_PACKAGE, "Ui")
-private val CIRCUIT_UI_FACTORY = CIRCUIT_UI.nestedClass("Factory")
-private val CIRCUIT_UI_STATE = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitUiState")
-private val SCREEN = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "Screen")
-private val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
-private val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
-private val DAGGER_MODULE = ClassName(DAGGER_PACKAGE, "Module")
-private val DAGGER_BINDS = ClassName(DAGGER_PACKAGE, "Binds")
-private val DAGGER_INSTALL_IN = ClassName(DAGGER_HILT_PACKAGE, "InstallIn")
-private val DAGGER_ORIGINATING_ELEMENT =
-  ClassName(DAGGER_HILT_CODEGEN_PACKAGE, "OriginatingElement")
-private val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
-private const val MODULE = "Module"
-private const val FACTORY = "Factory"
-private const val CIRCUIT_CODEGEN_MODE = "circuit.codegen.mode"
 
 @AutoService(SymbolProcessorProvider::class)
 public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
@@ -89,32 +50,6 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
       environment.platforms,
     )
   }
-}
-
-private class CircuitSymbols private constructor(resolver: Resolver) {
-  val modifier = resolver.loadKSType(MODIFIER.canonicalName)
-  val circuitUiState = resolver.loadKSType(CIRCUIT_UI_STATE.canonicalName)
-  val screen = resolver.loadKSType(SCREEN.canonicalName)
-  val navigator = resolver.loadKSType(NAVIGATOR.canonicalName)
-
-  companion object {
-    fun create(resolver: Resolver): CircuitSymbols? {
-      @Suppress("SwallowedException")
-      return try {
-        CircuitSymbols(resolver)
-      } catch (e: IllegalStateException) {
-        null
-      }
-    }
-  }
-}
-
-private fun Resolver.loadKSType(name: String): KSType =
-  loadOptionalKSType(name) ?: error("Could not find $name in classpath")
-
-private fun Resolver.loadOptionalKSType(name: String?): KSType? {
-  if (name == null) return null
-  return getClassDeclarationByName(getKSNameFromString(name))?.asType(emptyList())
 }
 
 private class CircuitSymbolProcessor(
@@ -129,7 +64,7 @@ private class CircuitSymbolProcessor(
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
     val codegenMode =
-      options[CIRCUIT_CODEGEN_MODE].let { mode ->
+      options[CircuitNames.CIRCUIT_CODEGEN_MODE].let { mode ->
         if (mode == null) {
           CodegenMode.ANVIL
         } else {
@@ -146,20 +81,21 @@ private class CircuitSymbolProcessor(
       return emptyList()
     }
 
-    resolver.getSymbolsWithAnnotation(CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
-      annotatedElement ->
-      when (annotatedElement) {
-        is KSClassDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
-        is KSFunctionDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
-        else ->
-          logger.error(
-            "CircuitInject is only applicable on classes and functions.",
-            annotatedElement,
-          )
+    resolver
+      .getSymbolsWithAnnotation(CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName)
+      .forEach { annotatedElement ->
+        when (annotatedElement) {
+          is KSClassDeclaration ->
+            generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
+          is KSFunctionDeclaration ->
+            generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
+          else ->
+            logger.error(
+              "CircuitInject is only applicable on classes and functions.",
+              annotatedElement,
+            )
+        }
       }
-    }
     return emptyList()
   }
 
@@ -172,17 +108,25 @@ private class CircuitSymbolProcessor(
     val circuitInjectAnnotation =
       annotatedElement.annotations.first {
         it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-          CIRCUIT_INJECT_ANNOTATION.canonicalName
+          CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName
       }
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
-    val screenIsObject =
-      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
+    // TODO why does smart cast not work on objects?
+    val screenIsObject = false
+    //      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind ==
+    // ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
     val factoryData =
-      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
-        ?: return
+      computeFactoryData(
+        annotatedElement,
+        symbols,
+        screenKSType,
+        instantiationType,
+        logger,
+        codegenMode,
+      ) ?: return
 
     val className =
       factoryData.className.replaceFirstChar { char ->
@@ -191,10 +135,10 @@ private class CircuitSymbolProcessor(
       }
 
     val builder =
-      TypeSpec.classBuilder(className + FACTORY)
+      TypeSpec.classBuilder(className + CircuitNames.FACTORY)
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(codegenMode.injectAnnotations.inject)
             .addParameters(factoryData.constructorParams)
             .build()
         )
@@ -242,7 +186,7 @@ private class CircuitSymbolProcessor(
     val additionalType =
       codegenMode.produceAdditionalTypeSpec(
         factoryType = factoryData.factoryType,
-        factory = ClassName(factoryData.packageName, className + FACTORY),
+        factory = ClassName(factoryData.packageName, className + CircuitNames.FACTORY),
         scope = scope,
         topLevelClass = topLevelClass,
       ) ?: return
@@ -265,7 +209,7 @@ private class CircuitSymbolProcessor(
 
   /** Computes the data needed to generate a factory. */
   // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
-  @Suppress("ComplexMethod", "LongMethod", "ReturnCount")
+  @Suppress("ComplexMethod", "LongMethod", "ReturnCount", "LongParameterList")
   @OptIn(KspExperimental::class)
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,
@@ -273,6 +217,7 @@ private class CircuitSymbolProcessor(
     screenKSType: KSType,
     instantiationType: InstantiationType,
     logger: KSPLogger,
+    codegenMode: CodegenMode,
   ): FactoryData? {
     val className: String
     val packageName: String
@@ -296,13 +241,19 @@ private class CircuitSymbolProcessor(
             FactoryType.UI
           }
         val assistedParams =
-          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
+          fd.assistedParameters(
+            symbols = symbols,
+            logger = logger,
+            screenType = screenKSType,
+            allowNavigator = factoryType == FactoryType.PRESENTER,
+            codegenMode = codegenMode,
+          )
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
               CodeBlock.of(
                 "%M·{·%M(%L)·}",
-                MemberName(CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "presenterOf"),
+                MemberName(CircuitNames.CIRCUIT_RUNTIME_PRESENTER_PACKAGE, "presenterOf"),
                 MemberName(packageName, name),
                 assistedParams,
               )
@@ -350,7 +301,8 @@ private class CircuitSymbolProcessor(
 
               @Suppress("IfThenToElvis") // The elvis is less readable here
               val stateType =
-                if (stateParam == null) CIRCUIT_UI_STATE else stateParam.type.resolve().toTypeName()
+                if (stateParam == null) CircuitNames.CIRCUIT_UI_STATE
+                else stateParam.type.resolve().toTypeName()
               val stateArg = if (stateParam == null) "_" else "state"
               val stateParamBlock =
                 if (stateParam == null) CodeBlock.of("")
@@ -365,7 +317,7 @@ private class CircuitSymbolProcessor(
                 }
               CodeBlock.of(
                 "%M<%T>·{·%L,·modifier·->·%M(%L%L%L)·}",
-                MemberName(CIRCUIT_RUNTIME_UI_PACKAGE, "ui"),
+                MemberName(CircuitNames.CIRCUIT_RUNTIME_UI_PACKAGE, "ui"),
                 stateType,
                 stateArg,
                 MemberName(packageName, name),
@@ -409,8 +361,8 @@ private class CircuitSymbolProcessor(
             .getAllSuperTypes()
             .mapNotNull {
               when (it.declaration.qualifiedName?.asString()) {
-                CIRCUIT_UI.canonicalName -> FactoryType.UI
-                CIRCUIT_PRESENTER.canonicalName -> FactoryType.PRESENTER
+                CircuitNames.CIRCUIT_UI.canonicalName -> FactoryType.UI
+                CircuitNames.CIRCUIT_PRESENTER.canonicalName -> FactoryType.PRESENTER
                 else -> null
               }
             }
@@ -436,10 +388,11 @@ private class CircuitSymbolProcessor(
             CodeBlock.of("")
           } else {
             creatorOrConstructor?.assistedParameters(
-              symbols,
-              logger,
-              screenKSType,
+              symbols = symbols,
+              logger = logger,
+              screenType = screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
+              codegenMode = codegenMode,
             )
           }
         codeBlock =
@@ -448,7 +401,7 @@ private class CircuitSymbolProcessor(
             constructorParams.add(
               ParameterSpec.builder(
                   "provider",
-                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName()),
+                  ClassName("javax.inject", "Provider").parameterizedBy(targetClass.toClassName()),
                 )
                 .build()
             )
@@ -464,6 +417,20 @@ private class CircuitSymbolProcessor(
               assistedParams,
             )
           } else {
+            if (codegenMode == CodegenMode.KOTLIN_INJECT) {
+              declaration.primaryConstructor?.parameters?.forEach { parameter ->
+                val resolvedType = parameter.type.resolve()
+                if (
+                  !resolvedType.isInstanceOf(symbols.screen) &&
+                    !resolvedType.isInstanceOf(symbols.navigator)
+                ) {
+                  constructorParams.add(
+                    ParameterSpec.builder(parameter.name!!.asString(), resolvedType.toTypeName())
+                      .build()
+                  )
+                }
+              }
+            }
             // Simple constructor call, no injection.
             CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
           }
@@ -473,83 +440,18 @@ private class CircuitSymbolProcessor(
   }
 }
 
-private data class AssistedType(val factoryName: String, val type: TypeName, val name: String)
-
-/**
- * Returns a [CodeBlock] representation of all named assisted parameters on this
- * [KSFunctionDeclaration] to be used in generated invocation code.
- *
- * Example: this function
- *
- * ```kotlin
- * @Composable
- * fun HomePresenter(screen: Screen, navigator: Navigator)
- * ```
- *
- * Yields this CodeBlock: `screen = screen, navigator = navigator`
- */
-private fun KSFunctionDeclaration.assistedParameters(
-  symbols: CircuitSymbols,
-  logger: KSPLogger,
-  screenType: KSType,
-  allowNavigator: Boolean,
-): CodeBlock {
-  return buildSet {
-      for (param in parameters) {
-        fun <E> MutableSet<E>.addOrError(element: E) {
-          val added = add(element)
-          if (!added) {
-            logger.error("Multiple parameters of type $element are not allowed.", param)
-          }
-        }
-
-        val type = param.type.resolve()
-        when {
-          type.isInstanceOf(symbols.screen) -> {
-            if (screenType.isSameDeclarationAs(type)) {
-              addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
-            } else {
-              logger.error("Screen type mismatch. Expected $screenType but found $type", param)
-            }
-          }
-          type.isInstanceOf(symbols.navigator) -> {
-            if (allowNavigator) {
-              addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
-            } else {
-              logger.error(
-                "Navigator type mismatch. Navigators are not injectable on this type.",
-                param,
-              )
-            }
-          }
-        }
-      }
-    }
-    .toList()
-    .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
-    .joinToCode(",·")
-}
-
-private fun KSType.isSameDeclarationAs(type: KSType): Boolean {
-  return this.declaration == type.declaration
-}
-
-private fun KSType.isInstanceOf(type: KSType): Boolean {
-  return type.isAssignableFrom(this)
-}
-
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
   instantiationCodeBlock: CodeBlock,
 ): TypeSpec {
-  return addSuperinterface(CIRCUIT_UI_FACTORY)
+  return addSuperinterface(CircuitNames.CIRCUIT_UI_FACTORY)
     .addFunction(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", SCREEN)
-        .addParameter("context", CIRCUIT_CONTEXT)
-        .returns(CIRCUIT_UI.parameterizedBy(STAR).copy(nullable = true))
+        .addParameter("screen", CircuitNames.SCREEN)
+        .addParameter("context", CircuitNames.CIRCUIT_CONTEXT)
+        .returns(CircuitNames.CIRCUIT_UI.parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return·when·(screen)")
         .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
         .addStatement("else·->·null")
@@ -578,14 +480,14 @@ private fun TypeSpec.Builder.buildPresenterFactory(
   //    }
   //  }
 
-  return addSuperinterface(CIRCUIT_PRESENTER_FACTORY)
+  return addSuperinterface(CircuitNames.CIRCUIT_PRESENTER_FACTORY)
     .addFunction(
       FunSpec.builder("create")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("screen", SCREEN)
-        .addParameter("navigator", NAVIGATOR)
-        .addParameter("context", CIRCUIT_CONTEXT)
-        .returns(CIRCUIT_PRESENTER.parameterizedBy(STAR).copy(nullable = true))
+        .addParameter("screen", CircuitNames.SCREEN)
+        .addParameter("navigator", CircuitNames.NAVIGATOR)
+        .addParameter("context", CircuitNames.CIRCUIT_CONTEXT)
+        .returns(CircuitNames.CIRCUIT_PRESENTER.parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")
         .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
         .addStatement("else·->·null")
@@ -595,143 +497,3 @@ private fun TypeSpec.Builder.buildPresenterFactory(
     .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
 }
-
-private enum class FactoryType {
-  PRESENTER,
-  UI
-}
-
-private enum class InstantiationType {
-  FUNCTION,
-  CLASS
-}
-
-private enum class CodegenMode {
-  /**
-   * The Anvil Codegen mode
-   *
-   * This mode annotates generated factory types with [ContributesMultibinding], allowing for Anvil
-   * to automatically wire the generated class up to Dagger's multibinding system within a given
-   * scope (e.g. AppScope).
-   *
-   * ```kotlin
-   * @ContributesMultibinding(AppScope::class)
-   * public class FavoritesPresenterFactory @Inject constructor(
-   *   private val factory: FavoritesPresenter.Factory,
-   * ) : Presenter.Factory { ... }
-   * ```
-   */
-  ANVIL {
-    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
-      // Anvil only supports JVM & Android
-      return platforms.all { it is JvmPlatformInfo }
-    }
-
-    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
-      builder.addAnnotation(
-        AnnotationSpec.builder(ContributesMultibinding::class).addMember("%T::class", scope).build()
-      )
-    }
-  },
-
-  /**
-   * The Hilt Codegen mode
-   *
-   * This mode provides an additional type, a Hilt module, which binds the generated factory, wiring
-   * up multibinding in the Hilt DI framework. The scope provided via [CircuitInject] is used to
-   * define the dagger component the factory provider is installed in.
-   *
-   * ```kotlin
-   * @Module
-   * @InstallIn(SingletonComponent::class)
-   * @OriginatingElement(topLevelClass = FavoritesPresenter::class)
-   * public abstract class FavoritesPresenterFactoryModule {
-   *   @Binds
-   *   @IntoSet
-   *   public abstract
-   *       fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
-   *       Presenter.Factory
-   * }
-   * ```
-   */
-  HILT {
-    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
-      // Hilt only supports JVM & Android
-      return platforms.all { it is JvmPlatformInfo }
-    }
-
-    override fun produceAdditionalTypeSpec(
-      factory: ClassName,
-      factoryType: FactoryType,
-      scope: TypeName,
-      topLevelClass: ClassName?,
-    ): TypeSpec {
-      val moduleAnnotations =
-        listOfNotNull(
-          AnnotationSpec.builder(DAGGER_MODULE).build(),
-          AnnotationSpec.builder(DAGGER_INSTALL_IN).addMember("%T::class", scope).build(),
-          topLevelClass?.let {
-            AnnotationSpec.builder(DAGGER_ORIGINATING_ELEMENT)
-              .addMember("%L = %T::class", "topLevelClass", topLevelClass)
-              .build()
-          },
-        )
-
-      val providerAnnotations =
-        listOf(
-          AnnotationSpec.builder(DAGGER_BINDS).build(),
-          AnnotationSpec.builder(DAGGER_INTO_SET).build(),
-        )
-
-      val providerReturns =
-        if (factoryType == FactoryType.UI) {
-          CIRCUIT_UI_FACTORY
-        } else {
-          CIRCUIT_PRESENTER_FACTORY
-        }
-
-      val factoryName = factory.simpleName
-
-      val providerSpec =
-        FunSpec.builder("bind${factoryName}")
-          .addModifiers(KModifier.ABSTRACT)
-          .addAnnotations(providerAnnotations)
-          .addParameter(name = factoryName.replaceFirstChar { it.lowercase() }, type = factory)
-          .returns(providerReturns)
-          .build()
-
-      return TypeSpec.classBuilder(factory.peerClass(factoryName + MODULE))
-        .addModifiers(KModifier.ABSTRACT)
-        .addAnnotations(moduleAnnotations)
-        .addFunction(providerSpec)
-        .build()
-    }
-  };
-
-  open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
-
-  open fun produceAdditionalTypeSpec(
-    factory: ClassName,
-    factoryType: FactoryType,
-    scope: TypeName,
-    topLevelClass: ClassName?,
-  ): TypeSpec? {
-    return null
-  }
-
-  abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
-}
-
-private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: () -> Unit) {
-  if (!getVisibility().isVisible) {
-    logger.error("CircuitInject is not applicable to private or local functions and classes.", this)
-    returnBody()
-  }
-}
-
-private fun KSDeclaration.topLevelDeclaration(): KSDeclaration {
-  return parentDeclaration?.topLevelDeclaration() ?: this
-}
-
-private val Visibility.isVisible: Boolean
-  get() = this != Visibility.PRIVATE && this != Visibility.LOCAL

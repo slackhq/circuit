@@ -189,6 +189,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 navigator = lastNavigator,
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
+                key = record.key,
               )
             },
         )

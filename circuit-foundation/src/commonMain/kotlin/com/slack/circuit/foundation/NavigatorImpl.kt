@@ -27,7 +27,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 public fun rememberCircuitNavigator(
   backStack: BackStack<out Record>,
-  onRootPop: () -> Unit,
+  onRootPop: (result: PopResult?) -> Unit,
 ): Navigator {
   return remember { Navigator(backStack, onRootPop) }
 }
@@ -40,12 +40,14 @@ public fun rememberCircuitNavigator(
  *   button.
  * @see NavigableCircuitContent
  */
-public fun Navigator(backStack: BackStack<out Record>, onRootPop: () -> Unit): Navigator =
-  NavigatorImpl(backStack, onRootPop)
+public fun Navigator(
+  backStack: BackStack<out Record>,
+  onRootPop: (result: PopResult?) -> Unit,
+): Navigator = NavigatorImpl(backStack, onRootPop)
 
 internal class NavigatorImpl(
   private val backStack: BackStack<out Record>,
-  private val onRootPop: () -> Unit,
+  private val onRootPop: (result: PopResult?) -> Unit,
 ) : Navigator {
 
   init {
@@ -58,7 +60,7 @@ internal class NavigatorImpl(
 
   override fun pop(result: PopResult?): Screen? {
     if (backStack.isAtRoot) {
-      onRootPop()
+      onRootPop(result)
       return null
     }
 

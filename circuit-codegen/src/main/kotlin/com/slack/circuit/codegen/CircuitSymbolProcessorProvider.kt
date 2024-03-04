@@ -21,6 +21,7 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
@@ -166,7 +167,6 @@ private class CircuitSymbolProcessor(
     return emptyList()
   }
 
-  @OptIn(KspExperimental::class)
   private fun generateFactory(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
@@ -174,27 +174,12 @@ private class CircuitSymbolProcessor(
     codegenMode: CodegenMode,
   ) {
     val circuitInjectAnnotation =
-      annotatedElement.annotations.first {
-        it.annotationType.resolve().declaration.qualifiedName?.asString() ==
-          CIRCUIT_INJECT_ANNOTATION.canonicalName
-      }
+      annotatedElement.getKSAnnotationsWithLeniency(CIRCUIT_INJECT_ANNOTATION).single()
 
-    // Check that the constructor is injected
+    // If we annotated a class, check that the class isn't using assisted inject. If so, error and
+    // return
     if (instantiationType == InstantiationType.CLASS) {
-      val declaration = annotatedElement as KSClassDeclaration
-      // Check for an AssistedInject constructor
-      if (declaration.findConstructorAnnotatedWith(AssistedInject::class) != null) {
-        val assistedFactory =
-          declaration.declarations.find {
-            it is KSClassDeclaration && it.isAnnotationPresentWithLeniency(AssistedFactory::class)
-          }
-        val suffix =
-          if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
-        logger.error(
-          "When using @CircuitInject with an @AssistedInject-annotated class, you must " +
-            "put the @CircuitInject annotation on the @AssistedFactory-annotated nested class$suffix.",
-          declaration,
-        )
+      (annotatedElement as KSClassDeclaration).checkForAssistedInjection {
         return
       }
     }
@@ -288,15 +273,42 @@ private class CircuitSymbolProcessor(
     }
   }
 
-  @OptIn(KspExperimental::class)
-  private fun KSAnnotated.isAnnotationPresentWithLeniency(
-    annotation: KClass<out Annotation>
-  ): Boolean {
-    val simpleName = annotation.simpleName!!
+  private inline fun KSClassDeclaration.checkForAssistedInjection(exit: () -> Nothing) {
+    // Check for an AssistedInject constructor
+    if (findConstructorAnnotatedWith(AssistedInject::class) != null) {
+      val assistedFactory =
+        declarations.filterIsInstance<KSClassDeclaration>().find {
+          it.isAnnotationPresentWithLeniency(AssistedFactory::class)
+        }
+      val suffix =
+        if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
+      logger.error(
+        "When using @CircuitInject with an @AssistedInject-annotated class, you must " +
+          "put the @CircuitInject annotation on the @AssistedFactory-annotated nested class$suffix.",
+        this,
+      )
+      exit()
+    }
+  }
+
+  private fun KSAnnotated.isAnnotationPresentWithLeniency(annotation: KClass<out Annotation>) =
+    getKSAnnotationsWithLeniency(annotation).firstOrNull() != null
+
+  private fun KSAnnotated.getKSAnnotationsWithLeniency(annotation: KClass<out Annotation>) =
+    getKSAnnotationsWithLeniency(annotation.asClassName())
+
+  private fun KSAnnotated.getKSAnnotationsWithLeniency(
+    annotation: ClassName
+  ): Sequence<KSAnnotation> {
+    val simpleName = annotation.simpleName
     return if (lenient) {
-      annotations.any { it.shortName.asString() == simpleName }
+      annotations.filter { it.shortName.asString() == simpleName }
     } else {
-      isAnnotationPresent(annotation)
+      val qualifiedName = annotation.canonicalName
+      this.annotations.filter {
+        it.shortName.getShortName() == simpleName &&
+          it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName
+      }
     }
   }
 

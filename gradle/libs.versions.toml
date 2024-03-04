@@ -214,6 +214,9 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 
+# Cover for guava's annoying conflicting artifacts
+guava-listenablefuture = "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
+
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
 jline = "org.jline:jline:3.25.1"
 jsoup = "org.jsoup:jsoup:1.17.2"

@@ -64,6 +64,12 @@ kotlin {
         implementation(libs.compose.test.junit4)
       }
     }
+    androidMain {
+      dependencies {
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
+      }
+    }
   }
 }
 

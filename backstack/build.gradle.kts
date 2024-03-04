@@ -53,6 +53,8 @@ kotlin {
         implementation(libs.androidx.lifecycle.viewModel.compose)
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
       }
     }
     val commonTest by getting {

@@ -24,13 +24,20 @@ android {
   }
 
   targetProjectPath = ":samples:star:apk"
+  val isCi = providers.environmentVariable("CI").isPresent
+  // Load the target app in a separate process so that it can be restarted multiple times, which
+  // is necessary for startup benchmarking to work correctly.
+  // https://source.android.com/docs/core/tests/development/instr-self-e2e
+  experimentalProperties["android.experimental.self-instrumenting"] = true
   experimentalProperties["android.experimental.testOptions.managedDevices.setupTimeoutMinutes"] = 20
-  // TODO remove in AGP 8.2
+  experimentalProperties["android.experimental.androidTest.numManagedDeviceShards"] = 1
+  experimentalProperties["android.experimental.testOptions.managedDevices.maxConcurrentDevices"] = 1
   experimentalProperties[
-    "android.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules"] =
-    "baselineprofile"
-  // TODO enable in AGP 8.2, doesn't work in AGP 8.1
-  //  experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
+    "android.experimental.testOptions.managedDevices.emulator.showKernelLogging"] = true
+  // If on CI, add indirect swiftshader arg
+  if (isCi) {
+    experimentalProperties["android.testoptions.manageddevices.emulator.gpu"] = "swiftshader_indirect"
+  }
 }
 
 baselineProfile {

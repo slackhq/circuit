@@ -8,6 +8,10 @@ plugins {
   alias(libs.plugins.baselineprofile)
 }
 
+val mvdApi = 33
+val mvdName = "pixel6Api$mvdApi"
+val isCi = providers.environmentVariable("CI").isPresent
+
 android {
   namespace = "com.circuit.samples.star.benchmark"
   defaultConfig {
@@ -16,15 +20,14 @@ android {
   }
 
   testOptions.managedDevices.devices {
-    create<ManagedVirtualDevice>("pixel6Api33") {
+    create<ManagedVirtualDevice>(mvdName) {
       device = "Pixel 6"
-      apiLevel = 33
+      apiLevel = mvdApi
       systemImageSource = "aosp"
     }
   }
 
   targetProjectPath = ":samples:star:apk"
-  val isCi = providers.environmentVariable("CI").isPresent
   // Load the target app in a separate process so that it can be restarted multiple times, which
   // is necessary for startup benchmarking to work correctly.
   // https://source.android.com/docs/core/tests/development/instr-self-e2e
@@ -36,21 +39,28 @@ android {
     "android.experimental.testOptions.managedDevices.emulator.showKernelLogging"] = true
   // If on CI, add indirect swiftshader arg
   if (isCi) {
-    experimentalProperties["android.testoptions.manageddevices.emulator.gpu"] = "swiftshader_indirect"
+    experimentalProperties["android.testoptions.manageddevices.emulator.gpu"] =
+      "swiftshader_indirect"
   }
 }
 
+val useConnectedDevice =
+  providers.gradleProperty("catchup.benchmark.useConnectedDevice").getOrElse("false").toBoolean()
+
 baselineProfile {
-  // This specifies the managed devices to use that you run the tests on. The default
-  // is none.
-  managedDevices += "pixel6Api33"
+  // This specifies the managed devices to use that you run the tests on. The
+  // default is none.
+  if (!useConnectedDevice) {
+    managedDevices += mvdName
+  }
 
-  // This enables using connected devices to generate profiles. The default is true.
-  // When using connected devices, they must be rooted or API 33 and higher.
-  useConnectedDevices = false
+  // This enables using connected devices to generate profiles. The default is
+  // true. When using connected devices, they must be rooted or API 33 and
+  // higher.
+  useConnectedDevices = useConnectedDevice
 
-  // Set to true to see the emulator, useful for debugging. Only enabled locally
-  enableEmulatorDisplay = false
+  // Disable the emulator display for GMD devices on CI
+  enableEmulatorDisplay = !isCi
 }
 
 dependencies {

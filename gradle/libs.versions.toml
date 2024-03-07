@@ -3,7 +3,7 @@ accompanist = "0.34.0"
 androidx-activity = "1.8.2"
 androidx-annotation = "1.7.1"
 androidx-appcompat = "1.6.1"
-androidx-browser = "1.7.0"
+androidx-browser = "1.8.0"
 androidx-lifecycle = "2.7.0"
 agp = "8.3.0"
 anvil = "2.4.9"
@@ -11,22 +11,22 @@ atomicfu = "0.23.2"
 benchmark = "1.2.3"
 coil = "2.6.0"
 coil3 = "3.0.0-alpha06"
-compose-animation = "1.6.2"
+compose-animation = "1.6.3"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
 compose-compiler-version = "1.5.10"
 compose-compiler-kotlinVersion = "1.9.22"
 compose-foundation = "1.6.2"
-compose-material = "1.6.2"
+compose-material = "1.6.3"
 compose-material3 = "1.2.0"
 compose-runtime = "1.6.3"
-compose-ui = "1.6.2"
+compose-ui = "1.6.3"
 compose-jb = "1.6.0"
 compose-jb-compiler = "1.5.8.1"
 compose-jb-kotlinVersion = "1.9.22"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.51"
-datastore = "1.1.0-beta01"
+datastore = "1.1.0-beta02"
 detekt = "1.23.5"
 dokka = "1.9.20"
 eithernet = "1.8.1"
@@ -111,7 +111,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.02.01" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.02.02" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }

@@ -58,7 +58,7 @@ spotless = "6.23.3"
 sqldelight = "2.0.1"
 telephoto = "0.8.0"
 testParameterInjector = "1.15"
-turbine = "1.0.0"
+turbine = "1.1.0"
 versionsPlugin = "0.49.0"
 
 [plugins]

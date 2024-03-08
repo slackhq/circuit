@@ -5,9 +5,12 @@ package com.slack.circuit.foundation
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.internal.test.Parcelize
+import com.slack.circuit.runtime.popRoot
 import com.slack.circuit.runtime.popUntil
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Test
@@ -100,5 +103,30 @@ class NavigatorTest {
     val navigator = NavigatorImpl(backStack) { fail() }
 
     assertEquals(TestScreen2, navigator.peek())
+  }
+
+  @Test
+  fun popRootWithResult() {
+    var onRootResult: PopResult? = null
+    var onRootPopped = false
+    val expectedRootResult = object : PopResult {}
+    val backStack = SaveableBackStack(TestScreen)
+    backStack.push(TestScreen2)
+    backStack.push(TestScreen3)
+
+    val navigator =
+      NavigatorImpl(backStack) {
+        onRootResult = it
+        onRootPopped = true
+      }
+
+    assertThat(backStack).hasSize(3)
+
+    navigator.popRoot(expectedRootResult)
+
+    assertTrue(onRootPopped)
+    assertSame(expectedRootResult, onRootResult)
+    assertThat(backStack).hasSize(1)
+    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen)
   }
 }

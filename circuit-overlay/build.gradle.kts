@@ -62,12 +62,18 @@ kotlin {
         implementation(libs.compose.test.junit4)
       }
     }
+    androidMain {
+      dependencies {
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
+      }
+    }
   }
 }
 
 android { namespace = "com.slack.circuit.overlay" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 baselineProfile {
   mergeIntoMain = true

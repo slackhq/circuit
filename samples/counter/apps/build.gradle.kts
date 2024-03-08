@@ -19,7 +19,7 @@ android {
   }
 }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }

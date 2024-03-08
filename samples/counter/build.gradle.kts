@@ -52,4 +52,4 @@ kotlin {
 
 android { namespace = "com.slack.circuit.sample.counter" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }

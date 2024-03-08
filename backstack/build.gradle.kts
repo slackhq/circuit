@@ -52,6 +52,8 @@ kotlin {
         implementation(libs.androidx.lifecycle.viewModel.compose)
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
       }
     }
     val commonTest by getting {
@@ -90,7 +92,7 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 
 android { namespace = "com.slack.circuit.backstack" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 baselineProfile {
   mergeIntoMain = true

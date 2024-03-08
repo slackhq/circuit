@@ -53,7 +53,7 @@ kotlin {
 
 android { namespace = "com.slack.circuit.runtime.screen" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 baselineProfile {
   mergeIntoMain = true

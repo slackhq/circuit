@@ -42,10 +42,12 @@ kotlin {
       }
     }
 
-    val androidMain by getting {
+    androidMain {
       dependencies {
         api(libs.androidx.compose.material.material3)
         implementation(libs.androidx.compose.accompanist.systemUi)
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
       }
     }
     // We use a common folder instead of a common source set because there is no commonizer

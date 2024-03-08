@@ -53,6 +53,8 @@ kotlin {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
         implementation(libs.androidx.compose.integration.activity)
+        // Because guava's dependencies are a tangled mess
+        implementation(libs.guava.listenablefuture)
       }
     }
     val commonTest by getting {

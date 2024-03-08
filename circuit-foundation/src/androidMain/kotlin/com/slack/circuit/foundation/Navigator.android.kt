@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent]. Delegates
@@ -34,11 +35,11 @@ public fun rememberCircuitNavigator(
 }
 
 @Composable
-private fun backDispatcherRootPop(): () -> Unit {
+private fun backDispatcherRootPop(): (result: PopResult?) -> Unit {
   val onBackPressedDispatcher =
     LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
       ?: error("No OnBackPressedDispatcherOwner found, unable to handle root navigation pops.")
-  return onBackPressedDispatcher::onBackPressed
+  return { onBackPressedDispatcher.onBackPressed() }
 }
 
 private fun onBack(backStack: BackStack<out Record>, navigator: Navigator): () -> Unit = {

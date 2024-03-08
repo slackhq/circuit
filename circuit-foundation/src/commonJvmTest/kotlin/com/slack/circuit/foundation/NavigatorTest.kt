@@ -22,6 +22,8 @@ import org.junit.runner.RunWith
 
 @Parcelize private data object TestScreen3 : Screen
 
+@Parcelize private data object TestPopResult : PopResult
+
 @RunWith(ComposeUiTestRunner::class)
 class NavigatorTest {
   @Test
@@ -109,7 +111,6 @@ class NavigatorTest {
   fun popRootWithResult() {
     var onRootResult: PopResult? = null
     var onRootPopped = false
-    val expectedRootResult = object : PopResult {}
     val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
     backStack.push(TestScreen3)
@@ -122,10 +123,10 @@ class NavigatorTest {
 
     assertThat(backStack).hasSize(3)
 
-    navigator.popRoot(expectedRootResult)
+    navigator.popRoot(TestPopResult)
 
     assertTrue(onRootPopped)
-    assertSame(expectedRootResult, onRootResult)
+    assertSame(TestPopResult, onRootResult)
     assertThat(backStack).hasSize(1)
     assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen)
   }

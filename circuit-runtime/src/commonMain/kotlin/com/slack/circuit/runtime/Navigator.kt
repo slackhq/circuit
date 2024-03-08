@@ -123,3 +123,13 @@ public inline fun Navigator.resetRoot(
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
   while (peek()?.let(predicate) == false) pop() ?: break // Break on root pop
 }
+
+/** Calls [Navigator.pop] until the root screen and passes [result] to the root pop. */
+public fun Navigator.popRoot(result: PopResult? = null) {
+  var backStackSize = peekBackStack().size
+  while (backStackSize > 1) {
+    backStackSize--
+    pop()
+  }
+  pop(result)
+}

@@ -71,12 +71,8 @@ kotlin {
     }
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
-    jsTest {
-      kotlin.srcDir("src/browserTest/kotlin")
-    }
-    val wasmJsTest by getting {
-      kotlin.srcDir("src/browserTest/kotlin")
-    }
+    jsTest { kotlin.srcDir("src/browserTest/kotlin") }
+    val wasmJsTest by getting { kotlin.srcDir("src/browserTest/kotlin") }
   }
   targets.configureEach {
     compilations.configureEach {

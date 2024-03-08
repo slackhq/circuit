@@ -73,19 +73,15 @@ kotlin {
     val jvmTest by getting { dependsOn(commonJvmTest) }
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
-    jsMain {
-      kotlin.srcDir("src/browserMain/kotlin")
-    }
-    val wasmJsMain by getting {
-      kotlin.srcDir("src/browserMain/kotlin")
-    }
+    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
   compilerOptions {
     // Need to disable, due to 'duplicate library name' warning
-    // https://youtrack.jetbrains.com/issue/KT-51110
+    // https://youtrack.jetbrains.com/issue/KT-64115
     allWarningsAsErrors = false
   }
 }

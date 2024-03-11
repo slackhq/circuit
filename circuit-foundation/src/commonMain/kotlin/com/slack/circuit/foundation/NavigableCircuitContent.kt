@@ -34,7 +34,6 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -108,7 +107,9 @@ public fun NavigableCircuitContent(
       // contains the record
       val record = provider.record
       val recordInBackStackRetainChecker =
-        remember(backStack, record) { CanRetainChecker { record in backStack } }
+        remember(backStack, record) {
+          CanRetainChecker { backStack.containsRecord(record, includeSaved = true) }
+        }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Remember the `providedValues` lookup because this composition can live longer than

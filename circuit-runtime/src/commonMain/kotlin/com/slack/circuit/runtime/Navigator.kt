@@ -5,6 +5,8 @@ package com.slack.circuit.runtime
 import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /** A Navigator that only supports [goTo]. */
 @Stable
@@ -23,7 +25,7 @@ public interface Navigator : GoToNavigator {
   public fun peek(): Screen?
 
   /** Returns the current back stack. */
-  public fun peekBackStack(): List<Screen>
+  public fun peekBackStack(): ImmutableList<Screen>
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -76,7 +78,7 @@ public interface Navigator : GoToNavigator {
     newRoot: Screen,
     saveState: Boolean = false,
     restoreState: Boolean = false,
-  ): List<Screen>
+  ): ImmutableList<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
@@ -85,13 +87,13 @@ public interface Navigator : GoToNavigator {
 
     override fun peek(): Screen? = null
 
-    override fun peekBackStack(): List<Screen> = emptyList()
+    override fun peekBackStack(): ImmutableList<Screen> = persistentListOf()
 
     override fun resetRoot(
       newRoot: Screen,
       saveState: Boolean,
       restoreState: Boolean,
-    ): List<Screen> = emptyList()
+    ): ImmutableList<Screen> = persistentListOf()
   }
 }
 
@@ -120,4 +122,14 @@ public inline fun Navigator.resetRoot(
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
   while (peek()?.let(predicate) == false) pop() ?: break // Break on root pop
+}
+
+/** Calls [Navigator.pop] until the root screen and passes [result] to the root pop. */
+public fun Navigator.popRoot(result: PopResult? = null) {
+  var backStackSize = peekBackStack().size
+  while (backStackSize > 1) {
+    backStackSize--
+    pop()
+  }
+  pop(result)
 }

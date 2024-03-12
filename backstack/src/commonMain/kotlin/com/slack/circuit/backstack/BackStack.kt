@@ -19,6 +19,9 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * A caller-supplied stack of [Record]s for presentation with a `Navigator`. Iteration order is
@@ -63,8 +66,13 @@ public interface BackStack<R : Record> : Iterable<R> {
   /**
    * Pop records off the top of the backstack until one is found that matches the given predicate.
    */
-  public fun popUntil(predicate: (R) -> Boolean) {
-    while (topRecord?.let(predicate) == false) pop()
+  public fun popUntil(predicate: (R) -> Boolean): ImmutableList<R> {
+    return persistentListOf<R>().mutate {
+      while (topRecord?.let(predicate) == false) {
+        val popped = pop() ?: break
+        it.add(popped)
+      }
+    }
   }
 
   /**
@@ -84,6 +92,14 @@ public interface BackStack<R : Record> : Iterable<R> {
    * @return Returns true if there was any back stack state to restore.
    */
   public fun restoreState(screen: Screen): Boolean
+
+  /**
+   * Whether the back stack contains the given [record].
+   *
+   * @param includeSaved Whether to also check if the record is contained by any saved back stack
+   *   state. See [saveState].
+   */
+  public fun containsRecord(record: R, includeSaved: Boolean): Boolean
 
   @Stable
   public interface Record {

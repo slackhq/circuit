@@ -5,10 +5,12 @@ package com.slack.circuit.foundation
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.internal.test.Parcelize
+import com.slack.circuit.runtime.popRoot
 import com.slack.circuit.runtime.popUntil
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Test
@@ -20,19 +22,13 @@ import org.junit.runner.RunWith
 
 @Parcelize private data object TestScreen3 : Screen
 
+@Parcelize private data object TestPopResult : PopResult
+
 @RunWith(ComposeUiTestRunner::class)
 class NavigatorTest {
   @Test
-  fun errorWhenBackstackIsEmpty() {
-    val backStack = SaveableBackStack()
-    val t = assertFailsWith<IllegalStateException> { NavigatorImpl(backStack) {} }
-    assertThat(t).hasMessageThat().contains("Backstack size must not be empty.")
-  }
-
-  @Test
   fun popAtRoot() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen)
 
     var onRootPop = 0
@@ -52,8 +48,7 @@ class NavigatorTest {
 
   @Test
   fun resetRoot() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }
@@ -70,8 +65,7 @@ class NavigatorTest {
 
   @Test
   fun popUntil() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
     backStack.push(TestScreen3)
 
@@ -88,8 +82,7 @@ class NavigatorTest {
   @Test
   fun popUntilRoot() {
     var onRootPopped = false
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
     backStack.push(TestScreen3)
 
@@ -106,12 +99,35 @@ class NavigatorTest {
 
   @Test
   fun peek() {
-    val backStack = SaveableBackStack()
-    backStack.push(TestScreen)
+    val backStack = SaveableBackStack(TestScreen)
     backStack.push(TestScreen2)
 
     val navigator = NavigatorImpl(backStack) { fail() }
 
     assertEquals(TestScreen2, navigator.peek())
+  }
+
+  @Test
+  fun popRootWithResult() {
+    var onRootResult: PopResult? = null
+    var onRootPopped = false
+    val backStack = SaveableBackStack(TestScreen)
+    backStack.push(TestScreen2)
+    backStack.push(TestScreen3)
+
+    val navigator =
+      NavigatorImpl(backStack) {
+        onRootResult = it
+        onRootPopped = true
+      }
+
+    assertThat(backStack).hasSize(3)
+
+    navigator.popRoot(TestPopResult)
+
+    assertTrue(onRootPopped)
+    assertSame(TestPopResult, onRootResult)
+    assertThat(backStack).hasSize(1)
+    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen)
   }
 }

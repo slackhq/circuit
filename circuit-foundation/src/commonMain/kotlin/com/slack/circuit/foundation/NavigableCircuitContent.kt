@@ -4,6 +4,8 @@ package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
@@ -45,9 +47,9 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-public fun NavigableCircuitContent(
+public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,
-  backStack: BackStack<out Record>,
+  backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
@@ -105,7 +107,9 @@ public fun NavigableCircuitContent(
       // contains the record
       val record = provider.record
       val recordInBackStackRetainChecker =
-        remember(backStack, record) { CanRetainChecker { record in backStack } }
+        remember(backStack, record) {
+          CanRetainChecker { backStack.containsRecord(record, includeSaved = true) }
+        }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Remember the `providedValues` lookup because this composition can live longer than
@@ -133,15 +137,15 @@ public fun NavigableCircuitContent(
 
 /** A simple holder class for a [record] and its associated [content]. */
 @Immutable
-public class RecordContentProvider(
-  public val record: Record,
-  internal val content: @Composable (Record) -> Unit,
+public class RecordContentProvider<R : Record>(
+  public val record: R,
+  internal val content: @Composable (R) -> Unit,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
 
-    other as RecordContentProvider
+    other as RecordContentProvider<*>
 
     if (record != other.record) return false
     if (content != other.content) return false
@@ -159,12 +163,12 @@ public class RecordContentProvider(
 }
 
 @Composable
-private fun BackStack<out Record>.buildCircuitContentProviders(
+private fun <R : Record> BackStack<R>.buildCircuitContentProviders(
   navigator: Navigator,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
-): ImmutableList<RecordContentProvider> {
-  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider>() }
+): ImmutableList<RecordContentProvider<R>> {
+  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
 
   val lastNavigator by rememberUpdatedState(navigator)
   val lastCircuit by rememberUpdatedState(circuit)
@@ -186,6 +190,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 navigator = lastNavigator,
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
+                key = record.key,
               )
             },
         )
@@ -238,35 +243,52 @@ public object NavigatorDefaults {
       val enterTransition =
         fadeIn(
           animationSpec =
-            tween(durationMillis = SHORT_DURATION, delayMillis = 50, easing = LinearEasing)
+            tween(
+              durationMillis = SHORT_DURATION,
+              delayMillis = if (sign > 0) 50 else 0,
+              easing = LinearEasing,
+            )
         ) +
           slideInHorizontally(
             initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
             animationSpec =
               tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
           ) +
-          expandHorizontally(
-            animationSpec =
-              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-            initialWidth = { (it * .9f).toInt() },
-            expandFrom = Alignment.Start,
-          )
+          if (sign > 0) {
+            expandHorizontally(
+              animationSpec =
+                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+              initialWidth = { (it * .9f).toInt() },
+              expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
+            )
+          } else {
+            EnterTransition.None
+          }
 
       val exitTransition =
         fadeOut(
-          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = AccelerateEasing)
+          animationSpec =
+            tween(
+              durationMillis = if (sign > 0) NORMAL_DURATION else SHORT_DURATION,
+              delayMillis = if (sign > 0) 0 else 50,
+              easing = AccelerateEasing,
+            )
         ) +
           slideOutHorizontally(
             targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
             animationSpec =
               tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
           ) +
-          shrinkHorizontally(
-            animationSpec =
-              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-            targetWidth = { (it * .9f).toInt() },
-            shrinkTowards = Alignment.End,
-          )
+          if (sign > 0) {
+            shrinkHorizontally(
+              animationSpec =
+                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+              targetWidth = { (it * .9f).toInt() },
+              shrinkTowards = Alignment.End,
+            )
+          } else {
+            ExitTransition.None
+          }
 
       return enterTransition togetherWith exitTransition
     }
@@ -283,7 +305,8 @@ public object NavigatorDefaults {
         targetState = args,
         modifier = modifier,
         transitionSpec = {
-          // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+          // A transitionSpec should only use values passed into the `AnimatedContent`, to
+          // minimize
           // the transitionSpec recomposing. The states are available as `targetState` and
           // `initialState`
           val diff = targetState.size - initialState.size

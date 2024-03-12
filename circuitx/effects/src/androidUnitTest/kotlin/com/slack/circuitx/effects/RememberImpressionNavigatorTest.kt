@@ -41,7 +41,7 @@ class RememberImpressionNavigatorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  private val fakeNavigator = FakeNavigator()
+  private val fakeNavigator = FakeNavigator(TestRootScreen)
   private val registry = RetainedStateRegistry()
   private val composed = MutableStateFlow(true)
 
@@ -127,9 +127,11 @@ class RememberImpressionNavigatorTest {
       // Navigation reset
       onNodeWithTag(TAG_RESET).performClick()
       advanceTimeByAndRun(1)
-      assertEquals(TestResetScreen, fakeNavigator.awaitResetRoot())
+      assertEquals(TestResetScreen, fakeNavigator.awaitResetRoot().newRoot)
     }
   }
+
+  @Parcelize private data object TestRootScreen : Screen
 
   @Parcelize private data object TestGoToScreen : Screen
 

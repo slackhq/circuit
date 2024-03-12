@@ -83,5 +83,6 @@ Overlays and navigation results can accomplish similar goals, and you should cho
 | Supports non-saveable inputs/outputs       | ✅         | ❌           |
 | Can participate with the caller's UI       | ✅         | ❌           |
 | Can return multiple different result types | ❌         | ✅           |
+| Works without a back stack                 | ✅         | ❌           |
 
 *`PopResult` is technically type-safe, but it's not as strongly typed as `Overlay` results since there is nothing inherently requiring the target screen to pop a given result type back.

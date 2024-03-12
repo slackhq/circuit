@@ -152,7 +152,7 @@ class ImageViewerAwareNavDecoration(
   ) {
     val firstArg = args.firstOrNull()
     val decoration =
-      if (firstArg is RecordContentProvider && firstArg.record.screen is ImageViewerScreen) {
+      if (firstArg is RecordContentProvider<*> && firstArg.record.screen is ImageViewerScreen) {
         NavigatorDefaults.EmptyDecoration
       } else {
         defaultNavDecoration

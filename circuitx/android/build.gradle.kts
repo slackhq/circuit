@@ -12,4 +12,6 @@ android { namespace = "com.slack.circuitx.android" }
 dependencies {
   implementation(libs.androidx.annotation)
   api(projects.circuitRuntime)
+  // Because guava's dependencies are a tangled mess
+  implementation(libs.guava.listenablefuture)
 }

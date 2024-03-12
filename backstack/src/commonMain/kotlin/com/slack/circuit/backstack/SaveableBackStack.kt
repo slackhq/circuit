@@ -127,7 +127,7 @@ internal constructor(
     return false
   }
 
-  override fun containsRecord(record: BackStack.Record, includeSaved: Boolean): Boolean {
+  override fun containsRecord(record: Record, includeSaved: Boolean): Boolean {
     // If it's in the main entry list, return true
     if (record in entryList) return true
 

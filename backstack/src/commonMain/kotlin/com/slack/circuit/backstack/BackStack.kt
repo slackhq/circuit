@@ -93,6 +93,14 @@ public interface BackStack<R : Record> : Iterable<R> {
    */
   public fun restoreState(screen: Screen): Boolean
 
+  /**
+   * Whether the back stack contains the given [record].
+   *
+   * @param includeSaved Whether to also check if the record is contained by any saved back stack
+   *   state. See [saveState].
+   */
+  public fun containsRecord(record: R, includeSaved: Boolean): Boolean
+
   @Stable
   public interface Record {
     /**

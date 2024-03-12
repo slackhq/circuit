@@ -161,6 +161,8 @@ subprojects {
   plugins.withType<KotlinBasePlugin> {
     val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
+      // Don't double apply to stub gen
+      if (this is KaptGenerateStubsTask) return@configureEach
       compilerOptions {
         allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
@@ -408,6 +410,8 @@ subprojects {
       val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
       if (suppressComposeKotlinVersion) {
         tasks.withType<KotlinCompilationTask<*>>().configureEach {
+          // Don't double apply to stub gen
+          if (this is KaptGenerateStubsTask) return@configureEach
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",

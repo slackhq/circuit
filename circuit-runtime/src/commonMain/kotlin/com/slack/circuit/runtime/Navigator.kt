@@ -3,6 +3,7 @@
 package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -124,12 +125,14 @@ public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
   while (peek()?.let(predicate) == false) pop() ?: break // Break on root pop
 }
 
-/** Calls [Navigator.pop] until the root screen and passes [result] to the root pop. */
+/** Pop the [Navigator] as if this was the root [Navigator.pop] call. */
 public fun Navigator.popRoot(result: PopResult? = null) {
-  var backStackSize = peekBackStack().size
-  while (backStackSize > 1) {
-    backStackSize--
-    pop()
+  Snapshot.withMutableSnapshot {
+    // Move the top screen to be the root screen for any final animation.
+    val backStack = peekBackStack()
+    if (backStack.size > 1) {
+      resetRoot(backStack.first())
+    }
+    pop(result)
   }
-  pop(result)
 }

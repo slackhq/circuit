@@ -137,24 +137,12 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun forgetUnclaimedValues() {
-    clearRetained()
-  }
-
-  /** Should this be public API on RetainedStateRegistry? */
-  internal fun clear() {
-    // First we saveAll, which flattens down the value providers to our retained list
-    saveAll()
-    // Now we clear the retained list
-    clearRetained()
-  }
-
-  private fun clearRetained() {
     fun clearValue(value: Any?) {
       when (value) {
         // If we get a RetainedHolder value, need to unwrap and call again
         is RetainedValueHolder<*> -> clearValue(value.value)
         // Dispatch the call to nested registries
-        is RetainedStateRegistryImpl -> value.clearRetained()
+        is RetainedStateRegistry -> value.forgetUnclaimedValues()
         // Dispatch onForgotten calls if the value is a RememberObserver
         is RememberObserver -> value.onForgotten()
       }

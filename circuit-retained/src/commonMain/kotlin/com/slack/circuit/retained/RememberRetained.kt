@@ -168,7 +168,12 @@ private class RetainableHolder<T>(
         is RememberObserver -> v.onForgotten()
         // Or if its a registry, we need to tell it to clear, which will forward the 'forgotten'
         // call onto its values
-        is RetainedStateRegistryImpl -> v.clear()
+        is RetainedStateRegistry -> {
+          // First we saveAll, which flattens down the value providers to our retained list
+          v.saveAll()
+          // Now we drop all retained values
+          v.forgetUnclaimedValues()
+        }
       }
     } else if (v is RetainedStateRegistry) {
       // If the value is a RetainedStateRegistry, we need to take care to retain it.

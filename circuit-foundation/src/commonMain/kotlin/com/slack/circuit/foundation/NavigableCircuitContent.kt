@@ -19,7 +19,9 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
@@ -58,7 +60,8 @@ public fun <R : Record> NavigableCircuitContent(
     circuit.onUnavailableContent,
 ) {
   val activeContentProviders =
-    backStack.buildCircuitContentProviders(
+    buildCircuitContentProviders(
+      backStack = backStack,
       navigator = navigator,
       circuit = circuit,
       unavailableRoute = unavailableRoute,
@@ -101,36 +104,30 @@ public fun <R : Record> NavigableCircuitContent(
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
 
+  println("Composing NavigableCircuitContent for ${backStack.toList()}")
+
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
-      // We retain the record's retained state registry for as long as the back stack
-      // contains the record
+      println("--> NavigableCircuitContent content called for ${provider.record}")
+
       val record = provider.record
-      val recordInBackStackRetainChecker =
-        remember(backStack, record) {
-          CanRetainChecker { backStack.containsRecord(record, includeSaved = true) }
-        }
 
-      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        // Remember the `providedValues` lookup because this composition can live longer than
-        // the record is present in the backstack, if the decoration is animated for example.
-        val values = remember(record) { providedValues[record] }?.provideValues()
-        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+      // Remember the `providedValues` lookup because this composition can live longer than
+      // the record is present in the backstack, if the decoration is animated for example.
+      val values = remember(record) { providedValues[record] }?.provideValues()
+      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
-        // Now provide a new registry to the content for it to store any retained state in,
-        // along with a retain checker which is always true (as upstream registries will
-        // maintain the lifetime), and the other provided values
-        val recordRetainedStateRegistry =
-          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides recordRetainedStateRegistry,
-          LocalCanRetainChecker provides CanRetainChecker.Always,
-          LocalBackStack provides backStack,
-          *providedLocals,
-        ) {
-          provider.content(record)
-        }
+      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+        provider.content(record)
       }
+
+      DisposableEffect(Unit) {
+        println("NavigableCircuitContent for ${provider.record} added")
+
+        onDispose { println("NavigableCircuitContent for ${provider.record} removed") }
+      }
+
+      SideEffect { println("--> NavigableCircuitContent content finished for ${provider.record}") }
     }
   }
 }
@@ -163,37 +160,65 @@ public class RecordContentProvider<R : Record>(
 }
 
 @Composable
-private fun <R : Record> BackStack<R>.buildCircuitContentProviders(
+private fun <R : Record> buildCircuitContentProviders(
+  backStack: BackStack<R>,
   navigator: Navigator,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
 ): ImmutableList<RecordContentProvider<R>> {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
 
+  val lastBackStack by rememberUpdatedState(backStack)
   val lastNavigator by rememberUpdatedState(navigator)
   val lastCircuit by rememberUpdatedState(circuit)
   val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
 
-  return iterator()
+  fun createRecordContent() =
+    movableContentOf<R> { record ->
+      val recordInBackStackRetainChecker =
+        remember(lastBackStack, record) {
+          CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
+            .also { println("Creating CanRetainChecker for $record") }
+        }
+
+      val lifecycle =
+        remember { LifecycleImpl().also { println("Created LifecycleImpl $it for $record") } }
+          .apply {
+            _isPaused = lastBackStack.topRecord != record
+            println("Set LifecycleImpl.isPaused to $_isPaused for $record. $this")
+          }
+
+      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+        // Now provide a new registry to the content for it to store any retained state in,
+        // along with a retain checker which is always true (as upstream registries will
+        // maintain the lifetime), and the other provided values
+        val recordRetainedStateRegistry =
+          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
+
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides recordRetainedStateRegistry,
+          LocalCanRetainChecker provides CanRetainChecker.Always,
+          LocalLifecycle provides lifecycle,
+        ) {
+          CircuitContent(
+            screen = record.screen,
+            navigator = lastNavigator,
+            circuit = lastCircuit,
+            unavailableContent = lastUnavailableRoute,
+            key = record.key,
+          )
+        }
+      }
+    }
+
+  return lastBackStack
+    .iterator()
     .asSequence()
     .map { record ->
       // Query the previous content providers map, so that we use the same
       // RecordContentProvider instances across calls.
       previousContentProviders.getOrPut(record.key) {
-        RecordContentProvider(
-          record = record,
-          content =
-            movableContentOf { record ->
-              CircuitContent(
-                screen = record.screen,
-                modifier = Modifier,
-                navigator = lastNavigator,
-                circuit = lastCircuit,
-                unavailableContent = lastUnavailableRoute,
-                key = record.key,
-              )
-            },
-        )
+        RecordContentProvider(record = record, content = createRecordContent())
       }
     }
     .toImmutableList()

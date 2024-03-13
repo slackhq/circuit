@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,12 +44,12 @@ public actual fun GestureNavigationDecoration(
   onBackInvoked: () -> Unit,
 ): NavDecoration =
   when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavigationDecoration(onBackInvoked)
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavigationDecoration(onBackInvoked)
     else -> fallback
   }
 
 @RequiresApi(34)
-private class AndroidPredictiveNavigationDecoration(private val onBackInvoked: () -> Unit) :
+public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked: () -> Unit) :
   NavDecoration {
   @Composable
   override fun <T> DecoratedContent(
@@ -70,7 +71,11 @@ private class AndroidPredictiveNavigationDecoration(private val onBackInvoked: (
           label = "GestureNavDecoration",
         )
 
-      if (previous != null && !transition.isStateBeingAnimated { it.record == previous }) {
+      if (
+        previous != null &&
+          !transition.isPending &&
+          !transition.isStateBeingAnimated { it.record == previous }
+      ) {
         // We display the 'previous' item in the back stack for when the user performs a gesture
         // to go back.
         // We only display it here if the transition is not running. When the transition is

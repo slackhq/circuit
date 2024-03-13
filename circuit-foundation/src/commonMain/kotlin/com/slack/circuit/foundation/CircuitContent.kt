@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -147,7 +149,9 @@ public fun <UiState : CircuitUiState> CircuitContent(
         onDispose(eventListener::onDisposePresent)
       }
 
-      val state = presenter.present()
+      val pauseablePresenter = remember(presenter) { presenter.toPauseablePresenter() }
+
+      val state = pauseablePresenter.present()
 
       // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
       SideEffect { eventListener.onState(state) }

@@ -128,7 +128,9 @@ public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
 /** Pop the [Navigator] as if this was the root [Navigator.pop] call. */
 public fun Navigator.popRoot(result: PopResult? = null) {
   Snapshot.withMutableSnapshot {
-    // Move the top screen to be the root screen for any final animation.
+    // If a repeat pop approach is used (like popUntil) then the root backstack item is shown during
+    // any root pop handling. This moves the top screen to become the root screen so it remains
+    // visible for any final handling.
     val backStack = peekBackStack()
     if (backStack.size > 1) {
       resetRoot(backStack.first())

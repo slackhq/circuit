@@ -158,17 +158,29 @@ private class RetainableHolder<T>(
     Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
 
   fun saveIfRetainable() {
-    val v = value
-    if (registry != null && !canRetainChecker.canRetain(registry!!)) {
+    val v = value ?: return
+    val reg = registry ?: return
+
+    if (!canRetainChecker.canRetain(reg)) {
       entry?.unregister()
-      // If value is a RememberObserver, we notify that it has been forgotten
-      if (v is RememberObserver) v.onForgotten()
+      when (v) {
+        // If value is a RememberObserver, we notify that it has been forgotten.
+        is RememberObserver -> v.onForgotten()
+        // Or if its a registry, we need to tell it to clear, which will forward the 'forgotten'
+        // call onto its values
+        is RetainedStateRegistry -> {
+          // First we saveAll, which flattens down the value providers to our retained list
+          v.saveAll()
+          // Now we drop all retained values
+          v.forgetUnclaimedValues()
+        }
+      }
     } else if (v is RetainedStateRegistry) {
       // If the value is a RetainedStateRegistry, we need to take care to retain it.
       // First we tell it to saveAll, to retain it's values. Then we need to tell the host
       // registry to retain the child registry.
       v.saveAll()
-      registry?.saveValue(key)
+      reg.saveValue(key)
     }
   }
 
@@ -194,5 +206,5 @@ private class RetainableHolder<T>(
     return value.takeIf { inputs.contentEquals(this.inputs) }
   }
 
-  class Value<T>(val value: T, val inputs: Array<out Any?>)
+  class Value<T>(override val value: T, val inputs: Array<out Any?>) : RetainedValueHolder<T>
 }

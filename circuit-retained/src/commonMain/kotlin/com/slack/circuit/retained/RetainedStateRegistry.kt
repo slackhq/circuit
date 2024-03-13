@@ -117,14 +117,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
         // the first provider returned null(nothing to save) and the second one returned
         // "1". When we will be restoring the first provider would restore null (it is the
         // same as to have nothing to restore) and the second one restore "1".
-        list
-          .map { it.invoke() }
-          .onEach { value ->
-            // Allow nested registries to also save
-            if (value is RetainedStateRegistry) {
-              value.saveAll()
-            }
-          }
+        list.map(RetainedValueProvider::invoke)
       }
 
     if (values.isNotEmpty()) {
@@ -144,8 +137,30 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun forgetUnclaimedValues() {
-    // Notify any RememberObservers that it has been forgotten
-    retained.asSequence().filterIsInstance<RememberObserver>().forEach { it.onForgotten() }
+    clearRetained()
+  }
+
+  /** Should this be public API on RetainedStateRegistry? */
+  internal fun clear() {
+    // First we saveAll, which flattens down the value providers to our retained list
+    saveAll()
+    // Now we clear the retained list
+    clearRetained()
+  }
+
+  private fun clearRetained() {
+    fun clearValue(value: Any?) {
+      when (value) {
+        // If we get a RetainedHolder value, need to unwrap and call again
+        is RetainedValueHolder<*> -> clearValue(value.value)
+        // Dispatch the call to nested registries
+        is RetainedStateRegistryImpl -> value.clearRetained()
+        // Dispatch onForgotten calls if the value is a RememberObserver
+        is RememberObserver -> value.onForgotten()
+      }
+    }
+
+    retained.values.forEach { it.forEach(::clearValue) }
     retained.clear()
   }
 }

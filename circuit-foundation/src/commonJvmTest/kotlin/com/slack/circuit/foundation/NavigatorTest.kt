@@ -128,6 +128,6 @@ class NavigatorTest {
     assertTrue(onRootPopped)
     assertSame(TestPopResult, onRootResult)
     assertThat(backStack).hasSize(1)
-    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen)
+    assertThat(backStack.topRecord?.screen).isEqualTo(TestScreen3)
   }
 }

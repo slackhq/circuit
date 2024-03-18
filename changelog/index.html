@@ -650,6 +650,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0200" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.20.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0191" class="md-nav__link">
     <span class="md-ellipsis">
       0.19.1
@@ -1237,6 +1246,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0200" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.20.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0191" class="md-nav__link">
     <span class="md-ellipsis">
       0.19.1
@@ -1760,6 +1778,30 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased"><strong>Unreleased</strong><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0200">0.20.0<a class="headerlink" href="#0200" title="Permanent link">&para;</a></h2>
+<p><em>2024-03-18</em></p>
+<ul>
+<li><strong>New</strong>: Enable <code>RememberObserver</code> to work with <code>rememberRetained</code>.</li>
+<li><strong>New</strong>: Add <code>Navigator.popRoot()</code>. extension (#1274)</li>
+<li><strong>Behavior change</strong>: Add a key to <code>CircuitContent</code> to keep <code>Ui</code> and <code>Presenter</code> consistent. We already did this for presenters, this just makes it consistent for both.</li>
+<li>[circuitx-android] Implement <code>ToastEffect</code>.</li>
+<li><strong>Fix</strong>: Fix <code>rememberImpressionNavigator()</code> not delegating <code>PopResult</code>.</li>
+<li><strong>Fix</strong>: Navigator - Pass <code>PopResult</code> to <code>onRootPop()</code>.</li>
+<li><strong>Fix</strong>: Check <code>canRetainCheck</code> when saving <code>RetainedStateRegistry</code>.</li>
+<li><strong>Enhancement</strong>: Improve error messaging when using assisted inject.</li>
+<li>Force <code>com.google.guava:listenablefuture</code> to <code>1.0</code> to avoid conflicts with Guava.</li>
+<li>Update compose-compiler to <code>1.5.10.1</code>.</li>
+<li>Update coroutines to <code>1.8.0</code>.</li>
+<li>Update to Compose Multiplatform <code>1.6.1</code>.</li>
+<li>Update Android compose dependencies to <code>1.6.3</code>.</li>
+<li>Update molecule to <code>1.4.1</code>.</li>
+<li>Update dagger to <code>2.51</code>.</li>
+<li>Update turbine to <code>1.1.0</code>.</li>
+<li>Update uuid to <code>0.8.3</code>.</li>
+<li>Update kotlin to <code>1.9.23</code>.</li>
+<li>Update KSP to <code>1.9.23-1.0.19</code>.</li>
+</ul>
+<p>Special thanks to <a href="https://github.com/chrisbanes">@chrisbanes</a>, <a href="https://github.com/aschulz90">@aschulz90</a>, and <a href="https://github.com/alexvanyo">@alexvanyo</a> for contributing to this release!</p>
 <h2 id="0191">0.19.1<a class="headerlink" href="#0191" title="Permanent link">&para;</a></h2>
 <p><em>2024-02-12</em></p>
 <p>This is a small bug fix release focused <code>SaveableBackStack</code> consistency and <code>FakeNavigator</code> API improvements.</p>

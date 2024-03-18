@@ -48,7 +48,6 @@ kotlin {
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
         implementation(libs.androidx.compose.ui.ui)
-        implementation(libs.guava.listenablefuture)
       }
     }
 
@@ -77,7 +76,6 @@ kotlin {
         implementation(libs.androidx.compose.ui.ui)
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
-        implementation(libs.guava.listenablefuture)
         implementation(libs.leakcanary.android.instrumentation)
         implementation(projects.circuitRetained)
       }
@@ -98,4 +96,13 @@ android {
 
   testOptions { unitTests.isIncludeAndroidResources = true }
   testBuildType = "release"
+}
+
+// Teach Gradle that full guava replaces listenablefuture.
+// This bypasses the dependency resolution that transitively bumps listenablefuture to a 9999.0
+// version that is empty.
+dependencies.modules {
+  module("com.google.guava:listenablefuture") {
+    replacedBy("com.google.guava:guava")
+  }
 }

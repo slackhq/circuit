@@ -110,7 +110,6 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.dagger)
         implementation(libs.eithernet)
-        implementation(libs.guava.listenablefuture)
         implementation(libs.jsoup)
         implementation(libs.coil3.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
@@ -170,7 +169,6 @@ kotlin {
           implementation(libs.androidx.compose.ui.testing.junit)
           implementation(libs.androidx.compose.ui.testing.manifest)
           implementation(libs.coroutines.test)
-          implementation(libs.guava.listenablefuture)
           implementation(libs.junit)
           implementation(libs.leakcanary.android.instrumentation)
           implementation(libs.truth)
@@ -277,5 +275,14 @@ dependencies {
   for (target in kspTargets) {
     val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target
     add("ksp${targetConfigSuffix}", projects.circuitCodegen)
+  }
+}
+
+// Teach Gradle that full guava replaces listenablefuture.
+// This bypasses the dependency resolution that transitively bumps listenablefuture to a 9999.0
+// version that is empty.
+dependencies.modules {
+  module("com.google.guava:listenablefuture") {
+    replacedBy("com.google.guava:guava")
   }
 }

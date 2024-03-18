@@ -242,6 +242,13 @@ subprojects {
     // endregion
   }
 
+  // Teach Gradle that full guava replaces listenablefuture.
+  // This bypasses the dependency resolution that transitively bumps listenablefuture to a 9999.0
+  // version that is empty.
+  dependencies.modules {
+    module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
+  }
+
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
 

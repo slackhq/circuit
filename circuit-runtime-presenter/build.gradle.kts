@@ -40,12 +40,6 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
-    androidMain {
-      dependencies {
-        // Because guava's dependencies are a tangled mess
-        implementation(libs.guava.listenablefuture)
-      }
-    }
   }
 }
 

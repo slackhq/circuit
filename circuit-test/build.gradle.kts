@@ -63,12 +63,6 @@ kotlin {
       }
     val jvmTest by getting { dependsOn(commonJvmTest) }
     val androidUnitTest by getting { dependsOn(commonJvmTest) }
-    androidMain {
-      dependencies {
-        // Because guava's dependencies are a tangled mess
-        implementation(libs.guava.listenablefuture)
-      }
-    }
   }
 }
 

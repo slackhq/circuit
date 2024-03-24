@@ -95,7 +95,14 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
       val restored = registry.consumeValue(finalKey) as? RetainableHolder.Value<*>
       val finalValue = restored?.value ?: init()
       val finalInputs = restored?.inputs ?: inputs
-      RetainableHolder(registry, canRetainChecker, finalKey, finalValue, finalInputs)
+      RetainableHolder(
+        registry = registry,
+        canRetainChecker = canRetainChecker,
+        key = finalKey,
+        value = finalValue,
+        inputs = finalInputs,
+        hasBeenRestored = restored != null,
+      )
     }
   val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect { holder.update(registry, finalKey, value, inputs) }
@@ -111,6 +118,7 @@ private class RetainableHolder<T>(
   private var key: String,
   private var value: T,
   private var inputs: Array<out Any?>,
+  private var hasBeenRestored: Boolean = false,
 ) : RetainedValueProvider, RememberObserver {
   private var entry: RetainedStateRegistry.Entry? = null
 
@@ -123,6 +131,10 @@ private class RetainableHolder<T>(
     if (this.key != key) {
       this.key = key
       entryIsOutdated = true
+    }
+    if (this.value !== value) {
+      // If the value changes, clear the hasBeenRestored flag
+      hasBeenRestored = false
     }
     this.value = value
     this.inputs = inputs
@@ -146,21 +158,40 @@ private class RetainableHolder<T>(
     Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
 
   fun saveIfRetainable() {
-    // If the value is a RetainedStateRegistry, we need to take care to retain it.
-    // First we tell it to saveAll, to retain it's values. Then we need to tell the host
-    // registry to retain the child registry.
-    if (value is RetainedStateRegistry) {
-      (value as RetainedStateRegistry).saveAll()
-      registry?.saveValue(key)
-    }
+    val v = value ?: return
+    val reg = registry ?: return
 
-    if (registry != null && !canRetainChecker.canRetain(registry!!)) {
+    if (!canRetainChecker.canRetain(reg)) {
       entry?.unregister()
+      when (v) {
+        // If value is a RememberObserver, we notify that it has been forgotten.
+        is RememberObserver -> v.onForgotten()
+        // Or if its a registry, we need to tell it to clear, which will forward the 'forgotten'
+        // call onto its values
+        is RetainedStateRegistry -> {
+          // First we saveAll, which flattens down the value providers to our retained list
+          v.saveAll()
+          // Now we drop all retained values
+          v.forgetUnclaimedValues()
+        }
+      }
+    } else if (v is RetainedStateRegistry) {
+      // If the value is a RetainedStateRegistry, we need to take care to retain it.
+      // First we tell it to saveAll, to retain it's values. Then we need to tell the host
+      // registry to retain the child registry.
+      v.saveAll()
+      reg.saveValue(key)
     }
   }
 
   override fun onRemembered() {
     register()
+
+    // If value is a RememberObserver, we notify that it has remembered
+    if (!hasBeenRestored) {
+      val v = value
+      if (v is RememberObserver) v.onRemembered()
+    }
   }
 
   override fun onForgotten() {
@@ -175,5 +206,5 @@ private class RetainableHolder<T>(
     return value.takeIf { inputs.contentEquals(this.inputs) }
   }
 
-  class Value<T>(val value: T, val inputs: Array<out Any?>)
+  class Value<T>(override val value: T, val inputs: Array<out Any?>) : RetainedValueHolder<T>
 }

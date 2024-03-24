@@ -4,13 +4,13 @@ package com.slack.circuit.sample.counter.android
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
@@ -27,6 +27,7 @@ class CounterActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
     setContent {
       val context = LocalContext.current
       val colorScheme =
@@ -35,8 +36,6 @@ class CounterActivity : AppCompatActivity() {
         } else {
           dynamicLightColorScheme(context)
         }
-      val systemUiController = rememberSystemUiController()
-      systemUiController.setSystemBarsColor(color = colorScheme.primaryContainer)
       MaterialTheme(colorScheme = colorScheme) {
         CircuitCompositionLocals(circuit) { CircuitContent(AndroidCounterScreen) }
       }

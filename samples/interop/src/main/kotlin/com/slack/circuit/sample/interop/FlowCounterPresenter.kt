@@ -51,7 +51,7 @@ fun FlowPresenter<Int, CounterScreen.Event>.asCircuitPresenter(): Presenter<Coun
     val channel = remember { Channel<CounterScreen.Event>(Channel.BUFFERED) }
     val eventsFlow = remember { channel.receiveAsFlow() }
     val scope = rememberCoroutineScope()
-    val state by present(scope, eventsFlow).collectAsState()
+    val state by remember { present(scope, eventsFlow) }.collectAsState()
     CounterScreen.State(state, channel::trySend)
   }
 }

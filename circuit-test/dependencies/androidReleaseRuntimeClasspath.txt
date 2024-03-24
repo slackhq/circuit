@@ -8,6 +8,7 @@ androidx.arch.core:core-common
 androidx.arch.core:core-runtime
 androidx.autofill:autofill
 androidx.collection:collection-jvm
+androidx.collection:collection-ktx
 androidx.collection:collection
 androidx.compose.animation:animation-android
 androidx.compose.animation:animation-core-android
@@ -69,8 +70,6 @@ org.jetbrains.compose.ui:ui
 org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-parcelize-runtime
-org.jetbrains.kotlin:kotlin-stdlib-jdk7
-org.jetbrains.kotlin:kotlin-stdlib-jdk8
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains.kotlinx:atomicfu-jvm
 org.jetbrains.kotlinx:atomicfu

@@ -24,7 +24,7 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PetListPresenterTest {
-  private val navigator = FakeNavigator()
+  private val navigator = FakeNavigator(PetListScreen)
 
   @Test
   fun `present - emit loading state then no animals state`() = runTest {

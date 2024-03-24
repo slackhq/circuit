@@ -10,63 +10,86 @@ import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
 
 /**
- * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent].
+ * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  *
- * @param backstack The backing [BackStack] to navigate.
+ * @param backStack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(
-  backstack: BackStack<out Record>,
-  onRootPop: () -> Unit,
+  backStack: BackStack<out Record>,
+  onRootPop: (result: PopResult?) -> Unit,
 ): Navigator {
-  return remember { NavigatorImpl(backstack, onRootPop) }
+  return remember { Navigator(backStack, onRootPop) }
 }
 
+/**
+ * Creates a new [Navigator].
+ *
+ * @param backStack The backing [BackStack] to navigate.
+ * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
+ *   button.
+ * @see NavigableCircuitContent
+ */
+public fun Navigator(
+  backStack: BackStack<out Record>,
+  onRootPop: (result: PopResult?) -> Unit,
+): Navigator = NavigatorImpl(backStack, onRootPop)
+
 internal class NavigatorImpl(
-  private val backstack: BackStack<out Record>,
-  private val onRootPop: () -> Unit,
+  private val backStack: BackStack<out Record>,
+  private val onRootPop: (result: PopResult?) -> Unit,
 ) : Navigator {
 
   init {
-    check(!backstack.isEmpty) { "Backstack size must not be empty." }
+    check(!backStack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goTo(screen: Screen) = backstack.push(screen)
+  override fun goTo(screen: Screen) {
+    backStack.push(screen)
+  }
 
-  override fun pop(): Screen? {
-    if (backstack.isAtRoot) {
-      onRootPop()
+  override fun pop(result: PopResult?): Screen? {
+    if (backStack.isAtRoot) {
+      onRootPop(result)
       return null
     }
 
-    return backstack.pop()?.screen
+    return backStack.pop(result)?.screen
   }
 
-  override fun peek(): Screen? = backstack.firstOrNull()?.screen
+  override fun peek(): Screen? = backStack.firstOrNull()?.screen
 
-  override fun peekBackStack(): List<Screen> = backstack.map { it.screen }
+  override fun peekBackStack(): ImmutableList<Screen> = backStack.mapToImmutableList { it.screen }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
-    val currentStack = backstack.map(Record::screen)
-
+  override fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): ImmutableList<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
-    Snapshot.withMutableSnapshot {
-      if (saveState) backstack.saveState()
-      // Pop everything off the back stack
-      backstack.popUntil { false }
+    val currentStack =
+      Snapshot.withMutableSnapshot {
+        if (saveState) backStack.saveState()
+        // Pop everything off the back stack
+        val popped = backStack.popUntil { false }.mapToImmutableList { it.screen }
 
-      // If we're not restoring state, or the restore didn't work, we need to push the new root
-      // onto the stack
-      if (!restoreState || !backstack.restoreState(newRoot)) {
-        backstack.push(newRoot)
+        // If we're not restoring state, or the restore didn't work, we need to push the new root
+        // onto the stack
+        if (!restoreState || !backStack.restoreState(newRoot)) {
+          backStack.push(newRoot)
+        }
+        popped
       }
-    }
 
     return currentStack
   }
@@ -77,19 +100,27 @@ internal class NavigatorImpl(
 
     other as NavigatorImpl
 
-    if (backstack != other.backstack) return false
+    if (backStack != other.backStack) return false
     if (onRootPop != other.onRootPop) return false
 
     return true
   }
 
   override fun hashCode(): Int {
-    var result = backstack.hashCode()
+    var result = backStack.hashCode()
     result = 31 * result + onRootPop.hashCode()
     return result
   }
 
   override fun toString(): String {
-    return "NavigatorImpl(backstack=$backstack, onRootPop=$onRootPop)"
+    return "NavigatorImpl(backStack=$backStack, onRootPop=$onRootPop)"
+  }
+}
+
+private inline fun <T, R> Iterable<T>.mapToImmutableList(transform: (T) -> R): ImmutableList<R> {
+  return persistentListOf<R>().mutate {
+    for (element in this@mapToImmutableList) {
+      it.add(transform(element))
+    }
   }
 }

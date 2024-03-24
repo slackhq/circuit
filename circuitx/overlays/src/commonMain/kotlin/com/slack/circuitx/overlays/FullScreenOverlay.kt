@@ -13,7 +13,10 @@ import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
@@ -47,7 +50,7 @@ internal class FullScreenOverlay<S : Screen>(
   override fun Content(navigator: OverlayNavigator<Unit>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
-      DispatchingOverlayNavigator(screen, navigator) { callbacks.onFinish() }
+      DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
     }
 
     BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
@@ -68,7 +71,7 @@ internal class DispatchingOverlayNavigator(
     error("goTo() is not supported in full screen overlays!")
   }
 
-  override fun pop(): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(Unit)
     onPop()
     return null
@@ -76,9 +79,13 @@ internal class DispatchingOverlayNavigator(
 
   override fun peek(): Screen = currentScreen
 
-  override fun peekBackStack(): List<Screen> = listOf(currentScreen)
+  override fun peekBackStack(): ImmutableList<Screen> = persistentListOf(currentScreen)
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): ImmutableList<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }
 }

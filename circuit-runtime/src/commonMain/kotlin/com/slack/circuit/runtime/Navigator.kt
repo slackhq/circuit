@@ -3,20 +3,30 @@
 package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.snapshots.Snapshot
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+
+/** A Navigator that only supports [goTo]. */
+@Stable
+public interface GoToNavigator {
+  public fun goTo(screen: Screen)
+}
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
-public interface Navigator {
-  public fun goTo(screen: Screen)
+public interface Navigator : GoToNavigator {
+  public override fun goTo(screen: Screen)
 
-  public fun pop(): Screen?
+  public fun pop(result: PopResult? = null): Screen?
 
   /** Returns current top most screen of backstack, or null if backstack is empty. */
   public fun peek(): Screen?
 
   /** Returns the current back stack. */
-  public fun peekBackStack(): List<Screen>
+  public fun peekBackStack(): ImmutableList<Screen>
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -42,7 +52,7 @@ public interface Navigator {
    * enable different root screens to have their own back stacks. A common use case is with the
    * bottom navigation bar UX pattern.
    *
-   * ``` kotlin
+   * ```kotlin
    * navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
    * // User navigates to a details screen
    * navigator.push(EntityDetails(id = foo))
@@ -69,22 +79,22 @@ public interface Navigator {
     newRoot: Screen,
     saveState: Boolean = false,
     restoreState: Boolean = false,
-  ): List<Screen>
+  ): ImmutableList<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen) {}
 
-    override fun pop(): Screen? = null
+    override fun pop(result: PopResult?): Screen? = null
 
     override fun peek(): Screen? = null
 
-    override fun peekBackStack(): List<Screen> = emptyList()
+    override fun peekBackStack(): ImmutableList<Screen> = persistentListOf()
 
     override fun resetRoot(
       newRoot: Screen,
       saveState: Boolean,
       restoreState: Boolean,
-    ): List<Screen> = emptyList()
+    ): ImmutableList<Screen> = persistentListOf()
   }
 
   public companion object
@@ -114,5 +124,19 @@ public inline fun Navigator.resetRoot(
 
 /** Calls [Navigator.pop] until the given [predicate] is matched or it pops the root. */
 public fun Navigator.popUntil(predicate: (Screen) -> Boolean) {
-  while (peek()?.let(predicate) == false) pop()
+  while (peek()?.let(predicate) == false) pop() ?: break // Break on root pop
+}
+
+/** Pop the [Navigator] as if this was the root [Navigator.pop] call. */
+public fun Navigator.popRoot(result: PopResult? = null) {
+  Snapshot.withMutableSnapshot {
+    // If a repeat pop approach is used (like popUntil) then the root backstack item is shown during
+    // any root pop handling. This moves the top screen to become the root screen so it remains
+    // visible for any final handling.
+    val backStack = peekBackStack()
+    if (backStack.size > 1) {
+      resetRoot(backStack.first())
+    }
+    pop(result)
+  }
 }

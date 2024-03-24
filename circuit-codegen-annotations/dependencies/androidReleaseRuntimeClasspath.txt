@@ -1,4 +1,7 @@
+androidx.annotation:annotation-jvm
 androidx.annotation:annotation
+androidx.collection:collection-jvm
+androidx.collection:collection
 androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime
 org.jetbrains.compose.runtime:runtime

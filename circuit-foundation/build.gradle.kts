@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -18,9 +19,16 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
-  js {
+  js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    nodejs()
+    browser()
+  }
+  if (hasProperty("enableWasm")) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+      moduleName = property("POM_ARTIFACT_ID").toString()
+      browser()
+    }
   }
   // endregion
 
@@ -39,6 +47,7 @@ kotlin {
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
         api(libs.compose.ui)
+        implementation(libs.uuid)
       }
     }
     val androidMain by getting {
@@ -70,7 +79,10 @@ kotlin {
       }
     val jvmTest by getting {
       dependsOn(commonJvmTest)
-      dependencies { implementation(compose.desktop.currentOs) }
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(libs.picnic)
+      }
     }
     val androidUnitTest by getting {
       dependsOn(commonJvmTest)

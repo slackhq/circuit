@@ -21,6 +21,7 @@ public class BasicAlertDialogOverlay<Model : Any, Result : Any>(
 ) : Overlay<Result> {
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
+    @Suppress("DEPRECATION") // This is deprecated in Android, but not available in CM yet
     AlertDialog(
       content = {
         Surface(

@@ -151,8 +151,8 @@ fun main() = application {
     onCloseRequest = ::exitApplication,
   ) {
     val initialBackStack = persistentListOf<Screen>(DesktopCounterScreen)
-    val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
-    val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
+    val backStack = rememberSaveableBackStack(initialBackStack)
+    val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
 
     val circuit: Circuit =
       Circuit.Builder()
@@ -164,7 +164,7 @@ fun main() = application {
       CircuitCompositionLocals(circuit) {
         NavigableCircuitContent(
           navigator = navigator,
-          backstack = backStack,
+          backStack = backStack,
           modifier =
             Modifier.backHandler(enabled = backStack.size > 1, onBack = { navigator.pop() }),
         )

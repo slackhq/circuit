@@ -33,11 +33,8 @@ jobs:
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
 
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: false
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Generate baseline profiles
         run: ./scripts/update-baseline-profiles.sh

@@ -32,7 +32,7 @@ with `rememberAndroidScreenAwareNavigator()`.
 class MainActivity : Activity {
   override fun onCreate(savedInstanceState: Bundle?) {
     setContent {
-      val backstack = rememberSaveableBackStack { push(HomeScreen) }
+      val backStack = rememberSaveableBackStack(root = HomeScreen)
       val navigator = rememberAndroidScreenAwareNavigator(
         rememberCircuitNavigator(backstack), // Decorated navigator
         this@MainActivity
@@ -119,7 +119,7 @@ To enable gesture navigation support, you can use the use the `GestureNavigation
 ```kotlin
 NavigableCircuitContent(
   navigator = navigator,
-  backstack = backstack,
+  backStack = backstack,
   decoration = GestureNavigationDecoration(
     // Pop the back stack once the user has gone 'back'
     navigator::pop

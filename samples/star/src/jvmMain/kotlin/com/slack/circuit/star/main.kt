@@ -40,8 +40,8 @@ fun main() {
   SingletonImageLoader.setSafe { component.imageLoader }
   application {
     val initialBackStack = persistentListOf<Screen>(HomeScreen)
-    val backStack = rememberSaveableBackStack { initialBackStack.forEach(::push) }
-    val circuitNavigator = rememberCircuitNavigator(backStack, ::exitApplication)
+    val backStack = rememberSaveableBackStack(initialBackStack)
+    val circuitNavigator = rememberCircuitNavigator(backStack) { exitApplication() }
     val navigator =
       remember(circuitNavigator) {
         object : Navigator by circuitNavigator {
@@ -95,7 +95,7 @@ fun main() {
       MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()) {
         CircuitCompositionLocals(component.circuit) {
           ContentWithOverlays {
-            NavigableCircuitContent(navigator = navigator, backstack = backStack)
+            NavigableCircuitContent(navigator = navigator, backStack = backStack)
           }
         }
       }

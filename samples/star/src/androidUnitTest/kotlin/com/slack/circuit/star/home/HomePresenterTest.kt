@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner
 class HomePresenterTest {
   @Test
   fun changeIndices() = runTest {
-    moleculeFlow(RecompositionMode.Immediate) { HomePresenter(FakeNavigator()) }
+    moleculeFlow(RecompositionMode.Immediate) { HomePresenter(FakeNavigator(HomeScreen)) }
       .test {
         // Initial index is 0.
         val firstState = awaitItem()

@@ -152,7 +152,7 @@ fun main() = application {
   ) {
     val initialBackStack = persistentListOf<Screen>(DesktopCounterScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
-    val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
+    val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
 
     val circuit: Circuit =
       Circuit.Builder()

@@ -10,6 +10,7 @@ HSPLcom/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt$lambda-
 HSPLcom/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt$lambda-1$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/overlay/ContentWithOverlaysKt;
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt;->ContentWithOverlays$lambda$0(Landroidx/compose/runtime/State;)Lcom/slack/circuit/overlay/OverlayHostData;
+HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt;->ContentWithOverlays$lambda$2(Landroidx/compose/runtime/State;)Lcom/slack/circuit/overlay/OverlayState;
 HPLcom/slack/circuit/overlay/ContentWithOverlaysKt;->ContentWithOverlays(Landroidx/compose/ui/Modifier;Lcom/slack/circuit/overlay/OverlayHost;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt;->access$ContentWithOverlays$lambda$0(Landroidx/compose/runtime/State;)Lcom/slack/circuit/overlay/OverlayHostData;
 Lcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;
@@ -23,6 +24,10 @@ HPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1$1$1;->i
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1$1$1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$2;
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$2;-><init>(Landroidx/compose/ui/Modifier;Lcom/slack/circuit/overlay/OverlayHost;Lkotlin/jvm/functions/Function2;II)V
+Lcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$overlayState$2$1;
+HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$overlayState$2$1;-><init>(Landroidx/compose/runtime/State;)V
+HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$overlayState$2$1;->invoke()Lcom/slack/circuit/overlay/OverlayState;
+HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$overlayState$2$1;->invoke()Ljava/lang/Object;
 Lcom/slack/circuit/overlay/Overlay;
 Lcom/slack/circuit/overlay/OverlayHost;
 Lcom/slack/circuit/overlay/OverlayHostData;
@@ -36,3 +41,13 @@ HSPLcom/slack/circuit/overlay/OverlayKt;->rememberOverlayHost(Landroidx/compose/
 Lcom/slack/circuit/overlay/OverlayKt$LocalOverlayHost$1;
 HSPLcom/slack/circuit/overlay/OverlayKt$LocalOverlayHost$1;-><clinit>()V
 HSPLcom/slack/circuit/overlay/OverlayKt$LocalOverlayHost$1;-><init>()V
+Lcom/slack/circuit/overlay/OverlayState;
+HSPLcom/slack/circuit/overlay/OverlayState;->$values()[Lcom/slack/circuit/overlay/OverlayState;
+HSPLcom/slack/circuit/overlay/OverlayState;-><clinit>()V
+HSPLcom/slack/circuit/overlay/OverlayState;-><init>(Ljava/lang/String;I)V
+Lcom/slack/circuit/overlay/OverlayStateKt;
+HSPLcom/slack/circuit/overlay/OverlayStateKt;-><clinit>()V
+HSPLcom/slack/circuit/overlay/OverlayStateKt;->getLocalOverlayState()Landroidx/compose/runtime/ProvidableCompositionLocal;
+Lcom/slack/circuit/overlay/OverlayStateKt$LocalOverlayState$1;
+HSPLcom/slack/circuit/overlay/OverlayStateKt$LocalOverlayState$1;-><clinit>()V
+HSPLcom/slack/circuit/overlay/OverlayStateKt$LocalOverlayState$1;-><init>()V

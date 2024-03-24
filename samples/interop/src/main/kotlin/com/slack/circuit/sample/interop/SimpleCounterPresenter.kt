@@ -41,11 +41,14 @@ class SimpleCounterPresenter(initialCount: Int) {
 }
 
 fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
+  // TODO why is this key necessary? The returned presenter is a new instance
+  val key = this
   return presenterOf {
-    var count by remember { mutableIntStateOf(this@asCircuitPresenter.count) }
-    val listener = remember {
-      SimpleCounterPresenter.OnCountChangedListener { newCount -> count = newCount }
-    }
+    var count by remember(key) { mutableIntStateOf(this@asCircuitPresenter.count) }
+    val listener =
+      remember(key) {
+        SimpleCounterPresenter.OnCountChangedListener { newCount -> count = newCount }
+      }
     DisposableEffect(listener) {
       setOnCountChangedListener(listener)
       onDispose { setOnCountChangedListener(null) }

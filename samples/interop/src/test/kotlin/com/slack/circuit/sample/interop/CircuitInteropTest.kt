@@ -19,7 +19,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
+import org.robolectric.annotation.GraphicsMode.Mode.NATIVE
 
+@GraphicsMode(NATIVE)
 @RunWith(RobolectricTestRunner::class)
 class CircuitInteropTest {
 
@@ -37,8 +40,10 @@ class CircuitInteropTest {
   fun smokeTest() {
     composeTestRule.run {
       for (presenterSource in PresenterSource.entries) {
+        println("---Presenter source is now ${presenterSource.name}")
         for (uiSource in UiSource.entries) {
-          println("${presenterSource.name} — ${uiSource.name}")
+          println("---Ui source is now ${uiSource.name}")
+          //          println("${presenterSource.name} — ${uiSource.name}")
           changePresenter(presenterSource)
           changeUi(uiSource)
           println(getCount())
@@ -67,7 +72,7 @@ class CircuitInteropTest {
   private fun assertCount() {
     assertThat(getCount()).isEqualTo(expectedCount)
     // TODO why doesn't this work? It sees the text but doesn't match
-    //    composeTestRule.onNodeWithTag(TestTags.COUNT).assertTextContains(count.toString())
+    // composeTestRule.onNodeWithTag(TestTags.COUNT).assertTextContains(expectedCount.toString())
   }
 
   private fun getCount(): Int = drivers.getValue(currentUiSource()).getCount()
@@ -90,13 +95,13 @@ class CircuitInteropTest {
   }
 
   private fun increment() {
-    println("++")
+    println("inc ⬆⬆")
     expectedCount++
     drivers.getValue(currentUiSource()).increment()
   }
 
   private fun decrement() {
-    println("--")
+    println("dec ⬇⬇")
     expectedCount--
     drivers.getValue(currentUiSource()).decrement()
   }

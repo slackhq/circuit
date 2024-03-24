@@ -24,6 +24,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -105,23 +106,7 @@ fun InteropSample(modifier: Modifier = Modifier) {
       }
     }
 
-    val content = remember {
-      movableContentOf { screen: Screen ->
-        @Suppress("UNCHECKED_CAST")
-        val presenter =
-          rememberPresenter(screen = screen, factory = circuit::presenter)
-            as Presenter<CounterScreen.State>
-        @Suppress("UNCHECKED_CAST")
-        val ui = rememberUi(screen = screen, factory = circuit::ui) as Ui<CounterScreen.State>
-
-        // Replicate what CircuitContent does but intercept the state
-        // We could also intercept with an event listener or make this a composite presenter,
-        // but for the scope of this sample those aren't necessary.
-        val state = presenter.present()
-        count = state.count
-        ui.Content(state = state, modifier = Modifier)
-      }
-    }
+    val content = rememberContent(circuit) { count = it }
 
     Scaffold(
       modifier = modifier.testTag(TestTags.ROOT),
@@ -208,4 +193,28 @@ private fun SourceMenuItem(source: Displayable, selectedIndex: Int, onSelected: 
     },
     onClick = { onSelected(source.index) },
   )
+}
+
+@Composable
+private fun rememberContent(
+  circuit: Circuit,
+  onCountUpdate: (Int) -> Unit,
+): @Composable (Screen) -> Unit {
+  return remember {
+    movableContentOf { screen: Screen ->
+      @Suppress("UNCHECKED_CAST")
+      val presenter =
+        rememberPresenter(screen = screen, factory = circuit::presenter)
+          as Presenter<CounterScreen.State>
+      @Suppress("UNCHECKED_CAST")
+      val ui = rememberUi(screen = screen, factory = circuit::ui) as Ui<CounterScreen.State>
+
+      // Replicate what CircuitContent does but intercept the state
+      // We could also intercept with an event listener or make this a composite presenter,
+      // but for the scope of this sample those aren't necessary.
+      val state = presenter.present()
+      SideEffect { onCountUpdate(state.count) }
+      ui.Content(state = state, modifier = Modifier)
+    }
+  }
 }

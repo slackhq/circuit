@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.runtime
 
+import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.internal.NoOpMap
 import kotlin.reflect.KClass
 
@@ -13,6 +14,7 @@ import kotlin.reflect.KClass
  * - [parent] – the parent [CircuitContext] or null if this is the root context.
  * - [tag] – a tag API to plumb arbitrary metadata through the [CircuitContext].
  */
+@Stable
 public class CircuitContext
 @InternalCircuitApi
 public constructor(

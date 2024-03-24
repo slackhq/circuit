@@ -81,6 +81,7 @@ public interface EventListener {
    */
   public fun dispose() {}
 
+  @Stable
   public fun interface Factory {
     public fun create(screen: Screen, context: CircuitContext): EventListener
   }

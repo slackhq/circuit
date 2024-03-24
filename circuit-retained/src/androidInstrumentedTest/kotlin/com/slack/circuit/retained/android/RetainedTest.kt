@@ -342,6 +342,59 @@ class RetainedTest {
     assertThat(subject.onForgottenCalled).isEqualTo(1)
   }
 
+  @Test
+  fun rememberObserver_nestedRegistries() {
+    val subject =
+      object : RememberObserver {
+        var onRememberCalled: Int = 0
+          private set
+
+        var onForgottenCalled: Int = 0
+          private set
+
+        override fun onAbandoned() = Unit
+
+        override fun onForgotten() {
+          onForgottenCalled++
+        }
+
+        override fun onRemembered() {
+          onRememberCalled++
+        }
+      }
+
+    val content =
+      @Composable {
+        val nestedRegistryLevel1 = rememberRetained { RetainedStateRegistry() }
+        CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistryLevel1) {
+          val nestedRegistryLevel2 = rememberRetained { RetainedStateRegistry() }
+          CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistryLevel2) {
+            @Suppress("UNUSED_VARIABLE") val retainedSubject = rememberRetained { subject }
+          }
+        }
+      }
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Restart the activity
+    scenario.recreate()
+    // Compose our content again
+    setActivityContent(content)
+
+    // Assert that onRemembered was not called again
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Now finish the Activity
+    scenario.close()
+
+    // Assert that the observer was forgotten
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(1)
+  }
+
   private fun nestedRegistriesWithPopAndPush(useKeys: Boolean) {
     val content = @Composable { NestedRetainWithPushAndPop(useKeys = useKeys) }
     setActivityContent(content)

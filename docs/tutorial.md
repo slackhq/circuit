@@ -94,7 +94,7 @@ See the [states and events](states-and-events.md) guide for more information.
 === "Inbox"
     <div class="result" markdown>
     
-    ![Preview](../images/tutorial_inbox.png){ align=left width=300 }
+    ![Preview](images/tutorial_inbox.png){ align=left width=300 }
     
     Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable function that 
     takes `State` and `Modifier` parameters.
@@ -317,7 +317,7 @@ CircuitCompositionLocals(circuit) {
 === "Detail"
     <div class="result" markdown>
 
-    ![Preview](../images/tutorial_detail.png){ align=left width=300 }
+    ![Preview](images/tutorial_detail.png){ align=left width=300 }
     
     Now that we have navigation set up, let's add a detail screen to our app to navigate to.
 

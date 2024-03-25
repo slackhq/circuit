@@ -90,10 +90,6 @@ class CircuitInteropTest {
       ?: error("Could not find PresenterSource matching presentation text '$text'")
   }
 
-  private fun isComposeUi(): Boolean {
-    return currentUiSource() == UiSource.View
-  }
-
   private fun increment() {
     println("inc ⬆⬆")
     expectedCount++

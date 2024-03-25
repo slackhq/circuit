@@ -27,7 +27,20 @@ kotlin {
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser {
+      testTask {
+        useKarma {
+          useChromeHeadless()
+          useConfigDirectory(
+            rootProject.projectDir
+              .resolve("internal-test-utils")
+              .resolve("karma.config.d")
+              .resolve("wasm")
+          )
+        }
+      }
+    }
+    binaries.executable()
   }
   // endregion
 
@@ -74,6 +87,10 @@ kotlin {
     }
   }
 }
+
+// adding it here to make sure skiko is unpacked and available in web tests
+// https://github.com/JetBrains/compose-multiplatform/issues/4133
+compose.experimental { web.application {} }
 
 android {
   namespace = "com.slack.circuitx.sideeffects"

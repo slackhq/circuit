@@ -10,7 +10,7 @@ import com.slack.circuit.sample.counter.CounterScreen
 import kotlinx.parcelize.Parcelize
 
 // TODO why doesn't Parcelable get inherited through CounterScreen?
-@Parcelize data object AndroidCounterScreen : CounterScreen, Parcelable
+@Parcelize data object AndroidCounterScreen : CounterScreen(), Parcelable
 
 @Preview(showBackground = true)
 @Composable

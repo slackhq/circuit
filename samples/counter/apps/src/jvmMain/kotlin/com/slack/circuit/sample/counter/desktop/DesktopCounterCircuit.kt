@@ -48,6 +48,8 @@ import com.slack.circuit.sample.counter.Remove
 import com.slack.circuit.sample.counter.buildCircuit
 import kotlinx.collections.immutable.persistentListOf
 
+data object DesktopCounterScreen : CounterScreen
+
 data class DesktopPrimeScreen(override val number: Int) : PrimeScreen
 
 @Composable
@@ -147,7 +149,7 @@ fun main() = application {
     state = WindowState(width = 300.dp, height = 300.dp),
     onCloseRequest = ::exitApplication,
   ) {
-    val initialBackStack = persistentListOf<Screen>(CounterScreen.Default)
+    val initialBackStack = persistentListOf<Screen>(DesktopCounterScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
     val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
     val circuit = remember { buildCircuit(uiFactory = CounterUiFactory()) }

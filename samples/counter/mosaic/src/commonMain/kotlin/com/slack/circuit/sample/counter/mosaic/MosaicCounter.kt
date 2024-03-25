@@ -23,6 +23,8 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.jline.terminal.TerminalBuilder
 
+data object MosaicCounterScreen : CounterScreen
+
 class CounterUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
@@ -84,7 +86,7 @@ internal suspend fun runCounterScreen(useCircuit: Boolean) = runMosaic {
 internal fun MosaicScope.runCircuitCounterScreen() {
   setContent {
     val circuit = remember { buildCircuit(uiFactory = CounterUiFactory()) }
-    CounterApp(circuit = circuit)
+    CounterApp(screen = MosaicCounterScreen, circuit = circuit)
   }
 }
 

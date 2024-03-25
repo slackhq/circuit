@@ -13,8 +13,8 @@ import com.slack.circuit.runtime.ui.Ui
 
 @Composable
 fun CounterApp(
+  screen: CounterScreen,
   circuit: Circuit = buildCircuit(),
-  screen: CounterScreen = CounterScreen.Default,
   colorScheme: ColorScheme = MaterialTheme.colorScheme,
 ) {
   MaterialTheme(colorScheme = colorScheme) {

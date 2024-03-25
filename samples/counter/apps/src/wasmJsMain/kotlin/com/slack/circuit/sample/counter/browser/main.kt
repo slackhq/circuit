@@ -7,8 +7,11 @@ package com.slack.circuit.sample.counter.browser
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.CanvasBasedWindow
 import com.slack.circuit.sample.counter.CounterApp
+import com.slack.circuit.sample.counter.CounterScreen
+
+data object WasmCounterScreen : CounterScreen
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-  CanvasBasedWindow { CounterApp() }
+  CanvasBasedWindow { CounterApp(WasmCounterScreen) }
 }

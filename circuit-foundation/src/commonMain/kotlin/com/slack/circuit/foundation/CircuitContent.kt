@@ -2,18 +2,25 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.presenter.toPauseablePresenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -81,51 +88,67 @@ public fun CircuitContent(
     circuit.onUnavailableContent,
   key: Any? = screen,
 ) {
+  CircuitContent(screen, navigator, isPaused = false, modifier, circuit, unavailableContent, key)
+}
+
+@Composable
+internal fun CircuitContent(
+  screen: Screen,
+  navigator: Navigator,
+  isPaused: Boolean,
+  modifier: Modifier = Modifier,
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
+  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuit.onUnavailableContent,
+  key: Any? = screen,
+) {
   val parent = LocalCircuitContext.current
+
   @OptIn(InternalCircuitApi::class)
   val context =
     remember(screen, navigator, circuit, parent) {
       CircuitContext(parent).also { it.circuit = circuit }
     }
   CompositionLocalProvider(LocalCircuitContext provides context) {
-    CircuitContent(screen, modifier, navigator, circuit, unavailableContent, context, key)
-  }
-}
+    val eventListener =
+      rememberEventListener(screen, context, factory = circuit.eventListenerFactory)
+    DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
 
-@Composable
-internal fun CircuitContent(
-  screen: Screen,
-  modifier: Modifier,
-  navigator: Navigator,
-  circuit: Circuit,
-  unavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit),
-  context: CircuitContext,
-  key: Any? = screen,
-) {
-  val eventListener = rememberEventListener(screen, context, factory = circuit.eventListenerFactory)
-  DisposableEffect(eventListener, screen, context) { onDispose { eventListener.dispose() } }
+    val presenter = rememberPresenter(screen, navigator, context, eventListener, circuit::presenter)
 
-  val presenter = rememberPresenter(screen, navigator, context, eventListener, circuit::presenter)
+    val ui = rememberUi(screen, context, eventListener, circuit::ui)
 
-  val ui = rememberUi(screen, context, eventListener, circuit::ui)
-
-  if (ui != null && presenter != null) {
-    (CircuitContent(screen, modifier, presenter, ui, eventListener, key))
-  } else {
-    eventListener.onUnavailableContent(screen, presenter, ui, context)
-    unavailableContent(screen, modifier)
+    if (ui != null && presenter != null) {
+      CircuitContent(screen, presenter, isPaused, ui, modifier, eventListener, key)
+    } else {
+      eventListener.onUnavailableContent(screen, presenter, ui, context)
+      unavailableContent(screen, modifier)
+    }
   }
 }
 
 @Composable
 public fun <UiState : CircuitUiState> CircuitContent(
   screen: Screen,
-  modifier: Modifier,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
+  modifier: Modifier = Modifier,
   eventListener: EventListener = EventListener.NONE,
   key: Any? = screen,
-): Unit =
+) {
+  CircuitContent(screen, presenter, isPaused = false, ui, modifier, eventListener, key)
+}
+
+@Composable
+internal fun <UiState : CircuitUiState> CircuitContent(
+  screen: Screen,
+  presenter: Presenter<UiState>,
+  isPaused: Boolean,
+  ui: Ui<UiState>,
+  modifier: Modifier = Modifier,
+  eventListener: EventListener = EventListener.NONE,
+  key: Any? = screen,
+) {
   // While the screen is different, in the eyes of compose its position is _the same_, meaning
   // we need to wrap the ui and presenter in a key() to force recomposition if it changes. A good
   // example case of this is when you have code that calls CircuitContent with a common screen with
@@ -134,21 +157,31 @@ public fun <UiState : CircuitUiState> CircuitContent(
   key(key) {
     DisposableEffect(screen) {
       eventListener.onStartPresent()
-
       onDispose { eventListener.onDisposePresent() }
     }
 
-    val state = presenter.present()
+    val pauseablePresenter = remember(presenter) { presenter.toPauseablePresenter(isPaused) }
+
+    SideEffect { pauseablePresenter.isPaused = isPaused }
+
+    val state = pauseablePresenter.present()
 
     // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
     SideEffect { eventListener.onState(state) }
     DisposableEffect(screen) {
       eventListener.onStartContent()
-
       onDispose { eventListener.onDisposeContent() }
     }
-    ui.Content(state, modifier)
+    Box {
+      ui.Content(state, modifier)
+
+      if (pauseablePresenter.isPaused) {
+        // Just for debugging. Easier to see if presenters are enabled or not
+        Spacer(Modifier.matchParentSize().background(Color.Magenta.copy(alpha = 0.25f)))
+      }
+    }
   }
+}
 
 /**
  * Remembers a new [EventListener] instance for the given [screen] and [context].

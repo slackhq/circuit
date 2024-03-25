@@ -3,7 +3,12 @@
 package com.slack.circuit.runtime.presenter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -174,5 +179,35 @@ public inline fun <UiState : CircuitUiState> presenterOf(
     override fun present(): UiState {
       return body()
     }
+  }
+}
+
+public abstract class PauseablePresenter<UiState : CircuitUiState>(isPaused: Boolean = false) :
+  Presenter<UiState> {
+
+  public var isPaused: Boolean by mutableStateOf(isPaused)
+
+  @Composable
+  override fun present(): UiState {
+    var lastState by remember { mutableStateOf<UiState?>(null) }
+
+    return when {
+      // If we're paused, return the last state if we have one. If we don't we'll
+      // just have to call the presenter regardless
+      isPaused -> lastState ?: _present()
+      else -> _present()
+    }.also { SideEffect { lastState = it } }
+  }
+
+  @Composable protected abstract fun _present(): UiState
+}
+
+public fun <UiState : CircuitUiState> Presenter<UiState>.toPauseablePresenter(
+  isPaused: Boolean = false
+): PauseablePresenter<UiState> {
+  if (this is PauseablePresenter<UiState>) return this
+  // Else we wrap the presenter
+  return object : PauseablePresenter<UiState>(isPaused) {
+    @Composable override fun _present(): UiState = this@toPauseablePresenter.present()
   }
 }

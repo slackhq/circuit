@@ -33,11 +33,6 @@ kotlin {
   jvm()
   iosX64()
   iosArm64()
-  js(IR) {
-    moduleName = "counterApp"
-    browser { commonWebpackConfig { outputFileName = "counterApp.js" } }
-    binaries.executable()
-  }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     moduleName = "counterApp"
@@ -68,11 +63,10 @@ kotlin {
         implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
-    val jsMain by getting {
+    val wasmJsMain by getting {
       dependencies {
         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)
-        implementation(compose.html.core)
         implementation(compose.ui)
         implementation(compose.runtime)
       }

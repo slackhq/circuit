@@ -127,6 +127,19 @@ internal constructor(
     return false
   }
 
+  override fun containsRecord(record: Record, includeSaved: Boolean): Boolean {
+    // If it's in the main entry list, return true
+    if (record in entryList) return true
+
+    if (includeSaved && stateStore.isNotEmpty()) {
+      // If we're checking our saved lists too, iterate through them and check
+      for (stored in stateStore.values) {
+        if (record in stored) return true
+      }
+    }
+    return false
+  }
+
   public data class Record(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),

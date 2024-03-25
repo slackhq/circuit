@@ -161,6 +161,8 @@ subprojects {
   plugins.withType<KotlinBasePlugin> {
     val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
+      // Don't double apply to stub gen
+      if (this is KaptGenerateStubsTask) return@configureEach
       compilerOptions {
         allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
@@ -238,6 +240,13 @@ subprojects {
 
     dependencies.add("detektPlugins", twitterDetektPlugin)
     // endregion
+  }
+
+  // Teach Gradle that full guava replaces listenablefuture.
+  // This bypasses the dependency resolution that transitively bumps listenablefuture to a 9999.0
+  // version that is empty.
+  dependencies.modules {
+    module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
   }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
@@ -408,6 +417,8 @@ subprojects {
       val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
       if (suppressComposeKotlinVersion) {
         tasks.withType<KotlinCompilationTask<*>>().configureEach {
+          // Don't double apply to stub gen
+          if (this is KaptGenerateStubsTask) return@configureEach
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",

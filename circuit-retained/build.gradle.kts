@@ -46,7 +46,6 @@ kotlin {
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
         implementation(libs.androidx.compose.ui.ui)
-        implementation(libs.guava.listenablefuture)
       }
     }
 
@@ -75,7 +74,6 @@ kotlin {
         implementation(libs.androidx.compose.ui.ui)
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
-        implementation(libs.guava.listenablefuture)
         implementation(libs.leakcanary.android.instrumentation)
         implementation(projects.circuitRetained)
       }

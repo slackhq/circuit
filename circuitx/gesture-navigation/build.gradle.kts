@@ -44,8 +44,6 @@ kotlin {
         api(libs.compose.material.material3)
         implementation(libs.compose.uiUtil)
         implementation(libs.androidx.activity.compose)
-        // Because guava's dependencies are a tangled mess
-        implementation(libs.guava.listenablefuture)
       }
     }
 

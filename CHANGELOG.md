@@ -4,6 +4,33 @@ Changelog
 **Unreleased**
 --------------
 
+0.20.0
+------
+
+_2024-03-18_
+
+- **New**: Enable `RememberObserver` to work with `rememberRetained`.
+- **New**: Add `Navigator.popRoot()`. extension (#1274)
+- **Behavior change**: Add a key to `CircuitContent` to keep `Ui` and `Presenter` consistent. We already did this for presenters, this just makes it consistent for both.
+- [circuitx-android] Implement `ToastEffect`.
+- **Fix**: Fix `rememberImpressionNavigator()` not delegating `PopResult`.
+- **Fix**: Navigator - Pass `PopResult` to `onRootPop()`.
+- **Fix**: Check `canRetainCheck` when saving `RetainedStateRegistry`.
+- **Enhancement**: Improve error messaging when using assisted inject.
+- Force `com.google.guava:listenablefuture` to `1.0` to avoid conflicts with Guava.
+- Update compose-compiler to `1.5.10.1`.
+- Update coroutines to `1.8.0`.
+- Update to Compose Multiplatform `1.6.1`.
+- Update Android compose dependencies to `1.6.3`.
+- Update molecule to `1.4.1`.
+- Update dagger to `2.51`.
+- Update turbine to `1.1.0`.
+- Update uuid to `0.8.3`.
+- Update kotlin to `1.9.23`.
+- Update KSP to `1.9.23-1.0.19`.
+
+Special thanks to [@chrisbanes](https://github.com/chrisbanes), [@aschulz90](https://github.com/aschulz90), and [@alexvanyo](https://github.com/alexvanyo) for contributing to this release!
+
 0.19.1
 ------
 

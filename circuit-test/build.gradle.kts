@@ -61,12 +61,6 @@ kotlin {
       }
     val jvmTest by getting { dependsOn(commonJvmTest) }
     val androidUnitTest by getting { dependsOn(commonJvmTest) }
-    androidMain {
-      dependencies {
-        // Because guava's dependencies are a tangled mess
-        implementation(libs.guava.listenablefuture)
-      }
-    }
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }

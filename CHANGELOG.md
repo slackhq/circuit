@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- **New**: Add WASM targets.
+
 0.20.0
 ------
 

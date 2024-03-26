@@ -21,12 +21,10 @@ kotlin {
     moduleName = "counterbrowser"
     browser()
   }
-  if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-      moduleName = "counterbrowser"
-      browser()
-    }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = "counterbrowser"
+    browser()
   }
   listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
     it.binaries.framework { baseName = "counter" }

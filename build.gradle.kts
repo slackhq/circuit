@@ -24,8 +24,9 @@ import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapp
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
@@ -457,13 +458,11 @@ subprojects {
         }
       }
     }
-    tasks.withType<KotlinNativeCompile>().configureEach {
-      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
-    }
-    @Suppress("INVISIBLE_REFERENCE")
-    tasks.withType<org.jetbrains.kotlin.gradle.plugin.mpp.apple.FrameworkCopy>().configureEach {
-      @Suppress("INVISIBLE_MEMBER")
-      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
+
+    // Workaround for missing task dependency in WASM
+    val executableCompileSyncTasks = tasks.withType(DefaultIncrementalSyncTask::class.java)
+    tasks.withType(KotlinJsTest::class.java).configureEach {
+      mustRunAfter(executableCompileSyncTasks)
     }
   }
 

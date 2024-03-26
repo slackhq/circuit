@@ -4,6 +4,7 @@ Changelog
 **Unreleased**
 --------------
 
+- **New**: Add WASM targets.
 - Mark `Presenter.Factory` as `@Stable`.
 - Mark `Ui.Factory` as `@Stable`.
 - Mark `CircuitContext` as `@Stable`.

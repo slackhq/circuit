@@ -23,18 +23,22 @@ kotlin {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }
-  if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-      moduleName = property("POM_ARTIFACT_ID").toString()
-      browser()
-    }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
   }
   // endregion
 
   applyDefaultHierarchyTemplate()
 
-  sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
+  sourceSets {
+    commonMain { dependencies { api(libs.compose.runtime) } }
+    // We use a common folder instead of a common source set because there is no commonizer
+    // which exposes the browser APIs across these two targets.
+    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+  }
 
   targets.configureEach {
     compilations.configureEach {

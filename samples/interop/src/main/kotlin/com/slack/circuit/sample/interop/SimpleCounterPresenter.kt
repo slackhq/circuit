@@ -41,7 +41,7 @@ class SimpleCounterPresenter(initialCount: Int) {
 }
 
 fun SimpleCounterPresenter.asCircuitPresenter(): Presenter<CounterScreen.State> {
-  // TODO why is this key necessary? The returned presenter is a new instance
+  // Necessary due to the positional key being the same
   val key = this
   return presenterOf {
     var count by remember(key) { mutableIntStateOf(this@asCircuitPresenter.count) }

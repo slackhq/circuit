@@ -25,8 +25,8 @@ fun interface FlowPresenter<UiState : Any, UiEvent : Any> {
 }
 
 /** An [Flow] presenter that exposes a [StateFlow] of count changes. */
-class FlowCounterPresenter : FlowPresenter<Int, CounterScreen.Event> {
-  private val count = MutableStateFlow(0)
+class FlowCounterPresenter(initialCount: Int) : FlowPresenter<Int, CounterScreen.Event> {
+  private val count = MutableStateFlow(initialCount)
 
   override fun present(scope: CoroutineScope, events: Flow<CounterScreen.Event>): StateFlow<Int> {
     scope.launch {
@@ -63,7 +63,7 @@ fun FlowPresenter<Int, CounterScreen.Event>.asCircuitPresenter(): Presenter<Coun
  */
 fun Presenter<CounterScreen.State>.asFlowPresenter(): FlowPresenter<Int, CounterScreen.Event> {
   return FlowPresenter { scope, events ->
-    scope.launchMolecule(RecompositionMode.Immediate) {
+    scope.launchMolecule(RecompositionMode.ContextClock) {
       val (count, eventSink) = present()
       LaunchedEffect(eventSink) { events.collect(eventSink) }
       count

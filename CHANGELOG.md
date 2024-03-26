@@ -5,6 +5,12 @@ Changelog
 --------------
 
 - **New**: Add WASM targets.
+- Mark `Presenter.Factory` as `@Stable`.
+- Mark `Ui.Factory` as `@Stable`.
+- Mark `CircuitContext` as `@Stable`.
+- Mark `EventListener` as `@Stable`.
+- Mark `EventListener.Factory` as `@Stable`.
+- [samples] Improve interop sample significantly.
 
 0.20.0
 ------

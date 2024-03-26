@@ -13,8 +13,12 @@ android {
     targetSdk = 34
     versionCode = 1
     versionName = "1"
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
   buildFeatures { viewBinding = true }
+
+  testOptions { unitTests.isIncludeAndroidResources = true }
+  testBuildType = "release"
 }
 
 dependencies {
@@ -39,4 +43,13 @@ dependencies {
   implementation(libs.coroutines.rxjava)
   implementation(libs.molecule.runtime)
   implementation(libs.androidx.compose.runtime.rxjava3)
+
+  testImplementation(libs.androidx.compose.foundation)
+  testImplementation(libs.androidx.compose.ui.testing.junit)
+  testImplementation(libs.androidx.compose.ui.testing.manifest)
+  testImplementation(libs.androidx.test.espresso.core)
+  testImplementation(libs.junit)
+  testImplementation(libs.robolectric)
+  testImplementation(libs.truth)
+  testImplementation(projects.internalTestUtils)
 }

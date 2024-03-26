@@ -148,6 +148,7 @@ public interface Presenter<UiState : CircuitUiState> {
    * ```
    */
   // Diagram generated from asciiflow: https://shorturl.at/fgjtA
+  @Stable
   public fun interface Factory {
     /**
      * Creates a [Presenter] for the given [screen] if it can handle it, or returns null if it

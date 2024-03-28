@@ -42,32 +42,7 @@ public fun CircuitContent(
     circuit.onUnavailableContent,
   key: Any? = screen,
 ) {
-  val navigator =
-    remember(onNavEvent) {
-      object : Navigator {
-        override fun goTo(screen: Screen) {
-          onNavEvent(NavEvent.GoTo(screen))
-        }
-
-        override fun resetRoot(
-          newRoot: Screen,
-          saveState: Boolean,
-          restoreState: Boolean,
-        ): ImmutableList<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
-          return persistentListOf()
-        }
-
-        override fun pop(result: PopResult?): Screen? {
-          onNavEvent(NavEvent.Pop(result))
-          return null
-        }
-
-        override fun peek(): Screen = screen
-
-        override fun peekBackStack(): ImmutableList<Screen> = persistentListOf(screen)
-      }
-    }
+  val navigator = remember(onNavEvent) { Navigator.navEventNavigator(screen, onNavEvent) }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent, key)
 }
 

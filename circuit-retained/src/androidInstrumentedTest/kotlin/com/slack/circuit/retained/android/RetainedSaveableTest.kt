@@ -26,7 +26,7 @@ import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberCanRetainChecker
-import com.slack.circuit.retained.rememberRetainedSaveable
+import com.slack.circuit.retained.rememberRetained
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
@@ -63,7 +63,7 @@ class RetainedSaveableTest {
 
     val content =
       @Composable {
-        data = rememberRetainedSaveable(saver = CacheableData.Saver) { CacheableData(id++) }
+        data = rememberRetained(saver = CacheableData.Saver) { CacheableData(id++) }
         Text(modifier = Modifier.testTag("id"), text = "${data.id}")
         Text(modifier = Modifier.testTag("superBigData"), text = "${data.superBigData}")
       }
@@ -96,7 +96,7 @@ class RetainedSaveableTest {
 
     val content =
       @Composable {
-        data = rememberRetainedSaveable(saver = CacheableData.Saver) { CacheableData(id++) }
+        data = rememberRetained(saver = CacheableData.Saver) { CacheableData(id++) }
         Text(modifier = Modifier.testTag("id"), text = "${data.id}")
         Text(modifier = Modifier.testTag("superBigData"), text = "${data.superBigData}")
       }

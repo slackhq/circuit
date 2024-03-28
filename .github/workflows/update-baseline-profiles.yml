@@ -2,7 +2,7 @@ name: "Update Baseline Profiles"
 
 on:
   workflow_dispatch:
-  # Always run on PRs if this file was modified! We won't PR changes if we modify the file though
+  # Always run on PRs if this file was modified
   pull_request:
     paths:
       - '.github/workflows/update-baseline-profiles.yml'

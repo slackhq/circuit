@@ -24,6 +24,8 @@ android {
       )
     }
   }
+  experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
+  experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 }
 
 baselineProfile {

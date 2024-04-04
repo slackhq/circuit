@@ -31,6 +31,8 @@ import kotlinx.coroutines.channels.Channel
 /**
  * Creates and remembers a [SaveableBackStack] with the given [root] screen.
  *
+ * If [root] changes, a new backstack will be created.
+ *
  * @param init optional initializer callback to perform extra initialization logic.
  */
 @Composable
@@ -38,16 +40,17 @@ public fun rememberSaveableBackStack(
   root: Screen,
   init: SaveableBackStack.() -> Unit = {},
 ): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
+  rememberSaveable(root, saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
 
 /**
  * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
- * [initialScreens] must not be empty.
+ *
+ * [initialScreens] must not be empty. If [initialScreens] changes, a new backstack will be created.
  */
 @Composable
 public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
-  return rememberSaveable(saver = SaveableBackStack.Saver) {
+  return rememberSaveable(initialScreens, saver = SaveableBackStack.Saver) {
     SaveableBackStack(null).apply {
       for (screen in initialScreens) {
         push(screen)

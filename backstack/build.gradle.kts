@@ -60,6 +60,14 @@ kotlin {
         implementation(libs.uuid)
       }
     }
+    commonTest {
+      dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+        implementation(libs.turbine)
+      }
+    }
     val androidMain by getting {
       dependencies {
         implementation(libs.androidx.lifecycle.viewModel.compose)

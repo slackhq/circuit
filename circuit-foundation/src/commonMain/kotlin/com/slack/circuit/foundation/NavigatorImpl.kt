@@ -54,8 +54,11 @@ internal class NavigatorImpl(
     check(!backStack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goTo(screen: Screen) {
-    backStack.push(screen)
+  override fun goTo(screen: Screen): Boolean {
+    return if (peek() != screen) {
+      backStack.push(screen)
+      true
+    } else false
   }
 
   override fun pop(result: PopResult?): Screen? {

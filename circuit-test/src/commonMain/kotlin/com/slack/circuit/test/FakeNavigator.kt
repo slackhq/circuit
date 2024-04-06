@@ -52,9 +52,12 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   private val resetRootEvents = Turbine<ResetRootEvent>()
   private val popEvents = Turbine<PopEvent>()
 
-  override fun goTo(screen: Screen) {
-    delegate.goTo(screen)
-    goToEvents.add(screen)
+  override fun goTo(screen: Screen): Boolean {
+    val res = delegate.goTo(screen)
+    if (res) {
+      goToEvents.add(screen)
+    }
+    return res
   }
 
   override fun pop(result: PopResult?): Screen? {

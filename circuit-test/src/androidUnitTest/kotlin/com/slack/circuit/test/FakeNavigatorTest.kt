@@ -34,6 +34,20 @@ class FakeNavigatorTest {
     assertThat(oldScreens).containsExactly(TestScreen1)
     assertThat(navigator.awaitResetRoot()).isEqualTo(ResetRootEvent(TestScreen1, oldScreens))
   }
+
+  @Test
+  fun goTo() = runTest {
+    val navigator = FakeNavigator(TestScreen1)
+    // Go to a second screen
+    assertThat(navigator.goTo(TestScreen2)).isTrue()
+    assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen2)
+    // Going to the same screen won't navigate
+    assertThat(navigator.goTo(TestScreen2)).isFalse()
+    navigator.expectNoEvents()
+    // Go to a third screen
+    assertThat(navigator.goTo(TestScreen3)).isTrue()
+    assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen3)
+  }
 }
 
 @Parcelize private data object TestScreen1 : Screen

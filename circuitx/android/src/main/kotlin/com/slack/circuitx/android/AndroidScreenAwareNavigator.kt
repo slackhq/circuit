@@ -35,8 +35,9 @@ public interface AndroidScreen : Screen
  */
 @Parcelize
 public data class IntentScreen(val intent: Intent, val options: Bundle? = null) : AndroidScreen {
-  public fun startWith(context: Context) {
+  public fun startWith(context: Context): Boolean {
     context.startActivity(intent, options)
+    return true
   }
 }
 
@@ -45,8 +46,8 @@ private class AndroidScreenAwareNavigator(
   private val delegate: Navigator,
   private val starter: AndroidScreenStarter,
 ) : Navigator by delegate {
-  override fun goTo(screen: Screen) {
-    when (screen) {
+  override fun goTo(screen: Screen): Boolean {
+    return when (screen) {
       is AndroidScreen -> starter.start(screen)
       else -> delegate.goTo(screen)
     }
@@ -61,7 +62,7 @@ private class AndroidScreenAwareNavigator(
  */
 public fun interface AndroidScreenStarter {
   /** Starts the given [screen]. */
-  public fun start(screen: AndroidScreen)
+  public fun start(screen: AndroidScreen): Boolean
 }
 
 /**
@@ -78,6 +79,7 @@ public fun rememberAndroidScreenAwareNavigator(delegate: Navigator, context: Con
       AndroidScreenStarter { screen ->
         when (screen) {
           is IntentScreen -> screen.startWith(context)
+          else -> false
         }
       }
     }

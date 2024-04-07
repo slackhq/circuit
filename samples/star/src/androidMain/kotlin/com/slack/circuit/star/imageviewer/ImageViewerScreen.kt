@@ -3,6 +3,7 @@
 package com.slack.circuit.star.imageviewer
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -26,10 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.RecordContentProvider
+import com.slack.circuit.foundation.LocalAnimatedContentScope
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -38,12 +37,12 @@ import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
+import com.slack.circuit.star.ui.SharedElementTransitionScope
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.collections.immutable.ImmutableList
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
@@ -73,9 +72,10 @@ constructor(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
-fun ImageViewer(state: State, modifier: Modifier = Modifier) {
+fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
   var showChrome by remember { mutableStateOf(true) }
   val systemUiController = rememberSystemUiController()
   systemUiController.isSystemBarsVisible = showChrome
@@ -95,7 +95,13 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
     val backgroundAlpha: Float by
       animateFloatAsState(targetValue = 1f, animationSpec = tween(), label = "backgroundAlpha")
     Surface(
-      modifier.fillMaxSize().animateContentSize(),
+      modifier
+        .fillMaxSize()
+        .animateContentSize()
+        .sharedBounds(
+          sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
+          animatedVisibilityScope = LocalAnimatedContentScope.current,
+        ),
       color = Color.Black.copy(alpha = backgroundAlpha),
       contentColor = Color.White,
     ) {
@@ -136,27 +142,21 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-// TODO
-//  generalize this when there's a factory pattern for it in Circuit
-//  shared element transitions?
-class ImageViewerAwareNavDecoration(
-  private val defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
-) : NavDecoration {
-  @Suppress("UnstableCollections")
-  @Composable
-  override fun <T> DecoratedContent(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable (T) -> Unit,
-  ) {
-    val firstArg = args.firstOrNull()
-    val decoration =
-      if (firstArg is RecordContentProvider<*> && firstArg.record.screen is ImageViewerScreen) {
-        NavigatorDefaults.EmptyDecoration
-      } else {
-        defaultNavDecoration
-      }
-    decoration.DecoratedContent(args, backStackDepth, modifier, content)
-  }
-}
+//// TODO
+////  generalize this when there's a factory pattern for it in Circuit
+////  shared element transitions?
+// class ImageViewerAwareNavDecoration(
+//  private val defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
+// ) : NavDecoration {
+//  @Suppress("UnstableCollections")
+//  @Composable
+//  override fun <T> DecoratedContent(
+//    args: ImmutableList<T>,
+//    backStackDepth: Int,
+//    modifier: Modifier,
+//    content: @Composable (T) -> Unit,
+//  ) {
+//    remember { SharedElementNavDecoration(defaultNavDecoration) }
+//      .DecoratedContent(args, backStackDepth, modifier, content)
+//  }
+// }

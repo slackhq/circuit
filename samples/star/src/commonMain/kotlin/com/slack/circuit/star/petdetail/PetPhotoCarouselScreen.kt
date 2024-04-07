@@ -2,42 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil3.SingletonImageLoader
@@ -62,8 +44,6 @@ import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.parcel.CommonTypeParceler
 import com.slack.circuit.star.parcel.ImmutableListParceler
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
-import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.star.ui.HorizontalPagerIndicator
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
@@ -72,12 +52,14 @@ import kotlinx.coroutines.launch
 
 @CommonParcelize
 data class PetPhotoCarouselScreen(
+  val id: Long,
   val name: String,
   @CommonTypeParceler<ImmutableList<String>, ImmutableListParceler>
   val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
   data class State(
+    val id: Long,
     val name: String,
     val photoUrls: ImmutableList<String>,
     val photoUrlMemoryCacheKey: String?,
@@ -85,6 +67,7 @@ data class PetPhotoCarouselScreen(
     companion object {
       operator fun invoke(screen: PetPhotoCarouselScreen): State {
         return State(
+          id = screen.id,
           name = screen.name,
           photoUrls = screen.photoUrls.toImmutableList(),
           photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
@@ -122,77 +105,8 @@ internal object PetPhotoCarouselTestConstants {
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
-@CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
-internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
-  val (name, photoUrls, photoUrlMemoryCacheKey) = state
-  val context = LocalPlatformContext.current
-  // Prefetch images
-  LaunchedEffect(Unit) {
-    for (url in photoUrls) {
-      if (url.isBlank()) continue
-      val request = Builder(context).data(url).build()
-      SingletonImageLoader.get(context).enqueue(request)
-    }
-  }
-
-  val totalPhotos = photoUrls.size
-  val pagerState = rememberPagerState { totalPhotos }
-  val scope = rememberStableCoroutineScope()
-  val requester = remember { FocusRequester() }
-  @Suppress("MagicNumber")
-  val columnModifier =
-    when (calculateWindowSizeClass().widthSizeClass) {
-      WindowWidthSizeClass.Medium,
-      WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
-      else -> modifier.fillMaxSize()
-    }
-  Column(
-    columnModifier
-      .testTag(CAROUSEL_TAG)
-      // Some images are different sizes. We probably want to constrain them to the same common
-      // size though
-      .animateContentSize()
-      .focusRequester(requester)
-      .focusable()
-      .onKeyEvent { event ->
-        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
-        val index =
-          when (event.key) {
-            Key.DirectionRight -> {
-              pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
-            }
-            Key.DirectionLeft -> {
-              pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
-            }
-            else -> -1
-          }
-        if (index == -1) {
-          false
-        } else {
-          scope.launch { pagerState.animateScrollToPage(index) }
-          true
-        }
-      }
-  ) {
-    PhotoPager(
-      pagerState = pagerState,
-      photoUrls = photoUrls,
-      name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
-    )
-
-    HorizontalPagerIndicator(
-      pagerState = pagerState,
-      pageCount = totalPhotos,
-      modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
-      activeColor = MaterialTheme.colorScheme.onBackground,
-    )
-  }
-
-  // Focus the pager so we can cycle through it with arrow keys
-  LaunchedEffect(Unit) { requester.requestFocus() }
-}
+expect fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier)
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
@@ -202,7 +116,7 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
 @Suppress("LongParameterList")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PhotoPager(
+fun PhotoPager(
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,

@@ -2,12 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,20 +20,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,7 +41,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -61,21 +53,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.SingletonImageLoader
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest.Builder
-import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
@@ -104,15 +88,11 @@ import com.slack.circuit.star.petlist.PetListScreen.State
 import com.slack.circuit.star.petlist.PetListScreen.State.Loading
 import com.slack.circuit.star.petlist.PetListScreen.State.NoAnimals
 import com.slack.circuit.star.petlist.PetListScreen.State.Success
-import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
-import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
-import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.FilterList
-import com.slack.circuit.star.ui.Pets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -306,9 +286,9 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-private fun PetListGrid(
+fun PetListGrid(
   animals: ImmutableList<PetListAnimal>,
   isRefreshing: Boolean,
   modifier: Modifier = Modifier,
@@ -326,22 +306,21 @@ private fun PetListGrid(
         else -> 2
       }
 
-    val spacing = if (columnSpan >= 4) 32.dp else 16.dp
     @Suppress("MagicNumber")
-    (LazyVerticalStaggeredGrid(
+    val spacing = if (columnSpan >= 4) 32.dp else 16.dp
+    LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(columnSpan),
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = spacing,
       horizontalArrangement = spacedBy(spacing),
       contentPadding = PaddingValues(spacing),
     ) {
-      items(count = animals.size, key = { i -> animals[i].id }) { index ->
-        val animal = animals[index]
-        PetListGridItem(animal, modifier = Modifier.animateItemPlacement()) {
+      items(items = animals, key = { animal -> animal.id }) { animal ->
+        PetListGridItem(animal, modifier = Modifier) {
           eventSink(ClickAnimal(animal.id, animal.imageUrl))
         }
       }
-    })
+    }
     PullRefreshIndicator(
       modifier = Modifier.align(Alignment.TopCenter),
       refreshing = isRefreshing,
@@ -351,64 +330,11 @@ private fun PetListGrid(
 }
 
 @Composable
-private fun PetListGridItem(
+expect fun PetListGridItem(
   animal: PetListAnimal,
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
-) {
-  ElevatedCard(
-    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
-    shape = RoundedCornerShape(16.dp),
-    colors =
-      CardDefaults.elevatedCardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-      ),
-  ) {
-    Column(modifier = Modifier.clickable(onClick = onClick)) {
-      // Image
-      val imageModifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG)
-      if (animal.imageUrl == null) {
-        Image(
-          rememberVectorPainter(Pets),
-          modifier = imageModifier.padding(8.dp),
-          contentDescription = animal.name,
-          contentScale = ContentScale.Crop,
-          colorFilter = ColorFilter.tint(LocalContentColor.current),
-        )
-      } else {
-        AsyncImage(
-          modifier = imageModifier,
-          model =
-            Builder(LocalPlatformContext.current)
-              .data(animal.imageUrl)
-              .memoryCacheKey(animal.imageUrl)
-              .crossfade(AnimationConstants.DefaultDurationMillis)
-              .build(),
-          contentDescription = animal.name,
-          contentScale = ContentScale.Crop,
-          imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-        )
-      }
-      Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
-        // Name
-        Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
-        // Type
-        animal.breed?.let { Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium) }
-        CompositionLocalProvider(
-          LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
-        ) {
-          // Gender, age
-          Text(
-            modifier = Modifier.testTag(AGE_AND_BREED_TAG),
-            text = "${animal.gender.displayName} – ${animal.age}",
-            style = MaterialTheme.typography.bodySmall,
-          )
-        }
-      }
-    }
-  }
-}
+)
 
 @Composable
 internal fun UpdateFiltersSheet(

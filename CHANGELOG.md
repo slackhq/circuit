@@ -5,7 +5,8 @@ Changelog
 --------------
 
 - **New**: Add WASM targets.
-- **Change**: Navigator.goTo now returns a Bool indicating navigation success
+- **Behaviour Change**: `NavigatorImpl.goTo` no longer navigates if the `Screen` is equal to `Navigator.peek()` 
+- **Change**: `Navigator.goTo` now returns a Bool indicating navigation success
 - Mark `Presenter.Factory` as `@Stable`.
 - Mark `Ui.Factory` as `@Stable`.
 - Mark `CircuitContext` as `@Stable`.

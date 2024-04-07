@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -22,13 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.LocalAnimatedContentScope
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -40,6 +41,7 @@ import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
 import com.slack.circuit.star.ui.SharedElementTransitionScope
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
+import com.slack.circuit.star.ui.sharedElementAnimatedContentScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -97,11 +99,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
     Surface(
       modifier
         .fillMaxSize()
-        .animateContentSize()
-        .sharedBounds(
-          sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
-          animatedVisibilityScope = LocalAnimatedContentScope.current,
-        ),
+        .animateContentSize(),
       color = Color.Black.copy(alpha = backgroundAlpha),
       contentColor = Color.White,
     ) {
@@ -124,7 +122,17 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
                 .apply { state.placeholderKey?.let(::placeholderMemoryCacheKey) }
                 .build(),
             contentDescription = "TODO",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
+              .sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
+                animatedVisibilityScope = sharedElementAnimatedContentScope(),
+              )
+              .sharedElement(
+                state = rememberSharedContentState(key = "animal-image-${state.id}"),
+                animatedVisibilityScope = sharedElementAnimatedContentScope(),
+              )
+              .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            ,
             state = imageState,
             onClick = { showChrome = !showChrome },
           )

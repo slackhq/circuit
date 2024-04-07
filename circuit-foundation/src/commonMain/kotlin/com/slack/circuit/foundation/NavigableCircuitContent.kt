@@ -3,7 +3,6 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -21,7 +20,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
@@ -325,9 +323,7 @@ public object NavigatorDefaults {
           )
         },
       ) {
-        CompositionLocalProvider(LocalAnimatedContentScope provides this) {
-          content(it.first())
-        }
+        content(it.first())
       }
     }
   }
@@ -351,13 +347,3 @@ public object NavigatorDefaults {
  * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
  */
 internal val LocalBackStack = compositionLocalOf<BackStack<out Record>?> { null }
-
-
-
-@Composable
-public fun SharedElementAnimatedContentScope(content: @Composable AnimatedContentScope.() -> Unit) {
-  LocalAnimatedContentScope.current.content()
-}
-
-public val LocalAnimatedContentScope: ProvidableCompositionLocal<AnimatedContentScope> =
-  compositionLocalOf<AnimatedContentScope> { error("Not in a SharedElementTransitionScope") }

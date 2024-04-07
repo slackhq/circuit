@@ -2,6 +2,7 @@ package com.slack.circuit.star.petlist
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
@@ -27,26 +30,20 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
-import com.slack.circuit.foundation.LocalAnimatedContentScope
 import com.slack.circuit.star.petlist.PetListTestConstants.AGE_AND_BREED_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.CARD_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.ui.Pets
 import com.slack.circuit.star.ui.SharedElementTransitionScope
+import com.slack.circuit.star.ui.sharedElementAnimatedContentScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 actual fun PetListGridItem(animal: PetListAnimal, modifier: Modifier, onClick: () -> Unit) =
   SharedElementTransitionScope {
+    val boundsTransform = { _: Rect, _: Rect -> tween<Rect>(1400) }
     ElevatedCard(
-      modifier =
-        modifier
-          .sharedBounds(
-            sharedContentState = rememberSharedContentState(key = "animal-${animal.id}"),
-            animatedVisibilityScope = LocalAnimatedContentScope.current,
-          )
-          .fillMaxWidth()
-          .testTag(CARD_TAG),
+      modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
       shape = RoundedCornerShape(16.dp),
       colors =
         CardDefaults.elevatedCardColors(
@@ -57,10 +54,16 @@ actual fun PetListGridItem(animal: PetListAnimal, modifier: Modifier, onClick: (
       Column(modifier = Modifier.clickable(onClick = onClick)) {
         // Image
         val imageModifier =
-          Modifier.sharedElement(
-              state = rememberSharedContentState(key = "animal-image-${animal.id}"),
-              animatedVisibilityScope = LocalAnimatedContentScope.current,
+          Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(key = "animal-${animal.id}"),
+              animatedVisibilityScope = sharedElementAnimatedContentScope(),
+              boundsTransform = boundsTransform,
             )
+            .sharedElement(
+              state = rememberSharedContentState(key = "animal-image-${animal.id}"),
+              animatedVisibilityScope = sharedElementAnimatedContentScope(),
+            )
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .fillMaxWidth()
             .testTag(IMAGE_TAG)
 

@@ -45,8 +45,8 @@ fun main() {
     val navigator =
       remember(circuitNavigator) {
         object : Navigator by circuitNavigator {
-          override fun goTo(screen: Screen) {
-            when (screen) {
+          override fun goTo(screen: Screen) : Boolean {
+            return when (screen) {
               is OpenUrlScreen -> openUrl(screen.url)
               else -> circuitNavigator.goTo(screen)
             }
@@ -103,7 +103,8 @@ fun main() {
   }
 }
 
-private fun openUrl(url: String) {
+private fun openUrl(url: String) : Boolean {
   val desktop = Desktop.getDesktop()
   desktop.browse(URI.create(url))
+  return true
 }

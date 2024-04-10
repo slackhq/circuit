@@ -71,6 +71,7 @@ public interface Ui<UiState : CircuitUiState> {
    * @Composable private fun Favorites(state: State, modifier: Modifier = Modifier) {...}
    * ```
    */
+  @Stable
   public fun interface Factory {
     public fun create(screen: Screen, context: CircuitContext): Ui<*>?
   }

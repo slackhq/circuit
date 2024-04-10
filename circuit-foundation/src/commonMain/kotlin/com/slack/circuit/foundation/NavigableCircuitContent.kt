@@ -34,7 +34,6 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -48,9 +47,9 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-public fun NavigableCircuitContent(
+public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,
-  backStack: BackStack<out Record>,
+  backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
@@ -108,7 +107,9 @@ public fun NavigableCircuitContent(
       // contains the record
       val record = provider.record
       val recordInBackStackRetainChecker =
-        remember(backStack, record) { CanRetainChecker { record in backStack } }
+        remember(backStack, record) {
+          CanRetainChecker { backStack.containsRecord(record, includeSaved = true) }
+        }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Remember the `providedValues` lookup because this composition can live longer than
@@ -136,15 +137,15 @@ public fun NavigableCircuitContent(
 
 /** A simple holder class for a [record] and its associated [content]. */
 @Immutable
-public class RecordContentProvider(
-  public val record: Record,
-  internal val content: @Composable (Record) -> Unit,
+public class RecordContentProvider<R : Record>(
+  public val record: R,
+  internal val content: @Composable (R) -> Unit,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
 
-    other as RecordContentProvider
+    other as RecordContentProvider<*>
 
     if (record != other.record) return false
     if (content != other.content) return false
@@ -162,12 +163,12 @@ public class RecordContentProvider(
 }
 
 @Composable
-private fun BackStack<out Record>.buildCircuitContentProviders(
+private fun <R : Record> BackStack<R>.buildCircuitContentProviders(
   navigator: Navigator,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
-): ImmutableList<RecordContentProvider> {
-  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider>() }
+): ImmutableList<RecordContentProvider<R>> {
+  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
 
   val lastNavigator by rememberUpdatedState(navigator)
   val lastCircuit by rememberUpdatedState(circuit)
@@ -189,6 +190,7 @@ private fun BackStack<out Record>.buildCircuitContentProviders(
                 navigator = lastNavigator,
                 circuit = lastCircuit,
                 unavailableContent = lastUnavailableRoute,
+                key = record.key,
               )
             },
         )

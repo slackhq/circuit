@@ -25,7 +25,7 @@ fun main() {
     Window(title = "Tutorial", onCloseRequest = ::exitApplication) {
       MaterialTheme {
         val backStack = rememberSaveableBackStack(InboxScreen)
-        val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
+        val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
         CircuitCompositionLocals(circuit) {
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }

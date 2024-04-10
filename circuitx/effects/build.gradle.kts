@@ -1,3 +1,7 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
@@ -16,9 +20,27 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
-  js {
+  js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    nodejs()
+    browser()
+  }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser {
+      testTask {
+        useKarma {
+          useChromeHeadless()
+          useConfigDirectory(
+            rootProject.projectDir
+              .resolve("internal-test-utils")
+              .resolve("karma.config.d")
+              .resolve("wasm")
+          )
+        }
+      }
+    }
+    binaries.executable()
   }
   // endregion
 
@@ -43,7 +65,7 @@ kotlin {
       }
     }
     val iosTest by getting { dependencies { dependsOn(commonTest) } }
-    val jsTest by getting { dependencies { dependsOn(commonTest) } }
+    val browserTest by creating { dependencies { dependsOn(commonTest) } }
     val jvmTest by getting { dependencies { dependsOn(commonTest) } }
     val androidUnitTest by getting {
       dependsOn(commonTest)
@@ -54,6 +76,10 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+    // We use a common folder instead of a common source set because there is no commonizer
+    // which exposes the browser APIs across these two targets.
+    jsTest { kotlin.srcDir("src/browserTest/kotlin") }
+    val wasmJsTest by getting { kotlin.srcDir("src/browserTest/kotlin") }
   }
   targets.configureEach {
     compilations.configureEach {
@@ -61,6 +87,10 @@ kotlin {
     }
   }
 }
+
+// adding it here to make sure skiko is unpacked and available in web tests
+// https://github.com/JetBrains/compose-multiplatform/issues/4133
+compose.experimental { web.application {} }
 
 android {
   namespace = "com.slack.circuitx.sideeffects"

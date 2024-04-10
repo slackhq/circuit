@@ -1135,6 +1135,79 @@ class CircuitSymbolProcessorTest {
     }
   }
 
+  @Test
+  fun invalidAssistedInjection() {
+    assertProcessingError(
+      sourceFile =
+        kotlin(
+          "InvalidAssistedInjection.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedInject
+          import dagger.assisted.AssistedFactory
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @AssistedInject constructor(@Assisted input: String) : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+
+            @AssistedFactory
+            fun interface Factory {
+              fun create(input: String): Favorites
+            }
+          }
+        """
+            .trimIndent(),
+        )
+    ) { messages ->
+      assertThat(messages)
+        .contains(
+          "When using @CircuitInject with an @AssistedInject-annotated class, you must put " +
+            "the @CircuitInject annotation on the @AssistedFactory-annotated nested" +
+            " class (test.Favorites.Factory)."
+        )
+    }
+  }
+
+  @Test
+  fun invalidAssistedInjection_missingFactory() {
+    assertProcessingError(
+      sourceFile =
+        kotlin(
+          "InvalidAssistedInjection.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedInject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @AssistedInject constructor(@Assisted input: String) : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+
+            }
+          }
+        """
+            .trimIndent(),
+        )
+    ) { messages ->
+      assertThat(messages)
+        .contains(
+          "When using @CircuitInject with an @AssistedInject-annotated class, you must put " +
+            "the @CircuitInject annotation on the @AssistedFactory-annotated nested class."
+        )
+    }
+  }
+
   private enum class CodegenMode {
     ANVIL,
     HILT

@@ -13,10 +13,10 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 
-class CircuitCounterPresenter : Presenter<CounterScreen.State> {
+class CircuitCounterPresenter(private val initialCount: Int) : Presenter<CounterScreen.State> {
   @Composable
   override fun present(): CounterScreen.State {
-    var count by rememberRetained { mutableIntStateOf(0) }
+    var count by rememberRetained { mutableIntStateOf(initialCount) }
 
     return CounterScreen.State(count) { event ->
       when (event) {

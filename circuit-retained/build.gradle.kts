@@ -1,6 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
   alias(libs.plugins.agp.library)
@@ -18,9 +19,14 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
-  js {
+  js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    nodejs()
+    browser()
+  }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
   }
   // endregion
 
@@ -61,17 +67,21 @@ kotlin {
     val androidInstrumentedTest by getting {
       dependencies {
         commonJvmTest()
+        implementation(libs.androidx.compose.foundation)
+        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.androidx.compose.material.material)
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.ui)
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
-        implementation(projects.circuitRetained)
-        implementation(libs.androidx.compose.integration.activity)
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.ui)
-        implementation(libs.androidx.compose.material.material)
         implementation(libs.leakcanary.android.instrumentation)
+        implementation(projects.circuitRetained)
       }
     }
+    // We use a common folder instead of a common source set because there is no commonizer
+    // which exposes the browser APIs across these two targets.
+    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
   }
 
   targets.configureEach {

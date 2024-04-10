@@ -1,3 +1,7 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
@@ -15,7 +19,7 @@ android {
   }
 }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
@@ -29,9 +33,10 @@ kotlin {
   jvm()
   iosX64()
   iosArm64()
-  js {
-    moduleName = "counterapp"
-    browser()
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = "counterApp"
+    browser { commonWebpackConfig { outputFileName = "counterApp.js" } }
     binaries.executable()
   }
   // endregion
@@ -58,11 +63,12 @@ kotlin {
         implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
-    val jsMain by getting {
+    val wasmJsMain by getting {
       dependencies {
         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)
-        implementation(compose.html.core)
+        implementation(compose.ui)
+        implementation(compose.runtime)
       }
     }
   }

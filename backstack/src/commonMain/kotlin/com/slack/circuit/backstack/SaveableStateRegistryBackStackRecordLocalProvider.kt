@@ -55,22 +55,26 @@ public object SaveableStateRegistryBackStackRecordLocalProvider :
 
         @Composable
         override fun provideValues(): ImmutableList<ProvidedValue<*>> {
-          remember {
-            object : RememberObserver {
-              override fun onForgotten() {
-                childRegistry.saveForContentLeavingComposition()
-              }
-
-              override fun onRemembered() {}
-
-              override fun onAbandoned() {}
-            }
-          }
+          remember { RememberObserverImpl(childRegistry) }
           return list
         }
       }
     }
   }
+}
+
+// Extracted to work around a WASM bug
+// https://youtrack.jetbrains.com/issue/KT-66465#focus=Comments-27-9568825.0-0
+private class RememberObserverImpl(
+  private val childRegistry: BackStackRecordLocalSaveableStateRegistry
+) : RememberObserver {
+  override fun onForgotten() {
+    childRegistry.saveForContentLeavingComposition()
+  }
+
+  override fun onRemembered() {}
+
+  override fun onAbandoned() {}
 }
 
 private class BackStackRecordLocalSaveableStateRegistry(
@@ -112,7 +116,7 @@ private class BackStackRecordLocalSaveableStateRegistry(
         synchronized(lock) {
           val list = valueProviders.remove(key)
           list?.remove(valueProvider)
-          if (list != null && list.isNotEmpty()) {
+          if (!list.isNullOrEmpty()) {
             // if there are other providers for this key return list
             // back to the map
             valueProviders[key] = list

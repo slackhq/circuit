@@ -6,9 +6,11 @@ count.
 
 ## Platforms
 
-| Platform                                         | Status |
-|--------------------------------------------------|--------|
-| Android                                          | ✅      |
-| [Desktop](https://www.jetbrains.com/lp/compose-mpp/) | ✅      |
-| [Mosaic](https://github.com/JakeWharton/mosaic)  | 🚧     |
-| iOS                                              | ❌      |
+| Platform                                        | Status |
+|-------------------------------------------------|--------|
+| Android                                         | ✅      |
+| Desktop                                         | ✅      |
+| iOS                                             | ✅      |
+| Web (JS)                                        | ✅      |
+| WASM (JS)                                       | ❌      |
+| [Mosaic](https://github.com/JakeWharton/mosaic) | 🚧     |

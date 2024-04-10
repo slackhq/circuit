@@ -1,3 +1,8 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
@@ -16,9 +21,27 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
-  js {
+  js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    nodejs()
+    browser()
+  }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser {
+      testTask {
+        useKarma {
+          useChromeHeadless()
+          useConfigDirectory(
+            rootProject.projectDir
+              .resolve("internal-test-utils")
+              .resolve("karma.config.d")
+              .resolve("wasm")
+          )
+        }
+      }
+    }
+    binaries.executable()
   }
   // endregion
 
@@ -35,6 +58,14 @@ kotlin {
         api(projects.circuitRuntimeScreen)
         implementation(libs.compose.runtime.saveable)
         implementation(libs.uuid)
+      }
+    }
+    commonTest {
+      dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+        implementation(libs.turbine)
       }
     }
     val androidMain by getting {
@@ -59,20 +90,28 @@ kotlin {
         }
       }
     val jvmTest by getting { dependsOn(commonJvmTest) }
+    // We use a common folder instead of a common source set because there is no commonizer
+    // which exposes the browser APIs across these two targets.
+    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+// adding it here to make sure skiko is unpacked and available in web tests
+// https://github.com/JetBrains/compose-multiplatform/issues/4133
+compose.experimental { web.application {} }
+
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
   compilerOptions {
     // Need to disable, due to 'duplicate library name' warning
-    // https://youtrack.jetbrains.com/issue/KT-51110
+    // https://youtrack.jetbrains.com/issue/KT-64115
     allWarningsAsErrors = false
   }
 }
 
 android { namespace = "com.slack.circuit.backstack" }
 
-androidComponents { beforeVariants { variant -> variant.enableAndroidTest = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 baselineProfile {
   mergeIntoMain = true

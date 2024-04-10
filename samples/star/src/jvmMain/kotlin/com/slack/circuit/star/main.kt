@@ -41,7 +41,7 @@ fun main() {
   application {
     val initialBackStack = persistentListOf<Screen>(HomeScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
-    val circuitNavigator = rememberCircuitNavigator(backStack, ::exitApplication)
+    val circuitNavigator = rememberCircuitNavigator(backStack) { exitApplication() }
     val navigator =
       remember(circuitNavigator) {
         object : Navigator by circuitNavigator {

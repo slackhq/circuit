@@ -35,7 +35,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -43,10 +42,10 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuit.sample.counter.CounterPresenterFactory
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
+import com.slack.circuit.sample.counter.buildCircuit
 import kotlinx.collections.immutable.persistentListOf
 
 data object DesktopCounterScreen : CounterScreen
@@ -152,21 +151,15 @@ fun main() = application {
   ) {
     val initialBackStack = persistentListOf<Screen>(DesktopCounterScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
-    val navigator = rememberCircuitNavigator(backStack, ::exitApplication)
-
-    val circuit: Circuit =
-      Circuit.Builder()
-        .addPresenterFactory(CounterPresenterFactory())
-        .addUiFactory(CounterUiFactory())
-        .build()
+    val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
+    val circuit = remember { buildCircuit(uiFactory = CounterUiFactory()) }
 
     MaterialTheme {
       CircuitCompositionLocals(circuit) {
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,
-          modifier =
-            Modifier.backHandler(enabled = backStack.size > 1, onBack = { navigator.pop() }),
+          modifier = Modifier.backHandler(enabled = backStack.size > 1, onBack = navigator::pop),
         )
       }
     }

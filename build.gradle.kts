@@ -25,6 +25,8 @@ import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapp
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -163,6 +165,8 @@ subprojects {
   plugins.withType<KotlinBasePlugin> {
     val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
+      // Don't double apply to stub gen
+      if (this is KaptGenerateStubsTask) return@configureEach
       compilerOptions {
         allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
@@ -240,6 +244,13 @@ subprojects {
 
     dependencies.add("detektPlugins", twitterDetektPlugin)
     // endregion
+  }
+
+  // Teach Gradle that full guava replaces listenablefuture.
+  // This bypasses the dependency resolution that transitively bumps listenablefuture to a 9999.0
+  // version that is empty.
+  dependencies.modules {
+    module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
   }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
@@ -321,7 +332,7 @@ subprojects {
   }
 
   // Common android config
-  val commonAndroidConfig: CommonExtension<*, *, *, *, *>.() -> Unit = {
+  val commonAndroidConfig: CommonExtension<*, *, *, *, *, *>.() -> Unit = {
     compileSdk = 34
 
     if (hasCompose) {
@@ -410,6 +421,8 @@ subprojects {
       val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
       if (suppressComposeKotlinVersion) {
         tasks.withType<KotlinCompilationTask<*>>().configureEach {
+          // Don't double apply to stub gen
+          if (this is KaptGenerateStubsTask) return@configureEach
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",
@@ -448,13 +461,11 @@ subprojects {
         }
       }
     }
-    tasks.withType<KotlinNativeCompile>().configureEach {
-      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
-    }
-    @Suppress("INVISIBLE_REFERENCE")
-    tasks.withType<org.jetbrains.kotlin.gradle.plugin.mpp.apple.FrameworkCopy>().configureEach {
-      @Suppress("INVISIBLE_MEMBER")
-      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
+
+    // Workaround for missing task dependency in WASM
+    val executableCompileSyncTasks = tasks.withType(DefaultIncrementalSyncTask::class.java)
+    tasks.withType(KotlinJsTest::class.java).configureEach {
+      mustRunAfter(executableCompileSyncTasks)
     }
   }
 

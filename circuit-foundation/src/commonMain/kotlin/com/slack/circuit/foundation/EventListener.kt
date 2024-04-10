@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -12,7 +13,11 @@ import com.slack.circuit.runtime.ui.Ui
 /**
  * A listener for tracking the state changes of a given [Screen]. This can be used for
  * instrumentation and other telemetry.
+ *
+ * @see <a href="https://publicobject.com/2022/05/01/eventlisteners-are-good/">EventListener is Like
+ *   Logging, But Good</a>
  */
+@Stable
 public interface EventListener {
 
   /** Called just before creating a [Presenter] for a given [screen]. */
@@ -76,6 +81,7 @@ public interface EventListener {
    */
   public fun dispose() {}
 
+  @Stable
   public fun interface Factory {
     public fun create(screen: Screen, context: CircuitContext): EventListener
   }

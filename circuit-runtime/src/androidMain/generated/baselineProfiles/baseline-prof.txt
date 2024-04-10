@@ -7,4 +7,5 @@ Lcom/slack/circuit/runtime/CircuitContext$Companion;
 HSPLcom/slack/circuit/runtime/CircuitContext$Companion;-><init>()V
 HSPLcom/slack/circuit/runtime/CircuitContext$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 Lcom/slack/circuit/runtime/CircuitUiState;
+Lcom/slack/circuit/runtime/GoToNavigator;
 Lcom/slack/circuit/runtime/Navigator;

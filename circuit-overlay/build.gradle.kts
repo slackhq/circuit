@@ -50,12 +50,13 @@ kotlin {
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest.get())
         dependencies {
           implementation(libs.junit)
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting {
+    jvmTest {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)

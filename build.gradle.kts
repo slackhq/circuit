@@ -448,7 +448,7 @@ subprojects {
     // Enforce Kotlin BOM
     configure<KotlinMultiplatformExtension> {
       sourceSets {
-        val commonMain by getting {
+        commonMain {
           dependencies {
             // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
             implementation(

@@ -32,7 +32,7 @@ kotlin {
 
   targets.configureEach {
     compilations.configureEach {
-      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      compileTaskProvider.configure { compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") } }
     }
   }
 
@@ -53,18 +53,19 @@ kotlin {
 
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest.get())
         dependencies {
           implementation(libs.junit)
           implementation(libs.truth)
           implementation(libs.testing.testParameterInjector)
         }
       }
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    jvmTest { dependsOn(commonJvmTest) }
     val androidUnitTest by getting { dependsOn(commonJvmTest) }
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 

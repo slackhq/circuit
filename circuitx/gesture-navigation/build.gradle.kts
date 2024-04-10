@@ -47,7 +47,7 @@ kotlin {
       }
     }
 
-    val iosMain by getting { dependencies { api(libs.compose.material.material) } }
+    iosMain { dependencies { api(libs.compose.material.material) } }
 
     val androidUnitTest by getting {
       dependencies {
@@ -62,7 +62,7 @@ kotlin {
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 

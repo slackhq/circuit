@@ -48,14 +48,14 @@ kotlin {
         implementation(libs.uuid)
       }
     }
-    val androidMain by getting {
+    androidMain {
       dependencies {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
         implementation(libs.androidx.compose.integration.activity)
       }
     }
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
@@ -67,7 +67,7 @@ kotlin {
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest)
+        dependsOn(commonTest.get())
         dependencies {
           implementation(libs.kotlin.test)
           implementation(libs.compose.ui.testing.junit)
@@ -75,7 +75,7 @@ kotlin {
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting {
+    jvmTest {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)
@@ -102,7 +102,7 @@ kotlin {
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 

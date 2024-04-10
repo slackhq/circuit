@@ -28,7 +28,7 @@ kotlin {
       }
     }
     // TODO is there a multiplatform way to do this?
-    val jvmMain by getting { dependencies { implementation(libs.jline) } }
+    jvmMain { dependencies { implementation(libs.jline) } }
   }
 
   targets.withType<KotlinJvmTarget> {

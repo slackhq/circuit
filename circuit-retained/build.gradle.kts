@@ -40,7 +40,7 @@ kotlin {
       }
     }
 
-    val androidMain by getting {
+    androidMain {
       dependencies {
         api(libs.androidx.lifecycle.viewModel.compose)
         api(libs.androidx.lifecycle.viewModel)
@@ -49,7 +49,7 @@ kotlin {
       }
     }
 
-    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
+    commonTest { dependencies { implementation(libs.kotlin.test) } }
 
     // Necessary because android instrumented tests cannot share a source set with jvm tests for
     // some reason
@@ -59,10 +59,10 @@ kotlin {
       implementation(libs.truth)
     }
 
-    val jvmTest by getting { dependencies { commonJvmTest() } }
+    jvmTest { dependencies { commonJvmTest() } }
 
     // TODO export this in Android too when it's supported in kotlin projects
-    val jvmMain by getting { dependencies.add("testFixturesApi", projects.circuitTest) }
+    jvmMain { dependencies.add("testFixturesApi", projects.circuitTest) }
 
     val androidInstrumentedTest by getting {
       dependencies {
@@ -81,12 +81,12 @@ kotlin {
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 
   targets.configureEach {
     compilations.configureEach {
-      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      compileTaskProvider.configure { compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") } }
     }
   }
 }

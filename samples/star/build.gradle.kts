@@ -7,6 +7,7 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -212,6 +213,21 @@ kotlin {
 
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
+        }
+      }
+    }
+  }
+
+  targets.configureEach {
+    if (platformType == KotlinPlatformType.androidJvm) {
+      compilations.configureEach {
+        compileTaskProvider.configure {
+          compilerOptions {
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.star.parcel.CommonParcelize",
+            )
+          }
         }
       }
     }

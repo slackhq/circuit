@@ -4,4 +4,4 @@ package com.slack.circuit.internal.test
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-expect annotation class Parcelize()
+annotation class Parcelize

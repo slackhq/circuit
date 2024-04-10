@@ -5,7 +5,7 @@ package com.slack.circuit.star.parcel
 // For Android @Parcelize
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-expect annotation class CommonParcelize()
+annotation class CommonParcelize
 
 // For Android Parcelable
 expect interface CommonParcelable

@@ -1,5 +1,6 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 // Copyright (C) 2023 Slack Technologies, LLC
@@ -50,6 +51,7 @@ kotlin {
   }
 
   targets.configureEach {
+    val isAndroidTarget = platformType == KotlinPlatformType.androidJvm
     compilations.configureEach {
       compileTaskProvider.configure {
         compilerOptions {
@@ -57,6 +59,12 @@ kotlin {
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xexpect-actual-classes", // used for Parcelize in tests
           )
+          if (isAndroidTarget) {
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.CommonParcelize"
+            )
+          }
         }
       }
     }

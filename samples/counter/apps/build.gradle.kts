@@ -64,8 +64,7 @@ kotlin {
     }
     wasmJsMain {
       dependencies {
-        @OptIn(ExperimentalComposeLibrary::class)
-        implementation(compose.components.resources)
+        @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
         implementation(compose.ui)
         implementation(compose.runtime)
       }

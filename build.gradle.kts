@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }

@@ -3,7 +3,6 @@
 import com.android.build.api.dsl.LibraryExtension
 import com.google.devtools.ksp.gradle.KspTaskJvm
 import java.util.Locale
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions

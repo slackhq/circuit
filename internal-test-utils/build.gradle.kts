@@ -62,7 +62,7 @@ kotlin {
           if (isAndroidTarget) {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.CommonParcelize",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
             )
           }
         }

@@ -83,7 +83,7 @@ kotlin {
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
-        @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
+        implementation(compose.components.resources)
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitOverlay)
@@ -104,7 +104,6 @@ kotlin {
       }
     }
     maybeCreate("jvmCommonMain").apply {
-      dependsOn(commonMain.get())
       dependencies {
         api(libs.anvil.annotations)
         api(libs.anvil.annotations.optional)
@@ -123,7 +122,6 @@ kotlin {
       }
     }
     maybeCreate("jvmCommonTest").apply {
-      dependsOn(commonTest.get())
       dependencies {
         implementation(dependencies.testFixtures(libs.eithernet))
         implementation(libs.junit)

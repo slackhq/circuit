@@ -15,12 +15,14 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+import org.jetbrains.kotlin.gradle.model.ComposeCompiler
 import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
@@ -52,6 +54,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
+  alias(libs.plugins.composePlugin) apply false
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
 }
@@ -186,23 +189,6 @@ subprojects {
               "-Xtype-enhancement-improvements-strict-mode",
               "-Xjspecify-annotations=strict",
             )
-
-            // Multiplatform compose handling is handled in a later block with the compose plugin
-            if (hasCompose && !isMultiPlatformPlugin) {
-              // Flag to disable Compose's kotlin version check because they're often behind
-              // Or ahead
-              // Or if they're the same, do nothing
-              // It's basically just very noisy.
-              val composeCompilerKotlinVersion = libs.versions.compose.compiler.kotlinVersion.get()
-              val kotlinVersion = libs.versions.kotlin.get()
-              val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
-              if (suppressComposeKotlinVersion) {
-                freeCompilerArgs.addAll(
-                  "-P",
-                  "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
-                )
-              }
-            }
           }
         }
 
@@ -336,9 +322,9 @@ subprojects {
 
     if (hasCompose) {
       buildFeatures { compose = true }
-      composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.version.get()
-      }
+//      composeOptions {
+//        kotlinCompilerExtensionVersion = libs.versions.kotlin.get()
+//      }
     }
 
     compileOptions {
@@ -399,36 +385,47 @@ subprojects {
 
   // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
-    // Don't run this on a pure android project
-    if (project.plugins.hasPlugin("org.jetbrains.kotlin.android")) return@withPlugin
-    configure<ComposeExtension> {
-      val kotlinVersion = libs.versions.kotlin.get()
-      // Flag to disable Compose's kotlin version check because they're often behind
-      // Or ahead
-      // Or if they're the same, do nothing
-      // It's basically just very noisy.
-      val (compilerDep, composeCompilerKotlinVersion) =
-        if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
-          // Google version
-          libs.androidx.compose.compiler.get().toString() to
-            libs.versions.compose.compiler.kotlinVersion.get()
-        } else {
-          // JB version
-          libs.compose.compilerJb.get().toString() to libs.versions.compose.jb.kotlinVersion.get()
-        }
-      kotlinCompilerPlugin.set(compilerDep)
-      val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
-      if (suppressComposeKotlinVersion) {
-        tasks.withType<KotlinCompilationTask<*>>().configureEach {
-          // Don't double apply to stub gen
-          if (this is KaptGenerateStubsTask) return@configureEach
-          compilerOptions {
-            freeCompilerArgs.addAll(
-              "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
-            )
-          }
-        }
+    apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+//    // Don't run this on a pure android project
+//    if (project.plugins.hasPlugin("org.jetbrains.kotlin.android")) return@withPlugin
+//    configure<ComposeExtension> {
+//      val kotlinVersion = libs.versions.kotlin.get()
+//      // Flag to disable Compose's kotlin version check because they're often behind
+//      // Or ahead
+//      // Or if they're the same, do nothing
+//      // It's basically just very noisy.
+//      // TODO combine these in RC2 when they're unified
+//      val (compilerDep, composeCompilerKotlinVersion) =
+//        if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
+//          // Google version
+//          libs.androidx.compose.compiler.get().toString() to
+//            libs.versions.kotlin.get()
+//        } else {
+//          // JB version
+//          libs.compose.compilerJb.get().toString() to libs.versions.compose.jb.kotlinVersion.get()
+//        }
+//      kotlinCompilerPlugin.set(compilerDep)
+//      val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
+//      if (suppressComposeKotlinVersion) {
+//        tasks.withType<KotlinCompilationTask<*>>().configureEach {
+//          // Don't double apply to stub gen
+//          if (this is KaptGenerateStubsTask) return@configureEach
+//          compilerOptions {
+//            freeCompilerArgs.addAll(
+//              "-P",
+//              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
+//            )
+//          }
+//        }
+//      }
+//    }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.plugin.compose") {
+    if (!pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+      configure<ComposeCompilerGradlePluginExtension> {
+        // TODO only for this release, can be removed after
+        suppressKotlinVersionCompatibilityCheck.set("2.0.0-RC1")
       }
     }
   }

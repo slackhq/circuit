@@ -52,7 +52,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
-  alias(libs.plugins.composePlugin) apply false
+  alias(libs.plugins.kotlin.plugin.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
 }
@@ -320,9 +320,6 @@ subprojects {
 
     if (hasCompose) {
       buildFeatures { compose = true }
-      //      composeOptions {
-      //        kotlinCompilerExtensionVersion = libs.versions.kotlin.get()
-      //      }
     }
 
     compileOptions {
@@ -381,44 +378,8 @@ subprojects {
     dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
   }
 
-  // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")
-    //    // Don't run this on a pure android project
-    //    if (project.plugins.hasPlugin("org.jetbrains.kotlin.android")) return@withPlugin
-    //    configure<ComposeExtension> {
-    //      val kotlinVersion = libs.versions.kotlin.get()
-    //      // Flag to disable Compose's kotlin version check because they're often behind
-    //      // Or ahead
-    //      // Or if they're the same, do nothing
-    //      // It's basically just very noisy.
-    //      // TODO combine these in RC2 when they're unified
-    //      val (compilerDep, composeCompilerKotlinVersion) =
-    //        if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
-    //          // Google version
-    //          libs.androidx.compose.compiler.get().toString() to
-    //            libs.versions.kotlin.get()
-    //        } else {
-    //          // JB version
-    //          libs.compose.compilerJb.get().toString() to
-    // libs.versions.compose.jb.kotlinVersion.get()
-    //        }
-    //      kotlinCompilerPlugin.set(compilerDep)
-    //      val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
-    //      if (suppressComposeKotlinVersion) {
-    //        tasks.withType<KotlinCompilationTask<*>>().configureEach {
-    //          // Don't double apply to stub gen
-    //          if (this is KaptGenerateStubsTask) return@configureEach
-    //          compilerOptions {
-    //            freeCompilerArgs.addAll(
-    //              "-P",
-    //
-    // "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
-    //            )
-    //          }
-    //        }
-    //      }
-    //    }
   }
 
   pluginManager.withPlugin("org.jetbrains.kotlin.plugin.compose") {

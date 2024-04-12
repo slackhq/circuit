@@ -9,6 +9,7 @@ plugins {
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.kotlin.plugin.compose)
 }
 
 android {

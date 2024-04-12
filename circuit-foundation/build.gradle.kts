@@ -26,7 +26,16 @@ kotlin {
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser {
+      // Necessary for tests
+      testTask {
+        useKarma {
+          useChromeHeadless()
+          useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
+        }
+      }
+      binaries.executable()
+    }
   }
   // endregion
 
@@ -121,6 +130,9 @@ tasks
       }
     }
   }
+
+// adding it here to make sure skiko is unpacked and available in web tests
+compose.experimental { web.application {} }
 
 android {
   namespace = "com.slack.circuit.foundation"

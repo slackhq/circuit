@@ -4,6 +4,7 @@ package com.slack.circuit.test
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.test.FakeNavigator.GoToEvent
 import com.slack.circuit.test.FakeNavigator.ResetRootEvent
 import kotlinx.coroutines.test.runTest
 import kotlinx.parcelize.Parcelize
@@ -43,7 +44,7 @@ class FakeNavigatorTest {
     assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen2)
     // Going to the same screen won't navigate
     assertThat(navigator.goTo(TestScreen2)).isFalse()
-    navigator.expectNoEvents()
+    assertThat(navigator.awaitNextGoTo()).isEqualTo(GoToEvent(TestScreen2, success = false))
     // Go to a third screen
     assertThat(navigator.goTo(TestScreen3)).isTrue()
     assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen3)

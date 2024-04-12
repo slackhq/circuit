@@ -55,10 +55,7 @@ internal class NavigatorImpl(
   }
 
   override fun goTo(screen: Screen): Boolean {
-    return if (peek() != screen) {
-      backStack.push(screen)
-      true
-    } else false
+    return backStack.push(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {

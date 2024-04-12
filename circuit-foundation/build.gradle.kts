@@ -112,6 +112,13 @@ tasks
   .configureEach {
     compilerOptions {
       freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+
+      if (name == "compileReleaseUnitTestKotlinAndroid") {
+        freeCompilerArgs.addAll(
+          "-P",
+          "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
+        )
+      }
     }
   }
 

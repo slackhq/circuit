@@ -237,6 +237,10 @@ subprojects {
     module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
   }
 
+  pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
+    tasks.withType<KaptGenerateStubsTask>().configureEach { useK2Kapt.set(true) }
+  }
+
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
 

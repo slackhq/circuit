@@ -29,7 +29,7 @@ class NavigatorTest {
   @Test
   fun popAtRoot() {
     val backStack = SaveableBackStack(TestScreen)
-    backStack.push(TestScreen)
+    backStack.push(TestScreen2)
 
     var onRootPop = 0
     val navigator = NavigatorImpl(backStack) { onRootPop++ }

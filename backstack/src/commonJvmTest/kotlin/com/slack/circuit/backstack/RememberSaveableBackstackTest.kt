@@ -50,6 +50,8 @@ class RememberSaveableBackstackTest {
         val firstStack = awaitItem()
         rootScreen = TestScreen.ScreenB
         val secondStack = awaitItem()
+        val thirdStack = awaitItem() // Why is this emitting twice??
+        assertSame(secondStack, thirdStack)
 
         assertNotSame(firstStack, secondStack)
         assertEquals(firstStack.entryList.first().screen, TestScreen.ScreenA)
@@ -65,6 +67,8 @@ class RememberSaveableBackstackTest {
         val firstStack = awaitItem()
         rootScreens = listOf(TestScreen.ScreenB)
         val secondStack = awaitItem()
+        val thirdStack = awaitItem() // Why is this emitting twice??
+        assertSame(secondStack, thirdStack)
 
         assertNotSame(firstStack, secondStack)
         assertEquals(firstStack.entryList.first().screen, TestScreen.ScreenA)

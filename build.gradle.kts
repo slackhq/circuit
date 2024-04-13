@@ -101,6 +101,8 @@ allprojects {
         "**/FilterList.kt",
         "**/Remove.kt",
         "**/Pets.kt",
+        "**/RetainedStateHolder*.kt",
+        "**/RetainedStateRestorationTester.kt",
         "**/SystemUiController.kt",
       )
     }

@@ -41,7 +41,7 @@ public interface RetainedStateRegistry {
    * Executes all the registered value providers and combines these values into a map. We have a
    * list of values for each key as it is allowed to have multiple providers for the same key.
    */
-  public fun saveAll()
+  public fun saveAll(): Map<String, List<Any?>>
 
   /** Executes the value providers registered with the given [key], and saves them for retrieval. */
   public fun saveValue(key: String)
@@ -109,7 +109,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     }
   }
 
-  override fun saveAll() {
+  override fun saveAll(): Map<String, List<Any?>> {
     val values =
       valueProviders.mapValues { (_, list) ->
         // If we have multiple providers we should store null values as well to preserve
@@ -126,6 +126,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     }
     // Clear the value providers now that we've stored the values
     valueProviders.clear()
+    return values
   }
 
   override fun saveValue(key: String) {
@@ -158,7 +159,7 @@ internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
 
   override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry = NoOpEntry
 
-  override fun saveAll() {}
+  override fun saveAll(): Map<String, List<Any?>> = emptyMap()
 
   override fun saveValue(key: String) {}
 

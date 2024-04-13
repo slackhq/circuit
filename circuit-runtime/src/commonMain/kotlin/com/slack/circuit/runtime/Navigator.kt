@@ -96,6 +96,8 @@ public interface Navigator : GoToNavigator {
       restoreState: Boolean,
     ): ImmutableList<Screen> = persistentListOf()
   }
+
+  public companion object
 }
 
 /**

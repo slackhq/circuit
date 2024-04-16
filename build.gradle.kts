@@ -9,6 +9,7 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.spotless.LineEnding
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
+import com.squareup.anvil.plugin.AnvilExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
@@ -19,7 +20,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
@@ -446,15 +445,9 @@ subprojects {
     tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
   }
 
-  // TODO cover until anvil supports 2.0
   subprojects {
     pluginManager.withPlugin("com.squareup.anvil") {
-      tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-          progressiveMode.set(false)
-          languageVersion.set(KotlinVersion.KOTLIN_1_9)
-        }
-      }
+      configure<AnvilExtension> { useKsp(contributesAndFactoryGeneration = true) }
     }
   }
 }

@@ -152,8 +152,8 @@ data object PetListScreen : Screen {
 }
 
 class PetListPresenter
-@AssistedInject
-constructor(@Assisted private val navigator: Navigator, private val petRepo: PetRepository) :
+//@AssistedInject
+constructor(private val navigator: Navigator, private val petRepo: PetRepository) :
   Presenter<State> {
   @Composable
   override fun present(): State {
@@ -214,8 +214,8 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
     return animal.gender in filters.genders && animal.size in filters.sizes
   }
 
-  @CircuitInject(PetListScreen::class, AppScope::class)
-  @AssistedFactory
+//  @CircuitInject(PetListScreen::class, AppScope::class)
+//  @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator): PetListPresenter
   }

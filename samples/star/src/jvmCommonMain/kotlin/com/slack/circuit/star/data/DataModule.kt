@@ -44,15 +44,16 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideOkHttpClient(cache: Cache): OkHttpClient = OkHttpClient.Builder()
-    .cache(cache)
-    .addInterceptor(
-      HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BASIC
-        redactHeader("Authorization")
-      }
-    )
-    .build()
+  fun provideOkHttpClient(cache: Cache): OkHttpClient =
+    OkHttpClient.Builder()
+      .cache(cache)
+      .addInterceptor(
+        HttpLoggingInterceptor().apply {
+          level = HttpLoggingInterceptor.Level.BASIC
+          redactHeader("Authorization")
+        }
+      )
+      .build()
 
   /** Qualifier to denote that a provided type is authenticated. */
   @Qualifier annotation class Authenticated
@@ -85,31 +86,33 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideHttpClient(okHttpClientLazy: dagger.Lazy<OkHttpClient>): HttpClient = HttpClient(
-    object : HttpClientEngineFactory<OkHttpConfig> {
-      override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
-        return OkHttpEngine(
-          OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block)
-        )
+  fun provideHttpClient(okHttpClientLazy: dagger.Lazy<OkHttpClient>): HttpClient =
+    HttpClient(
+      object : HttpClientEngineFactory<OkHttpConfig> {
+        override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
+          return OkHttpEngine(
+            OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block)
+          )
+        }
+      }
+    ) {
+      install(HttpRequestRetry) {
+        retryOnExceptionOrServerErrors(maxRetries = 2)
+        exponentialDelay()
       }
     }
-  ) {
-    install(HttpRequestRetry) {
-      retryOnExceptionOrServerErrors(maxRetries = 2)
-      exponentialDelay()
-    }
-  }
 
   @Provides
   @SingleIn(AppScope::class)
   fun providePetfinderApi(
     baseRetrofit: Retrofit,
     @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
-  ): PetfinderApi = baseRetrofit
-    .newBuilder()
-    .callFactory { okHttpClientLazy.get().newCall(it) }
-    .build()
-    .create<PetfinderApi>()
+  ): PetfinderApi =
+    baseRetrofit
+      .newBuilder()
+      .callFactory { okHttpClientLazy.get().newCall(it) }
+      .build()
+      .create<PetfinderApi>()
 
   @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 }

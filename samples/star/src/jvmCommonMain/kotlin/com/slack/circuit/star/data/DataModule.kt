@@ -39,31 +39,28 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideHttpCache(appDirs: StarAppDirs): Cache {
-    return Cache(appDirs.userCache / "http_cache", MAX_CACHE_SIZE, appDirs.fs)
-  }
+  fun provideHttpCache(appDirs: StarAppDirs): Cache =
+    Cache(appDirs.fs, appDirs.userCache / "http_cache", MAX_CACHE_SIZE)
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideOkHttpClient(cache: Cache): OkHttpClient {
-    return OkHttpClient.Builder()
-      .cache(cache)
-      .addInterceptor(
-        HttpLoggingInterceptor().apply {
-          level = HttpLoggingInterceptor.Level.BASIC
-          redactHeader("Authorization")
-        }
-      )
-      .build()
-  }
+  fun provideOkHttpClient(cache: Cache): OkHttpClient = OkHttpClient.Builder()
+    .cache(cache)
+    .addInterceptor(
+      HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BASIC
+        redactHeader("Authorization")
+      }
+    )
+    .build()
 
   /** Qualifier to denote that a provided type is authenticated. */
   @Qualifier annotation class Authenticated
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideRetrofit(moshi: Moshi, okHttpClientLazy: dagger.Lazy<OkHttpClient>): Retrofit {
-    return Retrofit.Builder()
+  fun provideRetrofit(moshi: Moshi, okHttpClientLazy: dagger.Lazy<OkHttpClient>): Retrofit =
+    Retrofit.Builder()
       .addCallAdapterFactory(ApiResultCallAdapterFactory)
       .addConverterFactory(ApiResultConverterFactory)
       .addConverterFactory(JsoupConverter.newFactory(PetBioParser::parse))
@@ -71,7 +68,6 @@ object DataModule {
       .baseUrl("https://api.petfinder.com/v2/")
       .callFactory { okHttpClientLazy.get().newCall(it) }
       .build()
-  }
 
   @Authenticated
   @Provides
@@ -89,20 +85,18 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideHttpClient(okHttpClientLazy: dagger.Lazy<OkHttpClient>): HttpClient {
-    return HttpClient(
-      object : HttpClientEngineFactory<OkHttpConfig> {
-        override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
-          return OkHttpEngine(
-            OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block)
-          )
-        }
+  fun provideHttpClient(okHttpClientLazy: dagger.Lazy<OkHttpClient>): HttpClient = HttpClient(
+    object : HttpClientEngineFactory<OkHttpConfig> {
+      override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
+        return OkHttpEngine(
+          OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block)
+        )
       }
-    ) {
-      install(HttpRequestRetry) {
-        retryOnExceptionOrServerErrors(maxRetries = 2)
-        exponentialDelay()
-      }
+    }
+  ) {
+    install(HttpRequestRetry) {
+      retryOnExceptionOrServerErrors(maxRetries = 2)
+      exponentialDelay()
     }
   }
 
@@ -111,14 +105,11 @@ object DataModule {
   fun providePetfinderApi(
     baseRetrofit: Retrofit,
     @Authenticated okHttpClientLazy: dagger.Lazy<OkHttpClient>,
-  ): PetfinderApi {
-    @Suppress("RemoveExplicitTypeArguments") // Necessary for R8
-    return baseRetrofit
-      .newBuilder()
-      .callFactory { okHttpClientLazy.get().newCall(it) }
-      .build()
-      .create<PetfinderApi>()
-  }
+  ): PetfinderApi = baseRetrofit
+    .newBuilder()
+    .callFactory { okHttpClientLazy.get().newCall(it) }
+    .build()
+    .create<PetfinderApi>()
 
   @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 }

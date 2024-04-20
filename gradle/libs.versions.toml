@@ -272,7 +272,7 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
-testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
+testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.2"

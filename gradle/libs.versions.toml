@@ -11,22 +11,22 @@ atomicfu = "0.23.2"
 benchmark = "1.2.4"
 coil = "2.6.0"
 coil3 = "3.0.0-alpha06"
-compose-animation = "1.6.5"
+compose-animation = "1.6.6"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.11"
+compose-compiler-version = "1.5.12"
 compose-compiler-kotlinVersion = "1.9.23"
-compose-foundation = "1.6.5"
+compose-foundation = "1.6.6"
 compose-material = "1.6.6"
 compose-material3 = "1.2.1"
-compose-runtime = "1.6.5"
+compose-runtime = "1.6.6"
 compose-ui = "1.6.5"
 compose-jb = "1.6.2"
-compose-jb-compiler = "1.5.10.1"
+compose-jb-compiler = "1.5.10.2"
 compose-jb-kotlinVersion = "1.9.23"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.51.1"
-datastore = "1.1.0-rc01"
+datastore = "1.1.0"
 detekt = "1.23.6"
 dokka = "1.9.20"
 eithernet = "1.8.1"
@@ -111,7 +111,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.04.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.04.01" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
@@ -272,7 +272,7 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
-testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
+testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.2"

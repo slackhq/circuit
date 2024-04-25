@@ -3,6 +3,7 @@
 package com.slack.circuit.runtime.presenter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposableTarget
 import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -94,7 +95,10 @@ public interface Presenter<UiState : CircuitUiState> {
    * Note that Circuit's test artifact has a `Presenter.test()` helper extension function for the
    * above case.
    */
-  @Composable public fun present(): UiState
+  @Composable
+  // Prevent compose UI from running in presenters, these only produce state
+  @ComposableTarget("Empty")
+  public fun present(): UiState
 
   /**
    * A factory that produces [presenters][Presenter] for a given [Screen]. `Circuit` instances use

@@ -5,7 +5,9 @@ The core Presenter interface is this:
 
 ```kotlin
 interface Presenter<UiState : CircuitUiState> {
-  @Composable fun present(): UiState
+  @ComposableTarget("presenter")
+  @Composable
+  fun present(): UiState
 }
 ```
 
@@ -66,6 +68,17 @@ fun ProfilePresenter(
 ```
 
 Presenters can present other presenters by injecting their assisted factories/providers, but note that this makes them a composite presenter that is now assuming responsibility for managing state of multiple nested presenters.
+
+## No Compose UI
+
+Presenter logic should _not_ emit any Compose UI. They are purely for presentation business logic. To help enforce this, `Presenter.present` is annotated with `@ComposableTarget("presenter")`. This helps prevent use of Compose UI in the presentation logic as the compiler will emit a warning if you do.
+
+!!! tip
+    This warning does not appear in the IDE, so it's recommended to use `allWarningsAsErrors` in your build configuration to fail the build on this event.
+    ```kotlin
+    // In build.gradle.kts
+    kotlin.compilerOptions.allWarningsAsErrors.set(true)
+    ```
 
 ## Retention
 

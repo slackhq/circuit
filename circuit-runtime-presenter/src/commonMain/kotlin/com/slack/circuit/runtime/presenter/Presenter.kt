@@ -94,6 +94,36 @@ public interface Presenter<UiState : CircuitUiState> {
    *
    * Note that Circuit's test artifact has a `Presenter.test()` helper extension function for the
    * above case.
+   *
+   * ```
+   * @Test
+   * fun `emit initial state and refresh`() = runTest {
+   *   val favorites = listOf("Moose", "Reeses", "Lola")
+   *   val repository = FakeFavoritesRepository(favorites)
+   *   val presenter = FavoritesPresenter(repository)
+   *
+   *   presenter.test {
+   *     assertThat(awaitItem()).isEqualTo(State.Loading)
+   *     val successState = awaitItem()
+   *     // ...
+   *   }
+   * }
+   * ```
+   *
+   * ## No Compose UI
+   *
+   * Presenter logic should _not_ emit any Compose UI. They are purely for presentation business
+   * logic. To help enforce this, [present] is annotated with
+   * [@ComposableTarget("presenter")][ComposableTarget]. This helps prevent use of Compose UI in the
+   * presentation logic as the compiler will emit a warning if you do.
+   *
+   * This warning does not appear in the IDE, so it's recommended to use `allWarningsAsErrors` in
+   * your build configuration to fail the build on this event.
+   *
+   * ```kotlin
+   * // In build.gradle.kts
+   * kotlin.compilerOptions.allWarningsAsErrors.set(true)
+   * ```
    */
   @Composable
   // Prevent compose UI from running in presenters, these only produce state

@@ -97,7 +97,10 @@ public interface Presenter<UiState : CircuitUiState> {
    */
   @Composable
   // Prevent compose UI from running in presenters, these only produce state
-  @ComposableTarget("Empty")
+  // The name here is a little funny, but intended to help make the warning printed a little easier
+  // to understand.
+  // "Calling a presenter composable function where a UI Composable composable was expected"
+  @ComposableTarget("presenter")
   public fun present(): UiState
 
   /**

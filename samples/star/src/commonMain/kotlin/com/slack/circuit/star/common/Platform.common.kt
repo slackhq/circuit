@@ -14,5 +14,5 @@ expect object Platform {
 
 enum class PlatformType {
   JVM,
-  ANDROID
+  ANDROID,
 }

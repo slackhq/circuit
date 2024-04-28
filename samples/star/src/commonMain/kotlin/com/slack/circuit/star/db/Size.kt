@@ -5,5 +5,5 @@ package com.slack.circuit.star.db
 enum class Size {
   SMALL,
   MEDIUM,
-  LARGE
+  LARGE,
 }

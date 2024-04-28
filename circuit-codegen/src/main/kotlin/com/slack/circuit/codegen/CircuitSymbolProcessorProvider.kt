@@ -650,12 +650,12 @@ private fun TypeSpec.Builder.buildPresenterFactory(
 
 private enum class FactoryType {
   PRESENTER,
-  UI
+  UI,
 }
 
 private enum class InstantiationType {
   FUNCTION,
-  CLASS
+  CLASS,
 }
 
 private enum class CodegenMode {

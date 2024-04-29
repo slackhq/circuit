@@ -48,13 +48,14 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     SaveableBackStack(root)
   )
 
-  private val goToEvents = Turbine<Screen>()
+  private val goToEvents = Turbine<GoToEvent>()
   private val resetRootEvents = Turbine<ResetRootEvent>()
   private val popEvents = Turbine<PopEvent>()
 
-  override fun goTo(screen: Screen) {
-    delegate.goTo(screen)
-    goToEvents.add(screen)
+  override fun goTo(screen: Screen): Boolean {
+    val success = delegate.goTo(screen)
+    goToEvents.add(GoToEvent(screen, success))
+    return success
   }
 
   override fun pop(result: PopResult?): Screen? {
@@ -78,10 +79,13 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
    *
    * For non-coroutines users only.
    */
-  public fun takeNextScreen(): Screen = goToEvents.takeItem()
+  public fun takeNextScreen(): Screen = goToEvents.takeItem().assertSuccessfulScreen()
 
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
-  public suspend fun awaitNextScreen(): Screen = goToEvents.awaitItem()
+  public suspend fun awaitNextScreen(): Screen = goToEvents.awaitItem().assertSuccessfulScreen()
+
+  /** Awaits the next navigation [goTo] or throws if no goTo are performed. */
+  public suspend fun awaitNextGoTo(): GoToEvent = goToEvents.awaitItem()
 
   /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
   public suspend fun awaitResetRoot(): ResetRootEvent = resetRootEvents.awaitItem()
@@ -99,6 +103,9 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     goToEvents.expectNoEvents()
   }
 
+  /** Represents a recorded [Navigator.goTo] event. */
+  public data class GoToEvent(val screen: Screen, val success: Boolean)
+
   /** Represents a recorded [Navigator.pop] event. */
   public data class PopEvent(val poppedScreen: Screen?, val result: PopResult? = null)
 
@@ -109,4 +116,11 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     val saveState: Boolean = false,
     val restoreState: Boolean = false,
   )
+
+  private fun GoToEvent.assertSuccessfulScreen(): Screen {
+    if (!success) {
+      throw AssertionError("Screen navigation was not successful")
+    }
+    return screen
+  }
 }

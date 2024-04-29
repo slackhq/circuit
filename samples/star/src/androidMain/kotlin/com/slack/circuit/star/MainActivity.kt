@@ -111,7 +111,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       else -> error("Unknown AndroidScreen: $screen")
     }
 
-  private fun goTo(screen: OpenUrlScreen) {
+  private fun goTo(screen: OpenUrlScreen): Boolean {
     val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
     CustomTabsIntent.Builder()
       .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)
@@ -119,5 +119,6 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       .setShowTitle(true)
       .build()
       .launchUrl(this, Uri.parse(screen.url))
+    return true
   }
 }

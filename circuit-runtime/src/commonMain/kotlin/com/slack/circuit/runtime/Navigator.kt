@@ -12,13 +12,18 @@ import kotlinx.collections.immutable.persistentListOf
 /** A Navigator that only supports [goTo]. */
 @Stable
 public interface GoToNavigator {
-  public fun goTo(screen: Screen)
+  /**
+   * Navigate to the [screen].
+   *
+   * @return If the navigator successfully went to the [screen]
+   */
+  public fun goTo(screen: Screen): Boolean
 }
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
 public interface Navigator : GoToNavigator {
-  public override fun goTo(screen: Screen)
+  public override fun goTo(screen: Screen): Boolean
 
   public fun pop(result: PopResult? = null): Screen?
 
@@ -82,7 +87,7 @@ public interface Navigator : GoToNavigator {
   ): ImmutableList<Screen>
 
   public object NoOp : Navigator {
-    override fun goTo(screen: Screen) {}
+    override fun goTo(screen: Screen): Boolean = true
 
     override fun pop(result: PopResult?): Screen? = null
 

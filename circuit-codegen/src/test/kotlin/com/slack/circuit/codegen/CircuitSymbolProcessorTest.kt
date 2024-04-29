@@ -1210,7 +1210,7 @@ class CircuitSymbolProcessorTest {
 
   private enum class CodegenMode {
     ANVIL,
-    HILT
+    HILT,
   }
 
   private fun assertGeneratedFile(

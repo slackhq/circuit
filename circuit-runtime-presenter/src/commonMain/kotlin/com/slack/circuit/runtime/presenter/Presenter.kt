@@ -3,6 +3,7 @@
 package com.slack.circuit.runtime.presenter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposableTarget
 import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -93,8 +94,44 @@ public interface Presenter<UiState : CircuitUiState> {
    *
    * Note that Circuit's test artifact has a `Presenter.test()` helper extension function for the
    * above case.
+   *
+   * ```
+   * @Test
+   * fun `emit initial state and refresh`() = runTest {
+   *   val favorites = listOf("Moose", "Reeses", "Lola")
+   *   val repository = FakeFavoritesRepository(favorites)
+   *   val presenter = FavoritesPresenter(repository)
+   *
+   *   presenter.test {
+   *     assertThat(awaitItem()).isEqualTo(State.Loading)
+   *     val successState = awaitItem()
+   *     // ...
+   *   }
+   * }
+   * ```
+   *
+   * ## No Compose UI
+   *
+   * Presenter logic should _not_ emit any Compose UI. They are purely for presentation business
+   * logic. To help enforce this, [present] is annotated with
+   * [@ComposableTarget("presenter")][ComposableTarget]. This helps prevent use of Compose UI in the
+   * presentation logic as the compiler will emit a warning if you do.
+   *
+   * This warning does not appear in the IDE, so it's recommended to use `allWarningsAsErrors` in
+   * your build configuration to fail the build on this event.
+   *
+   * ```kotlin
+   * // In build.gradle.kts
+   * kotlin.compilerOptions.allWarningsAsErrors.set(true)
+   * ```
    */
-  @Composable public fun present(): UiState
+  @Composable
+  // Prevent compose UI from running in presenters, these only produce state
+  // The name here is a little funny, but intended to help make the warning printed a little easier
+  // to understand.
+  // "Calling a presenter composable function where a UI Composable composable was expected"
+  @ComposableTarget("presenter")
+  public fun present(): UiState
 
   /**
    * A factory that produces [presenters][Presenter] for a given [Screen]. `Circuit` instances use

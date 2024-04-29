@@ -20,7 +20,7 @@ data class Ingredient(
 enum class Diet(@StringRes val codeResId: Int? = null) {
   NONE,
   VEGETARIAN(R.string.common_vegetarian),
-  VEGAN(R.string.common_vegan)
+  VEGAN(R.string.common_vegan),
 }
 
 typealias Cents = Int

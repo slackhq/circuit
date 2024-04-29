@@ -5,11 +5,11 @@ Changelog
 --------------
 
 - **New**: Add WASM targets.
-- **New**: FakeNavigator methods to check for the lack of pop/resetRoot events
+- **New**: Add `FakeNavigator` functions to check for the lack of pop/resetRoot events
 - **Behaviour Change**: `NavigatorImpl.goTo` no longer navigates if the `Screen` is equal to `Navigator.peek()`.
 - **Behaviour Change**: `Presenter.present` is now annotated with `@ComposableTarget("presenter")`. This helps prevent use of Compose UI in the presentation logic as the compiler will emit a warning if you do. Note this does not appear in the IDE, so it's recommended to use `allWarningsAsErrors` to fail the build on this event.
 - **Change**: `Navigator.goTo` now returns a Bool indicating navigation success.
-- **Deprecation**: FakeNavigator.assertIsEmpty and expectNoEvents (use the specific event type methods instead)
+- **Deprecation**: `FakeNavigator.assertIsEmpty` and `expectNoEvents` (use the specific event type methods instead)
 - Mark `Presenter.Factory` as `@Stable`.
 - Mark `Ui.Factory` as `@Stable`.
 - Mark `CircuitContext` as `@Stable`.

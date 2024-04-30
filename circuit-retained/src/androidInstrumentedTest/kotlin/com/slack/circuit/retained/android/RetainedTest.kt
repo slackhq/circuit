@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@file:Suppress("INVISIBLE_MEMBER")
 
 package com.slack.circuit.retained.android
 
@@ -96,7 +96,7 @@ class RetainedTest {
   }
 
   // Suppressions temporary until we can move this back to the circuit-retained module
-  @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+  @Suppress("INVISIBLE_REFERENCE")
   @Test
   fun clearingAfterDone() {
     setActivityContent {

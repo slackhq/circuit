@@ -142,7 +142,6 @@ val jvmTargetVersion = libs.versions.jvmTarget
 val publishedJvmTargetVersion = libs.versions.publishedJvmTarget
 
 subprojects {
-
   val isPublished = project.hasProperty("POM_ARTIFACT_ID")
   val jvmTargetProject = if (isPublished) publishedJvmTargetVersion else jvmTargetVersion
 

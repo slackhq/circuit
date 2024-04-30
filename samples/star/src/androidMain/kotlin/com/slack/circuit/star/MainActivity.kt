@@ -14,15 +14,12 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
-import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -73,19 +70,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         Surface(color = MaterialTheme.colorScheme.background) {
           val backStack = rememberSaveableBackStack(initialBackstack)
           val circuitNavigator = rememberCircuitNavigator(backStack)
-          // TODO https://kotlinlang.slack.com/archives/C03PK0PE257/p1713288571883269
-          val androidScreenNavigator = rememberAndroidScreenAwareNavigator(circuitNavigator, ::goTo)
-          val navigator = remember(androidScreenNavigator) {
-            object : Navigator by androidScreenNavigator {
-              override fun goTo(screen: Screen) {
-                if (screen is OpenUrlScreen) {
-                  this@MainActivity.goTo(screen)
-                } else {
-                  androidScreenNavigator.goTo(screen)
-                }
-              }
-            }
-          }
+          val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
           CircuitCompositionLocals(circuit) {
             ContentWithOverlays {
               NavigableCircuitContent(
@@ -103,8 +88,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
     }
   }
 
-  // TODO https://kotlinlang.slack.com/archives/C03PK0PE257/p1713288571883269
-  private fun goTo(screen: Screen) =
+  private fun goTo(screen: AndroidScreen) =
     when (screen) {
       is OpenUrlScreen -> goTo(screen)
       is IntentScreen -> screen.startWith(this)

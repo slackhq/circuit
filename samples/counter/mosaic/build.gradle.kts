@@ -1,6 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -31,20 +30,11 @@ kotlin {
     jvmMain { dependencies { implementation(libs.jline) } }
   }
 
-  targets.withType<KotlinJvmTarget> {
-    // Needed for 'application' plugin.
-    withJava()
-  }
+  // TODO wat
+  //    targets.withType<KotlinJvmTarget> {
+  //     // Needed for 'application' plugin.
+  //      withJava()
+  //    }
 }
 
-mosaic {
-  val compiler =
-    if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
-      // JB version
-      libs.compose.compilerJb
-    } else {
-      // Google version
-      libs.androidx.compose.compiler
-    }
-  kotlinCompilerPlugin.set(compiler.map { it.toString() })
-}
+mosaic { kotlinCompilerPlugin.set(libs.compose.compiler.map { it.toString() }) }

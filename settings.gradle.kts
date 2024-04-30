@@ -86,16 +86,6 @@ dependencyResolutionManagement {
       filter { includeModule("com.android.tools", "r8") }
     }
 
-    // Pre-release artifacts of compose-compiler, used to test with future Kotlin versions
-    // https://androidx.dev/storage/compose-compiler/repository
-    maven("https://androidx.dev/storage/compose-compiler/repository/") {
-      name = "compose-compiler"
-      content {
-        // this repository *only* contains compose-compiler artifacts
-        includeGroup("androidx.compose.compiler")
-      }
-    }
-
     // JB Compose Repo
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") { name = "Compose-JB" }
 

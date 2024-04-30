@@ -17,10 +17,7 @@ compose-material = "1.6.6"
 compose-material3 = "1.2.1"
 compose-runtime = "1.6.6"
 compose-ui = "1.6.6"
-compose-jb = "1.6.2"
-# https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compatibility-and-versioning.html#use-a-developer-version-of-compose-multiplatform-compiler
-compose-jb-compiler = "1.5.11-kt-2.0.0-RC1"
-compose-jb-kotlinVersion = "2.0.0-RC1"
+compose-jb = "1.6.10-beta03"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.51.1"
 datastore = "1.1.0"
@@ -33,7 +30,7 @@ kct = "0.5.0-alpha07"
 kotlin = "2.0.0-RC2"
 kotlinpoet = "1.16.0"
 kotlinx-coroutines = "1.8.0"
-ksp = "2.0.0-RC1-1.0.20"
+ksp = "2.0.0-RC2-1.0.20"
 ktfmt = "0.49"
 ktor = "2.3.10"
 leakcanary = "2.14"
@@ -110,8 +107,6 @@ androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:a
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.04.01" }
-# TODO consolidate this in RC2 with JB's compose compiler
-androidx-compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "kotlin" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-integration-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -181,7 +176,7 @@ coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.re
 coil3-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
 coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
 
-compose-compilerJb = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "compose-jb-compiler" }
+compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "kotlin" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }

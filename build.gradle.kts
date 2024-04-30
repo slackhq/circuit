@@ -15,7 +15,6 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -162,13 +161,12 @@ subprojects {
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
-    val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       // Don't double apply to stub gen
       if (this is KaptGenerateStubsTask) return@configureEach
       compilerOptions {
-        // TODO https://youtrack.jetbrains.com/issue/KT-64115. Hopefully before 2.0.20
-        allWarningsAsErrors.set(false)
+//         TODO https://youtrack.jetbrains.com/issue/KT-64115. Hopefully before 2.0.20
+//        allWarningsAsErrors.set(false)
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
           // Stub gen copies args from the parent compilation
@@ -191,15 +189,6 @@ subprojects {
         }
 
         progressiveMode.set(true)
-      }
-    }
-
-    if (hasCompose && !isMultiPlatformPlugin) {
-      // A standard android project using compose, we need to force the version again here
-      // separate from the ComposeExtension configuration elsewhere.
-      dependencies {
-        add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
-        add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
       }
     }
 

@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
+  alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
@@ -198,17 +199,6 @@ kotlin {
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
 
-        if (project.hasProperty("circuit.enableComposeCompilerReports")) {
-          val metricsDir =
-            project.layout.buildDirectory.dir("compose_metrics").get().asFile.absolutePath
-          freeCompilerArgs.addAll(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir",
-          )
-        }
-
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
         }
@@ -229,6 +219,14 @@ kotlin {
         }
       }
     }
+  }
+}
+
+if (project.hasProperty("circuit.enableComposeCompilerReports")) {
+  val metricsDir = project.layout.buildDirectory.dir("compose_metrics")
+  composeCompiler {
+    metricsDestination.set(metricsDir)
+    reportsDestination.set(metricsDir)
   }
 }
 

@@ -37,10 +37,10 @@ data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
 }
 
 class ListBenchmarksPresenter
-//@AssistedInject
-constructor(private val screen: ListBenchmarksScreen) : Presenter<State> {
-//  @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
-//  @AssistedFactory
+@AssistedInject
+constructor(@Assisted private val screen: ListBenchmarksScreen) : Presenter<State> {
+  @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
+  @AssistedFactory
   fun interface Factory {
     fun create(screen: ListBenchmarksScreen): ListBenchmarksPresenter
   }
@@ -80,14 +80,14 @@ class IndexMultiplier @Inject constructor() {
 }
 
 class ListBenchmarksItemPresenter
-//@AssistedInject
+@AssistedInject
 constructor(
-  private val screen: ListBenchmarksItemScreen,
+  @Assisted private val screen: ListBenchmarksItemScreen,
   // Simulate injecting something that accumulates instances
   private val indexMultiplier: IndexMultiplier,
 ) : Presenter<ListBenchmarksItemScreen.State> {
-//  @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)
-//  @AssistedFactory
+  @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)
+  @AssistedFactory
   fun interface Factory {
     fun create(screen: ListBenchmarksItemScreen): ListBenchmarksItemPresenter
   }

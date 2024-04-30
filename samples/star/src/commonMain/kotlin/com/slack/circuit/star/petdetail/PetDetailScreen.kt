@@ -105,10 +105,10 @@ internal fun Animal.toPetDetailState(
 }
 
 class PetDetailPresenter
-//@AssistedInject
+@AssistedInject
 constructor(
-  private val screen: PetDetailScreen,
-  private val navigator: Navigator,
+  @Assisted private val screen: PetDetailScreen,
+  @Assisted private val navigator: Navigator,
   private val petRepository: PetRepository,
 ) : Presenter<State> {
   @Composable
@@ -136,8 +136,8 @@ constructor(
     return state
   }
 
-//  @CircuitInject(PetDetailScreen::class, AppScope::class)
-//  @AssistedFactory
+  @CircuitInject(PetDetailScreen::class, AppScope::class)
+  @AssistedFactory
   interface Factory {
     fun create(screen: PetDetailScreen, navigator: Navigator): PetDetailPresenter
   }

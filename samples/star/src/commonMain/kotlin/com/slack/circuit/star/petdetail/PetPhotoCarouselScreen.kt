@@ -102,13 +102,13 @@ data class PetPhotoCarouselScreen(
 // TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
 //  screen type?
 class PetPhotoCarouselPresenter
-//@AssistedInject
-constructor(private val screen: PetPhotoCarouselScreen) : Presenter<State> {
+@AssistedInject
+constructor(@Assisted private val screen: PetPhotoCarouselScreen) : Presenter<State> {
 
   @Composable override fun present() = State(screen)
 
-//  @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
-//  @AssistedFactory
+  @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
+  @AssistedFactory
   interface Factory {
     fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter
   }

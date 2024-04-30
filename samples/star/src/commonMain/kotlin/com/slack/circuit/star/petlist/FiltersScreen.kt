@@ -37,10 +37,10 @@ data class FiltersScreen(val initialFilters: Filters) : Screen {
 }
 
 class FiltersPresenter
-//@AssistedInject
+@AssistedInject
 constructor(
-  private val navigator: Navigator,
-  private val screen: FiltersScreen,
+  @Assisted private val navigator: Navigator,
+  @Assisted private val screen: FiltersScreen,
 ) : Presenter<FiltersScreen.State> {
   @Composable
   override fun present(): FiltersScreen.State {
@@ -56,8 +56,8 @@ constructor(
     )
   }
 
-//  @CircuitInject(FiltersScreen::class, AppScope::class)
-//  @AssistedFactory
+  @CircuitInject(FiltersScreen::class, AppScope::class)
+  @AssistedFactory
   interface Factory {
     fun create(navigator: Navigator, screen: FiltersScreen): FiltersPresenter
   }

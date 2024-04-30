@@ -165,8 +165,6 @@ subprojects {
       // Don't double apply to stub gen
       if (this is KaptGenerateStubsTask) return@configureEach
       compilerOptions {
-//         TODO https://youtrack.jetbrains.com/issue/KT-64115. Hopefully before 2.0.20
-//        allWarningsAsErrors.set(false)
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
           // Stub gen copies args from the parent compilation

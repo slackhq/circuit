@@ -42,10 +42,11 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   )
 
   public constructor(
-    root: Screen
+    root: Screen,
+    vararg additionalScreens: Screen,
   ) : this(
     // Use a real back stack
-    SaveableBackStack(root)
+    SaveableBackStack(root).apply { additionalScreens.forEach { push(it) } }
   )
 
   private val goToEvents = Turbine<GoToEvent>()

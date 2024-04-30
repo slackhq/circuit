@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import com.android.build.api.variant.Variant
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
@@ -14,6 +17,7 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
+import java.util.Locale
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
@@ -327,6 +331,27 @@ subprojects {
     dependencies { add("lintChecks", libs.lints.compose) }
   }
 
+  /** Patch for https://youtrack.jetbrains.com/issue/KT-67915 */
+  val patchLintTaskDeps: (Variant) -> Unit = { variant ->
+    if (pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+      (variant as? HasUnitTest)?.unitTest?.let { unitTestVariant ->
+        val lintModelTasks = tasks.named { it.endsWith("UnitTestLintModel") }
+
+        val resourceAccessorsTasks =
+          tasks.named { it.startsWith("generateResourceAccessorsForAndroidUnitTest") }
+
+        resourceAccessorsTasks.configureEach { mustRunAfter(lintModelTasks) }
+
+        tasks
+          .named {
+            @Suppress("DEPRECATION")
+            it == "lintAnalyze${unitTestVariant.name.capitalize(Locale.US)}"
+          }
+          .configureEach { mustRunAfter(resourceAccessorsTasks) }
+      }
+    }
+  }
+
   // Android library config
   pluginManager.withPlugin("com.android.library") {
     with(extensions.getByType<LibraryExtension>()) {
@@ -342,6 +367,7 @@ subprojects {
           builder.enable = false
         }
       }
+      onVariants(callback = patchLintTaskDeps)
     }
   }
 
@@ -365,6 +391,9 @@ subprojects {
         }
       }
       compileOptions { isCoreLibraryDesugaringEnabled = true }
+    }
+    extensions.configure<ApplicationAndroidComponentsExtension> {
+      onVariants(callback = patchLintTaskDeps)
     }
     dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
   }

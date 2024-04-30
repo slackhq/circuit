@@ -20,9 +20,11 @@ import java.net.URI
 import java.util.Locale
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
@@ -164,11 +166,22 @@ subprojects {
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       // Don't double apply to stub gen
-      if (this is KaptGenerateStubsTask) return@configureEach
+      if (this is KaptGenerateStubsTask) {
+        // TODO due to Anvil we need to force language version 1.9
+        compilerOptions {
+          progressiveMode.set(false)
+          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        }
+        return@configureEach
+      }
+      val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
-        // TODO https://youtrack.jetbrains.com/issue/KT-64115
-        // TODO only do this for wasm targets?
-        allWarningsAsErrors.set(false)
+        if (isWasmTask && this is KotlinJsCompilerOptions) {
+          // TODO https://youtrack.jetbrains.com/issue/KT-64115
+          allWarningsAsErrors.set(false)
+        } else {
+          allWarningsAsErrors.set(true)
+        }
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
           // Stub gen copies args from the parent compilation

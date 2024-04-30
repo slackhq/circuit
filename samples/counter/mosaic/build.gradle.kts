@@ -29,11 +29,11 @@ kotlin {
     jvmMain { dependencies { implementation(libs.jline) } }
   }
 
-  // TODO wat
-  //    targets.withType<KotlinJvmTarget> {
-  //     // Needed for 'application' plugin.
-  //      withJava()
-  //    }
+  // TODO https://youtrack.jetbrains.com/issue/KT-67636
+  //  targets.withType<KotlinJvmTarget> {
+  //   // Needed for 'application' plugin.
+  //    withJava()
+  //  }
 }
 
 mosaic { kotlinCompilerPlugin.set(libs.compose.compiler.map { it.toString() }) }

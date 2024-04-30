@@ -386,15 +386,6 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")
   }
 
-  pluginManager.withPlugin("org.jetbrains.kotlin.plugin.compose") {
-    if (!pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-      configure<ComposeCompilerGradlePluginExtension> {
-        // TODO only for this release, can be removed after
-        suppressKotlinVersionCompatibilityCheck.set("2.0.0-RC1")
-      }
-    }
-  }
-
   pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
     // Enforce Kotlin BOM
     dependencies { add("implementation", platform(libs.kotlin.bom)) }

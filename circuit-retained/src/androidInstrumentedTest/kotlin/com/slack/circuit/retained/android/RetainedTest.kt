@@ -96,7 +96,6 @@ class RetainedTest {
   }
 
   // Suppressions temporary until we can move this back to the circuit-retained module
-  @Suppress("INVISIBLE_REFERENCE")
   @Test
   fun clearingAfterDone() {
     setActivityContent {

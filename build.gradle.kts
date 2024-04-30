@@ -139,13 +139,13 @@ fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
 }
 
 val jvmTargetVersion = libs.versions.jvmTarget
-val jvmTargetVersionShippedLibraries = libs.versions.jvmTargetShippedLibraries
+val publishedJvmTargetVersion = libs.versions.publishedJvmTarget
 
 subprojects {
 
   // Shipped libraries target Java 8, everything else targets Java 11.
-  val isShipped = project.hasProperty("POM_ARTIFACT_ID")
-  val jvmTargetProject = if (isShipped) jvmTargetVersionShippedLibraries else jvmTargetVersion
+  val isPublished = project.hasProperty("POM_ARTIFACT_ID")
+  val jvmTargetProject = if (isPublished) publishedJvmTargetVersion else jvmTargetVersion
 
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {

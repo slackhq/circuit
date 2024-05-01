@@ -65,8 +65,12 @@ kotlin {
   }
 }
 
-tasks.withType<JavaCompile>().configureEach {
-  options.release.set(libs.versions.jvmTarget.map { it.toInt() })
-}
+tasks
+  .withType<JavaCompile>()
+  .named {
+    // Don't set the release flag on the android JavaCompile task
+    !it.endsWith("WithJavac")
+  }
+  .configureEach { options.release.set(libs.versions.jvmTarget.map(String::toInt)) }
 
 compose.desktop { application { mainClass = "com.slack.circuit.tutorial.MainKt" } }

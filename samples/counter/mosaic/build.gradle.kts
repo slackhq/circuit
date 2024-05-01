@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 plugins {
@@ -29,11 +31,10 @@ kotlin {
     jvmMain { dependencies { implementation(libs.jline) } }
   }
 
-  // TODO https://youtrack.jetbrains.com/issue/KT-67636
-  //  targets.withType<KotlinJvmTarget> {
-  //   // Needed for 'application' plugin.
-  //    withJava()
-  //  }
+  targets.withType<KotlinJvmTarget> {
+    // Needed for 'application' plugin.
+    withJava()
+  }
 }
 
 mosaic { kotlinCompilerPlugin.set(libs.compose.compiler.map { it.toString() }) }

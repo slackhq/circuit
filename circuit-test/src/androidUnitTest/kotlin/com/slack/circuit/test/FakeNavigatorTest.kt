@@ -49,6 +49,15 @@ class FakeNavigatorTest {
     assertThat(navigator.goTo(TestScreen3)).isTrue()
     assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen3)
   }
+
+  @Test
+  fun initializeWithAdditionalScreens() = runTest {
+    val navigator = FakeNavigator(TestScreen1, TestScreen2, TestScreen3)
+    val backStack = navigator.peekBackStack()
+    assertThat(backStack).hasSize(3)
+    // peekBackStack returns a list ordered from top to bottom
+    assertThat(backStack).isEqualTo(listOf(TestScreen3, TestScreen2, TestScreen1))
+  }
 }
 
 @Parcelize private data object TestScreen1 : Screen

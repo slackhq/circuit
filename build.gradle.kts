@@ -143,8 +143,12 @@ fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
 }
 
 val jvmTargetVersion = libs.versions.jvmTarget
+val publishedJvmTargetVersion = libs.versions.publishedJvmTarget
 
 subprojects {
+  val isPublished = project.hasProperty("POM_ARTIFACT_ID")
+  val jvmTargetProject = if (isPublished) publishedJvmTargetVersion else jvmTargetVersion
+
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
       toolchain {
@@ -155,7 +159,9 @@ subprojects {
     }
 
     tasks.withType<JavaCompile>().configureEach {
-      options.release.set(jvmTargetVersion.map(String::toInt))
+      options.release.set(
+        jvmTargetProject.map(JavaVersion::toVersion).map { it.majorVersion.toInt() }
+      )
     }
 
     // This is the default base plugin applied on all projects, so safe to add this hook here
@@ -183,7 +189,12 @@ subprojects {
           allWarningsAsErrors.set(true)
         }
         if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
+          jvmTarget.set(
+            jvmTargetProject
+              .map(JavaVersion::toVersion)
+              .map { it.toString() }
+              .map(JvmTarget::fromTarget)
+          )
           // Stub gen copies args from the parent compilation
           if (this@configureEach !is KaptGenerateStubsTask) {
             freeCompilerArgs.addAll(
@@ -331,8 +342,8 @@ subprojects {
     }
 
     compileOptions {
-      sourceCompatibility = JavaVersion.VERSION_11
-      targetCompatibility = JavaVersion.VERSION_11
+      sourceCompatibility = jvmTargetProject.map(JavaVersion::toVersion).get()
+      targetCompatibility = jvmTargetProject.map(JavaVersion::toVersion).get()
     }
 
     lint {

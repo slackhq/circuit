@@ -42,10 +42,11 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   )
 
   public constructor(
-    root: Screen
+    root: Screen,
+    vararg additionalScreens: Screen,
   ) : this(
     // Use a real back stack
-    SaveableBackStack(root)
+    SaveableBackStack(root).apply { additionalScreens.forEach { push(it) } }
   )
 
   private val goToEvents = Turbine<GoToEvent>()
@@ -93,14 +94,46 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
   public suspend fun awaitPop(): PopEvent = popEvents.awaitItem()
 
-  /** Asserts that all events so far have been consumed. */
+  /** Asserts that all goTo events so far have been consumed. */
+  @Deprecated(
+    "Only checks for goToEvents, use assertGoToIsEmpty instead",
+    replaceWith = ReplaceWith("assertGoToIsEmpty()"),
+  )
   public fun assertIsEmpty() {
     goToEvents.ensureAllEventsConsumed()
   }
 
-  /** Asserts that no events have been emitted. */
+  public fun assertGoToIsEmpty() {
+    goToEvents.ensureAllEventsConsumed()
+  }
+
+  public fun assertPopIsEmpty() {
+    popEvents.ensureAllEventsConsumed()
+  }
+
+  public fun assertResetRootIsEmpty() {
+    resetRootEvents.ensureAllEventsConsumed()
+  }
+
+  /** Asserts that no goTo events have been emitted. */
+  @Deprecated(
+    "Only checks for goToEvents, use expectNoGoToEvents instead",
+    replaceWith = ReplaceWith("expectNoGoToEvents()"),
+  )
   public fun expectNoEvents() {
     goToEvents.expectNoEvents()
+  }
+
+  public fun expectNoGoToEvents() {
+    goToEvents.expectNoEvents()
+  }
+
+  public fun expectNoPopEvents() {
+    popEvents.expectNoEvents()
+  }
+
+  public fun expectNoResetRootEvents() {
+    resetRootEvents.expectNoEvents()
   }
 
   /** Represents a recorded [Navigator.goTo] event. */

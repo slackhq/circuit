@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.agp.test)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.kotlin.plugin.compose)
 }
 
 android {

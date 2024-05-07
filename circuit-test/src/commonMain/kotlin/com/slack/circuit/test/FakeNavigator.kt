@@ -42,19 +42,21 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   )
 
   public constructor(
-    root: Screen
+    root: Screen,
+    vararg additionalScreens: Screen,
   ) : this(
     // Use a real back stack
-    SaveableBackStack(root)
+    SaveableBackStack(root).apply { additionalScreens.forEach { push(it) } }
   )
 
-  private val goToEvents = Turbine<Screen>()
+  private val goToEvents = Turbine<GoToEvent>()
   private val resetRootEvents = Turbine<ResetRootEvent>()
   private val popEvents = Turbine<PopEvent>()
 
-  override fun goTo(screen: Screen) {
-    delegate.goTo(screen)
-    goToEvents.add(screen)
+  override fun goTo(screen: Screen): Boolean {
+    val success = delegate.goTo(screen)
+    goToEvents.add(GoToEvent(screen, success))
+    return success
   }
 
   override fun pop(result: PopResult?): Screen? {
@@ -78,10 +80,13 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
    *
    * For non-coroutines users only.
    */
-  public fun takeNextScreen(): Screen = goToEvents.takeItem()
+  public fun takeNextScreen(): Screen = goToEvents.takeItem().assertSuccessfulScreen()
 
   /** Awaits the next [Screen] that was navigated to or throws if no screens were navigated to. */
-  public suspend fun awaitNextScreen(): Screen = goToEvents.awaitItem()
+  public suspend fun awaitNextScreen(): Screen = goToEvents.awaitItem().assertSuccessfulScreen()
+
+  /** Awaits the next navigation [goTo] or throws if no goTo are performed. */
+  public suspend fun awaitNextGoTo(): GoToEvent = goToEvents.awaitItem()
 
   /** Awaits the next navigation [resetRoot] or throws if no resets were performed. */
   public suspend fun awaitResetRoot(): ResetRootEvent = resetRootEvents.awaitItem()
@@ -89,15 +94,50 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
   public suspend fun awaitPop(): PopEvent = popEvents.awaitItem()
 
-  /** Asserts that all events so far have been consumed. */
+  /** Asserts that all goTo events so far have been consumed. */
+  @Deprecated(
+    "Only checks for goToEvents, use assertGoToIsEmpty instead",
+    replaceWith = ReplaceWith("assertGoToIsEmpty()"),
+  )
   public fun assertIsEmpty() {
     goToEvents.ensureAllEventsConsumed()
   }
 
-  /** Asserts that no events have been emitted. */
+  public fun assertGoToIsEmpty() {
+    goToEvents.ensureAllEventsConsumed()
+  }
+
+  public fun assertPopIsEmpty() {
+    popEvents.ensureAllEventsConsumed()
+  }
+
+  public fun assertResetRootIsEmpty() {
+    resetRootEvents.ensureAllEventsConsumed()
+  }
+
+  /** Asserts that no goTo events have been emitted. */
+  @Deprecated(
+    "Only checks for goToEvents, use expectNoGoToEvents instead",
+    replaceWith = ReplaceWith("expectNoGoToEvents()"),
+  )
   public fun expectNoEvents() {
     goToEvents.expectNoEvents()
   }
+
+  public fun expectNoGoToEvents() {
+    goToEvents.expectNoEvents()
+  }
+
+  public fun expectNoPopEvents() {
+    popEvents.expectNoEvents()
+  }
+
+  public fun expectNoResetRootEvents() {
+    resetRootEvents.expectNoEvents()
+  }
+
+  /** Represents a recorded [Navigator.goTo] event. */
+  public data class GoToEvent(val screen: Screen, val success: Boolean)
 
   /** Represents a recorded [Navigator.pop] event. */
   public data class PopEvent(val poppedScreen: Screen?, val result: PopResult? = null)
@@ -109,4 +149,11 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     val saveState: Boolean = false,
     val restoreState: Boolean = false,
   )
+
+  private fun GoToEvent.assertSuccessfulScreen(): Screen {
+    if (!success) {
+      throw AssertionError("Screen navigation was not successful")
+    }
+    return screen
+  }
 }

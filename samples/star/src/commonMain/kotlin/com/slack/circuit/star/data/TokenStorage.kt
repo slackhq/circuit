@@ -18,6 +18,7 @@ import kotlinx.datetime.Instant
 interface TokenStorage {
   /** Updates the current stored auth data. */
   suspend fun updateAuthData(authData: AuthenticationData)
+
   /** Returns the current auth data or null if none are stored. */
   suspend fun getAuthData(): AuthenticationData?
 }

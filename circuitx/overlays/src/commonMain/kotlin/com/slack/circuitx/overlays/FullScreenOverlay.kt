@@ -67,7 +67,7 @@ internal class DispatchingOverlayNavigator(
   private val overlayNavigator: OverlayNavigator<Unit>,
   private val onPop: () -> Unit,
 ) : Navigator {
-  override fun goTo(screen: Screen) {
+  override fun goTo(screen: Screen): Boolean {
     error("goTo() is not supported in full screen overlays!")
   }
 

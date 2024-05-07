@@ -11,6 +11,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.slack.circuit.internal.test.TestScreen
 import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class SaveableBackStackTest {
 
@@ -99,6 +101,14 @@ class SaveableBackStackTest {
 
     assertThat(backStack.entryList.toList()).isEqualTo(restored.entryList.toList())
     assertThat(backStack.stateStore.toMap()).isEqualTo(restored.stateStore.toMap())
+  }
+
+  @Test
+  fun test_guard_pushing_same_top_record() {
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    assertTrue(backStack.push(TestScreen.ScreenA))
+    assertTrue(backStack.push(TestScreen.ScreenB))
+    assertFalse(backStack.push(TestScreen.ScreenB))
   }
 }
 

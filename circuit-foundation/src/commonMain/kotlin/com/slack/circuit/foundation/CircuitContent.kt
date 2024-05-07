@@ -45,8 +45,9 @@ public fun CircuitContent(
   val navigator =
     remember(onNavEvent) {
       object : Navigator {
-        override fun goTo(screen: Screen) {
+        override fun goTo(screen: Screen): Boolean {
           onNavEvent(NavEvent.GoTo(screen))
+          return true
         }
 
         override fun resetRoot(

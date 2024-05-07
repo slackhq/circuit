@@ -249,7 +249,7 @@ internal fun OrderTacosUi(state: OrderTacosScreen.State, modifier: Modifier = Mo
 
 internal enum class Direction(val icon: ImageVector, @StringRes val descriptionResId: Int) {
   LEFT(Icons.AutoMirrored.Filled.ArrowBack, R.string.top_bar_back),
-  RIGHT(Icons.AutoMirrored.Filled.ArrowForward, R.string.top_bar_forward)
+  RIGHT(Icons.AutoMirrored.Filled.ArrowForward, R.string.top_bar_forward),
 }
 
 @Composable

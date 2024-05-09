@@ -1,9 +1,7 @@
 package com.slack.circuit.star.petdetail
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -22,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -34,24 +31,22 @@ import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.thenIfSharedTransitionScope
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
-import com.slack.circuit.star.ui.SharedElementTransitionScope
-import com.slack.circuit.star.ui.sharedElementAnimatedContentScope
 import kotlinx.coroutines.launch
 
 @OptIn(
   ExperimentalSharedTransitionApi::class,
   ExperimentalMaterial3WindowSizeClassApi::class,
   ExperimentalFoundationApi::class,
-  ExperimentalAnimationApi::class,
 )
 @Composable
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
-actual fun PetPhotoCarousel(state: State, modifier: Modifier) = SharedElementTransitionScope {
+actual fun PetPhotoCarousel(state: State, modifier: Modifier) {
   val (id, name, photoUrls, photoUrlMemoryCacheKey) = state
   val context = LocalPlatformContext.current
   // Prefetch images
@@ -74,7 +69,7 @@ actual fun PetPhotoCarousel(state: State, modifier: Modifier) = SharedElementTra
       WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
       else -> modifier.fillMaxSize()
     }
-  val boundsTransform = { _: Rect, _: Rect -> tween<Rect>(1400) }
+  //  val boundsTransform = { _: Rect, _: Rect -> tween<Rect>(1400) }
   Column(
     columnModifier
       .testTag(CAROUSEL_TAG)
@@ -109,15 +104,17 @@ actual fun PetPhotoCarousel(state: State, modifier: Modifier) = SharedElementTra
       name = name,
       photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
       modifier =
-        Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(key = "animal-${id}"),
-            animatedVisibilityScope = sharedElementAnimatedContentScope(),
-            boundsTransform = boundsTransform,
-          )
-          .sharedElement(
+        Modifier.thenIfSharedTransitionScope {
+          Modifier.sharedElement(
             state = rememberSharedContentState(key = "animal-image-${id}"),
-            animatedVisibilityScope = sharedElementAnimatedContentScope(),
-          ),
+            animatedVisibilityScope = it,
+          )
+          //              .sharedBounds(
+          //                sharedContentState = rememberSharedContentState(key = "animal-${id}"),
+          //                animatedVisibilityScope = sharedElementAnimatedContentScope(),
+          //                boundsTransform = boundsTransform,
+          //              )
+        },
     )
 
     HorizontalPagerIndicator(

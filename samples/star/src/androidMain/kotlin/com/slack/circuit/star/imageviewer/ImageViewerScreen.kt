@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.thenIfSharedTransitionScope
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -38,10 +39,8 @@ import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
-import com.slack.circuit.star.ui.SharedElementTransitionScope
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
-import com.slack.circuit.star.ui.sharedElementAnimatedContentScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -77,7 +76,7 @@ constructor(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
-fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
+fun ImageViewer(state: State, modifier: Modifier = Modifier) {
   var showChrome by remember { mutableStateOf(true) }
   val systemUiController = rememberSystemUiController()
   systemUiController.isSystemBarsVisible = showChrome
@@ -97,9 +96,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
     val backgroundAlpha: Float by
       animateFloatAsState(targetValue = 1f, animationSpec = tween(), label = "backgroundAlpha")
     Surface(
-      modifier
-        .fillMaxSize()
-        .animateContentSize(),
+      modifier.fillMaxSize().animateContentSize(),
       color = Color.Black.copy(alpha = backgroundAlpha),
       contentColor = Color.White,
     ) {
@@ -122,17 +119,21 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
                 .apply { state.placeholderKey?.let(::placeholderMemoryCacheKey) }
                 .build(),
             contentDescription = "TODO",
-            modifier = Modifier.fillMaxSize()
-              .sharedBounds(
-                sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
-                animatedVisibilityScope = sharedElementAnimatedContentScope(),
-              )
-              .sharedElement(
-                state = rememberSharedContentState(key = "animal-image-${state.id}"),
-                animatedVisibilityScope = sharedElementAnimatedContentScope(),
-              )
-              .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            ,
+            modifier =
+              Modifier.fillMaxSize()
+                .thenIfSharedTransitionScope {
+                  Modifier
+                    //                    .sharedBounds(
+                    //                      sharedContentState = rememberSharedContentState(key =
+                    // "animal-${state.id}"),
+                    //                      animatedVisibilityScope = it,
+                    //                    )
+                    .sharedElement(
+                      state = rememberSharedContentState(key = "animal-image-${state.id}"),
+                      animatedVisibilityScope = it,
+                    )
+                }
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             state = imageState,
             onClick = { showChrome = !showChrome },
           )

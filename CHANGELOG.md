@@ -17,6 +17,8 @@ Changelog
 - Mark `EventListener` as `@Stable`.
 - Mark `EventListener.Factory` as `@Stable`.
 - [samples] Improve interop sample significantly.
+- Update Kotlin to `1.9.24`.
+- Update KSP to `1.9.24-2.0.20`.
 
 0.20.0
 ------

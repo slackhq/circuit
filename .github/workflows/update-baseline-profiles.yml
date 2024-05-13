@@ -36,6 +36,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Update SDK
+        run: |
+          echo "Accepting SDK licenses"
+          yes | "${ANDROID_HOME}"/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          echo "Installing emulator image"
+          "${ANDROID_HOME}"/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-33;google_apis;x86_64"
+
       - name: Generate baseline profiles
         run: ./scripts/update-baseline-profiles.sh
 

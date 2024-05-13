@@ -13,9 +13,6 @@ plugins {
 
 version = "1.0.0-SNAPSHOT"
 
-// Disabled because SKIE doesn't support pre-releases
-skie { isEnabled.set(false) }
-
 kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }

@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.Snapshot
 import com.benasher44.uuid.uuid4
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -31,6 +32,8 @@ import kotlinx.coroutines.channels.Channel
 /**
  * Creates and remembers a [SaveableBackStack] with the given [root] screen.
  *
+ * If [root] changes, a new backstack will be created.
+ *
  * @param init optional initializer callback to perform extra initialization logic.
  */
 @Composable
@@ -38,16 +41,17 @@ public fun rememberSaveableBackStack(
   root: Screen,
   init: SaveableBackStack.() -> Unit = {},
 ): SaveableBackStack =
-  rememberSaveable(saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
+  rememberSaveable(root, saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
 
 /**
  * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
- * [initialScreens] must not be empty.
+ *
+ * [initialScreens] must not be empty. If [initialScreens] changes, a new backstack will be created.
  */
 @Composable
 public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
-  return rememberSaveable(saver = SaveableBackStack.Saver) {
+  return rememberSaveable(initialScreens, saver = SaveableBackStack.Saver) {
     SaveableBackStack(null).apply {
       for (screen in initialScreens) {
         push(screen)
@@ -87,18 +91,24 @@ internal constructor(
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public override fun push(screen: Screen, resultKey: String?) {
+  public override fun push(screen: Screen, resultKey: String?): Boolean {
     return push(screen, emptyMap(), resultKey)
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?) {
-    push(Record(screen, args), resultKey)
+  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?): Boolean {
+    return push(Record(screen, args), resultKey)
   }
 
-  public override fun push(record: Record, resultKey: String?) {
-    entryList.add(0, record)
-    // Clear the cached pending result from the previous top record
-    entryList.getOrNull(1)?.apply { resultKey?.let(::prepareForResult) }
+  public override fun push(record: Record, resultKey: String?): Boolean {
+    val topRecord = Snapshot.withoutReadObservation { entryList.firstOrNull() }
+    // Guard pushing the exact same record value to the top, records.key is always unique so verify
+    // the parameters individually.
+    return if (topRecord?.screen != record.screen || topRecord.args != record.args) {
+      entryList.add(0, record)
+      // Clear the cached pending result from the previous top record
+      entryList.getOrNull(1)?.apply { resultKey?.let(::prepareForResult) }
+      true
+    } else false
   }
 
   override fun pop(result: PopResult?): Record? {

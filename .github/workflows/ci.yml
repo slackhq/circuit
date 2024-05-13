@@ -37,7 +37,7 @@ jobs:
       - name: Build and run checks
         id: gradle-build
         run: |
-          ./gradlew --continue --no-configuration-cache \
+          ./gradlew --quiet --continue --no-configuration-cache \
               check \
               :samples:star:apk:assembleDebug \
               detektMain \
@@ -47,7 +47,7 @@ jobs:
       - name: Verify STAR desktop builds
         id: gradle-build-star-desktop
         run: |
-          ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop
+          ./gradlew :samples:star:jvmJar -Pcircuit.buildDesktop --quiet
 
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)
@@ -55,7 +55,7 @@ jobs:
         id: gradle-instrumentation
         env:
           EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
-        run: ./gradlew testReleaseWithEmulatorWtf
+        run: ./gradlew testReleaseWithEmulatorWtf --quiet
 
       - name: Enable KVM group perms
         run: |
@@ -78,7 +78,7 @@ jobs:
           heap-size: 600M
           script: |
             # Disable benchmark tests as they do not work on emulators
-            ./gradlew ciConnectedCheck -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=none
+            ./gradlew ciConnectedCheck --quiet -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=none
 
       - name: (Fail-only) Upload reports
         if: failure()
@@ -123,7 +123,7 @@ jobs:
       - name: Run iOS Simulator tests
         id: gradle-ios-tests
         run: |
-          ./gradlew --continue --no-configuration-cache \
+          ./gradlew --quiet --continue --no-configuration-cache \
               iosSimulatorArm64Test
 
       - name: Build iOS samples
@@ -138,7 +138,7 @@ jobs:
           lfs: 'true'
 
       - name: Check LFS files
-        uses: actionsdesk/lfs-warning@v3.2
+        uses: actionsdesk/lfs-warning@v3.3
 
       - name: Install JDK
         uses: actions/setup-java@v4
@@ -151,7 +151,7 @@ jobs:
 
       - name: Verify Snapshots
         id: gradle-snapshots
-        run: ./gradlew verifyRoborazzi
+        run: ./gradlew verifyRoborazzi --quiet
 
       - name: (Fail-only) Upload reports
         if: failure()
@@ -181,4 +181,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Publish snapshot (main branch only)
-        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache
+        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache --quiet

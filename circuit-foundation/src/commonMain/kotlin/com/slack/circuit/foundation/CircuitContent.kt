@@ -45,8 +45,9 @@ public fun CircuitContent(
   val navigator =
     remember(onNavEvent) {
       object : Navigator {
-        override fun goTo(screen: Screen) {
+        override fun goTo(screen: Screen): Boolean {
           onNavEvent(NavEvent.GoTo(screen))
+          return true
         }
 
         override fun resetRoot(
@@ -110,7 +111,7 @@ internal fun CircuitContent(
   val ui = rememberUi(screen, context, eventListener, circuit::ui)
 
   if (ui != null && presenter != null) {
-    (CircuitContent(screen, modifier, presenter, ui, eventListener, key))
+    (CircuitContent(screen, presenter, ui, modifier, eventListener, key))
   } else {
     eventListener.onUnavailableContent(screen, presenter, ui, context)
     unavailableContent(screen, modifier)
@@ -120,9 +121,9 @@ internal fun CircuitContent(
 @Composable
 public fun <UiState : CircuitUiState> CircuitContent(
   screen: Screen,
-  modifier: Modifier,
   presenter: Presenter<UiState>,
   ui: Ui<UiState>,
+  modifier: Modifier = Modifier,
   eventListener: EventListener = EventListener.NONE,
   key: Any? = screen,
 ): Unit =

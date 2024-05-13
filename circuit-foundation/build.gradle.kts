@@ -23,12 +23,10 @@ kotlin {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }
-  if (hasProperty("enableWasm")) {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-      moduleName = property("POM_ARTIFACT_ID").toString()
-      browser()
-    }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
   }
   // endregion
 
@@ -101,6 +99,10 @@ kotlin {
         implementation(libs.compose.ui.testing.junit)
       }
     }
+    // We use a common folder instead of a common source set because there is no commonizer
+    // which exposes the browser APIs across these two targets.
+    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 

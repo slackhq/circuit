@@ -31,12 +31,12 @@ constructor(
   @StyleRes defStyleRes: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-  private val binding: CounterViewBinding
+  private val binding: CounterViewBinding =
+    CounterViewBinding.inflate(LayoutInflater.from(context), this, true)
   private var onIncrementClickListener: OnClickListener? = null
   private var onDecrementClickListener: OnClickListener? = null
 
   init {
-    binding = CounterViewBinding.inflate(LayoutInflater.from(context), this, true)
     binding.increment.setOnClickListener { onIncrementClickListener?.onClick(it) }
     binding.decrement.setOnClickListener { onDecrementClickListener?.onClick(it) }
   }

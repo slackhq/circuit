@@ -41,8 +41,9 @@ public interface BackStack<R : Record> : Iterable<R> {
    * @param record The record to push onto the stack.
    * @param resultKey An optional key that would be used to tag a result produced by this record.
    *   The previous record on the stack will receive this key.
+   * @return If the [record] was successfully pushed onto the back stack
    */
-  public fun push(record: R, resultKey: String? = null)
+  public fun push(record: R, resultKey: String? = null): Boolean
 
   /**
    * Push a new [Screen] onto the back stack. This will be enveloped in a [Record] and the new
@@ -51,8 +52,9 @@ public interface BackStack<R : Record> : Iterable<R> {
    * @param screen The screen to push onto the stack.
    * @param resultKey An optional key that would be used to tag a result produced by this record.
    *   The previous record on the stack will receive this key.
+   * @return If the [screen] was successfully pushed onto the back stack
    */
-  public fun push(screen: Screen, resultKey: String? = null)
+  public fun push(screen: Screen, resultKey: String? = null): Boolean
 
   /**
    * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was

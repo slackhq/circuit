@@ -24,8 +24,9 @@ import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapp
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
@@ -138,8 +139,12 @@ fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
 }
 
 val jvmTargetVersion = libs.versions.jvmTarget
+val publishedJvmTargetVersion = libs.versions.publishedJvmTarget
 
 subprojects {
+  val isPublished = project.hasProperty("POM_ARTIFACT_ID")
+  val jvmTargetProject = if (isPublished) publishedJvmTargetVersion else jvmTargetVersion
+
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
       toolchain {
@@ -150,7 +155,9 @@ subprojects {
     }
 
     tasks.withType<JavaCompile>().configureEach {
-      options.release.set(jvmTargetVersion.map(String::toInt))
+      options.release.set(
+        jvmTargetProject.map(JavaVersion::toVersion).map { it.majorVersion.toInt() }
+      )
     }
 
     // This is the default base plugin applied on all projects, so safe to add this hook here
@@ -166,7 +173,12 @@ subprojects {
       compilerOptions {
         allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(jvmTargetVersion.map(JvmTarget::fromTarget))
+          jvmTarget.set(
+            jvmTargetProject
+              .map(JavaVersion::toVersion)
+              .map { it.toString() }
+              .map(JvmTarget::fromTarget)
+          )
           // Stub gen copies args from the parent compilation
           if (this@configureEach !is KaptGenerateStubsTask) {
             freeCompilerArgs.addAll(
@@ -339,8 +351,8 @@ subprojects {
     }
 
     compileOptions {
-      sourceCompatibility = JavaVersion.VERSION_11
-      targetCompatibility = JavaVersion.VERSION_11
+      sourceCompatibility = jvmTargetProject.map(JavaVersion::toVersion).get()
+      targetCompatibility = jvmTargetProject.map(JavaVersion::toVersion).get()
     }
 
     lint {
@@ -457,13 +469,11 @@ subprojects {
         }
       }
     }
-    tasks.withType<KotlinNativeCompile>().configureEach {
-      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
-    }
-    @Suppress("INVISIBLE_REFERENCE")
-    tasks.withType<org.jetbrains.kotlin.gradle.plugin.mpp.apple.FrameworkCopy>().configureEach {
-      @Suppress("INVISIBLE_MEMBER")
-      notCompatibleWithConfigurationCache("https://youtrack.jetbrains.com/issue/KT-49933")
+
+    // Workaround for missing task dependency in WASM
+    val executableCompileSyncTasks = tasks.withType(DefaultIncrementalSyncTask::class.java)
+    tasks.withType(KotlinJsTest::class.java).configureEach {
+      mustRunAfter(executableCompileSyncTasks)
     }
   }
 

@@ -124,9 +124,10 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   }
   val answeringNavigator = remember {
     object : GoToNavigator {
-      override fun goTo(screen: Screen) {
+      override fun goTo(screen: Screen): Boolean {
         currentBackStack.push(screen, key)
         launched = true
+        return true
       }
     }
   }

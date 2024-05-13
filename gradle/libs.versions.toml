@@ -1,63 +1,64 @@
 [versions]
 accompanist = "0.34.0"
-androidx-activity = "1.8.2"
+androidx-activity = "1.9.0"
 androidx-annotation = "1.7.1"
 androidx-appcompat = "1.6.1"
 androidx-browser = "1.8.0"
 androidx-lifecycle = "2.7.0"
-agp = "8.3.1"
+agp = "8.4.0"
 anvil = "2.4.9"
-atomicfu = "0.23.2"
-benchmark = "1.2.3"
+atomicfu = "0.24.0"
+benchmark = "1.2.4"
 coil = "2.6.0"
 coil3 = "3.0.0-alpha06"
-compose-animation = "1.6.4"
+compose-animation = "1.6.7"
 # Pre-release versions for testing Kotlin previews can be found here
 # https://androidx.dev/storage/compose-compiler/repository
-compose-compiler-version = "1.5.11"
+compose-compiler-version = "1.5.13"
 compose-compiler-kotlinVersion = "1.9.23"
-compose-foundation = "1.6.4"
-compose-material = "1.6.4"
+compose-foundation = "1.6.7"
+compose-material = "1.6.7"
 compose-material3 = "1.2.1"
-compose-runtime = "1.6.4"
-compose-ui = "1.6.4"
-compose-jb = "1.6.1"
-compose-jb-compiler = "1.5.10.1"
+compose-runtime = "1.6.7"
+compose-ui = "1.6.7"
+compose-jb = "1.6.2"
+compose-jb-compiler = "1.5.10.2"
 compose-jb-kotlinVersion = "1.9.23"
 compose-integration-constraintlayout = "1.0.1"
-dagger = "2.51"
-datastore = "1.1.0-beta02"
-detekt = "1.23.5"
+dagger = "2.51.1"
+datastore = "1.1.1"
+detekt = "1.23.6"
 dokka = "1.9.20"
 eithernet = "1.8.1"
 jdk = "21"
 jvmTarget = "11"
-kct = "0.4.0"
-kotlin = "1.9.23"
+publishedJvmTarget = "1.8"
+kct = "0.4.1"
+kotlin = "1.9.24"
 kotlinpoet = "1.16.0"
-kotlinx-coroutines = "1.8.0"
-ksp = "1.9.23-1.0.19"
-ktfmt = "0.47"
-ktor = "2.3.9"
-leakcanary = "2.13"
+kotlinx-coroutines = "1.8.1"
+ksp = "1.9.24-1.0.20"
+ktfmt = "0.49"
+ktor = "2.3.11"
+leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.28.0"
-molecule = "1.4.1"
+molecule = "1.4.2"
 mosaic = "0.11.0"
 moshi = "1.15.1"
-moshix = "0.25.1"
-okhttp = "5.0.0-alpha.12"
+moshix = "0.26.0"
+okhttp = "5.0.0-alpha.14"
 okio = "3.9.0"
 paparazzi = "1.3.3"
 picnic = "0.7.0"
-retrofit = "2.10.0"
-robolectric = "4.11.1"
-roborazzi = "1.11.0"
-skie = "0.6.2"
+retrofit = "2.11.0"
+robolectric = "4.12.1"
+roborazzi = "1.15.0"
+skie = "0.7.0"
 spotless = "6.23.3"
-sqldelight = "2.0.1"
-telephoto = "0.8.0"
-testParameterInjector = "1.15"
+sqldelight = "2.0.2"
+telephoto = "0.11.2"
+testParameterInjector = "1.16"
 turbine = "1.1.0"
 versionsPlugin = "0.49.0"
 
@@ -95,7 +96,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.2" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.0" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -111,7 +112,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.03.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.05.00" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler-version" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
@@ -143,7 +144,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
 
-androidx-core = "androidx.core:core-ktx:1.12.0"
+androidx-core = "androidx.core:core-ktx:1.13.1"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -171,7 +172,7 @@ autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", versi
 
 baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
 
-clikt = "com.github.ajalt.clikt:clikt:4.2.2"
+clikt = "com.github.ajalt.clikt:clikt:4.4.0"
 
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
@@ -214,7 +215,7 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jline = "org.jline:jline:3.25.1"
+jline = "org.jline:jline:3.26.1"
 jsoup = "org.jsoup:jsoup:1.17.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
@@ -243,7 +244,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.3.1"
 
-material = "com.google.android.material:material:1.11.0"
+material = "com.google.android.material:material:1.12.0"
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
@@ -272,7 +273,7 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
-testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
+testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.2"

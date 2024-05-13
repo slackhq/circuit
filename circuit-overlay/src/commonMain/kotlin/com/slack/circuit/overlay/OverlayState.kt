@@ -20,5 +20,5 @@ public enum class OverlayState {
   HIDDEN,
 
   /** Indicates that an overlay is currently showing. */
-  SHOWING
+  SHOWING,
 }

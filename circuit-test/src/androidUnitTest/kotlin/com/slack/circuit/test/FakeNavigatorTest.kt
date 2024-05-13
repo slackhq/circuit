@@ -4,6 +4,7 @@ package com.slack.circuit.test
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.test.FakeNavigator.GoToEvent
 import com.slack.circuit.test.FakeNavigator.ResetRootEvent
 import kotlinx.coroutines.test.runTest
 import kotlinx.parcelize.Parcelize
@@ -33,6 +34,29 @@ class FakeNavigatorTest {
 
     assertThat(oldScreens).containsExactly(TestScreen1)
     assertThat(navigator.awaitResetRoot()).isEqualTo(ResetRootEvent(TestScreen1, oldScreens))
+  }
+
+  @Test
+  fun goTo() = runTest {
+    val navigator = FakeNavigator(TestScreen1)
+    // Go to a second screen
+    assertThat(navigator.goTo(TestScreen2)).isTrue()
+    assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen2)
+    // Going to the same screen won't navigate
+    assertThat(navigator.goTo(TestScreen2)).isFalse()
+    assertThat(navigator.awaitNextGoTo()).isEqualTo(GoToEvent(TestScreen2, success = false))
+    // Go to a third screen
+    assertThat(navigator.goTo(TestScreen3)).isTrue()
+    assertThat(navigator.awaitNextScreen()).isEqualTo(TestScreen3)
+  }
+
+  @Test
+  fun initializeWithAdditionalScreens() = runTest {
+    val navigator = FakeNavigator(TestScreen1, TestScreen2, TestScreen3)
+    val backStack = navigator.peekBackStack()
+    assertThat(backStack).hasSize(3)
+    // peekBackStack returns a list ordered from top to bottom
+    assertThat(backStack).isEqualTo(listOf(TestScreen3, TestScreen2, TestScreen1))
   }
 }
 

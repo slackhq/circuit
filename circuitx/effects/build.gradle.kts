@@ -84,10 +84,6 @@ kotlin {
   }
 }
 
-// adding it here to make sure skiko is unpacked and available in web tests
-// https://github.com/JetBrains/compose-multiplatform/issues/4133
-compose.experimental { web.application {} }
-
 android {
   namespace = "com.slack.circuitx.sideeffects"
 

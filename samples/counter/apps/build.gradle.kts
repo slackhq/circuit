@@ -24,8 +24,6 @@ compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
 }
 
-compose.experimental { web.application {} }
-
 kotlin {
   // region KMP Targets
   androidTarget()

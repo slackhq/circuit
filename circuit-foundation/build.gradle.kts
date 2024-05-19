@@ -131,9 +131,6 @@ tasks
     }
   }
 
-// adding it here to make sure skiko is unpacked and available in web tests
-compose.experimental { web.application {} }
-
 android {
   namespace = "com.slack.circuit.foundation"
   defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }

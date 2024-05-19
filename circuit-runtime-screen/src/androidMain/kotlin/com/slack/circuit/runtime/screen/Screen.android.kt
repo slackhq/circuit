@@ -6,4 +6,4 @@ import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 
 @Immutable public actual interface Screen : Parcelable
-@Immutable public actual interface StatelessScreen : Screen
+@Immutable public actual interface StaticScreen : Screen

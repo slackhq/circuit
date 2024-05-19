@@ -11,9 +11,8 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import kotlin.LazyThreadSafetyMode.NONE
 
-/** TODO doc */
 @Suppress("UNCHECKED_CAST")
-public fun <UiState : CircuitUiState> statelessPresenter(): Presenter<UiState> =
+internal fun <UiState : CircuitUiState> statelessPresenter(): Presenter<UiState> =
   STATELESS as Presenter<UiState>
 
 /**

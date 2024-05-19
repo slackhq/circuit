@@ -30,3 +30,6 @@ import androidx.compose.runtime.Immutable
  * ```
  */
 @Immutable public expect interface Screen
+
+/** TODO doc */
+public expect interface StatelessScreen : Screen

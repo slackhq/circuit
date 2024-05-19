@@ -16,6 +16,7 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.StatelessScreen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 
@@ -95,6 +96,12 @@ public class Circuit private constructor(builder: Builder) {
       }
     }
 
+    // If it's stateless, gracefully fall back and return a stateless presenter and assume this is a
+    // UI-only screen. We still try giving other presenter factories
+    if (screen is StatelessScreen) {
+      return statelessPresenter<CircuitUiState>()
+    }
+
     return null
   }
 
@@ -145,6 +152,26 @@ public class Circuit private constructor(builder: Builder) {
       addUiFactory { screen, _ ->
         if (screen is S) {
           ui<UiState> { state, modifier -> content(state, modifier) }
+        } else {
+          null
+        }
+      }
+    }
+
+    /**
+     * Adds a static UI that does not require a presenter. This is useful for screens that do not
+     * have computed state. They can either be stateless or use the given [screen][S] as an input
+     * for its state.
+     *
+     * When this is used, no corresponding [Presenter] needs to be added. Internally, an inert one
+     * is created for linking purposes but is never used.
+     */
+    public inline fun <reified S : Screen, UiState : CircuitUiState> addStaticUi(
+      crossinline content: @Composable (screen: S, modifier: Modifier) -> Unit
+    ): Builder = apply {
+      addUiFactory { screen, _ ->
+        if (screen is S) {
+          ui<UiState> { _, modifier -> content(screen, modifier) }
         } else {
           null
         }

@@ -27,8 +27,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-@CommonParcelize
-data object AboutScreen : StaticScreen
+@CommonParcelize data object AboutScreen : StaticScreen
 
 @OptIn(ExperimentalResourceApi::class)
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)

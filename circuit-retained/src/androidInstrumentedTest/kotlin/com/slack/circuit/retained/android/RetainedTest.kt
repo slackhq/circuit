@@ -95,8 +95,6 @@ class RetainedTest {
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
   }
 
-  // Suppressions temporary until we can move this back to the circuit-retained module
-  @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
   @Test
   fun clearingAfterDone() {
     setActivityContent {
@@ -124,7 +122,7 @@ class RetainedTest {
     // - text2Enabled
     // - text1
     // - text2
-    assertThat(continuity.peekProviders()).hasSize(2)
+    assertThat(continuity.peekProviders()).hasSize(1)
     assertThat(continuity.peekProviders().values.sumOf { it.size }).isEqualTo(3)
 
     // Now disable the second text

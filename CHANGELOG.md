@@ -5,8 +5,9 @@ Changelog
 --------------
 
 - **New**: Add WASM targets.
-- **New**: Add `FakeNavigator` functions to check for the lack of pop/resetRoot events
-- **New**: Add `FakeNavigator` constructor param to add additional screens to the backstack
+- **New**: Add `FakeNavigator` functions to check for the lack of pop/resetRoot events.
+- **New**: Add `FakeNavigator` constructor param to add additional screens to the backstack.
+- **New**: Add support for static UIs. In some cases, a UI may not need a presenter to compute or manage its state. Examples of this include UIs that are stateless or can derive their state from a single static input or an input [Screen]'s properties. In these cases, make your _screen_ implement the `StaticScreen` interface. When a `StaticScreen` is used, Circuit will internally allow the UI to run on its own and won't connect it to a presenter if no presenter is provided.
 - **Behaviour Change**: `NavigatorImpl.goTo` no longer navigates if the `Screen` is equal to `Navigator.peek()`.
 - **Behaviour Change**: `Presenter.present` is now annotated with `@ComposableTarget("presenter")`. This helps prevent use of Compose UI in the presentation logic as the compiler will emit a warning if you do. Note this does not appear in the IDE, so it's recommended to use `allWarningsAsErrors` to fail the build on this event.
 - **Change**: `Navigator.goTo` now returns a Bool indicating navigation success.

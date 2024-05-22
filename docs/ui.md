@@ -37,3 +37,7 @@ private fun PreviewFavorites() = Favorites(FavoritesState(listOf("Reeses", "Lola
 @Composable
 private fun PreviewEmptyFavorites() = Favorites(FavoritesState(listOf()))
 ```
+
+## Static UI
+
+In some cases, a UI may not need a presenter to compute or manage its state. Examples of this include UIs that are stateless or can derive their state from a single static input or an input [Screen]'s properties. In these cases, make your _screen_ implement the `StaticScreen` interface. When a `StaticScreen` is used, Circuit will internally allow the UI to run on its own and won't connect it to a presenter if no presenter is provided.

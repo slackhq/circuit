@@ -36,6 +36,8 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
+        // For CupertinoGestureNavigationDecoration
+        api(libs.compose.material.material)
       }
     }
 
@@ -46,8 +48,6 @@ kotlin {
         implementation(libs.androidx.activity.compose)
       }
     }
-
-    iosMain { dependencies { api(libs.compose.material.material) } }
 
     val androidUnitTest by getting {
       dependencies {

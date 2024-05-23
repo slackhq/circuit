@@ -118,11 +118,11 @@ class RetainedTest {
     // Hold on to our Continuity instance
     val continuity = vmFactory.continuity!!
 
-    // We now have one list with three retained values
+    // We now have two groups with three retained values
     // - text2Enabled
     // - text1
     // - text2
-    assertThat(continuity.peekProviders()).hasSize(1)
+    assertThat(continuity.peekProviders()).hasSize(2)
     assertThat(continuity.peekProviders().values.sumOf { it.size }).isEqualTo(3)
 
     // Now disable the second text

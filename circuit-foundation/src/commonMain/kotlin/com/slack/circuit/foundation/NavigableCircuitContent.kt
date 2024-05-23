@@ -19,9 +19,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
@@ -104,12 +102,8 @@ public fun <R : Record> NavigableCircuitContent(
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
 
-  println("Composing NavigableCircuitContent for ${backStack.toList()}")
-
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
-      println("--> NavigableCircuitContent content called for ${provider.record}")
-
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
@@ -120,14 +114,6 @@ public fun <R : Record> NavigableCircuitContent(
       CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
         provider.content(record)
       }
-
-      DisposableEffect(Unit) {
-        println("NavigableCircuitContent for ${provider.record} added")
-
-        onDispose { println("NavigableCircuitContent for ${provider.record} removed") }
-      }
-
-      SideEffect { println("--> NavigableCircuitContent content finished for ${provider.record}") }
     }
   }
 }
@@ -178,15 +164,10 @@ private fun <R : Record> buildCircuitContentProviders(
       val recordInBackStackRetainChecker =
         remember(lastBackStack, record) {
           CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
-            .also { println("Creating CanRetainChecker for $record") }
         }
 
       val lifecycle =
-        remember { LifecycleImpl().also { println("Created LifecycleImpl $it for $record") } }
-          .apply {
-            _isPaused = lastBackStack.topRecord != record
-            println("Set LifecycleImpl.isPaused to $_isPaused for $record. $this")
-          }
+        remember { LifecycleImpl() }.apply { _isPaused = lastBackStack.topRecord != record }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Now provide a new registry to the content for it to store any retained state in,

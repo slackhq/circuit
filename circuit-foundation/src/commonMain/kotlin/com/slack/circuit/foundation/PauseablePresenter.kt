@@ -25,13 +25,11 @@ public abstract class PauseablePresenter<UiState : CircuitUiState>() : Presenter
     val isPaused = LocalLifecycle.current.isPaused
 
     if (!isPaused || uiState == null) {
-      val retainedStateRegistry = rememberRetained(key = "pauseable") { RetainedStateRegistry() }
+      val retainedStateRegistry = rememberRetained { RetainedStateRegistry() }
       CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
         saveableStateHolder.SaveableStateProvider("pauseable_presenter") { uiState = _present() }
       }
     }
-
-    println("PauseablePresenter. isPaused: $isPaused. state: $uiState")
 
     return uiState!!
   }

@@ -15,7 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(ComposeUiTestRunner::class)
-class NavigatorTestUtil {
+class NavigatorTest {
   @Test
   fun popAtRoot() {
     val backStack = SaveableBackStack(TestScreen)

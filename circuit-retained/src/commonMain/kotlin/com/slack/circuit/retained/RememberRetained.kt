@@ -270,30 +270,28 @@ private class RetainableSaveableHolder<T>(
 }
 
 private fun SaveableStateRegistry.requireCanBeSaved(value: Any?) {
-  if (value != null && !canBeSaved(value)) {
-    throw IllegalArgumentException(
-      if (value is SnapshotMutableState<*>) {
-        if (
-          value.policy !== neverEqualPolicy<Any?>() &&
-            value.policy !== structuralEqualityPolicy<Any?>() &&
-            value.policy !== referentialEqualityPolicy<Any?>()
-        ) {
-          "If you use a custom SnapshotMutationPolicy for your MutableState you have to" +
-            " write a custom Saver"
-        } else {
-          "MutableState containing ${value.value} cannot be saved using the current " +
-            "SaveableStateRegistry. The default implementation only supports types " +
-            "which can be stored inside the Bundle. Please consider implementing a " +
-            "custom Saver for this class and pass it as a stateSaver parameter to " +
-            "rememberRetainedSaveable()."
-        }
+  require(value == null || canBeSaved(value)) {
+    if (value is SnapshotMutableState<*>) {
+      if (
+        value.policy !== neverEqualPolicy<Any?>() &&
+          value.policy !== structuralEqualityPolicy<Any?>() &&
+          value.policy !== referentialEqualityPolicy<Any?>()
+      ) {
+        "If you use a custom SnapshotMutationPolicy for your MutableState you have to" +
+          " write a custom Saver"
       } else {
-        "$value cannot be saved using the current SaveableStateRegistry. The default " +
-          "implementation only supports types which can be stored inside the Bundle" +
-          ". Please consider implementing a custom Saver for this class and pass it" +
-          " to rememberRetainedSaveable()."
+        "MutableState containing ${value.value} cannot be saved using the current " +
+          "SaveableStateRegistry. The default implementation only supports types " +
+          "which can be stored inside the Bundle. Please consider implementing a " +
+          "custom Saver for this class and pass it as a stateSaver parameter to " +
+          "rememberRetainedSaveable()."
       }
-    )
+    } else {
+      "$value cannot be saved using the current SaveableStateRegistry. The default " +
+        "implementation only supports types which can be stored inside the Bundle" +
+        ". Please consider implementing a custom Saver for this class and pass it" +
+        " to rememberRetainedSaveable()."
+    }
   }
 }
 

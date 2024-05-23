@@ -69,8 +69,8 @@ import androidx.compose.runtime.structuralEqualityPolicy
  * }
  * ```
  *
- * There is also an overload of [rememberRetained] that takes a [Saver], which participates in both the saved state
- * registry system and retaining.
+ * There is also an overload of [rememberRetained] that takes a [Saver], which participates in both
+ * the saved state registry system and retaining.
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  *   reset and [init] to be rerun
@@ -80,35 +80,29 @@ import androidx.compose.runtime.structuralEqualityPolicy
  * @param init A factory function to create the initial value of this state
  */
 @Composable
-public fun <T : Any> rememberRetained(
-  vararg inputs: Any?,
-  key: String? = null,
-  init: () -> T,
-): T = rememberRetained(
-  inputs = inputs,
-  saver = Saver({ null }, { null }),
-  key = key,
-  init = init
-)
+public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: () -> T): T =
+  rememberRetained(inputs = inputs, saver = Saver({ null }, { null }), key = key, init = init)
 
 /**
  * Remember the value produced by [init].
  *
- * It behaves similarly to [rememberRetained] by retaining the value in memory, but with an additional [saver]
- * parameter that will opportunistically save the value to saved instance state.
+ * It behaves similarly to [rememberRetained] by retaining the value in memory, but with an
+ * additional [saver] parameter that will opportunistically save the value to saved instance state.
  *
- * The retained value will be the source of truth for the value, except in the case where the process was killed,
- * and the value is being restored. In that situation only, the most recent value recovered from the saveable state
- * registry will be used instead of the value provided by [init].
+ * The retained value will be the source of truth for the value, except in the case where the
+ * process was killed, and the value is being restored. In that situation only, the most recent
+ * value recovered from the saveable state registry will be used instead of the value provided by
+ * [init].
  *
- * Importantly, the most recent value persisted in saveable state may lag behind the value that is saved in memory.
- * For example, on Android, saved state will be collected when an Activity is backgrounded and onStop is
- * called. The retained value might continue to be updated while in the background, but those updates will not be
- * reflected in the saved state. If the process is killed before the app has returned to the foreground, these
- * background updates will be lost, as the restored saved state will have been taken before the background updates
- * occurred.
+ * Importantly, the most recent value persisted in saveable state may lag behind the value that is
+ * saved in memory. For example, on Android, saved state will be collected when an Activity is
+ * backgrounded and onStop is called. The retained value might continue to be updated while in the
+ * background, but those updates will not be reflected in the saved state. If the process is killed
+ * before the app has returned to the foreground, these background updates will be lost, as the
+ * restored saved state will have been taken before the background updates occurred.
  *
- * Therefore, [saver] should only store and restore information that is logically safe to have an out-of-date view of.
+ * Therefore, [saver] should only store and restore information that is logically safe to have an
+ * out-of-date view of.
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  *   reset and [init] to be rerun
@@ -176,8 +170,8 @@ public fun <T : Any> rememberRetained(
  * It behaves similarly to [remember], but the stored value will survive configuration changes, such
  * as a screen rotation.
  *
- * Use this overload if you remember a mutable state to specify a [stateSaver] for the value contained inside the
- * [MutableState].
+ * Use this overload if you remember a mutable state to specify a [stateSaver] for the value
+ * contained inside the [MutableState].
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  *   reset and [init] to be rerun

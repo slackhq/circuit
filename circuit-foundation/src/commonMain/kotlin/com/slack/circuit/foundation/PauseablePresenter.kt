@@ -20,11 +20,10 @@ public abstract class PauseablePresenter<UiState : CircuitUiState>() : Presenter
 
   @Composable
   override fun present(): UiState {
+    val lifecycle = LocalLifecycle.current
     val saveableStateHolder = rememberSaveableStateHolder()
 
-    val isPaused = LocalLifecycle.current.isPaused
-
-    if (!isPaused || uiState == null) {
+    if (lifecycle.isResumed || uiState == null) {
       val retainedStateRegistry = rememberRetained { RetainedStateRegistry() }
       CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
         saveableStateHolder.SaveableStateProvider("pauseable_presenter") { uiState = _present() }

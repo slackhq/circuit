@@ -3,23 +3,26 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 
+@Stable
 public interface Lifecycle {
-  public val isPaused: Boolean
+  public val isResumed: Boolean
 }
 
-internal class LifecycleImpl : Lifecycle {
-  internal var _isPaused by mutableStateOf(false)
-  override val isPaused: Boolean
-    get() = _isPaused
+internal class MutableLifecycle(isResumed: Boolean = false) : Lifecycle {
+  override var isResumed: Boolean by mutableStateOf(isResumed)
 }
 
 public val LocalLifecycle: ProvidableCompositionLocal<Lifecycle> = staticCompositionLocalOf {
-  object : Lifecycle {
-    override val isPaused: Boolean = false
-  }
+  staticLifecycle(true)
 }
+
+private fun staticLifecycle(isResumed: Boolean): Lifecycle =
+  object : Lifecycle {
+    override val isResumed: Boolean = isResumed
+  }

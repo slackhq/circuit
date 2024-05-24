@@ -23,12 +23,27 @@ import com.slack.circuit.runtime.presenter.Presenter
  */
 @Stable public interface NonPausablePresenter<UiState : CircuitUiState> : Presenter<UiState>
 
+/**
+ * Presents the UI state when the lifecycle is resumed, otherwise will replay the last emitted UI
+ * state.
+ *
+ * @param key A unique key for the pausable state
+ * @param isResumed Whether the lifecycle is resumed
+ */
 @Composable
 public fun <UiState : CircuitUiState> Presenter<UiState>.presentWithLifecycle(
   key: Any,
   isResumed: Boolean = LocalLifecycle.current.isResumed,
 ): UiState = pausableState(key, isResumed) { present() }
 
+/**
+ * Wraps a composable state producer, which will replay the last emitted state instance when
+ * [isResumed] is `false`.
+ *
+ * @param key A unique key for the pausable state.
+ * @param isResumed Whether the lifecycle is resumed
+ * @param produceState A composable lambda function which produces the state
+ */
 @Composable
 public fun <UiState : CircuitUiState> pausableState(
   key: Any,

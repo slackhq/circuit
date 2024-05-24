@@ -25,11 +25,13 @@ import com.slack.circuit.runtime.presenter.Presenter
 
 @Composable
 public fun <UiState : CircuitUiState> Presenter<UiState>.presentWithLifecycle(
-  isResumed: Boolean = LocalLifecycle.current.isResumed
-): UiState = pausableState(isResumed) { present() }
+  key: Any,
+  isResumed: Boolean = LocalLifecycle.current.isResumed,
+): UiState = pausableState(key, isResumed) { present() }
 
 @Composable
 public fun <UiState : CircuitUiState> pausableState(
+  key: Any,
   isResumed: Boolean = LocalLifecycle.current.isResumed,
   produceState: @Composable () -> UiState,
 ): UiState {
@@ -38,9 +40,9 @@ public fun <UiState : CircuitUiState> pausableState(
   val saveableStateHolder = rememberSaveableStateHolder()
 
   if (isResumed || uiState == null) {
-    val retainedStateRegistry = rememberRetained { RetainedStateRegistry() }
+    val retainedStateRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
     CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
-      saveableStateHolder.SaveableStateProvider("pausable_state") { uiState = produceState() }
+      saveableStateHolder.SaveableStateProvider(key = key) { uiState = produceState() }
     }
   }
 

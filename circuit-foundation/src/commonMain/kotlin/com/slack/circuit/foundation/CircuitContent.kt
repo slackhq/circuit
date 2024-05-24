@@ -150,7 +150,7 @@ public fun <UiState : CircuitUiState> CircuitContent(
       val state =
         when (presenter) {
           is NonPausablePresenter<UiState> -> presenter.present()
-          else -> presenter.presentWithLifecycle()
+          else -> presenter.presentWithLifecycle(key = key ?: screen)
         }
 
       // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here

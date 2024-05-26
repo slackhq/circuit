@@ -16,12 +16,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
   private val delegate = RetainedStateRegistryImpl(null)
 
-  override fun consumeValue(key: Any): Any? {
+  override fun consumeValue(key: String): Any? {
     return delegate.consumeValue(key)
   }
 
   override fun registerValue(
-    key: Any,
+    key: String,
     valueProvider: RetainedValueProvider,
   ): RetainedStateRegistry.Entry {
     return delegate.registerValue(key, valueProvider)
@@ -31,7 +31,7 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
     delegate.saveAll()
   }
 
-  override fun saveValue(key: Any) {
+  override fun saveValue(key: String) {
     delegate.saveValue(key)
   }
 
@@ -44,10 +44,10 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
     delegate.valueProviders.clear()
   }
 
-  @VisibleForTesting fun peekRetained(): Map<Any, List<Any?>> = delegate.retained.toMap()
+  @VisibleForTesting fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
 
   @VisibleForTesting
-  fun peekProviders(): Map<Any, MutableList<RetainedValueProvider>> =
+  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
     delegate.valueProviders.toMap()
 
   object Factory : ViewModelProvider.Factory {

@@ -18,7 +18,7 @@ public interface RetainedStateRegistry {
    *
    * @param key Key used to save the value
    */
-  public fun consumeValue(key: Any): Any?
+  public fun consumeValue(key: String): Any?
 
   /**
    * Registers the value provider.
@@ -35,7 +35,7 @@ public interface RetainedStateRegistry {
    * @param valueProvider The value to provide
    * @return the registry entry which you can use to unregister the provider
    */
-  public fun registerValue(key: Any, valueProvider: RetainedValueProvider): Entry
+  public fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry
 
   /**
    * Executes all the registered value providers and combines these values into a map. We have a
@@ -44,7 +44,7 @@ public interface RetainedStateRegistry {
   public fun saveAll()
 
   /** Executes the value providers registered with the given [key], and saves them for retrieval. */
-  public fun saveValue(key: Any)
+  public fun saveValue(key: String)
 
   /** Releases all currently unconsumed values. Useful as a GC mechanism for the registry. */
   public fun forgetUnclaimedValues()
@@ -57,7 +57,7 @@ public interface RetainedStateRegistry {
 }
 
 internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
-  val retained: MutableMap<Any, List<Any?>>
+  val retained: MutableMap<String, List<Any?>>
 }
 
 /**
@@ -65,7 +65,9 @@ internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
  *
  * @param values The map of the restored values
  */
-public fun RetainedStateRegistry(values: Map<Any, List<Any?>> = emptyMap()): RetainedStateRegistry =
+public fun RetainedStateRegistry(
+  values: Map<String, List<Any?>> = emptyMap()
+): RetainedStateRegistry =
   RetainedStateRegistryImpl(values.mapValues { it.value.toMutableList() }.toMutableMap())
 
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
@@ -74,13 +76,13 @@ public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateR
     NoOpRetainedStateRegistry
   }
 
-internal class RetainedStateRegistryImpl(retained: MutableMap<Any, List<Any?>>?) :
+internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>>?) :
   MutableRetainedStateRegistry {
 
-  override val retained: MutableMap<Any, List<Any?>> = retained?.toMutableMap() ?: mutableMapOf()
-  internal val valueProviders = mutableMapOf<Any, MutableList<RetainedValueProvider>>()
+  override val retained: MutableMap<String, List<Any?>> = retained?.toMutableMap() ?: mutableMapOf()
+  internal val valueProviders = mutableMapOf<String, MutableList<RetainedValueProvider>>()
 
-  override fun consumeValue(key: Any): Any? {
+  override fun consumeValue(key: String): Any? {
     val list = retained.remove(key)
     return if (!list.isNullOrEmpty()) {
       if (list.size > 1) {
@@ -92,7 +94,8 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<Any, List<Any?>>?)
     }
   }
 
-  override fun registerValue(key: Any, valueProvider: RetainedValueProvider): Entry {
+  override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry {
+    require(key.isNotBlank()) { "Registered key is empty or blank" }
     valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
     return object : Entry {
       override fun unregister() {
@@ -125,7 +128,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<Any, List<Any?>>?)
     valueProviders.clear()
   }
 
-  override fun saveValue(key: Any) {
+  override fun saveValue(key: String) {
     val providers = valueProviders[key]
     if (providers != null) {
       retained[key] = providers.map { it.invoke() }
@@ -151,13 +154,13 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<Any, List<Any?>>?)
 }
 
 internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
-  override fun consumeValue(key: Any): Any? = null
+  override fun consumeValue(key: String): Any? = null
 
-  override fun registerValue(key: Any, valueProvider: RetainedValueProvider): Entry = NoOpEntry
+  override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry = NoOpEntry
 
   override fun saveAll() {}
 
-  override fun saveValue(key: Any) {}
+  override fun saveValue(key: String) {}
 
   override fun forgetUnclaimedValues() {}
 

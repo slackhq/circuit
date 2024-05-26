@@ -198,7 +198,7 @@ class KeyedCircuitContentTests {
 }
 
 private class ScreenA(val num: Int) : Screen {
-  class State(val numSquare: Int, val retainedNumSquare: Int) : CircuitUiState
+  data class State(val numSquare: Int, val retainedNumSquare: Int) : CircuitUiState
 }
 
 private class ScreenAPresenter(val screen: ScreenA) : Presenter<ScreenA.State> {
@@ -221,7 +221,7 @@ private fun ScreenAUi(state: ScreenA.State, modifier: Modifier = Modifier) {
 
 private class ScreenB(val text: String) : Screen {
 
-  class State(val textReverse: String, val retainedTextReverse: String) : CircuitUiState
+  data class State(val textReverse: String, val retainedTextReverse: String) : CircuitUiState
 }
 
 private class ScreenBPresenter(val screen: ScreenB) : Presenter<ScreenB.State> {

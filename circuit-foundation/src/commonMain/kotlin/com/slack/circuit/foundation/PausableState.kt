@@ -18,7 +18,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 
 /**
  * By default [CircuitContent] will wrap presenters so that the last emitted [CircuitUiState] is
- * replayed when the presenter is paused. If this behavior is not wanted, [Presenter] should
+ * replayed when the presenter is paused. If this behavior is not wanted, the [Presenter] should
  * implement this interface to disable the behavior.
  */
 @Stable public interface NonPausablePresenter<UiState : CircuitUiState> : Presenter<UiState>
@@ -50,7 +50,7 @@ public fun <UiState : CircuitUiState> pausableState(
   isActive: Boolean = LocalRecordLifecycle.current.isActive,
   produceState: @Composable () -> UiState,
 ): UiState {
-  var uiState: UiState? by remember { mutableStateOf(null) }
+  var uiState: UiState? by remember(key) { mutableStateOf(null) }
 
   val saveableStateHolder = rememberSaveableStateHolder()
 

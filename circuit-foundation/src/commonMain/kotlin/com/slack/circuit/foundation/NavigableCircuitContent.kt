@@ -167,7 +167,7 @@ private fun <R : Record> buildCircuitContentProviders(
         }
 
       val lifecycle =
-        remember { MutableLifecycle() }.apply { isResumed = lastBackStack.topRecord == record }
+        remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Now provide a new registry to the content for it to store any retained state in,
@@ -179,7 +179,7 @@ private fun <R : Record> buildCircuitContentProviders(
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides recordRetainedStateRegistry,
           LocalCanRetainChecker provides CanRetainChecker.Always,
-          LocalLifecycle provides lifecycle,
+          LocalRecordLifecycle provides lifecycle,
         ) {
           CircuitContent(
             screen = record.screen,

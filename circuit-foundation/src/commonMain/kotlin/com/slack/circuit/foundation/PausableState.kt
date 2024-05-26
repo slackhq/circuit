@@ -28,33 +28,33 @@ import com.slack.circuit.runtime.presenter.Presenter
  * state.
  *
  * @param key A unique key for the pausable state
- * @param isResumed Whether the lifecycle is resumed
+ * @param isActive Whether the presenter is active or not.
  */
 @Composable
 public fun <UiState : CircuitUiState> Presenter<UiState>.presentWithLifecycle(
   key: Any,
-  isResumed: Boolean = LocalLifecycle.current.isResumed,
-): UiState = pausableState(key, isResumed) { present() }
+  isActive: Boolean = LocalRecordLifecycle.current.isActive,
+): UiState = pausableState(key, isActive) { present() }
 
 /**
  * Wraps a composable state producer, which will replay the last emitted state instance when
- * [isResumed] is `false`.
+ * [isActive] is `false`.
  *
  * @param key A unique key for the pausable state.
- * @param isResumed Whether the lifecycle is resumed
+ * @param isActive Whether the state producer should be active or not.
  * @param produceState A composable lambda function which produces the state
  */
 @Composable
 public fun <UiState : CircuitUiState> pausableState(
   key: Any,
-  isResumed: Boolean = LocalLifecycle.current.isResumed,
+  isActive: Boolean = LocalRecordLifecycle.current.isActive,
   produceState: @Composable () -> UiState,
 ): UiState {
   var uiState: UiState? by remember { mutableStateOf(null) }
 
   val saveableStateHolder = rememberSaveableStateHolder()
 
-  if (isResumed || uiState == null) {
+  if (isActive || uiState == null) {
     val retainedStateRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
     CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
       saveableStateHolder.SaveableStateProvider(key = key) { uiState = produceState() }

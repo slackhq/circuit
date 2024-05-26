@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.ui.test.MainTestClock
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertAll
 import androidx.compose.ui.test.assertAny
@@ -36,13 +37,12 @@ class NavigableCircuitViewModelStateAndroidTest {
   @Test
   fun retainedStateScopedToBackstackWithRecreations() {
     composeTestRule.run {
-      mainClock.autoAdvance = false
+      mainClock.autoAdvance = true
 
       // Current: Screen A. Increase count to 1
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
-      mainClock.advanceTimeByFrame()
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
@@ -52,11 +52,9 @@ class NavigableCircuitViewModelStateAndroidTest {
 
       // Navigate to Screen B. Increase count to 1
       onNodeWithTag(TAG_GO_NEXT).performClick()
-      mainClock.advanceTimeBy(1_000)
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
-      mainClock.advanceTimeByFrame()
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
@@ -66,11 +64,9 @@ class NavigableCircuitViewModelStateAndroidTest {
 
       // Navigate to Screen C. Increase count to 1
       onNodeWithTag(TAG_GO_NEXT).performClick()
-      mainClock.advanceTimeBy(1_000)
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
-      mainClock.advanceTimeByFrame()
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
       // Now recreate the Activity and assert that the values were retained
@@ -78,37 +74,43 @@ class NavigableCircuitViewModelStateAndroidTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
-      // Pop to Screen B. Increase count from 1 to 2.
-      onNodeWithTag(TAG_POP).performClick()
+      mainClock.withAutoAdvance(false) {
+        // Pop to Screen B
+        onNodeWithTag(TAG_POP).performClick()
 
-      // Part-way through pop, both screens should be visible
-      onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
-        onAllNodesWithTag(TAG_LABEL)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("C"))
-          .assertAny(hasTextExactly("B"))
-        onAllNodesWithTag(TAG_COUNT).assertCountEquals(2).assertAll(hasTextExactly("1"))
+        // Part-way through pop, both screens should be visible
+        onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
+          onAllNodesWithTag(TAG_LABEL)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("C"))
+            .assertAny(hasTextExactly("B"))
+          onAllNodesWithTag(TAG_COUNT).assertCountEquals(2).assertAll(hasTextExactly("1"))
+        }
       }
+
+      // Increase count from 1 to 2.
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()
-      mainClock.advanceTimeByFrame()
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
-      // Navigate to Screen C. Assert that it's state was not retained
-      onNodeWithTag(TAG_GO_NEXT).performClick()
+      mainClock.withAutoAdvance(false) {
+        // Navigate to Screen C
+        onNodeWithTag(TAG_GO_NEXT).performClick()
 
-      // Part-way through push, both screens should be visible
-      onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
-        onAllNodesWithTag(TAG_LABEL)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("C"))
-          .assertAny(hasTextExactly("B"))
-        onAllNodesWithTag(TAG_COUNT)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("0"))
-          .assertAny(hasTextExactly("2"))
+        // Part-way through push, both screens should be visible
+        onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
+          onAllNodesWithTag(TAG_LABEL)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("C"))
+            .assertAny(hasTextExactly("B"))
+          onAllNodesWithTag(TAG_COUNT)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("0"))
+            .assertAny(hasTextExactly("2"))
+        }
       }
+      // Assert that Screen C's state was retained
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
@@ -117,20 +119,23 @@ class NavigableCircuitViewModelStateAndroidTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
 
-      // Pop to Screen B. Assert that it's state was retained
-      onNodeWithTag(TAG_POP).performClick()
+      mainClock.withAutoAdvance(false) {
+        // Pop to Screen B
+        onNodeWithTag(TAG_POP).performClick()
 
-      // Part-way through pop, both screens should be visible
-      onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
-        onAllNodesWithTag(TAG_LABEL)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("C"))
-          .assertAny(hasTextExactly("B"))
-        onAllNodesWithTag(TAG_COUNT)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("0"))
-          .assertAny(hasTextExactly("2"))
+        // Part-way through pop, both screens should be visible
+        onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
+          onAllNodesWithTag(TAG_LABEL)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("C"))
+            .assertAny(hasTextExactly("B"))
+          onAllNodesWithTag(TAG_COUNT)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("0"))
+            .assertAny(hasTextExactly("2"))
+        }
       }
+      // Assert that Screen B's state was retained
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
@@ -139,20 +144,23 @@ class NavigableCircuitViewModelStateAndroidTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
 
-      // Pop to Screen A. Assert that it's state was retained
-      onNodeWithTag(TAG_POP).performClick()
+      mainClock.withAutoAdvance(false) {
+        // Pop to Screen A
+        onNodeWithTag(TAG_POP).performClick()
 
-      // Part-way through pop, both screens should be visible
-      onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
-        onAllNodesWithTag(TAG_LABEL)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("B"))
-          .assertAny(hasTextExactly("A"))
-        onAllNodesWithTag(TAG_COUNT)
-          .assertCountEquals(2)
-          .assertAny(hasTextExactly("2"))
-          .assertAny(hasTextExactly("1"))
+        // Part-way through pop, both screens should be visible
+        onEachFrameWhileMultipleScreens(hasTestTag(TAG_LABEL)) {
+          onAllNodesWithTag(TAG_LABEL)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("B"))
+            .assertAny(hasTextExactly("A"))
+          onAllNodesWithTag(TAG_COUNT)
+            .assertCountEquals(2)
+            .assertAny(hasTextExactly("2"))
+            .assertAny(hasTextExactly("1"))
+        }
       }
+      // Assert that Screen B's state was retained
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("1")
 
@@ -163,7 +171,6 @@ class NavigableCircuitViewModelStateAndroidTest {
 
       // Navigate to Screen B. Assert that it's state was not retained
       onNodeWithTag(TAG_GO_NEXT).performClick()
-      mainClock.advanceTimeBy(1_000)
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
     }
@@ -186,5 +193,15 @@ class NavigableCircuitViewModelStateAndroidTest {
       }
       i++
     }
+  }
+}
+
+private fun MainTestClock.withAutoAdvance(value: Boolean, block: () -> Unit) {
+  val currentAutoAdvance = this.autoAdvance
+  try {
+    this.autoAdvance = value
+    block()
+  } finally {
+    this.autoAdvance = currentAutoAdvance
   }
 }

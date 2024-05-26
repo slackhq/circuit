@@ -9,6 +9,9 @@ internal fun <T> Transition<T>.isStateBeingAnimated(equals: (T) -> Boolean): Boo
   return isRunning && (equals(currentState) || equals(targetState))
 }
 
+internal val Transition<*>.isPending: Boolean
+  get() = this.currentState != this.targetState
+
 /**
  * A holder class used by the `AnimatedContent` composables. This enables us to pass through all of
  * the necessary information as an argument, which is optimal for `AnimatedContent`.

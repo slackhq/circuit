@@ -147,7 +147,11 @@ public fun <UiState : CircuitUiState> CircuitContent(
         onDispose(eventListener::onDisposePresent)
       }
 
-      val state = presenter.present()
+      val state =
+        when (presenter) {
+          is NonPausablePresenter<UiState> -> presenter.present()
+          else -> presenter.presentWithLifecycle()
+        }
 
       // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
       SideEffect { eventListener.onState(state) }

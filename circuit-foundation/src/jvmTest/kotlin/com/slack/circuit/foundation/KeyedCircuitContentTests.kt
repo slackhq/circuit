@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -16,7 +17,6 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -25,8 +25,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val TAG_UI_RETAINED = "TAG_UI_RETAINED"
-private const val TAG_PRESENTER_RETAINED = "TAG_PRESENTER_RETAINED"
+private const val TAG_UI_REMEMBERED = "TAG_UI_REMEMBERED"
+private const val TAG_PRESENTER_REMEMBERED = "TAG_PRESENTER_REMEMBERED"
 private const val TAG_STATE = "TAG_STATE"
 
 /**
@@ -62,33 +62,33 @@ class KeyedCircuitContentTests {
       val navigator = setUpTestOneContent()
       // Initial
       onNodeWithTag(TAG_STATE).assertTextEquals("1")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("1")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("1")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("1")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("1")
       // Push a new ScreenA
       navigator.goTo(ScreenA(2))
       onNodeWithTag(TAG_STATE).assertTextEquals("4")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("4")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("4")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("4")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("4")
       // Push a new ScreenA
       navigator.goTo(ScreenA(3))
       onNodeWithTag(TAG_STATE).assertTextEquals("9")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("9")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("9")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("9")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("9")
       // Push a new ScreenB
       navigator.goTo(ScreenB("abc"))
       onNodeWithTag(TAG_STATE).assertTextEquals("cba")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("cba")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("cba")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("cba")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("cba")
       // Back one
       navigator.pop()
       onNodeWithTag(TAG_STATE).assertTextEquals("9")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("9")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("9")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("9")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("9")
       // Back two
       navigator.pop()
       onNodeWithTag(TAG_STATE).assertTextEquals("4")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("4")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("4")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("4")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("4")
     }
   }
 
@@ -98,33 +98,33 @@ class KeyedCircuitContentTests {
       var screenState by setUpTestTwoAContent()
       // Initial
       onNodeWithTag(TAG_STATE).assertTextEquals("1")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("1")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("1")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("1")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("1")
       // Set a new ScreenA
       screenState = ScreenA(2)
       onNodeWithTag(TAG_STATE).assertTextEquals("4")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("4")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("4")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("4")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("4")
       // Set a new ScreenA
       screenState = ScreenA(3)
       onNodeWithTag(TAG_STATE).assertTextEquals("9")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("9")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("9")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("9")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("9")
       // Set a new ScreenB
       screenState = ScreenB("abc")
       onNodeWithTag(TAG_STATE).assertTextEquals("cba")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("cba")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("cba")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("cba")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("cba")
       // Back to a ScreenA
       screenState = ScreenA(3)
       onNodeWithTag(TAG_STATE).assertTextEquals("9")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("9")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("9")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("9")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("9")
       // Back to another ScreenA
       screenState = ScreenA(2)
       onNodeWithTag(TAG_STATE).assertTextEquals("4")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("4")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("4")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("4")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("4")
     }
   }
 
@@ -134,33 +134,33 @@ class KeyedCircuitContentTests {
       var screenState by setUpTestTwoBContent()
       // Initial
       onNodeWithTag(TAG_STATE).assertTextEquals("1")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("1")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("1")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("1")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("1")
       // Set a new ScreenA
       screenState = ScreenA(2)
       onNodeWithTag(TAG_STATE).assertTextEquals("4")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("1")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("1")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("1")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("1")
       // Set a new ScreenA
       screenState = ScreenA(3)
       onNodeWithTag(TAG_STATE).assertTextEquals("9")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("1")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("1")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("1")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("1")
       // Set a new ScreenB
       screenState = ScreenB("abc")
       onNodeWithTag(TAG_STATE).assertTextEquals("cba")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("cba")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("cba")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("cba")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("cba")
       // Back to a ScreenA
       screenState = ScreenA(3)
       onNodeWithTag(TAG_STATE).assertTextEquals("9")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("9")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("9")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("9")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("9")
       // Back to another ScreenA
       screenState = ScreenA(2)
       onNodeWithTag(TAG_STATE).assertTextEquals("4")
-      onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("9")
-      onNodeWithTag(TAG_PRESENTER_RETAINED).assertTextEquals("9")
+      onNodeWithTag(TAG_UI_REMEMBERED).assertTextEquals("9")
+      onNodeWithTag(TAG_PRESENTER_REMEMBERED).assertTextEquals("9")
     }
   }
 
@@ -198,13 +198,13 @@ class KeyedCircuitContentTests {
 }
 
 private class ScreenA(val num: Int) : Screen {
-  data class State(val numSquare: Int, val retainedNumSquare: Int) : CircuitUiState
+  data class State(val numSquare: Int, val rememberedNumSquare: Int) : CircuitUiState
 }
 
 private class ScreenAPresenter(val screen: ScreenA) : Presenter<ScreenA.State> {
   @Composable
   override fun present(): ScreenA.State {
-    val square = rememberRetained { screen.num * screen.num }
+    val square = remember { screen.num * screen.num }
     return ScreenA.State(screen.num * screen.num, square)
   }
 }
@@ -212,22 +212,25 @@ private class ScreenAPresenter(val screen: ScreenA) : Presenter<ScreenA.State> {
 @Composable
 private fun ScreenAUi(state: ScreenA.State, modifier: Modifier = Modifier) {
   Column(modifier) {
-    val retained = rememberRetained { state.numSquare }
-    Text(text = "$retained", modifier = Modifier.testTag(TAG_UI_RETAINED))
+    val remembered = remember { state.numSquare }
+    Text(text = "$remembered", modifier = Modifier.testTag(TAG_UI_REMEMBERED))
     Text(text = "${state.numSquare}", modifier = Modifier.testTag(TAG_STATE))
-    Text(text = "${state.retainedNumSquare}", modifier = Modifier.testTag(TAG_PRESENTER_RETAINED))
+    Text(
+      text = "${state.rememberedNumSquare}",
+      modifier = Modifier.testTag(TAG_PRESENTER_REMEMBERED),
+    )
   }
 }
 
 private class ScreenB(val text: String) : Screen {
 
-  data class State(val textReverse: String, val retainedTextReverse: String) : CircuitUiState
+  data class State(val textReverse: String, val rememberedTextReverse: String) : CircuitUiState
 }
 
 private class ScreenBPresenter(val screen: ScreenB) : Presenter<ScreenB.State> {
   @Composable
   override fun present(): ScreenB.State {
-    val textReverse = rememberRetained { screen.text.reversed() }
+    val textReverse = remember { screen.text.reversed() }
     return ScreenB.State(screen.text.reversed(), textReverse)
   }
 }
@@ -235,9 +238,9 @@ private class ScreenBPresenter(val screen: ScreenB) : Presenter<ScreenB.State> {
 @Composable
 private fun ScreenBUi(state: ScreenB.State, modifier: Modifier = Modifier) {
   Column(modifier) {
-    val retained = rememberRetained { state.textReverse }
-    Text(text = retained, modifier = Modifier.testTag(TAG_UI_RETAINED))
+    val remembered = remember { state.textReverse }
+    Text(text = remembered, modifier = Modifier.testTag(TAG_UI_REMEMBERED))
     Text(text = state.textReverse, modifier = Modifier.testTag(TAG_STATE))
-    Text(text = state.retainedTextReverse, modifier = Modifier.testTag(TAG_PRESENTER_RETAINED))
+    Text(text = state.rememberedTextReverse, modifier = Modifier.testTag(TAG_PRESENTER_REMEMBERED))
   }
 }

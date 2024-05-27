@@ -88,6 +88,11 @@ kotlin {
   targets.configureEach {
     compilations.configureEach {
       compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      if (compilationName == "releaseAndroidTest") {
+        compilerOptions.configure {
+          optIn.add("com.slack.circuit.retained.DelicateCircuitRetainedApi")
+        }
+      }
     }
   }
 }

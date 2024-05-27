@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
@@ -102,17 +103,21 @@ public fun <R : Record> NavigableCircuitContent(
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
 
+  val saveableStateHolder = rememberSaveableStateHolder()
+
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 
-      // Remember the `providedValues` lookup because this composition can live longer than
-      // the record is present in the backstack, if the decoration is animated for example.
-      val values = remember(record) { providedValues[record] }?.provideValues()
-      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+      saveableStateHolder.SaveableStateProvider(record.key) {
+        // Remember the `providedValues` lookup because this composition can live longer than
+        // the record is present in the backstack, if the decoration is animated for example.
+        val values = remember(record) { providedValues[record] }?.provideValues()
+        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
-      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-        provider.content(record)
+        CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+          provider.content(record)
+        }
       }
     }
   }

@@ -105,7 +105,11 @@ public class CupertinoGestureNavigationDecoration(
           label = "GestureNavDecoration",
         )
 
-      if (previous != null && !transition.isStateBeingAnimated { it.record == previous }) {
+      if (
+        previous != null &&
+          !transition.isPending &&
+          !transition.isStateBeingAnimated { it.record == previous }
+      ) {
         // We display the 'previous' item in the back stack for when the user performs a gesture
         // to go back.
         // We only display it here if the transition is not running. When the transition is

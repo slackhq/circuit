@@ -30,9 +30,13 @@ class NavigableCircuitSaveableStateTest {
 
   @Test fun saveableStateScopedToBackstackWithoutKeys() = saveableStateScopedToBackstack(false)
 
-  @Test fun saveableStateScopedToBackstackResetRootsWithKeys() = saveableStateScopedToBackstackResetRoots(true)
+  @Test
+  fun saveableStateScopedToBackstackResetRootsWithKeys() =
+    saveableStateScopedToBackstackResetRoots(true)
 
-  @Test fun saveableStateScopedToBackstackResetRootsWithoutKeys() = saveableStateScopedToBackstackResetRoots(false)
+  @Test
+  fun saveableStateScopedToBackstackResetRootsWithoutKeys() =
+    saveableStateScopedToBackstackResetRoots(false)
 
   private fun saveableStateScopedToBackstack(useKeys: Boolean) {
     composeTestRule.run {

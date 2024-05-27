@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.autoSaver
 import androidx.compose.runtime.snapshots.SnapshotMutableState
 import androidx.compose.runtime.structuralEqualityPolicy
 
@@ -25,7 +26,7 @@ import androidx.compose.runtime.structuralEqualityPolicy
  * It behaves similarly to [remember], but the stored value will survive configuration changes, such
  * as a screen rotation.
  *
- * You can use it with a value stored inside [androidx.compose.runtime.mutableStateOf].
+ * You can use it with a value stored inside [mutableStateOf].
  *
  * This differs from `rememberSaveable` by not being tied to Android bundles or parcelable. You
  * should take care to ensure that the state computed by [init] does not capture anything that is
@@ -35,8 +36,8 @@ import androidx.compose.runtime.structuralEqualityPolicy
  * However, it does not participate in saved instance state either, so care should be taken to
  * choose the right retention mechanism for your use case. Consider the below two examples.
  *
- * The first case will retain `state` across configuration changes but will _not_ survive process
- * death.
+ * The first case will retain `state` across configuration changes and the back stack but will _not_
+ * survive process death.
  *
  * ```kotlin
  * @Composable
@@ -52,8 +53,9 @@ import androidx.compose.runtime.structuralEqualityPolicy
  * }
  * ```
  *
- * This second case will retain `count` across configuration changes _and_ survive process death.
- * However, it only works with primitives or `Parcelable` state types.
+ * This second case will retain `count` across configuration changes, the back stack, _and_ survive
+ * process death. However, it only works with primitives or implicitly Saveable (i.e. `Parcelable`
+ * on Android) state types.
  *
  * ```kotlin
  * @Composable
@@ -69,8 +71,12 @@ import androidx.compose.runtime.structuralEqualityPolicy
  * }
  * ```
  *
+ * ## Layering
+ *
  * There is also an overload of [rememberRetained] that takes a [Saver], which participates in both
- * the saved state registry system and retaining.
+ * the saved state registry system and retaining. Alternatively, use [rememberRetainedSaveable] for
+ * one that uses [autoSaver]. These can be used to persist state across multiple layers, allowing
+ * for both the caching of [rememberRetained] while also the process-death-survival of saveable.
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  *   reset and [init] to be rerun
@@ -81,7 +87,23 @@ import androidx.compose.runtime.structuralEqualityPolicy
  */
 @Composable
 public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: () -> T): T =
-  rememberRetained(inputs = inputs, saver = Saver({ null }, { null }), key = key, init = init)
+  rememberRetained(inputs = inputs, saver = neverSave(), key = key, init = init)
+
+/**
+ * A simple proxy to [rememberRetained] that uses the default [autoSaver] for [saver] and a more
+ * explicit name.
+ *
+ * @see rememberRetained
+ */
+@Composable
+public fun <T : Any> rememberRetainedSaveable(
+  vararg inputs: Any?,
+  saver: Saver<T, out Any> = autoSaver(),
+  key: String? = null,
+  init: () -> T,
+): T {
+  return rememberRetained(inputs = inputs, saver = saver, key = key, init = init)
+}
 
 /**
  * Remember the value produced by [init].
@@ -137,8 +159,7 @@ public fun <T : Any> rememberRetained(
   val holder =
     remember(canRetainChecker) {
       // value is restored using the retained registry first, the saveable registry second, or
-      // created via [init]
-      // lambda third
+      // created via [init] lambda third
       @Suppress("UNCHECKED_CAST")
       val retainedRestored =
         retainedStateRegistry.consumeValue(finalKey) as? RetainableSaveableHolder.Value<T>
@@ -191,8 +212,28 @@ public fun <T> rememberRetained(
 ): MutableState<T> =
   rememberRetained(*inputs, saver = mutableStateSaver(stateSaver), key = key, init = init)
 
+/**
+ * A simple proxy to [rememberRetained] that uses the default [autoSaver] for [saver] and a more
+ * explicit name.
+ *
+ * @see rememberRetained
+ */
+@Composable
+public fun <T> rememberRetainedSaveable(
+  vararg inputs: Any?,
+  stateSaver: Saver<T, out Any>,
+  key: String? = null,
+  init: () -> MutableState<T>,
+): MutableState<T> =
+  rememberRetained(*inputs, saver = mutableStateSaver(stateSaver), key = key, init = init)
+
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36
+
+private val NoOpSaver = Saver<Any?, Any>({ null }, { null })
+
+@Suppress("UNCHECKED_CAST")
+private fun <Original, Saveable : Any> neverSave() = NoOpSaver as Saver<Original, Saveable>
 
 private class RetainableSaveableHolder<T>(
   private var retainedStateRegistry: RetainedStateRegistry?,

@@ -85,6 +85,7 @@ import androidx.compose.runtime.structuralEqualityPolicy
  *   location in the composition tree
  * @param init A factory function to create the initial value of this state
  */
+@OptIn(DelicateCircuitRetainedApi::class)
 @Composable
 public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: () -> T): T =
   rememberRetained(inputs = inputs, saver = neverSave(), key = key, init = init)
@@ -95,15 +96,14 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, 
  *
  * @see rememberRetained
  */
+@OptIn(DelicateCircuitRetainedApi::class)
 @Composable
 public fun <T : Any> rememberRetainedSaveable(
   vararg inputs: Any?,
   saver: Saver<T, out Any> = autoSaver(),
   key: String? = null,
   init: () -> T,
-): T {
-  return rememberRetained(inputs = inputs, saver = saver, key = key, init = init)
-}
+): T = rememberRetained(inputs = inputs, saver = saver, key = key, init = init)
 
 /**
  * Remember the value produced by [init].
@@ -134,6 +134,7 @@ public fun <T : Any> rememberRetainedSaveable(
  *   location in the composition tree
  * @param init A factory function to create the initial value of this state
  */
+@DelicateCircuitRetainedApi
 @Composable
 public fun <T : Any> rememberRetained(
   vararg inputs: Any?,
@@ -203,6 +204,7 @@ public fun <T : Any> rememberRetained(
  *   location in the composition tree
  * @param init A factory function to create the initial value of this state
  */
+@DelicateCircuitRetainedApi
 @Composable
 public fun <T> rememberRetained(
   vararg inputs: Any?,
@@ -218,6 +220,7 @@ public fun <T> rememberRetained(
  *
  * @see rememberRetained
  */
+@DelicateCircuitRetainedApi
 @Composable
 public fun <T> rememberRetainedSaveable(
   vararg inputs: Any?,

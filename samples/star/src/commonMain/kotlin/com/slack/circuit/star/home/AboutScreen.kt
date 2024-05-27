@@ -19,8 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.parcel.CommonParcelize
@@ -28,14 +27,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-@CommonParcelize
-data object AboutScreen : Screen {
-  object State : CircuitUiState
-}
-
-@CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
-@Composable
-fun AboutPresenter(): AboutScreen.State = AboutScreen.State
+@CommonParcelize data object AboutScreen : StaticScreen
 
 @OptIn(ExperimentalResourceApi::class)
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)

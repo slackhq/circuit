@@ -30,7 +30,7 @@ class RememberSaveableBackstackTest {
     val rootScreen by mutableStateOf<Screen>(TestScreen.ScreenA)
     var dummyData by mutableStateOf(false)
     moleculeFlow(RecompositionMode.Immediate) {
-        dummyData
+        @Suppress("UNUSED_EXPRESSION") dummyData
         rememberSaveableBackStack(rootScreen)
       }
       .test {

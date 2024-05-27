@@ -95,8 +95,6 @@ class RetainedTest {
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
   }
 
-  // Suppressions temporary until we can move this back to the circuit-retained module
-  @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
   @Test
   fun clearingAfterDone() {
     setActivityContent {
@@ -120,7 +118,7 @@ class RetainedTest {
     // Hold on to our Continuity instance
     val continuity = vmFactory.continuity!!
 
-    // We now have one list with three retained values
+    // We now have two groups with three retained values
     // - text2Enabled
     // - text1
     // - text2

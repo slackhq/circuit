@@ -133,22 +133,34 @@ public fun <UiState : CircuitUiState> CircuitContent(
   // different inputs (but thus same presenter instance type) and you need this to recompose with
   // a different presenter.
   key(key) {
-    DisposableEffect(screen) {
-      eventListener.onStartPresent()
+    // Static UI can be rendered directly, no presenter ever needs to be connected
+    if (ui is StaticUi) {
+      // TODO anything we want to send to the event listener here for state?
+      DisposableEffect(screen) {
+        eventListener.onStartContent()
+        onDispose(eventListener::onDisposeContent)
+      }
+      ui.Content(modifier)
+    } else {
+      DisposableEffect(screen) {
+        eventListener.onStartPresent()
+        onDispose(eventListener::onDisposePresent)
+      }
 
-      onDispose { eventListener.onDisposePresent() }
+      val state =
+        when (presenter) {
+          is NonPausablePresenter<UiState> -> presenter.present()
+          else -> presenter.presentWithLifecycle()
+        }
+
+      // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
+      SideEffect { eventListener.onState(state) }
+      DisposableEffect(screen) {
+        eventListener.onStartContent()
+        onDispose(eventListener::onDisposeContent)
+      }
+      ui.Content(state, modifier)
     }
-
-    val state = presenter.present()
-
-    // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here
-    SideEffect { eventListener.onState(state) }
-    DisposableEffect(screen) {
-      eventListener.onStartContent()
-
-      onDispose { eventListener.onDisposeContent() }
-    }
-    ui.Content(state, modifier)
   }
 
 /**

@@ -1,2 +1,3 @@
 Lcom/slack/circuit/runtime/screen/PopResult;
 Lcom/slack/circuit/runtime/screen/Screen;
+Lcom/slack/circuit/runtime/screen/StaticScreen;

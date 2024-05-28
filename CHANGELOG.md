@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- **Fix**: Fix `rememberRetained` implicitly requiring `LocalContext` where it used to no-op.
+
 0.21.0
 ------
 

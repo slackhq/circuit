@@ -3,6 +3,7 @@
 package com.slack.circuit.star.imageviewer
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,15 +23,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.RecordContentProvider
+import com.slack.circuit.foundation.thenIfSharedTransitionScope
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -43,7 +44,6 @@ import com.slack.circuit.star.ui.rememberSystemUiController
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.collections.immutable.ImmutableList
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
@@ -73,6 +73,7 @@ constructor(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
 fun ImageViewer(state: State, modifier: Modifier = Modifier) {
@@ -118,7 +119,21 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
                 .apply { state.placeholderKey?.let(::placeholderMemoryCacheKey) }
                 .build(),
             contentDescription = "TODO",
-            modifier = Modifier.fillMaxSize(),
+            modifier =
+              Modifier.fillMaxSize()
+                .thenIfSharedTransitionScope {
+                  Modifier
+                    //                    .sharedBounds(
+                    //                      sharedContentState = rememberSharedContentState(key =
+                    // "animal-${state.id}"),
+                    //                      animatedVisibilityScope = it,
+                    //                    )
+                    .sharedElement(
+                      state = rememberSharedContentState(key = "animal-image-${state.id}"),
+                      animatedVisibilityScope = it,
+                    )
+                }
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             state = imageState,
             onClick = { showChrome = !showChrome },
           )
@@ -136,27 +151,21 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-// TODO
-//  generalize this when there's a factory pattern for it in Circuit
-//  shared element transitions?
-class ImageViewerAwareNavDecoration(
-  private val defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
-) : NavDecoration {
-  @Suppress("UnstableCollections")
-  @Composable
-  override fun <T> DecoratedContent(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable (T) -> Unit,
-  ) {
-    val firstArg = args.firstOrNull()
-    val decoration =
-      if (firstArg is RecordContentProvider<*> && firstArg.record.screen is ImageViewerScreen) {
-        NavigatorDefaults.EmptyDecoration
-      } else {
-        defaultNavDecoration
-      }
-    decoration.DecoratedContent(args, backStackDepth, modifier, content)
-  }
-}
+//// TODO
+////  generalize this when there's a factory pattern for it in Circuit
+////  shared element transitions?
+// class ImageViewerAwareNavDecoration(
+//  private val defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
+// ) : NavDecoration {
+//  @Suppress("UnstableCollections")
+//  @Composable
+//  override fun <T> DecoratedContent(
+//    args: ImmutableList<T>,
+//    backStackDepth: Int,
+//    modifier: Modifier,
+//    content: @Composable (T) -> Unit,
+//  ) {
+//    remember { SharedElementNavDecoration(defaultNavDecoration) }
+//      .DecoratedContent(args, backStackDepth, modifier, content)
+//  }
+// }

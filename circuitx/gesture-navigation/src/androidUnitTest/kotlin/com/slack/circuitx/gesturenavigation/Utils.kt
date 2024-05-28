@@ -27,7 +27,7 @@ internal fun BackEventCompat.copy(
 ): BackEventCompat =
   BackEventCompat(touchX = touchX, touchY = touchY, progress = progress, swipeEdge = swipeEdge)
 
-internal fun ActivityScenario<ComponentActivity>.performBackSwipeGesture() {
+internal fun ActivityScenario<ComponentActivity>.performGestureNavigationBackSwipe() {
   onActivity { activity ->
     val event =
       BackEventCompat(
@@ -48,5 +48,17 @@ internal fun ActivityScenario<ComponentActivity>.performBackSwipeGesture() {
       // Finally, trigger a 'back press' to finish the gesture
       onBackPressed()
     }
+  }
+}
+
+fun parameterizedParams(): List<Array<Any>> = emptyList()
+
+inline fun <reified T> List<Array<T>>.combineWithParameters(vararg values: T): List<Array<T>> {
+  if (isEmpty()) return values.map { arrayOf(it) }
+
+  return fold(emptyList()) { acc, args ->
+    val result = acc.toMutableList()
+    values.forEach { result += (args + it) }
+    result.toList()
   }
 }

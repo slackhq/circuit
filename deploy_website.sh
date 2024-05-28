@@ -11,6 +11,7 @@ if [[ "$1" = "--local" ]]; then local=true; fi
 if ! [[ ${local} ]]; then
   set -ex
 
+  export GIT_CLONE_PROTECTION_ACTIVE=false
   REPO="git@github.com:slackhq/circuit.git"
   DIR=temp-clone
 

@@ -36,6 +36,7 @@ kotlin {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
+        api(libs.compose.runtime.saveable)
         api(libs.coroutines)
       }
     }
@@ -88,6 +89,11 @@ kotlin {
     compilations.configureEach {
       compileTaskProvider.configure {
         compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      }
+      if (compilationName == "releaseAndroidTest") {
+        compileTaskProvider.configure {
+          compilerOptions { optIn.add("com.slack.circuit.retained.DelicateCircuitRetainedApi") }
+        }
       }
     }
   }

@@ -85,12 +85,12 @@ Presenter logic should _not_ emit any Compose UI. They are purely for presentati
 There are three types of composable retention functions used in Circuit.
 
 1. `remember` – from Compose, remembers a value across recompositions. Can be any type.
-2. `rememberRetained` – custom, remembers a value across recompositions and configuration changes. Can be any type, but should not retain leak-able things like `Navigator` instances or `Context` instances. Backed by a hidden `ViewModel` on Android. Note that this is not necessary in most cases if handling configuration changes yourself via `android:configChanges`.
-3. `rememberSaveable` – from Compose, remembers a value across recompositions, configuration changes, and process death. Must be `Parcelable` or implement a custom `Saver`, should not retain leakable things like `Navigator` instances or `Context` instances. Backed by the framework saved instance state system.
+2. `rememberRetained` – custom, remembers a value across recompositions, the back stack, and configuration changes. Can be any type, but should not retain leak-able things like `Navigator` instances or `Context` instances. Backed by a hidden `ViewModel` on Android.
+3. `rememberSaveable` – from Compose, remembers a value across recompositions, the back stack, configuration changes, _and_ process death. Must be a primitive, `Parcelable` (on Android), or implement a custom `Saver`. This should not retain leakable things like `Navigator` instances or `Context` instances and is backed by the framework saved instance state system.
 
 Developers should use the right tool accordingly depending on their use case. Consider these three examples.
 
-The first one will preserve the `count` value across recompositions, but not configuration changes or process death.
+The first one will preserve the `count` value across recompositions, but not the back stack, configuration changes, or process death.
 
 ```kotlin
 @Composable
@@ -106,7 +106,7 @@ fun CounterPresenter(): CounterState {
 }
 ```
 
-The second one will preserve the state across recompositions and configuration changes, but not process death.
+The second one will preserve the state across recompositions, the back stack, and configuration changes, but _not_ process death.
 
 ```kotlin
 @Composable
@@ -122,7 +122,7 @@ fun CounterPresenter(): CounterState {
 }
 ```
 
-The third case will preserve the `count` state across recompositions, configuration changes, and process death. However, it only works with primitives or `Parcelable` state types.
+The third case will preserve the `count` state across recompositions, the back stack, configuration changes, _and_ process death.
 
 ```kotlin
 @Composable
@@ -137,3 +137,15 @@ fun CounterPresenter(): CounterState {
   }
 }
 ```
+
+---
+
+|                                 | `remember` | `rememberRetained` | `rememberSaveable` |
+|---------------------------------|------------|--------------------|--------------------|
+| Recompositions                  | ✅          | ✅                  | ✅                  |
+| Back stack                      | ❌          | ✅*                 | ✅*                 |
+| Configuration changes (Android) | ❌          | ✅                  | ✅                  |
+| Process death                   | ❌          | ❌                  | ✅                  |
+| Can be non-Saveable types       | ✅          | ✅                  | ❌                  |
+
+*If using `NavigableCircuitContent`'s default configuration.

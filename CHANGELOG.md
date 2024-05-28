@@ -4,13 +4,31 @@ Changelog
 **Unreleased**
 --------------
 
+0.21.0
+------
+
+_2024-05-28_
+
 - **New**: Add WASM targets.
 - **New**: Add `FakeNavigator` functions to check for the lack of pop/resetRoot events.
 - **New**: Add `FakeNavigator` constructor param to add additional screens to the backstack.
 - **New**: Add support for static UIs. In some cases, a UI may not need a presenter to compute or manage its state. Examples of this include UIs that are stateless or can derive their state from a single static input or an input [Screen]'s properties. In these cases, make your _screen_ implement the `StaticScreen` interface. When a `StaticScreen` is used, Circuit will internally allow the UI to run on its own and won't connect it to a presenter if no presenter is provided.
+- **New**: Add `RecordLifecycle` and `LocalRecordLifecycle` composition local, allowing UIs and presenters to observe when they are 'active'. Currently, a record is considered 'active' when it is the top record on the back stack.
+- **New**: Add a `rememberRetainedSaveable` variant that participates in both `RetainedStateRegistry` and `SaveableStateRegistry` restoration, allowing layered state persistence.
+  - The logic is the following upon `rememberRetainedSaveable` entering composition:
+    - consume from both `RetainedStateRegistry` and `SaveableStateRegistry`, if available
+    - if the retained value is available, use that
+    - otherwise, if the saveable restored value is available, use that
+    - otherwise, re-initialize the value
+  - There is also an overload of `rememberRetained` that explicitly requires a `Saver` parameter.
+- **Behaviour Change**: Presenters are now 'paused' when inactive and replay their last emitted `CircuitUiState` when they are not active. Presenters can opt-out of this behavior by implementing `NonPausablePresenter`.
 - **Behaviour Change**: `NavigatorImpl.goTo` no longer navigates if the `Screen` is equal to `Navigator.peek()`.
 - **Behaviour Change**: `Presenter.present` is now annotated with `@ComposableTarget("presenter")`. This helps prevent use of Compose UI in the presentation logic as the compiler will emit a warning if you do. Note this does not appear in the IDE, so it's recommended to use `allWarningsAsErrors` to fail the build on this event.
+- **Behaviour Change**: Guard against `Navigator.goTo()` calls to the same current screen.
 - **Change**: `Navigator.goTo` now returns a Bool indicating navigation success.
+- **Change**: Move iOS `GestureNavigationDecoration` impl to `commonMain` and rename to `CupertinoGestureNavigationDecoration`.
+- **Change**: Target jvmTarget `1.8` in core libraries.
+- **Fix**: Fix saveable state being restored when using reset root navigation events.
 - **Deprecation**: `FakeNavigator.assertIsEmpty` and `expectNoEvents` (use the specific event type methods instead)
 - Mark `Presenter.Factory` as `@Stable`.
 - Mark `Ui.Factory` as `@Stable`.
@@ -20,6 +38,23 @@ Changelog
 - [samples] Improve interop sample significantly.
 - Update Kotlin to `1.9.24`.
 - Update KSP to `1.9.24-2.0.20`.
+- Update compose-compiler to `1.5.14`.
+- Update KotlinPoet to `1.17.0`.
+- Update androidx.lifecycle to `2.8.0`.
+- Update Molecule to `1.4.3`.
+- Update androidx.annotation to `1.8.0`.
+- Update kotlinx.coroutines to `1.8.1`.
+- Update Compose Multiplatform to `1.6.2`.
+- Update Compose UI to `1.6.7`.
+- Update Compose Runtime to `1.6.7`.
+- Update Compose Animation to `1.6.7`.
+- Update Compose Material to `1.6.7`.
+- Update androidx.core to `1.13.1`.
+- Update androidx.activity to `1.9.0`.
+- Update dagger to `2.51.1`.
+- Update uuid to `0.8.4`.
+
+Special thanks to [@chrisbanes](https://github.com/chrisbanes), [@alexvanyo](https://github.com/alexvanyo), [@eboudrant](https://github.com/eboudrant), [@edenman](https://github.com/edenman), and [@JustinBis](https://github.com/JustinBis) for contributing to this release!
 
 0.20.0
 ------

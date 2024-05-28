@@ -4,7 +4,13 @@ Changelog
 **Unreleased**
 --------------
 
+0.22.1
+------
+
+_2024-05-28_
+
 - **Fix**: Fix `rememberRetained` implicitly requiring `LocalContext` where it used to no-op.
+- Update Molecule to `2.0.0`.
 
 0.22.0
 ------

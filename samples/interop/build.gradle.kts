@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.kotlin.plugin.compose)
 }
 
 android {

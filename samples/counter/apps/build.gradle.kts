@@ -1,9 +1,8 @@
-// Copyright (C) 2024 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
@@ -24,8 +23,6 @@ androidComponents { beforeVariants { variant -> variant.androidTest.enable = fal
 compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
 }
-
-compose.experimental { web.application {} }
 
 kotlin {
   // region KMP Targets
@@ -51,9 +48,9 @@ kotlin {
         api(projects.circuitFoundation)
       }
     }
-    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
-    val jvmMain by getting { dependencies { implementation(compose.desktop.currentOs) } }
-    val androidMain by getting {
+    commonTest { dependencies { implementation(libs.kotlin.test) } }
+    jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
+    androidMain {
       dependencies {
         implementation(libs.androidx.appCompat)
         implementation(libs.bundles.compose.ui)
@@ -63,10 +60,9 @@ kotlin {
         implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
-    val wasmJsMain by getting {
+    wasmJsMain {
       dependencies {
-        @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-        implementation(compose.components.resources)
+        @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
         implementation(compose.ui)
         implementation(compose.runtime)
       }

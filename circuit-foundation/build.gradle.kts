@@ -26,7 +26,16 @@ kotlin {
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     moduleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser {
+      // Necessary for tests
+      testTask {
+        useKarma {
+          useChromeHeadless()
+          useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
+        }
+      }
+      binaries.executable()
+    }
   }
   // endregion
 
@@ -48,14 +57,14 @@ kotlin {
         implementation(libs.uuid)
       }
     }
-    val androidMain by getting {
+    androidMain {
       dependencies {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
         implementation(libs.androidx.compose.integration.activity)
       }
     }
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
@@ -67,15 +76,15 @@ kotlin {
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest)
-
+        dependsOn(commonTest.get())
         dependencies {
+          implementation(libs.kotlin.test)
           implementation(libs.compose.ui.testing.junit)
           implementation(libs.junit)
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting {
+    jvmTest {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)
@@ -102,7 +111,7 @@ kotlin {
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 
@@ -112,6 +121,13 @@ tasks
   .configureEach {
     compilerOptions {
       freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+
+      if (name == "compileReleaseUnitTestKotlinAndroid") {
+        freeCompilerArgs.addAll(
+          "-P",
+          "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
+        )
+      }
     }
   }
 

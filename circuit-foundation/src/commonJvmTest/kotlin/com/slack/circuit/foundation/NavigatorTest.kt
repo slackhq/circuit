@@ -1,28 +1,18 @@
-// Copyright (C) 2022 Slack Technologies, LLC
+// Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.SaveableBackStack
-import com.slack.circuit.internal.test.Parcelize
 import com.slack.circuit.runtime.popRoot
 import com.slack.circuit.runtime.popUntil
 import com.slack.circuit.runtime.screen.PopResult
-import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Test
 import org.junit.runner.RunWith
-
-@Parcelize private data object TestScreen : Screen
-
-@Parcelize private data object TestScreen2 : Screen
-
-@Parcelize private data object TestScreen3 : Screen
-
-@Parcelize private data object TestPopResult : PopResult
 
 @RunWith(ComposeUiTestRunner::class)
 class NavigatorTest {

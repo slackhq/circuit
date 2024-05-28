@@ -1,5 +1,6 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 // Copyright (C) 2023 Slack Technologies, LLC
@@ -46,16 +47,25 @@ kotlin {
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 
   targets.configureEach {
+    val isAndroidTarget = platformType == KotlinPlatformType.androidJvm
     compilations.configureEach {
-      compilerOptions.configure {
-        freeCompilerArgs.addAll(
-          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-          "-Xexpect-actual-classes", // used for Parcelize in tests
-        )
+      compileTaskProvider.configure {
+        compilerOptions {
+          freeCompilerArgs.addAll(
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xexpect-actual-classes", // used for Parcelize in tests
+          )
+          if (isAndroidTarget) {
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
+            )
+          }
+        }
       }
     }
   }

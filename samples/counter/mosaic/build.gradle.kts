@@ -28,7 +28,7 @@ kotlin {
       }
     }
     // TODO is there a multiplatform way to do this?
-    val jvmMain by getting { dependencies { implementation(libs.jline) } }
+    jvmMain { dependencies { implementation(libs.jline) } }
   }
 
   targets.withType<KotlinJvmTarget> {
@@ -37,14 +37,4 @@ kotlin {
   }
 }
 
-mosaic {
-  val compiler =
-    if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
-      // JB version
-      libs.compose.compilerJb
-    } else {
-      // Google version
-      libs.androidx.compose.compiler
-    }
-  kotlinCompilerPlugin.set(compiler.map { it.toString() })
-}
+mosaic { kotlinCompilerPlugin.set(libs.compose.compiler.map { it.toString() }) }

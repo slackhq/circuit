@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
-// Copyright (C) 2023 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -53,7 +51,7 @@ kotlin {
         implementation(projects.circuitFoundation)
       }
     }
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(compose.foundation)
         implementation(compose.material3)
@@ -64,11 +62,7 @@ kotlin {
         implementation(projects.circuitTest)
       }
     }
-    val iosTest by getting { dependencies { dependsOn(commonTest) } }
-    val browserTest by creating { dependencies { dependsOn(commonTest) } }
-    val jvmTest by getting { dependencies { dependsOn(commonTest) } }
     val androidUnitTest by getting {
-      dependsOn(commonTest)
       dependencies {
         implementation(libs.robolectric)
         implementation(libs.androidx.compose.foundation)
@@ -79,18 +73,16 @@ kotlin {
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsTest { kotlin.srcDir("src/browserTest/kotlin") }
-    val wasmJsTest by getting { kotlin.srcDir("src/browserTest/kotlin") }
+    wasmJsTest { kotlin.srcDir("src/browserTest/kotlin") }
   }
   targets.configureEach {
     compilations.configureEach {
-      compilerOptions.configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      compileTaskProvider.configure {
+        compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      }
     }
   }
 }
-
-// adding it here to make sure skiko is unpacked and available in web tests
-// https://github.com/JetBrains/compose-multiplatform/issues/4133
-compose.experimental { web.application {} }
 
 android {
   namespace = "com.slack.circuitx.sideeffects"

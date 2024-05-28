@@ -42,7 +42,7 @@ kotlin {
         implementation(libs.molecule.runtime)
       }
     }
-    val commonTest by getting { dependencies { implementation(libs.kotlin.test) } }
+    commonTest { dependencies { implementation(libs.kotlin.test) } }
     val iosMain by sourceSets.getting { dependencies { api(libs.coroutines) } }
     val iosSimulatorArm64Main by sourceSets.getting
 

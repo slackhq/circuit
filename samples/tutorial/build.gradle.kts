@@ -41,7 +41,7 @@ kotlin {
         implementation(projects.circuitFoundation)
       }
     }
-    val androidMain by getting {
+    androidMain {
       dependencies {
         implementation(libs.androidx.activity.ktx)
         implementation(libs.androidx.appCompat)

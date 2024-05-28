@@ -68,14 +68,14 @@ kotlin {
         implementation(libs.turbine)
       }
     }
-    val androidMain by getting {
+    androidMain {
       dependencies {
         implementation(libs.androidx.lifecycle.viewModel.compose)
         api(libs.androidx.lifecycle.viewModel)
         api(libs.androidx.compose.runtime)
       }
     }
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(libs.kotlin.test)
         implementation(libs.testing.assertk)
@@ -84,22 +84,19 @@ kotlin {
     }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest.get())
         dependencies {
           implementation(libs.junit)
           implementation(libs.truth)
         }
       }
-    val jvmTest by getting { dependsOn(commonJvmTest) }
+    jvmTest { dependsOn(commonJvmTest) }
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.
     jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    val wasmJsMain by getting { kotlin.srcDir("src/browserMain/kotlin") }
+    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
-
-// adding it here to make sure skiko is unpacked and available in web tests
-// https://github.com/JetBrains/compose-multiplatform/issues/4133
-compose.experimental { web.application {} }
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
   compilerOptions {

@@ -12,6 +12,6 @@ import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
 
 @Target(CONSTRUCTOR) expect annotation class AssistedInject()
 
-@Target(VALUE_PARAMETER) expect annotation class Assisted()
+@Target(VALUE_PARAMETER) expect annotation class Assisted(val value: String = "")
 
 @Target(CLASS) expect annotation class AssistedFactory()

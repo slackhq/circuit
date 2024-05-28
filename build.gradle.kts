@@ -9,21 +9,20 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.spotless.LineEnding
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
+import com.squareup.anvil.plugin.AnvilExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
-import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
-import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
-import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -50,6 +49,7 @@ plugins {
   alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
+  alias(libs.plugins.kotlin.plugin.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
 }
@@ -166,12 +166,24 @@ subprojects {
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
-    val isMultiPlatformPlugin = this is AbstractKotlinMultiplatformPluginWrapper
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       // Don't double apply to stub gen
-      if (this is KaptGenerateStubsTask) return@configureEach
+      if (this is KaptGenerateStubsTask) {
+        // TODO due to Anvil we need to force language version 1.9
+        compilerOptions {
+          progressiveMode.set(false)
+          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        }
+        return@configureEach
+      }
+      val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
-        allWarningsAsErrors.set(true)
+        if (isWasmTask && this is KotlinJsCompilerOptions) {
+          // TODO https://youtrack.jetbrains.com/issue/KT-64115
+          allWarningsAsErrors.set(false)
+        } else {
+          allWarningsAsErrors.set(true)
+        }
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(
             jvmTargetProject
@@ -195,36 +207,10 @@ subprojects {
               "-Xtype-enhancement-improvements-strict-mode",
               "-Xjspecify-annotations=strict",
             )
-
-            // Multiplatform compose handling is handled in a later block with the compose plugin
-            if (hasCompose && !isMultiPlatformPlugin) {
-              // Flag to disable Compose's kotlin version check because they're often behind
-              // Or ahead
-              // Or if they're the same, do nothing
-              // It's basically just very noisy.
-              val composeCompilerKotlinVersion = libs.versions.compose.compiler.kotlinVersion.get()
-              val kotlinVersion = libs.versions.kotlin.get()
-              val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
-              if (suppressComposeKotlinVersion) {
-                freeCompilerArgs.addAll(
-                  "-P",
-                  "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
-                )
-              }
-            }
           }
         }
 
         progressiveMode.set(true)
-      }
-    }
-
-    if (hasCompose && !isMultiPlatformPlugin) {
-      // A standard android project using compose, we need to force the version again here
-      // separate from the ComposeExtension configuration elsewhere.
-      dependencies {
-        add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
-        add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, libs.androidx.compose.compiler)
       }
     }
 
@@ -259,6 +245,10 @@ subprojects {
   // version that is empty.
   dependencies.modules {
     module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
+    tasks.withType<KaptGenerateStubsTask>().configureEach { useK2Kapt.set(true) }
   }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
@@ -345,9 +335,6 @@ subprojects {
 
     if (hasCompose) {
       buildFeatures { compose = true }
-      composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.version.get()
-      }
     }
 
     compileOptions {
@@ -406,40 +393,8 @@ subprojects {
     dependencies.add("coreLibraryDesugaring", libs.desugarJdkLibs)
   }
 
-  // Disable compose-jb Compose version checks
   pluginManager.withPlugin("org.jetbrains.compose") {
-    // Don't run this on a pure android project
-    if (project.plugins.hasPlugin("org.jetbrains.kotlin.android")) return@withPlugin
-    configure<ComposeExtension> {
-      val kotlinVersion = libs.versions.kotlin.get()
-      // Flag to disable Compose's kotlin version check because they're often behind
-      // Or ahead
-      // Or if they're the same, do nothing
-      // It's basically just very noisy.
-      val (compilerDep, composeCompilerKotlinVersion) =
-        if (property("circuit.forceAndroidXComposeCompiler").toString().toBoolean()) {
-          // Google version
-          libs.androidx.compose.compiler.get().toString() to
-            libs.versions.compose.compiler.kotlinVersion.get()
-        } else {
-          // JB version
-          libs.compose.compilerJb.get().toString() to libs.versions.compose.jb.kotlinVersion.get()
-        }
-      kotlinCompilerPlugin.set(compilerDep)
-      val suppressComposeKotlinVersion = kotlinVersion != composeCompilerKotlinVersion
-      if (suppressComposeKotlinVersion) {
-        tasks.withType<KotlinCompilationTask<*>>().configureEach {
-          // Don't double apply to stub gen
-          if (this is KaptGenerateStubsTask) return@configureEach
-          compilerOptions {
-            freeCompilerArgs.addAll(
-              "-P",
-              "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=$kotlinVersion",
-            )
-          }
-        }
-      }
-    }
+    apply(plugin = "org.jetbrains.kotlin.plugin.compose")
   }
 
   pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
@@ -456,7 +411,7 @@ subprojects {
     // Enforce Kotlin BOM
     configure<KotlinMultiplatformExtension> {
       sourceSets {
-        val commonMain by getting {
+        commonMain {
           dependencies {
             // KGP doesn't support catalogs https://youtrack.jetbrains.com/issue/KT-55351
             implementation(
@@ -490,5 +445,11 @@ subprojects {
     // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
     // that would include benchmarks.
     tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
+  }
+
+  subprojects {
+    pluginManager.withPlugin("com.squareup.anvil") {
+      configure<AnvilExtension> { useKsp(contributesAndFactoryGeneration = true) }
+    }
   }
 }

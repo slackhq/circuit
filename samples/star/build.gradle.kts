@@ -1,17 +1,19 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import com.android.build.api.dsl.LibraryExtension
+import com.google.devtools.ksp.gradle.KspAATask
 import com.google.devtools.ksp.gradle.KspTaskJvm
 import java.util.Locale
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
+  alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
@@ -82,7 +84,7 @@ kotlin {
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
-        @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
+        implementation(compose.components.resources)
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitOverlay)
@@ -103,7 +105,6 @@ kotlin {
       }
     }
     maybeCreate("jvmCommonMain").apply {
-      dependsOn(commonMain.get())
       dependencies {
         api(libs.anvil.annotations)
         api(libs.anvil.annotations.optional)
@@ -122,7 +123,6 @@ kotlin {
       }
     }
     maybeCreate("jvmCommonTest").apply {
-      dependsOn(commonTest.get())
       dependencies {
         implementation(dependencies.testFixtures(libs.eithernet))
         implementation(libs.junit)
@@ -199,22 +199,34 @@ kotlin {
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
 
-        if (project.hasProperty("circuit.enableComposeCompilerReports")) {
-          val metricsDir =
-            project.layout.buildDirectory.dir("compose_metrics").get().asFile.absolutePath
-          freeCompilerArgs.addAll(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir",
-          )
-        }
-
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
         }
       }
     }
+  }
+
+  targets.configureEach {
+    if (platformType == KotlinPlatformType.androidJvm) {
+      compilations.configureEach {
+        compileTaskProvider.configure {
+          compilerOptions {
+            freeCompilerArgs.addAll(
+              "-P",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.star.parcel.CommonParcelize",
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+if (project.hasProperty("circuit.enableComposeCompilerReports")) {
+  val metricsDir = project.layout.buildDirectory.dir("compose_metrics")
+  composeCompiler {
+    metricsDestination.set(metricsDir)
+    reportsDestination.set(metricsDir)
   }
 }
 
@@ -262,9 +274,18 @@ afterEvaluate {
   for (target in kspTargets) {
     if (target != "Android" && target != "Jvm") continue
     val buildType = if (target == "Android") "Release" else ""
-    val kspReleaseTask = tasks.named<KspTaskJvm>("ksp${buildType}Kotlin${target}")
+    val kspTaskName = "ksp${buildType}Kotlin${target}"
+    val useKSP2 = providers.gradleProperty("ksp.useKSP2").getOrElse("false").toBoolean()
+    val generatedKspKotlinFiles =
+      if (useKSP2) {
+        val kspReleaseTask = tasks.named<KspAATask>(kspTaskName)
+        kspReleaseTask.flatMap { it.kspConfig.kotlinOutputDir }
+      } else {
+        val kspReleaseTask = tasks.named<KspTaskJvm>(kspTaskName)
+        kspReleaseTask.flatMap { it.destination }
+      }
     tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
-      source(kspReleaseTask.flatMap { it.destination })
+      source(generatedKspKotlinFiles)
     }
   }
 }

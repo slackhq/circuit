@@ -8,7 +8,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
-import com.tschuchort.compiletesting.kspArgs
+import com.tschuchort.compiletesting.kspProcessorOptions
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Ignore
 import org.junit.Test
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "RedundantVisibilityModifier")
 @OptIn(ExperimentalCompilerApi::class)
 class CircuitSymbolProcessorTest {
   private val appScope =
@@ -656,7 +656,7 @@ class CircuitSymbolProcessorTest {
           class FavoritesPresenter : Presenter<FavoritesScreen.State> {
             @Composable
             override fun present(): FavoritesScreen.State {
-
+              throw NotImplementedError()
             }
           }
         """
@@ -708,7 +708,7 @@ class CircuitSymbolProcessorTest {
           class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
             @Composable
             override fun present(): FavoritesScreen.State {
-
+              throw NotImplementedError()
             }
           }
         """
@@ -774,7 +774,7 @@ class CircuitSymbolProcessorTest {
 
             @Composable
             override fun present(): FavoritesScreen.State {
-
+              throw NotImplementedError()
             }
           }
         """
@@ -841,7 +841,7 @@ class CircuitSymbolProcessorTest {
 
             @Composable
             override fun present(): FavoritesScreen.State {
-
+              throw NotImplementedError()
             }
           }
         """
@@ -906,7 +906,7 @@ class CircuitSymbolProcessorTest {
 
             @Composable
             override fun present(): FavoritesScreen.State {
-
+              throw NotImplementedError()
             }
           }
         """
@@ -1044,7 +1044,7 @@ class CircuitSymbolProcessorTest {
 
             @Composable
             override fun present(): FavoritesScreen.State {
-
+              throw NotImplementedError()
             }
           }
         """
@@ -1252,8 +1252,10 @@ class CircuitSymbolProcessorTest {
             CodegenMode.HILT -> singletonComponent
           }
       inheritClassPath = true
-      symbolProcessorProviders = listOf(CircuitSymbolProcessorProvider())
-      kspArgs += "circuit.codegen.mode" to codegenMode.name
+      symbolProcessorProviders += CircuitSymbolProcessorProvider()
+      kspProcessorOptions += "circuit.codegen.mode" to codegenMode.name
+      // Necessary for KSP
+      languageVersion = "1.9"
     }
 
   private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {

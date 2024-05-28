@@ -59,8 +59,6 @@ import com.slack.circuit.star.di.AssistedFactory
 import com.slack.circuit.star.di.AssistedInject
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.parcel.CommonTypeParceler
-import com.slack.circuit.star.parcel.ImmutableListParceler
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
@@ -73,7 +71,6 @@ import kotlinx.coroutines.launch
 @CommonParcelize
 data class PetPhotoCarouselScreen(
   val name: String,
-  @CommonTypeParceler<ImmutableList<String>, ImmutableListParceler>
   val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {

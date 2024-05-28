@@ -24,6 +24,7 @@ import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.ContinuityViewModel
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberCanRetainChecker
 import com.slack.circuit.retained.rememberRetained
@@ -119,6 +120,44 @@ class RetainedSaveableTest {
     canRetainOverride = null
 
     setActivityContent(content)
+
+    // Retained state is not preserved, but id is
+    composeTestRule.onNodeWithTag("id").assertTextEquals("0")
+    composeTestRule.onNodeWithTag("superBigData").assertTextEquals("null")
+  }
+
+  @Test
+  fun saveableIsUsedWhenRetainIsNoop() {
+    var id = 0
+    lateinit var data: CacheableData
+
+    fun setContent() {
+      scenario.onActivity { activity ->
+        activity.setContent {
+          CompositionLocalProvider(LocalRetainedStateRegistry provides NoOpRetainedStateRegistry) {
+            data = rememberRetained(saver = CacheableData.Saver) { CacheableData(id++) }
+            Text(modifier = Modifier.testTag("id"), text = "${data.id}")
+            Text(modifier = Modifier.testTag("superBigData"), text = "${data.superBigData}")
+          }
+        }
+      }
+    }
+
+    setContent()
+
+    // Check initial state is correct
+    composeTestRule.onNodeWithTag("id").assertTextEquals("0")
+    composeTestRule.onNodeWithTag("superBigData").assertTextEquals("null")
+
+    data.superBigData = "Super big data"
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("id").assertTextEquals("0")
+    composeTestRule.onNodeWithTag("superBigData").assertTextEquals("Super big data")
+
+    scenario.recreate()
+
+    setContent()
 
     // Retained state is not preserved, but id is
     composeTestRule.onNodeWithTag("id").assertTextEquals("0")

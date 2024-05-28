@@ -4,11 +4,17 @@ Changelog
 **Unreleased**
 --------------
 
+0.22.0
+------
+
+_2024-05-28_
+
 - Update to Kotlin `2.0.0`.
 - Update to KSP `2.0.0-1.0.21`.
 - Update Compose Multiplatform to `1.6.10`.
-- Update Anvil to `2.5.0-beta09`.
 - Switch to the compose compiler shipped with Kotlin.
+
+This release is otherwise identical to `0.21.0`, just updated to Kotlin 2.0.
 
 0.21.0
 ------

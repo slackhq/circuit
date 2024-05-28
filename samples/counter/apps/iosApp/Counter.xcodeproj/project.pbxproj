@@ -12,8 +12,6 @@
 		EA5CD5D82B473FB200CA7518 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA5CD5D72B473FB200CA7518 /* Assets.xcassets */; };
 		EA5CD5DC2B473FB200CA7518 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA5CD5DB2B473FB200CA7518 /* Preview Assets.xcassets */; };
 		EA5CD5E62B473FB200CA7518 /* CounterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5E52B473FB200CA7518 /* CounterTests.swift */; };
-		EA5CD5F02B473FB200CA7518 /* CounterUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5EF2B473FB200CA7518 /* CounterUITests.swift */; };
-		EA5CD5F22B473FB200CA7518 /* CounterUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5F12B473FB200CA7518 /* CounterUITestsLaunchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,9 +40,6 @@
 		EA5CD5DB2B473FB200CA7518 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EA5CD5E12B473FB200CA7518 /* CounterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CounterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA5CD5E52B473FB200CA7518 /* CounterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterTests.swift; sourceTree = "<group>"; };
-		EA5CD5EB2B473FB200CA7518 /* CounterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CounterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EA5CD5EF2B473FB200CA7518 /* CounterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterUITests.swift; sourceTree = "<group>"; };
-		EA5CD5F12B473FB200CA7518 /* CounterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterUITestsLaunchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +72,6 @@
 			children = (
 				EA5CD5D22B473FB100CA7518 /* Counter */,
 				EA5CD5E42B473FB200CA7518 /* CounterTests */,
-				EA5CD5EE2B473FB200CA7518 /* CounterUITests */,
 				EA5CD5D12B473FB100CA7518 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,7 +81,6 @@
 			children = (
 				EA5CD5D02B473FB100CA7518 /* Counter.app */,
 				EA5CD5E12B473FB200CA7518 /* CounterTests.xctest */,
-				EA5CD5EB2B473FB200CA7518 /* CounterUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,15 +111,6 @@
 				EA5CD5E52B473FB200CA7518 /* CounterTests.swift */,
 			);
 			path = CounterTests;
-			sourceTree = "<group>";
-		};
-		EA5CD5EE2B473FB200CA7518 /* CounterUITests */ = {
-			isa = PBXGroup;
-			children = (
-				EA5CD5EF2B473FB200CA7518 /* CounterUITests.swift */,
-				EA5CD5F12B473FB200CA7518 /* CounterUITestsLaunchTests.swift */,
-			);
-			path = CounterUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,24 +152,6 @@
 			productReference = EA5CD5E12B473FB200CA7518 /* CounterTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		EA5CD5EA2B473FB200CA7518 /* CounterUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EA5CD5FB2B473FB200CA7518 /* Build configuration list for PBXNativeTarget "CounterUITests" */;
-			buildPhases = (
-				EA5CD5E72B473FB200CA7518 /* Sources */,
-				EA5CD5E82B473FB200CA7518 /* Frameworks */,
-				EA5CD5E92B473FB200CA7518 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EA5CD5ED2B473FB200CA7518 /* PBXTargetDependency */,
-			);
-			name = CounterUITests;
-			productName = CounterUITests;
-			productReference = EA5CD5EB2B473FB200CA7518 /* CounterUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -224,7 +190,6 @@
 			targets = (
 				EA5CD5CF2B473FB100CA7518 /* Counter */,
 				EA5CD5E02B473FB200CA7518 /* CounterTests */,
-				EA5CD5EA2B473FB200CA7518 /* CounterUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -290,15 +255,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA5CD5E62B473FB200CA7518 /* CounterTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EA5CD5E72B473FB200CA7518 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EA5CD5F02B473FB200CA7518 /* CounterUITests.swift in Sources */,
-				EA5CD5F22B473FB200CA7518 /* CounterUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,48 +510,6 @@
 			};
 			name = Release;
 		};
-		EA5CD5FC2B473FB200CA7518 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
-				MACOSX_DEPLOYMENT_TARGET = 14.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.slack.circuit.samples.CounterUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Counter;
-			};
-			name = Debug;
-		};
-		EA5CD5FD2B473FB200CA7518 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
-				MACOSX_DEPLOYMENT_TARGET = 14.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.slack.circuit.samples.CounterUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Counter;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -622,15 +536,6 @@
 			buildConfigurations = (
 				EA5CD5F92B473FB200CA7518 /* Debug */,
 				EA5CD5FA2B473FB200CA7518 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EA5CD5FB2B473FB200CA7518 /* Build configuration list for PBXNativeTarget "CounterUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EA5CD5FC2B473FB200CA7518 /* Debug */,
-				EA5CD5FD2B473FB200CA7518 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

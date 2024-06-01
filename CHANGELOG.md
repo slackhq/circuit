@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- **Change**: `OverlayHost.showFullScreenOverlay` now returns the PopResult? that was popped by the screen.
+
 0.22.1
 ------
 

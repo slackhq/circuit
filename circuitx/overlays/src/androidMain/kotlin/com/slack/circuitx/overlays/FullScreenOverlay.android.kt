@@ -3,8 +3,9 @@
 package com.slack.circuitx.overlays
 
 import com.slack.circuit.overlay.OverlayHost
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
-public actual suspend fun OverlayHost.showFullScreenOverlay(screen: Screen) {
-  show(FullScreenOverlay(screen) { rememberConditionalSystemUiColors() })
+public actual suspend fun OverlayHost.showFullScreenOverlay(screen: Screen): PopResult? {
+  return show(FullScreenOverlay(screen) { rememberConditionalSystemUiColors() })
 }

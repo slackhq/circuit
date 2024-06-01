@@ -22,7 +22,7 @@ import kotlinx.collections.immutable.persistentListOf
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
  * over the entire available screen space available to the current [OverlayHost].
  */
-public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen)
+public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen): PopResult?
 
 /**
  * A simple overlay that renders a given [screen] in a [CircuitContent] with backhandling support
@@ -31,7 +31,7 @@ public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen)
 internal class FullScreenOverlay<S : Screen>(
   private val screen: S,
   private val callbacks: @Composable () -> Callbacks = { Callbacks.NoOp },
-) : Overlay<Unit> {
+) : Overlay<PopResult?> {
   /** Simple callbacks for when a [FullScreenOverlay] is shown and finished. */
   @Stable
   internal interface Callbacks {
@@ -47,7 +47,7 @@ internal class FullScreenOverlay<S : Screen>(
   }
 
   @Composable
-  override fun Content(navigator: OverlayNavigator<Unit>) {
+  override fun Content(navigator: OverlayNavigator<PopResult?>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
       DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
@@ -64,7 +64,7 @@ internal class FullScreenOverlay<S : Screen>(
  */
 internal class DispatchingOverlayNavigator(
   private val currentScreen: Screen,
-  private val overlayNavigator: OverlayNavigator<Unit>,
+  private val overlayNavigator: OverlayNavigator<PopResult?>,
   private val onPop: () -> Unit,
 ) : Navigator {
   override fun goTo(screen: Screen): Boolean {
@@ -72,7 +72,7 @@ internal class DispatchingOverlayNavigator(
   }
 
   override fun pop(result: PopResult?): Screen? {
-    overlayNavigator.finish(Unit)
+    overlayNavigator.finish(result)
     onPop()
     return null
   }

@@ -7,11 +7,10 @@ package com.slack.circuit.foundation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
@@ -58,18 +57,40 @@ public fun <T> pausableState(
   isActive: Boolean = LocalRecordLifecycle.current.isActive,
   produceState: @Composable () -> T,
 ): T {
-  var state: T? by remember(key) { mutableStateOf(null) }
-
+  val pauseableState = remember(key) { PauseableState<T>() }.also { it.update(produceState) }
   val saveableStateHolder = rememberSaveableStateHolder()
 
-  if (isActive || state == null) {
+  if (isActive || pauseableState.value == null) {
     val retainedStateRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
     CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
       saveableStateHolder.SaveableStateProvider(key = key ?: "pausable_state") {
-        state = produceState()
+        pauseableState.Produce()
       }
     }
   }
 
-  return state!!
+  return pauseableState.value!!
+}
+
+/**
+ * Wrapper class to update state from inside the [CompositionLocalProvider] without the
+ * [MutableState] observed in such a way that the back write will trigger a recomposition.
+ */
+private class PauseableState<T> : State<T> {
+
+  private var produceState: (@Composable () -> T)? = null
+
+  private val state = mutableStateOf<T?>(null)
+
+  override val value: T
+    get() = state.value!!
+
+  fun update(produceState: @Composable () -> T) {
+    this.produceState = produceState
+  }
+
+  @Composable
+  fun Produce() {
+    state.value = produceState!!()
+  }
 }

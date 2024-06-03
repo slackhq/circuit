@@ -73,6 +73,17 @@ public class Circuit private constructor(builder: Builder) {
   public val defaultNavDecoration: NavDecoration = builder.defaultNavDecoration
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
+  /**
+   * If enabled, presenters will be "paused" when inactive on the back stack and cache their last
+   * emitted state.
+   *
+   * @see NonPausablePresenter
+   * @see RecordLifecycle
+   * @see presentWithLifecycle
+   * @see pausableState
+   */
+  public val presentWithLifecycle: Boolean = builder.presentWithLifecycle
+
   @OptIn(InternalCircuitApi::class)
   public fun presenter(
     screen: Screen,
@@ -138,6 +149,9 @@ public class Circuit private constructor(builder: Builder) {
       private set
 
     public var eventListenerFactory: EventListener.Factory? = null
+      private set
+
+    public var presentWithLifecycle: Boolean = true
       private set
 
     internal constructor(circuit: Circuit) : this() {
@@ -239,6 +253,10 @@ public class Circuit private constructor(builder: Builder) {
 
     public fun eventListenerFactory(factory: EventListener.Factory): Builder = apply {
       eventListenerFactory = factory
+    }
+
+    public fun presentWithLifecycle(enable: Boolean = true): Builder = apply {
+      presentWithLifecycle = enable
     }
 
     public fun build(): Circuit {

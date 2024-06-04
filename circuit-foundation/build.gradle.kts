@@ -115,6 +115,14 @@ tasks
     }
   }
 
+tasks.withType<Test>().configureEach {
+  // Without this PausableStateTest will deadlock, timeout and fail. Seems to be related to when
+  // it is ran at the same time as other tests. PausableStateTest is pretty innocuous, so seems
+  // to be test infra related. Best guess is that ComposeTestRule doesn't like content which calls
+  // a composable with a return value. Needs more investigation.
+  setForkEvery(1)
+}
+
 android {
   namespace = "com.slack.circuit.foundation"
   defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }

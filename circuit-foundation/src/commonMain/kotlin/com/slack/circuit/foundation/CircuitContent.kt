@@ -126,6 +126,7 @@ public fun <UiState : CircuitUiState> CircuitContent(
   modifier: Modifier = Modifier,
   eventListener: EventListener = EventListener.NONE,
   key: Any? = screen,
+  presentWithLifecycle: Boolean = LocalCircuit.current?.presentWithLifecycle == true,
 ): Unit =
   // While the screen is different, in the eyes of compose its position is _the same_, meaning
   // we need to wrap the ui and presenter in a key() to force recomposition if it changes. A good
@@ -148,9 +149,10 @@ public fun <UiState : CircuitUiState> CircuitContent(
       }
 
       val state =
-        when (presenter) {
-          is NonPausablePresenter<UiState> -> presenter.present()
-          else -> presenter.presentWithLifecycle()
+        when {
+          presentWithLifecycle && presenter !is NonPausablePresenter<UiState> ->
+            presenter.presentWithLifecycle()
+          else -> presenter.present()
         }
 
       // TODO not sure why stateFlow + LaunchedEffect + distinctUntilChanged doesn't work here

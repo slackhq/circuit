@@ -5,13 +5,11 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.InternalComposeApi
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
@@ -58,18 +56,39 @@ public fun <T> pausableState(
   isActive: Boolean = LocalRecordLifecycle.current.isActive,
   produceState: @Composable () -> T,
 ): T {
-  var state: T? by remember(key) { mutableStateOf(null) }
+  // This is explicitly not snapshot (or state) backed as don't want it to influence composition.
+  // It is here to only store the last emitted state value. Only the caller, or the produceState
+  // should be triggering recompositions.
+  val state = remember(key) { MutableRef<T>(null) }
 
-  val saveableStateHolder = rememberSaveableStateHolder()
+  val saveableStateHolder = rememberSaveableStateHolderWithReturn()
 
-  if (isActive || state == null) {
+  return if (isActive || state.value == null) {
     val retainedStateRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
-    CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
-      saveableStateHolder.SaveableStateProvider(key = key ?: "pausable_state") {
-        state = produceState()
+    withCompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
+        saveableStateHolder.SaveableStateProvider(
+          key = key ?: "pausable_state",
+          content = produceState,
+        )
       }
-    }
+      .also {
+        // Store the last emitted state
+        state.value = it
+      }
+  } else {
+    // Else, we just omitted the last recorded state instance
+    state.value!!
   }
+}
 
-  return state!!
+internal data class MutableRef<R>(var value: R?)
+
+@Composable
+@OptIn(InternalComposeApi::class)
+internal fun <R> withCompositionLocalProvider(
+  vararg values: ProvidedValue<*>,
+  content: @Composable () -> R,
+): R {
+  currentComposer.startProviders(values)
+  return content().also { currentComposer.endProviders() }
 }

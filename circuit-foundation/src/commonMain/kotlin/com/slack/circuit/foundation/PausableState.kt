@@ -76,7 +76,7 @@ public fun <T> pausableState(
         state.value = it
       }
   } else {
-    // Else, we just omitted the last recorded state instance
+    // Else, we just emit the last stored state instance
     state.value!!
   }
 }

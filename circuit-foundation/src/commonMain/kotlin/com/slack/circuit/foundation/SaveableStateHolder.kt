@@ -11,14 +11,8 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 
 /**
- * Allows to save the state defined with [rememberSaveable] for the subtree before disposing it to
- * make it possible to compose it back next time with the restored state. It allows different
- * navigation patterns to keep the ui state like scroll position for the currently not composed
- * screens from the backstack.
- *
- * The content should be composed using [SaveableStateProvider] while providing a key representing
- * this content. Next time [SaveableStateProvider] will be used with the same key its state will be
- * restored.
+ * This is a copy of [androidx.compose.runtime.saveable.SaveableStateHolder], tweaked so that
+ * [SaveableStateProvider] returns a value.
  */
 internal interface SaveableStateHolder {
   /**

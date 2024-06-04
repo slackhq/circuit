@@ -4,6 +4,17 @@ Changelog
 **Unreleased**
 --------------
 
+0.22.2
+------
+
+_2024-06-04_
+
+- **Fix**: Fix `pausableState` recomposition loops by avoiding backward snapshot writes.
+- **New**: Add `Circuit.presentWithLifecycle` flag to enable/disable automatic `pausableState` use. This is enabled by default.
+- Update Compose Multiplatform to `1.6.11`.
+- Update androidx.lifecycle to `2.8.1`.
+- Update androidx.appcompat to `1.7.0`.
+
 0.22.1
 ------
 

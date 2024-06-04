@@ -15,6 +15,8 @@ _2024-06-04_
 - Update androidx.lifecycle to `2.8.1`.
 - Update androidx.appcompat to `1.7.0`.
 
+Special thanks to [@chrisbanes](https://github.com/chrisbanes), [@adamp](https://github.com/adamp), and Chuck Jazdzewski for contributing to this release and helping us find a runtime fix for the `pausableState` issue!
+
 0.22.1
 ------
 

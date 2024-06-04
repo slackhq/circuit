@@ -5,11 +5,9 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.InternalComposeApi
-import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
+import com.slack.circuit.foundation.internal.withCompositionLocalProvider
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
@@ -82,13 +80,3 @@ public fun <T> pausableState(
 }
 
 internal data class MutableRef<R>(var value: R?)
-
-@Composable
-@OptIn(InternalComposeApi::class)
-internal fun <R> withCompositionLocalProvider(
-  vararg values: ProvidedValue<*>,
-  content: @Composable () -> R,
-): R {
-  currentComposer.startProviders(values)
-  return content().also { currentComposer.endProviders() }
-}

@@ -4,8 +4,18 @@ Changelog
 **Unreleased**
 --------------
 
+0.21.2
+------
+
+_2024-06-04_
+
+- **Fix**: Fix `pausableState` recomposition loops by avoiding backward snapshot writes.
+- **New**: Add `Circuit.presentWithLifecycle` flag to enable/disable automatic `pausableState` use. This is enabled by default.
+
 0.21.1
 ------
+
+_2024-05-28_
 
 - **Fix**: Fix `rememberRetained` implicitly requiring `LocalContext` where it used to no-op.
 

@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Slightly optimize `pausableState` [#1455](https://github.com/slackhq/circuit/pull/1455).
+
 0.22.2
 ------
 

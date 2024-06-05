@@ -15,6 +15,7 @@ import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
 import com.slack.eithernet.ApiResult
+import com.slack.eithernet.exceptionOrNull
 import com.slack.eithernet.retryWithExponentialBackoff
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
@@ -91,7 +92,10 @@ class PetRepositoryImpl(
       petFinderApi.animals(limit = 100)
     }
     if (result !is ApiResult.Success) {
-      System.err.println("Failed to fetch animals: $result")
+      System.err.println("Failed to fetch animals: $result.")
+      (result as ApiResult.Failure).exceptionOrNull()?.stackTraceToString()?.let {
+        System.err.println("Trace is:\n$it")
+      }
       return
     }
     val animals = result.value.animals

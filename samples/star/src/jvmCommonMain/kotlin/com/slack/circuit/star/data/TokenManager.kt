@@ -1,5 +1,6 @@
 package com.slack.circuit.star.data
 
+import com.slack.circuit.star.data.petfinder.PetfinderAuthApi
 import com.slack.circuit.star.data.petfinder.updateAuthData
 import com.slack.eithernet.ApiResult.Failure
 import com.slack.eithernet.ApiResult.Success

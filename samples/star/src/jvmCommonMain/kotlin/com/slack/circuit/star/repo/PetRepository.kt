@@ -5,7 +5,7 @@ package com.slack.circuit.star.repo
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.slack.circuit.star.data.PetfinderApi
+import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender

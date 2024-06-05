@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data
 
+import com.slack.circuit.star.data.petfinder.PetfinderApi
+import com.slack.circuit.star.data.petfinder.PetfinderAuthApi
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetBioParser
 import com.slack.eithernet.ApiResultCallAdapterFactory
 import com.slack.eithernet.ApiResultConverterFactory
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import io.ktor.client.HttpClient
@@ -18,12 +19,14 @@ import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.plugins.HttpRequestRetry
 import javax.inject.Qualifier
+import kotlinx.serialization.json.Json
 import okhttp3.Cache
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.FileSystem
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
 
 private const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
@@ -33,8 +36,10 @@ private const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
 object DataModule {
   @Provides
   @SingleIn(AppScope::class)
-  fun provideMoshi(): Moshi {
-    return Moshi.Builder().build()
+  fun provideJson(): Json {
+    return Json {
+      ignoreUnknownKeys = true
+    }
   }
 
   @Provides
@@ -60,12 +65,12 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideRetrofit(moshi: Moshi, okHttpClientLazy: dagger.Lazy<OkHttpClient>): Retrofit =
+  fun provideRetrofit(json: Json, okHttpClientLazy: dagger.Lazy<OkHttpClient>): Retrofit =
     Retrofit.Builder()
       .addCallAdapterFactory(ApiResultCallAdapterFactory)
       .addConverterFactory(ApiResultConverterFactory)
       .addConverterFactory(JsoupConverter.newFactory(PetBioParser::parse))
-      .addConverterFactory(MoshiConverterFactory.create(moshi))
+      .addConverterFactory(json.asConverterFactory("application/json; charset=UTF-8".toMediaType()))
       .baseUrl("https://api.petfinder.com/v2/")
       .callFactory { okHttpClientLazy.get().newCall(it) }
       .build()

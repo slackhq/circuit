@@ -17,7 +17,7 @@ plugins {
   alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
-  alias(libs.plugins.moshiGradlePlugin)
+  alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
@@ -78,6 +78,7 @@ kotlin {
         implementation(libs.coroutines)
         implementation(libs.kotlinx.datetime)
         implementation(libs.kotlinx.immutable)
+        implementation(libs.kotlinx.serialization.json.okio)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
         implementation(libs.okio)
@@ -117,7 +118,7 @@ kotlin {
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
         implementation(libs.retrofit)
-        implementation(libs.retrofit.converters.moshi)
+        implementation(libs.retrofit.converters.kotlinxSerialization)
         val kapt by configurations.getting
         kapt.dependencies.addLater(libs.dagger.compiler)
       }

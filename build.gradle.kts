@@ -36,6 +36,7 @@ plugins {
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
+  alias(libs.plugins.kotlin.plugin.serialization) apply false
   alias(libs.plugins.agp.application) apply false
   alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.agp.test) apply false
@@ -46,7 +47,6 @@ plugins {
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.versionsPlugin)
-  alias(libs.plugins.moshiGradlePlugin) apply false
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.kotlin.plugin.compose) apply false

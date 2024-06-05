@@ -31,13 +31,13 @@ data class Animal(
   //     "special_needs": false,
   //     "shots_current": true
   // },
-  val attributes: Map<String, Boolean>,
+  val attributes: Map<String, Boolean?>,
   // "environment": {
   //     "children": false,
   //     "dogs": true,
   //     "cats": true
   // },
-  val environment: Map<String, Boolean>,
+  val environment: Map<String, Boolean?>,
   val tags: List<String>,
   // "contact": {
   //     "email": "petfindertechsupport@gmail.com",

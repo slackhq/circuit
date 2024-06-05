@@ -5,7 +5,7 @@ package com.slack.circuit.star.repo
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.slack.circuit.star.data.PetfinderApi
+import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.Animal as DbAnimal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
@@ -15,6 +15,7 @@ import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
 import com.slack.eithernet.ApiResult
+import com.slack.eithernet.exceptionOrNull
 import com.slack.eithernet.retryWithExponentialBackoff
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlinx.collections.immutable.toImmutableList
@@ -91,7 +92,10 @@ class PetRepositoryImpl(
       petFinderApi.animals(limit = 100)
     }
     if (result !is ApiResult.Success) {
-      System.err.println("Failed to fetch animals: $result")
+      System.err.println("Failed to fetch animals: $result.")
+      (result as ApiResult.Failure).exceptionOrNull()?.stackTraceToString()?.let {
+        System.err.println("Trace is:\n$it")
+      }
       return
     }
     val animals = result.value.animals

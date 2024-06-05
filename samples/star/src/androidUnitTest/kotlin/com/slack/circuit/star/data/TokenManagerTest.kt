@@ -3,6 +3,9 @@
 package com.slack.circuit.star.data
 
 import com.google.common.truth.Truth.assertThat
+import com.slack.circuit.star.data.petfinder.AuthenticationResponse
+import com.slack.circuit.star.data.petfinder.PetfinderAuthApi
+import com.slack.circuit.star.data.petfinder.updateAuthData
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.test.enqueue
 import com.slack.eithernet.test.newEitherNetController

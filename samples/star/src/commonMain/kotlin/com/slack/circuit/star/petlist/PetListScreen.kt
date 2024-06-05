@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -61,8 +62,16 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -113,6 +122,9 @@ import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
+import io.ktor.util.Platform
+import io.ktor.util.PlatformUtils
+import io.ktor.util.platform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -316,7 +328,27 @@ private fun PetListGrid(
 ) {
   val pullRefreshState =
     rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { eventSink(Refresh) })
-  Box(modifier = modifier.pullRefresh(pullRefreshState)) {
+
+  val focusRequester = remember { FocusRequester() }
+  Box(
+    modifier =
+      modifier
+        .pullRefresh(pullRefreshState)
+        .focusRequester(focusRequester)
+        // Keyboard shortcut for refresh calls
+        .onKeyEvent { event ->
+          if (event.key == Key.R && event.isMetaPressed && event.type == KeyEventType.KeyDown) {
+            eventSink(Refresh)
+            true
+          } else {
+            false
+          }
+        }
+  ) {
+    // For the refresh keyboard shortcut
+    if (PlatformUtils.platform == Platform.Jvm) {
+      LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    }
     @Suppress("MagicNumber")
     val columnSpan =
       when (calculateWindowSizeClass().widthSizeClass) {

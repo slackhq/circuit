@@ -40,6 +40,5 @@ interface PetfinderApi {
 
   @GET("animals/{id}") suspend fun animal(@Path("id") id: Long): ApiResult<Animal, Unit>
 
-  @JSoupEndpoint
-  @GET("") suspend fun animalBio(@Url url: String): ApiResult<String, Unit>
+  @JSoupEndpoint @GET("") suspend fun animalBio(@Url url: String): ApiResult<String, Unit>
 }

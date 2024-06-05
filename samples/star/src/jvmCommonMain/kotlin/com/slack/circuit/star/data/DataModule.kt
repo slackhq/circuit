@@ -37,9 +37,7 @@ object DataModule {
   @Provides
   @SingleIn(AppScope::class)
   fun provideJson(): Json {
-    return Json {
-      ignoreUnknownKeys = true
-    }
+    return Json { ignoreUnknownKeys = true }
   }
 
   @Provides

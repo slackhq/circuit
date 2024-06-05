@@ -1,10 +1,11 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data.petfinder
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class AnimalsResponse(val animals: List<Animal>, val pagination: Pagination)
+@Serializable data class AnimalsResponse(val animals: List<Animal>, val pagination: Pagination)
 
 @Serializable
 data class Animal(
@@ -70,11 +71,9 @@ data class Animal(
   @SerialName("_links") val links: Links,
 )
 
-@Serializable
-data class Links(val self: Link, val type: Link, val organization: Link)
+@Serializable data class Links(val self: Link, val type: Link, val organization: Link)
 
-@Serializable
-data class Link(val href: String)
+@Serializable data class Link(val href: String)
 
 @Serializable
 data class Breeds(

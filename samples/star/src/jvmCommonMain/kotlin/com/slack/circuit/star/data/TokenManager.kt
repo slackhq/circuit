@@ -9,7 +9,6 @@ import com.slack.eithernet.ApiResult.Success
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock.System
-import okhttp3.Request
 
 /**
  * A hypothetical token manager that stores an auth token. Just in-memory and not thread-safe for
@@ -18,29 +17,28 @@ import okhttp3.Request
 class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: TokenStorage) {
   private val mutex = Mutex()
 
-  /** Authenticates a [request]. */
-  suspend fun authenticate(request: Request): Request {
-    return authenticate(request, false)
+  data class AuthHeader(val name: String, val value: String)
+
+  /** Returns an [AuthHeader] that can be used to authenticate requests. */
+  suspend fun requestAuthHeader(): AuthHeader {
+    return requestAuthHeader(false)
   }
 
-  private suspend fun authenticate(request: Request, isAfterRefresh: Boolean): Request {
-    println("INFO: Authenticating request ${request.url}")
-    val newBuilder = request.newBuilder()
+  private suspend fun requestAuthHeader(isAfterRefresh: Boolean): AuthHeader {
+    println("INFO: Authenticating request")
     val (tokenType, expiration, token) =
       tokenStorage.getAuthData()
         ?: run {
           refreshToken()
-          return authenticate(request, isAfterRefresh)
+          return requestAuthHeader(isAfterRefresh)
         }
     if (System.now() > expiration) {
       check(!isAfterRefresh)
       refreshToken()
-      return authenticate(request, isAfterRefresh)
+      return requestAuthHeader(isAfterRefresh)
     } else {
-      newBuilder.addHeader("Authorization", "$tokenType $token")
+      return AuthHeader("Authorization", "$tokenType $token")
     }
-
-    return newBuilder.build()
   }
 
   private suspend fun refreshToken() =

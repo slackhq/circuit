@@ -23,7 +23,7 @@ dagger = "2.51.1"
 datastore = "1.1.1"
 detekt = "1.23.6"
 dokka = "1.9.20"
-eithernet = "1.9.0"
+eithernet = "2.0.0-alpha01"
 jdk = "21"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
@@ -206,7 +206,8 @@ detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
-eithernet-testFixtures = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
+eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
+eithernet-retrofit = { module = "com.slack.eithernet:eithernet-integration-retrofit", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
 jline = "org.jline:jline:3.26.1"
 jsoup = "org.jsoup:jsoup:1.17.2"

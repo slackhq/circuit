@@ -109,6 +109,7 @@ androidx-compose-animation = { module = "androidx.compose.animation:animation", 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.05.00" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
+androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
 androidx-compose-integration-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-compose-integration-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "compose-integration-constraintlayout" }
 androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }

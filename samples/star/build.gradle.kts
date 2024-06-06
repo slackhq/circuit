@@ -139,6 +139,7 @@ kotlin {
           implementation(libs.androidx.compose.accompanist.pager)
           implementation(libs.androidx.compose.accompanist.pager.indicators)
           implementation(libs.androidx.compose.accompanist.systemUi)
+          implementation(libs.androidx.compose.googleFonts)
           implementation(libs.androidx.compose.integration.activity)
           implementation(libs.androidx.compose.integration.activity)
           implementation(libs.androidx.compose.ui.tooling)

@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.ui
 
 import androidx.compose.ui.graphics.Color
@@ -217,10 +219,3 @@ val surfaceContainerLowDarkHighContrast = Color(0xFF1B1B1B)
 val surfaceContainerDarkHighContrast = Color(0xFF1F1F1F)
 val surfaceContainerHighDarkHighContrast = Color(0xFF2A2A2A)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF353535)
-
-
-
-
-
-
-

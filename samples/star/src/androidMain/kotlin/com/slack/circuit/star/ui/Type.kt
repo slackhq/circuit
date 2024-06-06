@@ -1,36 +1,29 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.ui
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.FontFamily
-
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import com.slack.circuit.star.R
 
-val provider = GoogleFont.Provider(
+val provider =
+  GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
-)
+    certificates = R.array.com_google_android_gms_fonts_certs,
+  )
 
-val bodyFontFamily = FontFamily(
-    Font(
-        googleFont = GoogleFont("Cabin"),
-        fontProvider = provider,
-    )
-)
+val bodyFontFamily = FontFamily(Font(googleFont = GoogleFont("Cabin"), fontProvider = provider))
 
-val displayFontFamily = FontFamily(
-    Font(
-        googleFont = GoogleFont("Cabin"),
-        fontProvider = provider,
-    )
-)
+val displayFontFamily = FontFamily(Font(googleFont = GoogleFont("Cabin"), fontProvider = provider))
 
 // Default Material 3 typography values
 val baseline = Typography()
 
-val StarTypography = Typography(
+val StarTypography =
+  Typography(
     displayLarge = baseline.displayLarge.copy(fontFamily = displayFontFamily),
     displayMedium = baseline.displayMedium.copy(fontFamily = displayFontFamily),
     displaySmall = baseline.displaySmall.copy(fontFamily = displayFontFamily),
@@ -46,5 +39,4 @@ val StarTypography = Typography(
     labelLarge = baseline.labelLarge.copy(fontFamily = bodyFontFamily),
     labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
     labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
-)
-
+  )

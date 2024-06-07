@@ -15,9 +15,9 @@ import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.jvm.JvmInline
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.jvm.JvmInline
 
 /**
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
@@ -47,8 +47,7 @@ internal class FullScreenOverlay<S : Screen>(
     }
   }
 
-  @JvmInline
-  internal value class Result(val result: PopResult?)
+  @JvmInline internal value class Result(val result: PopResult?)
 
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {

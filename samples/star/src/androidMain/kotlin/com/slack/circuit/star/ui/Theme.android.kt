@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 @Composable
 actual fun StarTheme(
@@ -36,7 +35,7 @@ actual fun StarTheme(
     SideEffect {
       val window = (view.context as Activity).window
       window.statusBarColor = Color.Transparent.toArgb()
-      WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = useDarkTheme
+      window.navigationBarColor = Color.Transparent.toArgb()
     }
   }
 

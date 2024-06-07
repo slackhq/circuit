@@ -4,7 +4,21 @@ Changelog
 **Unreleased**
 --------------
 
+- Slightly optimize `pausableState` [#1455](https://github.com/slackhq/circuit/pull/1455).
 - **Change**: `OverlayHost.showFullScreenOverlay` now returns the PopResult? that was popped by the screen.
+
+0.22.2
+------
+
+_2024-06-04_
+
+- **Fix**: Fix `pausableState` recomposition loops by avoiding backward snapshot writes.
+- **New**: Add `Circuit.presentWithLifecycle` flag to enable/disable automatic `pausableState` use. This is enabled by default.
+- Update Compose Multiplatform to `1.6.11`.
+- Update androidx.lifecycle to `2.8.1`.
+- Update androidx.appcompat to `1.7.0`.
+
+Special thanks to [@chrisbanes](https://github.com/chrisbanes), [@adamp](https://github.com/adamp), and Chuck Jazdzewski for contributing to this release and helping us find a runtime fix for the `pausableState` issue!
 
 0.22.1
 ------

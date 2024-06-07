@@ -17,21 +17,22 @@ compose-material = "1.6.7"
 compose-material3 = "1.2.1"
 compose-runtime = "1.6.7"
 compose-ui = "1.6.7"
-compose-jb = "1.6.10"
+compose-jb = "1.6.11"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.51.1"
 datastore = "1.1.1"
 detekt = "1.23.6"
 dokka = "1.9.20"
-eithernet = "1.8.1"
+eithernet = "1.9.0"
 jdk = "21"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
-kct = "0.5.0-alpha07"
+kct = "0.5.0"
 kotlin = "2.0.0"
 kotlinpoet = "1.17.0"
 kotlinx-coroutines = "1.8.1"
-ksp = "2.0.0-1.0.21"
+kotlinx-serialization = "1.6.3"
+ksp = "2.0.0-1.0.22"
 ktfmt = "0.49"
 ktor = "2.3.11"
 leakcanary = "2.14"
@@ -39,8 +40,6 @@ material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.28.0"
 molecule = "2.0.0"
 mosaic = "0.12.0"
-moshi = "1.15.1"
-moshix = "0.27.1"
 okhttp = "5.0.0-alpha.14"
 okio = "3.9.0"
 paparazzi = "1.3.4"
@@ -48,7 +47,7 @@ picnic = "0.7.0"
 retrofit = "2.11.0"
 robolectric = "4.12.2"
 roborazzi = "1.20.0"
-skie = "0.8.0"
+skie = "0.8.1"
 spotless = "6.23.3"
 sqldelight = "2.0.2"
 telephoto = "0.11.2"
@@ -75,11 +74,11 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
-moshiGradlePlugin = { id = "dev.zacsweers.moshix", version.ref = "moshix" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 skie = { id = "co.touchlab.skie", version.ref = "skie"}
@@ -222,6 +221,9 @@ kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
+
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 # Only present to trigger automatic renovate updates
@@ -241,8 +243,6 @@ lints-compose = "com.slack.lint.compose:compose-lint-checks:1.3.1"
 material = "com.google.android.material:material:1.12.0"
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
@@ -250,7 +250,7 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofit-converters-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+retrofit-converters-kotlinxSerialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 retrofit-converters-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref="robolectric" }
 

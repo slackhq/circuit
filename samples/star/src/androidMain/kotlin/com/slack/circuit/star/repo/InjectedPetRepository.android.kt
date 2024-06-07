@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.repo
 
-import com.slack.circuit.star.data.PetfinderApi
+import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.di.AppScope
 import com.squareup.anvil.annotations.ContributesBinding

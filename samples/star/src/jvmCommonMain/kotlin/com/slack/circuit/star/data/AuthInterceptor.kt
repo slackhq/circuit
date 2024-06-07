@@ -10,7 +10,10 @@ import okhttp3.Response
 class AuthInterceptor(private val tokenManager: TokenManager) : Interceptor {
   override fun intercept(chain: Chain): Response {
     // TODO check for 401s and re-auth?
-    val request = runBlocking { tokenManager.authenticate(chain.request()) }
+    val request = runBlocking {
+      val (name, value) = tokenManager.requestAuthHeader()
+      chain.request().newBuilder().addHeader(name, value).build()
+    }
     return chain.proceed(request)
   }
 }

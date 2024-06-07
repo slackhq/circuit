@@ -10,7 +10,6 @@ import com.slack.eithernet.ApiResult
 import com.slack.eithernet.test.enqueue
 import com.slack.eithernet.test.newEitherNetController
 import kotlinx.coroutines.test.runTest
-import okhttp3.Request
 import org.junit.Test
 
 class TokenManagerTest {
@@ -22,9 +21,9 @@ class TokenManagerTest {
     val tokenStorage =
       FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 1000, "token")) }
     val tokenManager = TokenManager(authApi, tokenStorage)
-    val request = Request.Builder().url("https://api.petfinder.com/v2/animals").build()
-    val authenticated = tokenManager.authenticate(request)
-    assertThat(authenticated.header("Authorization")).isEqualTo("Bearer token")
+    val (name, value) = tokenManager.requestAuthHeader()
+    assertThat(name).isEqualTo("Authorization")
+    assertThat(value).isEqualTo("Bearer token")
   }
 
   @Test
@@ -36,9 +35,9 @@ class TokenManagerTest {
     val tokenStorage =
       FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 0, "token")) }
     val tokenManager = TokenManager(authApi, tokenStorage)
-    val request = Request.Builder().url("https://api.petfinder.com/v2/animals").build()
-    val authenticated = tokenManager.authenticate(request)
-    assertThat(authenticated.header("Authorization")).isEqualTo("Bearer queuedToken")
+    val (name, value) = tokenManager.requestAuthHeader()
+    assertThat(name).isEqualTo("Authorization")
+    assertThat(value).isEqualTo("Bearer queuedToken")
     apiController.assertNoMoreQueuedResults()
     assertThat(tokenStorage.getAuthData()!!.token).isEqualTo("queuedToken")
   }

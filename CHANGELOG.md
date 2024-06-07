@@ -5,6 +5,7 @@ Changelog
 --------------
 
 - Slightly optimize `pausableState` [#1455](https://github.com/slackhq/circuit/pull/1455).
+- **Change**: `OverlayHost.showFullScreenOverlay` now returns the PopResult? that was popped by the screen.
 
 0.22.2
 ------

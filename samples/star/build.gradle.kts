@@ -260,7 +260,13 @@ if (!buildDesktop) {
   }
 }
 
-compose.desktop { application { mainClass = "com.slack.circuit.star.MainKt" } }
+compose {
+  desktop { application { mainClass = "com.slack.circuit.star.MainKt" } }
+  resources {
+    packageOfResClass = "com.slack.circuit.star.resources"
+    generateResClass = always
+  }
+}
 
 sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
 

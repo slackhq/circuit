@@ -10,8 +10,10 @@ import coil3.annotation.ExperimentalCoilApi
 import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.InternalResourceApi
-import org.jetbrains.compose.resources.readResourceBytes
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.getDrawableResourceBytes
+import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import org.junit.rules.ExternalResource
 
 /**
@@ -38,13 +40,11 @@ class CoilRule(private val factory: SingletonImageLoader.Factory = defaultFactor
     operator fun invoke(image: Image) = CoilRule(factory = defaultFactory(image))
 
     /**
-     * A custom invoke that just uses a custom [imageResourcePath] to default in a
-     * [FakeImageLoaderEngine].
+     * A custom invoke that just uses a custom [resource] to default in a [FakeImageLoaderEngine].
      */
-    // TODO reading a path from another project doesn't appear to be supported
-    @OptIn(InternalResourceApi::class)
-    operator fun invoke(imageResourcePath: String): CoilRule {
-      val bytes = runBlocking { readResourceBytes(imageResourcePath) }
+    @OptIn(ExperimentalResourceApi::class)
+    operator fun invoke(resource: DrawableResource): CoilRule {
+      val bytes = runBlocking { getDrawableResourceBytes(getSystemResourceEnvironment(), resource) }
       return CoilRule(factory = defaultFactory(createImageFromBytes(bytes)))
     }
   }

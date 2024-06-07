@@ -6,8 +6,8 @@ import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.data.petfinder.PetfinderAuthApi
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.petdetail.PetBioParser
-import com.slack.eithernet.ApiResultCallAdapterFactory
-import com.slack.eithernet.ApiResultConverterFactory
+import com.slack.eithernet.integration.retrofit.ApiResultCallAdapterFactory
+import com.slack.eithernet.integration.retrofit.ApiResultConverterFactory
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module

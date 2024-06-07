@@ -92,6 +92,7 @@ kotlin {
         implementation(projects.circuitRetained)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.overlays)
+        implementation(libs.eithernet)
       }
     }
     commonTest {
@@ -103,6 +104,7 @@ kotlin {
         implementation(libs.okio.fakefilesystem)
         implementation(libs.testing.assertk)
         implementation(projects.circuitTest)
+        implementation(libs.eithernet.testFixtures)
       }
     }
     maybeCreate("jvmCommonMain").apply {
@@ -111,7 +113,7 @@ kotlin {
         api(libs.anvil.annotations.optional)
         implementation(libs.compose.material.icons)
         implementation(libs.dagger)
-        implementation(libs.eithernet)
+        implementation(libs.eithernet.retrofit)
         implementation(libs.jsoup)
         implementation(libs.coil3.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
@@ -125,7 +127,6 @@ kotlin {
     }
     maybeCreate("jvmCommonTest").apply {
       dependencies {
-        implementation(dependencies.testFixtures(libs.eithernet))
         implementation(libs.junit)
         implementation(libs.truth)
       }

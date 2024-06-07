@@ -54,7 +54,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -88,6 +87,8 @@ import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
+import com.slack.circuit.retained.collectAsRetainedState
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -128,6 +129,7 @@ import io.ktor.util.platform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 @CommonParcelize
@@ -178,26 +180,28 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
     }
 
     val animalState by
-      produceState<List<PetListAnimal>?>(initialValue = null, petRepo) {
-        petRepo
-          .animalsFlow()
-          .map { animals -> animals?.map(Animal::toPetListAnimal) }
-          .collect { value = it }
-      }
+      rememberRetained(petRepo) {
+          petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
+        }
+        .collectAsRetainedState(null)
 
-    var isUpdateFiltersModalShowing by rememberSaveable { mutableStateOf(false) }
+    var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
+    val filteredAnimals by
+      rememberRetained(animalState, filters) {
+        derivedStateOf { animalState?.filter { shouldKeep(filters, it) }?.toImmutableList() }
+      }
 
     val filtersScreenNavigator =
       rememberAnsweringNavigator<FiltersScreen.Result>(navigator) { filters = it.filters }
 
-    val animals = animalState
+    val animals = filteredAnimals
     return when {
       animals == null -> Loading
       animals.isEmpty() -> NoAnimals(isRefreshing)
       else ->
         Success(
-          animals = animals.filter { shouldKeep(filters, it) }.toImmutableList(),
+          animals = animals,
           isRefreshing = isRefreshing,
           filters = filters,
           isUpdateFiltersModalShowing = isUpdateFiltersModalShowing,

@@ -15,6 +15,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
@@ -395,6 +396,10 @@ subprojects {
 
   pluginManager.withPlugin("org.jetbrains.compose") {
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+    configure<ComposeCompilerGradlePluginExtension> {
+      enableStrongSkippingMode = true
+      includeSourceInformation = true
+    }
   }
 
   pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {

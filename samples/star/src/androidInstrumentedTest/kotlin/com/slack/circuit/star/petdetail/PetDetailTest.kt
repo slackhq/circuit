@@ -23,6 +23,8 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.resources.Res
+import com.slack.circuit.star.resources.dog2
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -33,7 +35,7 @@ import org.junit.Test
 class PetDetailTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-  @get:Rule val coilRule = CoilRule("dog2.jpg")
+  @get:Rule val coilRule = CoilRule(Res.drawable.dog2)
   // Not using detectLeaksAfterTestSuccessWrapping() because it causes an NPE with composeTestRule
   @get:Rule val leakDetectionRule = DetectLeaksAfterTestSuccess()
 

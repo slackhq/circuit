@@ -23,13 +23,12 @@ import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.parcel.CommonParcelize
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.InternalResourceApi
+import com.slack.circuit.star.resources.Res
+import com.slack.circuit.star.resources.star_icon
 import org.jetbrains.compose.resources.painterResource
 
 @CommonParcelize data object AboutScreen : StaticScreen
 
-@OptIn(InternalResourceApi::class)
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable
 fun About(modifier: Modifier = Modifier) {
@@ -40,7 +39,7 @@ fun About(modifier: Modifier = Modifier) {
   ) {
     Icon(
       modifier = Modifier.size(96.dp),
-      painter = painterResource(DrawableResource("star_icon.png", emptySet())),
+      painter = painterResource(Res.drawable.star_icon),
       contentDescription = "STAR icon",
       tint = Color.Unspecified,
     )

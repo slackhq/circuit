@@ -140,6 +140,7 @@ kotlin {
           implementation(libs.androidx.compose.accompanist.pager)
           implementation(libs.androidx.compose.accompanist.pager.indicators)
           implementation(libs.androidx.compose.accompanist.systemUi)
+          implementation(libs.androidx.compose.googleFonts)
           implementation(libs.androidx.compose.integration.activity)
           implementation(libs.androidx.compose.integration.activity)
           implementation(libs.androidx.compose.ui.tooling)
@@ -166,6 +167,7 @@ kotlin {
         }
       }
       val androidInstrumentedTest by getting {
+        dependsOn(commonTest.get())
         // Annoyingly cannot depend on commonJvmTest
         dependencies {
           implementation(libs.androidx.compose.ui.testing.junit)
@@ -236,15 +238,6 @@ if (!buildDesktop) {
   configure<LibraryExtension> {
     namespace = "com.slack.circuit.star"
 
-    // Hack to get these resources visible to other source sets
-    // https://kotlinlang.slack.com/archives/C3PQML5NU/p1696283778314299?thread_ts=1696283403.197389&cid=C3PQML5NU
-    // Disabled during sync because it breaks source sets
-    if (!System.getProperty("idea.sync.active", "false").toBoolean()) {
-      sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-      sourceSets["test"].resources.srcDirs("src/commonTest/resources")
-      sourceSets["androidTest"].resources.srcDirs("src/commonTest/resources")
-    }
-
     defaultConfig {
       minSdk = 28
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -260,7 +253,13 @@ if (!buildDesktop) {
   }
 }
 
-compose.desktop { application { mainClass = "com.slack.circuit.star.MainKt" } }
+compose {
+  desktop { application { mainClass = "com.slack.circuit.star.MainKt" } }
+  resources {
+    packageOfResClass = "com.slack.circuit.star.resources"
+    generateResClass = always
+  }
+}
 
 sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
 

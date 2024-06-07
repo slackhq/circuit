@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +28,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.AppComponent
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigation.OpenUrlScreen
+import com.slack.circuit.star.ui.StarTheme
 import java.awt.Desktop
 import java.net.URI
 import kotlinx.collections.immutable.persistentListOf
@@ -92,7 +90,7 @@ fun main() {
         }
       },
     ) {
-      MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()) {
+      StarTheme(useDarkTheme = darkMode) {
         CircuitCompositionLocals(component.circuit) {
           ContentWithOverlays {
             NavigableCircuitContent(navigator = navigator, backStack = backStack)

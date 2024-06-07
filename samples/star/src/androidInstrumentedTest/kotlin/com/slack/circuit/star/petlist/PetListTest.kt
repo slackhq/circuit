@@ -23,6 +23,8 @@ import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
+import com.slack.circuit.star.resources.Res
+import com.slack.circuit.star.resources.dog
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -32,7 +34,7 @@ import org.junit.Test
 class PetListTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-  @get:Rule val coilRule = CoilRule("dog.jpg")
+  @get:Rule val coilRule = CoilRule(Res.drawable.dog)
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {

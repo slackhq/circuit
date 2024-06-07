@@ -166,6 +166,7 @@ kotlin {
         }
       }
       val androidInstrumentedTest by getting {
+        dependsOn(commonTest.get())
         // Annoyingly cannot depend on commonJvmTest
         dependencies {
           implementation(libs.androidx.compose.ui.testing.junit)

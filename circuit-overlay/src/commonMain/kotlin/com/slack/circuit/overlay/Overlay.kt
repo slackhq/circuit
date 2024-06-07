@@ -62,7 +62,7 @@ public interface OverlayHost {
    * }
    * ```
    */
-  public val currentOverlayData: OverlayHostData<Any?>?
+  public val currentOverlayData: OverlayHostData<Any>?
 
   /**
    * Shows the given [overlay] and suspends until the overlay is finished with a [Result]. The
@@ -74,7 +74,7 @@ public interface OverlayHost {
    * This function should only be called from UI contexts and _not_ presenters, as overlays are a UI
    * concern.
    */
-  public suspend fun <Result : Any?> show(overlay: Overlay<Result>): Result
+  public suspend fun <Result : Any> show(overlay: Overlay<Result>): Result
 }
 
 /** Returns a remembered an [OverlayHost] that can be used to show overlays. */
@@ -88,18 +88,18 @@ private class OverlayHostImpl : OverlayHost {
    */
   private val mutex = Mutex()
 
-  override var currentOverlayData: OverlayHostData<Any?>? by mutableStateOf(null)
+  override var currentOverlayData: OverlayHostData<Any>? by mutableStateOf(null)
     private set
 
-  override suspend fun <T : Any?> show(overlay: Overlay<T>): T =
+  override suspend fun <T : Any> show(overlay: Overlay<T>): T =
     mutex.withLock {
       try {
         return suspendCancellableCoroutine { continuation ->
           @Suppress("UNCHECKED_CAST")
           currentOverlayData =
             OverlayHostDataImpl(
-              overlay as Overlay<Any?>,
-              continuation as CancellableContinuation<Any?>,
+              overlay as Overlay<Any>,
+              continuation as CancellableContinuation<Any>,
             )
         }
       } finally {
@@ -113,7 +113,7 @@ private class OverlayHostImpl : OverlayHost {
  * implemented by consumers!
  */
 @Stable
-public interface OverlayHostData<Result : Any?> {
+public interface OverlayHostData<Result : Any> {
   /** The [Overlay] that is currently being shown. Read-only. */
   public val overlay: Overlay<Result>
 
@@ -124,7 +124,7 @@ public interface OverlayHostData<Result : Any?> {
   public fun finish(result: Result)
 }
 
-private class OverlayHostDataImpl<T : Any?>(
+private class OverlayHostDataImpl<T : Any>(
   override val overlay: Overlay<T>,
   private val continuation: CancellableContinuation<T>,
 ) : OverlayHostData<T> {
@@ -156,7 +156,7 @@ private class OverlayHostDataImpl<T : Any?>(
  * result when they are done.
  */
 @Stable
-public fun interface OverlayNavigator<Result : Any?> {
+public fun interface OverlayNavigator<Result : Any> {
   /** Called by the [Overlay] with a [result] it's done. */
   public fun finish(result: Result)
 }
@@ -171,7 +171,7 @@ public fun interface OverlayNavigator<Result : Any?> {
  * example: `BottomSheetOverlay`, `ModalOverlay`, `TooltipOverlay`, etc.
  */
 @Stable
-public interface Overlay<Result : Any?> {
+public interface Overlay<Result : Any> {
   @Composable public fun Content(navigator: OverlayNavigator<Result>)
 }
 
@@ -181,7 +181,7 @@ public interface Overlay<Result : Any?> {
  * [AnimatedContent] is executed with with [AnimatedVisibilityScope] so that child animations can be
  * coordinated with the overlay's animations.
  */
-public abstract class AnimatedOverlay<Result : Any?>(
+public abstract class AnimatedOverlay<Result : Any>(
   public val enterTransition: EnterTransition,
   public val exitTransition: ExitTransition,
 ) : Overlay<Result> {

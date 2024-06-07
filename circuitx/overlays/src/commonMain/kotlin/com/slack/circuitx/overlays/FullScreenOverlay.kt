@@ -17,6 +17,7 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlin.jvm.JvmInline
 
 /**
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
@@ -31,7 +32,7 @@ public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen): Pop
 internal class FullScreenOverlay<S : Screen>(
   private val screen: S,
   private val callbacks: @Composable () -> Callbacks = { Callbacks.NoOp },
-) : Overlay<PopResult?> {
+) : Overlay<FullScreenOverlay.Result> {
   /** Simple callbacks for when a [FullScreenOverlay] is shown and finished. */
   @Stable
   internal interface Callbacks {
@@ -46,8 +47,11 @@ internal class FullScreenOverlay<S : Screen>(
     }
   }
 
+  @JvmInline
+  internal value class Result(val result: PopResult?)
+
   @Composable
-  override fun Content(navigator: OverlayNavigator<PopResult?>) {
+  override fun Content(navigator: OverlayNavigator<Result>) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
       DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
@@ -64,7 +68,7 @@ internal class FullScreenOverlay<S : Screen>(
  */
 internal class DispatchingOverlayNavigator(
   private val currentScreen: Screen,
-  private val overlayNavigator: OverlayNavigator<PopResult?>,
+  private val overlayNavigator: OverlayNavigator<FullScreenOverlay.Result>,
   private val onPop: () -> Unit,
 ) : Navigator {
   override fun goTo(screen: Screen): Boolean {
@@ -72,7 +76,7 @@ internal class DispatchingOverlayNavigator(
   }
 
   override fun pop(result: PopResult?): Screen? {
-    overlayNavigator.finish(result)
+    overlayNavigator.finish(FullScreenOverlay.Result(result))
     onPop()
     return null
   }

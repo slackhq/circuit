@@ -7,5 +7,5 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 public actual suspend fun OverlayHost.showFullScreenOverlay(screen: Screen): PopResult? {
-  return show(FullScreenOverlay(screen))
+  return show(FullScreenOverlay(screen)).result
 }

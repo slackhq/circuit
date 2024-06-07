@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,7 +57,7 @@ data object HomeScreen : Screen {
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomePresenter(navigator: Navigator): HomeScreen.State {
-  var selectedIndex by remember { mutableIntStateOf(0) }
+  var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
   return HomeScreen.State(selectedIndex = selectedIndex) { event ->
     when (event) {
       is ClickNavItem -> selectedIndex = event.index
@@ -92,12 +93,13 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) {
   Platform.ReportDrawnWhen { contentComposed }
 }
 
+// These are the buttons on the NavBar, they dictate where we navigate too
+val NAV_ITEMS = persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About)
+
 @Composable
 private fun BottomNavigationBar(selectedIndex: Int, onSelectedIndex: (Int) -> Unit) {
-  // These are the buttons on the NavBar, they dictate where we navigate too
-  val items = remember { listOf(BottomNavItem.Adoptables, BottomNavItem.About) }
   NavigationBar(containerColor = MaterialTheme.colorScheme.primaryContainer) {
-    items.forEachIndexed { index, item ->
+    NAV_ITEMS.forEachIndexed { index, item ->
       NavigationBarItem(
         icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
         label = { Text(text = item.title) },

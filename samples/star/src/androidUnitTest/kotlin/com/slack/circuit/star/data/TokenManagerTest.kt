@@ -6,8 +6,6 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.star.data.petfinder.AuthenticationResponse
 import com.slack.circuit.star.data.petfinder.PetfinderAuthApi
 import com.slack.circuit.star.data.petfinder.updateAuthData
-import com.slack.eithernet.ApiResult
-import com.slack.eithernet.test.enqueue
 import com.slack.eithernet.test.newEitherNetController
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -21,25 +19,11 @@ class TokenManagerTest {
     val tokenStorage =
       FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 1000, "token")) }
     val tokenManager = TokenManager(authApi, tokenStorage)
-    val (name, value) = tokenManager.requestAuthHeader()
-    assertThat(name).isEqualTo("Authorization")
-    assertThat(value).isEqualTo("Bearer token")
-  }
-
-  @Test
-  fun expires() = runTest {
-    apiController.enqueue(
-      PetfinderAuthApi::authenticate,
-      ApiResult.success(AuthenticationResponse("Bearer", 1000, "queuedToken")),
-    )
-    val tokenStorage =
-      FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 0, "token")) }
-    val tokenManager = TokenManager(authApi, tokenStorage)
-    val (name, value) = tokenManager.requestAuthHeader()
-    assertThat(name).isEqualTo("Authorization")
-    assertThat(value).isEqualTo("Bearer queuedToken")
-    apiController.assertNoMoreQueuedResults()
-    assertThat(tokenStorage.getAuthData()!!.token).isEqualTo("queuedToken")
+    val current = tokenManager.last()
+    assertThat(current).isNull()
+    tokenManager.refreshToken()
+    val tokens = tokenManager.last()
+    assertThat(tokens!!.accessToken).isEqualTo("token")
   }
 }
 

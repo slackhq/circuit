@@ -18,5 +18,4 @@ constructor(
   sqliteDriverFactory: SqlDriverFactory,
   private val petFinderApi: PetfinderApi,
   private val petBioParserApi: PetBioParserApi,
-) :
-  PetRepository by PetRepositoryImpl(sqliteDriverFactory, petFinderApi, petBioParserApi)
+) : PetRepository by PetRepositoryImpl(sqliteDriverFactory, petFinderApi, petBioParserApi)

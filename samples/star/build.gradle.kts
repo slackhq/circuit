@@ -39,13 +39,7 @@ if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
   apply(plugin = libs.plugins.kotlin.plugin.parcelize.get().pluginId)
 } else {
-  compose {
-    desktop {
-      application {
-        mainClass = "com.slack.circuit.star.MainKt"
-      }
-    }
-  }
+  compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
 
 kotlin {

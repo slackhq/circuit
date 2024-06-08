@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data
 
-import com.slack.circuit.star.data.petfinder.PetBioParserApiImpl
-import com.slack.circuit.star.data.petfinder.PetfinderApiImpl
-import com.slack.circuit.star.data.petfinder.PetfinderAuthApiImpl
 import com.slack.circuit.star.data.petfinder.PetBioParserApi
 import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.di.AppScope
@@ -17,11 +14,6 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.engine.okhttp.OkHttpEngine
-import io.ktor.client.plugins.HttpRequestRetry
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
 import javax.inject.Qualifier
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
@@ -34,11 +26,7 @@ private const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
 @ContributesTo(AppScope::class)
 @Module
 object DataModule {
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideJson(): Json {
-    return Json { ignoreUnknownKeys = true }
-  }
+  @Provides @SingleIn(AppScope::class) fun provideJson(): Json = CommonDataModule.provideJson()
 
   @Provides
   @SingleIn(AppScope::class)
@@ -63,56 +51,40 @@ object DataModule {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideTokenManager(httpClient: HttpClient, tokenStorage: TokenStorage): TokenManager {
-    val authApi = PetfinderAuthApiImpl(httpClient)
-    val tokenManager = TokenManager(authApi, tokenStorage)
-    return tokenManager
-  }
+  fun provideTokenManager(httpClient: HttpClient, tokenStorage: TokenStorage): TokenManager =
+    CommonDataModule.provideTokenManager(httpClient, tokenStorage)
 
   @Authenticated
   @Provides
   @SingleIn(AppScope::class)
   fun provideAuthedHttpClient(httpClient: HttpClient, tokenManager: TokenManager): HttpClient =
-    httpClient.config {
-      install(Auth) {
-        bearer {
-          loadTokens { tokenManager.last() }
-          refreshTokens {
-            tokenManager.refreshToken()
-            tokenManager.last()
-          }
-        }
-      }
-    }
+    CommonDataModule.provideAuthedHttpClient(httpClient, tokenManager)
 
   @Provides
   @SingleIn(AppScope::class)
   fun provideHttpClient(okHttpClientLazy: dagger.Lazy<OkHttpClient>, json: Json): HttpClient =
-    HttpClient(
+    CommonDataModule.provideHttpClient(
       object : HttpClientEngineFactory<OkHttpConfig> {
         override fun create(block: OkHttpConfig.() -> Unit): HttpClientEngine {
           return OkHttpEngine(
             OkHttpConfig().apply { preconfigured = okHttpClientLazy.get() }.apply(block)
           )
         }
-      }
-    ) {
-      expectSuccess = true
-      install(HttpRequestRetry) {
-        retryOnExceptionOrServerErrors(maxRetries = 2)
-        exponentialDelay()
-      }
-      install(ContentNegotiation) { json(json) }
-    }
+      },
+      json,
+    )
 
   @Provides
   @SingleIn(AppScope::class)
   fun providePetfinderApi(@Authenticated httpClient: HttpClient): PetfinderApi =
-    PetfinderApiImpl(httpClient)
+    CommonDataModule.providePetfinderApi(httpClient)
 
   @Provides
   @SingleIn(AppScope::class)
-  fun providePetBioApi(httpClient: HttpClient): PetBioParserApi = PetBioParserApiImpl(httpClient)
+  fun providePetBioApi(httpClient: HttpClient): PetBioParserApi =
+    CommonDataModule.providePetBioApi(httpClient)
 
-  @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideFileSystem(): FileSystem = CommonDataModule.provideFileSystem()
 }

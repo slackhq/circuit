@@ -8,9 +8,7 @@ import org.jsoup.Jsoup
 internal object PetBioParser {
   private val newlines = Regex("\n{3,}")
 
-  private fun String.reduceNewlines(): String {
-    return replace(newlines, "\n\n")
-  }
+  private fun String.reduceNewlines() = replace(newlines, "\n\n")
 
   internal fun parse(fullBody: String): String {
     return Jsoup.parse(fullBody, "https://www.petfinder.com/")

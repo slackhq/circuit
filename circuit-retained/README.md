@@ -1,19 +1,20 @@
 # Module circuit-retained
 
-This optional artifact contains an implementation of `rememberRetained` and `produceRetainedState`. This is
-useful for cases where you want to retain non-parcelable state across configuration changes. This
-comes at the cost of not participating in the `SavedStateRegistry` and thus not being able to
-persist across process death.
-
-The only meaningful implementation in this artifact is for Android, where a backing `ViewModel` is used
-to hold values. If you're not running this on Android, you shouldn't need this artifact.
-
-**Note**: For the Android artifacts, there are no baseline profiles shipped with circuit-retained.
-This is normal, as it's not usually something on your startup hot path.
+This optional artifact contains a alternative implementations of `rememberRetained`, `produceRetainedState`, `collectAsRetainedState()`, etc. This is
+useful for cases where you want to retain non-saveable state across configuration changes or across a back stack. This
+comes at the cost of not participating in the `SavedStateRegistry` and thus not being able to persist across process death, but added flexibility of not 
+requiring Saveable values.
 
 ## Installation
 
-Simply provide the `LocalRetainedStateRegistry` composition local using `continuityRetainedStateRegistry()`.
+This is automatically set up and available when you use it on available platforms when you use `CircuitCompositionLocals {}`.
+
+If using `NavigableCircuitContent`, a `RetainedStateRegistry` is set up for each back stack record automatically as well.
+
+### Advanced usage
+
+By default, `LocalRetainedStateRegistry` composition local will use a no-op instance. You can provide custom implementations of this to tie into whatever
+lifecycle is relevant for your app (back stack, hierarchical, etc). The platform default implementations are accessibly via `continuityRetainedStateRegistry()`.
 
 ```kotlin
 CompositionLocalProvider(

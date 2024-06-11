@@ -38,6 +38,8 @@ val disableJvmTarget =
 if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
   apply(plugin = libs.plugins.kotlin.plugin.parcelize.get().pluginId)
+} else {
+  compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
 
 kotlin {
@@ -81,6 +83,8 @@ kotlin {
         implementation(libs.kotlinx.serialization.json.okio)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
+        implementation(libs.ktor.client.auth)
+        implementation(libs.ktor.serialization.json)
         implementation(libs.okio)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
@@ -113,14 +117,11 @@ kotlin {
         api(libs.anvil.annotations.optional)
         implementation(libs.compose.material.icons)
         implementation(libs.dagger)
-        implementation(libs.eithernet.retrofit)
         implementation(libs.jsoup)
         implementation(libs.coil3.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
-        implementation(libs.retrofit)
-        implementation(libs.retrofit.converters.kotlinxSerialization)
         val kapt by configurations.getting
         kapt.dependencies.addLater(libs.dagger.compiler)
       }

@@ -9,6 +9,7 @@ import com.slack.circuit.star.data.petfinder.updateAuthData
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.test.enqueue
 import com.slack.eithernet.test.newEitherNetController
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -18,28 +19,27 @@ class TokenManagerTest {
 
   @Test
   fun happyPath() = runTest {
-    val tokenStorage =
-      FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 1000, "token")) }
+    val tokenStorage = FakeTokenStorage()
     val tokenManager = TokenManager(authApi, tokenStorage)
-    val (name, value) = tokenManager.requestAuthHeader()
-    assertThat(name).isEqualTo("Authorization")
-    assertThat(value).isEqualTo("Bearer token")
+    val current = tokenManager.last()
+    assertThat(current).isNull()
+    apiController.enqueue(
+      PetfinderAuthApi::authenticate,
+      ApiResult.success(AuthenticationResponse("Bearer", 1000, "token")),
+    )
+    tokenManager.refreshToken()
+    val tokens = tokenManager.last()
+    assertThat(tokens!!.accessToken).isEqualTo("token")
   }
 
   @Test
-  fun expires() = runTest {
-    apiController.enqueue(
-      PetfinderAuthApi::authenticate,
-      ApiResult.success(AuthenticationResponse("Bearer", 1000, "queuedToken")),
-    )
+  fun initialData() = runTest {
     val tokenStorage =
-      FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 0, "token")) }
+      FakeTokenStorage().apply { updateAuthData(AuthenticationResponse("Bearer", 1000, "token")) }
     val tokenManager = TokenManager(authApi, tokenStorage)
-    val (name, value) = tokenManager.requestAuthHeader()
-    assertThat(name).isEqualTo("Authorization")
-    assertThat(value).isEqualTo("Bearer queuedToken")
-    apiController.assertNoMoreQueuedResults()
-    assertThat(tokenStorage.getAuthData()!!.token).isEqualTo("queuedToken")
+    val current = tokenManager.last()
+    assertNotNull(current)
+    assertThat(current.accessToken).isEqualTo("token")
   }
 }
 

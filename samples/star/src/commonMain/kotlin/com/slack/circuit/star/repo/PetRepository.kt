@@ -5,6 +5,7 @@ package com.slack.circuit.star.repo
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.slack.circuit.star.data.petfinder.PetBioParserApi
 import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.AnimalBio
@@ -42,6 +43,7 @@ interface PetRepository {
 class PetRepositoryImpl(
   sqliteDriverFactory: SqlDriverFactory,
   private val petFinderApi: PetfinderApi,
+  private val petBioParserApi: PetBioParserApi,
 ) : PetRepository {
 
   private val backgroundScope = CoroutineScope(SupervisorJob() + IO)
@@ -159,7 +161,7 @@ class PetRepositoryImpl(
       val isStale = isOperationStale(opId)
       val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
       if (isStale || dbBio == null) {
-        when (val result = petFinderApi.animalBio(animal.url)) {
+        when (val result = petBioParserApi.parseBio(animal.url)) {
           is ApiResult.Success -> {
             val bio = result.value
             // Single transaction to log the operation update with the put

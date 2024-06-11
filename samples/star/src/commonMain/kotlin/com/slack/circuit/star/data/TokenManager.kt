@@ -6,45 +6,24 @@ import com.slack.circuit.star.data.petfinder.PetfinderAuthApi
 import com.slack.circuit.star.data.petfinder.updateAuthData
 import com.slack.eithernet.ApiResult.Failure
 import com.slack.eithernet.ApiResult.Success
+import io.ktor.client.plugins.auth.providers.BearerTokens
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock.System
 
-/**
- * A hypothetical token manager that stores an auth token. Just in-memory and not thread-safe for
- * now.
- */
+/** A hypothetical token manager that stores an auth token and can refresh the token as needed. */
 class TokenManager(private val api: PetfinderAuthApi, private val tokenStorage: TokenStorage) {
   private val mutex = Mutex()
 
-  data class AuthHeader(val name: String, val value: String)
-
-  /** Returns an [AuthHeader] that can be used to authenticate requests. */
-  suspend fun requestAuthHeader(): AuthHeader {
-    return requestAuthHeader(false)
+  /** Returns the current [BearerTokens] (if present) that can be used to authenticate requests. */
+  suspend fun last(): BearerTokens? {
+    val (_, _, token) = tokenStorage.getAuthData() ?: return null
+    return BearerTokens(token, "never used")
   }
 
-  private suspend fun requestAuthHeader(isAfterRefresh: Boolean): AuthHeader {
-    println("INFO: Authenticating request")
-    val (tokenType, expiration, token) =
-      tokenStorage.getAuthData()
-        ?: run {
-          refreshToken()
-          return requestAuthHeader(isAfterRefresh)
-        }
-    if (System.now() > expiration) {
-      check(!isAfterRefresh)
-      refreshToken()
-      return requestAuthHeader(isAfterRefresh)
-    } else {
-      return AuthHeader("Authorization", "$tokenType $token")
-    }
-  }
-
-  private suspend fun refreshToken() =
+  /** Refreshes the current auth token. */
+  suspend fun refreshToken() =
     mutex.withLock {
       println("INFO: Refreshing token")
-
       when (val result = api.authenticate()) {
         is Success -> tokenStorage.updateAuthData(result.value)
         is Failure -> {

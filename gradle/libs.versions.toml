@@ -4,7 +4,7 @@ androidx-activity = "1.9.0"
 androidx-annotation = "1.8.0"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.1"
+androidx-lifecycle = "2.8.2"
 agp = "8.4.2"
 anvil = "2.5.0-beta09"
 atomicfu = "0.24.0"
@@ -13,7 +13,7 @@ coil = "2.6.0"
 coil3 = "3.0.0-alpha06"
 compose-animation = "1.6.7"
 compose-foundation = "1.6.7"
-compose-material = "1.6.7"
+compose-material = "1.6.8"
 compose-material3 = "1.2.1"
 compose-runtime = "1.6.8"
 compose-ui = "1.6.7"
@@ -105,7 +105,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.05.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.06.00" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }

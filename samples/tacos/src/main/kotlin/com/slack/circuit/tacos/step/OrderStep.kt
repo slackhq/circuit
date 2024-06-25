@@ -4,6 +4,7 @@ package com.slack.circuit.tacos.step
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Ingredient
 
@@ -46,6 +47,7 @@ sealed interface OrderStep {
   data object Restart : Event
 
   /** The primary [Composable] entry point to produce order step state */
+  @Stable
   fun interface StateProducer<T : State> {
     /**
      * Implementing classes should consume [OrderDetails] and emit state extending

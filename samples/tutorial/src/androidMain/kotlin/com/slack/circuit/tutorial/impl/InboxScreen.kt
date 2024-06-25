@@ -38,6 +38,8 @@ class InboxPresenter(
 ) : Presenter<InboxScreen.State> {
   @Composable
   override fun present(): InboxScreen.State {
+    // False positive - https://issuetracker.google.com/issues/349411310
+    @Suppress("ProduceStateDoesNotAssignValue")
     val emails by
       produceState<List<Email>>(initialValue = emptyList()) { value = emailRepository.getEmails() }
     return InboxScreen.State(emails) { event ->

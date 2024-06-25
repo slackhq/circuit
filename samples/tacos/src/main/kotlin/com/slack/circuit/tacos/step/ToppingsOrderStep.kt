@@ -60,6 +60,8 @@ internal class ToppingsProducerImpl(private val repository: IngredientsRepositor
     minimumToppings: Int,
     eventSink: (OrderStep.Event) -> Unit,
   ): ToppingsOrderStep.State {
+    // False positive - https://issuetracker.google.com/issues/349411310
+    @Suppress("ProduceStateDoesNotAssignValue")
     val ingredients by
       produceState<ImmutableList<Ingredient>?>(null) { value = repository.getToppings() }
 

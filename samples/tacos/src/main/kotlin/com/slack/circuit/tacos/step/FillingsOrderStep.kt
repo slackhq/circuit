@@ -49,6 +49,8 @@ internal class FillingsProducerImpl(private val repository: IngredientsRepositor
     orderDetails: OrderDetails,
     eventSink: (OrderStep.Event) -> Unit,
   ): FillingsOrderStep.State {
+    // False positive - https://issuetracker.google.com/issues/349411310
+    @Suppress("ProduceStateDoesNotAssignValue")
     val ingredients by
       produceState<ImmutableList<Ingredient>?>(null) { value = repository.getFillings() }
 

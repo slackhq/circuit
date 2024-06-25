@@ -78,7 +78,6 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
-        implementation(libs.kotlinx.datetime)
         implementation(libs.kotlinx.immutable)
         implementation(libs.kotlinx.serialization.json.okio)
         implementation(libs.ktor.client)
@@ -86,6 +85,7 @@ kotlin {
         implementation(libs.ktor.client.auth)
         implementation(libs.ktor.serialization.json)
         implementation(libs.okio)
+        implementation(libs.kotlinx.datetime)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
@@ -136,14 +136,13 @@ kotlin {
       androidMain {
         dependencies {
           implementation(libs.androidx.appCompat)
+          implementation(libs.androidx.compose.integration.activity)
           implementation(libs.androidx.browser)
           implementation(libs.androidx.compose.accompanist.flowlayout)
           implementation(libs.androidx.compose.accompanist.pager)
           implementation(libs.androidx.compose.accompanist.pager.indicators)
           implementation(libs.androidx.compose.accompanist.systemUi)
           implementation(libs.androidx.compose.googleFonts)
-          implementation(libs.androidx.compose.integration.activity)
-          implementation(libs.androidx.compose.integration.activity)
           implementation(libs.androidx.compose.ui.tooling)
           implementation(libs.coroutines.android)
           implementation(libs.sqldelight.driver.android)
@@ -186,9 +185,9 @@ kotlin {
       jvmMain {
         dependencies {
           implementation(compose.desktop.currentOs)
+          implementation(libs.appDirs)
           implementation(libs.coroutines.swing)
           implementation(libs.sqldelight.driver.jdbc)
-          implementation(libs.appDirs)
         }
       }
     }

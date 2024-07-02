@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EA5CD5D42B473FB100CA7518 /* CounterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5D32B473FB100CA7518 /* CounterApp.swift */; };
-		EA5CD5D62B473FB100CA7518 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5D52B473FB100CA7518 /* ContentView.swift */; };
+		EA5CD5D62B473FB100CA7518 /* CounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5D52B473FB100CA7518 /* CounterView.swift */; };
 		EA5CD5D82B473FB200CA7518 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA5CD5D72B473FB200CA7518 /* Assets.xcassets */; };
 		EA5CD5DC2B473FB200CA7518 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA5CD5DB2B473FB200CA7518 /* Preview Assets.xcassets */; };
 		EA5CD5E62B473FB200CA7518 /* CounterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5E52B473FB200CA7518 /* CounterTests.swift */; };
@@ -22,19 +22,12 @@
 			remoteGlobalIDString = EA5CD5CF2B473FB100CA7518;
 			remoteInfo = Counter;
 		};
-		EA5CD5EC2B473FB200CA7518 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EA5CD5C82B473FB100CA7518 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EA5CD5CF2B473FB100CA7518;
-			remoteInfo = Counter;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		EA5CD5D02B473FB100CA7518 /* Counter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Counter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA5CD5D32B473FB100CA7518 /* CounterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterApp.swift; sourceTree = "<group>"; };
-		EA5CD5D52B473FB100CA7518 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EA5CD5D52B473FB100CA7518 /* CounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterView.swift; sourceTree = "<group>"; };
 		EA5CD5D72B473FB200CA7518 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA5CD5D92B473FB200CA7518 /* Counter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Counter.entitlements; sourceTree = "<group>"; };
 		EA5CD5DB2B473FB200CA7518 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -51,13 +44,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EA5CD5DE2B473FB200CA7518 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EA5CD5E82B473FB200CA7518 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -89,7 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				EA5CD5D32B473FB100CA7518 /* CounterApp.swift */,
-				EA5CD5D52B473FB100CA7518 /* ContentView.swift */,
+				EA5CD5D52B473FB100CA7518 /* CounterView.swift */,
 				EA5CD5D72B473FB200CA7518 /* Assets.xcassets */,
 				EA5CD5D92B473FB200CA7518 /* Counter.entitlements */,
 				EA5CD5DA2B473FB200CA7518 /* Preview Content */,
@@ -160,16 +146,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1510;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					EA5CD5CF2B473FB100CA7518 = {
 						CreatedOnToolsVersion = 15.1;
 					};
 					EA5CD5E02B473FB200CA7518 = {
-						CreatedOnToolsVersion = 15.1;
-						TestTargetID = EA5CD5CF2B473FB100CA7518;
-					};
-					EA5CD5EA2B473FB200CA7518 = {
 						CreatedOnToolsVersion = 15.1;
 						TestTargetID = EA5CD5CF2B473FB100CA7518;
 					};
@@ -211,13 +193,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EA5CD5E92B473FB200CA7518 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -245,7 +220,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA5CD5D62B473FB100CA7518 /* ContentView.swift in Sources */,
+				EA5CD5D62B473FB100CA7518 /* CounterView.swift in Sources */,
 				EA5CD5D42B473FB100CA7518 /* CounterApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,11 +240,6 @@
 			isa = PBXTargetDependency;
 			target = EA5CD5CF2B473FB100CA7518 /* Counter */;
 			targetProxy = EA5CD5E22B473FB200CA7518 /* PBXContainerItemProxy */;
-		};
-		EA5CD5ED2B473FB200CA7518 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EA5CD5CF2B473FB100CA7518 /* Counter */;
-			targetProxy = EA5CD5EC2B473FB200CA7518 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -308,6 +278,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -369,6 +340,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -396,6 +368,7 @@
 				CODE_SIGN_ENTITLEMENTS = Counter/Counter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Counter/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -435,6 +408,7 @@
 				CODE_SIGN_ENTITLEMENTS = Counter/Counter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Counter/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -473,6 +447,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 14.2;
@@ -495,6 +470,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 14.2;

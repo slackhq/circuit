@@ -21,8 +21,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+import org.jetbrains.kotlin.gradle.internal.KaptTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
@@ -170,10 +170,14 @@ subprojects {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       // Don't double apply to stub gen
       if (this is KaptGenerateStubsTask) {
-        // TODO due to Anvil we need to force language version 1.9
         compilerOptions {
-          progressiveMode.set(false)
-          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+          allWarningsAsErrors.set(false)
+        }
+        return@configureEach
+      }
+      if (this is KaptTask) {
+        compilerOptions {
+          allWarningsAsErrors.set(false)
         }
         return@configureEach
       }
@@ -453,8 +457,16 @@ subprojects {
   }
 
   subprojects {
+    val useKaptForDagger = providers.gradleProperty("circuit.useKaptForDagger")
+      .getOrElse("false")
+      .toBoolean()
     pluginManager.withPlugin("com.squareup.anvil") {
-      configure<AnvilExtension> { useKsp(contributesAndFactoryGeneration = true) }
+      configure<AnvilExtension> {
+        useKsp(
+          contributesAndFactoryGeneration = true,
+          componentMerging = !useKaptForDagger
+        )
+      }
     }
   }
 }

@@ -15,7 +15,7 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.agp.library) apply false
-  alias(libs.plugins.kotlin.kapt)
+  alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.anvil)
@@ -40,6 +40,14 @@ if (!buildDesktop) {
   apply(plugin = libs.plugins.kotlin.plugin.parcelize.get().pluginId)
 } else {
   compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
+}
+
+val useKaptForDagger = providers.gradleProperty("circuit.useKaptForDagger")
+  .getOrElse("false")
+  .toBoolean()
+
+if (useKaptForDagger) {
+  apply(plugin = libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 kotlin {
@@ -123,8 +131,10 @@ kotlin {
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
-        val kapt by configurations.getting
-        kapt.dependencies.addLater(libs.dagger.compiler)
+        if (useKaptForDagger) {
+          val kapt by configurations.getting
+          kapt.dependencies.addLater(libs.dagger.compiler)
+        }
       }
     }
     maybeCreate("jvmCommonTest").apply {
@@ -271,23 +281,28 @@ fun String.capitalizeUS() = replaceFirstChar {
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 
-// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
-afterEvaluate {
-  for (target in kspTargets) {
-    if (target != "Android" && target != "Jvm") continue
-    val buildType = if (target == "Android") "Release" else ""
-    val kspTaskName = "ksp${buildType}Kotlin${target}"
-    val useKSP2 = providers.gradleProperty("ksp.useKSP2").getOrElse("false").toBoolean()
-    val generatedKspKotlinFiles =
-      if (useKSP2) {
-        val kspReleaseTask = tasks.named<KspAATask>(kspTaskName)
-        kspReleaseTask.flatMap { it.kspConfig.kotlinOutputDir }
-      } else {
-        val kspReleaseTask = tasks.named<KspTaskJvm>(kspTaskName)
-        kspReleaseTask.flatMap { it.destination }
+val useKSP2 = providers.gradleProperty("ksp.useKSP2")
+  .getOrElse("false")
+  .toBoolean()
+
+if (useKaptForDagger) {
+  // Workaround for https://youtrack.jetbrains.com/issue/KT-59220
+  afterEvaluate {
+    for (target in kspTargets) {
+      if (target != "Android" && target != "Jvm") continue
+      val buildType = if (target == "Android") "Release" else ""
+      val kspTaskName = "ksp${buildType}Kotlin${target}"
+      val generatedKspKotlinFiles =
+        if (useKSP2) {
+          val kspReleaseTask = tasks.named<KspAATask>(kspTaskName)
+          kspReleaseTask.flatMap { it.kspConfig.kotlinOutputDir }
+        } else {
+          val kspReleaseTask = tasks.named<KspTaskJvm>(kspTaskName)
+          kspReleaseTask.flatMap { it.destination }
+        }
+      tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
+        source(generatedKspKotlinFiles)
       }
-    tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
-      source(generatedKspKotlinFiles)
     }
   }
 }
@@ -298,5 +313,10 @@ dependencies {
   for (target in kspTargets) {
     val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target
     add("ksp${targetConfigSuffix}", projects.circuitCodegen)
+    if (!useKaptForDagger) {
+      add("ksp${targetConfigSuffix}", libs.dagger.compiler)
+    }
+    add("ksp${targetConfigSuffix}", "com.google.guava:guava:33.2.1-jre")
+    add("ksp${targetConfigSuffix}", enforcedPlatform("com.google.guava:guava-bom:33.2.1-jre"))
   }
 }

@@ -13,7 +13,7 @@ import dagger.Component
 )
 @SingleIn(AppScope::class)
 interface AppComponent : CommonAppComponent {
-  @Component.Factory
+  @MergeComponent.Factory
   interface Factory {
     fun create(): AppComponent
   }

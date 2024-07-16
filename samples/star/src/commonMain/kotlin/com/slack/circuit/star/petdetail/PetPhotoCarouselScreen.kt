@@ -54,9 +54,9 @@ import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State

@@ -20,9 +20,9 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import com.slack.circuit.star.parcel.CommonParcelize
 
 @CommonParcelize

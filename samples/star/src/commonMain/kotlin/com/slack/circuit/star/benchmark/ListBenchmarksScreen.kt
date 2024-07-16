@@ -25,10 +25,10 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen.State
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
-import com.slack.circuit.star.di.Inject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import javax.inject.Inject
 import com.slack.circuit.star.parcel.CommonParcelize
 
 @CommonParcelize

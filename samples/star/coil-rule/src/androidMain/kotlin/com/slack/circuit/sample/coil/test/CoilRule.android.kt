@@ -10,11 +10,11 @@ import android.graphics.drawable.LayerDrawable
 import androidx.annotation.DrawableRes
 import androidx.test.platform.app.InstrumentationRegistry
 import coil3.Image
-import coil3.asCoilImage
+import coil3.asImage
 
 /** A custom invoke that just uses a custom [drawable] to default in a [FakeImageLoader]. */
 operator fun CoilRule.Companion.invoke(drawable: Drawable) =
-  invoke(image = wrapIfNecessary(drawable).asCoilImage())
+  invoke(image = wrapIfNecessary(drawable).asImage())
 
 /** A custom invoke that just uses a custom Drawable [id] to default in a [FakeImageLoader]. */
 operator fun CoilRule.Companion.invoke(
@@ -44,5 +44,5 @@ private fun wrapInLayer(drawable: Drawable): Drawable {
 }
 
 internal actual fun createImageFromBytes(bytes: ByteArray): Image {
-  return BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asCoilImage()
+  return BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asImage()
 }

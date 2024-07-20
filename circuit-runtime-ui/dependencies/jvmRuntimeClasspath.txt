@@ -9,8 +9,6 @@ androidx.lifecycle:lifecycle-runtime-desktop
 androidx.lifecycle:lifecycle-runtime
 androidx.lifecycle:lifecycle-viewmodel-desktop
 androidx.lifecycle:lifecycle-viewmodel
-com.benasher44:uuid-jvm
-com.benasher44:uuid
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose

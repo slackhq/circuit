@@ -17,7 +17,6 @@ import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag.Companion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions

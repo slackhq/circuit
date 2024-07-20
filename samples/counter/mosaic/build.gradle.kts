@@ -7,8 +7,10 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.mosaic)
   // TODO this isn't supported anymore
-  //  w: 'application' (also applies 'java' plugin) Gradle plugin is not compatible with 'org.jetbrains.kotlin.multiplatform' plugin.
-  //  Consider adding a new subproject with 'application' plugin where the KMP project is added as a dependency.
+  //  w: 'application' (also applies 'java' plugin) Gradle plugin is not compatible with
+  //  'org.jetbrains.kotlin.multiplatform' plugin.
+  //  Consider adding a new subproject with 'application' plugin where the KMP project is added as a
+  //  dependency.
   application
 }
 

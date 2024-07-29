@@ -18,6 +18,8 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
+  macosX64()
+  macosArm64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()

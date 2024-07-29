@@ -7,9 +7,10 @@ Changelog
 - **New**: Add macOS, windows, linux, tvOS, and watchOS targets to Circuit's runtime and retained artifacts.
 - **New**: Add macOS targets to Circuit's UI, backstack, overlay, test, circuitx (except gesture nav), and foundation artifacts.
 - Slightly optimize `pausableState` [#1455](https://github.com/slackhq/circuit/pull/1455).
-- **Change**: `OverlayHost.showFullScreenOverlay` now returns the `PopResult?` that was popped by the screen.
-- **Change**: Remove `backstace` dependency from `circuit-runtime`. It was unnecessary and also accidentally imposed Compose UI on the runtime/presenter artifacts.
+- **Change**: `OverlayHost.showFullScreenOverlay` now returns the PopResult? that was popped by the screen.
+- **Change**: Remove `backstack` dependency from `circuit-runtime`. It was unnecessary and also accidentally imposed Compose UI on the runtime/presenter artifacts.
 - **Change**: Make `Overlay` a `fun interface`.
+- **Breaking Change**: Change `OverlayEffect` to use a new `OverlayScope` API that implements both `CoroutineScope` and `OverlayHost`, making both contexts available in the lambda.
 
 0.22.2
 ------

@@ -29,7 +29,7 @@ class OverlayUiTest {
       ContentWithOverlays {
         if (shouldShow) {
           OverlayEffect {
-            it.show(TestOverlay())
+            show(TestOverlay())
             shouldShow = false
           }
         }

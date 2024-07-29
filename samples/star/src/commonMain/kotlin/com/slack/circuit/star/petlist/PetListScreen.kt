@@ -262,8 +262,8 @@ internal object PetListTestConstants {
 @Composable
 internal fun PetList(state: State, modifier: Modifier = Modifier) {
   if (state is Success && state.isUpdateFiltersModalShowing) {
-    OverlayEffect(state) { host ->
-      val result = host.updateFilters(state.filters)
+    OverlayEffect(state) {
+      val result = updateFilters(state.filters)
       state.eventSink(UpdatedFilters(result))
     }
   }

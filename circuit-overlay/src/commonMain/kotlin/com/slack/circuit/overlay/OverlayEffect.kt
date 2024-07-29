@@ -5,6 +5,7 @@ package com.slack.circuit.overlay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -20,12 +21,21 @@ import kotlinx.coroutines.CoroutineScope
 public fun OverlayEffect(
   vararg keys: Any?,
   fallback: (@Composable () -> Unit)? = null,
-  block: suspend CoroutineScope.(host: OverlayHost) -> Unit,
+  block: suspend OverlayScope.() -> Unit,
 ) {
   if (LocalOverlayState.current == UNAVAILABLE) {
     fallback?.invoke()
   } else {
     val host = LocalOverlayHost.current
-    LaunchedEffect(host, *keys) { block(host) }
+    LaunchedEffect(host, *keys) {
+      val scope = OverlayScopeImpl(host, coroutineContext)
+      scope.block()
+    }
   }
 }
+
+@OptIn(ReadOnlyOverlayApi::class) public interface OverlayScope : OverlayHost, CoroutineScope
+
+@OptIn(ReadOnlyOverlayApi::class)
+private class OverlayScopeImpl(host: OverlayHost, override val coroutineContext: CoroutineContext) :
+  OverlayScope, OverlayHost by host

@@ -839,9 +839,9 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@Composable</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">SubmitAnswer</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">FormState</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">promptConfirmation</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">OverlayEffect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="n">OverlayEffect</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="c1">// Suspend on the result of the overlay</span>
-<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">host</span><span class="p">.</span><span class="na">show</span><span class="p">(</span><span class="n">ConfirmationDialogOverlay</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Are you sure?&quot;</span><span class="p">))</span>
+<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">show</span><span class="p">(</span><span class="n">ConfirmationDialogOverlay</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Are you sure?&quot;</span><span class="p">))</span>
 <span class="w">      </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">SubmitAnswerEvent</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -864,8 +864,8 @@ example: <code>BottomSheetOverlay</code>, <code>ModalOverlay</code>, <code>Toolt
 </code></pre></div>
 <p>Where <code>BottomSheetOverlay</code> is a custom bottom sheet implementation of an <code>Overlay</code>.</p>
 <p>In composition, you can also use <code>OverlayEffect</code> for a more streamlined API.</p>
-<div class="highlight"><pre><span></span><code><span class="n">OverlayEffect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">host</span><span class="p">.</span><span class="na">show</span><span class="p">(</span><span class="n">BottomSheetOverlay</span><span class="p">(...))</span>
+<div class="highlight"><pre><span></span><code><span class="n">OverlayEffect</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">show</span><span class="p">(</span><span class="n">BottomSheetOverlay</span><span class="p">(...))</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>

@@ -153,7 +153,7 @@ limitations under the License.</code></pre>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div><span class="brief-comment">
-              <p class="paragraph">This optional artifact contains an implementation of <code class="lang-kotlin">rememberRetained</code> and <code class="lang-kotlin">produceRetainedState</code>. This is useful for cases where you want to retain non-parcelable state across configuration changes. This comes at the cost of not participating in the <code class="lang-kotlin">SavedStateRegistry</code> and thus not being able to persist across process death.</p>
+              <p class="paragraph">This optional artifact contains a alternative implementations of <code class="lang-kotlin">rememberRetained</code>, <code class="lang-kotlin">produceRetainedState</code>, <code class="lang-kotlin">collectAsRetainedState()</code>, etc. This is useful for cases where you want to retain non-saveable state across configuration changes or across a back stack. This comes at the cost of not participating in the <code class="lang-kotlin">SavedStateRegistry</code> and thus not being able to persist across process death, but added flexibility of not requiring Saveable values.</p>
             </span></div>
         </div>
       </div>

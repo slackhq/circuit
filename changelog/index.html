@@ -650,6 +650,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0230" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.23.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0222" class="md-nav__link">
     <span class="md-ellipsis">
       0.22.2
@@ -1282,6 +1291,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0230" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.23.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0222" class="md-nav__link">
     <span class="md-ellipsis">
       0.22.2
@@ -1850,6 +1868,24 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased"><strong>Unreleased</strong><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0230">0.23.0<a class="headerlink" href="#0230" title="Permanent link">&para;</a></h2>
+<p><em>2024-07-30</em></p>
+<ul>
+<li><strong>New</strong>: Add macOS, windows, linux, tvOS, and watchOS targets to Circuit&rsquo;s runtime and retained artifacts.</li>
+<li><strong>New</strong>: Add macOS targets to Circuit&rsquo;s UI, backstack, overlay, test, circuitx (except gesture nav), and foundation artifacts.</li>
+<li>Slightly optimize <code>pausableState</code> <a href="https://github.com/slackhq/circuit/pull/1455">#1455</a>.</li>
+<li><strong>Change</strong>: <code>OverlayHost.showFullScreenOverlay</code> now returns the <code>PopResult?</code> that was popped by the screen.</li>
+<li><strong>Change</strong>: Remove <code>backstack</code> dependency from <code>circuit-runtime</code>. It was unnecessary and also accidentally imposed Compose UI on the runtime/presenter artifacts.</li>
+<li><strong>Change</strong>: Make <code>Overlay</code> a <code>fun interface</code>.</li>
+<li><strong>Breaking Change</strong>: Change <code>OverlayEffect</code> to use a new <code>OverlayScope</code> API that implements both <code>CoroutineScope</code> and <code>OverlayHost</code>, making both contexts available in the lambda.</li>
+<li>Update KSP to <code>2.0.0-1.0.24</code>.</li>
+<li>Update androidx.activity to <code>1.9.1</code>.</li>
+<li>Update androidx.lifecycle to <code>2.8.4</code>.</li>
+<li>Update androidx.annotation to <code>1.8.1</code>.</li>
+<li>Update KotlinPoet <code>1.18.1</code>.</li>
+<li>Update Compose Multiplatform to <code>1.6.11</code>.</li>
+</ul>
+<p>Special thanks to <a href="https://github.com/aschulz90">@aschulz90</a> and <a href="https://github.com/chrisbanes">@chrisbanes</a> for contributing to this release!</p>
 <h2 id="0222">0.22.2<a class="headerlink" href="#0222" title="Permanent link">&para;</a></h2>
 <p><em>2024-06-04</em></p>
 <ul>

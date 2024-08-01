@@ -151,7 +151,7 @@ private constructor(
       containerColor = sheetContainerColor ?: BottomSheetDefaults.ContainerColor,
       dragHandle = dragHandle ?: { BottomSheetDefaults.DragHandle() },
       // Go edge-to-edge
-      windowInsets = WindowInsets(0, 0, 0, 0),
+      contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
       onDismissRequest = {
         // Only possible if dismissOnTapOutside is false
         check(dismissOnTapOutside)

@@ -334,7 +334,9 @@ public object NavigatorDefaults {
           )
         },
       ) {
-        content(it.first())
+        CompositionLocalProvider(LocalTransitionAnimatedVisibilityScope provides this) {
+          content(it.first())
+        }
       }
     }
   }

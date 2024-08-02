@@ -3,6 +3,7 @@
 package com.slack.circuit.star.imageviewer
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -30,6 +31,9 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.RecordContentProvider
+import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.overlay.LocalOverlayState
+import com.slack.circuit.overlay.OverlayState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -73,9 +77,10 @@ constructor(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
-fun ImageViewer(state: State, modifier: Modifier = Modifier) {
+fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
   var showChrome by remember { mutableStateOf(true) }
   val systemUiController = rememberSystemUiController()
   systemUiController.isSystemBarsVisible = showChrome
@@ -118,7 +123,12 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) {
                 .apply { state.placeholderKey?.let(::placeholderMemoryCacheKey) }
                 .build(),
             contentDescription = "TODO",
-            modifier = Modifier.fillMaxSize(),
+            modifier =
+              Modifier.sharedElementWithCallerManagedVisibility(
+                  sharedContentState = rememberSharedContentState(key = "animal-image-${state.id}"),
+                  visible = LocalOverlayState.current == OverlayState.SHOWING,
+                )
+                .fillMaxSize(),
             state = imageState,
             onClick = { showChrome = !showChrome },
           )

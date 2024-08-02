@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -85,6 +86,8 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.internal.NoOpSharedTransitionScope.sharedElement
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -386,12 +389,13 @@ private fun PetListGrid(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PetListGridItem(
   animal: PetListAnimal,
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
-) {
+) = SharedElementTransitionScope {
   ElevatedCard(
     modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
     shape = RoundedCornerShape(16.dp),
@@ -403,7 +407,14 @@ private fun PetListGridItem(
   ) {
     Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
-      val imageModifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG)
+      val imageModifier =
+        Modifier.sharedElement(
+            state = rememberSharedContentState(key = "animal-image-${animal.id}"),
+            animatedVisibilityScope = animatedVisibilityScope,
+          )
+          .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+          .fillMaxWidth()
+          .testTag(IMAGE_TAG)
       if (animal.imageUrl == null) {
         Image(
           rememberVectorPainter(Pets),

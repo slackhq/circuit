@@ -73,6 +73,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
     data object UnknownAnimal : State
 
     data class Success(
+      val id: Long,
       val url: String,
       val photoUrls: ImmutableList<String>,
       val photoUrlMemoryCacheKey: String?,
@@ -94,6 +95,7 @@ internal fun Animal.toPetDetailState(
   eventSink: (Event) -> Unit,
 ): State {
   return Success(
+    id = id,
     url = url,
     photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
@@ -197,6 +199,7 @@ private fun ShowAnimal(state: Success, padding: PaddingValues) {
     movableContentOf {
       CircuitContent(
         PetPhotoCarouselScreen(
+          id = state.id,
           name = state.name,
           photoUrls = state.photoUrls,
           photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,

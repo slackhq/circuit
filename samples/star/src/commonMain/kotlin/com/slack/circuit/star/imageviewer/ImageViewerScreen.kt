@@ -8,10 +8,9 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.parcel.CommonParcelize
 
 @CommonParcelize
-data class ImageViewerScreen(val id: String, val url: String, val placeholderKey: String?) :
-  Screen {
+data class ImageViewerScreen(val id: Long, val url: String, val placeholderKey: String?) : Screen {
   data class State(
-    val id: String,
+    val id: Long,
     val url: String,
     val placeholderKey: String?,
     val eventSink: (Event) -> Unit,

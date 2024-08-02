@@ -18,6 +18,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.LocalTransitionAnimatedVisibilityScope
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.InternalCircuitApi
 import kotlin.math.absoluteValue
@@ -117,33 +119,35 @@ public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked
           }
         }
       ) { holder ->
-        var swipeProgress by remember { mutableFloatStateOf(0f) }
+        CompositionLocalProvider(LocalTransitionAnimatedVisibilityScope provides this) {
+          var swipeProgress by remember { mutableFloatStateOf(0f) }
 
-        if (backStackDepth > 1) {
-          BackHandler(
-            onBackProgress = { progress ->
-              showPrevious = progress != 0f
-              swipeProgress = progress
-            },
-            onBackInvoked = {
-              if (swipeProgress != 0f) {
-                // If back has been invoked, and the swipe progress isn't zero,
-                // mark this record as 'popped via gesture' so we can
-                // use a different transition
-                recordPoppedFromGesture = holder.record
-              }
-              onBackInvoked()
-            },
-          )
-        }
+          if (backStackDepth > 1) {
+            BackHandler(
+              onBackProgress = { progress ->
+                showPrevious = progress != 0f
+                swipeProgress = progress
+              },
+              onBackInvoked = {
+                if (swipeProgress != 0f) {
+                  // If back has been invoked, and the swipe progress isn't zero,
+                  // mark this record as 'popped via gesture' so we can
+                  // use a different transition
+                  recordPoppedFromGesture = holder.record
+                }
+                onBackInvoked()
+              },
+            )
+          }
 
-        Box(
-          Modifier.predictiveBackMotion(
-            shape = MaterialTheme.shapes.extraLarge,
-            progress = { swipeProgress },
-          )
-        ) {
-          content(holder.record)
+          Box(
+            Modifier.predictiveBackMotion(
+              shape = MaterialTheme.shapes.extraLarge,
+              progress = { swipeProgress },
+            )
+          ) {
+            content(holder.record)
+          }
         }
       }
     }

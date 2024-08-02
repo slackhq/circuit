@@ -12,12 +12,14 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.SharedElementTransitionLayout
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
@@ -41,6 +43,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 @ActivityKey(MainActivity::class)
 class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
@@ -72,15 +75,17 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           val circuitNavigator = rememberCircuitNavigator(backStack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
           CircuitCompositionLocals(circuit) {
-            ContentWithOverlays {
-              NavigableCircuitContent(
-                navigator = navigator,
-                backStack = backStack,
-                decoration =
-                  ImageViewerAwareNavDecoration(
-                    GestureNavigationDecoration(onBackInvoked = navigator::pop)
-                  ),
-              )
+            SharedElementTransitionLayout {
+              ContentWithOverlays {
+                NavigableCircuitContent(
+                  navigator = navigator,
+                  backStack = backStack,
+                  decoration =
+                    ImageViewerAwareNavDecoration(
+                      GestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    ),
+                )
+              }
             }
           }
         }

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -46,8 +47,11 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.internal.NoOpSharedTransitionScope.rememberSharedContentState
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.LocalOverlayState
+import com.slack.circuit.overlay.OverlayState
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
@@ -70,11 +74,13 @@ import kotlinx.coroutines.launch
 
 @CommonParcelize
 data class PetPhotoCarouselScreen(
+  val id: Long,
   val name: String,
   val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : Screen {
   data class State(
+    val id: Long,
     val name: String,
     val photoUrls: ImmutableList<String>,
     val photoUrlMemoryCacheKey: String?,
@@ -82,6 +88,7 @@ data class PetPhotoCarouselScreen(
     companion object {
       operator fun invoke(screen: PetPhotoCarouselScreen): State {
         return State(
+          id = screen.id,
           name = screen.name,
           photoUrls = screen.photoUrls.toImmutableList(),
           photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
@@ -118,88 +125,96 @@ internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
-internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
-  val (name, photoUrls, photoUrlMemoryCacheKey) = state
-  val context = LocalPlatformContext.current
-  // Prefetch images
-  LaunchedEffect(Unit) {
-    for (url in photoUrls) {
-      if (url.isBlank()) continue
-      val request = Builder(context).data(url).build()
-      SingletonImageLoader.get(context).enqueue(request)
-    }
-  }
-
-  val totalPhotos = photoUrls.size
-  val pagerState = rememberPagerState { totalPhotos }
-  val scope = rememberStableCoroutineScope()
-  val requester = remember { FocusRequester() }
-  @Suppress("MagicNumber")
-  val columnModifier =
-    when (calculateWindowSizeClass().widthSizeClass) {
-      WindowWidthSizeClass.Medium,
-      WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
-      else -> modifier.fillMaxSize()
-    }
-  Column(
-    columnModifier
-      .testTag(CAROUSEL_TAG)
-      // Some images are different sizes. We probably want to constrain them to the same common
-      // size though
-      .animateContentSize()
-      .focusRequester(requester)
-      .focusable()
-      .onKeyEvent { event ->
-        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
-        val index =
-          when (event.key) {
-            Key.DirectionRight -> {
-              pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
-            }
-            Key.DirectionLeft -> {
-              pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
-            }
-            else -> -1
-          }
-        if (index == -1) {
-          false
-        } else {
-          scope.launch { pagerState.animateScrollToPage(index) }
-          true
-        }
+internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
+  SharedElementTransitionScope {
+    val context = LocalPlatformContext.current
+    // Prefetch images
+    LaunchedEffect(Unit) {
+      for (url in state.photoUrls) {
+        if (url.isBlank()) continue
+        val request = Builder(context).data(url).build()
+        SingletonImageLoader.get(context).enqueue(request)
       }
-  ) {
-    PhotoPager(
-      pagerState = pagerState,
-      photoUrls = photoUrls,
-      name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
-    )
+    }
 
-    HorizontalPagerIndicator(
-      pagerState = pagerState,
-      pageCount = totalPhotos,
-      modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
-      activeColor = MaterialTheme.colorScheme.onBackground,
-    )
+    val totalPhotos = state.photoUrls.size
+    val pagerState = rememberPagerState { totalPhotos }
+    val scope = rememberStableCoroutineScope()
+    val requester = remember { FocusRequester() }
+    @Suppress("MagicNumber")
+    val columnModifier =
+      when (calculateWindowSizeClass().widthSizeClass) {
+        WindowWidthSizeClass.Medium,
+        WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
+        else -> modifier.fillMaxSize()
+      }
+    Column(
+      columnModifier
+        .testTag(CAROUSEL_TAG)
+        // Some images are different sizes. We probably want to constrain them to the same
+        // common
+        // size though
+        .animateContentSize()
+        .focusRequester(requester)
+        .focusable()
+        .onKeyEvent { event ->
+          if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
+          val index =
+            when (event.key) {
+              Key.DirectionRight -> {
+                pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
+              }
+              Key.DirectionLeft -> {
+                pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
+              }
+              else -> -1
+            }
+          if (index == -1) {
+            false
+          } else {
+            scope.launch { pagerState.animateScrollToPage(index) }
+            true
+          }
+        }
+    ) {
+      val overlayVisible = LocalOverlayState.current == OverlayState.SHOWING
+      val animationVisible = isTransitionState { it < EnterExitState.PostExit }
+      PhotoPager(
+        id = state.id,
+        pagerState = pagerState,
+        photoUrls = state.photoUrls,
+        name = state.name,
+        photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
+        modifier =
+          Modifier.sharedElementWithCallerManagedVisibility(
+            sharedContentState = rememberSharedContentState(key = "animal-image-${state.id}"),
+            visible = animationVisible && !overlayVisible,
+          ),
+      )
+
+      HorizontalPagerIndicator(
+        pagerState = pagerState,
+        pageCount = totalPhotos,
+        modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+        activeColor = MaterialTheme.colorScheme.onBackground,
+      )
+    }
+
+    // Focus the pager so we can cycle through it with arrow keys
+    LaunchedEffect(Unit) { requester.requestFocus() }
   }
 
-  // Focus the pager so we can cycle through it with arrow keys
-  LaunchedEffect(Unit) { requester.requestFocus() }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
 private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
 @Suppress("LongParameterList")
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
+  id: Long,
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,
@@ -223,7 +238,7 @@ private fun PhotoPager(
           Modifier.clickable {
             scope.launch {
               overlayHost.showFullScreenOverlay(
-                ImageViewerScreen(id = url, url = url, placeholderKey = name)
+                ImageViewerScreen(id = id, url = url, placeholderKey = name)
               )
             }
           }

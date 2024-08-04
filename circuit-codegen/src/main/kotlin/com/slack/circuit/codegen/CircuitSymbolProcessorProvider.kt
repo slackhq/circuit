@@ -26,6 +26,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.google.devtools.ksp.symbol.Visibility
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
@@ -128,8 +129,6 @@ private class CircuitSymbolProcessor(
   private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
 
-  private val lenient = options["circuit.codegen.lenient"]?.toBoolean() ?: false
-
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
     val codegenMode =
@@ -174,7 +173,7 @@ private class CircuitSymbolProcessor(
     codegenMode: CodegenMode,
   ) {
     val circuitInjectAnnotation =
-      annotatedElement.getKSAnnotationsWithLeniency(CIRCUIT_INJECT_ANNOTATION).single()
+      annotatedElement.getKSAnnotationsOfType(CIRCUIT_INJECT_ANNOTATION.canonicalName).single()
 
     // If we annotated a class, check that the class isn't using assisted inject. If so, error and
     // return
@@ -269,7 +268,7 @@ private class CircuitSymbolProcessor(
     annotation: KClass<out Annotation>
   ): KSFunctionDeclaration? {
     return getConstructors().singleOrNull { constructor ->
-      constructor.isAnnotationPresentWithLeniency(annotation)
+      constructor.isAnnotationPresentOfType(annotation)
     }
   }
 
@@ -278,7 +277,7 @@ private class CircuitSymbolProcessor(
     if (findConstructorAnnotatedWith(AssistedInject::class) != null) {
       val assistedFactory =
         declarations.filterIsInstance<KSClassDeclaration>().find {
-          it.isAnnotationPresentWithLeniency(AssistedFactory::class)
+          it.isAnnotationPresentOfType(AssistedFactory::class)
         }
       val suffix =
         if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
@@ -291,24 +290,31 @@ private class CircuitSymbolProcessor(
     }
   }
 
-  private fun KSAnnotated.isAnnotationPresentWithLeniency(annotation: KClass<out Annotation>) =
-    getKSAnnotationsWithLeniency(annotation).any()
+  private fun KSAnnotated.isAnnotationPresentOfType(annotation: KClass<out Annotation>) =
+    getKSAnnotationsOfType(annotation).any()
 
-  private fun KSAnnotated.getKSAnnotationsWithLeniency(annotation: KClass<out Annotation>) =
-    getKSAnnotationsWithLeniency(annotation.asClassName())
+  private fun KSAnnotated.getKSAnnotationsOfType(annotation: KClass<out Annotation>) =
+    getKSAnnotationsOfType(annotation.qualifiedName!!)
 
-  private fun KSAnnotated.getKSAnnotationsWithLeniency(
-    annotation: ClassName
-  ): Sequence<KSAnnotation> {
-    val simpleName = annotation.simpleName
-    return if (lenient) {
-      annotations.filter { it.shortName.asString() == simpleName }
-    } else {
-      val qualifiedName = annotation.canonicalName
-      this.annotations.filter {
-        it.shortName.getShortName() == simpleName &&
-          it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName
+  private fun KSAnnotated.getKSAnnotationsOfType(qualifiedName: String): Sequence<KSAnnotation> {
+    return this.annotations.filter {
+      it.annotationType
+        .resolve()
+        .declaration
+        .resolveKSClassDeclaration()
+        ?.qualifiedName
+        ?.asString() == qualifiedName
+    }
+  }
+
+  private fun KSDeclaration.resolveKSClassDeclaration(): KSClassDeclaration? {
+    return when (this) {
+      is KSClassDeclaration -> this
+      is KSTypeAlias -> {
+        // Note: doesn't work for generic aliased types, but we only use this for CircuitInject
+        type.resolve().declaration.resolveKSClassDeclaration()
       }
+      else -> null
     }
   }
 
@@ -438,7 +444,7 @@ private class CircuitSymbolProcessor(
         declaration.checkVisibility(logger) {
           return null
         }
-        val isAssisted = declaration.isAnnotationPresentWithLeniency(AssistedFactory::class)
+        val isAssisted = declaration.isAnnotationPresentOfType(AssistedFactory::class)
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {

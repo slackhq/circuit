@@ -15,7 +15,6 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.agp.library) apply false
-  alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.anvil)
@@ -25,7 +24,7 @@ plugins {
   alias(libs.plugins.emulatorWtf)
 }
 
-// Cannot enable both Desktop and Android w/ kapt due to
+// Cannot enable both Desktop and Android w/ java due to
 // https://youtrack.jetbrains.com/issue/KT-30878
 val buildDesktop = project.hasProperty("circuit.buildDesktop")
 
@@ -124,8 +123,6 @@ kotlin {
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
-        val kapt by configurations.getting
-        kapt.dependencies.addLater(libs.dagger.compiler)
       }
     }
     maybeCreate("jvmCommonTest").apply {
@@ -272,32 +269,12 @@ fun String.capitalizeUS() = replaceFirstChar {
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 
-// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
-afterEvaluate {
-  for (target in kspTargets) {
-    if (target != "Android" && target != "Jvm") continue
-    val buildType = if (target == "Android") "Release" else ""
-    val kspTaskName = "ksp${buildType}Kotlin${target}"
-    val useKSP2 = providers.gradleProperty("ksp.useKSP2").getOrElse("false").toBoolean()
-    val generatedKspKotlinFiles =
-      if (useKSP2) {
-        val kspReleaseTask = tasks.named<KspAATask>(kspTaskName)
-        kspReleaseTask.flatMap { it.kspConfig.kotlinOutputDir }
-      } else {
-        val kspReleaseTask = tasks.named<KspTaskJvm>(kspTaskName)
-        kspReleaseTask.flatMap { it.destination }
-      }
-    tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
-      source(generatedKspKotlinFiles)
-    }
-  }
-}
-
 ksp { arg("circuit.codegen.lenient", "true") }
 
 dependencies {
   for (target in kspTargets) {
     val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target
     add("ksp${targetConfigSuffix}", projects.circuitCodegen)
+    add("ksp${targetConfigSuffix}", libs.dagger.compiler)
   }
 }

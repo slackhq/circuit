@@ -21,8 +21,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
@@ -35,7 +33,6 @@ plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.kotlin.android) apply false
-  alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization) apply false
   alias(libs.plugins.agp.application) apply false
@@ -124,7 +121,6 @@ val knownBomConfigurations =
     "androidTestImplementation",
     "compileOnly",
     "testCompileOnly",
-    "kapt",
     "ksp",
   )
 
@@ -168,15 +164,6 @@ subprojects {
   val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
-      // Don't double apply to stub gen
-      if (this is KaptGenerateStubsTask) {
-        // TODO due to Anvil we need to force language version 1.9
-        compilerOptions {
-          progressiveMode.set(false)
-          languageVersion.set(KotlinVersion.KOTLIN_1_9)
-        }
-        return@configureEach
-      }
       val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
         if (isWasmTask && this is KotlinJsCompilerOptions) {
@@ -192,23 +179,20 @@ subprojects {
               .map { it.toString() }
               .map(JvmTarget::fromTarget)
           )
-          // Stub gen copies args from the parent compilation
-          if (this@configureEach !is KaptGenerateStubsTask) {
-            freeCompilerArgs.addAll(
-              "-Xjsr305=strict",
-              // Match JVM assertion behavior:
-              // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
-              "-Xassertions=jvm",
-              // Potentially useful for static analysis tools or annotation processors.
-              "-Xemit-jvm-type-annotations",
-              // Enable new jvm-default behavior
-              // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-              "-Xjvm-default=all",
-              // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-              "-Xtype-enhancement-improvements-strict-mode",
-              "-Xjspecify-annotations=strict",
-            )
-          }
+          freeCompilerArgs.addAll(
+            "-Xjsr305=strict",
+            // Match JVM assertion behavior:
+            // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
+            "-Xassertions=jvm",
+            // Potentially useful for static analysis tools or annotation processors.
+            "-Xemit-jvm-type-annotations",
+            // Enable new jvm-default behavior
+            // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+            "-Xjvm-default=all",
+            // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
+            "-Xtype-enhancement-improvements-strict-mode",
+            "-Xjspecify-annotations=strict",
+          )
         }
 
         progressiveMode.set(true)
@@ -246,10 +230,6 @@ subprojects {
   // version that is empty.
   dependencies.modules {
     module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
-  }
-
-  pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
-    tasks.withType<KaptGenerateStubsTask>().configureEach { useK2Kapt.set(true) }
   }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {

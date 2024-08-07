@@ -8,7 +8,6 @@ import com.slack.circuit.star.data.DataModule
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.BindsInstance
-import dagger.Component
 import javax.inject.Provider
 
 @MergeComponent(
@@ -19,7 +18,7 @@ import javax.inject.Provider
 interface AppComponent : CommonAppComponent {
   val activityProviders: Map<Class<out Activity>, @JvmSuppressWildcards Provider<Activity>>
 
-  @Component.Factory
+  @MergeComponent.Factory
   interface Factory {
     fun create(@ApplicationContext @BindsInstance context: Context): AppComponent
   }

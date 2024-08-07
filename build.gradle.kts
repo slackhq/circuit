@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
@@ -167,6 +168,15 @@ subprojects {
   val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
+      // Don't double apply to stub gen
+      if (this is KaptGenerateStubsTask) {
+        // TODO due to Anvil we need to force language version 1.9
+        compilerOptions {
+          progressiveMode.set(false)
+          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        }
+        return@configureEach
+      }
       val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
         if (isWasmTask && this is KotlinJsCompilerOptions) {

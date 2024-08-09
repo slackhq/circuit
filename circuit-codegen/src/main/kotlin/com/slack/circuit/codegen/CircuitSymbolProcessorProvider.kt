@@ -10,7 +10,6 @@ import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.getVisibility
-import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.KSPLogger
@@ -27,7 +26,6 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
-import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -41,19 +39,17 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import java.util.Locale
-import javax.inject.Inject
-import javax.inject.Provider
-import kotlin.reflect.KClass
 
+private val ASSISTED_FACTORY = ClassName("dagger.assisted", "AssistedFactory")
+private val ASSISTED_INJECT = ClassName("dagger.assisted", "AssistedInject")
+private val INJECT = ClassName("javax.inject", "Inject")
+private val PROVIDER = ClassName("javax.inject", "Provider")
 private const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
 private const val DAGGER_PACKAGE = "dagger"
 private const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"
@@ -196,15 +192,14 @@ private class CircuitSymbolProcessor(
 
     val className =
       factoryData.className.replaceFirstChar { char ->
-        char.takeIf { char.isLowerCase() }?.run { uppercase(Locale.getDefault()) }
-          ?: char.toString()
+        char.takeIf { char.isLowerCase() }?.run { uppercase(Locale.US) } ?: char.toString()
       }
 
     val builder =
       TypeSpec.classBuilder(className + FACTORY)
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(INJECT)
             .addParameters(factoryData.constructorParams)
             .build()
         )
@@ -266,7 +261,7 @@ private class CircuitSymbolProcessor(
   }
 
   private fun KSClassDeclaration.findConstructorAnnotatedWith(
-    annotation: KClass<out Annotation>
+    annotation: ClassName
   ): KSFunctionDeclaration? {
     return getConstructors().singleOrNull { constructor ->
       constructor.isAnnotationPresentWithLeniency(annotation)
@@ -275,10 +270,10 @@ private class CircuitSymbolProcessor(
 
   private inline fun KSClassDeclaration.checkForAssistedInjection(exit: () -> Nothing) {
     // Check for an AssistedInject constructor
-    if (findConstructorAnnotatedWith(AssistedInject::class) != null) {
+    if (findConstructorAnnotatedWith(ASSISTED_INJECT) != null) {
       val assistedFactory =
         declarations.filterIsInstance<KSClassDeclaration>().find {
-          it.isAnnotationPresentWithLeniency(AssistedFactory::class)
+          it.isAnnotationPresentWithLeniency(ASSISTED_FACTORY)
         }
       val suffix =
         if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
@@ -291,11 +286,8 @@ private class CircuitSymbolProcessor(
     }
   }
 
-  private fun KSAnnotated.isAnnotationPresentWithLeniency(annotation: KClass<out Annotation>) =
+  private fun KSAnnotated.isAnnotationPresentWithLeniency(annotation: ClassName) =
     getKSAnnotationsWithLeniency(annotation).any()
-
-  private fun KSAnnotated.getKSAnnotationsWithLeniency(annotation: KClass<out Annotation>) =
-    getKSAnnotationsWithLeniency(annotation.asClassName())
 
   private fun KSAnnotated.getKSAnnotationsWithLeniency(
     annotation: ClassName
@@ -438,7 +430,7 @@ private class CircuitSymbolProcessor(
         declaration.checkVisibility(logger) {
           return null
         }
-        val isAssisted = declaration.isAnnotationPresentWithLeniency(AssistedFactory::class)
+        val isAssisted = declaration.isAnnotationPresentWithLeniency(ASSISTED_FACTORY)
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {
@@ -453,7 +445,7 @@ private class CircuitSymbolProcessor(
           targetClass = declaration
         }
         val useProvider =
-          !isAssisted && creatorOrConstructor?.isAnnotationPresent(Inject::class) == true
+          !isAssisted && creatorOrConstructor?.isAnnotationPresentWithLeniency(INJECT) == true
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =
@@ -498,10 +490,7 @@ private class CircuitSymbolProcessor(
           if (useProvider) {
             // Inject a Provider<TargetClass> that we'll call get() on.
             constructorParams.add(
-              ParameterSpec.builder(
-                  "provider",
-                  Provider::class.asClassName().parameterizedBy(targetClass.toClassName()),
-                )
+              ParameterSpec.builder("provider", PROVIDER.parameterizedBy(targetClass.toClassName()))
                 .build()
             )
             CodeBlock.of("provider.get()")
@@ -674,6 +663,9 @@ private enum class CodegenMode {
    * ```
    */
   ANVIL {
+    private val contributesMultibindingCN =
+      ClassName("com.squareup.anvil.annotations", "ContributesMultibinding")
+
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Anvil only supports JVM & Android
       return platforms.all { it is JvmPlatformInfo }
@@ -681,7 +673,7 @@ private enum class CodegenMode {
 
     override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
       builder.addAnnotation(
-        AnnotationSpec.builder(ContributesMultibinding::class).addMember("%T::class", scope).build()
+        AnnotationSpec.builder(contributesMultibindingCN).addMember("%T::class", scope).build()
       )
     }
   },

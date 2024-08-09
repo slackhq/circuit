@@ -171,7 +171,7 @@ public fun interface OverlayNavigator<Result : Any> {
  * example: `BottomSheetOverlay`, `ModalOverlay`, `TooltipOverlay`, etc.
  */
 @Stable
-public interface Overlay<Result : Any> {
+public fun interface Overlay<Result : Any> {
   @Composable public fun Content(navigator: OverlayNavigator<Result>)
 }
 

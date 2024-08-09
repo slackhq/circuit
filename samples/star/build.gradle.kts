@@ -42,6 +42,8 @@ if (!buildDesktop) {
   compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
 
+anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
+
 kotlin {
   if (buildDesktop) {
     jvm { withJava() }

@@ -4,7 +4,6 @@ package com.slack.circuit.sample.coil.test
 
 import coil3.ComponentRegistry
 import coil3.ImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.request.Disposable
@@ -20,7 +19,6 @@ import kotlinx.coroutines.CompletableDeferred
  *
  * This delegates everything to a backing [FakeImageLoaderEngine] that intercepts all calls.
  */
-@OptIn(ExperimentalCoilApi::class)
 internal class FakeImageLoader(engine: FakeImageLoaderEngine) : ImageLoader {
 
   override val defaults = Defaults.DEFAULT

@@ -1,6 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {

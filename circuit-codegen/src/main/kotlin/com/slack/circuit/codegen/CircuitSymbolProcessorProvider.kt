@@ -5,7 +5,6 @@
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getConstructors

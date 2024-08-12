@@ -439,7 +439,8 @@ private class CircuitSymbolProcessor(
             return null
           }
         } else {
-          creatorOrConstructor = declaration.primaryConstructor
+          creatorOrConstructor =
+            declaration.findConstructorAnnotatedWith(INJECT) ?: declaration.primaryConstructor
           targetClass = declaration
         }
         val useProvider =

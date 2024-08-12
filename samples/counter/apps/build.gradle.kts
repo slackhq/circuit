@@ -58,11 +58,12 @@ kotlin {
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
         implementation(libs.androidx.compose.material.icons)
         implementation(libs.androidx.compose.accompanist.systemUi)
+        implementation(libs.androidx.compose.ui.tooling)
       }
     }
     wasmJsMain {
       dependencies {
-        @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
+        implementation(compose.components.resources)
         implementation(compose.ui)
         implementation(compose.runtime)
       }

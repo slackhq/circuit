@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- **New**: Promote `NoOpRetainedStateRegistry` to public API for use in testing and previews.
+
 0.23.0
 ------
 

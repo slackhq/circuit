@@ -5,6 +5,7 @@ Changelog
 --------------
 
 - **New**: Promote `NoOpRetainedStateRegistry` to public API for use in testing and previews.
+- **New**: Add `CircuitPreview` helper function for composable previews that contain Circuit content.
 
 0.23.0
 ------

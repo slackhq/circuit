@@ -14,6 +14,9 @@ _2024-07-30_
 - **Enhancement**: When running under `LocalInspectionMode`, Circuit's default `onUnavailableContent` now shows a simpler non-intrusive placeholder UI instead.
 - **Enhancement**: Support secondary injected constructors in code gen.
 - **Fix**: Fix non-dismissable `BottomSheetOverlay` crash when invoking back-press.
+- Update to Kotlin `2.0.10`.
+- Update to androidx.annotation `1.8.2`.
+- Build against KSP `2.0.10-1.0.24`.
 
 0.23.0
 ------

@@ -84,7 +84,7 @@ private constructor(
     sheetContainerColor = sheetContainerColor,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
     properties =
-      ModalBottomSheetProperties(isFocusable = isFocusable, shouldDismissOnBackPress = false),
+      createBottomSheetProperties(isFocusable = isFocusable, shouldDismissOnBackPress = false),
     content = content,
   )
 
@@ -107,7 +107,7 @@ private constructor(
     sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
-    properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties(),
+    properties: ModalBottomSheetProperties = DEFAULT_PROPERTIES,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
@@ -189,3 +189,12 @@ private constructor(
     }
   }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties()
+
+@OptIn(ExperimentalMaterial3Api::class)
+internal expect fun createBottomSheetProperties(
+  isFocusable: Boolean = DEFAULT_PROPERTIES.isFocusable,
+  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress,
+): ModalBottomSheetProperties

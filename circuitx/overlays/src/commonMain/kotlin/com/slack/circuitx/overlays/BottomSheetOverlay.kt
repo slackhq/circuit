@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -43,24 +45,27 @@ import kotlinx.coroutines.launch
 public class BottomSheetOverlay<Model : Any, Result : Any>
 private constructor(
   private val model: Model,
-  private val dismissOnTapOutside: Boolean = true,
-  private val onDismiss: (() -> Result)? = null,
-  private val sheetShape: Shape? = null,
-  private val sheetContainerColor: Color? = null,
-  private val dragHandle: (@Composable () -> Unit)? = null,
-  private val skipPartiallyExpandedState: Boolean = false,
+  private val dismissOnTapOutside: Boolean,
+  private val onDismiss: (() -> Result)?,
+  private val sheetShape: Shape?,
+  private val sheetContainerColor: Color?,
+  private val dragHandle: (@Composable () -> Unit)?,
+  private val skipPartiallyExpandedState: Boolean,
+  private val properties: ModalBottomSheetProperties,
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
 ) : Overlay<Result> {
 
   /**
    * Constructs a new [BottomSheetOverlay] that will not dismiss when tapped outside of the sheet.
    * This means that only the [content] can finish the overlay. Additionally the appearance of the
-   * sheet can be customized
+   * sheet can be customized.
    *
-   * @param sheetContainerColor - set the container color of the ModalBottomSheet
-   * @param dragHandle - customize the drag handle of the sheet
-   * @param skipPartiallyExpandedState - indicates if the Sheet should be expanded per default (if
+   * @param sheetContainerColor set the container color of the ModalBottomSheet
+   * @param dragHandle customize the drag handle of the sheet
+   * @param skipPartiallyExpandedState indicates if the Sheet should be expanded per default (if
    *   it's height exceed the partial height threshold)
+   * @param isFocusable corresponds to [ModalBottomSheetProperties.isFocusable] and will be passed
+   *   on to the final sheet as such.
    */
   public constructor(
     model: Model,
@@ -68,6 +73,7 @@ private constructor(
     sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
+    isFocusable: Boolean = true,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
@@ -77,18 +83,22 @@ private constructor(
     sheetShape = sheetShape,
     sheetContainerColor = sheetContainerColor,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
+    properties =
+      createBottomSheetProperties(isFocusable = isFocusable, shouldDismissOnBackPress = false),
     content = content,
   )
 
   /**
    * Constructs a new [BottomSheetOverlay] that will dismiss when tapped outside of the sheet.
    * [onDismiss] is required in this case to offer a default value in this event. Additionally the
-   * appearance of the sheet can be customized
+   * appearance of the sheet can be customized.
    *
-   * @param sheetContainerColor - set the container color of the ModalBottomSheet
-   * @param dragHandle - customize the drag handle of the sheet
-   * @param skipPartiallyExpandedState - indicates if the Sheet should be expanded per default (if
+   * @param sheetContainerColor set the container color of the ModalBottomSheet
+   * @param dragHandle customize the drag handle of the sheet
+   * @param skipPartiallyExpandedState indicates if the Sheet should be expanded per default (if
    *   it's height exceed the partial height threshold)
+   * @param properties any [ModalBottomSheetProperties]. Defaults to
+   *   [ModalBottomSheetDefaults.properties].
    */
   public constructor(
     model: Model,
@@ -97,6 +107,7 @@ private constructor(
     sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
+    properties: ModalBottomSheetProperties = DEFAULT_PROPERTIES,
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
@@ -106,6 +117,7 @@ private constructor(
     sheetShape = sheetShape,
     sheetContainerColor = sheetContainerColor,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
+    properties = properties,
     content = content,
   )
 
@@ -157,6 +169,7 @@ private constructor(
         check(dismissOnTapOutside)
         navigator.finish(onDismiss!!.invoke())
       },
+      properties = properties,
     )
 
     LaunchedEffect(model, onDismiss) {
@@ -171,9 +184,17 @@ private constructor(
         }
     }
     LaunchedEffect(model, onDismiss) {
-      // TODO why doesn't this ever hit if it's after show()
       hasShown = true
       sheetState.show()
     }
   }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties()
+
+@OptIn(ExperimentalMaterial3Api::class)
+internal expect fun createBottomSheetProperties(
+  isFocusable: Boolean = DEFAULT_PROPERTIES.isFocusable,
+  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress,
+): ModalBottomSheetProperties

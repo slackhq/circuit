@@ -48,7 +48,6 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.SharedElementTransitionScope
-import com.slack.circuit.foundation.internal.NoOpSharedTransitionScope.rememberSharedContentState
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.LocalOverlayState
 import com.slack.circuit.overlay.OverlayState

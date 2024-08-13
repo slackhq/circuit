@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.internal.NoOpSharedTransitionScope
 import com.slack.circuit.runtime.InternalCircuitApi
 
 /**
@@ -129,7 +128,7 @@ private data class SimpleAnimatedVisibilityScope(
 @OptIn(ExperimentalSharedTransitionApi::class)
 public val LocalSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope> =
   compositionLocalOf {
-    NoOpSharedTransitionScope
+    error("No SharedTransitionScope provided")
   }
 
 /**

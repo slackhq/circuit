@@ -4,6 +4,11 @@ Changelog
 **Unreleased**
 --------------
 
+0.23.1
+------
+
+_2024-07-30_
+
 - **New**: Promote `NoOpRetainedStateRegistry` to public API for use in testing and previews.
 - **New**: Add `CircuitPreview` helper function for composable previews that contain Circuit content.
 - **Enhancement**: When running under `LocalInspectionMode`, Circuit's default `onUnavailableContent` now shows a simpler non-intrusive placeholder UI instead.

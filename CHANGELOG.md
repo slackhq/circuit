@@ -8,6 +8,7 @@ Changelog
 - **New**: Add `CircuitPreview` helper function for composable previews that contain Circuit content.
 - **Enhancement**: When running under `LocalInspectionMode`, Circuit's default `onUnavailableContent` now shows a simpler non-intrusive placeholder UI instead.
 - **Enhancement**: Support secondary injected constructors in code gen.
+- **Fix**: Fix non-dismissable `BottomSheetOverlay` crash when invoking back-press.
 
 0.23.0
 ------

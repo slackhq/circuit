@@ -17,13 +17,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
@@ -50,11 +51,11 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.SharedElementTransitionScope
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Overlay
-import com.slack.circuit.overlay.LocalOverlayHost
+import com.slack.circuit.foundation.requireActiveAnimatedScope
+import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.overlay.LocalOverlayState
-import com.slack.circuit.overlay.OverlayState
+import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
@@ -68,6 +69,8 @@ import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.transition.PetImageBoundsSharedTransitionKey
+import com.slack.circuit.star.transition.PetImageSharedTransitionKey
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import kotlin.math.absoluteValue
@@ -183,18 +186,6 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
           }
         }
     ) {
-      // todo wrap this up nicely in a new api
-      val overlayVisible = LocalOverlayState.current == OverlayState.SHOWING
-      var wasOverlayVisible by remember { mutableStateOf(overlayVisible) }
-      SideEffect { wasOverlayVisible = overlayVisible }
-      val overlayAnimationScope = requireAnimatedScope(Overlay)
-      val navigationAnimationScope = requireAnimatedScope(Navigation)
-      val animatedVisibilityScope =
-        when {
-          !wasOverlayVisible && overlayVisible -> overlayAnimationScope
-          wasOverlayVisible && !overlayVisible -> overlayAnimationScope
-          else -> navigationAnimationScope
-        }
       PhotoPager(
         id = state.id,
         pagerState = pagerState,
@@ -202,9 +193,10 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
         name = state.name,
         photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
         modifier =
-          Modifier.sharedElement(
-            state = rememberSharedContentState(key = "animal-image-${state.id}"),
-            animatedVisibilityScope = animatedVisibilityScope,
+          Modifier.sharedBounds(
+            sharedContentState =
+              rememberSharedContentState(key = PetImageBoundsSharedTransitionKey(state.id)),
+            animatedVisibilityScope = requireActiveAnimatedScope(),
           ),
       )
 
@@ -224,6 +216,7 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("LongParameterList")
 @Composable
 private fun PhotoPager(
@@ -233,7 +226,7 @@ private fun PhotoPager(
   name: String,
   modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,
-) {
+) = SharedElementTransitionScope {
   HorizontalPager(
     state = pagerState,
     key = photoUrls::get,
@@ -241,25 +234,25 @@ private fun PhotoPager(
     contentPadding = PaddingValues(16.dp),
   ) { page ->
     val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
+    var shownOverlayUrl by remember { mutableStateOf<String?>(null) }
 
+    OverlayEffect(shownOverlayUrl) {
+      shownOverlayUrl?.let { url ->
+        showFullScreenOverlay(ImageViewerScreen(id = id, url = url, placeholderKey = url))
+        shownOverlayUrl = null
+      }
+    }
+
+    val shape = CardDefaults.shape
     // TODO implement full screen overlay on non-android targets
     val clickableModifier =
-      if (LocalOverlayState.current != UNAVAILABLE) {
-        val scope = rememberStableCoroutineScope()
-        val overlayHost = LocalOverlayHost.current
-        photoUrl?.let { url ->
-          Modifier.clickable {
-            scope.launch {
-              overlayHost.showFullScreenOverlay(
-                ImageViewerScreen(id = id, url = url, placeholderKey = name)
-              )
-            }
-          }
-        } ?: Modifier
-      } else {
-        Modifier
+      Modifier.clip(shape).clickable(
+        enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null
+      ) {
+        shownOverlayUrl = photoUrl
       }
     Card(
+      shape = shape,
       modifier =
         clickableModifier.aspectRatio(1f).graphicsLayer {
           // Calculate the absolute offset for the current page from the
@@ -276,13 +269,21 @@ private fun PhotoPager(
 
           // We animate the alpha, between 50% and 100%
           alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
-        }
+        },
     ) {
       AsyncImage(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+          Modifier.fillMaxWidth().thenIfNotNull(photoUrl) {
+            sharedElement(
+                state = rememberSharedContentState(key = PetImageSharedTransitionKey(it)),
+                animatedVisibilityScope = requireAnimatedScope(Overlay),
+              )
+              .clip(shape)
+          },
         model =
           Builder(LocalPlatformContext.current)
             .data(photoUrl)
+            .memoryCacheKey(photoUrl)
             .apply {
               if (page == 0) {
                 placeholderMemoryCacheKey(photoUrlMemoryCacheKey)

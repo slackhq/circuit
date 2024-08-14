@@ -167,10 +167,26 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) {
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TopBar(state: State) {
   if (state !is Success) return
-  CenterAlignedTopAppBar(title = { Text(state.name) }, navigationIcon = { BackPressNavIcon() })
+  SharedElementTransitionScope {
+    CenterAlignedTopAppBar(
+      title = {
+        Text(
+          state.name,
+          modifier =
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(key = "name-${state.id}"),
+              animatedVisibilityScope = requireAnimatedScope(Navigation),
+              zIndexInOverlay = 10f,
+            ),
+        )
+      },
+      navigationIcon = { BackPressNavIcon() },
+    )
+  }
 }
 
 @Composable
@@ -259,26 +275,33 @@ private fun ShowAnimalPortrait(
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 private fun LazyListScope.petDetailDescriptions(state: Success) {
   // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
   item(state.tags.hashCode()) {
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-      verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
-    ) {
-      state.tags.forEach { tag ->
-        Surface(
-          color = MaterialTheme.colorScheme.tertiary,
-          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
-        ) {
-          Text(
-            modifier = Modifier.padding(12.dp),
-            text = tag.capitalize(LocaleList.current),
-            color = MaterialTheme.colorScheme.onTertiary,
-            style = MaterialTheme.typography.labelLarge,
-          )
+    SharedElementTransitionScope {
+      FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+      ) {
+        state.tags.forEach { tag ->
+          Surface(
+            color = MaterialTheme.colorScheme.tertiary,
+            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "tag-${state.id}-${tag}"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+              ),
+          ) {
+            Text(
+              modifier = Modifier.padding(12.dp),
+              text = tag.capitalize(LocaleList.current),
+              color = MaterialTheme.colorScheme.onTertiary,
+              style = MaterialTheme.typography.labelLarge,
+            )
+          }
         }
       }
     }

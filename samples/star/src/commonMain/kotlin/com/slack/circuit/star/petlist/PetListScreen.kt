@@ -123,6 +123,7 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.transition.PetImageBoundsSharedTransitionKey
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
 import io.ktor.util.Platform
@@ -415,8 +416,9 @@ private fun PetListGridItem(
     Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
       val imageModifier =
-        Modifier.sharedElement(
-            state = rememberSharedContentState(key = "animal-image-${animal.id}"),
+        Modifier.sharedBounds(
+            sharedContentState =
+              rememberSharedContentState(key = PetImageBoundsSharedTransitionKey(animal.id)),
             animatedVisibilityScope = requireAnimatedScope(Navigation),
           )
           .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
@@ -446,9 +448,29 @@ private fun PetListGridItem(
       }
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
-        Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
+        Text(
+          text = animal.name,
+          style = MaterialTheme.typography.labelLarge,
+          modifier =
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(key = "name-${animal.id}"),
+              animatedVisibilityScope = requireAnimatedScope(Navigation),
+              zIndexInOverlay = 10f,
+            ),
+        )
         // Type
-        animal.breed?.let { Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium) }
+        animal.breed?.let {
+          Text(
+            text = animal.breed,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState =
+                  rememberSharedContentState(key = "tag-${animal.id}-${animal.breed}"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+              ),
+          )
+        }
         CompositionLocalProvider(
           LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
         ) {

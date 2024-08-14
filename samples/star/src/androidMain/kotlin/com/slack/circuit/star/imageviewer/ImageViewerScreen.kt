@@ -3,28 +3,29 @@
 package com.slack.circuit.star.imageviewer
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
 import com.slack.circuit.backstack.NavDecoration
@@ -33,6 +34,7 @@ import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.RecordContentProvider
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Overlay
+import com.slack.circuit.foundation.thenIf
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -41,6 +43,8 @@ import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
+import com.slack.circuit.star.transition.PetImageBoundsSharedTransitionKey
+import com.slack.circuit.star.transition.PetImageSharedTransitionKey
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
 import dagger.assisted.Assisted
@@ -84,6 +88,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
   val systemUiController = rememberSystemUiController()
   systemUiController.isSystemBarsVisible = showChrome
   DisposableEffect(systemUiController) {
+    systemUiController.statusBarDarkContentEnabled = false
     val originalSystemBarsBehavior = systemUiController.systemBarsBehavior
     // Set BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE so the UI doesn't jump when it hides
     systemUiController.systemBarsBehavior =
@@ -95,12 +100,22 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
     }
   }
 
+  val overlayTransition = getAnimatedScope(Overlay)?.transition
+  val backgroundColor =
+    overlayTransition
+      ?.animateColor(transitionSpec = { tween() }, label = "Background color") { state ->
+        when (state) {
+          EnterExitState.PreEnter -> Color.Transparent
+          EnterExitState.Visible -> Color.Black
+          EnterExitState.PostExit -> Color.Transparent
+        }
+      }
+      ?.value ?: Color.Black
+
   StarTheme(useDarkTheme = true) {
-    val backgroundAlpha: Float by
-      animateFloatAsState(targetValue = 1f, animationSpec = tween(), label = "backgroundAlpha")
     Surface(
-      modifier.fillMaxSize().animateContentSize(),
-      color = Color.Black.copy(alpha = backgroundAlpha),
+      modifier = modifier.fillMaxSize().animateContentSize(),
+      color = backgroundColor,
       contentColor = Color.White,
     ) {
       Box(Modifier.fillMaxSize()) {
@@ -111,33 +126,63 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
           state.eventSink(Close)
         }
         // TODO bind scrim with flick. animate scrim out after flick finishes? Or with flick?
-        FlickToDismiss(state = dismissState) {
-          val zoomableState = rememberZoomableState(ZoomSpec(maxZoomFactor = 2f))
+        FlickToDismiss(
+          state = dismissState,
+          modifier =
+            Modifier.thenIf(!dismissState.willDismissOnRelease) {
+              sharedBounds(
+                sharedContentState =
+                  rememberSharedContentState(key = PetImageBoundsSharedTransitionKey(state.id)),
+                animatedVisibilityScope = requireAnimatedScope(Overlay),
+                enter = fadeIn(),
+                exit = fadeOut(animationSpec = tween(easing = LinearEasing)),
+              )
+            },
+        ) {
+          val zoomableState = rememberZoomableState(ZoomSpec(maxZoomFactor = 4f))
           val imageState = rememberZoomableImageState(zoomableState)
           // TODO loading loading indicator if there's no memory cached placeholderKey
           ZoomableAsyncImage(
             model =
               Builder(LocalContext.current)
                 .data(state.url)
-                .apply { state.placeholderKey?.let(::placeholderMemoryCacheKey) }
+                .apply {
+                  state.placeholderKey?.let {
+                    placeholderMemoryCacheKey(it)
+                    crossfade(AnimationConstants.DefaultDurationMillis)
+                  }
+                }
                 .build(),
             contentDescription = "TODO",
             modifier =
-              Modifier.sharedElement(
-                  state = rememberSharedContentState(key = "animal-image-${state.id}"),
+              Modifier.fillMaxSize().thenIf(!dismissState.willDismissOnRelease) {
+                sharedElement(
+                  state = rememberSharedContentState(key = PetImageSharedTransitionKey(state.url)),
                   animatedVisibilityScope = requireAnimatedScope(Overlay),
                 )
-                .fillMaxSize(),
+              },
             state = imageState,
             onClick = { showChrome = !showChrome },
           )
         }
 
         // TODO pick color based on if image is underneath it or not. Similar to badges
-        AnimatedVisibility(showChrome, enter = fadeIn(), exit = fadeOut()) {
-          BackPressNavIcon(
-            Modifier.align(Alignment.TopStart).padding(8.dp).statusBarsPadding(),
-            onClick = { state.eventSink(Close) },
+        val backVisible =
+          showChrome &&
+            overlayTransition?.targetState?.let { it == EnterExitState.Visible } != false
+
+        AnimatedVisibility(backVisible, enter = fadeIn(), exit = fadeOut()) {
+          CenterAlignedTopAppBar(
+            title = {},
+            navigationIcon = { BackPressNavIcon() },
+            colors =
+              TopAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent,
+                navigationIconContentColor = Color.Transparent,
+                titleContentColor = Color.Transparent,
+                actionIconContentColor = Color.Transparent,
+              ),
           )
         }
       }

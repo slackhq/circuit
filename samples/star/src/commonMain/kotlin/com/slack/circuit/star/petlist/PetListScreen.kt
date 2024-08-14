@@ -396,7 +396,16 @@ private fun PetListGridItem(
   onClick: () -> Unit = {},
 ) = SharedElementTransitionScope {
   ElevatedCard(
-    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .testTag(CARD_TAG)
+        .sharedBounds(
+          sharedContentState = rememberSharedContentState(key = "animal-${animal.id}"),
+          animatedVisibilityScope = animatedVisibilityScope,
+        )
+        .clip(RoundedCornerShape(16.dp)) // todo change this over time with a seekable state
+    ,
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.elevatedCardColors(

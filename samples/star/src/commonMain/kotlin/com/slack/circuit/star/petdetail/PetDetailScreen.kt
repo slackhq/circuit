@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -193,8 +195,16 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun ShowAnimal(state: Success, padding: PaddingValues) {
+private fun ShowAnimal(state: Success, padding: PaddingValues) = SharedElementTransitionScope {
+  val sharedModifier =
+    Modifier.padding(padding)
+      .testTag(ANIMAL_CONTAINER_TAG)
+      .sharedBounds(
+        sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
+        animatedVisibilityScope = animatedVisibilityScope,
+      )
   val carouselContent = remember {
     movableContentOf {
       CircuitContent(
@@ -207,19 +217,19 @@ private fun ShowAnimal(state: Success, padding: PaddingValues) {
       )
     }
   }
-  return when (Platform.isLandscape()) {
-    true -> ShowAnimalLandscape(state, padding, carouselContent)
-    false -> ShowAnimalPortrait(state, padding, carouselContent)
+  when (Platform.isLandscape()) {
+    true -> ShowAnimalLandscape(state, sharedModifier, carouselContent)
+    false -> ShowAnimalPortrait(state, sharedModifier, carouselContent)
   }
 }
 
 @Composable
 private fun ShowAnimalLandscape(
   state: Success,
-  padding: PaddingValues,
+  modifier: Modifier = Modifier,
   carouselContent: @Composable () -> Unit,
 ) {
-  Row(modifier = Modifier.padding(padding), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+  Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
     carouselContent()
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -234,11 +244,11 @@ private fun ShowAnimalLandscape(
 @Composable
 private fun ShowAnimalPortrait(
   state: Success,
-  padding: PaddingValues,
+  modifier: Modifier = Modifier,
   carouselContent: @Composable () -> Unit,
 ) {
   LazyColumn(
-    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    modifier = modifier,
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,

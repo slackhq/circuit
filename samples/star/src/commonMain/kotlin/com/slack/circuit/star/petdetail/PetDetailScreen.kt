@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -203,7 +204,7 @@ private fun ShowAnimal(state: Success, padding: PaddingValues) = SharedElementTr
       .testTag(ANIMAL_CONTAINER_TAG)
       .sharedBounds(
         sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
-        animatedVisibilityScope = animatedVisibilityScope,
+        animatedVisibilityScope = requireAnimatedScope(Navigation),
       )
   val carouselContent = remember {
     movableContentOf {

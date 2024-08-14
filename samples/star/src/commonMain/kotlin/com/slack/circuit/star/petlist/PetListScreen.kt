@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -87,6 +86,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -131,7 +131,6 @@ import io.ktor.util.platform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 @CommonParcelize
@@ -402,7 +401,7 @@ private fun PetListGridItem(
         .testTag(CARD_TAG)
         .sharedBounds(
           sharedContentState = rememberSharedContentState(key = "animal-${animal.id}"),
-          animatedVisibilityScope = animatedVisibilityScope,
+          animatedVisibilityScope = requireAnimatedScope(Navigation),
         )
         .clip(RoundedCornerShape(16.dp)) // todo change this over time with a seekable state
     ,
@@ -418,7 +417,7 @@ private fun PetListGridItem(
       val imageModifier =
         Modifier.sharedElement(
             state = rememberSharedContentState(key = "animal-image-${animal.id}"),
-            animatedVisibilityScope = animatedVisibilityScope,
+            animatedVisibilityScope = requireAnimatedScope(Navigation),
           )
           .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
           .fillMaxWidth()

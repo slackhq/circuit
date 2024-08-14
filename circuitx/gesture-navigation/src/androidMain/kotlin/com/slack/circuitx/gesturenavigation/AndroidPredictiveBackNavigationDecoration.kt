@@ -10,6 +10,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,7 +19,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,8 +34,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.LocalTransitionAnimatedVisibilityScope
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.ProvideAnimatedTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.runtime.InternalCircuitApi
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
@@ -52,6 +53,7 @@ public actual fun GestureNavigationDecoration(
 @RequiresApi(34)
 public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked: () -> Unit) :
   NavDecoration {
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
   override fun <T> DecoratedContent(
     args: ImmutableList<T>,
@@ -119,7 +121,7 @@ public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked
           }
         }
       ) { holder ->
-        CompositionLocalProvider(LocalTransitionAnimatedVisibilityScope provides this) {
+        ProvideAnimatedTransitionScope(Navigation, this) {
           var swipeProgress by remember { mutableFloatStateOf(0f) }
 
           if (backStackDepth > 1) {

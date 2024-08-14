@@ -48,6 +48,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.LocalOverlayState
 import com.slack.circuit.overlay.OverlayState
@@ -180,7 +181,7 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
         }
     ) {
       val overlayVisible = LocalOverlayState.current == OverlayState.SHOWING
-      val animationVisible = isTransitionState { it < EnterExitState.PostExit }
+      val animationVisible = getAnimatedScope(Navigation)?.transition?.targetState == EnterExitState.Visible
       PhotoPager(
         id = state.id,
         pagerState = pagerState,

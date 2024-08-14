@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
@@ -35,6 +36,7 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -304,6 +306,7 @@ public object NavigatorDefaults {
       return enterTransition togetherWith exitTransition
     }
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
     override fun <T> DecoratedContent(
       args: ImmutableList<T>,
@@ -334,9 +337,7 @@ public object NavigatorDefaults {
           )
         },
       ) {
-        CompositionLocalProvider(LocalTransitionAnimatedVisibilityScope provides this) {
-          content(it.first())
-        }
+        ProvideAnimatedTransitionScope(Navigation, this) { content(it.first()) }
       }
     }
   }

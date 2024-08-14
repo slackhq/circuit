@@ -3,20 +3,18 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope
 import com.slack.circuit.runtime.InternalCircuitApi
 
 /**
@@ -36,18 +34,27 @@ import com.slack.circuit.runtime.InternalCircuitApi
 @Composable
 public fun SharedElementTransitionLayout(
   modifier: Modifier = Modifier,
-  content: @Composable SharedElementTransitionScope.() -> Unit,
+  content: @Composable () -> Unit,
 ) {
   SharedTransitionLayout(modifier = modifier) {
-    val sharedTransitionScope = this
-    val animatedVisibilityScope = findAnimatedVisibilityScope()
-    CompositionLocalProvider(
-      LocalSharedTransitionScope provides sharedTransitionScope,
-      LocalTransitionAnimatedVisibilityScope provides animatedVisibilityScope,
-    ) {
-      SharedElementTransitionScope(sharedTransitionScope, animatedVisibilityScope, content)
-    }
+    val scope = remember { SharedElementTransitionScopeImpl(this) }
+    CompositionLocalProvider(LocalSharedElementTransitionScope provides scope, content)
   }
+}
+
+@ExperimentalSharedTransitionApi
+@OptIn(InternalCircuitApi::class)
+@Composable
+public fun ProvideAnimatedTransitionScope(
+  animatedScope: AnimatedScope,
+  animatedVisibilityScope: AnimatedVisibilityScope,
+  content: @Composable () -> Unit,
+) {
+  val parent = LocalSharedElementTransitionScope.current
+  val scope =
+    remember(parent) { SharedElementTransitionScopeImpl(parent) }
+      .apply { setScope(animatedScope, animatedVisibilityScope) }
+  CompositionLocalProvider(LocalSharedElementTransitionScope provides scope, content)
 }
 
 /**
@@ -61,62 +68,34 @@ public fun SharedElementTransitionLayout(
 @OptIn(InternalCircuitApi::class)
 @Composable
 public fun SharedElementTransitionScope(
-  sharedTransitionScope: SharedTransitionScope = LocalSharedTransitionScope.current,
-  animatedVisibilityScope: AnimatedVisibilityScope = findAnimatedVisibilityScope(),
+  sharedElementTransitionScope: SharedElementTransitionScope =
+    LocalSharedElementTransitionScope.current,
   content: @Composable SharedElementTransitionScope.() -> Unit,
 ) {
-  val scope =
-    remember(sharedTransitionScope) {
-      SharedElementTransitionScopeImpl(animatedVisibilityScope, sharedTransitionScope)
-    }
-  with(scope) {
-    updateAnimatedScope(animatedVisibilityScope)
-    content()
-  }
+  sharedElementTransitionScope.content()
 }
 
 /**
  * [SharedElementTransitionScope] provides a [SharedTransitionScope] for the standard shared
  * elements/shared bounds animations. This also provides a [AnimatedVisibilityScope], which can be
- * set using [LocalTransitionAnimatedVisibilityScope]. Typically this should be set by a
- * [NavDecoration] that has children using [SharedElementTransitionScope] for the animations to
+ * set using [set] and retrieved using [get] or [requireAnimatedScope]. Typically this should be set
+ * by a [NavDecoration] that has children using [SharedElementTransitionScope] for the animations to
  * match up with the navigation animations.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public interface SharedElementTransitionScope : SharedTransitionScope {
-  public val animatedVisibilityScope: AnimatedVisibilityScope
 
-  public fun isTransitionState(predicate: (EnterExitState) -> Boolean): Boolean {
-    return with(animatedVisibilityScope) {
-      predicate(transition.targetState) || predicate(transition.currentState)
-    }
+  public fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope?
+
+  public fun requireAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope {
+    return requireNotNull(getAnimatedScope(key)) { "No AnimatedVisibilityScope found for $key" }
+  }
+
+  public enum class AnimatedScope {
+    Overlay,
+    Navigation,
   }
 }
-
-/**
- * Finds the [AnimatedVisibilityScope] from the [LocalTransitionAnimatedVisibilityScope] or creates
- * a [SimpleAnimatedVisibilityScope].
- */
-@Composable
-private fun findAnimatedVisibilityScope(): AnimatedVisibilityScope {
-  return LocalTransitionAnimatedVisibilityScope.current ?: staticAnimatedVisibilityScope()
-}
-
-/**
- * Creates an [AnimatedVisibilityScope] that is always visible as a fallback for any
- * [SharedElementTransitionScope].
- */
-@Composable
-private fun staticAnimatedVisibilityScope(): AnimatedVisibilityScope {
-  val transition =
-    updateTransition(EnterExitState.Visible, label = "Static AnimatedVisibilityScope")
-  return remember { SimpleAnimatedVisibilityScope(transition) }
-}
-
-/** A [AnimatedVisibilityScope] that takes a [Transition]. */
-private data class SimpleAnimatedVisibilityScope(
-  override val transition: Transition<EnterExitState>
-) : AnimatedVisibilityScope
 
 /**
  * A provider of a [SharedTransitionScope] for a [SharedElementTransitionScope]. This should be set
@@ -125,40 +104,29 @@ private data class SimpleAnimatedVisibilityScope(
  * By default this falls back to a no-op [SharedTransitionScope].
  */
 @InternalCircuitApi
-@OptIn(ExperimentalSharedTransitionApi::class)
-public val LocalSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope> =
+private val LocalSharedElementTransitionScope:
+  ProvidableCompositionLocal<SharedElementTransitionScope> =
   compositionLocalOf {
-    error("No SharedTransitionScope provided")
-  }
-
-/**
- * This provides a [AnimatedVisibilityScope] to any [SharedElementTransitionScope]. Typically this
- * should be set by a [NavDecoration] so that shared transitions can match up with the any
- * navigation animations.
- */
-public val LocalTransitionAnimatedVisibilityScope:
-  ProvidableCompositionLocal<AnimatedVisibilityScope?> =
-  compositionLocalOf {
-    null
+    error("No SharedElementTransitionScope provided")
   }
 
 /**
  * [SharedElementTransitionScope] implementation that delegates to a provided
- * [SharedTransitionScope] and allows for updating the [animatedVisibilityScope].
+ * [SharedTransitionScope] and allows for updating the [animatedVisibilityScopes].
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class SharedElementTransitionScopeImpl(
-  private val animatedScope: AnimatedVisibilityScope,
-  private val sharedTransitionScope: SharedTransitionScope,
+  private val sharedTransitionScope: SharedTransitionScope
 ) : SharedElementTransitionScope, SharedTransitionScope by sharedTransitionScope {
 
-  private val animatedVisibilityScopeState = mutableStateOf(animatedScope)
+  private val animatedVisibilityScopes = mutableStateMapOf<AnimatedScope, AnimatedVisibilityScope>()
 
-  override val animatedVisibilityScope: AnimatedVisibilityScope
-    get() = animatedVisibilityScopeState.value
+  fun setScope(key: AnimatedScope, value: AnimatedVisibilityScope) {
+    animatedVisibilityScopes[key] = value
+  }
 
-  /** Update the [animatedVisibilityScope] to [animatedScope]. */
-  public fun updateAnimatedScope(animatedScope: AnimatedVisibilityScope) {
-    animatedVisibilityScopeState.value = animatedScope
+  override fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope? {
+    return animatedVisibilityScopes[key]
+      ?: (sharedTransitionScope as? SharedElementTransitionScope)?.getAnimatedScope(key)
   }
 }

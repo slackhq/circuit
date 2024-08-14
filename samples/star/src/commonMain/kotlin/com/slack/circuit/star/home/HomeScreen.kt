@@ -25,6 +25,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -87,7 +88,8 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
               Modifier.renderInSharedTransitionScopeOverlay(
                 renderInOverlay = {
                   isTransitionActive &&
-                    animatedVisibilityScope.transition.targetState == EnterExitState.Visible
+                    requireAnimatedScope(Navigation).transition.targetState ==
+                      EnterExitState.Visible
                 },
                 zIndexInOverlay = 1f,
               ),

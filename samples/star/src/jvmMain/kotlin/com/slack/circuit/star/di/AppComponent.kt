@@ -5,7 +5,6 @@ package com.slack.circuit.star.di
 import com.slack.circuit.star.data.DataModule
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.annotations.optional.SingleIn
-import dagger.Component
 
 @MergeComponent(
   scope = AppScope::class,
@@ -13,7 +12,7 @@ import dagger.Component
 )
 @SingleIn(AppScope::class)
 interface AppComponent : CommonAppComponent {
-  @Component.Factory
+  @MergeComponent.Factory
   interface Factory {
     fun create(): AppComponent
   }

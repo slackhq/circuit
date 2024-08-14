@@ -152,19 +152,3 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     retained.clear()
   }
 }
-
-internal object NoOpRetainedStateRegistry : RetainedStateRegistry {
-  override fun consumeValue(key: String): Any? = null
-
-  override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry = NoOpEntry
-
-  override fun saveAll() {}
-
-  override fun saveValue(key: String) {}
-
-  override fun forgetUnclaimedValues() {}
-
-  private object NoOpEntry : Entry {
-    override fun unregister() {}
-  }
-}

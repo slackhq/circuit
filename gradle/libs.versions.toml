@@ -1,16 +1,16 @@
 [versions]
 accompanist = "0.34.0"
-androidx-activity = "1.9.0"
-androidx-annotation = "1.8.0"
+androidx-activity = "1.9.1"
+androidx-annotation = "1.8.2"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.3"
-agp = "8.5.1"
-anvil = "2.5.0-beta09"
+androidx-lifecycle = "2.8.4"
+agp = "8.5.2"
+anvil = "0.2.4"
 atomicfu = "0.25.0"
-benchmark = "1.3.0-beta02"
+benchmark = "1.3.0-rc01"
 coil = "2.7.0"
-coil3 = "3.0.0-alpha08"
+coil3 = "3.0.0-alpha10"
 compose-animation = "1.6.8"
 compose-foundation = "1.6.8"
 compose-material = "1.6.8"
@@ -19,7 +19,7 @@ compose-runtime = "1.6.8"
 compose-ui = "1.6.8"
 compose-jb = "1.6.11"
 compose-integration-constraintlayout = "1.0.1"
-dagger = "2.51.1"
+dagger = "2.52"
 datastore = "1.1.1"
 detekt = "1.23.6"
 dokka = "1.9.20"
@@ -45,8 +45,8 @@ okio = "3.9.0"
 paparazzi = "1.3.4"
 picnic = "0.7.0"
 robolectric = "4.13"
-roborazzi = "1.23.0"
-skie = "0.8.3"
+roborazzi = "1.26.0"
+skie = "0.8.4"
 spotless = "6.23.3"
 sqldelight = "2.0.2"
 telephoto = "0.12.1"
@@ -58,7 +58,7 @@ versionsPlugin = "0.49.0"
 agp-application = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
-anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
@@ -89,7 +89,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.0" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.1" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -151,8 +151,8 @@ androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
 androidx-test-monitor = "androidx.test:monitor:1.6.1"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 
-anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
-anvil-annotations-optional = { module = "com.squareup.anvil:annotations-optional", version.ref = "anvil" }
+anvil-annotations = { module = "dev.zacsweers.anvil:annotations", version.ref = "anvil" }
+anvil-annotations-optional = { module = "dev.zacsweers.anvil:annotations-optional", version.ref = "anvil" }
 
 # Utilities for local storage dirs on Desktop
 # https://github.com/harawata/appdirs
@@ -172,7 +172,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
 coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil3-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
-coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil3" }
 coil3-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
 coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
 
@@ -256,7 +256,7 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.8"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.9"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }

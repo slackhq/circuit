@@ -1,12 +1,10 @@
-// Copyright (C) 2024 Slack Technologies, LLC
+// Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 
-// Copyright (C) 2022 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -21,6 +19,8 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
+  macosX64()
+  macosArm64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()

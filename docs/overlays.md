@@ -7,9 +7,9 @@ The `circuit-overlay` artifact contains an optional API for presenting overlays 
 @Composable
 fun SubmitAnswer(state: FormState, modifier: Modifier = Modifier) {
   if (state.promptConfirmation) {
-    OverlayEffect { host ->
+    OverlayEffect {
       // Suspend on the result of the overlay
-      val result = host.show(ConfirmationDialogOverlay(title = "Are you sure?"))
+      val result = show(ConfirmationDialogOverlay(title = "Are you sure?"))
       state.eventSink(SubmitAnswerEvent(result))
     }
   }
@@ -47,8 +47,8 @@ Where `BottomSheetOverlay` is a custom bottom sheet implementation of an `Overla
 In composition, you can also use `OverlayEffect` for a more streamlined API.
 
 ```kotlin
-OverlayEffect { host ->
-  val result = host.show(BottomSheetOverlay(...))
+OverlayEffect {
+  val result = show(BottomSheetOverlay(...))
 }
 ```
 

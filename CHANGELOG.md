@@ -4,8 +4,40 @@ Changelog
 **Unreleased**
 --------------
 
+0.23.1
+------
+
+_2024-07-30_
+
+- **New**: Promote `NoOpRetainedStateRegistry` to public API for use in testing and previews.
+- **New**: Add `CircuitPreview` helper function for composable previews that contain Circuit content.
+- **Enhancement**: When running under `LocalInspectionMode`, Circuit's default `onUnavailableContent` now shows a simpler non-intrusive placeholder UI instead.
+- **Enhancement**: Support secondary injected constructors in code gen.
+- **Fix**: Fix non-dismissable `BottomSheetOverlay` crash when invoking back-press.
+- Update to Kotlin `2.0.10`.
+- Update to androidx.annotation `1.8.2`.
+- Build against KSP `2.0.10-1.0.24`.
+
+0.23.0
+------
+
+_2024-07-30_
+
+- **New**: Add macOS, windows, linux, tvOS, and watchOS targets to Circuit's runtime and retained artifacts.
+- **New**: Add macOS targets to Circuit's UI, backstack, overlay, test, circuitx (except gesture nav), and foundation artifacts.
 - Slightly optimize `pausableState` [#1455](https://github.com/slackhq/circuit/pull/1455).
-- **Change**: `OverlayHost.showFullScreenOverlay` now returns the PopResult? that was popped by the screen.
+- **Change**: `OverlayHost.showFullScreenOverlay` now returns the `PopResult?` that was popped by the screen.
+- **Change**: Remove `backstack` dependency from `circuit-runtime`. It was unnecessary and also accidentally imposed Compose UI on the runtime/presenter artifacts.
+- **Change**: Make `Overlay` a `fun interface`.
+- **Breaking Change**: Change `OverlayEffect` to use a new `OverlayScope` API that implements both `CoroutineScope` and `OverlayHost`, making both contexts available in the lambda.
+- Update KSP to `2.0.0-1.0.24`.
+- Update androidx.activity to `1.9.1`.
+- Update androidx.lifecycle to `2.8.4`.
+- Update androidx.annotation to `1.8.1`.
+- Update KotlinPoet `1.18.1`.
+- Update Compose Multiplatform to `1.6.11`.
+
+Special thanks to [@aschulz90](https://github.com/aschulz90) and [@chrisbanes](https://github.com/chrisbanes) for contributing to this release!
 
 0.22.2
 ------

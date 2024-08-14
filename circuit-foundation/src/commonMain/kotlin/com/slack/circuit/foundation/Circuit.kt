@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.runtime.CircuitContext
@@ -267,11 +268,20 @@ public class Circuit private constructor(builder: Builder) {
 
 private val UnavailableContent: @Composable (screen: Screen, modifier: Modifier) -> Unit =
   { screen, modifier ->
-    BasicText(
-      "Route not available: $screen",
-      modifier.background(Color.Red),
-      style = TextStyle(color = Color.Yellow),
-    )
+    if (LocalInspectionMode.current) {
+      // In previews/tests, use a plainer placeholder
+      BasicText(
+        text = "⚡️CircuitScreen(${screen::class.simpleName})",
+        modifier = modifier.background(Color.Gray),
+        style = TextStyle(color = Color.Black),
+      )
+    } else {
+      BasicText(
+        text = "Route not available: $screen",
+        modifier = modifier.background(Color.Red),
+        style = TextStyle(color = Color.Yellow),
+      )
+    }
   }
 
 /** The [Circuit] used in this context. */

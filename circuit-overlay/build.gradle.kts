@@ -38,6 +38,9 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
         implementation(libs.coroutines)
+        implementation(
+          projects.circuitFoundation
+        ) // todo Move the shared transition basics out of the main project
       }
     }
     commonTest {

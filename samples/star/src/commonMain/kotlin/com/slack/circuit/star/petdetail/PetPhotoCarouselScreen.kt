@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
@@ -24,9 +23,12 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -49,6 +51,7 @@ import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.LocalOverlayState
 import com.slack.circuit.overlay.OverlayState
@@ -180,8 +183,18 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
           }
         }
     ) {
+      // todo wrap this up nicely in a new api
       val overlayVisible = LocalOverlayState.current == OverlayState.SHOWING
-      val animationVisible = getAnimatedScope(Navigation)?.transition?.targetState == EnterExitState.Visible
+      var wasOverlayVisible by remember { mutableStateOf(overlayVisible) }
+      SideEffect { wasOverlayVisible = overlayVisible }
+      val overlayAnimationScope = requireAnimatedScope(Overlay)
+      val navigationAnimationScope = requireAnimatedScope(Navigation)
+      val animatedVisibilityScope =
+        when {
+          !wasOverlayVisible && overlayVisible -> overlayAnimationScope
+          wasOverlayVisible && !overlayVisible -> overlayAnimationScope
+          else -> navigationAnimationScope
+        }
       PhotoPager(
         id = state.id,
         pagerState = pagerState,
@@ -189,9 +202,9 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
         name = state.name,
         photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
         modifier =
-          Modifier.sharedElementWithCallerManagedVisibility(
-            sharedContentState = rememberSharedContentState(key = "animal-image-${state.id}"),
-            visible = animationVisible && !overlayVisible,
+          Modifier.sharedElement(
+            state = rememberSharedContentState(key = "animal-image-${state.id}"),
+            animatedVisibilityScope = animatedVisibilityScope,
           ),
       )
 

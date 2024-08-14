@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
@@ -15,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.runtime.InternalCircuitApi
 
 /**
@@ -94,6 +97,26 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
   public enum class AnimatedScope {
     Overlay,
     Navigation,
+  }
+}
+
+/**
+ * Dynamically switch between the [AnimatedScope.Overlay] and [AnimatedScope.Navigation] for shared
+ * elements that can exist across Navigation and Overlay transitions.
+ */
+// todo Better name for this?
+public fun SharedElementTransitionScope.requireActiveAnimatedScope(): AnimatedVisibilityScope {
+  val scope = requireAnimatedScope(Overlay)
+  val current = scope.transition.currentState
+  val target = scope.transition.targetState
+  // Visible -> PostExit - Hiding behind the overlay
+  // PostExit -> PostExit - Hidden behind the overlay
+  // PostExit -> Visible - Showing as the overlay is hidden
+  return when {
+    current == EnterExitState.Visible && target == EnterExitState.PostExit ||
+      target == EnterExitState.PostExit && current == EnterExitState.PostExit ||
+      current == EnterExitState.PostExit && target == EnterExitState.Visible -> scope
+    else -> requireAnimatedScope(Navigation)
   }
 }
 

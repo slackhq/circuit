@@ -2,15 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -36,7 +38,8 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
+import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -234,10 +237,13 @@ public object NavigatorDefaults {
   private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
-  /** The default [NavDecoration] used in navigation. */
-  // Mirrors the forward and backward transitions of activities in Android 34
-  public object DefaultDecoration : NavDecoration {
-
+  public object DefaultDecoration :
+    AnimatedNavDecoration(
+      decoratorFactory =
+        object : AnimatedNavDecorator.Factory {
+          override fun <T> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+        }
+    ) {
     /**
      * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
@@ -305,40 +311,48 @@ public object NavigatorDefaults {
 
       return enterTransition togetherWith exitTransition
     }
+  }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
+  public class DefaultDecorator<T> : AnimatedNavDecorator<T, ImmutableList<T>> {
+
     @Composable
-    override fun <T> DecoratedContent(
+    public override fun Content(
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
+      content: @Composable Transition<ImmutableList<T>>.(Modifier) -> Unit,
+    ) {
+      updateTransition(args).content(modifier)
+    }
+
+    @OptIn(InternalCircuitApi::class)
+    @Composable
+    override fun Transition<ImmutableList<T>>.transitionSpec():
+      AnimatedContentTransitionScope<ImmutableList<T>>.() -> ContentTransform = {
+      // A transitionSpec should only use values passed into the `AnimatedContent`, to
+      // minimize
+      // the transitionSpec recomposing. The states are available as `targetState` and
+      // `initialState`
+      val diff = targetState.size - initialState.size
+      val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
+
+      when {
+        sameRoot && diff > 0 -> forward
+        sameRoot && diff < 0 -> backward
+        else -> fadeIn() togetherWith fadeOut()
+      }.using(
+        // Disable clipping since the faded slide-in/out should
+        // be displayed out of bounds.
+        SizeTransform(clip = false)
+      )
+    }
+
+    @Composable
+    public override fun AnimatedContentScope.AnimatedContent(
+      targetState: ImmutableList<T>,
       content: @Composable (T) -> Unit,
     ) {
-      @OptIn(InternalCircuitApi::class)
-      AnimatedContent(
-        targetState = args,
-        modifier = modifier,
-        transitionSpec = {
-          // A transitionSpec should only use values passed into the `AnimatedContent`, to
-          // minimize
-          // the transitionSpec recomposing. The states are available as `targetState` and
-          // `initialState`
-          val diff = targetState.size - initialState.size
-          val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
-
-          when {
-            sameRoot && diff > 0 -> forward
-            sameRoot && diff < 0 -> backward
-            else -> fadeIn() togetherWith fadeOut()
-          }.using(
-            // Disable clipping since the faded slide-in/out should
-            // be displayed out of bounds.
-            SizeTransform(clip = false)
-          )
-        },
-      ) {
-        ProvideAnimatedTransitionScope(Navigation, this) { content(it.first()) }
-      }
+      content(targetState.first())
     }
   }
 

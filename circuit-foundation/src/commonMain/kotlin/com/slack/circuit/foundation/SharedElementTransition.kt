@@ -41,7 +41,12 @@ public fun SharedElementTransitionLayout(
 ) {
   SharedTransitionLayout(modifier = modifier) {
     val scope = remember { SharedElementTransitionScopeImpl(this) }
-    CompositionLocalProvider(LocalSharedElementTransitionScope provides scope, content)
+    CompositionLocalProvider(
+      LocalSharedElementTransitionScope provides scope,
+      LocalSharedElementTransitionState provides SharedElementTransitionState.Available,
+    ) {
+      content()
+    }
   }
 }
 
@@ -53,11 +58,15 @@ public fun ProvideAnimatedTransitionScope(
   animatedVisibilityScope: AnimatedVisibilityScope,
   content: @Composable () -> Unit,
 ) {
-  val parent = LocalSharedElementTransitionScope.current
-  val scope =
-    remember(parent) { SharedElementTransitionScopeImpl(parent) }
-      .apply { setScope(animatedScope, animatedVisibilityScope) }
-  CompositionLocalProvider(LocalSharedElementTransitionScope provides scope, content)
+  if (LocalSharedElementTransitionState.current == SharedElementTransitionState.Available) {
+    val parent = LocalSharedElementTransitionScope.current
+    val scope =
+      remember(parent) { SharedElementTransitionScopeImpl(parent) }
+        .apply { setScope(animatedScope, animatedVisibilityScope) }
+    CompositionLocalProvider(LocalSharedElementTransitionScope provides scope) { content() }
+  } else {
+    content()
+  }
 }
 
 /**
@@ -87,6 +96,8 @@ public fun SharedElementTransitionScope(
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public interface SharedElementTransitionScope : SharedTransitionScope {
+
+  public fun availableScopes(): Set<AnimatedScope>
 
   public fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope?
 
@@ -134,6 +145,25 @@ private val LocalSharedElementTransitionScope:
   }
 
 /**
+ * A [ProvidableCompositionLocal] to expose the current [SharedElementTransitionState] in the
+ * composition tree.
+ */
+public val LocalSharedElementTransitionState:
+  ProvidableCompositionLocal<SharedElementTransitionState> =
+  compositionLocalOf {
+    SharedElementTransitionState.Unavailable
+  }
+
+/** Represents the current state of the available [SharedElementTransitionScope]. */
+public enum class SharedElementTransitionState {
+  /** Indicates that shared element transitions are not available. */
+  Unavailable,
+
+  /** Indicates that shared element transitions are available. */
+  Available,
+}
+
+/**
  * [SharedElementTransitionScope] implementation that delegates to a provided
  * [SharedTransitionScope] and allows for updating the [animatedVisibilityScopes].
  */
@@ -142,14 +172,18 @@ private data class SharedElementTransitionScopeImpl(
   private val sharedTransitionScope: SharedTransitionScope
 ) : SharedElementTransitionScope, SharedTransitionScope by sharedTransitionScope {
 
+  private val parentScope = sharedTransitionScope as? SharedElementTransitionScope
   private val animatedVisibilityScopes = mutableStateMapOf<AnimatedScope, AnimatedVisibilityScope>()
 
   fun setScope(key: AnimatedScope, value: AnimatedVisibilityScope) {
     animatedVisibilityScopes[key] = value
   }
 
+  override fun availableScopes(): Set<AnimatedScope> {
+    return animatedVisibilityScopes.keys + (parentScope?.availableScopes() ?: emptySet())
+  }
+
   override fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope? {
-    return animatedVisibilityScopes[key]
-      ?: (sharedTransitionScope as? SharedElementTransitionScope)?.getAnimatedScope(key)
+    return animatedVisibilityScopes[key] ?: parentScope?.getAnimatedScope(key)
   }
 }

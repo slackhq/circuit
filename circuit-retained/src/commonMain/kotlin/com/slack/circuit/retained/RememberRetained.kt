@@ -219,8 +219,8 @@ public fun <T> rememberRetained(
   rememberRetained(*inputs, saver = mutableStateSaver(stateSaver), key = key, init = init)
 
 /**
- * A simple proxy to [rememberRetained] that uses the default [autoSaver] for [saver] and a more
- * explicit name.
+ * A simple proxy to [rememberRetained] that uses the default [autoSaver] for [stateSaver] and a
+ * more explicit name.
  *
  * @see rememberRetained
  */

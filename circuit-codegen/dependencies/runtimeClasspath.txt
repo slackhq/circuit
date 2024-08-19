@@ -1,10 +1,10 @@
 androidx.compose:compose-bom
 com.google.auto.service:auto-service-annotations
 com.google.dagger:dagger
-com.squareup.anvil:annotations
 com.squareup:kotlinpoet-jvm
 com.squareup:kotlinpoet-ksp
 com.squareup:kotlinpoet
+jakarta.inject:jakarta.inject-api
 javax.inject:javax.inject
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-reflect

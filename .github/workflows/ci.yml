@@ -9,7 +9,10 @@ on:
       - '**/*.md'
   # Always run on PRs
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - 'releases*'
+      - 'compose-1.7.x'
   merge_group:
 
 concurrency:

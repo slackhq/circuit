@@ -433,6 +433,60 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
+  fun uiClass_simpleInjection_secondaryConstructor() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import javax.inject.Inject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites(val value: String) : Ui<FavoritesScreen.State> {
+
+            @Inject constructor() : this("injected")
+
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
+            }
+          }
+        """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        import javax.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val provider: Provider<Favorites>,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+      """
+          .trimIndent(),
+    )
+  }
+
+  @Test
   fun uiClass_assistedInjection() {
     assertGeneratedFile(
       sourceFile =

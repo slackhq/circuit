@@ -28,7 +28,7 @@ jdk = "21"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
 kct = "0.5.1"
-kotlin = "2.0.20-RC2"
+kotlin = "2.0.20"
 kotlinpoet = "1.18.1"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization = "1.7.1"
@@ -270,9 +270,6 @@ testing-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.4"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-
-# KMP UUID
-uuid = "com.benasher44:uuid:0.8.4"
 
 windowSizeClass = "dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0"
 

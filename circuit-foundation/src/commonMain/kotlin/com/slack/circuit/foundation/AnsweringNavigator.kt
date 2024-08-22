@@ -11,13 +11,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.benasher44.uuid.uuid4
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -104,7 +105,8 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   }
 
   // Key for the resultKey, so we can track who owns this requested result
-  val key = rememberSaveable { uuid4().toString() }
+  @OptIn(ExperimentalUuidApi::class)
+  val key = rememberSaveable { Uuid.random().toString() }
 
   // Current top record of the navigator
   val currentTopRecordKey by remember { derivedStateOf { currentBackStack.topRecord!!.key } }

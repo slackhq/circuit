@@ -57,7 +57,6 @@ kotlin {
         api(libs.kotlinx.immutable)
         api(projects.circuitRuntimeScreen)
         implementation(libs.compose.runtime.saveable)
-        implementation(libs.uuid)
       }
     }
     commonTest {

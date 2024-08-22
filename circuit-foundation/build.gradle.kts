@@ -56,7 +56,6 @@ kotlin {
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
         api(libs.compose.ui)
-        implementation(libs.uuid)
       }
     }
     androidMain {

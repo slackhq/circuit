@@ -64,8 +64,6 @@ app.cash.molecule:molecule-runtime-android
 app.cash.molecule:molecule-runtime
 app.cash.turbine:turbine-jvm
 app.cash.turbine:turbine
-com.benasher44:uuid-jvm
-com.benasher44:uuid
 com.google.guava:listenablefuture
 org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.runtime:runtime-saveable

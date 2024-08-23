@@ -26,7 +26,6 @@ platform :ios do
     for project in projects
       swiftlint(
         mode: :fix,
-        path: project,
         strict: true,
         raise_if_swiftlint_error: true,
         config_file: ".swiftlint.yml"

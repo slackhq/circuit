@@ -29,14 +29,14 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   timeout: Duration? = null,
   name: String? = null,
   moleculeFlowTransformer: (Flow<UiState>) -> Flow<UiState> = Flow<UiState>::distinctUntilChanged,
-  block: suspend ReceiveTurbine<UiState>.() -> Unit,
+  block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
 ) {
   presenterTestOf({ present() }, timeout, name, moleculeFlowTransformer, block)
 }
 
 /**
- * Presents this [presentFunction] and invokes a `suspend` [ReceiveTurbine] [block] that can be used
- * to assert state emissions from it.
+ * Presents this [presentFunction] and invokes a `suspend` [CircuitReceiveTurbine] [block] that can
+ * be used to assert state emissions from it.
  *
  * @param presentFunction the [Composable] present function being tested.
  * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
@@ -52,9 +52,12 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
   timeout: Duration? = null,
   name: String? = null,
   moleculeFlowTransformer: (Flow<UiState>) -> Flow<UiState> = Flow<UiState>::distinctUntilChanged,
-  block: suspend ReceiveTurbine<UiState>.() -> Unit,
+  block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
 ) {
-  moleculeFlow(RecompositionMode.Immediate, presentFunction)
-    .run(moleculeFlowTransformer)
-    .test(timeout, name, block)
+  moleculeFlow(RecompositionMode.Immediate, presentFunction).run(moleculeFlowTransformer).test(
+    timeout,
+    name,
+  ) {
+    asCircuitReceiveTurbine().block()
+  }
 }

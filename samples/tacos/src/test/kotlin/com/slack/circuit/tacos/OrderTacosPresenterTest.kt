@@ -14,6 +14,7 @@ import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.test.test
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -125,7 +126,7 @@ class OrderTacosPresenterTest {
       val filling = Ingredient("apple")
       sink(OrderStep.UpdateOrder.SetFilling(filling))
 
-      awaitItem()
+      advanceUntilIdle()
       assertThat(details).isEqualTo(OrderDetails(filling = filling))
     }
   }

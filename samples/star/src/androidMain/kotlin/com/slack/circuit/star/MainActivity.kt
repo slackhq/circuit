@@ -19,7 +19,6 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.SharedElementTransitionLayout
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
@@ -33,6 +32,7 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
@@ -79,7 +79,8 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                 NavigableCircuitContent(
                   navigator = navigator,
                   backStack = backStack,
-                  decoration = NavigatorDefaults.DefaultDecoration,
+                  decoration = GestureNavigationDecoration(onBackInvoked = navigator::pop),
+                  // NavigatorDefaults.DefaultDecoration,
                   // ImageViewerAwareNavDecoration(GestureNavigationDecoration(onBackInvoked =
                   // navigator::pop)),
                 )

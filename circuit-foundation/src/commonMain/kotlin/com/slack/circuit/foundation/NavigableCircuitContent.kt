@@ -348,7 +348,7 @@ public object NavigatorDefaults {
     }
 
     @Composable
-    public override fun AnimatedContentScope.AnimatedContent(
+    public override fun AnimatedContentScope.AnimatedNavContent(
       targetState: ImmutableList<T>,
       content: @Composable (T) -> Unit,
     ) {

@@ -37,7 +37,7 @@ public abstract class AnimatedNavDecoration(
       Content(args, backStackDepth, modifier) { modifier ->
         AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { targetState ->
           ProvideAnimatedTransitionScope(Navigation, this) {
-            AnimatedContent(targetState) { content(it) }
+            AnimatedNavContent(targetState) { content(it) }
           }
         }
       }
@@ -45,11 +45,14 @@ public abstract class AnimatedNavDecoration(
   }
 }
 
+public class DefaultAnimatedNavDecoration(decoratorFactory: AnimatedNavDecorator.Factory) :
+  AnimatedNavDecoration(decoratorFactory)
+
 @Stable
 public interface AnimatedNavDecorator<T, S> {
 
   @Composable
-  public fun Content( // Behind, Chrome, Background, etc
+  public fun Content(
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
@@ -61,8 +64,12 @@ public interface AnimatedNavDecorator<T, S> {
     AnimatedContentTransitionScope<S>.() -> ContentTransform
 
   @Composable
-  public fun AnimatedContentScope.AnimatedContent(targetState: S, content: @Composable (T) -> Unit)
+  public fun AnimatedContentScope.AnimatedNavContent(
+    targetState: S,
+    content: @Composable (T) -> Unit,
+  )
 
+  @Stable
   public interface Factory {
 
     public fun <T> create(): AnimatedNavDecorator<T, *>

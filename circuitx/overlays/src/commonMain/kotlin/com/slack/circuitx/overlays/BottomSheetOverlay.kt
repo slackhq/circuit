@@ -83,8 +83,7 @@ private constructor(
     sheetShape = sheetShape,
     sheetContainerColor = sheetContainerColor,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
-    properties =
-      createBottomSheetProperties(isFocusable = isFocusable, shouldDismissOnBackPress = false),
+    properties = createBottomSheetProperties(shouldDismissOnBackPress = false),
     content = content,
   )
 
@@ -191,10 +190,9 @@ private constructor(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties()
+internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal expect fun createBottomSheetProperties(
-  isFocusable: Boolean = DEFAULT_PROPERTIES.isFocusable,
-  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress,
+  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress
 ): ModalBottomSheetProperties

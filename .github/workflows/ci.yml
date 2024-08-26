@@ -9,7 +9,10 @@ on:
       - '**/*.md'
   # Always run on PRs
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - 'releases*'
+      - 'compose-1.7.x'
   merge_group:
 
 concurrency:
@@ -117,8 +120,9 @@ jobs:
 
       - run: brew install swiftlint
 
-      - name: Run lint on iOS samples
-        run: bundle exec fastlane ios lint
+# TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/22191
+#      - name: Run lint on iOS samples
+#        run: bundle exec fastlane ios lint
 
       - name: Run iOS Simulator tests
         id: gradle-ios-tests

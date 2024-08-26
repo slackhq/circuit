@@ -113,12 +113,15 @@ internal constructor(
   }
 
   override fun pop(result: PopResult?): Record? {
-    val popped = entryList.removeFirstOrNull()
-    if (result != null) {
-      // Send the pending result to our new top record, but only if it's expecting one
-      topRecord?.apply { if (expectingResult()) sendResult(result) }
+    // Run in a snapshot to ensure the sendResult doesn't get missed.
+    return Snapshot.withMutableSnapshot {
+      val popped = entryList.removeFirstOrNull()
+      if (result != null) {
+        // Send the pending result to our new top record, but only if it's expecting one
+        topRecord?.apply { if (expectingResult()) sendResult(result) }
+      }
+      popped
     }
-    return popped
   }
 
   override fun saveState() {

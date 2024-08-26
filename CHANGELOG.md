@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- **Behavior change**: `presenterTestOf` and `Presenter.test` have a new optional `moleculeFlowTransformer` parameter that allows for advanced filtering of the `Flow` returned out of the underlying `moleculeFlow`. By default, this now runs a `distinctUntilChanged` operator.
+
 0.23.1
 ------
 

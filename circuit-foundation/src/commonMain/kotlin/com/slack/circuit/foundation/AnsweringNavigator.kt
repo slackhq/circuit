@@ -105,8 +105,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   }
 
   // Key for the resultKey, so we can track who owns this requested result
-  @OptIn(ExperimentalUuidApi::class)
-  val key = rememberSaveable { Uuid.random().toString() }
+  @OptIn(ExperimentalUuidApi::class) val key = rememberSaveable { Uuid.random().toString() }
 
   // Current top record of the navigator
   val currentTopRecordKey by remember { derivedStateOf { currentBackStack.topRecord!!.key } }

@@ -157,8 +157,7 @@ internal constructor(
   public data class Record(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
-    @OptIn(ExperimentalUuidApi::class)
-    override val key: String = Uuid.random().toString(),
+    @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : BackStack.Record {
     /**
      * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because

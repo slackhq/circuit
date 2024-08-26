@@ -79,8 +79,8 @@ HSPLcom/slack/circuit/backstack/SaveableBackStack$Record$Companion;-><init>()V
 HSPLcom/slack/circuit/backstack/SaveableBackStack$Record$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLcom/slack/circuit/backstack/SaveableBackStack$Record$Companion;->getSaver()Landroidx/compose/runtime/saveable/Saver;
 Lcom/slack/circuit/backstack/SaveableBackStackKt;
-HSPLcom/slack/circuit/backstack/SaveableBackStackKt;->$r8$lambda$_L-lwy8UscpzOrG0mpEXZhcGdX4(Ljava/util/List;)Lcom/slack/circuit/backstack/SaveableBackStack;
-HSPLcom/slack/circuit/backstack/SaveableBackStackKt;->rememberSaveableBackStack$lambda$6$lambda$5(Ljava/util/List;)Lcom/slack/circuit/backstack/SaveableBackStack;
+HSPLcom/slack/circuit/backstack/SaveableBackStackKt;->$r8$lambda$svsb3-L867OYnQdgcWTTFbiSjU0(Ljava/util/List;)Lcom/slack/circuit/backstack/SaveableBackStack;
+HSPLcom/slack/circuit/backstack/SaveableBackStackKt;->rememberSaveableBackStack$lambda$7$lambda$6(Ljava/util/List;)Lcom/slack/circuit/backstack/SaveableBackStack;
 HSPLcom/slack/circuit/backstack/SaveableBackStackKt;->rememberSaveableBackStack(Ljava/util/List;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/backstack/SaveableBackStack;
 Lcom/slack/circuit/backstack/SaveableBackStackKt$$ExternalSyntheticLambda0;
 HSPLcom/slack/circuit/backstack/SaveableBackStackKt$$ExternalSyntheticLambda0;-><init>(Ljava/util/List;)V

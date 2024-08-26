@@ -5,7 +5,6 @@
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getConstructors
@@ -315,7 +314,6 @@ private class CircuitSymbolProcessor(
   /** Computes the data needed to generate a factory. */
   // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
   @Suppress("ComplexMethod", "LongMethod", "ReturnCount")
-  @OptIn(KspExperimental::class)
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,
     symbols: CircuitSymbols,
@@ -441,7 +439,8 @@ private class CircuitSymbolProcessor(
             return null
           }
         } else {
-          creatorOrConstructor = declaration.primaryConstructor
+          creatorOrConstructor =
+            declaration.findConstructorAnnotatedWith(INJECT) ?: declaration.primaryConstructor
           targetClass = declaration
         }
         val useProvider =

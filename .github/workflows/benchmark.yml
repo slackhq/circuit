@@ -28,9 +28,6 @@ jobs:
         with:
           lfs: 'true'
 
-      - name: Gradle Wrapper Validation
-        uses: gradle/actions/wrapper-validation@v4
-
       - name: Check LFS files
         uses: actionsdesk/lfs-warning@v3.3
 

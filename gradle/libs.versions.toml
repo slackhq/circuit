@@ -1,16 +1,16 @@
 [versions]
 accompanist = "0.34.0"
 androidx-activity = "1.9.1"
-androidx-annotation = "1.8.1"
+androidx-annotation = "1.8.2"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
 androidx-lifecycle = "2.8.4"
-agp = "8.5.1"
-anvil = "2.5.0-beta11"
+agp = "8.5.2"
+anvil = "0.2.6"
 atomicfu = "0.25.0"
-benchmark = "1.3.0-beta02"
+benchmark = "1.3.0"
 coil = "2.7.0"
-coil3 = "3.0.0-alpha09"
+coil3 = "3.0.0-alpha10"
 compose-animation = "1.6.8"
 compose-foundation = "1.6.8"
 compose-material = "1.6.8"
@@ -19,7 +19,7 @@ compose-runtime = "1.6.8"
 compose-ui = "1.6.8"
 compose-jb = "1.6.11"
 compose-integration-constraintlayout = "1.0.1"
-dagger = "2.51.1"
+dagger = "2.52"
 datastore = "1.1.1"
 detekt = "1.23.6"
 dokka = "1.9.20"
@@ -28,12 +28,12 @@ jdk = "21"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
 kct = "0.5.1"
-kotlin = "2.0.0"
+kotlin = "2.0.10"
 kotlinpoet = "1.18.1"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization = "1.7.1"
-ksp = "2.0.0-1.0.24"
-ktfmt = "0.51"
+ksp = "2.0.10-1.0.24"
+ktfmt = "0.52"
 ktor = "2.3.12"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
@@ -45,11 +45,11 @@ okio = "3.9.0"
 paparazzi = "1.3.4"
 picnic = "0.7.0"
 robolectric = "4.13"
-roborazzi = "1.25.0"
-skie = "0.8.3"
-spotless = "6.23.3"
+roborazzi = "1.26.0"
+skie = "0.8.4"
+spotless = "7.0.0.BETA2"
 sqldelight = "2.0.2"
-telephoto = "0.12.1"
+telephoto = "0.13.0"
 testParameterInjector = "1.16"
 turbine = "1.1.0"
 versionsPlugin = "0.49.0"
@@ -58,7 +58,7 @@ versionsPlugin = "0.49.0"
 agp-application = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
-anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
@@ -105,7 +105,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.06.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.08.00" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
@@ -148,11 +148,11 @@ androidx-loader = "androidx.loader:loader:1.1.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.3.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-androidx-test-monitor = "androidx.test:monitor:1.6.1"
+androidx-test-monitor = "androidx.test:monitor:1.7.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 
-anvil-annotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
-anvil-annotations-optional = { module = "com.squareup.anvil:annotations-optional", version.ref = "anvil" }
+anvil-annotations = { module = "dev.zacsweers.anvil:annotations", version.ref = "anvil" }
+anvil-annotations-optional = { module = "dev.zacsweers.anvil:annotations-optional", version.ref = "anvil" }
 
 # Utilities for local storage dirs on Desktop
 # https://github.com/harawata/appdirs
@@ -213,7 +213,7 @@ jsoup = "org.jsoup:jsoup:1.18.1"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
-kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.0"
+kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}
@@ -256,7 +256,7 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.8"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.9"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }

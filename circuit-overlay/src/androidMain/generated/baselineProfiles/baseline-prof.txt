@@ -21,9 +21,9 @@ HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$$ExternalSyntheticLambda0;->
 Lcom/slack/circuit/overlay/ContentWithOverlaysKt$$ExternalSyntheticLambda1;
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$$ExternalSyntheticLambda1;-><init>(Landroidx/compose/ui/Modifier;Lcom/slack/circuit/overlay/OverlayHost;Lkotlin/jvm/functions/Function2;II)V
 Lcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;
-HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;->$r8$lambda$TCuuCQLhjSoo4FMyL1iz7-j8YBg(Landroidx/compose/animation/AnimatedContentTransitionScope;)Landroidx/compose/animation/ContentTransform;
+HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;->$r8$lambda$7yFN_j_3-rMPzO2ixymfx_uqoUQ(Landroidx/compose/animation/AnimatedContentTransitionScope;)Landroidx/compose/animation/ContentTransform;
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;-><init>(Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/State;)V
-HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;->invoke$lambda$4$lambda$3(Landroidx/compose/animation/AnimatedContentTransitionScope;)Landroidx/compose/animation/ContentTransform;
+HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;->invoke$lambda$5$lambda$4$lambda$3(Landroidx/compose/animation/AnimatedContentTransitionScope;)Landroidx/compose/animation/ContentTransform;
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;->invoke(Landroidx/compose/runtime/Composer;I)V
 HSPLcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/slack/circuit/overlay/ContentWithOverlaysKt$ContentWithOverlays$1$$ExternalSyntheticLambda0;

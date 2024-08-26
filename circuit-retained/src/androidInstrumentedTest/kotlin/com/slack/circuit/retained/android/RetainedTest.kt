@@ -69,7 +69,8 @@ class RetainedTest {
     var continuity: ContinuityViewModel? = null
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      @Suppress("UNCHECKED_CAST") return ContinuityViewModel().also { continuity = it } as T
+      @Suppress("UNCHECKED_CAST")
+      return ContinuityViewModel().also { continuity = it } as T
     }
   }
 

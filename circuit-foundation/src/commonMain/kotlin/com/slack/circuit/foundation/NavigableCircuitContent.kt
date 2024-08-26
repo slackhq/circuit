@@ -20,6 +20,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
@@ -354,7 +355,14 @@ public object NavigatorDefaults {
 }
 
 /**
- * Internal API to access the [BackStack] from within a [CircuitContent] or
+ * Delicate API to access the [BackStack] from within a [CircuitContent] or
  * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
+ *
+ * This is generally considered an internal API to Circuit, but can be useful for interop cases and
+ * testing of [rememberAnsweringNavigator] APIs. As such, it's public but annotated as
+ * [DelicateCircuitFoundationApi].
  */
-internal val LocalBackStack = compositionLocalOf<BackStack<out Record>?> { null }
+@DelicateCircuitFoundationApi
+public val LocalBackStack: ProvidableCompositionLocal<BackStack<out Record>?> = compositionLocalOf {
+  null
+}

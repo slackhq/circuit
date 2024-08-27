@@ -60,8 +60,6 @@ androidx.savedstate:savedstate
 androidx.startup:startup-runtime
 androidx.tracing:tracing
 androidx.versionedparcelable:versionedparcelable
-com.benasher44:uuid-jvm
-com.benasher44:uuid
 com.google.guava:listenablefuture
 org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.runtime:runtime-saveable

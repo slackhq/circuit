@@ -1,7 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -60,7 +60,6 @@ kotlin {
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
         api(libs.compose.ui)
-        implementation(libs.uuid)
       }
     }
     androidMain {

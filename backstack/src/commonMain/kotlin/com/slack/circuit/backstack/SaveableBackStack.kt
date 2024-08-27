@@ -22,9 +22,10 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
-import com.benasher44.uuid.uuid4
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -156,7 +157,7 @@ internal constructor(
   public data class Record(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
-    override val key: String = uuid4().toString(),
+    @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : BackStack.Record {
     /**
      * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because

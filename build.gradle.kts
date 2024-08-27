@@ -396,10 +396,7 @@ subprojects {
 
   pluginManager.withPlugin("org.jetbrains.compose") {
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")
-    configure<ComposeCompilerGradlePluginExtension> {
-      enableStrongSkippingMode = true
-      includeSourceInformation = true
-    }
+    configure<ComposeCompilerGradlePluginExtension> { includeSourceInformation = true }
   }
 
   pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {

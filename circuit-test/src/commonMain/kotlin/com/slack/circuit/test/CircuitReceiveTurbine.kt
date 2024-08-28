@@ -10,8 +10,8 @@ import com.slack.circuit.runtime.CircuitUiState
  * A Circuit-specific extension to [ReceiveTurbine] with extra helper functions for Circuit testing.
  */
 public interface CircuitReceiveTurbine<UiState : CircuitUiState> : ReceiveTurbine<UiState> {
-  /** Awaits the _next_ [UiState] emission that is different than the previous emission. */
-  public suspend fun nextState(lastState: UiState = tryMostRecentItem()): UiState
+  /** Awaits the _next_ [UiState] emission that is different than the [lastState]. */
+  public suspend fun consumeState(lastState: UiState? = tryMostRecentItem()): UiState
 }
 
 /**
@@ -34,11 +34,11 @@ public suspend inline fun <reified SubState, UiState> CircuitReceiveTurbine<UiSt
   return awaitNext(dropUnmatchedIntermediates) { it is SubState }
 }
 
-internal fun <UiState : CircuitUiState> ReceiveTurbine<UiState>.tryMostRecentItem(): UiState {
+internal fun <UiState : CircuitUiState> ReceiveTurbine<UiState>.tryMostRecentItem(): UiState? {
   return try {
     expectMostRecentItem()
   } catch (e: AssertionError) {
-    throw AssertionError("nextState() cannot be called until at least one state has emitted!")
+    null
   }
 }
 
@@ -50,7 +50,7 @@ internal fun <UiState : CircuitUiState> ReceiveTurbine<UiState>.asCircuitReceive
 private class CircuitReceiveTurbineImpl<UiState : CircuitUiState>(
   private val delegate: ReceiveTurbine<UiState>
 ) : CircuitReceiveTurbine<UiState>, ReceiveTurbine<UiState> by delegate {
-  override suspend fun nextState(lastState: UiState): UiState {
+  override suspend fun consumeState(lastState: UiState?): UiState {
     return awaitNext(dropUnmatchedIntermediates = false) { value -> value != lastState }
   }
 }

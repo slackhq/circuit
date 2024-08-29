@@ -20,15 +20,15 @@ public interface CircuitReceiveTurbine<UiState : CircuitUiState> : ReceiveTurbin
  *
  * ```kotlin
  * presenter.test {
- *   val loadingState = awaitState<Loading>()
+ *   val loadingState = consumeState<Loading>()
  *   // By default, will drop any unmatched intermediate emissions
- *   val loadedState = awaitState<Loaded>()
+ *   val loadedState = consumeState<Loaded>()
  *   // Optionally, disallow dropping to expect the next emission to be the expected type
- *   val loadedState = awaitState<Loaded>(dropUnmatchedIntermediates = false)
+ *   val loadedState = consumeState<Loaded>(dropUnmatchedIntermediates = false)
  * }
  * ```
  */
-public suspend inline fun <reified SubState, UiState> CircuitReceiveTurbine<UiState>.awaitState(
+public suspend inline fun <reified SubState, UiState> CircuitReceiveTurbine<UiState>.consumeState(
   dropUnmatchedIntermediates: Boolean = true
 ): UiState where SubState : UiState, UiState : CircuitUiState {
   return awaitNext(dropUnmatchedIntermediates) { it is SubState }

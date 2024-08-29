@@ -12,6 +12,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -100,9 +101,9 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
 
   public fun availableScopes(): Set<AnimatedScope>
 
-  public fun getAnimatedScope(key: AnimatedScope): SharedAnimatedVisibilityScope?
+  public fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope?
 
-  public fun requireAnimatedScope(key: AnimatedScope): SharedAnimatedVisibilityScope {
+  public fun requireAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope {
     return requireNotNull(getAnimatedScope(key)) { "No AnimatedVisibilityScope found for $key" }
   }
 
@@ -110,22 +111,6 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
     Overlay,
     Navigation,
   }
-}
-
-public interface SharedAnimatedVisibilityScope : AnimatedVisibilityScope {
-
-  public val fraction: State<Float>?
-}
-
-public data class FractionSharedAnimatedVisibilityScope(
-  private val delegate: AnimatedVisibilityScope,
-  override val fraction: State<Float>,
-) : SharedAnimatedVisibilityScope, AnimatedVisibilityScope by delegate
-
-private data class SharedAnimatedVisibilityScopeImpl(
-  private val delegate: AnimatedVisibilityScope
-) : SharedAnimatedVisibilityScope, AnimatedVisibilityScope by delegate {
-  override val fraction: State<Float>? = null
 }
 
 /**
@@ -190,23 +175,29 @@ private data class SharedElementTransitionScopeImpl(
 ) : SharedElementTransitionScope, SharedTransitionScope by sharedTransitionScope {
 
   private val parentScope = sharedTransitionScope as? SharedElementTransitionScope
-  private val animatedVisibilityScopes =
-    mutableStateMapOf<AnimatedScope, SharedAnimatedVisibilityScope>()
+  private val animatedVisibilityScopes = mutableStateMapOf<AnimatedScope, AnimatedVisibilityScope>()
 
   fun setScope(key: AnimatedScope, value: AnimatedVisibilityScope) {
-    animatedVisibilityScopes[key] =
-      if (value is SharedAnimatedVisibilityScope) {
-        value
-      } else {
-        SharedAnimatedVisibilityScopeImpl(value)
-      }
+    animatedVisibilityScopes[key] = value
   }
 
   override fun availableScopes(): Set<AnimatedScope> {
     return animatedVisibilityScopes.keys + (parentScope?.availableScopes() ?: emptySet())
   }
 
-  override fun getAnimatedScope(key: AnimatedScope): SharedAnimatedVisibilityScope? {
+  override fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope? {
     return animatedVisibilityScopes[key] ?: parentScope?.getAnimatedScope(key)
+  }
+}
+
+/** Current progress fraction of the animation, between 0f and 1f. */
+public fun AnimatedVisibilityScope.progress(): State<Float> {
+  return derivedStateOf {
+    with(transition) {
+      if (isRunning || isSeeking) {
+        val fraction = playTimeNanos * 1f / totalDurationNanos
+        fraction.coerceIn(0f, 1f)
+      } else 0f
+    }
   }
 }

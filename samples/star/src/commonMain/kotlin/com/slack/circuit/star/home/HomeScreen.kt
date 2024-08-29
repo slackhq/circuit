@@ -17,15 +17,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.progress
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -80,19 +83,19 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       contentWindowInsets = WindowInsets(0, 0, 0, 0),
       containerColor = Color.Transparent,
       bottomBar = {
+        val scope = requireAnimatedScope(Navigation)
+        val isInOverlay = isTransitionActive && scope.transition.targetState == EnterExitState.Visible
+        val fraction by remember(scope) { scope.progress() }
         StarTheme(useDarkTheme = true) {
           BottomNavigationBar(
             selectedIndex = state.selectedIndex,
             onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
             modifier =
               Modifier.renderInSharedTransitionScopeOverlay(
-                renderInOverlay = {
-                  isTransitionActive &&
-                    requireAnimatedScope(Navigation).transition.targetState ==
-                      EnterExitState.Visible
-                },
-                zIndexInOverlay = 1f,
-              ),
+                  renderInOverlay = { isInOverlay },
+                  zIndexInOverlay = 1f,
+                )
+                .alpha(if (isInOverlay) fraction else 1f),
           )
         }
       },

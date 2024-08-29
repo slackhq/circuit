@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import org.jsoup.Jsoup
+import com.fleeksoft.ksoup.Ksoup
 
 /** PetFinder doesn't expose pet bios so we have to do gross things :( */
 internal object PetBioParser {
@@ -11,7 +11,7 @@ internal object PetBioParser {
   private fun String.reduceNewlines() = replace(newlines, "\n\n")
 
   internal fun parse(fullBody: String): String {
-    return Jsoup.parse(fullBody, "https://www.petfinder.com/")
+    return Ksoup.parse(fullBody, "https://www.petfinder.com/")
       .getElementsByClass("card-section")
       .first { node -> node.hasAttr("data-test") && node.attr("data-test") == "Pet_Story_Section" }
       .child(1)

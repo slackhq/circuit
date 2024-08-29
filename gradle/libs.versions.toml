@@ -24,16 +24,16 @@ datastore = "1.1.1"
 detekt = "1.23.6"
 dokka = "1.9.20"
 eithernet = "2.0.0-alpha01"
-jdk = "21"
+jdk = "22"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
 kct = "0.5.1"
-kotlin = "2.0.10"
+kotlin = "2.0.20"
 kotlinpoet = "1.18.1"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization = "1.7.1"
-ksp = "2.0.10-1.0.24"
-ktfmt = "0.51"
+ksp = "2.0.20-1.0.24"
+ktfmt = "0.52"
 ktor = "2.3.12"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
@@ -46,8 +46,8 @@ paparazzi = "1.3.4"
 picnic = "0.7.0"
 robolectric = "4.13"
 roborazzi = "1.26.0"
-skie = "0.8.4"
-spotless = "6.23.3"
+skie = "0.9.0-RC.3"
+spotless = "7.0.0.BETA2"
 sqldelight = "2.0.2"
 telephoto = "0.13.0"
 testParameterInjector = "1.16"
@@ -203,7 +203,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.0.4"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.0"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
@@ -223,6 +223,8 @@ kotlin-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
+
+ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.6-alpha1"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
@@ -270,9 +272,6 @@ testing-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.4"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-
-# KMP UUID
-uuid = "com.benasher44:uuid:0.8.4"
 
 windowSizeClass = "dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0"
 

@@ -50,7 +50,7 @@ skie = "0.9.0-RC.3"
 spotless = "7.0.0.BETA2"
 sqldelight = "2.0.2"
 telephoto = "0.13.0"
-testParameterInjector = "1.16"
+testParameterInjector = "1.17"
 turbine = "1.1.0"
 versionsPlugin = "0.49.0"
 

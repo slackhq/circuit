@@ -1,10 +1,10 @@
 [versions]
 accompanist = "0.36.0"
-androidx-activity = "1.9.1"
+androidx-activity = "1.9.2"
 androidx-annotation = "1.8.2"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.4"
+androidx-lifecycle = "2.8.5"
 agp = "8.6.0"
 anvil = "0.3.1"
 atomicfu = "0.25.0"
@@ -89,7 +89,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.1" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.2" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -203,7 +203,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.1"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.2"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
@@ -224,7 +224,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
-ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.6-alpha1"
+ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.6"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }

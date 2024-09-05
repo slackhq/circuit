@@ -24,7 +24,7 @@ android {
 
 dependencies {
   implementation(projects.circuitFoundation)
-  implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)
   implementation(libs.bundles.compose.ui)

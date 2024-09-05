@@ -11,12 +11,12 @@ atomicfu = "0.25.0"
 benchmark = "1.3.0"
 coil = "2.7.0"
 coil3 = "3.0.0-alpha10"
-compose-animation = "1.7.0-rc01"
-compose-foundation = "1.7.0-rc01"
-compose-material = "1.7.0-rc01"
-compose-material3 = "1.3.0-rc01"
-compose-runtime = "1.7.0-rc01"
-compose-ui = "1.7.0-rc01"
+compose-animation = "1.7.0"
+compose-foundation = "1.7.0"
+compose-material = "1.7.0"
+compose-material3 = "1.3.0"
+compose-runtime = "1.7.0"
+compose-ui = "1.7.0"
 compose-jb = "1.7.0-alpha02"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.52"
@@ -59,7 +59,7 @@ agp-application = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
@@ -74,13 +74,13 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
-skie = { id = "co.touchlab.skie", version.ref = "skie"}
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
@@ -215,8 +215,8 @@ kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7"
-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
-kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}
+kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
@@ -252,7 +252,7 @@ okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
-robolectric = { module = "org.robolectric:robolectric", version.ref="robolectric" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }

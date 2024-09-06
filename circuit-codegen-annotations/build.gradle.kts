@@ -18,8 +18,10 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        // Only here for docs linking
-        compileOnly(projects.circuitFoundation)
+        compileOnly(projects.circuitFoundation) {
+          because("Only here for docs linking")
+        }
+        compileOnly(libs.kotlinInject.anvil.runtime)
         api(projects.circuitRuntimeScreen)
       }
     }

@@ -3,12 +3,7 @@
 package com.slack.circuit.codegen.annotations
 
 import androidx.compose.runtime.Composable
-import com.slack.circuit.foundation.Circuit
-import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
 import kotlin.reflect.KClass
 import software.amazon.lastmile.kotlin.inject.anvil.extend.ContributingAnnotation
 

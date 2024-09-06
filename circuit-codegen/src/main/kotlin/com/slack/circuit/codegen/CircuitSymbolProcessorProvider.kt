@@ -749,7 +749,38 @@ private enum class CodegenMode {
         .addFunction(providerSpec)
         .build()
     }
-  };
+  },
+
+  /**
+   * The `kotlin-inject` Anvil Codegen mode
+   *
+   * This mode annotates generated factory types with `ContributesMultibinding`, allowing for KI-Anvil
+   * to automatically wire the generated class up to KI's multibinding system within a given
+   * scope (e.g. AppScope).
+   *
+   * ```kotlin
+   * @ContributesMultibinding(AppScope::class)
+   * public class FavoritesPresenterFactory @Inject constructor(
+   *   private val factory: FavoritesPresenter.Factory,
+   * ) : Presenter.Factory { ... }
+   * ```
+   */
+  KOTLIN_INJECT_ANVIL {
+    private val contributesMultibindingCN =
+      ClassName("software.amazon.lastmile.kotlin.inject.anvil", "ContributesMultibinding")
+
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      // KI-Anvil supports all
+      return true
+    }
+
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
+      builder.addAnnotation(
+        AnnotationSpec.builder(contributesMultibindingCN).addMember("%T::class", scope).build()
+      )
+    }
+  },
+  ;
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 

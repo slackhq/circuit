@@ -184,6 +184,7 @@ subprojects {
           allWarningsAsErrors.set(false)
         } else {
           // TODO remove once conflicting CM and Anvil runtime klibs conflict is fixed
+          //  https://youtrack.jetbrains.com/issue/KT-69310
           allWarningsAsErrors.set(false)
         }
         if (this is KotlinJvmCompilerOptions) {

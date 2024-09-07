@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.codegen
 
 import com.google.devtools.ksp.processing.JvmPlatformInfo
@@ -80,7 +82,9 @@ internal enum class CodegenMode {
       val moduleAnnotations =
         listOfNotNull(
           AnnotationSpec.builder(CircuitNames.DAGGER_MODULE).build(),
-          AnnotationSpec.builder(CircuitNames.DAGGER_INSTALL_IN).addMember("%T::class", scope).build(),
+          AnnotationSpec.builder(CircuitNames.DAGGER_INSTALL_IN)
+            .addMember("%T::class", scope)
+            .build(),
           topLevelClass?.let {
             AnnotationSpec.builder(CircuitNames.DAGGER_ORIGINATING_ELEMENT)
               .addMember("%L = %T::class", "topLevelClass", topLevelClass)
@@ -122,9 +126,9 @@ internal enum class CodegenMode {
   /**
    * The `kotlin-inject` Anvil Codegen mode
    *
-   * This mode annotates generated factory types with `ContributesMultibinding`, allowing for KI-Anvil
-   * to automatically wire the generated class up to KI's multibinding system within a given
-   * scope (e.g. AppScope).
+   * This mode annotates generated factory types with `ContributesMultibinding`, allowing for
+   * KI-Anvil to automatically wire the generated class up to KI's multibinding system within a
+   * given scope (e.g. AppScope).
    *
    * ```kotlin
    * @ContributesMultibinding(AppScope::class)
@@ -139,20 +143,17 @@ internal enum class CodegenMode {
       return true
     }
 
-    override val runtime: InjectionRuntime =
-      InjectionRuntime.KotlinInject
+    override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
 
     override fun annotateFactory(builder: Builder, scope: TypeName) {
       builder.addAnnotation(
-        AnnotationSpec.builder(
-          CircuitNames.KotlinInject.Anvil.CONTRIBUTES_BINDING)
+        AnnotationSpec.builder(CircuitNames.KotlinInject.Anvil.CONTRIBUTES_BINDING)
           .addMember("%T::class", scope)
           .addMember("multibinding = true")
           .build()
       )
     }
-  },
-  ;
+  };
 
   open fun annotateFactory(builder: Builder, scope: TypeName) {}
 
@@ -174,11 +175,13 @@ internal enum class CodegenMode {
     val assisted: ClassName
 
     fun asProvider(providedType: TypeName): TypeName
+
     fun getProviderBlock(provider: CodeBlock): CodeBlock
 
     data object Javax : InjectionRuntime {
       override val inject: ClassName = CircuitNames.INJECT
       override val assisted: ClassName = CircuitNames.ASSISTED
+
       override fun asProvider(providedType: TypeName): TypeName {
         return CircuitNames.PROVIDER.parameterizedBy(providedType)
       }
@@ -191,6 +194,7 @@ internal enum class CodegenMode {
     data object KotlinInject : InjectionRuntime {
       override val inject: ClassName = CircuitNames.KotlinInject.INJECT
       override val assisted: ClassName = CircuitNames.KotlinInject.ASSISTED
+
       override fun asProvider(providedType: TypeName): TypeName {
         return LambdaTypeName.get(returnType = providedType)
       }

@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.codegen
 
 import com.squareup.kotlinpoet.ClassName
@@ -30,8 +32,7 @@ internal object CircuitNames {
   val DAGGER_MODULE = ClassName(DAGGER_PACKAGE, "Module")
   val DAGGER_BINDS = ClassName(DAGGER_PACKAGE, "Binds")
   val DAGGER_INSTALL_IN = ClassName(DAGGER_HILT_PACKAGE, "InstallIn")
-  val DAGGER_ORIGINATING_ELEMENT =
-    ClassName(DAGGER_HILT_CODEGEN_PACKAGE, "OriginatingElement")
+  val DAGGER_ORIGINATING_ELEMENT = ClassName(DAGGER_HILT_CODEGEN_PACKAGE, "OriginatingElement")
   val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
   const val MODULE = "Module"
   const val FACTORY = "Factory"
@@ -44,9 +45,7 @@ internal object CircuitNames {
 
     object Anvil {
       private const val RUNTIME_PACKAGE = "software.amazon.lastmile.kotlin.inject.anvil"
-      internal val CONTRIBUTES_BINDING =
-        ClassName(RUNTIME_PACKAGE, "ContributesBinding")
-
+      internal val CONTRIBUTES_BINDING = ClassName(RUNTIME_PACKAGE, "ContributesBinding")
     }
   }
 }

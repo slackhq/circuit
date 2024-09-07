@@ -28,7 +28,7 @@ kotlin {
   linuxArm64()
   linuxX64()
   // TODO
-//  mingwX64()
+  //  mingwX64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()
@@ -46,7 +46,7 @@ kotlin {
     commonMain {
       dependencies {
         // TODO this is noisy
-//        compileOnly(projects.circuitFoundation) { because("Only here for docs linking") }
+        //        compileOnly(projects.circuitFoundation) { because("Only here for docs linking") }
         compileOnly(libs.kotlinInject.anvil.runtime)
         api(projects.circuitRuntimeScreen)
       }
@@ -56,11 +56,8 @@ kotlin {
         dependsOn(commonMain.get())
         dependencies { compileOnly(libs.hilt) }
       }
-    androidMain {
-      dependsOn(commonJvm)
-    }
-    jvmMain {
-      dependsOn(commonJvm) }
+    androidMain { dependsOn(commonJvm) }
+    jvmMain { dependsOn(commonJvm) }
     nativeMain {
       dependencies {
         compileOnly(libs.kotlinInject.anvil.runtime)

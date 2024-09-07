@@ -18,7 +18,6 @@ plugins {
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization)
-  alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
@@ -41,8 +40,6 @@ if (!buildDesktop) {
 } else {
   compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
-
-anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
 
 kotlin {
   if (buildDesktop) {
@@ -80,6 +77,8 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
+        implementation(libs.kotlinInject.runtime)
+        implementation(libs.kotlinInject.anvil.runtime)
         implementation(libs.kotlinx.immutable)
         implementation(libs.kotlinx.serialization.json.okio)
         implementation(libs.ksoup)
@@ -300,5 +299,7 @@ dependencies {
   for (target in kspTargets) {
     val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target
     add("ksp${targetConfigSuffix}", projects.circuitCodegen)
+    add("ksp${targetConfigSuffix}", libs.kotlinInject.compiler)
+    add("ksp${targetConfigSuffix}", libs.kotlinInject.anvil.compiler)
   }
 }

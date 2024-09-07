@@ -84,20 +84,21 @@ private class CircuitSymbolProcessor(
       return emptyList()
     }
 
-    resolver.getSymbolsWithAnnotation(CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName).forEach {
-      annotatedElement ->
-      when (annotatedElement) {
-        is KSClassDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
-        is KSFunctionDeclaration ->
-          generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
-        else ->
-          logger.error(
-            "CircuitInject is only applicable on classes and functions.",
-            annotatedElement,
-          )
+    resolver
+      .getSymbolsWithAnnotation(CircuitNames.CIRCUIT_INJECT_ANNOTATION.canonicalName)
+      .forEach { annotatedElement ->
+        when (annotatedElement) {
+          is KSClassDeclaration ->
+            generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
+          is KSFunctionDeclaration ->
+            generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
+          else ->
+            logger.error(
+              "CircuitInject is only applicable on classes and functions.",
+              annotatedElement,
+            )
+        }
       }
-    }
     return emptyList()
   }
 
@@ -125,8 +126,14 @@ private class CircuitSymbolProcessor(
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
     val factoryData =
-      computeFactoryData(annotatedElement, symbols, screenKSType, instantiationType, logger)
-        ?: return
+      computeFactoryData(
+        annotatedElement,
+        symbols,
+        screenKSType,
+        instantiationType,
+        logger,
+        codegenMode = codegenMode,
+      ) ?: return
 
     val className =
       factoryData.className.replaceFirstChar { char ->
@@ -137,7 +144,7 @@ private class CircuitSymbolProcessor(
       TypeSpec.classBuilder(className + CircuitNames.FACTORY)
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .addAnnotation(CircuitNames.INJECT)
+            .addAnnotation(codegenMode.runtime.inject)
             .addParameters(factoryData.constructorParams)
             .build()
         )
@@ -259,6 +266,7 @@ private class CircuitSymbolProcessor(
     screenKSType: KSType,
     instantiationType: InstantiationType,
     logger: KSPLogger,
+    codegenMode: CodegenMode,
   ): FactoryData? {
     val className: String
     val packageName: String
@@ -336,7 +344,8 @@ private class CircuitSymbolProcessor(
 
               @Suppress("IfThenToElvis") // The elvis is less readable here
               val stateType =
-                if (stateParam == null) CircuitNames.CIRCUIT_UI_STATE else stateParam.type.resolve().toTypeName()
+                if (stateParam == null) CircuitNames.CIRCUIT_UI_STATE
+                else stateParam.type.resolve().toTypeName()
               val stateArg = if (stateParam == null) "_" else "state"
               val stateParamBlock =
                 if (stateParam == null) CodeBlock.of("")
@@ -379,11 +388,14 @@ private class CircuitSymbolProcessor(
           }
         } else {
           creatorOrConstructor =
-            declaration.findConstructorAnnotatedWith(CircuitNames.INJECT) ?: declaration.primaryConstructor
+            declaration.findConstructorAnnotatedWith(codegenMode.runtime.inject)
+              ?: declaration.primaryConstructor
           targetClass = declaration
         }
         val useProvider =
-          !isAssisted && creatorOrConstructor?.isAnnotationPresentWithLeniency(CircuitNames.INJECT) == true
+          !isAssisted &&
+            creatorOrConstructor?.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) ==
+              true
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =
@@ -428,10 +440,13 @@ private class CircuitSymbolProcessor(
           if (useProvider) {
             // Inject a Provider<TargetClass> that we'll call get() on.
             constructorParams.add(
-              ParameterSpec.builder("provider", CircuitNames.PROVIDER.parameterizedBy(targetClass.toClassName()))
+              ParameterSpec.builder(
+                  "provider",
+                  codegenMode.runtime.asProvider(targetClass.toClassName()),
+                )
                 .build()
             )
-            CodeBlock.of("provider.get()")
+            codegenMode.runtime.getProviderBlock(CodeBlock.of("provider"))
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
             constructorParams.add(

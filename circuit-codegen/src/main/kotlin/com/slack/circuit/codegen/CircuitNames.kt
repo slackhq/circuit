@@ -35,4 +35,19 @@ internal object CircuitNames {
   const val MODULE = "Module"
   const val FACTORY = "Factory"
   const val CIRCUIT_CODEGEN_MODE = "circuit.codegen.mode"
+
+  object KotlinInject {
+    private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"
+    val INJECT = ClassName(ANNOTATIONS_PACKAGE, "Inject")
+    val COMPONENT = ClassName(ANNOTATIONS_PACKAGE, "Component")
+    val PROVIDES = ClassName(ANNOTATIONS_PACKAGE, "Provides")
+    val INTO_SET = ClassName(ANNOTATIONS_PACKAGE, "IntoSet")
+
+    object Anvil {
+      private const val RUNTIME_PACKAGE = "software.amazon.lastmile.kotlin.inject.anvil"
+      internal val CONTRIBUTES_BINDING =
+        ClassName(RUNTIME_PACKAGE, "ContributesBinding")
+
+    }
+  }
 }

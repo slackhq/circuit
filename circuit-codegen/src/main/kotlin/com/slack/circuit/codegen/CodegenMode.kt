@@ -4,10 +4,12 @@ import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.PlatformInfo
 import com.slack.circuit.codegen.FactoryType.UI
 import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.AnnotationSpec.Companion
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
+import com.squareup.kotlinpoet.LambdaTypeName
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
@@ -132,17 +134,21 @@ internal enum class CodegenMode {
    * ```
    */
   KOTLIN_INJECT_ANVIL {
-    private val contributesMultibindingCN =
-      ClassName("software.amazon.lastmile.kotlin.inject.anvil", "ContributesMultibinding")
-
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
       return true
     }
 
+    override val runtime: InjectionRuntime =
+      InjectionRuntime.KotlinInject
+
     override fun annotateFactory(builder: Builder, scope: TypeName) {
       builder.addAnnotation(
-        AnnotationSpec.builder(contributesMultibindingCN).addMember("%T::class", scope).build()
+        AnnotationSpec.builder(
+          CircuitNames.KotlinInject.Anvil.CONTRIBUTES_BINDING)
+          .addMember("%T::class", scope)
+          .addMember("multibinding = true")
+          .build()
       )
     }
   },
@@ -160,4 +166,35 @@ internal enum class CodegenMode {
   }
 
   abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
+
+  open val runtime: InjectionRuntime = InjectionRuntime.Javax
+
+  sealed interface InjectionRuntime {
+    val inject: ClassName
+
+    fun asProvider(providedType: TypeName): TypeName
+    fun getProviderBlock(provider: CodeBlock): CodeBlock
+
+    data object Javax : InjectionRuntime {
+      override val inject: ClassName = CircuitNames.INJECT
+      override fun asProvider(providedType: TypeName): TypeName {
+        return CircuitNames.PROVIDER.parameterizedBy(providedType)
+      }
+
+      override fun getProviderBlock(provider: CodeBlock): CodeBlock {
+        return CodeBlock.of("%L.get()", provider)
+      }
+    }
+
+    data object KotlinInject : InjectionRuntime {
+      override val inject: ClassName = CircuitNames.KotlinInject.INJECT
+      override fun asProvider(providedType: TypeName): TypeName {
+        return LambdaTypeName.get(returnType = providedType)
+      }
+
+      override fun getProviderBlock(provider: CodeBlock): CodeBlock {
+        return CodeBlock.of("%L()", provider)
+      }
+    }
+  }
 }

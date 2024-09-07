@@ -171,12 +171,14 @@ internal enum class CodegenMode {
 
   sealed interface InjectionRuntime {
     val inject: ClassName
+    val assisted: ClassName
 
     fun asProvider(providedType: TypeName): TypeName
     fun getProviderBlock(provider: CodeBlock): CodeBlock
 
     data object Javax : InjectionRuntime {
       override val inject: ClassName = CircuitNames.INJECT
+      override val assisted: ClassName = CircuitNames.ASSISTED
       override fun asProvider(providedType: TypeName): TypeName {
         return CircuitNames.PROVIDER.parameterizedBy(providedType)
       }
@@ -188,6 +190,7 @@ internal enum class CodegenMode {
 
     data object KotlinInject : InjectionRuntime {
       override val inject: ClassName = CircuitNames.KotlinInject.INJECT
+      override val assisted: ClassName = CircuitNames.KotlinInject.ASSISTED
       override fun asProvider(providedType: TypeName): TypeName {
         return LambdaTypeName.get(returnType = providedType)
       }

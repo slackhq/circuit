@@ -3,6 +3,7 @@ package com.slack.circuit.codegen
 import com.squareup.kotlinpoet.ClassName
 
 internal object CircuitNames {
+  val ASSISTED = ClassName("dagger.assisted", "Assisted")
   val ASSISTED_FACTORY = ClassName("dagger.assisted", "AssistedFactory")
   val ASSISTED_INJECT = ClassName("dagger.assisted", "AssistedInject")
   val INJECT = ClassName("javax.inject", "Inject")
@@ -39,9 +40,7 @@ internal object CircuitNames {
   object KotlinInject {
     private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"
     val INJECT = ClassName(ANNOTATIONS_PACKAGE, "Inject")
-    val COMPONENT = ClassName(ANNOTATIONS_PACKAGE, "Component")
-    val PROVIDES = ClassName(ANNOTATIONS_PACKAGE, "Provides")
-    val INTO_SET = ClassName(ANNOTATIONS_PACKAGE, "IntoSet")
+    val ASSISTED = ClassName(ANNOTATIONS_PACKAGE, "Assisted")
 
     object Anvil {
       private const val RUNTIME_PACKAGE = "software.amazon.lastmile.kotlin.inject.anvil"

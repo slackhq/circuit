@@ -48,7 +48,7 @@ class OverlayTest {
     moleculeFlow(RecompositionMode.Immediate) {
         val overlayHost = rememberOverlayHost()
         val overlayHostData by rememberUpdatedState(overlayHost.currentOverlayData)
-        key(overlayHostData) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }
+        key(overlayHost) { overlayHostData?.let { data -> data.overlay.Content(data::finish) } }
         LaunchedEffect(overlayHost) { overlayHost.show(testOverlay) }
         overlayHostData
       }

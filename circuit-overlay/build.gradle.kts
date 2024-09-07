@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
   alias(libs.plugins.agp.library)
@@ -63,7 +63,7 @@ kotlin {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)
-        implementation(libs.compose.test.junit4)
+        implementation(libs.compose.ui.testing.junit)
       }
     }
   }

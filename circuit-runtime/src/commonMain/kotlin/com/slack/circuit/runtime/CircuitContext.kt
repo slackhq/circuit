@@ -25,7 +25,8 @@ public constructor(
 
   /** Returns the tag attached with [type] as a key, or null if no tag is attached with that key. */
   public fun <T : Any> tag(type: KClass<T>): T? {
-    @Suppress("UNCHECKED_CAST") return tags[type] as T?
+    @Suppress("UNCHECKED_CAST")
+    return tags[type] as T?
   }
 
   /** Returns the tag attached with [T] as a key, or null if no tag is attached with that key. */

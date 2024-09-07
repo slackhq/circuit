@@ -81,7 +81,7 @@ kotlin {
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
         implementation(libs.kotlinx.immutable)
-        implementation(libs.kotlinx.serialization.json.okio)
+        implementation(libs.ksoup)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
         implementation(libs.ktor.client.auth)
@@ -138,7 +138,7 @@ kotlin {
       androidMain {
         dependencies {
           implementation(libs.androidx.appCompat)
-          implementation(libs.androidx.compose.integration.activity)
+          implementation(libs.androidx.activity.compose)
           implementation(libs.androidx.browser)
           implementation(libs.androidx.compose.accompanist.flowlayout)
           implementation(libs.androidx.compose.accompanist.pager)
@@ -164,7 +164,7 @@ kotlin {
           implementation(libs.roborazzi)
           implementation(libs.roborazzi.compose)
           implementation(libs.roborazzi.rules)
-          implementation(libs.testing.espresso.core)
+          implementation(libs.androidx.test.espresso.core)
           implementation(projects.samples.star.coilRule)
         }
       }

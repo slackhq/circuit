@@ -13,8 +13,6 @@ app.cash.molecule:molecule-runtime-jvm
 app.cash.molecule:molecule-runtime
 app.cash.turbine:turbine-jvm
 app.cash.turbine:turbine
-com.benasher44:uuid-jvm
-com.benasher44:uuid
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose

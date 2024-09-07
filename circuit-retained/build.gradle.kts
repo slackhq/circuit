@@ -1,7 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
   alias(libs.plugins.agp.library)
@@ -80,8 +80,8 @@ kotlin {
     val androidInstrumentedTest by getting {
       dependencies {
         commonJvmTest()
+        implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.integration.activity)
         implementation(libs.androidx.compose.material.material)
         implementation(libs.androidx.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.ui)

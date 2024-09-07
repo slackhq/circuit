@@ -1,6 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -52,8 +52,8 @@ kotlin {
     androidMain {
       dependencies {
         implementation(libs.androidx.appCompat)
+        implementation(libs.androidx.activity.compose)
         implementation(libs.bundles.compose.ui)
-        implementation(libs.androidx.compose.integration.activity)
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
         implementation(libs.androidx.compose.material.icons)
         implementation(libs.androidx.compose.accompanist.systemUi)

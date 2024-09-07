@@ -4,7 +4,10 @@ Changelog
 **Unreleased**
 --------------
 
+- Update to Kotlin `2.0.20`.
+- **Change**: Switch to stdlib's implementation of `Uuid`. This release now requires Kotlin `2.0.20` or later.
 - **Behavior change**: `presenterTestOf` and `Presenter.test` have a new optional `moleculeFlowTransformer` parameter that allows for advanced filtering of the `Flow` returned out of the underlying `moleculeFlow`. By default, this now runs a `distinctUntilChanged` operator.
+- Build against KSP `2.0.20-1.0.24`.
 
 0.23.1
 ------

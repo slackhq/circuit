@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -170,6 +171,31 @@ public enum class SharedElementTransitionState {
 
   /** Indicates that shared element transitions are available. */
   Available,
+}
+
+/**
+ * Helper for previewing a [SharedElementTransitionLayout] while also providing an [AnimatedScope].
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param animatedScope The [AnimatedScope] to provide.
+ * @param content The child composable to be laid out.
+ */
+@ExperimentalSharedTransitionApi
+@Composable
+public fun PreviewSharedElementTransitionLayout(
+  modifier: Modifier = Modifier,
+  animatedScope: AnimatedScope = Navigation,
+  content: @Composable () -> Unit,
+) {
+  SharedElementTransitionLayout(modifier = modifier) {
+    AnimatedVisibility(visible = true) {
+      ProvideAnimatedTransitionScope(
+        animatedScope = animatedScope,
+        animatedVisibilityScope = this,
+        content = content,
+      )
+    }
+  }
 }
 
 /**

@@ -3,6 +3,7 @@
 package com.slack.circuit.star.petlist
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,6 +14,8 @@ import androidx.compose.ui.test.onRoot
 import coil.annotation.ExperimentalCoilApi
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.slack.circuit.foundation.PreviewSharedElementTransitionLayout
+import com.slack.circuit.foundation.SharedElementTransitionLayout
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
@@ -104,10 +107,13 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     PetList(NoAnimals(isRefreshing = false), modifier)
   }
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Test
   fun petList_show_list_for_success_state() = snapshot { modifier ->
-    val animals = persistentListOf(ANIMAL)
-    PetList(Success(animals, isRefreshing = false), modifier)
+    PreviewSharedElementTransitionLayout {
+      val animals = persistentListOf(ANIMAL)
+      PetList(Success(animals, isRefreshing = false), modifier)
+    }
   }
 
   @Test

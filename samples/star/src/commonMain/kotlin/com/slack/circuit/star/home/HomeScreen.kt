@@ -4,6 +4,7 @@ package com.slack.circuit.star.home
 
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -21,15 +23,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.IntOffset
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
-import com.slack.circuit.foundation.progress
 import com.slack.circuit.foundation.onNavEvent
+import com.slack.circuit.foundation.progress
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -41,6 +44,7 @@ import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.ui.StarTheme
+import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -84,18 +88,39 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       containerColor = Color.Transparent,
       bottomBar = {
         val scope = requireAnimatedScope(Navigation)
-        val isInOverlay = isTransitionActive && scope.transition.targetState == EnterExitState.Visible
-        val fraction by remember(scope) { scope.progress() }
+        val isInOverlay =
+          isTransitionActive && scope.transition.targetState == EnterExitState.Visible
+        val fraction by
+          remember(scope) {
+            derivedStateOf {
+              val progress = scope.progress().value / .8f
+              EaseInOutCubic.transform(progress.coerceIn(0f, 1f))
+            }
+          }
         StarTheme(useDarkTheme = true) {
-          BottomNavigationBar(
-            selectedIndex = state.selectedIndex,
-            onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
-            modifier =
-              Modifier.renderInSharedTransitionScopeOverlay(
-                  renderInOverlay = { isInOverlay },
-                  zIndexInOverlay = 1f,
-                )
-                .alpha(if (isInOverlay) fraction else 1f),
+          Layout(
+            modifier = Modifier,
+            measurePolicy = { measurables, constraints ->
+              val placeable = measurables.first().measure(constraints)
+              if (isInOverlay) {
+                // Slide in the bottom bar
+                val height = (placeable.height * fraction).roundToInt()
+                layout(placeable.width, height) { placeable.place(IntOffset.Zero) }
+              } else {
+                layout(placeable.width, placeable.height) { placeable.place(IntOffset.Zero) }
+              }
+            },
+            content = {
+              BottomNavigationBar(
+                selectedIndex = state.selectedIndex,
+                onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
+                modifier =
+                  Modifier.renderInSharedTransitionScopeOverlay(
+                    renderInOverlay = { isInOverlay },
+                    zIndexInOverlay = 1f,
+                  ),
+              )
+            },
           )
         }
       },

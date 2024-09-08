@@ -9,8 +9,9 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.FloatState
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.State
+import androidx.compose.runtime.asFloatState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -111,13 +112,19 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
     Overlay,
     Navigation,
   }
+
+  public companion object {
+    @Composable
+    public fun isAvailable(): Boolean {
+      return LocalSharedElementTransitionState.current == SharedElementTransitionState.Available
+    }
+  }
 }
 
 /**
  * Dynamically switch between the [AnimatedScope.Overlay] and [AnimatedScope.Navigation] for shared
  * elements that can exist across Navigation and Overlay transitions.
  */
-// todo Better name for this?
 public fun SharedElementTransitionScope.requireActiveAnimatedScope(): AnimatedVisibilityScope {
   val scope = requireAnimatedScope(Overlay)
   val current = scope.transition.currentState
@@ -191,13 +198,18 @@ private data class SharedElementTransitionScopeImpl(
 }
 
 /** Current progress fraction of the animation, between 0f and 1f. */
-public fun AnimatedVisibilityScope.progress(): State<Float> {
+public fun AnimatedVisibilityScope.progress(): FloatState {
   return derivedStateOf {
-    with(transition) {
-      if (isRunning || isSeeking) {
-        val fraction = playTimeNanos * 1f / totalDurationNanos
-        fraction.coerceIn(0f, 1f)
-      } else 0f
+      with(transition) {
+        when {
+          isRunning || isSeeking -> {
+            val fraction = playTimeNanos * 1f / totalDurationNanos
+            fraction.coerceIn(0f, 1f)
+          }
+          currentState == EnterExitState.Visible -> 1f
+          else -> 0f
+        }
+      }
     }
-  }
+    .asFloatState()
 }

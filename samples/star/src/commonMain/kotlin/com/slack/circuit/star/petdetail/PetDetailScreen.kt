@@ -39,6 +39,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -65,6 +66,8 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.transition.PetCardBoundsKey
+import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.ExpandableText
 import kotlinx.collections.immutable.ImmutableList
 
@@ -155,10 +158,21 @@ internal object PetDetailTestConstants {
   const val FULL_BIO_TAG = "full_bio"
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
-internal fun PetDetail(state: State, modifier: Modifier = Modifier) {
-  Scaffold(modifier = modifier, topBar = { TopBar(state) }) { padding ->
+internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
+  Scaffold(
+    topBar = { TopBar(state) },
+    modifier =
+      modifier.thenIfNotNull((state as? Success)?.id) { animalId ->
+        sharedBounds(
+          sharedContentState =
+            rememberSharedContentState(key = PetCardBoundsKey(animalId)),
+          animatedVisibilityScope = requireAnimatedScope(Navigation),
+        )
+      },
+  ) { padding ->
     when (state) {
       is Loading -> Loading(padding)
       is UnknownAnimal -> UnknownAnimal(padding)
@@ -178,7 +192,8 @@ private fun TopBar(state: State) {
           state.name,
           modifier =
             Modifier.sharedBounds(
-              sharedContentState = rememberSharedContentState(key = "name-${state.id}"),
+              sharedContentState =
+                rememberSharedContentState(PetNameBoundsKey(state.id)),
               animatedVisibilityScope = requireAnimatedScope(Navigation),
               zIndexInOverlay = 10f,
             ),
@@ -212,16 +227,9 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun ShowAnimal(state: Success, padding: PaddingValues) = SharedElementTransitionScope {
-  val sharedModifier =
-    Modifier.padding(padding)
-      .testTag(ANIMAL_CONTAINER_TAG)
-      .sharedBounds(
-        sharedContentState = rememberSharedContentState(key = "animal-${state.id}"),
-        animatedVisibilityScope = requireAnimatedScope(Navigation),
-      )
+private fun ShowAnimal(state: Success, padding: PaddingValues) {
+  val sharedModifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)
   val carouselContent = remember {
     movableContentOf {
       CircuitContent(

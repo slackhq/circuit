@@ -3,6 +3,7 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.clickable
@@ -69,8 +70,8 @@ import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.star.transition.PetImageBoundsSharedTransitionKey
-import com.slack.circuit.star.transition.PetImageSharedTransitionKey
+import com.slack.circuit.star.transition.PetImageBoundsKey
+import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import kotlin.math.absoluteValue
@@ -195,8 +196,9 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
         modifier =
           Modifier.sharedBounds(
             sharedContentState =
-              rememberSharedContentState(key = PetImageBoundsSharedTransitionKey(state.id)),
+              rememberSharedContentState(key = PetImageBoundsKey(state.id)),
             animatedVisibilityScope = requireActiveAnimatedScope(),
+            placeHolderSize = animatedSize,
           ),
       )
 
@@ -275,7 +277,7 @@ private fun PhotoPager(
         modifier =
           Modifier.fillMaxWidth().thenIfNotNull(photoUrl) {
             sharedElement(
-                state = rememberSharedContentState(key = PetImageSharedTransitionKey(it)),
+                state = rememberSharedContentState(key = PetImageElementKey(it)),
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
               )
               .clip(shape)

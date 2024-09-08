@@ -12,6 +12,7 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
@@ -25,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -43,10 +43,8 @@ import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.AnimatedNavDecorator
 import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
-import com.slack.circuit.foundation.LocalSharedElementTransitionState
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.SharedElementTransitionScope
-import com.slack.circuit.foundation.SharedElementTransitionState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlin.math.absoluteValue
@@ -69,14 +67,13 @@ internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: (
 
   private lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
-
-  private var recordPoppedFromGesture by mutableStateOf<T?>(null)
-
+  private var isSharedTransitionActive by mutableStateOf(false)
+  private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
+
+  private var backStackDepthState by mutableIntStateOf(0)
   private var currentHolder by mutableStateOf<GestureNavTransitionHolder<T>?>(null)
   private var previousHolder by mutableStateOf<GestureNavTransitionHolder<T>?>(null)
-  private var backStackDepth by mutableIntStateOf(0)
-  private var isTransitionActive by mutableStateOf(false)
 
   @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
@@ -86,30 +83,40 @@ internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: (
     modifier: Modifier,
     content: @Composable (Transition<GestureNavTransitionHolder<T>>.(Modifier) -> Unit),
   ) {
-    this.backStackDepth = backStackDepth
-    currentHolder =
-      remember(args) { GestureNavTransitionHolder(args.first(), backStackDepth, args.last()) }
-    previousHolder =
-      remember(args) {
-        args.getOrNull(1)?.let { GestureNavTransitionHolder(it, backStackDepth - 1, args.last()) }
-      }
-    seekableTransitionState = remember { SeekableTransitionState(currentHolder!!) }
-
-    val transition =
-      rememberTransition(transitionState = seekableTransitionState, label = "GestureNavDecoration")
-
     val scope = rememberStableCoroutineScope()
-    LaunchedEffect(currentHolder) {
+    val current =
+      remember(args) {
+        args
+          .first()
+          .let { GestureNavTransitionHolder(it, backStackDepth, args.last()) }
+          .also { currentHolder = it }
+      }
+    val previous =
+      remember(args) {
+        args
+          .getOrNull(1)
+          ?.let { GestureNavTransitionHolder(it, backStackDepth - 1, args.last()) }
+          ?.also { previousHolder = it }
+      }
+
+    backStackDepthState = backStackDepth
+    seekableTransitionState = remember { SeekableTransitionState(current) }
+    val transition = rememberTransition(seekableTransitionState, label = "GestureNavDecoration")
+
+    LaunchedEffect(current) {
+      // When the current state has changed (i.e. any transition has completed),
+      // clear out any transient state
+      showPrevious = false
       swipeProgress = 0f
-      seekableTransitionState.animateTo(currentHolder!!)
+      seekableTransitionState.animateTo(current)
     }
-    LaunchedEffect(previousHolder, currentHolder) {
-      val previousHolder = previousHolder
-      if (previousHolder != null) {
+
+    LaunchedEffect(previous, current) {
+      if (previous != null) {
         snapshotFlow { swipeProgress }
           .collect { progress ->
             if (progress != 0f) {
-              seekableTransitionState.seekTo(fraction = progress, targetState = previousHolder)
+              seekableTransitionState.seekTo(fraction = progress, targetState = previous)
             }
           }
       }
@@ -117,22 +124,21 @@ internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: (
 
     if (backStackDepth > 1) {
       BackHandler(
-        onBackProgress = { swipeProgress = it },
-        onBackCancelled = { scope.launch { seekableTransitionState.snapTo(currentHolder!!) } },
+        onBackProgress = { progress ->
+          showPrevious = progress != 0f
+          swipeProgress = progress
+        },
+        onBackCancelled = { scope.launch { seekableTransitionState.snapTo(current) } },
         onBackInvoked = { onBackInvoked() },
       )
     }
 
-    Box(modifier = modifier) {
-      if (LocalSharedElementTransitionState.current == SharedElementTransitionState.Available) {
-        SharedElementTransitionScope {
-          this@AndroidPredictiveBackNavDecorator.isTransitionActive = isTransitionActive
-          transition.content(Modifier)
-        }
-      } else {
-        transition.content(Modifier)
-      }
+    if (SharedElementTransitionScope.isAvailable()) {
+      // todo We don't know this fast enough for the transitionSpec
+      SharedElementTransitionScope { isSharedTransitionActive = isTransitionActive }
     }
+
+    transition.content(modifier)
   }
 
   @OptIn(InternalCircuitApi::class)
@@ -143,12 +149,12 @@ internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: (
     val sameRoot = targetState.rootRecord == initialState.rootRecord
 
     when {
-      isTransitionActive -> fadeIn() togetherWith fadeOut()
+      isSharedTransitionActive -> EnterTransition.None togetherWith ExitTransition.None
       // adding to back stack
       sameRoot && diff > 0 -> NavigatorDefaults.DefaultDecoration.forward
       // come back from back stack
       sameRoot && diff < 0 -> {
-        if (recordPoppedFromGesture == initialState.record) {
+        if (showPrevious) {
             EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
           } else {
             NavigatorDefaults.DefaultDecoration.backward
@@ -169,22 +175,16 @@ internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: (
       Modifier.predictiveBackMotion(
         shape = MaterialTheme.shapes.extraLarge,
         progress = {
-          if (swipeProgress != 0f && seekableTransitionState.currentState == targetState) {
+          if (
+            !isSharedTransitionActive &&
+              swipeProgress != 0f &&
+              seekableTransitionState.currentState == targetState
+          ) {
             swipeProgress
           } else 0f
         },
       )
     ) {
-      // todo Do we want to provide seekable progress to the content?
-      val contentProgress = remember {
-        derivedStateOf {
-          if (seekableTransitionState.targetState == targetState) {
-            seekableTransitionState.fraction
-          } else {
-            1f - seekableTransitionState.fraction
-          }
-        }
-      }
       content(targetState.record)
     }
   }

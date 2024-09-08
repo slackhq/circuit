@@ -43,8 +43,8 @@ import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
-import com.slack.circuit.star.transition.PetImageBoundsSharedTransitionKey
-import com.slack.circuit.star.transition.PetImageSharedTransitionKey
+import com.slack.circuit.star.transition.PetImageBoundsKey
+import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
 import dagger.assisted.Assisted
@@ -132,7 +132,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
             Modifier.thenIf(!dismissState.willDismissOnRelease) {
               sharedBounds(
                 sharedContentState =
-                  rememberSharedContentState(key = PetImageBoundsSharedTransitionKey(state.id)),
+                  rememberSharedContentState(key = PetImageBoundsKey(state.id)),
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
                 enter = fadeIn(),
                 exit = fadeOut(animationSpec = tween(easing = LinearEasing)),
@@ -157,7 +157,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
             modifier =
               Modifier.fillMaxSize().thenIf(!dismissState.willDismissOnRelease) {
                 sharedElement(
-                  state = rememberSharedContentState(key = PetImageSharedTransitionKey(state.url)),
+                  state = rememberSharedContentState(key = PetImageElementKey(state.url)),
                   animatedVisibilityScope = requireAnimatedScope(Overlay),
                 )
               },

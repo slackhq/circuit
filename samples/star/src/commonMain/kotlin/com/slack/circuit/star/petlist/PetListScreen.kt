@@ -3,6 +3,7 @@
 package com.slack.circuit.star.petlist
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -78,6 +79,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
@@ -87,6 +89,7 @@ import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.progress
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -123,7 +126,9 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
-import com.slack.circuit.star.transition.PetImageBoundsSharedTransitionKey
+import com.slack.circuit.star.transition.PetCardBoundsKey
+import com.slack.circuit.star.transition.PetImageBoundsKey
+import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
 import io.ktor.util.Platform
@@ -395,18 +400,19 @@ private fun PetListGridItem(
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
 ) = SharedElementTransitionScope {
+  val animatedScope = requireAnimatedScope(Navigation)
+  val cornerSize = lerp(0.dp, 16.dp, animatedScope.progress().value)
   ElevatedCard(
     modifier =
       modifier
         .fillMaxWidth()
         .testTag(CARD_TAG)
         .sharedBounds(
-          sharedContentState = rememberSharedContentState(key = "animal-${animal.id}"),
-          animatedVisibilityScope = requireAnimatedScope(Navigation),
-        )
-        .clip(RoundedCornerShape(16.dp)) // todo change this over time with a seekable state
-    ,
-    shape = RoundedCornerShape(16.dp),
+          sharedContentState =
+            rememberSharedContentState(key = PetCardBoundsKey(animal.id)),
+          animatedVisibilityScope = animatedScope,
+        ),
+    shape = RoundedCornerShape(cornerSize),
     colors =
       CardDefaults.elevatedCardColors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -418,10 +424,11 @@ private fun PetListGridItem(
       val imageModifier =
         Modifier.sharedBounds(
             sharedContentState =
-              rememberSharedContentState(key = PetImageBoundsSharedTransitionKey(animal.id)),
-            animatedVisibilityScope = requireAnimatedScope(Navigation),
+              rememberSharedContentState(key = PetImageBoundsKey(animal.id)),
+            animatedVisibilityScope = animatedScope,
+            placeHolderSize = animatedSize,
           )
-          .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+          .clip(RoundedCornerShape(topStart = cornerSize, topEnd = cornerSize))
           .fillMaxWidth()
           .testTag(IMAGE_TAG)
       if (animal.imageUrl == null) {
@@ -453,7 +460,8 @@ private fun PetListGridItem(
           style = MaterialTheme.typography.labelLarge,
           modifier =
             Modifier.sharedBounds(
-              sharedContentState = rememberSharedContentState(key = "name-${animal.id}"),
+              sharedContentState =
+                rememberSharedContentState(PetNameBoundsKey(animal.id)),
               animatedVisibilityScope = requireAnimatedScope(Navigation),
               zIndexInOverlay = 10f,
             ),

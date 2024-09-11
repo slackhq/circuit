@@ -14,7 +14,6 @@ import com.squareup.kotlinpoet.LambdaTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.TypeSpec.Builder
 
 internal enum class CodegenMode {
   /**
@@ -40,10 +39,17 @@ internal enum class CodegenMode {
       return platforms.all { it is JvmPlatformInfo }
     }
 
-    override fun annotateFactory(builder: Builder, scope: TypeName) {
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
       builder.addAnnotation(
         AnnotationSpec.builder(contributesMultibindingCN).addMember("%T::class", scope).build()
       )
+    }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder
+    ) {
+      constructorBuilder.addAnnotation(runtime.inject)
     }
   },
 
@@ -121,6 +127,13 @@ internal enum class CodegenMode {
         .addFunction(providerSpec)
         .build()
     }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder
+    ) {
+      constructorBuilder.addAnnotation(runtime.inject)
+    }
   },
 
   /**
@@ -138,14 +151,14 @@ internal enum class CodegenMode {
    * ```
    */
   KOTLIN_INJECT_ANVIL {
+    override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
+
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
       return true
     }
 
-    override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
-
-    override fun annotateFactory(builder: Builder, scope: TypeName) {
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
       builder.addAnnotation(
         AnnotationSpec.builder(CircuitNames.KotlinInject.Anvil.CONTRIBUTES_BINDING)
           .addMember("%T::class", scope)
@@ -153,9 +166,16 @@ internal enum class CodegenMode {
           .build()
       )
     }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder
+    ) {
+      classBuilder.addAnnotation(runtime.inject)
+    }
   };
 
-  open fun annotateFactory(builder: Builder, scope: TypeName) {}
+  open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 
   open fun produceAdditionalTypeSpec(
     factory: ClassName,
@@ -167,6 +187,8 @@ internal enum class CodegenMode {
   }
 
   abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
+
+  abstract fun addInjectAnnotation(classBuilder: TypeSpec.Builder, constructorBuilder: FunSpec.Builder)
 
   open val runtime: InjectionRuntime = InjectionRuntime.Javax
 

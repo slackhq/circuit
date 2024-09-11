@@ -47,7 +47,7 @@ internal enum class CodegenMode {
 
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
-      constructorBuilder: FunSpec.Builder
+      constructorBuilder: FunSpec.Builder,
     ) {
       constructorBuilder.addAnnotation(runtime.inject)
     }
@@ -130,7 +130,7 @@ internal enum class CodegenMode {
 
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
-      constructorBuilder: FunSpec.Builder
+      constructorBuilder: FunSpec.Builder,
     ) {
       constructorBuilder.addAnnotation(runtime.inject)
     }
@@ -169,7 +169,7 @@ internal enum class CodegenMode {
 
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
-      constructorBuilder: FunSpec.Builder
+      constructorBuilder: FunSpec.Builder,
     ) {
       classBuilder.addAnnotation(runtime.inject)
     }
@@ -188,7 +188,10 @@ internal enum class CodegenMode {
 
   abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
 
-  abstract fun addInjectAnnotation(classBuilder: TypeSpec.Builder, constructorBuilder: FunSpec.Builder)
+  abstract fun addInjectAnnotation(
+    classBuilder: TypeSpec.Builder,
+    constructorBuilder: FunSpec.Builder,
+  )
 
   open val runtime: InjectionRuntime = InjectionRuntime.Javax
 

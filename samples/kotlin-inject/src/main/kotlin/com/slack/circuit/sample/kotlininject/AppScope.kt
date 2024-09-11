@@ -4,5 +4,4 @@ package com.slack.circuit.sample.kotlininject
 
 import me.tatarka.inject.annotations.Scope
 
-@Scope
-annotation class SingleInAppScope
+@Scope annotation class SingleInAppScope

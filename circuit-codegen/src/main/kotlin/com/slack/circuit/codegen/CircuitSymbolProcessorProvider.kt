@@ -40,7 +40,6 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
-import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -149,8 +148,8 @@ private class CircuitSymbolProcessor(
     val builder =
       TypeSpec.classBuilder(className + CircuitNames.FACTORY)
         .apply {
-          val constructorBuilder = FunSpec.constructorBuilder()
-            .addParameters(factoryData.constructorParams)
+          val constructorBuilder =
+            FunSpec.constructorBuilder().addParameters(factoryData.constructorParams)
           // Add the `@Inject` annotation to the appropriate place
           codegenMode.addInjectAnnotation(this, constructorBuilder)
           primaryConstructor(constructorBuilder.build())
@@ -393,16 +392,16 @@ private class CircuitSymbolProcessor(
           return null
         }
         val injectableConstructor by
-        lazy(NONE) {
-          declaration.findConstructorAnnotatedWith(codegenMode.runtime.inject)
-            ?: declaration.primaryConstructor
-        }
+          lazy(NONE) {
+            declaration.findConstructorAnnotatedWith(codegenMode.runtime.inject)
+              ?: declaration.primaryConstructor
+          }
         val assistedKSParams by
-        lazy(NONE) {
-          injectableConstructor?.parameters?.filter {
-            it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted)
-          } ?: emptyList()
-        }
+          lazy(NONE) {
+            injectableConstructor?.parameters?.filter {
+              it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted)
+            } ?: emptyList()
+          }
         val isAssisted =
           if (codegenMode == KOTLIN_INJECT_ANVIL) {
             assistedKSParams.isNotEmpty()
@@ -431,7 +430,7 @@ private class CircuitSymbolProcessor(
         val useProvider =
           !isAssisted &&
             creatorOrConstructor?.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) ==
-            true
+              true
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =
@@ -478,9 +477,9 @@ private class CircuitSymbolProcessor(
             // Inject a Provider<TargetClass> that we'll call get() on.
             constructorParams.add(
               ParameterSpec.builder(
-                "provider",
-                codegenMode.runtime.asProvider(targetClass.toClassName()),
-              )
+                  "provider",
+                  codegenMode.runtime.asProvider(targetClass.toClassName()),
+                )
                 .build()
             )
             codegenMode.runtime.getProviderBlock(CodeBlock.of("provider"))
@@ -491,13 +490,13 @@ private class CircuitSymbolProcessor(
                 LambdaTypeName.get(
                   receiver = null,
                   parameters =
-                  assistedKSParams.map { ksParam ->
-                    ParameterSpec.builder(
-                      ksParam.name!!.getShortName(),
-                      ksParam.type.toTypeName(),
-                    )
-                      .build()
-                  },
+                    assistedKSParams.map { ksParam ->
+                      ParameterSpec.builder(
+                          ksParam.name!!.getShortName(),
+                          ksParam.type.toTypeName(),
+                        )
+                        .build()
+                    },
                   returnType = targetClass.toClassName(),
                 )
               constructorParams.add(ParameterSpec.builder("factory", factoryLambda).build())
@@ -545,37 +544,37 @@ private fun KSFunctionDeclaration.assistedParameters(
   includeParameterNames: Boolean,
 ): CodeBlock {
   return buildSet {
-    for (param in parameters) {
-      fun <E> MutableSet<E>.addOrError(element: E) {
-        val added = add(element)
-        if (!added) {
-          logger.error("Multiple parameters of type $element are not allowed.", param)
-        }
-      }
-
-      val type = param.type.resolve()
-      when {
-        type.isInstanceOf(symbols.screen) -> {
-          if (screenType.isSameDeclarationAs(type)) {
-            addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
-          } else {
-            logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+      for (param in parameters) {
+        fun <E> MutableSet<E>.addOrError(element: E) {
+          val added = add(element)
+          if (!added) {
+            logger.error("Multiple parameters of type $element are not allowed.", param)
           }
         }
 
-        type.isInstanceOf(symbols.navigator) -> {
-          if (allowNavigator) {
-            addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
-          } else {
-            logger.error(
-              "Navigator type mismatch. Navigators are not injectable on this type.",
-              param,
-            )
+        val type = param.type.resolve()
+        when {
+          type.isInstanceOf(symbols.screen) -> {
+            if (screenType.isSameDeclarationAs(type)) {
+              addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error("Screen type mismatch. Expected $screenType but found $type", param)
+            }
+          }
+
+          type.isInstanceOf(symbols.navigator) -> {
+            if (allowNavigator) {
+              addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
+            } else {
+              logger.error(
+                "Navigator type mismatch. Navigators are not injectable on this type.",
+                param,
+              )
+            }
           }
         }
       }
     }
-  }
     .toList()
     .map {
       val prefix =

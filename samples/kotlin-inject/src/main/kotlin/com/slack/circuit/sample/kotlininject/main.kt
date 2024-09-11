@@ -14,14 +14,14 @@ import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.sample.kotlininject.MyScreen.State
 import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 
 fun main() = application {
   val circuit = remember { AppComponent::class.create().circuit }
 
   Window(onCloseRequest = ::exitApplication, title = "Sample") {
-    CircuitCompositionLocals(circuit) { CircuitContent(MyScreen) }
+    CircuitCompositionLocals(circuit) { CircuitContent(MyScreen("Hello")) }
   }
 }
 
@@ -31,17 +31,18 @@ fun MyScreen(state: MyScreen.State, modifier: Modifier = Modifier) {
   Text(state.visibleString, modifier = modifier)
 }
 
-data object MyScreen : Screen {
+data class MyScreen(val inputText: String) : Screen {
   data class State(val visibleString: String) : CircuitUiState
 }
 
 @CircuitInject(MyScreen::class, SingleInAppScope::class)
+@Inject
 class MyScreenPresenter(
   private val injectedString: String,
-  @Suppress("unused") @Assisted private val screen: MyScreen,
-) : Presenter<State> {
+  @Assisted private val screen: MyScreen,
+) : Presenter<MyScreen.State> {
   @Composable
   override fun present(): MyScreen.State {
-    return MyScreen.State(injectedString)
+    return MyScreen.State(screen.inputText + " " + injectedString)
   }
 }

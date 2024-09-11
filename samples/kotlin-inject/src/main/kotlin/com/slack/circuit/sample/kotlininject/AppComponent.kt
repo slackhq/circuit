@@ -19,7 +19,7 @@ abstract class AppComponent : AppComponentMerged {
   @Provides
   @SingleInAppScope
   fun providesString(): String {
-    return "Injected String!"
+    return "Circuit!"
   }
 
   @SingleInAppScope

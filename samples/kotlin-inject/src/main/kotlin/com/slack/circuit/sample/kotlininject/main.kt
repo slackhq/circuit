@@ -25,7 +25,7 @@ fun main() = application {
   }
 }
 
-@CircuitInject(MyScreen::class, AppScope::class)
+@CircuitInject(MyScreen::class, SingleInAppScope::class)
 @Composable
 fun MyScreen(state: MyScreen.State, modifier: Modifier = Modifier) {
   Text(state.visibleString, modifier = modifier)
@@ -35,7 +35,7 @@ data object MyScreen : Screen {
   data class State(val visibleString: String) : CircuitUiState
 }
 
-@CircuitInject(MyScreen::class, AppScope::class)
+@CircuitInject(MyScreen::class, SingleInAppScope::class)
 class MyScreenPresenter(
   private val injectedString: String,
   @Suppress("unused") @Assisted private val screen: MyScreen,

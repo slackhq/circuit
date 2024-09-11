@@ -11,18 +11,18 @@ import software.amazon.lastmile.kotlin.inject.anvil.MergeComponent
 
 @Component
 @MergeComponent
-@SingleIn(AppScope::class)
-abstract class AppComponent {
+@SingleInAppScope
+abstract class AppComponent : AppComponentMerged {
   abstract val presenterFactories: Set<Presenter.Factory>
   abstract val uiFactories: Set<Ui.Factory>
 
   @Provides
-  @SingleIn(AppScope::class)
+  @SingleInAppScope
   fun providesString(): String {
     return "Injected String!"
   }
 
-  @SingleIn(AppScope::class)
+  @SingleInAppScope
   @Provides
   fun circuit(presenterFactories: Set<Presenter.Factory>, uiFactories: Set<Ui.Factory>): Circuit {
     return Circuit.Builder()

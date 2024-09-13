@@ -1,12 +1,12 @@
 [versions]
 accompanist = "0.34.0"
-androidx-activity = "1.9.1"
+androidx-activity = "1.9.2"
 androidx-annotation = "1.8.2"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.4"
-agp = "8.5.2"
-anvil = "0.2.6"
+androidx-lifecycle = "2.8.5"
+agp = "8.6.0"
+anvil = "0.3.1"
 atomicfu = "0.25.0"
 benchmark = "1.3.0"
 coil = "2.7.0"
@@ -21,7 +21,7 @@ compose-jb = "1.6.11"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.52"
 datastore = "1.1.1"
-detekt = "1.23.6"
+detekt = "1.23.7"
 dokka = "1.9.20"
 eithernet = "2.0.0-alpha01"
 jdk = "22"
@@ -31,8 +31,8 @@ kct = "0.5.1"
 kotlin = "2.0.20"
 kotlinpoet = "1.18.1"
 kotlinx-coroutines = "1.8.1"
-kotlinx-serialization = "1.7.1"
-ksp = "2.0.20-1.0.24"
+kotlinx-serialization = "1.7.2"
+ksp = "2.0.20-1.0.25"
 ktfmt = "0.52"
 ktor = "2.3.12"
 leakcanary = "2.14"
@@ -41,16 +41,16 @@ mavenPublish = "0.29.0"
 molecule = "2.0.0"
 mosaic = "0.12.0"
 okhttp = "5.0.0-alpha.14"
-okio = "3.9.0"
+okio = "3.9.1"
 paparazzi = "1.3.4"
 picnic = "0.7.0"
 robolectric = "4.13"
 roborazzi = "1.26.0"
-skie = "0.9.0-RC.3"
+skie = "0.9.0-RC.4"
 spotless = "7.0.0.BETA2"
 sqldelight = "2.0.2"
 telephoto = "0.13.0"
-testParameterInjector = "1.16"
+testParameterInjector = "1.17"
 turbine = "1.1.0"
 versionsPlugin = "0.49.0"
 
@@ -89,7 +89,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.1" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.2" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -105,7 +105,7 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.08.00" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.09.01" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
@@ -203,7 +203,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.0"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.2"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
@@ -214,7 +214,7 @@ junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
-kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7"
+kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
@@ -224,7 +224,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
-ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.6-alpha1"
+ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.7"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }

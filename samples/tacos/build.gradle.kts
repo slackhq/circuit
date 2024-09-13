@@ -20,6 +20,8 @@ android {
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
+androidComponents { beforeVariants { it.enable = it.name.contains("debug", ignoreCase = true) } }
+
 tasks
   .withType<KotlinCompile>()
   .matching { it !is KaptGenerateStubsTask }

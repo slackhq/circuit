@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tacos
 
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.moleculeFlow
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.model.toCurrencyString
@@ -12,6 +9,7 @@ import com.slack.circuit.tacos.step.FillingsOrderStep
 import com.slack.circuit.tacos.step.OrderStep
 import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.ToppingsOrderStep
+import com.slack.circuit.test.presenterTestOf
 import com.slack.circuit.test.test
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -72,11 +70,10 @@ class OrderTacosPresenterTest {
         initialStep = ToppingsOrderStep,
       )
 
-    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
-      .test {
-        awaitItem().run { eventSink(OrderTacosScreen.Event.Previous) }
-        assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
-      }
+    presenterTestOf({ presenter.present() }) {
+      awaitItem().run { eventSink(OrderTacosScreen.Event.Previous) }
+      assertThat(awaitItem().stepState).isEqualTo(FillingsOrderStep.State.Loading)
+    }
   }
 
   @Test
@@ -149,17 +146,16 @@ class OrderTacosPresenterTest {
         initialStep = ToppingsOrderStep,
       )
 
-    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
-      .test {
-        awaitItem()
-        assertThat(details).isEqualTo(OrderDetails())
+    presenterTestOf({ presenter.present() }) {
+      awaitItem()
+      assertThat(details).isEqualTo(OrderDetails())
 
-        val toppings = persistentSetOf(Ingredient("apple"))
-        sink(OrderStep.UpdateOrder.SetToppings(toppings))
+      val toppings = persistentSetOf(Ingredient("apple"))
+      sink(OrderStep.UpdateOrder.SetToppings(toppings))
 
-        assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
-        assertThat(details).isEqualTo(OrderDetails(toppings = toppings))
-      }
+      assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
+      assertThat(details).isEqualTo(OrderDetails(toppings = toppings))
+    }
   }
 
   @Test
@@ -182,19 +178,18 @@ class OrderTacosPresenterTest {
         initialStep = SummaryOrderStep,
       )
 
-    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
-      .test {
-        assertThat(awaitItem().stepState).isInstanceOf(SummaryOrderStep.SummaryState::class.java)
+    presenterTestOf({ presenter.present() }) {
+      assertThat(awaitItem().stepState).isInstanceOf(SummaryOrderStep.SummaryState::class.java)
 
-        sink(OrderStep.Restart)
+      sink(OrderStep.Restart)
 
-        awaitItem().run {
-          assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
-          assertThat(isNextEnabled).isFalse()
-        }
-
-        assertThat(details).isEqualTo(OrderDetails())
+      awaitItem().run {
+        assertThat(stepState).isEqualTo(FillingsOrderStep.State.Loading)
+        assertThat(isNextEnabled).isFalse()
       }
+
+      assertThat(details).isEqualTo(OrderDetails())
+    }
   }
 
   @Test
@@ -211,7 +206,8 @@ class OrderTacosPresenterTest {
         initialOrderDetails = initialData,
       )
 
-    moleculeFlow(RecompositionMode.Immediate) { presenter.present() }
-      .test { awaitItem().run { assertThat(orderCost).isEqualTo(expectedCost.toCurrencyString()) } }
+    presenterTestOf({ presenter.present() }) {
+      awaitItem().run { assertThat(orderCost).isEqualTo(expectedCost.toCurrencyString()) }
+    }
   }
 }

@@ -27,8 +27,7 @@ kotlin {
   macosArm64()
   linuxArm64()
   linuxX64()
-  // TODO
-  //  mingwX64()
+  mingwX64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()

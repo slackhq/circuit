@@ -16,16 +16,17 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import software.amazon.lastmile.kotlin.inject.anvil.AppScope
 
 fun main() = application {
   val circuit = remember { AppComponent::class.create().circuit }
 
   Window(onCloseRequest = ::exitApplication, title = "Sample") {
-    CircuitCompositionLocals(circuit) { CircuitContent(MyScreen("Hello")) }
+    CircuitCompositionLocals(circuit) { CircuitContent(MyScreen("Circuit")) }
   }
 }
 
-@CircuitInject(MyScreen::class, SingleInAppScope::class)
+@CircuitInject(MyScreen::class, AppScope::class)
 @Composable
 fun MyScreen(state: MyScreen.State, modifier: Modifier = Modifier) {
   Text(state.visibleString, modifier = modifier)
@@ -35,7 +36,7 @@ data class MyScreen(val inputText: String) : Screen {
   data class State(val visibleString: String) : CircuitUiState
 }
 
-@CircuitInject(MyScreen::class, SingleInAppScope::class)
+@CircuitInject(MyScreen::class, AppScope::class)
 @Inject
 class MyScreenPresenter(
   private val injectedString: String,
@@ -43,6 +44,6 @@ class MyScreenPresenter(
 ) : Presenter<MyScreen.State> {
   @Composable
   override fun present(): MyScreen.State {
-    return MyScreen.State(screen.inputText + " " + injectedString)
+    return MyScreen.State(screen.inputText + " + " + injectedString)
   }
 }

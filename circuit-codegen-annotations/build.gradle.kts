@@ -27,7 +27,8 @@ kotlin {
   macosArm64()
   linuxArm64()
   linuxX64()
-  mingwX64()
+  // TODO https://github.com/evant/kotlin-inject/pull/440
+  //  mingwX64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()
@@ -44,8 +45,6 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        // TODO this is noisy
-        //        compileOnly(projects.circuitFoundation) { because("Only here for docs linking") }
         compileOnly(libs.kotlinInject.anvil.runtime)
         api(projects.circuitRuntimeScreen)
       }

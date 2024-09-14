@@ -30,7 +30,7 @@ publishedJvmTarget = "1.8"
 kct = "0.5.1"
 kotlin = "2.0.20"
 kotlinInject = "0.7.2"
-kotlinInject-anvil = "0.0.2"
+kotlinInject-anvil = "0.0.3"
 kotlinpoet = "1.18.1"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization = "1.7.2"
@@ -228,6 +228,7 @@ kotlinInject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp
 kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
 kotlinInject-anvil-compiler = { module = "software.amazon.lastmile.kotlin.inject.anvil:compiler", version.ref = "kotlinInject-anvil" }
 kotlinInject-anvil-runtime = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime", version.ref = "kotlinInject-anvil" }
+kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime-optional", version.ref = "kotlinInject-anvil" }
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 

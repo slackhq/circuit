@@ -26,4 +26,5 @@ dependencies {
 
   implementation(libs.kotlinInject.runtime)
   implementation(libs.kotlinInject.anvil.runtime)
+  implementation(libs.kotlinInject.anvil.runtime.optional)
 }

@@ -4,7 +4,7 @@ Changelog
 **Unreleased**
 --------------
 
-- **New**: Add code gen support for [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil). See the [code gen docs](https://slackhq.github.io/circuit/code-gen/) for usage instructions.
+- **New**: Add code gen support for [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil). See the [code gen docs](https://slackhq.github.io/circuit/code-gen/) for usage instructions. We've also added a sample project.
 - Update to Kotlin `2.0.20`.
 - **Change**: Switch to stdlib's implementation of `Uuid`. This release now requires Kotlin `2.0.20` or later.
 - **Behavior change**: `presenterTestOf` and `Presenter.test` have a new optional `moleculeFlowTransformer` parameter that allows for advanced filtering of the `Flow` returned out of the underlying `moleculeFlow`. By default, this now runs a `distinctUntilChanged` operator.

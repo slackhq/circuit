@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -40,7 +41,19 @@ kotlin {
   }
   // endregion
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("commonJs") {
+        withJs()
+        withWasmJs()
+      }
+      group("commonJvm") {
+        withJvm()
+        withAndroidTarget()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -49,32 +62,17 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
-    val commonJvm =
-      maybeCreate("commonJvm").apply {
-        dependsOn(commonMain.get())
-        dependencies { compileOnly(libs.hilt) }
-      }
-    androidMain { dependsOn(commonJvm) }
-    jvmMain { dependsOn(commonJvm) }
+    named("commonJvmMain") {
+      dependsOn(commonMain.get())
+      dependencies { compileOnly(libs.hilt) }
+    }
     nativeMain {
       dependencies {
         compileOnly(libs.kotlinInject.anvil.runtime)
         api(libs.kotlinInject.anvil.runtime)
       }
     }
-    // We use a common folder instead of a common source set because there is no commonizer
-    // which exposes the browser APIs across these two targets.
-    jsMain {
-      kotlin.srcDir("src/browserMain/kotlin")
-
-      dependencies {
-        compileOnly(libs.kotlinInject.anvil.runtime)
-        api(libs.kotlinInject.anvil.runtime)
-      }
-    }
-    wasmJsMain {
-      kotlin.srcDir("src/browserMain/kotlin")
-
+    named("commonJsMain") {
       dependencies {
         compileOnly(libs.kotlinInject.anvil.runtime)
         api(libs.kotlinInject.anvil.runtime)

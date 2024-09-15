@@ -63,7 +63,6 @@ kotlin {
       }
     }
     named("commonJvmMain") {
-      dependsOn(commonMain.get())
       dependencies { compileOnly(libs.hilt) }
     }
     nativeMain {

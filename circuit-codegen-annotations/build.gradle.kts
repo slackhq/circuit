@@ -62,9 +62,7 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
-    named("commonJvmMain") {
-      dependencies { compileOnly(libs.hilt) }
-    }
+    named("commonJvmMain") { dependencies { compileOnly(libs.hilt) } }
     nativeMain {
       dependencies {
         compileOnly(libs.kotlinInject.anvil.runtime)

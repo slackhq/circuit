@@ -153,7 +153,12 @@ private class CircuitSymbolProcessor(
             FunSpec.constructorBuilder().addParameters(factoryData.constructorParams)
           // Add the `@Inject` annotation to the appropriate place
           codegenMode.addInjectAnnotation(this, constructorBuilder)
-          primaryConstructor(constructorBuilder.build())
+          if (
+            constructorBuilder.annotations.isNotEmpty() ||
+              constructorBuilder.parameters.isNotEmpty()
+          ) {
+            primaryConstructor(constructorBuilder.build())
+          }
         }
         .apply {
           if (factoryData.constructorParams.isNotEmpty()) {
@@ -399,9 +404,10 @@ private class CircuitSymbolProcessor(
           }
         val assistedKSParams by
           lazy(NONE) {
-            injectableConstructor?.parameters?.filter {
-              it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted)
-            } ?: emptyList()
+            injectableConstructor
+              ?.parameters
+              ?.filter { it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted) }
+              .orEmpty()
           }
         val isAssisted =
           if (codegenMode == KOTLIN_INJECT_ANVIL) {

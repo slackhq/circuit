@@ -11,11 +11,14 @@ import com.slack.circuit.runtime.CircuitUiState
  * This implementation of [ReceiveTurbine] slightly alters the behavior of [awaitItem] by only
  * emitting items that are _different_ from the previously emitted item.
  */
+@OptIn(ExperimentalSubclassOptIn::class)
+@SubclassOptInRequired(ExperimentalForInheritanceCircuitTestApi::class)
 public interface CircuitReceiveTurbine<UiState : CircuitUiState> : ReceiveTurbine<UiState> {
   /**
    * Awaits the next item and asserts that it is _unchanged_ from the previous emission. Essentially
    * this is a sort of escape-hatch from the altered "distinct until changed" behavior of
-   * [awaitItem] in this implementation.
+   * [awaitItem] in this implementation and can be used to more or less assert no change in state
+   * after the next recomposition.
    */
   public suspend fun awaitUnchanged()
 }
@@ -25,6 +28,7 @@ internal fun <UiState : CircuitUiState> ReceiveTurbine<UiState>.asCircuitReceive
   return CircuitReceiveTurbineImpl(this)
 }
 
+@OptIn(ExperimentalForInheritanceCircuitTestApi::class)
 private class CircuitReceiveTurbineImpl<UiState : CircuitUiState>(
   private val delegate: ReceiveTurbine<UiState>
 ) : CircuitReceiveTurbine<UiState>, ReceiveTurbine<UiState> by delegate {

@@ -12,7 +12,6 @@ import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.test.presenterTestOf
 import com.slack.circuit.test.test
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -123,7 +122,7 @@ class OrderTacosPresenterTest {
       val filling = Ingredient("apple")
       sink(OrderStep.UpdateOrder.SetFilling(filling))
 
-      advanceUntilIdle()
+      awaitUnchanged()
       assertThat(details).isEqualTo(OrderDetails(filling = filling))
     }
   }
@@ -153,7 +152,7 @@ class OrderTacosPresenterTest {
       val toppings = persistentSetOf(Ingredient("apple"))
       sink(OrderStep.UpdateOrder.SetToppings(toppings))
 
-      assertThat(awaitItem().stepState).isEqualTo(ToppingsOrderStep.State.Loading)
+      awaitUnchanged()
       assertThat(details).isEqualTo(OrderDetails(toppings = toppings))
     }
   }

@@ -31,6 +31,10 @@ style:
       - 'androidx.compose.desktop.ui.tooling.preview.Preview'
       - 'Preview'
 
+empty-blocks:
+  EmptyDefaultConstructor:
+    excludes: ["**/build/**"]
+
 TwitterCompose:
   ComposableNaming:
     # TODO disabled for now pending https://github.com/twitter/compose-rules/issues/104

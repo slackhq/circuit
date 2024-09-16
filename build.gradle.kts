@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
@@ -182,6 +183,9 @@ subprojects {
         if (isWasmTask && this is KotlinJsCompilerOptions) {
           // TODO https://youtrack.jetbrains.com/issue/KT-64115
           allWarningsAsErrors.set(false)
+        } else if (this is KotlinNativeCompilerOptions) {
+          // TODO https://youtrack.jetbrains.com/issue/KT-38719
+          allWarningsAsErrors.set(false)
         } else {
           allWarningsAsErrors.set(true)
         }
@@ -229,7 +233,7 @@ subprojects {
     }
 
     tasks.withType<Detekt>().configureEach {
-      jvmTarget = "11"
+      jvmTarget = jvmTargetProject.get()
       reports {
         html.required.set(true)
         xml.required.set(true)

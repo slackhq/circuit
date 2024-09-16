@@ -1,4 +1,4 @@
-name: CI
+name: Benchmarks
 
 on:
   # Only run push on main

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.test
 
+import androidx.compose.runtime.SnapshotMutationPolicy
 import app.cash.turbine.ReceiveTurbine
 import com.slack.circuit.runtime.CircuitUiState
 
@@ -23,14 +24,16 @@ public interface CircuitReceiveTurbine<UiState : CircuitUiState> : ReceiveTurbin
   public suspend fun awaitUnchanged()
 }
 
-internal fun <UiState : CircuitUiState> ReceiveTurbine<UiState>.asCircuitReceiveTurbine():
-  CircuitReceiveTurbine<UiState> {
-  return CircuitReceiveTurbineImpl(this)
+internal fun <UiState : CircuitUiState> ReceiveTurbine<UiState>.asCircuitReceiveTurbine(
+  policy: SnapshotMutationPolicy<UiState>
+): CircuitReceiveTurbine<UiState> {
+  return CircuitReceiveTurbineImpl(this, policy)
 }
 
 @OptIn(ExperimentalForInheritanceCircuitTestApi::class)
 private class CircuitReceiveTurbineImpl<UiState : CircuitUiState>(
-  private val delegate: ReceiveTurbine<UiState>
+  private val delegate: ReceiveTurbine<UiState>,
+  private val policy: SnapshotMutationPolicy<UiState>,
 ) : CircuitReceiveTurbine<UiState>, ReceiveTurbine<UiState> by delegate {
 
   private var lastItem: UiState? = null
@@ -49,7 +52,9 @@ private class CircuitReceiveTurbineImpl<UiState : CircuitUiState>(
       val last = lastItem
       val next = delegate.awaitItem()
       lastItem = next
-      if (next != last) {
+      if (last == null) {
+        return next
+      } else if (!policy.equivalent(last, next)) {
         return next
       }
     }

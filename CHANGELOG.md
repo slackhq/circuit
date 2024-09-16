@@ -5,10 +5,11 @@ Changelog
 --------------
 
 - **New**: Add code gen support for [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil). See the [code gen docs](https://slackhq.github.io/circuit/code-gen/) for usage instructions. We've also added a sample project.
+- **New**: `presenterTestOf()` and `Presenter.test()` functions now return a new `CircuitReceiveTurbine` interface. This interface slightly but importantly modifies the behavior of `awaitItem()` by making it only emit _changed_ items rather than every item. If you do want to assert the equivalent state is emitted across recompositions, you can use `awaitUnchanged()`.
+- **Behavior change**: Due to the above-documented change to `awaitItem()`, you may need to update tests that previously assumed duplicate emissions.
 - Update to Kotlin `2.0.20`.
 - **Change**: Switch to stdlib's implementation of `Uuid`. This release now requires Kotlin `2.0.20` or later.
-- **Behavior change**: `presenterTestOf` and `Presenter.test` have a new optional `moleculeFlowTransformer` parameter that allows for advanced filtering of the `Flow` returned out of the underlying `moleculeFlow`. By default, this now runs a `distinctUntilChanged` operator.
-- Build against KSP `2.0.20-1.0.24`.
+- Build against KSP `2.0.20-1.0.25`.
 
 0.23.1
 ------

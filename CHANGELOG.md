@@ -4,6 +4,11 @@ Changelog
 **Unreleased**
 --------------
 
+0.24.0
+------
+
+_2024-09-16_
+
 - **New**: Add code gen support for [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil). See the [code gen docs](https://slackhq.github.io/circuit/code-gen/) for usage instructions. We've also added a sample project.
 - **New**: `presenterTestOf()` and `Presenter.test()` functions now return a new `CircuitReceiveTurbine` interface. This interface slightly but importantly modifies the behavior of `awaitItem()` by making it only emit _changed_ items rather than every item. If you do want to assert the equivalent state is emitted across recompositions, you can use `awaitUnchanged()`.
 - **New**: Promote `LocalBackStack` to public API.

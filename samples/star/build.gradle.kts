@@ -18,8 +18,8 @@ plugins {
   alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization)
-  alias(libs.plugins.anvil)
   alias(libs.plugins.roborazzi)
+  alias(libs.plugins.anvil)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)

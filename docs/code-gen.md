@@ -1,7 +1,7 @@
 Code Generation
 ===============
 
-If using Dagger and Anvil or Hilt, Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories.
+Circuit offers a KSP-based code gen solution to ease boilerplate around generating factories for several dependency injection tools.
 
 ## Installation
 
@@ -16,11 +16,18 @@ dependencies {
 }
 ```
 
-Note that Anvil is enabled by default. If you are using Hilt, you must specify the mode as a KSP arg.
+Currently supported types are:
+- [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil)
+- [Dagger/Hilt](https://dagger.dev/hilt/)
+- [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil)
+
+Note that Dagger+Anvil is the default mode. 
+
+If you are using another mode, you must specify the mode as a KSP arg.
 
 ```kotlin
 ksp {
-  arg("circuit.codegen.mode", "hilt")
+  arg("circuit.codegen.mode", "hilt") // or "kotlin_inject_anvil"
 }
 ```
 
@@ -31,6 +38,18 @@ annotation short names alone to support this case via `circuit.codegen.lenient` 
 ```kotlin
 ksp {
   arg("circuit.codegen.lenient", "true")
+}
+```
+
+If using anvil-ksp or kotlin-inject-anvil, you also need to indicate `@CircuitInject` as a 
+contributing annotation.
+
+```kotlin
+ksp {
+  // Anvil-KSP
+  arg("anvil-ksp-extraContributingAnnotations", "com.slack.circuit.codegen.annotations.CircuitInject")
+  // kotlin-inject-anvil (requires 0.0.3+)
+  arg("kotlin-inject-anvil-contributing-annotations", "com.slack.circuit.codegen.annotations.CircuitInject")
 }
 ```
 
@@ -139,4 +158,19 @@ class HomePresenter @AssistedInject constructor(
     fun create(screen: Screen, navigator: Navigator, context: CircuitContext): HomePresenter
   }
 }
+```
+
+### kotlin-inject
+
+Assisted injection in kotlin-inject works slightly differently for classes. Since there is no 
+`@AssistedFactory`, you can continue to just annotate the injected class directly.
+
+```kotlin
+@Inject
+@CircuitInject(HomeScreen::class, AppScope::class)
+class HomePresenter(
+  @Assisted screen: Screen,
+  @Assisted navigator: Navigator,
+  ...
+) : Presenter<HomeState>
 ```

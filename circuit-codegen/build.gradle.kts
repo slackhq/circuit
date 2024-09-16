@@ -9,6 +9,8 @@ plugins {
 dependencies {
   compileOnly(libs.ksp.api)
   compileOnly(libs.anvil.annotations)
+  compileOnly(libs.kotlinInject.runtime)
+  compileOnly(libs.kotlinInject.anvil.runtime)
   ksp(libs.autoService.ksp)
   implementation(libs.autoService.annotations)
   implementation(libs.dagger)

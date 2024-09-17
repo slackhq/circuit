@@ -1,5 +1,8 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
@@ -11,25 +14,67 @@ kotlin {
   androidTarget { publishLibraryVariants("release") }
   jvm()
   // Anvil/Dagger does not support iOS targets
+  iosX64()
+  iosArm64()
+  iosSimulatorArm64()
+  watchosArm32()
+  watchosArm64()
+  watchosX64()
+  watchosSimulatorArm64()
+  tvosArm64()
+  tvosX64()
+  tvosSimulatorArm64()
+  macosX64()
+  macosArm64()
+  linuxArm64()
+  linuxX64()
+  // TODO https://github.com/evant/kotlin-inject/pull/440
+  //  mingwX64()
+  js(IR) {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
+  }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
+  }
   // endregion
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("commonJs") {
+        withJs()
+        withWasmJs()
+      }
+      group("commonJvm") {
+        withJvm()
+        withAndroidTarget()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
       dependencies {
-        // Only here for docs linking
-        compileOnly(projects.circuitFoundation)
+        compileOnly(libs.kotlinInject.anvil.runtime)
         api(projects.circuitRuntimeScreen)
       }
     }
-    val commonJvm =
-      maybeCreate("commonJvm").apply {
-        dependsOn(commonMain.get())
-        dependencies { compileOnly(libs.hilt) }
+    named("commonJvmMain") { dependencies { compileOnly(libs.hilt) } }
+    nativeMain {
+      dependencies {
+        compileOnly(libs.kotlinInject.anvil.runtime)
+        api(libs.kotlinInject.anvil.runtime)
       }
-    androidMain { dependsOn(commonJvm) }
-    jvmMain { dependsOn(commonJvm) }
+    }
+    named("commonJsMain") {
+      dependencies {
+        compileOnly(libs.kotlinInject.anvil.runtime)
+        api(libs.kotlinInject.anvil.runtime)
+      }
+    }
   }
 
   targets.configureEach {

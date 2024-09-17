@@ -35,11 +35,11 @@ HSPLcom/slack/circuit/backstack/NestedRememberObserver$UiRememberObserver;-><ini
 HSPLcom/slack/circuit/backstack/NestedRememberObserver$UiRememberObserver;->onRemembered()V
 Lcom/slack/circuit/backstack/ProvidedValues;
 Lcom/slack/circuit/backstack/SaveableBackStack;
-HSPLcom/slack/circuit/backstack/SaveableBackStack;->$r8$lambda$-19fS1jL0-oLJKC-xOi9LWJ9B5c(Landroidx/compose/runtime/saveable/SaverScope;Lcom/slack/circuit/backstack/SaveableBackStack;)Ljava/util/List;
+HSPLcom/slack/circuit/backstack/SaveableBackStack;->$r8$lambda$cNT3kJyYZ1n2yRn0PnybiEJ8XRE(Landroidx/compose/runtime/saveable/SaverScope;Lcom/slack/circuit/backstack/SaveableBackStack;)Ljava/util/List;
 HSPLcom/slack/circuit/backstack/SaveableBackStack;-><clinit>()V
 HSPLcom/slack/circuit/backstack/SaveableBackStack;-><init>(Lcom/slack/circuit/backstack/SaveableBackStack$Record;Ljava/lang/Object;)V
 HSPLcom/slack/circuit/backstack/SaveableBackStack;-><init>(Lcom/slack/circuit/backstack/SaveableBackStack$Record;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-HSPLcom/slack/circuit/backstack/SaveableBackStack;->Saver$lambda$8(Landroidx/compose/runtime/saveable/SaverScope;Lcom/slack/circuit/backstack/SaveableBackStack;)Ljava/util/List;
+HSPLcom/slack/circuit/backstack/SaveableBackStack;->Saver$lambda$9(Landroidx/compose/runtime/saveable/SaverScope;Lcom/slack/circuit/backstack/SaveableBackStack;)Ljava/util/List;
 HSPLcom/slack/circuit/backstack/SaveableBackStack;->access$getSaver$cp()Landroidx/compose/runtime/saveable/Saver;
 HSPLcom/slack/circuit/backstack/SaveableBackStack;->getSize()I
 HSPLcom/slack/circuit/backstack/SaveableBackStack;->getTopRecord()Lcom/slack/circuit/backstack/BackStack$Record;

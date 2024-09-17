@@ -217,6 +217,7 @@ include(
   ":samples:counter:apps",
   ":samples:counter:mosaic",
   ":samples:interop",
+  ":samples:kotlin-inject",
   ":samples:star",
   ":samples:star:apk",
   ":samples:star:benchmark",

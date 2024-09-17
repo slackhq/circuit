@@ -3,9 +3,10 @@ Testing
 
 Circuit is designed to make testing as easy as possible. Its core components are not mockable nor do they need to be mocked. Fakes are provided where needed, everything else can be used directly.
 
-Circuit will have a test artifact containing APIs to aid testing both presenters and composable UIs:
+Circuit offers a test artifact containing APIs to aid testing both presenters and composable UIs:
 
-- `Presenter.test()` - an extension function that bridges the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages [Molecule](https://github.com/cashapp/molecule) and [Turbine](https://github.com/cashapp/turbine).
+- `presenterTestOf()` - a top-level function that wraps a composable function to bridge the Compose and coroutines world. Use of this function is recommended for testing presenter state emissions and incoming UI events. Under the hood it leverages [Molecule](https://github.com/cashapp/molecule) and [Turbine](https://github.com/cashapp/turbine). It returns a `CircuitReceiveTurbine`, a custom implementation of `ReceiveTurbine` that modifies the behavior of `awaitItem()` to only emit _changed_ items (i.e. "distinct until changed").
+- `Presenter.test()` - an extension function on `Presenter` that bridges to `presenterTestOf()`.
 - `FakeNavigator` - a test fake implementing the `Navigator` interface. Use of this object is recommended when testing screen navigation (ie. goTo, pop/back). This acts as a real navigator and exposes recorded information for testing purposes.
 - `TestEventSink` - a generic test fake for recording and asserting event emissions through an event sink function.
 

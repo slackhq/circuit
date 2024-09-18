@@ -195,8 +195,7 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) =
         photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
         modifier =
           Modifier.sharedBounds(
-            sharedContentState =
-              rememberSharedContentState(key = PetImageBoundsKey(state.id)),
+            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(state.id)),
             animatedVisibilityScope = requireActiveAnimatedScope(),
             placeHolderSize = animatedSize,
           ),

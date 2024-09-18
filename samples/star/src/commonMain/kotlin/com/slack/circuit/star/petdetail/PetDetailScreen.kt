@@ -167,8 +167,7 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElem
     modifier =
       modifier.thenIfNotNull((state as? Success)?.id) { animalId ->
         sharedBounds(
-          sharedContentState =
-            rememberSharedContentState(key = PetCardBoundsKey(animalId)),
+          sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animalId)),
           animatedVisibilityScope = requireAnimatedScope(Navigation),
         )
       },
@@ -192,8 +191,7 @@ private fun TopBar(state: State) {
           state.name,
           modifier =
             Modifier.sharedBounds(
-              sharedContentState =
-                rememberSharedContentState(PetNameBoundsKey(state.id)),
+              sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
               animatedVisibilityScope = requireAnimatedScope(Navigation),
               zIndexInOverlay = 10f,
             ),

@@ -15,7 +15,6 @@ import coil.annotation.ExperimentalCoilApi
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.slack.circuit.foundation.PreviewSharedElementTransitionLayout
-import com.slack.circuit.foundation.SharedElementTransitionLayout
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL

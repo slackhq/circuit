@@ -408,8 +408,7 @@ private fun PetListGridItem(
         .fillMaxWidth()
         .testTag(CARD_TAG)
         .sharedBounds(
-          sharedContentState =
-            rememberSharedContentState(key = PetCardBoundsKey(animal.id)),
+          sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animal.id)),
           animatedVisibilityScope = animatedScope,
         ),
     shape = RoundedCornerShape(cornerSize),
@@ -423,8 +422,7 @@ private fun PetListGridItem(
       // Image
       val imageModifier =
         Modifier.sharedBounds(
-            sharedContentState =
-              rememberSharedContentState(key = PetImageBoundsKey(animal.id)),
+            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id)),
             animatedVisibilityScope = animatedScope,
             placeHolderSize = animatedSize,
           )
@@ -460,8 +458,7 @@ private fun PetListGridItem(
           style = MaterialTheme.typography.labelLarge,
           modifier =
             Modifier.sharedBounds(
-              sharedContentState =
-                rememberSharedContentState(PetNameBoundsKey(animal.id)),
+              sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
               animatedVisibilityScope = requireAnimatedScope(Navigation),
               zIndexInOverlay = 10f,
             ),

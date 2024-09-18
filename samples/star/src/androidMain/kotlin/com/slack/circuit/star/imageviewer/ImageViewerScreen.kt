@@ -131,8 +131,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
           modifier =
             Modifier.thenIf(!dismissState.willDismissOnRelease) {
               sharedBounds(
-                sharedContentState =
-                  rememberSharedContentState(key = PetImageBoundsKey(state.id)),
+                sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(state.id)),
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
                 enter = fadeIn(),
                 exit = fadeOut(animationSpec = tween(easing = LinearEasing)),

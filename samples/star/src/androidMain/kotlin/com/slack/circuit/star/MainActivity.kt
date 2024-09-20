@@ -5,6 +5,7 @@ package com.slack.circuit.star
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +19,6 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
@@ -30,8 +30,12 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
-import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
+import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
+import com.slack.circuitx.navigation.intercepting.CircuitInterceptingNavigator
+import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor
+import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
+import com.slack.circuitx.navigation.intercepting.rememberCircuitInterceptingNavigator
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
@@ -64,21 +68,40 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         persistentListOf(HomeScreen, petDetailScreen)
       }
 
+    val interceptors = persistentListOf(AndroidScreenAwareNavigationInterceptor(this::goTo))
+    val eventListeners = persistentListOf(LoggingNavigationEventListener)
+    val notifier =
+      object : CircuitInterceptingNavigator.FailureNotifier {
+        override fun goToInterceptorFailure(result: CircuitNavigationInterceptor.Result.Failure) {
+          Log.w("Circuit", "goToInterceptorFailure: $result")
+        }
+
+        override fun popInterceptorFailure(result: CircuitNavigationInterceptor.Result.Failure) {
+          Log.w("Circuit", "popInterceptorFailure: $result")
+        }
+      }
+
     setContent {
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
         Surface(color = MaterialTheme.colorScheme.background) {
           val backStack = rememberSaveableBackStack(initialBackstack)
-          val circuitNavigator = rememberCircuitNavigator(backStack)
-          val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
+          // Build the delegate Navigator.
+          val interceptingNavigator =
+            rememberCircuitInterceptingNavigator(
+              backStack = backStack,
+              interceptors = interceptors,
+              eventListeners = eventListeners,
+              notifier = notifier,
+            )
           CircuitCompositionLocals(circuit) {
             ContentWithOverlays {
               NavigableCircuitContent(
-                navigator = navigator,
+                navigator = interceptingNavigator,
                 backStack = backStack,
                 decoration =
                   ImageViewerAwareNavDecoration(
-                    GestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    GestureNavigationDecoration(onBackInvoked = interceptingNavigator::pop)
                   ),
               )
             }

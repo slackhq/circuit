@@ -40,11 +40,7 @@ kotlin {
       }
     }
 
-    androidMain {
-      dependencies {
-        api(projects.circuitx.android)
-      }
-    }
+    androidMain { dependencies { api(projects.circuitx.android) } }
 
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.

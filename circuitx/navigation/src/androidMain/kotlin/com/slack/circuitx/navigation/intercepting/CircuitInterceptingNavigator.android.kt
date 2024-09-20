@@ -1,3 +1,5 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
 import androidx.compose.runtime.Composable
@@ -10,7 +12,6 @@ import com.slack.circuit.runtime.screen.PopResult
 /**
  * Provides a [Navigator] that is delegated to by the [CircuitInterceptingNavigator] if navigation
  * was not intercepted by a [CircuitNavigationInterceptor].
- *
  *
  * @param onRootPop A handler for the root pop. Null indicates that the root pop should be called by
  *   the system back handler.

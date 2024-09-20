@@ -1,21 +1,19 @@
+// Copyright (C) 2024 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.retained.rememberRetained
-import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.CircuitInterceptingNavigator.FailureNotifier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 /**
  * An implementation of [NavigableCircuitContent] that allows for a [CircuitNavigationInterceptor]

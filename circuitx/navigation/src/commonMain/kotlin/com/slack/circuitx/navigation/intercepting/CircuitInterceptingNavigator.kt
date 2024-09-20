@@ -3,15 +3,43 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Result
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 /**
- * Creates and remembers a [CircuitNavigationInterceptor].
+ * Creates and remembers a [CircuitNavigationInterceptor] from a [SaveableBackStack].
+ *
+ * @see CircuitInterceptingNavigator
+ */
+@Composable
+public fun rememberCircuitInterceptingNavigator(
+  backStack: SaveableBackStack,
+  interceptors: ImmutableList<CircuitNavigationInterceptor>,
+  eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
+  notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
+  onRootPop: ((result: PopResult?) -> Unit)? = null,
+): Navigator {
+  BackStackChangedEffect(eventListeners, backStack)
+  // Build the delegate Navigator.
+  val backstackNavigator = rememberCircuitInterceptingBackStackNavigator(backStack, onRootPop)
+  // Handle our NavigationInterceptors.
+  return rememberCircuitInterceptingNavigator(
+    navigator = backstackNavigator,
+    interceptors = interceptors,
+    eventListeners = eventListeners,
+    notifier = notifier,
+  )
+}
+
+/**
+ * Creates and remembers a [CircuitNavigationInterceptor] using a delegate [Navigator].
  *
  * @see CircuitInterceptingNavigator
  */
@@ -99,5 +127,29 @@ public class CircuitInterceptingNavigator(
      * [CircuitNavigationInterceptor.pop].
      */
     public fun popInterceptorFailure(result: Result.Failure)
+  }
+}
+
+/**
+ * Provides a [Navigator] that is delegated to by the [CircuitInterceptingNavigator] if navigation
+ * was not intercepted by a [CircuitNavigationInterceptor].
+ */
+@Composable
+public expect fun rememberCircuitInterceptingBackStackNavigator(
+  backStack: SaveableBackStack,
+  onRootPop: ((result: PopResult?) -> Unit)?,
+): Navigator
+
+/** A SideEffect that notifies the [CircuitNavigationEventListener] when the backstack changes. */
+@Composable
+public fun BackStackChangedEffect(
+  eventListeners: ImmutableList<CircuitNavigationEventListener>,
+  backStack: SaveableBackStack,
+) {
+  // Key using the screen as it'll be the same through rotation, as the record key will change.
+  val screens = backStack.map { it.screen }.toImmutableList()
+  rememberRetained(screens) {
+    val backStackScreens = backStack.map { it.screen }.toImmutableList()
+    eventListeners.forEach { it.onBackStackChanged(backStackScreens) }
   }
 }

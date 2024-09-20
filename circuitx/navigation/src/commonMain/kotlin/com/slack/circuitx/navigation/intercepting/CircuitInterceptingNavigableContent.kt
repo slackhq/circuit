@@ -39,16 +39,14 @@ public fun CircuitInterceptingNavigableContent(
 ) {
   check(screens.isNotEmpty()) { "No screens were provided." }
   val backStack = rememberSaveableBackStack(screens)
-  BackStackChangedEffect(eventListeners, backStack)
   // Build the delegate Navigator.
-  val backstackNavigator = rememberCircuitInterceptingBackStackNavigator(backStack, onRootPop)
-  // Handle our NavigationInterceptors.
   val interceptingNavigator =
     rememberCircuitInterceptingNavigator(
-      navigator = backstackNavigator,
+      backStack = backStack,
       interceptors = interceptors,
       eventListeners = eventListeners,
       notifier = notifier,
+      onRootPop = onRootPop,
     )
   NavigableCircuitContent(
     navigator = interceptingNavigator,
@@ -57,28 +55,4 @@ public fun CircuitInterceptingNavigableContent(
     decoration = decoration,
     unavailableRoute = unavailableRoute,
   )
-}
-
-/**
- * Provides a [Navigator] that is delegated to by the [CircuitInterceptingNavigator] if navigation
- * was not intercepted by a [CircuitNavigationInterceptor].
- */
-@Composable
-public expect fun rememberCircuitInterceptingBackStackNavigator(
-  backStack: SaveableBackStack,
-  onRootPop: ((result: PopResult?) -> Unit)?,
-): Navigator
-
-/** A SideEffect that notifies the [CircuitNavigationEventListener] when the backstack changes. */
-@Composable
-public fun BackStackChangedEffect(
-  eventListeners: ImmutableList<CircuitNavigationEventListener>,
-  backStack: SaveableBackStack,
-) {
-  // Key using the screen as it'll be the same through rotation, as the record key will change.
-  val screens = backStack.map { it.screen }.toImmutableList()
-  rememberRetained(screens) {
-    val backStackScreens = backStack.map { it.screen }.toImmutableList()
-    eventListeners.forEach { it.onBackStackChanged(backStackScreens) }
-  }
 }

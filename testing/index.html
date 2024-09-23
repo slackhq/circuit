@@ -925,7 +925,7 @@
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="presenter-unit-tests">Presenter Unit Tests<a class="headerlink" href="#presenter-unit-tests" title="Permanent link">&para;</a></h3>
-<p>Here’s a test to verify presenter emissions using the <code>Presenter.test()</code> helper. This function acts as a shorthand over Molecule + Turbine to give you a <code>ReceiveTurbine.() -&gt; Unit</code> lambda.</p>
+<p>Here’s a test to verify presenter emissions using the <code>Presenter.test()</code> helper. This function acts as a shorthand over Molecule + Turbine to give you a <code>CircuitReceiveTurbine.() -&gt; Unit</code> lambda.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Test</span><span class="w"> </span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">`present - emit loading state then list of favorites`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">favorites</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">Favorite</span><span class="p">(</span><span class="m">1L</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>

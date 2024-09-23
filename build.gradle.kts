@@ -166,9 +166,8 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
-  val useK2Kapt = providers.gradleProperty("kapt.use.k2")
-    .map { it.toBooleanStrict() }
-    .getOrElse(false)
+  val useK2Kapt =
+    providers.gradleProperty("kapt.use.k2").map { it.toBooleanStrict() }.getOrElse(false)
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       if (this is KaptGenerateStubsTask) {
@@ -256,10 +255,6 @@ subprojects {
   // version that is empty.
   dependencies.modules {
     module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
-  }
-
-  pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
-    tasks.withType<KaptGenerateStubsTask>().configureEach { useK2Kapt.set(true) }
   }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {

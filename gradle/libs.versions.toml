@@ -27,14 +27,14 @@ eithernet = "2.0.0-alpha01"
 jdk = "22"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
-kct = "0.5.1"
-kotlin = "2.0.20"
+kct = "0.6.0-alpha01"
+kotlin = "2.1.0-Beta1"
 kotlinInject = "0.7.2"
 kotlinInject-anvil = "0.0.4"
 kotlinpoet = "1.18.1"
 kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.3"
-ksp = "2.0.20-1.0.25"
+ksp = "2.1.0-Beta1-1.0.25"
 ktfmt = "0.52"
 ktor = "2.3.12"
 leakcanary = "2.14"
@@ -54,7 +54,6 @@ sqldelight = "2.0.2"
 telephoto = "0.13.0"
 testParameterInjector = "1.17"
 turbine = "1.1.0"
-versionsPlugin = "0.49.0"
 
 [plugins]
 agp-application = { id = "com.android.application", version.ref = "agp" }
@@ -85,7 +84,6 @@ roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 skie = { id = "co.touchlab.skie", version.ref = "skie"}
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
-versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
 [libraries]
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }

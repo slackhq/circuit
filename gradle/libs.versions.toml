@@ -232,7 +232,7 @@ kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotli
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
-ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.8"
+ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.9"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }

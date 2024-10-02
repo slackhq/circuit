@@ -3,6 +3,7 @@ Changelog
 
 **Unreleased**
 --------------
+- **New**: Pass `tonalElevation` to `BottomSheetOverlay` so that is reflected in `ModalBottomSheet`.
 
 0.24.0
 ------

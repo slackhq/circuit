@@ -388,7 +388,9 @@ class DetailPresenter(...) : Presenter<DetailScreen.State> {
 }
 ```
 
-Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.
+Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter. 
+
+Note: Circuit assumes that the `create` method will only return presenter instances for screen types it supports. If the screen type isn't supported, it's important to return `null` instead.
 
 We can then wire these detail components to our `Circuit` instance too.
 

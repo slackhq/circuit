@@ -373,7 +373,7 @@ private fun PetListGrid(
     ) {
       items(count = animals.size, key = { i -> animals[i].id }) { index ->
         val animal = animals[index]
-        PetListGridItem(animal, modifier = Modifier.animateItemPlacement()) {
+        PetListGridItem(animal, modifier = Modifier.animateItem()) {
           eventSink(ClickAnimal(animal.id, animal.imageUrl))
         }
       }

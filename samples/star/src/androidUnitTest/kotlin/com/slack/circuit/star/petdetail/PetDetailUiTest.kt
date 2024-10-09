@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
+import coil3.test.FakeImage
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -25,8 +28,6 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
-import com.slack.circuit.star.resources.Res
-import com.slack.circuit.star.resources.dog2
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -38,7 +39,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()
-  @get:Rule val coilRule = CoilRule(Res.drawable.dog2)
+  @get:Rule val coilRule = CoilRule(FakeImage(100, 100, color = Color.Blue.toArgb()))
 
   // TODO this seems like not the greatest test pattern, maybe something we can offer better
   //  solutions for via semantics.

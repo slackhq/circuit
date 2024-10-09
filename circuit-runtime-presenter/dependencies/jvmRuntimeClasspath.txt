@@ -2,6 +2,7 @@ androidx.annotation:annotation-jvm
 androidx.annotation:annotation
 androidx.collection:collection-jvm
 androidx.collection:collection
+org.jetbrains.compose.annotation-internal:annotation
 org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime

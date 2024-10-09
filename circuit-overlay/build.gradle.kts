@@ -60,7 +60,7 @@ kotlin {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)
-        implementation(libs.compose.test.junit4)
+        implementation(libs.compose.ui.testing.junit)
       }
     }
   }

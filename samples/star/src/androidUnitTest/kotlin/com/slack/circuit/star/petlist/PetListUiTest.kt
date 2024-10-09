@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -10,6 +12,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import coil.annotation.ExperimentalCoilApi
+import coil3.test.FakeImage
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Gender.MALE
@@ -25,8 +28,6 @@ import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
-import com.slack.circuit.star.resources.Res
-import com.slack.circuit.star.resources.dog
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -39,7 +40,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetListUiTest {
   @get:Rule val composeTestRule = createComposeRule()
-  @get:Rule val coilRule = CoilRule(Res.drawable.dog)
+  @get:Rule val coilRule = CoilRule(FakeImage(100, 100, color = Color.Blue.toArgb()))
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {

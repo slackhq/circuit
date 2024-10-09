@@ -14,6 +14,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -100,6 +101,7 @@ class RetainedTest {
       Column {
         var text2Enabled by rememberRetained { mutableStateOf(true) }
         val text1 by rememberRetained { mutableStateOf("Text") }
+
         Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = text1)
         Button(
           modifier = Modifier.testTag("TAG_BUTTON"),
@@ -117,11 +119,11 @@ class RetainedTest {
     // Hold on to our Continuity instance
     val continuity = vmFactory.continuity!!
 
-    // We now have two groups with three retained values
+    // We now have three groups with three retained values
     // - text2Enabled
     // - text1
     // - text2
-    assertThat(continuity.peekProviders()).hasSize(2)
+    assertThat(continuity.peekProviders()).hasSize(3)
     assertThat(continuity.peekProviders().values.sumOf { it.size }).isEqualTo(3)
 
     // Now disable the second text
@@ -131,8 +133,8 @@ class RetainedTest {
     // text2 is now gone, so we only have two providers left now
     // - text2Enabled
     // - text1
-    assertThat(continuity.peekProviders()).hasSize(1)
-    assertThat(continuity.peekProviders().values.single()).hasSize(2)
+    assertThat(continuity.peekProviders()).hasSize(2)
+    assertThat(continuity.peekProviders().values.flatten()).hasSize(2)
 
     // Recreate the activity
     scenario.recreate()
@@ -140,8 +142,8 @@ class RetainedTest {
     // After recreation, our VM now has committed our pending values.
     // - text2Enabled
     // - text1
-    assertThat(continuity.peekRetained()).hasSize(1)
-    assertThat(continuity.peekRetained().values.single()).hasSize(2)
+    assertThat(continuity.peekRetained()).hasSize(2)
+    assertThat(continuity.peekRetained().values.flatten()).hasSize(2)
 
     // Set different compose content what wouldn't reuse the previous ones
     setActivityContent {

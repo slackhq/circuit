@@ -9,7 +9,11 @@ import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
+import com.slack.circuit.foundation.internal.withCompositionLocalProvider
+import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.presenter.Presenter
 import kotlin.time.Duration
 
@@ -28,9 +32,10 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   timeout: Duration? = null,
   name: String? = null,
   policy: SnapshotMutationPolicy<UiState> = structuralEqualityPolicy(),
+  retainedStateRegistry: RetainedStateRegistry = RetainedStateRegistry(),
   block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
 ) {
-  presenterTestOf({ present() }, timeout, name, policy, block)
+  presenterTestOf({ present() }, timeout, name, policy, retainedStateRegistry, block)
 }
 
 /**
@@ -41,6 +46,7 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
  * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
  * @param policy a policy to controls how state changes are compared in
  *   [CircuitReceiveTurbine.awaitItem].
+ * @param retainedStateRegistry a [RetainedStateRegistry] that can operate
  * @param block the block to invoke.
  * @see moleculeFlow
  * @see test
@@ -50,9 +56,27 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
   timeout: Duration? = null,
   name: String? = null,
   policy: SnapshotMutationPolicy<UiState> = structuralEqualityPolicy(),
+  retainedStateRegistry: RetainedStateRegistry = RetainedStateRegistry(),
   block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
 ) {
-  moleculeFlow(RecompositionMode.Immediate, presentFunction).test(timeout, name) {
-    asCircuitReceiveTurbine(policy).block()
+  try {
+    moleculeFlow(RecompositionMode.Immediate, decorate(presentFunction, retainedStateRegistry))
+      .test(timeout, name) { asCircuitReceiveTurbine(policy).block() }
+  } finally {
+    retainedStateRegistry.forgetUnclaimedValues()
   }
+}
+
+@OptIn(InternalCircuitApi::class)
+private fun <UiState : CircuitUiState> decorate(
+  presentFunction: @Composable () -> UiState,
+  retainedStateRegistry: RetainedStateRegistry,
+): @Composable () -> UiState {
+  val newFunction =
+    @Composable {
+      withCompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
+        presentFunction()
+      }
+    }
+  return newFunction
 }

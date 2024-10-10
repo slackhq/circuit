@@ -88,5 +88,7 @@ kotlin {
 
 android {
   namespace = "com.slack.circuit.codegen.annotations"
-  defaultConfig { consumerProguardFiles("consumer-proguard-rules.txt") }
+  defaultConfig {
+    consumerProguardFiles("src/commonJvmMain/resources/META-INF/proguard/circuit-codegen-annotations.pro")
+  }
 }

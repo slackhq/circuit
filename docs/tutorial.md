@@ -295,7 +295,7 @@ val navigator = rememberCircuitNavigator(backStack) {
 Once you have these two components created, you can pass them to an advanced version of `CircuitContent` that supports navigation called `NavigableCircuitContent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-navigable-circuit-content.html)).
 
 ```kotlin title="NavigableCircuitContent"
-NavigableCircuitContent(navigator = navigator, backstack = backStack)
+NavigableCircuitContent(navigator = navigator, backStack = backStack)
 ```
 
 This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens ([`NavDecoration`](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html)) and fallback behavior with `Circuit.Builder.onUnavailableRoute` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/on-unavailable-content.html)).
@@ -308,7 +308,7 @@ val navigator = rememberCircuitNavigator(backStack) {
   // Do something when the root screen is popped, usually exiting the app
 }
 CircuitCompositionLocals(circuit) {
-  NavigableCircuitContent(navigator = navigator, backstack = backStack)
+  NavigableCircuitContent(navigator = navigator, backStack = backStack)
 }
 ```
 

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiState
@@ -18,12 +19,18 @@ import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import software.amazon.lastmile.kotlin.inject.anvil.AppScope
 
-fun main() = application {
-  val circuit = remember { AppComponent::class.create().circuit }
+typealias KotlinInjectApp = @Composable () -> Unit
 
-  Window(onCloseRequest = ::exitApplication, title = "Sample") {
-    CircuitCompositionLocals(circuit) { CircuitContent(MyScreen("Circuit")) }
-  }
+fun main() = application {
+  val app = remember { AppComponent::class.create().kotlinInjectApp }
+
+  Window(onCloseRequest = ::exitApplication, title = "Sample") { app() }
+}
+
+@Inject
+@Composable
+fun KotlinInjectApp(circuit: Circuit) {
+  CircuitCompositionLocals(circuit) { CircuitContent(MyScreen("Circuit")) }
 }
 
 @CircuitInject(MyScreen::class, AppScope::class)

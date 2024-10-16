@@ -12,9 +12,10 @@ import software.amazon.lastmile.kotlin.inject.anvil.MergeComponent
 import software.amazon.lastmile.kotlin.inject.anvil.SingleIn
 
 @Component
-@MergeComponent
+@MergeComponent(AppScope::class)
 @SingleIn(AppScope::class)
 abstract class AppComponent : AppComponentMerged {
+  abstract val kotlinInjectApp: KotlinInjectApp
   abstract val presenterFactories: Set<Presenter.Factory>
   abstract val uiFactories: Set<Ui.Factory>
 

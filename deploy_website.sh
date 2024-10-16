@@ -25,7 +25,7 @@ if ! [[ ${local} ]]; then
   cd ${DIR}
 
   # Generate the API docs
-  ./gradlew dokkaHtmlMultiModule --no-configuration-cache
+  ./gradlew :dokkaGenerate
 fi
 
 # Copy in special files that GitHub wants in the project root.

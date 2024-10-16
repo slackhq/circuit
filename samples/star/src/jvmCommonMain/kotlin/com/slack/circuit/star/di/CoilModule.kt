@@ -7,7 +7,7 @@ import coil3.PlatformContext
 import coil3.disk.DiskCache
 import coil3.network.CacheStrategy
 import coil3.network.NetworkFetcher
-import coil3.network.ktor2.asNetworkClient
+import coil3.network.ktor3.asNetworkClient
 import com.slack.circuit.star.data.StarAppDirs
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn

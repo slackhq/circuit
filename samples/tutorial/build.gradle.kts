@@ -44,9 +44,9 @@ kotlin {
     androidMain {
       dependencies {
         implementation(libs.androidx.activity.ktx)
+        implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
         implementation(libs.bundles.compose.ui)
-        implementation(libs.androidx.compose.integration.activity)
         implementation(libs.material)
       }
     }

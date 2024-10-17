@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.34.0"
+accompanist = "0.36.0"
 androidx-activity = "1.9.2"
 androidx-annotation = "1.8.2"
 androidx-appcompat = "1.7.0"
@@ -10,14 +10,15 @@ anvil = "0.3.2"
 atomicfu = "0.25.0"
 benchmark = "1.3.2"
 coil = "2.7.0"
-coil3 = "3.0.0-alpha10"
-compose-animation = "1.6.8"
-compose-foundation = "1.6.8"
-compose-material = "1.6.8"
-compose-material3 = "1.2.1"
-compose-runtime = "1.6.8"
-compose-ui = "1.6.8"
-compose-jb = "1.6.11"
+coil3 = "3.0.0-rc01"
+compose-animation = "1.7.4"
+compose-foundation = "1.7.4"
+compose-material = "1.7.4"
+compose-material3 = "1.3.0"
+compose-runtime = "1.7.4"
+compose-ui = "1.7.4"
+compose-jb = "1.7.0"
+compose-bom = "2024.10.00"
 compose-integration-constraintlayout = "1.0.1"
 dagger = "2.52"
 datastore = "1.1.1"
@@ -61,7 +62,7 @@ agp-application = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
@@ -76,13 +77,13 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
-skie = { id = "co.touchlab.skie", version.ref = "skie"}
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
@@ -91,7 +92,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.2" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -107,14 +108,12 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.09.03" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
-androidx-compose-integration-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-compose-integration-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "compose-integration-constraintlayout" }
 androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }
-androidx-compose-integration-rxjava3 = { module = "androidx.compose.runtime:runtime-rxjava3", version.ref = "compose-runtime" }
 # Material design icons
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "compose-material" }
 androidx-compose-material-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
@@ -174,7 +173,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
 coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil3-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
-coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil3" }
+coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
 coil3-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
 coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
 
@@ -192,7 +191,6 @@ compose-material-icons = { module = "org.jetbrains.compose.material:material-ico
 compose-material-iconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-jb" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb" }
-compose-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "compose-jb" }
 
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -260,7 +258,7 @@ okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
-robolectric = { module = "org.robolectric:robolectric", version.ref="robolectric" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
@@ -276,7 +274,6 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
-testing-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.4"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }

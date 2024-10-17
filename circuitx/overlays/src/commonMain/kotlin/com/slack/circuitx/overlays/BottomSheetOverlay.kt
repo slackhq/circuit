@@ -87,8 +87,7 @@ private constructor(
     sheetContainerColor = sheetContainerColor,
     tonalElevation = tonalElevation,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
-    properties =
-      createBottomSheetProperties(isFocusable = isFocusable, shouldDismissOnBackPress = false),
+    properties = createBottomSheetProperties(shouldDismissOnBackPress = false),
     content = content,
   )
 
@@ -170,7 +169,7 @@ private constructor(
       tonalElevation = tonalElevation ?: 0.dp,
       dragHandle = dragHandle ?: { BottomSheetDefaults.DragHandle() },
       // Go edge-to-edge
-      windowInsets = WindowInsets(0, 0, 0, 0),
+      contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
       onDismissRequest = {
         // Only possible if dismissOnTapOutside is false
         check(dismissOnTapOutside)
@@ -198,10 +197,9 @@ private constructor(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties()
+internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal expect fun createBottomSheetProperties(
-  isFocusable: Boolean = DEFAULT_PROPERTIES.isFocusable,
-  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress,
+  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress
 ): ModalBottomSheetProperties

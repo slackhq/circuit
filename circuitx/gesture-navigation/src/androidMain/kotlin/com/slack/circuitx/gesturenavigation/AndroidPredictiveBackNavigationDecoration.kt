@@ -56,10 +56,15 @@ public actual fun GestureNavigationDecoration(
   onBackInvoked: () -> Unit,
 ): NavDecoration =
   when {
-    Build.VERSION.SDK_INT >= 34 ->
-      DefaultAnimatedNavDecoration(AndroidPredictiveBackNavDecorator.Factory(onBackInvoked))
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavigationDecoration(onBackInvoked)
     else -> fallback
   }
+
+@RequiresApi(34)
+public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked: () -> Unit) :
+  NavDecoration by DefaultAnimatedNavDecoration(
+    AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
+  )
 
 @Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)

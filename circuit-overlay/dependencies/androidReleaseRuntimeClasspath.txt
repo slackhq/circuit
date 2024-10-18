@@ -1,3 +1,4 @@
+androidx.activity:activity-compose
 androidx.activity:activity-ktx
 androidx.activity:activity
 androidx.annotation:annotation-experimental
@@ -51,6 +52,8 @@ androidx.lifecycle:lifecycle-runtime-ktx-android
 androidx.lifecycle:lifecycle-runtime-ktx
 androidx.lifecycle:lifecycle-runtime
 androidx.lifecycle:lifecycle-viewmodel-android
+androidx.lifecycle:lifecycle-viewmodel-compose-android
+androidx.lifecycle:lifecycle-viewmodel-compose
 androidx.lifecycle:lifecycle-viewmodel-ktx
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
@@ -79,10 +82,14 @@ org.jetbrains.compose.ui:ui-text
 org.jetbrains.compose.ui:ui-unit
 org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
+org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom
+org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains.kotlinx:atomicfu-jvm
 org.jetbrains.kotlinx:atomicfu
+org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm
+org.jetbrains.kotlinx:kotlinx-collections-immutable
 org.jetbrains.kotlinx:kotlinx-coroutines-android
 org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm

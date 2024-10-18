@@ -37,8 +37,10 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.foundation.DelicateCircuitFoundationApi
 import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.thenIf
 import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -180,7 +182,7 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElem
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, DelicateCircuitFoundationApi::class)
 @Composable
 private fun TopBar(state: State) {
   if (state !is Success) return
@@ -190,11 +192,13 @@ private fun TopBar(state: State) {
         Text(
           state.name,
           modifier =
-            Modifier.sharedBounds(
-              sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
-              animatedVisibilityScope = requireAnimatedScope(Navigation),
-              zIndexInOverlay = 10f,
-            ),
+            Modifier.thenIf(hasLayoutCoordinates) {
+              sharedBounds(
+                sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 10f,
+              )
+            },
         )
       },
       navigationIcon = { BackPressNavIcon() },

@@ -5,9 +5,11 @@ package com.slack.circuit.foundation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.FloatState
@@ -15,9 +17,13 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.asFloatState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope
 import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
@@ -43,13 +49,28 @@ public fun SharedElementTransitionLayout(
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
-  SharedTransitionLayout(modifier = modifier) {
+  SharedTransitionScope { sharedTransitionModifier ->
     val scope = remember { SharedElementTransitionScopeImpl(this) }
-    CompositionLocalProvider(
-      LocalSharedElementTransitionScope provides scope,
-      LocalSharedElementTransitionState provides SharedElementTransitionState.Available,
+    Box(
+      modifier
+        .then(sharedTransitionModifier)
+        // Workaround for https://issuetracker.google.com/issues/344343033
+        .layout { measurable, constraints ->
+          val placeable = measurable.measure(constraints)
+          layout(placeable.width, placeable.height) {
+            if (coordinates != null && isLookingAhead) {
+              scope.hasLayoutCoordinates = true
+            }
+            placeable.place(0, 0)
+          }
+        }
     ) {
-      content()
+      CompositionLocalProvider(
+        LocalSharedElementTransitionScope provides scope,
+        LocalSharedElementTransitionState provides SharedElementTransitionState.Available,
+      ) {
+        content()
+      }
     }
   }
 }
@@ -101,6 +122,8 @@ public fun SharedElementTransitionScope(
 @OptIn(ExperimentalSharedTransitionApi::class)
 public interface SharedElementTransitionScope : SharedTransitionScope {
 
+  @DelicateCircuitFoundationApi public val hasLayoutCoordinates: Boolean
+
   public fun availableScopes(): Set<AnimatedScope>
 
   public fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope?
@@ -109,9 +132,10 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
     return requireNotNull(getAnimatedScope(key)) { "No AnimatedVisibilityScope found for $key" }
   }
 
-  public enum class AnimatedScope {
-    Overlay,
-    Navigation,
+  public interface AnimatedScope {
+    public object Overlay : AnimatedScope
+
+    public object Navigation : AnimatedScope
   }
 
   public companion object {
@@ -188,7 +212,7 @@ public fun PreviewSharedElementTransitionLayout(
   content: @Composable () -> Unit,
 ) {
   SharedElementTransitionLayout(modifier = modifier) {
-    AnimatedVisibility(visible = true) {
+    AnimatedVisibility(visible = true, enter = EnterTransition.None, exit = ExitTransition.None) {
       ProvideAnimatedTransitionScope(
         animatedScope = animatedScope,
         animatedVisibilityScope = this,
@@ -209,6 +233,9 @@ private data class SharedElementTransitionScopeImpl(
 
   private val parentScope = sharedTransitionScope as? SharedElementTransitionScope
   private val animatedVisibilityScopes = mutableStateMapOf<AnimatedScope, AnimatedVisibilityScope>()
+
+  override var hasLayoutCoordinates by mutableStateOf(false)
+    internal set
 
   fun setScope(key: AnimatedScope, value: AnimatedVisibilityScope) {
     animatedVisibilityScopes[key] = value

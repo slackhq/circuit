@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -36,6 +37,11 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.foundation.DelicateCircuitFoundationApi
+import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.thenIf
+import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -62,6 +68,8 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.transition.PetCardBoundsKey
+import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.ExpandableText
 import kotlinx.collections.immutable.ImmutableList
 
@@ -73,6 +81,7 @@ data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?)
     data object UnknownAnimal : State
 
     data class Success(
+      val id: Long,
       val url: String,
       val photoUrls: ImmutableList<String>,
       val photoUrlMemoryCacheKey: String?,
@@ -94,6 +103,7 @@ internal fun Animal.toPetDetailState(
   eventSink: (Event) -> Unit,
 ): State {
   return Success(
+    id = id,
     url = url,
     photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
@@ -150,10 +160,20 @@ internal object PetDetailTestConstants {
   const val FULL_BIO_TAG = "full_bio"
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
-internal fun PetDetail(state: State, modifier: Modifier = Modifier) {
-  Scaffold(modifier = modifier, topBar = { TopBar(state) }) { padding ->
+internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
+  Scaffold(
+    topBar = { TopBar(state) },
+    modifier =
+      modifier.thenIfNotNull((state as? Success)?.id) { animalId ->
+        sharedBounds(
+          sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animalId)),
+          animatedVisibilityScope = requireAnimatedScope(Navigation),
+        )
+      },
+  ) { padding ->
     when (state) {
       is Loading -> Loading(padding)
       is UnknownAnimal -> UnknownAnimal(padding)
@@ -162,10 +182,28 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) {
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class, DelicateCircuitFoundationApi::class)
 @Composable
 private fun TopBar(state: State) {
   if (state !is Success) return
-  CenterAlignedTopAppBar(title = { Text(state.name) }, navigationIcon = { BackPressNavIcon() })
+  SharedElementTransitionScope {
+    CenterAlignedTopAppBar(
+      title = {
+        Text(
+          state.name,
+          modifier =
+            Modifier.thenIf(hasLayoutCoordinates) {
+              sharedBounds(
+                sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 10f,
+              )
+            },
+        )
+      },
+      navigationIcon = { BackPressNavIcon() },
+    )
+  }
 }
 
 @Composable
@@ -193,10 +231,12 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
 
 @Composable
 private fun ShowAnimal(state: Success, padding: PaddingValues) {
+  val sharedModifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)
   val carouselContent = remember {
     movableContentOf {
       CircuitContent(
         PetPhotoCarouselScreen(
+          id = state.id,
           name = state.name,
           photoUrls = state.photoUrls,
           photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
@@ -204,19 +244,19 @@ private fun ShowAnimal(state: Success, padding: PaddingValues) {
       )
     }
   }
-  return when (Platform.isLandscape()) {
-    true -> ShowAnimalLandscape(state, padding, carouselContent)
-    false -> ShowAnimalPortrait(state, padding, carouselContent)
+  when (Platform.isLandscape()) {
+    true -> ShowAnimalLandscape(state, sharedModifier, carouselContent)
+    false -> ShowAnimalPortrait(state, sharedModifier, carouselContent)
   }
 }
 
 @Composable
 private fun ShowAnimalLandscape(
   state: Success,
-  padding: PaddingValues,
+  modifier: Modifier = Modifier,
   carouselContent: @Composable () -> Unit,
 ) {
-  Row(modifier = Modifier.padding(padding), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+  Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
     carouselContent()
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -231,11 +271,11 @@ private fun ShowAnimalLandscape(
 @Composable
 private fun ShowAnimalPortrait(
   state: Success,
-  padding: PaddingValues,
+  modifier: Modifier = Modifier,
   carouselContent: @Composable () -> Unit,
 ) {
   LazyColumn(
-    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    modifier = modifier,
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -245,26 +285,33 @@ private fun ShowAnimalPortrait(
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 private fun LazyListScope.petDetailDescriptions(state: Success) {
   // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
   item(state.tags.hashCode()) {
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-      verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
-    ) {
-      state.tags.forEach { tag ->
-        Surface(
-          color = MaterialTheme.colorScheme.tertiary,
-          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
-        ) {
-          Text(
-            modifier = Modifier.padding(12.dp),
-            text = tag.capitalize(LocaleList.current),
-            color = MaterialTheme.colorScheme.onTertiary,
-            style = MaterialTheme.typography.labelLarge,
-          )
+    SharedElementTransitionScope {
+      FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+      ) {
+        state.tags.forEach { tag ->
+          Surface(
+            color = MaterialTheme.colorScheme.tertiary,
+            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "tag-${state.id}-${tag}"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+              ),
+          ) {
+            Text(
+              modifier = Modifier.padding(12.dp),
+              text = tag.capitalize(LocaleList.current),
+              color = MaterialTheme.colorScheme.onTertiary,
+              style = MaterialTheme.typography.labelLarge,
+            )
+          }
         }
       }
     }

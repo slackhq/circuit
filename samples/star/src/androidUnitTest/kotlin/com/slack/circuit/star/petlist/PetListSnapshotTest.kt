@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -13,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import coil.annotation.ExperimentalCoilApi
 import com.github.takahirom.roborazzi.RoborazziRule
+import com.github.takahirom.roborazzi.RoborazziTransparentActivity
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.slack.circuit.foundation.PreviewSharedElementTransitionLayout
 import com.slack.circuit.sample.coil.test.CoilRule
@@ -60,7 +60,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     fun data() = listOf(true, false)
   }
 
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  @get:Rule val composeTestRule = createAndroidComposeRule<RoborazziTransparentActivity>()
 
   @get:Rule
   val roborazziRule =

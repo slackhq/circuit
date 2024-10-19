@@ -68,6 +68,7 @@ class PetDetailTest {
   fun petDetail_show_animal_for_success_state() {
     val success =
       State.Success(
+        id = 1L,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -88,6 +89,7 @@ class PetDetailTest {
 
     val expectedScreen =
       PetPhotoCarouselScreen(
+        id = 1L,
         name = success.name,
         photoUrls = success.photoUrls,
         photoUrlMemoryCacheKey = null,
@@ -118,6 +120,7 @@ class PetDetailTest {
 
     val success =
       State.Success(
+        id = 1L,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,

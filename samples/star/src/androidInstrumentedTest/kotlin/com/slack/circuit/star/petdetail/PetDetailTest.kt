@@ -3,8 +3,11 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -14,6 +17,7 @@ import androidx.compose.ui.test.swipeUp
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.PreviewSharedElementTransitionLayout
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.star.common.Strings
@@ -42,7 +46,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { ContentWithOverlays { PetDetail(State.Loading) } }
+      setTestContent { ContentWithOverlays { PetDetail(State.Loading) } }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -53,7 +57,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
-      setContent { ContentWithOverlays { PetDetail(State.UnknownAnimal) } }
+      setTestContent { ContentWithOverlays { PetDetail(State.UnknownAnimal) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
@@ -96,7 +100,7 @@ class PetDetailTest {
       )
 
     composeTestRule.run {
-      setContent {
+      setTestContent {
         ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
       }
 
@@ -138,7 +142,7 @@ class PetDetailTest {
         .build()
 
     composeTestRule.run {
-      setContent {
+      setTestContent {
         ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
       }
 
@@ -148,4 +152,9 @@ class PetDetailTest {
       testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
     }
   }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
+  setContent { PreviewSharedElementTransitionLayout { content() } }
 }

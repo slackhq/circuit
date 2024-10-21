@@ -66,7 +66,7 @@ kotlin {
       dependencies {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
-        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.androidx.activity.compose)
       }
     }
     commonTest {
@@ -109,7 +109,7 @@ kotlin {
       dependencies {
         implementation(libs.junit)
         implementation(libs.coroutines.android)
-        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.androidx.activity.compose)
         implementation(libs.compose.ui.testing.junit)
       }
     }

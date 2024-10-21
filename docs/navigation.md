@@ -79,7 +79,7 @@ class TakePhotoPresenter {
 Circuit automatically manages saving/restoring result states and ensuring that results are only delivered to the original receiver that requested it. If the target screen does not pop back a result, the previous screen's receiver will just never receive one.
 
 !!! note "When to use an `Overlay` vs navigating to a `Screen` with result?"
-    See this doc in [Overlays](https://slackhq.github.io/circuit/overlays/overlays/#overlay-vs-popresult)!
+    See this doc in [Overlays](https://slackhq.github.io/circuit/overlays/#overlay-vs-popresult)!
 
 ## Nested Navigation
 

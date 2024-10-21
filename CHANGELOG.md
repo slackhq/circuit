@@ -3,6 +3,9 @@ Changelog
 
 **Unreleased**
 --------------
+- **New**: Pass `tonalElevation` to `BottomSheetOverlay` so that is reflected in `ModalBottomSheet`.
+- Update Compose Android to `1.7.4`
+- Update Compose Multiplatform to `1.7.0`.
 
 0.24.0
 ------

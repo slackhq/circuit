@@ -47,6 +47,7 @@ public actual fun GestureNavigationDecoration(
     else -> fallback
   }
 
+@Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)
 public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked: () -> Unit) :
   NavDecoration {

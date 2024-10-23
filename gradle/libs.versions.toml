@@ -247,7 +247,7 @@ ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", 
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.1"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
 material = "com.google.android.material:material:1.12.0"
 

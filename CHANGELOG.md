@@ -4,6 +4,11 @@ Changelog
 **Unreleased**
 --------------
 
+0.25.0
+------
+
+_2024-10-23_
+
 - **New**: Pass `tonalElevation` to `BottomSheetOverlay` so that is reflected in `ModalBottomSheet`.
 - **Enhancement**: Add `-dontwarn` on Anvil classes from codegen annotations.
 - **Enhancement**: Misc small doc fixes and updates.

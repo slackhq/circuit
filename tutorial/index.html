@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../images/slack_logo_small.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.35f28582.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -1265,7 +1265,7 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 <span class="p">}</span>
 </code></pre></div>
 <p>Once you have these two components created, you can pass them to an advanced version of <code>CircuitContent</code> that supports navigation called <code>NavigableCircuitContent</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-navigable-circuit-content.html">docs</a>).</p>
-<div class="highlight"><span class="filename">NavigableCircuitContent</span><pre><span></span><code><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<div class="highlight"><span class="filename">NavigableCircuitContent</span><pre><span></span><code><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
 </code></pre></div>
 <p>This composable will automatically manage the backstack and navigation for you, essentially rendering the &ldquo;top&rdquo; of the back stack as your <em>navigator</em> navigates it. This also handles transitions between screens (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html"><code>NavDecoration</code></a>) and fallback behavior with <code>Circuit.Builder.onUnavailableRoute</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/on-unavailable-content.html">docs</a>).</p>
 <p>Like with <code>Circuit</code>, this is usually a one-time setup in your application at its primary entry point.</p>
@@ -1274,7 +1274,7 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 <span class="w">  </span><span class="c1">// Do something when the root screen is popped, usually exiting the app</span>
 <span class="p">}</span>
 <span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backstack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="add-a-detail-screen">Add a detail screen<a class="headerlink" href="#add-a-detail-screen" title="Permanent link">&para;</a></h2>
@@ -1352,7 +1352,8 @@ also show content like the chain history.</p>
 </span><span class="hll"><span class="w">  </span><span class="p">}</span>
 </span><span class="p">}</span>
 </code></pre></div>
-<p>Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.</p>
+<p>Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter. </p>
+<p>Note: Circuit assumes that the <code>create</code> method will only return presenter instances for screen types it supports. If the screen type isn&rsquo;t supported, it&rsquo;s important to return <code>null</code> instead.</p>
 <p>We can then wire these detail components to our <code>Circuit</code> instance too.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="p">:</span><span class="w"> </span><span class="n">Circuit</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
@@ -1561,10 +1562,10 @@ also show content like the chain history.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.56dfad97.min.js"></script>
+      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
       
     
   </body>

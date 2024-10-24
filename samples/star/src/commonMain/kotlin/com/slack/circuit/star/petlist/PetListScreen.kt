@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -27,7 +29,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -78,6 +79,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
@@ -85,6 +87,9 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.SharedElementTransitionScope
+import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.foundation.progress
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -121,6 +126,9 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.transition.PetCardBoundsKey
+import com.slack.circuit.star.transition.PetImageBoundsKey
+import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
 import io.ktor.util.Platform
@@ -129,7 +137,6 @@ import io.ktor.util.platform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 @CommonParcelize
@@ -386,15 +393,25 @@ private fun PetListGrid(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PetListGridItem(
   animal: PetListAnimal,
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
-) {
+) = SharedElementTransitionScope {
+  val animatedScope = requireAnimatedScope(Navigation)
+  val cornerSize = lerp(0.dp, 16.dp, animatedScope.progress().value)
   ElevatedCard(
-    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
-    shape = RoundedCornerShape(16.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .testTag(CARD_TAG)
+        .sharedBounds(
+          sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animal.id)),
+          animatedVisibilityScope = animatedScope,
+        ),
+    shape = RoundedCornerShape(cornerSize),
     colors =
       CardDefaults.elevatedCardColors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -403,7 +420,15 @@ private fun PetListGridItem(
   ) {
     Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
-      val imageModifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG)
+      val imageModifier =
+        Modifier.sharedBounds(
+            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id)),
+            animatedVisibilityScope = animatedScope,
+            placeHolderSize = animatedSize,
+          )
+          .clip(RoundedCornerShape(topStart = cornerSize, topEnd = cornerSize))
+          .fillMaxWidth()
+          .testTag(IMAGE_TAG)
       if (animal.imageUrl == null) {
         Image(
           rememberVectorPainter(Pets),
@@ -428,9 +453,29 @@ private fun PetListGridItem(
       }
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
-        Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
+        Text(
+          text = animal.name,
+          style = MaterialTheme.typography.labelLarge,
+          modifier =
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
+              animatedVisibilityScope = requireAnimatedScope(Navigation),
+              zIndexInOverlay = 10f,
+            ),
+        )
         // Type
-        animal.breed?.let { Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium) }
+        animal.breed?.let {
+          Text(
+            text = animal.breed,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState =
+                  rememberSharedContentState(key = "tag-${animal.id}-${animal.breed}"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+              ),
+          )
+        }
         CompositionLocalProvider(
           LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
         ) {

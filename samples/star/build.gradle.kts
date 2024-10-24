@@ -245,8 +245,13 @@ if (!buildDesktop) {
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
       testApplicationId = "com.slack.circuit.star.apk.androidTest"
     }
-
-    testOptions { unitTests.isIncludeAndroidResources = true }
+    testOptions {
+      unitTests {
+        isIncludeAndroidResources = true
+        // For https://github.com/takahirom/roborazzi/issues/296
+        all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
+      }
+    }
     testBuildType = "release"
   }
 } else {

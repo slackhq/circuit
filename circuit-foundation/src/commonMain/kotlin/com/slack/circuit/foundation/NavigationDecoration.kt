@@ -13,7 +13,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalSharedTransitionApi::class)

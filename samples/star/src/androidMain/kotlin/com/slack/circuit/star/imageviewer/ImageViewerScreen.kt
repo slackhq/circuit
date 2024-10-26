@@ -32,11 +32,11 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.RecordContentProvider
-import com.slack.circuit.foundation.SharedElementTransitionScope
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.foundation.thenIf
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.Dismissed

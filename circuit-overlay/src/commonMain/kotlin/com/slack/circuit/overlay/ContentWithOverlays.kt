@@ -29,8 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.slack.circuit.foundation.ProvideAnimatedTransitionScope
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Overlay
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 
 /**
  * Renders the given [content] with the ability to show overlays on top of it. This works by

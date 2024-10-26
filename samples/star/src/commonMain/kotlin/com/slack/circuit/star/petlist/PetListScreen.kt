@@ -87,9 +87,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.SharedElementTransitionScope
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
-import com.slack.circuit.foundation.progress
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -99,6 +96,9 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.sharedelements.progress
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender

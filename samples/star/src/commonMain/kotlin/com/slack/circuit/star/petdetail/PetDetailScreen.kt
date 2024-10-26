@@ -37,9 +37,6 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.foundation.DelicateCircuitFoundationApi
-import com.slack.circuit.foundation.SharedElementTransitionScope
-import com.slack.circuit.foundation.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.foundation.thenIf
 import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -47,6 +44,9 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.sharedelements.DelicateCircuitSharedElementsApi
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
@@ -182,7 +182,7 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElem
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class, DelicateCircuitFoundationApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, DelicateCircuitSharedElementsApi::class)
 @Composable
 private fun TopBar(state: State) {
   if (state !is Success) return

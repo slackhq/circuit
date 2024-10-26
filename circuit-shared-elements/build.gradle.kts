@@ -1,5 +1,6 @@
-// Copyright (C) 2022 Slack Technologies, LLC
+// Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -29,51 +30,27 @@ kotlin {
     browser()
   }
   // endregion
-
   applyDefaultHierarchyTemplate()
+
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  compilerOptions.optIn.add("com.slack.circuit.sharedelements.DelicateCircuitSharedElementsApi")
 
   sourceSets {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
-        implementation(libs.coroutines)
-        implementation(projects.circuitSharedElements)
-      }
-    }
-    commonTest {
-      dependencies {
-        implementation(libs.coroutines.test)
-        implementation(libs.kotlin.test)
-        implementation(libs.molecule.runtime)
-        implementation(libs.turbine)
-      }
-    }
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
-      }
-    jvmTest {
-      dependsOn(commonJvmTest)
-      dependencies {
-        implementation(compose.desktop.currentOs)
-        implementation(libs.compose.ui.testing.junit)
+        api(libs.compose.ui)
       }
     }
   }
 }
 
-android { namespace = "com.slack.circuit.overlay" }
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
+android { namespace = "com.slack.circuit.sharedelements" }
 
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true
   from(projects.samples.star.benchmark.dependencyProject)
-  filter { include("com.slack.circuit.overlay.**") }
+  filter { include("com.slack.circuit.sharedelements.**") }
 }

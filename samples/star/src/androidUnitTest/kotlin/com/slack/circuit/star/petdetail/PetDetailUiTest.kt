@@ -21,9 +21,9 @@ import coil3.test.FakeImage
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.PreviewSharedElementTransitionLayout
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio

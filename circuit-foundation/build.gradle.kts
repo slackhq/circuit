@@ -59,6 +59,7 @@ kotlin {
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
+        api(projects.circuitSharedElements)
         api(libs.compose.ui)
       }
     }

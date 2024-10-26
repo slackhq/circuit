@@ -44,9 +44,9 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.AnimatedNavDecorator
 import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.SharedElementTransitionScope
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch

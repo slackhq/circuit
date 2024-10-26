@@ -17,9 +17,9 @@ import androidx.compose.ui.test.swipeUp
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.PreviewSharedElementTransitionLayout
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG

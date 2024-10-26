@@ -87,7 +87,7 @@ class PetDetailTest {
       Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
           carouselScreen = screen as PetPhotoCarouselScreen
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen), modifier)
+          PetPhotoCarousel(screen, modifier)
         }
         .build()
 
@@ -137,7 +137,7 @@ class PetDetailTest {
     val circuit =
       Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen), modifier)
+          PetPhotoCarousel(screen as PetPhotoCarouselScreen, modifier)
         }
         .build()
 

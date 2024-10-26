@@ -32,7 +32,6 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
-import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
@@ -55,7 +54,7 @@ class PetDetailUiTest {
       .setOnUnavailableContent { screen, modifier ->
         when (screen) {
           is PetPhotoCarouselScreen -> {
-            PetPhotoCarousel(State(screen), modifier)
+            PetPhotoCarousel(screen, modifier)
             carouselScreen = screen
           }
         }
@@ -145,7 +144,7 @@ class PetDetailUiTest {
     val circuit =
       Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
-          PetPhotoCarousel(State(screen as PetPhotoCarouselScreen), modifier)
+          PetPhotoCarousel(screen as PetPhotoCarouselScreen, modifier)
         }
         .build()
 

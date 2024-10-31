@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.36.0"
 androidx-activity = "1.9.3"
-androidx-annotation = "1.9.0"
+androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
 androidx-lifecycle = "2.8.7"

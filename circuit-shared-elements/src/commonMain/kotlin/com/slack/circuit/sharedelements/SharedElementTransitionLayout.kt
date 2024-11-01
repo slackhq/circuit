@@ -20,8 +20,8 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 
 /**
  * [SharedElementTransitionLayout] creates a layout with a [SharedElementTransitionScope]. Any child
- * layout of [SharedElementTransitionLayout] can then use the receiver scope
- * [SharedElementTransitionScope] to create standard shared element or shared bounds transitions.
+ * layout of [SharedElementTransitionLayout] can then use the [SharedElementTransitionScope]
+ * Composable to create standard shared element or shared bounds transitions.
  *
  * Any indirect child layout of the [SharedElementTransitionLayout] can use the
  * [SharedElementTransitionScope] composable to access the [SharedElementTransitionScope] created by

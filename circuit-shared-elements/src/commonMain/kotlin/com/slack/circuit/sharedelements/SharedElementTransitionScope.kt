@@ -21,10 +21,14 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 
 /**
  * [SharedElementTransitionScope] provides a [SharedTransitionScope] for the standard shared
- * elements/shared bounds animations. This also provides a [AnimatedVisibilityScope], which can be
- * set using [set] and retrieved using [get] or [requireAnimatedScope]. In Circuit this is set by a
- * NavDecoration that has children using the [SharedElementTransitionScope] function for the
- * animations to match up with the navigation animations.
+ * elements/shared bounds animations. This also provides access to a [AnimatedVisibilityScope],
+ * which can be retrieved using [getAnimatedScope] or [requireAnimatedScope].
+ *
+ * An [AnimatedScope] can be provided to an existing [SharedElementTransitionScope] using
+ * [ProvideAnimatedTransitionScope]. Within Circuit a NavigableCircuitContent using an
+ * AnimatedNavDecoration will provide a [Navigation] scope for sharing elements across Screen
+ * transitions. If Circuit overlays are used an [Overlay] scope will be provided for overlay
+ * transitions.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public interface SharedElementTransitionScope : SharedTransitionScope {
@@ -64,11 +68,11 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
 }
 
 /**
- * [SharedElementTransitionScope] creates a [SharedElementTransitionScope] for the child layouts in
- * [content]. Any child layout of [SharedElementTransitionScope] can then use the receiver scope
+ * [SharedElementTransitionScope] accesses the [SharedElementTransitionScope] from the composition
+ * providing it as a receiver to the [content]. The [content] can then use the
  * [SharedElementTransitionScope] to create standard shared element or shared bounds transitions.
  *
- * @param content The child composable to be laid out.
+ * @param content The composable to attach the [SharedElementTransitionScope] to.
  */
 @ExperimentalSharedTransitionApi
 @Composable
@@ -82,7 +86,7 @@ public fun SharedElementTransitionScope(
 
 /**
  * [ProvideAnimatedTransitionScope] sets the [animatedVisibilityScope] as the given [animatedScope]
- * for the layouts in [content] to access from [SharedElementTransitionScope]. If no parent
+ * for the layouts in [content] to access from a [SharedElementTransitionScope]. If no parent
  * [SharedElementTransitionScope] is [SharedElementTransitionState.Available] then the content is
  * shown normally.
  */
@@ -115,8 +119,8 @@ internal val LocalSharedElementTransitionScope:
   }
 
 /**
- * Dynamically switch between the [AnimatedScope.Overlay] and [AnimatedScope.Navigation] for shared
- * elements that can exist across Navigation and Overlay transitions.
+ * Dynamically switch between [AnimatedScope.Overlay] and [AnimatedScope.Navigation] for shared
+ * elements that can exist across both Navigation and Overlay transitions.
  */
 public fun SharedElementTransitionScope.requireActiveAnimatedScope(): AnimatedVisibilityScope {
   val scope = requireAnimatedScope(Overlay)
@@ -135,7 +139,7 @@ public fun SharedElementTransitionScope.requireActiveAnimatedScope(): AnimatedVi
 
 /**
  * [SharedElementTransitionScope] implementation that delegates to a provided
- * [SharedTransitionScope] and allows for updating the [animatedVisibilityScopes].
+ * [SharedTransitionScope]. This implementation allows for setting an [AnimatedScope].
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal data class SharedElementTransitionScopeImpl(

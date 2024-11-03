@@ -46,7 +46,7 @@ android {
 }
 
 val useConnectedDevice =
-  providers.gradleProperty("catchup.benchmark.useConnectedDevice").getOrElse("false").toBoolean()
+  providers.gradleProperty("circuit.benchmark.useConnectedDevice").getOrElse("false").toBoolean()
 
 baselineProfile {
   // This specifies the managed devices to use that you run the tests on. The

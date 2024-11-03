@@ -67,8 +67,7 @@ private fun GridItem(animal: PetListAnimal, modifier: Modifier = Modifier) =
   }
 ```
 
-Shared elements also need an `AnimatedVisibilityScope` in order to animate the shared Composable. Without having to explicitly pass the `AnimatedVisibilityScope` to the Composable, `SharedElementTransitionScope` has methods to access a `AnimatedVisibilityScope` via an [AnimatedScope](#animatedScope) key. This can be done with [`requireAnimatedScope`]() to require the  `AnimatedVisibilityScope` or with [`getAnimatedScope`]() for an optional animation.  
-
+Shared elements also need an `AnimatedVisibilityScope` in order to animate the shared Composable. Without having to explicitly pass the `AnimatedVisibilityScope` to the Composable, `SharedElementTransitionScope` has methods to access a `AnimatedVisibilityScope` via an [AnimatedScope](#animatedscope) key. This can be done with [`requireAnimatedScope`](https://slackhq.github.io/circuit/api/0.x/circuit-shared-elements/com.slack.circuit.sharedelements/-shared-element-transition-scope/index.html#-994011672%2FFunctions%2F1321375323) to require the  `AnimatedVisibilityScope` or with [`getAnimatedScope`](https://slackhq.github.io/circuit/api/0.x/circuit-shared-elements/com.slack.circuit.sharedelements/-shared-element-transition-scope/index.html#-1088686569%2FFunctions%2F1321375323) for an optional `AnimatedVisibilityScope`.
 
 ```kotlin
 Box(
@@ -97,7 +96,7 @@ Box(
 
 By default Circuit provides a _Navigation_ and _Overlay_ `AnimatedVisibilityScope` when a `SharedElementTransitionScope` is available and either `NavigableCircuitContent` or `ContentWithOverlays` has been used. 
 
-An `AnimatedScope` can be provided using `ProvideAnimatedTransitionScope`, including a custom variations. Doing so will make the `AnimatedVisibilityScope` available to the `SharedElementTransitionScope` inside the `ProvideAnimatedTransitionScope`. 
+An `AnimatedScope` can be provided using `ProvideAnimatedTransitionScope`, including custom scopes. Doing so will make the `AnimatedVisibilityScope` available to the `SharedElementTransitionScope` inside the `ProvideAnimatedTransitionScope`. 
 
 ```kotlin
 AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { targetState ->
@@ -108,7 +107,7 @@ AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { target
 
 ```
 
-In Circuit the _Navigation_ `AnimatedScope` is setup using a `ProvideAnimatedTransitionScope`. This is done with an implementation of `NavDecoration` called `AnimatedNavDecoration`. It takes a `AnimatedNavDecorator` to customize the navigation content animation without having to setup `AnimatedContent` and `SharedElementTransitionScope`. An example of a custom `AnimatedNavDecorator` can be seen with the `AndroidPredictiveBackNavigationDecoration`.
+In Circuit the _Navigation_ `AnimatedScope` is setup using a `ProvideAnimatedTransitionScope`. This is done with an implementation of `NavDecoration`, `AnimatedNavDecoration`. It takes an `AnimatedNavDecorator` to customize the Screen animation without having to manually setup a `AnimatedContent` and `SharedElementTransitionScope`. An example of a custom `AnimatedNavDecorator` can be seen with the `AndroidPredictiveBackNavigationDecoration` in [`circuitx-gesture-navigation`](https://slackhq.github.io/circuit/circuitx/#gesture-navigation).
 
 
 ## Non-Circuit usage

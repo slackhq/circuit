@@ -80,9 +80,6 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                   navigator = navigator,
                   backStack = backStack,
                   decoration = GestureNavigationDecoration(onBackInvoked = navigator::pop),
-                  // NavigatorDefaults.DefaultDecoration,
-                  // ImageViewerAwareNavDecoration(GestureNavigationDecoration(onBackInvoked =
-                  // navigator::pop)),
                 )
               }
             }

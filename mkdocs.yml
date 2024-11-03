@@ -74,6 +74,7 @@ nav:
   - 'Presenter': presenter.md
   - 'Ui': ui.md
   - 'Overlays': overlays.md
+  - 'Shared Elements': shared-elements.md
   - 'Testing': testing.md
   - 'Factories': factories.md
   - 'Code Generation': code-gen.md

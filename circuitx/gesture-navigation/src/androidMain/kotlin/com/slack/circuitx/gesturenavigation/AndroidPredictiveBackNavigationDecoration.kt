@@ -12,8 +12,6 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.rememberTransition
@@ -47,7 +45,6 @@ import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
-import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
@@ -75,15 +72,11 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
   private lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
-  private var isSharedTransitionActive by mutableStateOf(false)
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
 
   private var backStackDepthState by mutableIntStateOf(0)
-  private var currentHolder by mutableStateOf<GestureNavTransitionHolder<T>?>(null)
-  private var previousHolder by mutableStateOf<GestureNavTransitionHolder<T>?>(null)
 
-  @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
   override fun Content(
     args: ImmutableList<T>,
@@ -93,18 +86,10 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   ) {
     val scope = rememberStableCoroutineScope()
     val current =
-      remember(args) {
-        args
-          .first()
-          .let { GestureNavTransitionHolder(it, backStackDepth, args.last()) }
-          .also { currentHolder = it }
-      }
+      remember(args) { GestureNavTransitionHolder(args.first(), backStackDepth, args.last()) }
     val previous =
       remember(args) {
-        args
-          .getOrNull(1)
-          ?.let { GestureNavTransitionHolder(it, backStackDepth - 1, args.last()) }
-          ?.also { previousHolder = it }
+        args.getOrNull(1)?.let { GestureNavTransitionHolder(it, backStackDepth - 1, args.last()) }
       }
 
     backStackDepthState = backStackDepth
@@ -140,12 +125,6 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         onBackInvoked = { onBackInvoked() },
       )
     }
-
-    if (SharedElementTransitionScope.isAvailable()) {
-      // todo We don't know this fast enough for the transitionSpec
-      SharedElementTransitionScope { isSharedTransitionActive = isTransitionActive }
-    }
-
     transition.content(modifier)
   }
 
@@ -157,7 +136,6 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     val sameRoot = targetState.rootRecord == initialState.rootRecord
 
     when {
-      isSharedTransitionActive -> EnterTransition.None togetherWith ExitTransition.None
       // adding to back stack
       sameRoot && diff > 0 -> NavigatorDefaults.DefaultDecoration.forward
       // come back from back stack
@@ -183,11 +161,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
       Modifier.predictiveBackMotion(
         shape = MaterialTheme.shapes.extraLarge,
         progress = {
-          if (
-            !isSharedTransitionActive &&
-              swipeProgress != 0f &&
-              seekableTransitionState.currentState == targetState
-          ) {
+          if (swipeProgress != 0f && seekableTransitionState.currentState == targetState) {
             swipeProgress
           } else 0f
         },

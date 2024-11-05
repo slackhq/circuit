@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -146,9 +147,12 @@ import kotlinx.coroutines.flow.map
 @CommonParcelize
 data object PetListScreen : AnimatedScreen {
 
-  override fun enterTransition() = fadeIn()
+  override fun enterTransition(sharedElementTransition: Boolean) =
+    if (sharedElementTransition) EnterTransition.None else null
 
-  override fun exitTransition() = fadeOut()
+  override fun exitTransition(sharedElementTransition: Boolean) =
+    if (sharedElementTransition) ExitTransition.None else fadeOut()
+
 
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean

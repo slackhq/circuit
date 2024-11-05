@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -89,9 +90,15 @@ data class PetDetailScreen(
   val animal: PartialAnimal? = null,
 ) : AnimatedScreen {
 
-  override fun enterTransition() = fadeIn()
+  override fun enterTransition(sharedElementTransition: Boolean) =
+    if (sharedElementTransition) EnterTransition.None else null
 
-  override fun exitTransition() = fadeOut()
+  override fun exitTransition(sharedElementTransition: Boolean) =
+    if (sharedElementTransition) ExitTransition.None else fadeOut()
+
+  override fun sharedElementTransitionKey(): Any? {
+    return if (animal != null && photoUrlMemoryCacheKey != null) petId else null
+  }
 
   @CommonParcelize
   data class PartialAnimal(

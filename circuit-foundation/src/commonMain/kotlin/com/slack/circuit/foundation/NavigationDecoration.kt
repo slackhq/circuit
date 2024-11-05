@@ -82,7 +82,11 @@ public interface AnimatedState {
   public val screen: Screen
   public val backStackDepth: Int
 }
+
 public interface AnimatedScreen : Screen {
-  public val enterTransition: EnterTransition?
-  public val exitTransition: ExitTransition?
+  public fun enterTransition(sharedElementTransition: Boolean = false): EnterTransition? = null
+
+  public fun exitTransition(sharedElementTransition: Boolean = false): ExitTransition? = null
+
+  public fun sharedElementTransitionKey(): Any? = null
 }

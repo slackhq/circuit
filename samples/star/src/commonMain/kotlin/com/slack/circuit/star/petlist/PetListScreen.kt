@@ -4,6 +4,7 @@ package com.slack.circuit.star.petlist
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -60,6 +61,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -160,7 +162,11 @@ data object PetListScreen : Screen {
   }
 
   sealed interface Event : CircuitUiEvent {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+    data class ClickAnimal(
+      val petId: Long,
+      val photoUrlMemoryCacheKey: String?,
+      val animal: PetListAnimal,
+    ) : Event
 
     data object Refresh : Event
 
@@ -215,7 +221,13 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
         ) { event ->
           when (event) {
             is ClickAnimal -> {
-              navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+              navigator.goTo(
+                PetDetailScreen(
+                  event.petId,
+                  event.photoUrlMemoryCacheKey,
+                  event.animal.toPartialAnimal(),
+                )
+              )
             }
             is UpdatedFilters -> {
               isUpdateFiltersModalShowing = false
@@ -253,6 +265,17 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     gender = gender,
     size = size,
     age = age,
+  )
+}
+
+internal fun PetListAnimal.toPartialAnimal(): PetDetailScreen.PartialAnimal {
+  return PetDetailScreen.PartialAnimal(
+    id = id,
+    name = name,
+    imageUrl = imageUrl,
+    breed = breed,
+    gender = gender,
+    size = size,
   )
 }
 
@@ -381,7 +404,7 @@ private fun PetListGrid(
       items(count = animals.size, key = { i -> animals[i].id }) { index ->
         val animal = animals[index]
         PetListGridItem(animal, modifier = Modifier.animateItem()) {
-          eventSink(ClickAnimal(animal.id, animal.imageUrl))
+          eventSink(ClickAnimal(animal.id, animal.imageUrl, animal))
         }
       }
     })

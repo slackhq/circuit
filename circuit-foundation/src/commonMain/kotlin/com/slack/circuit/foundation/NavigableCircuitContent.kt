@@ -42,6 +42,7 @@ import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
+import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -319,29 +320,36 @@ public object NavigatorDefaults {
     }
   }
 
-  public class DefaultDecorator<T : NavArgument> : AnimatedNavDecorator<T, ImmutableList<T>> {
+  public class DefaultDecorator<T : NavArgument> :
+    AnimatedNavDecorator<T, DefaultAnimatedState<T>> {
+
+    public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
+      AnimatedState {
+      override val screen: Screen = args.first().screen
+      override val backStackDepth: Int = args.size
+    }
 
     @Composable
     public override fun Content(
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,
-      content: @Composable Transition<ImmutableList<T>>.(Modifier) -> Unit,
+      content: @Composable Transition<DefaultAnimatedState<T>>.(Modifier) -> Unit,
     ) {
-      updateTransition(args).content(modifier)
+      updateTransition(DefaultAnimatedState(args)).content(modifier)
     }
 
     @OptIn(InternalCircuitApi::class)
     @Composable
-    override fun Transition<ImmutableList<T>>.transitionSpec():
-      AnimatedContentTransitionScope<ImmutableList<T>>.() -> ContentTransform = {
+    override fun Transition<DefaultAnimatedState<T>>.transitionSpec():
+      AnimatedContentTransitionScope<DefaultAnimatedState<T>>.() -> ContentTransform = {
       // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize the
       // transitionSpec recomposing.
       // The states are available as `targetState` and `initialState`.
-      val diff = targetState.size - initialState.size
-      val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
-      val targetScreen = targetState.firstOrNull()?.screen
-      val initialScreen = initialState.firstOrNull()?.screen
+      val diff = targetState.args.size - initialState.args.size
+      val sameRoot = targetState.args.lastOrNull() == initialState.args.lastOrNull()
+      val targetScreen = targetState.args.firstOrNull()?.screen
+      val initialScreen = initialState.args.firstOrNull()?.screen
       when {
         sameRoot && diff > 0 -> contentTransform(targetScreen, initialScreen, forward)
         sameRoot && diff < 0 -> contentTransform(initialScreen, targetScreen, backward)
@@ -365,10 +373,10 @@ public object NavigatorDefaults {
 
     @Composable
     public override fun AnimatedContentScope.AnimatedNavContent(
-      targetState: ImmutableList<T>,
+      targetState: DefaultAnimatedState<T>,
       content: @Composable (T) -> Unit,
     ) {
-      content(targetState.first())
+      content(targetState.args.first())
     }
   }
 

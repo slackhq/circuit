@@ -33,7 +33,7 @@ public abstract class AnimatedNavDecoration(
   ) {
     val decorator = remember {
       @Suppress("UNCHECKED_CAST")
-      decoratorFactory.create<T>() as AnimatedNavDecorator<T, Any>
+      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedState>
     }
     with(decorator) {
       Content(args, backStackDepth, modifier) { modifier ->
@@ -51,7 +51,7 @@ public class DefaultAnimatedNavDecoration(decoratorFactory: AnimatedNavDecorator
   AnimatedNavDecoration(decoratorFactory)
 
 @Stable
-public interface AnimatedNavDecorator<T : NavArgument, S> {
+public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedState> {
 
   @Composable
   public fun Content(
@@ -78,6 +78,10 @@ public interface AnimatedNavDecorator<T : NavArgument, S> {
   }
 }
 
+public interface AnimatedState {
+  public val screen: Screen
+  public val backStackDepth: Int
+}
 public interface AnimatedScreen : Screen {
   public val enterTransition: EnterTransition?
   public val exitTransition: ExitTransition?

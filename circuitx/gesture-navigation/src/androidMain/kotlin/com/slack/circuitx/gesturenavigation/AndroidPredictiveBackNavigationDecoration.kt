@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.AnimatedNavDecorator
 import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
@@ -68,8 +69,9 @@ public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked
 
 @Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)
-internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: () -> Unit) :
-  AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
+  private val onBackInvoked: () -> Unit
+) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   private lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
@@ -196,7 +198,7 @@ internal class AndroidPredictiveBackNavDecorator<T>(private val onBackInvoked: (
   }
 
   class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
-    override fun <T> create(): AnimatedNavDecorator<T, *> {
+    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
       return AndroidPredictiveBackNavDecorator(onBackInvoked = onBackInvoked)
     }
   }

@@ -3,6 +3,8 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.AnimatedScreen
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.thenIf
 import com.slack.circuit.foundation.thenIfNotNull
@@ -43,7 +46,6 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.DelicateCircuitSharedElementsApi
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
@@ -85,7 +87,11 @@ data class PetDetailScreen(
   val petId: Long,
   val photoUrlMemoryCacheKey: String? = null,
   val animal: PartialAnimal? = null,
-) : Screen {
+) : AnimatedScreen {
+
+  override fun enterTransition() = fadeIn()
+
+  override fun exitTransition() = fadeOut()
 
   @CommonParcelize
   data class PartialAnimal(

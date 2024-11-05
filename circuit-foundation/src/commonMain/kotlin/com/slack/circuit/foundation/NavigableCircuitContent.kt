@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
@@ -134,7 +135,11 @@ public fun <R : Record> NavigableCircuitContent(
 public class RecordContentProvider<R : Record>(
   public val record: R,
   internal val content: @Composable (R) -> Unit,
-) {
+) : NavArgument {
+
+  override val screen: Screen
+    get() = record.screen
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
@@ -242,7 +247,7 @@ public object NavigatorDefaults {
     AnimatedNavDecoration(
       decoratorFactory =
         object : AnimatedNavDecorator.Factory {
-          override fun <T> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+          override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
         }
     ) {
     /**
@@ -314,7 +319,7 @@ public object NavigatorDefaults {
     }
   }
 
-  public class DefaultDecorator<T> : AnimatedNavDecorator<T, ImmutableList<T>> {
+  public class DefaultDecorator<T : NavArgument> : AnimatedNavDecorator<T, ImmutableList<T>> {
 
     @Composable
     public override fun Content(
@@ -330,22 +335,32 @@ public object NavigatorDefaults {
     @Composable
     override fun Transition<ImmutableList<T>>.transitionSpec():
       AnimatedContentTransitionScope<ImmutableList<T>>.() -> ContentTransform = {
-      // A transitionSpec should only use values passed into the `AnimatedContent`, to
-      // minimize
-      // the transitionSpec recomposing. The states are available as `targetState` and
-      // `initialState`
+      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize the
+      // transitionSpec recomposing.
+      // The states are available as `targetState` and `initialState`.
       val diff = targetState.size - initialState.size
       val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
-
+      val targetScreen = targetState.firstOrNull()?.screen
+      val initialScreen = initialState.firstOrNull()?.screen
       when {
-        sameRoot && diff > 0 -> forward
-        sameRoot && diff < 0 -> backward
+        sameRoot && diff > 0 -> contentTransform(targetScreen, initialScreen, forward)
+        sameRoot && diff < 0 -> contentTransform(initialScreen, targetScreen, backward)
         else -> fadeIn() togetherWith fadeOut()
       }.using(
         // Disable clipping since the faded slide-in/out should
         // be displayed out of bounds.
         SizeTransform(clip = false)
       )
+    }
+
+    private fun contentTransform(
+      targetScreen: Screen?,
+      initialScreen: Screen?,
+      fallback: ContentTransform,
+    ): ContentTransform {
+      return ((targetScreen as? AnimatedScreen)?.enterTransition()
+        ?: fallback.targetContentEnter) togetherWith
+        ((initialScreen as? AnimatedScreen)?.exitTransition() ?: fallback.initialContentExit)
     }
 
     @Composable
@@ -360,7 +375,7 @@ public object NavigatorDefaults {
   /** An empty [NavDecoration] that emits the content with no surrounding decoration or logic. */
   public object EmptyDecoration : NavDecoration {
     @Composable
-    override fun <T> DecoratedContent(
+    override fun <T : NavArgument> DecoratedContent(
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,

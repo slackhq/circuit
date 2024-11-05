@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
+import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
@@ -201,7 +202,7 @@ class ImageViewerAwareNavDecoration(
 ) : NavDecoration {
   @Suppress("UnstableCollections")
   @Composable
-  override fun <T> DecoratedContent(
+  override fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,

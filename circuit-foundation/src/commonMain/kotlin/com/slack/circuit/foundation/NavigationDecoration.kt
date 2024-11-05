@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlinx.collections.immutable.ImmutableList
@@ -23,13 +25,12 @@ public abstract class AnimatedNavDecoration(
 ) : NavDecoration {
 
   @Composable
-  public override fun <T> DecoratedContent(
+  public override fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-
     val decorator = remember {
       @Suppress("UNCHECKED_CAST")
       decoratorFactory.create<T>() as AnimatedNavDecorator<T, Any>
@@ -50,7 +51,7 @@ public class DefaultAnimatedNavDecoration(decoratorFactory: AnimatedNavDecorator
   AnimatedNavDecoration(decoratorFactory)
 
 @Stable
-public interface AnimatedNavDecorator<T, S> {
+public interface AnimatedNavDecorator<T : NavArgument, S> {
 
   @Composable
   public fun Content(
@@ -73,6 +74,11 @@ public interface AnimatedNavDecorator<T, S> {
   @Stable
   public interface Factory {
 
-    public fun <T> create(): AnimatedNavDecorator<T, *>
+    public fun <T : NavArgument> create(): AnimatedNavDecorator<T, *>
   }
+}
+
+public interface AnimatedScreen : Screen {
+  public val enterTransition: EnterTransition?
+  public val exitTransition: ExitTransition?
 }

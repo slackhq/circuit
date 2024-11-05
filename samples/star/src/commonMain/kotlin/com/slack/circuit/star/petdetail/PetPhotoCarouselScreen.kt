@@ -4,6 +4,7 @@ package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -154,6 +156,7 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
             sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(screen.id)),
             animatedVisibilityScope = requireActiveAnimatedScope(),
             placeHolderSize = animatedSize,
+            resizeMode = ScaleToBounds(ContentScale.Crop, Center),
           ),
       )
 

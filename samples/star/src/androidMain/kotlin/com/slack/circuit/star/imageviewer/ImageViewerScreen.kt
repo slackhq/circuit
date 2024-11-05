@@ -5,6 +5,7 @@ package com.slack.circuit.star.imageviewer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
@@ -23,8 +24,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
@@ -135,6 +138,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
                 enter = fadeIn(),
                 exit = fadeOut(animationSpec = tween(easing = LinearEasing)),
+                resizeMode = ScaleToBounds(ContentScale.Crop, Center),
               )
             },
         ) {

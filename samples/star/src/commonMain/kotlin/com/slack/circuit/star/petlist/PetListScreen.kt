@@ -424,16 +424,18 @@ private fun PetListGridItem(
   onClick: () -> Unit = {},
 ) = SharedElementTransitionScope {
   val animatedScope = requireAnimatedScope(Navigation)
-  val cornerSize = lerp(0.dp, 16.dp, animatedScope.progress().value)
+  val boundsState = rememberSharedContentState(key = PetCardBoundsKey(animal.id))
+  val fraction by
+    remember(boundsState, animatedScope) {
+      derivedStateOf { if (boundsState.isMatchFound) animatedScope.progress().value else 1f }
+    }
+  val cornerSize = lerp(8.dp, 16.dp, fraction)
   ElevatedCard(
     modifier =
       modifier
         .fillMaxWidth()
         .testTag(CARD_TAG)
-        .sharedBounds(
-          sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animal.id)),
-          animatedVisibilityScope = animatedScope,
-        ),
+        .sharedBounds(sharedContentState = boundsState, animatedVisibilityScope = animatedScope),
     shape = RoundedCornerShape(cornerSize),
     colors =
       CardDefaults.elevatedCardColors(
@@ -448,6 +450,7 @@ private fun PetListGridItem(
             sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id)),
             animatedVisibilityScope = animatedScope,
             placeHolderSize = animatedSize,
+            resizeMode = ScaleToBounds(ContentScale.Crop, Center),
           )
           .clip(RoundedCornerShape(topStart = cornerSize, topEnd = cornerSize))
           .fillMaxWidth()

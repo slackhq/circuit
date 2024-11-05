@@ -99,7 +99,7 @@ public fun PreviewSharedElementTransitionLayout(
       ProvideAnimatedTransitionScope(
         animatedScope = animatedScope,
         animatedVisibilityScope = this,
-        content = content,
+        content = { content() },
       )
     }
   }

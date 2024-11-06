@@ -149,8 +149,13 @@ internal data class SharedElementTransitionScopeImpl(
   private val parentScope = sharedTransitionScope as? SharedElementTransitionScope
   private val animatedVisibilityScopes = mutableStateMapOf<AnimatedScope, AnimatedVisibilityScope>()
 
-  override var hasLayoutCoordinates by mutableStateOf(false)
-    internal set
+  private val hasLayoutCoordinatesState = mutableStateOf(false)
+
+  override var hasLayoutCoordinates: Boolean
+    get() = parentScope?.hasLayoutCoordinates ?: hasLayoutCoordinatesState.value
+    internal set(value) {
+      hasLayoutCoordinatesState.value = value
+    }
 
   fun setScope(key: AnimatedScope, value: AnimatedVisibilityScope) {
     animatedVisibilityScopes[key] = value

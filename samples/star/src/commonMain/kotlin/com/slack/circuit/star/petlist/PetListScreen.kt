@@ -446,7 +446,11 @@ private fun PetListGridItem(
       modifier
         .fillMaxWidth()
         .testTag(CARD_TAG)
-        .sharedBounds(sharedContentState = boundsState, animatedVisibilityScope = animatedScope),
+        .sharedBounds(
+          sharedContentState = boundsState,
+          animatedVisibilityScope = animatedScope,
+          zIndexInOverlay = 1f,
+        ),
     shape = RoundedCornerShape(cornerSize),
     colors =
       CardDefaults.elevatedCardColors(
@@ -462,6 +466,7 @@ private fun PetListGridItem(
             animatedVisibilityScope = animatedScope,
             placeHolderSize = animatedSize,
             resizeMode = ScaleToBounds(ContentScale.Crop, Center),
+            zIndexInOverlay = 2f,
           )
           .clip(RoundedCornerShape(topStart = cornerSize, topEnd = cornerSize))
           .fillMaxWidth()
@@ -497,7 +502,7 @@ private fun PetListGridItem(
             Modifier.sharedBounds(
               sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
               animatedVisibilityScope = requireAnimatedScope(Navigation),
-              zIndexInOverlay = 10f,
+              zIndexInOverlay = 3f,
             ),
         )
         // Type
@@ -510,6 +515,7 @@ private fun PetListGridItem(
                 sharedContentState =
                   rememberSharedContentState(key = "tag-${animal.id}-${animal.breed}"),
                 animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 2f,
               ),
           )
         }

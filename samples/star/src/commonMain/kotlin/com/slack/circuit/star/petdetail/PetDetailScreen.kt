@@ -267,7 +267,7 @@ private fun TopBar(state: State) {
               sharedBounds(
                 sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
                 animatedVisibilityScope = requireAnimatedScope(Navigation),
-                zIndexInOverlay = 10f,
+                zIndexInOverlay = 3f,
               )
             },
         )
@@ -376,6 +376,7 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
               Modifier.sharedBounds(
                 sharedContentState = rememberSharedContentState(key = "tag-${state.id}-${tag}"),
                 animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 2f,
               ),
           ) {
             Text(

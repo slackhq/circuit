@@ -157,6 +157,7 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
             animatedVisibilityScope = requireActiveAnimatedScope(),
             placeHolderSize = animatedSize,
             resizeMode = ScaleToBounds(ContentScale.Crop, Center),
+            zIndexInOverlay = 2f,
           ),
       )
 
@@ -237,6 +238,7 @@ private fun PhotoPager(
             sharedElement(
                 state = rememberSharedContentState(key = PetImageElementKey(it)),
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
+                zIndexInOverlay = 5f,
               )
               .clip(shape)
           },

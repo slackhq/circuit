@@ -5,6 +5,8 @@ package com.slack.circuit.star.home
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.IntOffset
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.AnimatedScreen
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.onNavEvent
@@ -34,7 +37,6 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.progress
@@ -49,7 +51,14 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @CommonParcelize
-data object HomeScreen : Screen {
+data object HomeScreen : AnimatedScreen {
+
+  override fun enterTransition(sharedElementTransition: Boolean) =
+    if (sharedElementTransition) fadeIn() else null
+
+  override fun exitTransition(sharedElementTransition: Boolean) =
+    if (sharedElementTransition) fadeOut() else null
+
   data class State(
     val navItems: ImmutableList<BottomNavItem> =
       persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),

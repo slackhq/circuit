@@ -153,7 +153,6 @@ data object PetListScreen : AnimatedScreen {
   override fun exitTransition(sharedElementTransition: Boolean) =
     if (sharedElementTransition) ExitTransition.None else fadeOut()
 
-
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean
 

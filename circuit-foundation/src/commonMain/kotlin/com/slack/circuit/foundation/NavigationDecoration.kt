@@ -55,7 +55,7 @@ public abstract class AnimatedNavDecoration(
         AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { targetState ->
           val animatedContentScope = this@AnimatedContent
           ProvideAnimatedTransitionScope(Navigation, animatedContentScope) {
-            val sharedElementTransitionScope = this@ProvideAnimatedTransitionScope
+            sharedElementTransitionScope ->
             val entry = backStackEntryState.value
             val animatedModifier =
               if (sharedElementTransitionScope != null && entry != null) {
@@ -71,9 +71,7 @@ public abstract class AnimatedNavDecoration(
               } else {
                 Modifier.overrideAnimations(animatedContentScope, targetState.screen)
               }
-            Box(modifier = modifier.then(animatedModifier)) {
-              AnimatedNavContent(targetState) { content(it) }
-            }
+            Box(modifier = animatedModifier) { AnimatedNavContent(targetState) { content(it) } }
           }
         }
       }

@@ -4,8 +4,6 @@ package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.test.assertIsDisplayed
@@ -27,7 +25,7 @@ import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
-import com.slack.circuit.star.petdetail.PetDetailScreen.State.Success
+import com.slack.circuit.star.petdetail.PetDetailScreen.State.Full
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
@@ -89,7 +87,7 @@ class PetDetailUiTest {
   @Test
   fun petDetail_show_animal_for_success_state() {
     val success =
-      Success(
+      Full(
         id = 1,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
@@ -130,7 +128,7 @@ class PetDetailUiTest {
     val testSink = TestEventSink<Event>()
 
     val success =
-      Success(
+      Full(
         id = 1,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),

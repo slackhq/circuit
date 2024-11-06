@@ -71,7 +71,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_animal_for_success_state() {
     val success =
-      State.Success(
+      State.Full(
         id = 1L,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
@@ -123,7 +123,7 @@ class PetDetailTest {
     val testSink = TestEventSink<PetDetailScreen.Event>()
 
     val success =
-      State.Success(
+      State.Full(
         id = 1L,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),

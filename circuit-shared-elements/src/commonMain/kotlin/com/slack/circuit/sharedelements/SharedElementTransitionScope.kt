@@ -95,16 +95,16 @@ public fun SharedElementTransitionScope(
 public fun ProvideAnimatedTransitionScope(
   animatedScope: AnimatedScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
-  content: @Composable SharedElementTransitionScope?.() -> Unit,
+  content: @Composable (SharedElementTransitionScope?) -> Unit,
 ) {
   if (SharedElementTransitionScope.isAvailable()) {
     val parent = LocalSharedElementTransitionScope.current
     val scope =
       remember(parent) { SharedElementTransitionScopeImpl(parent) }
         .apply { setScope(animatedScope, animatedVisibilityScope) }
-    CompositionLocalProvider(LocalSharedElementTransitionScope provides scope) { scope.content() }
+    CompositionLocalProvider(LocalSharedElementTransitionScope provides scope) { content(scope) }
   } else {
-    null?.content()
+    content(null)
   }
 }
 

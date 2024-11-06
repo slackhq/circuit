@@ -91,7 +91,7 @@ class PetListTest {
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 
-      testSink.assertEvent(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
+      testSink.assertEvent(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl, ANIMAL))
     }
   }
 

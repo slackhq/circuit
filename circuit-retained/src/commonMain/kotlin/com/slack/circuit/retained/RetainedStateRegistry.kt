@@ -121,6 +121,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
       }
 
     if (values.isNotEmpty()) {
+      values.values.forEach { it.forEach(::save) }
       // Store the values in our retained map
       retained.putAll(values)
     }
@@ -131,8 +132,17 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   override fun saveValue(key: String) {
     val providers = valueProviders[key]
     if (providers != null) {
-      retained[key] = providers.map { it.invoke() }
+      retained[key] = providers.map { it.invoke().also(::save) }
       valueProviders.remove(key)
+    }
+  }
+
+  private fun save(value: Any?) {
+    when (value) {
+      // If we get a RetainedHolder value, need to unwrap and call again
+      is RetainedValueHolder<*> -> save(value.value)
+      // Dispatch the call to nested registries
+      is RetainedStateRegistry -> value.saveAll()
     }
   }
 

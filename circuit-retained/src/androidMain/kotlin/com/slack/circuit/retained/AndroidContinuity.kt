@@ -40,7 +40,7 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
   }
 
   override fun onCleared() {
-    delegate.retained.clear()
+    delegate.forgetUnclaimedValues()
     delegate.valueProviders.clear()
   }
 

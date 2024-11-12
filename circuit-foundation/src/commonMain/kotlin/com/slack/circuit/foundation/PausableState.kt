@@ -5,6 +5,7 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.foundation.internal.withCompositionLocalProvider
@@ -60,9 +61,9 @@ public fun <T> pausableState(
   val state = remember(key) { MutableRef<T>(null) }
 
   val saveableStateHolder = rememberSaveableStateHolderWithReturn()
+  val retainedStateRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
 
   return if (isActive || state.value == null) {
-    val retainedStateRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
     withCompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
         saveableStateHolder.SaveableStateProvider(
           key = key ?: "pausable_state",
@@ -72,6 +73,7 @@ public fun <T> pausableState(
       .also {
         // Store the last emitted state
         state.value = it
+        DisposableEffect(retainedStateRegistry) { onDispose { retainedStateRegistry.saveAll() } }
       }
   } else {
     // Else, we just emit the last stored state instance

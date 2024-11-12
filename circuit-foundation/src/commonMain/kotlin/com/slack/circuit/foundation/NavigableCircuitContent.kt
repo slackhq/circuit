@@ -19,6 +19,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -174,13 +175,15 @@ private fun <R : Record> buildCircuitContentProviders(
 
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
+      val parentRetainedStateRegistry = LocalRetainedStateRegistry.current
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Now provide a new registry to the content for it to store any retained state in,
         // along with a retain checker which is always true (as upstream registries will
         // maintain the lifetime), and the other provided values
+        val registryKey = record.registryKey
         val recordRetainedStateRegistry =
-          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
+          rememberRetained(key = registryKey) { RetainedStateRegistry() }
 
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides recordRetainedStateRegistry,
@@ -194,6 +197,14 @@ private fun <R : Record> buildCircuitContentProviders(
             unavailableContent = lastUnavailableRoute,
             key = record.key,
           )
+        }
+
+        DisposableEffect(registryKey, recordRetainedStateRegistry) {
+          onDispose {
+            if (recordInBackStackRetainChecker.canRetain(recordRetainedStateRegistry)) {
+              parentRetainedStateRegistry.saveValue(registryKey)
+            }
+          }
         }
       }
     }

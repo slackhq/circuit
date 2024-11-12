@@ -19,7 +19,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -40,6 +39,7 @@ import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateProvider
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.InternalCircuitApi
@@ -175,35 +175,20 @@ private fun <R : Record> buildCircuitContentProviders(
 
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
-      val parentRetainedStateRegistry = LocalRetainedStateRegistry.current
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
         // Now provide a new registry to the content for it to store any retained state in,
         // along with a retain checker which is always true (as upstream registries will
         // maintain the lifetime), and the other provided values
-        val registryKey = record.registryKey
-        val recordRetainedStateRegistry =
-          rememberRetained(key = registryKey) { RetainedStateRegistry() }
-
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides recordRetainedStateRegistry,
-          LocalCanRetainChecker provides CanRetainChecker.Always,
-          LocalRecordLifecycle provides lifecycle,
-        ) {
-          CircuitContent(
-            screen = record.screen,
-            navigator = lastNavigator,
-            circuit = lastCircuit,
-            unavailableContent = lastUnavailableRoute,
-            key = record.key,
-          )
-        }
-
-        DisposableEffect(registryKey, recordRetainedStateRegistry) {
-          onDispose {
-            if (recordInBackStackRetainChecker.canRetain(recordRetainedStateRegistry)) {
-              parentRetainedStateRegistry.saveValue(registryKey)
-            }
+        RetainedStateProvider(record.registryKey) {
+          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+            CircuitContent(
+              screen = record.screen,
+              navigator = lastNavigator,
+              circuit = lastCircuit,
+              unavailableContent = lastUnavailableRoute,
+              key = record.key,
+            )
           }
         }
       }

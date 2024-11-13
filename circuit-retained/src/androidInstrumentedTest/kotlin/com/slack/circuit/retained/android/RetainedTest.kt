@@ -15,6 +15,7 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -53,6 +55,7 @@ private const val TAG_RETAINED_2 = "retained2"
 private const val TAG_RETAINED_3 = "retained3"
 private const val TAG_BUTTON_SHOW = "btn_show"
 private const val TAG_BUTTON_HIDE = "btn_hide"
+private const val TAG_BUTTON_INC = "btn_inc"
 
 class RetainedTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -394,6 +397,54 @@ class RetainedTest {
     assertThat(subject.onForgottenCalled).isEqualTo(1)
   }
 
+  @Test
+  fun conditionalRetainBeforeSave() {
+    val registry = RetainedStateRegistry()
+    val content = @Composable { ConditionalRetainContent(registry) }
+    setActivityContent(content)
+
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_INC).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("1")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_HIDE).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+  }
+
+  @Test
+  fun conditionalRetainAfterSave() {
+    val registry = RetainedStateRegistry()
+    val content = @Composable { ConditionalRetainContent(registry) }
+    setActivityContent(content)
+
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_INC).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("1")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_HIDE).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    registry.saveAll()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+  }
+
   private fun nestedRegistriesWithPopAndPush(useKeys: Boolean) {
     val content = @Composable { NestedRetainWithPushAndPop(useKeys = useKeys) }
     setActivityContent(content)
@@ -727,5 +778,27 @@ private fun InputsContent(input: String) {
       onValueChange = { retainedText = it },
       label = {},
     )
+  }
+}
+
+@Composable
+private fun ConditionalRetainContent(registry: RetainedStateRegistry) {
+  CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+    var showContent by remember { mutableStateOf(false) }
+    Column {
+      Button(modifier = Modifier.testTag(TAG_BUTTON_HIDE), onClick = { showContent = false }) {
+        Text(text = "Hide content")
+      }
+      Button(modifier = Modifier.testTag(TAG_BUTTON_SHOW), onClick = { showContent = true }) {
+        Text(text = "Show content")
+      }
+      if (showContent) {
+        var count by rememberRetained { mutableIntStateOf(0) }
+        Button(modifier = Modifier.testTag(TAG_BUTTON_INC), onClick = { count += 1 }) {
+          Text(text = "Increment")
+        }
+        Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = count.toString())
+      }
+    }
   }
 }

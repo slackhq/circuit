@@ -176,7 +176,7 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-
+    
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.CircuitUiState
         import com.slack.circuit.runtime.screen.Screen
@@ -184,16 +184,15 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-
+        
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier, screen
-                = screen) }
+            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier, screen = screen) }
             else -> null
           }
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -313,23 +312,22 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-
+    
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-
+        
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier, screen
-                = screen) }
+            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier, screen = screen) }
             else -> null
           }
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -970,7 +968,7 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-
+    
         import com.slack.circuit.runtime.presenter.Presenter
         import dagger.Binds
         import dagger.Module
@@ -978,18 +976,16 @@ class CircuitSymbolProcessorTest {
         import dagger.hilt.codegen.OriginatingElement
         import dagger.hilt.components.SingletonComponent
         import dagger.multibindings.IntoSet
-
+        
         @Module
         @InstallIn(SingletonComponent::class)
         @OriginatingElement(topLevelClass = FavoritesPresenter::class)
         public abstract class FavoritesPresenterFactoryModule {
           @Binds
           @IntoSet
-          public abstract
-              fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
-              Presenter.Factory
+          public abstract fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory): Presenter.Factory
         }
-      """
+        """
           .trimIndent(),
     )
   }

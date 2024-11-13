@@ -176,7 +176,7 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.CircuitUiState
         import com.slack.circuit.runtime.screen.Screen
@@ -184,7 +184,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -312,14 +312,14 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-    
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
@@ -968,7 +968,7 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-    
+
         import com.slack.circuit.runtime.presenter.Presenter
         import dagger.Binds
         import dagger.Module
@@ -976,7 +976,7 @@ class CircuitSymbolProcessorTest {
         import dagger.hilt.codegen.OriginatingElement
         import dagger.hilt.components.SingletonComponent
         import dagger.multibindings.IntoSet
-        
+
         @Module
         @InstallIn(SingletonComponent::class)
         @OriginatingElement(topLevelClass = FavoritesPresenter::class)

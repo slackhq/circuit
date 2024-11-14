@@ -232,8 +232,10 @@ subprojects {
       buildUponDefaultConfig = true
     }
 
+    val buildDir = project.layout.buildDirectory.asFile.get().canonicalPath
     tasks.withType<Detekt>().configureEach {
       jvmTarget = jvmTargetProject.get()
+      exclude { it.file.canonicalPath.startsWith(buildDir) }
       reports {
         html.required.set(true)
         xml.required.set(true)

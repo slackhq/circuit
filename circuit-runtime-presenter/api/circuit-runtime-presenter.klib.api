@@ -1,0 +1,17 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-runtime-presenter>
+abstract interface <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.runtime.presenter/Presenter { // com.slack.circuit.runtime.presenter/Presenter|null[0]
+    abstract fun present(androidx.compose.runtime/Composer?, kotlin/Int): #A // com.slack.circuit.runtime.presenter/Presenter.present|present(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+
+    abstract fun interface Factory { // com.slack.circuit.runtime.presenter/Presenter.Factory|null[0]
+        abstract fun create(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator, com.slack.circuit.runtime/CircuitContext): com.slack.circuit.runtime.presenter/Presenter<*>? // com.slack.circuit.runtime.presenter/Presenter.Factory.create|create(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator;com.slack.circuit.runtime.CircuitContext){}[0]
+    }
+}
+
+final inline fun <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.runtime.presenter/presenterOf(crossinline kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, #A>): com.slack.circuit.runtime.presenter/Presenter<#A> // com.slack.circuit.runtime.presenter/presenterOf|presenterOf(kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,0:0>){0§<com.slack.circuit.runtime.CircuitUiState>}[0]

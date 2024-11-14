@@ -1,0 +1,11 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root.circuitx:effects>
+final fun com.slack.circuitx.effects/ImpressionEffect(kotlin/Array<out kotlin/Any?>..., kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.effects/ImpressionEffect|ImpressionEffect(kotlin.Array<out|kotlin.Any?>...;kotlin.Function0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.slack.circuitx.effects/LaunchedImpressionEffect(kotlin/Array<out kotlin/Any?>..., kotlin.coroutines/SuspendFunction0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.effects/LaunchedImpressionEffect|LaunchedImpressionEffect(kotlin.Array<out|kotlin.Any?>...;kotlin.coroutines.SuspendFunction0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.slack.circuitx.effects/rememberImpressionNavigator(kotlin/Array<out kotlin/Any?>..., com.slack.circuit.runtime/Navigator, kotlin.coroutines/SuspendFunction0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.runtime/Navigator // com.slack.circuitx.effects/rememberImpressionNavigator|rememberImpressionNavigator(kotlin.Array<out|kotlin.Any?>...;com.slack.circuit.runtime.Navigator;kotlin.coroutines.SuspendFunction0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]

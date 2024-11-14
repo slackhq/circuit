@@ -1,0 +1,12 @@
+public abstract interface class com/slack/circuit/runtime/presenter/Presenter {
+	public abstract fun present (Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/CircuitUiState;
+}
+
+public abstract interface class com/slack/circuit/runtime/presenter/Presenter$Factory {
+	public abstract fun create (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/CircuitContext;)Lcom/slack/circuit/runtime/presenter/Presenter;
+}
+
+public final class com/slack/circuit/runtime/presenter/PresenterKt {
+	public static final fun presenterOf (Lkotlin/jvm/functions/Function2;)Lcom/slack/circuit/runtime/presenter/Presenter;
+}
+

@@ -1,0 +1,70 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-overlay>
+open annotation class com.slack.circuit.overlay/ReadOnlyOverlayApi : kotlin/Annotation { // com.slack.circuit.overlay/ReadOnlyOverlayApi|null[0]
+    constructor <init>() // com.slack.circuit.overlay/ReadOnlyOverlayApi.<init>|<init>(){}[0]
+}
+
+final enum class com.slack.circuit.overlay/OverlayState : kotlin/Enum<com.slack.circuit.overlay/OverlayState> { // com.slack.circuit.overlay/OverlayState|null[0]
+    enum entry HIDDEN // com.slack.circuit.overlay/OverlayState.HIDDEN|null[0]
+    enum entry SHOWING // com.slack.circuit.overlay/OverlayState.SHOWING|null[0]
+    enum entry UNAVAILABLE // com.slack.circuit.overlay/OverlayState.UNAVAILABLE|null[0]
+
+    final val entries // com.slack.circuit.overlay/OverlayState.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuit.overlay/OverlayState> // com.slack.circuit.overlay/OverlayState.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.slack.circuit.overlay/OverlayState // com.slack.circuit.overlay/OverlayState.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.slack.circuit.overlay/OverlayState> // com.slack.circuit.overlay/OverlayState.values|values#static(){}[0]
+}
+
+abstract fun interface <#A: kotlin/Any> com.slack.circuit.overlay/Overlay { // com.slack.circuit.overlay/Overlay|null[0]
+    abstract fun Content(com.slack.circuit.overlay/OverlayNavigator<#A>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.overlay/Overlay.Content|Content(com.slack.circuit.overlay.OverlayNavigator<1:0>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+abstract fun interface <#A: kotlin/Any> com.slack.circuit.overlay/OverlayNavigator { // com.slack.circuit.overlay/OverlayNavigator|null[0]
+    abstract fun finish(#A) // com.slack.circuit.overlay/OverlayNavigator.finish|finish(1:0){}[0]
+}
+
+abstract interface <#A: kotlin/Any> com.slack.circuit.overlay/OverlayHostData { // com.slack.circuit.overlay/OverlayHostData|null[0]
+    abstract val overlay // com.slack.circuit.overlay/OverlayHostData.overlay|{}overlay[0]
+        abstract fun <get-overlay>(): com.slack.circuit.overlay/Overlay<#A> // com.slack.circuit.overlay/OverlayHostData.overlay.<get-overlay>|<get-overlay>(){}[0]
+
+    abstract fun finish(#A) // com.slack.circuit.overlay/OverlayHostData.finish|finish(1:0){}[0]
+}
+
+abstract interface com.slack.circuit.overlay/OverlayHost { // com.slack.circuit.overlay/OverlayHost|null[0]
+    abstract val currentOverlayData // com.slack.circuit.overlay/OverlayHost.currentOverlayData|{}currentOverlayData[0]
+        abstract fun <get-currentOverlayData>(): com.slack.circuit.overlay/OverlayHostData<kotlin/Any>? // com.slack.circuit.overlay/OverlayHost.currentOverlayData.<get-currentOverlayData>|<get-currentOverlayData>(){}[0]
+
+    abstract suspend fun <#A1: kotlin/Any> show(com.slack.circuit.overlay/Overlay<#A1>): #A1 // com.slack.circuit.overlay/OverlayHost.show|show(com.slack.circuit.overlay.Overlay<0:0>){0§<kotlin.Any>}[0]
+}
+
+abstract interface com.slack.circuit.overlay/OverlayScope : com.slack.circuit.overlay/OverlayHost, kotlinx.coroutines/CoroutineScope // com.slack.circuit.overlay/OverlayScope|null[0]
+
+abstract class <#A: kotlin/Any> com.slack.circuit.overlay/AnimatedOverlay : com.slack.circuit.overlay/Overlay<#A> { // com.slack.circuit.overlay/AnimatedOverlay|null[0]
+    constructor <init>(androidx.compose.animation/EnterTransition, androidx.compose.animation/ExitTransition) // com.slack.circuit.overlay/AnimatedOverlay.<init>|<init>(androidx.compose.animation.EnterTransition;androidx.compose.animation.ExitTransition){}[0]
+
+    final val enterTransition // com.slack.circuit.overlay/AnimatedOverlay.enterTransition|{}enterTransition[0]
+        final fun <get-enterTransition>(): androidx.compose.animation/EnterTransition // com.slack.circuit.overlay/AnimatedOverlay.enterTransition.<get-enterTransition>|<get-enterTransition>(){}[0]
+    final val exitTransition // com.slack.circuit.overlay/AnimatedOverlay.exitTransition|{}exitTransition[0]
+        final fun <get-exitTransition>(): androidx.compose.animation/ExitTransition // com.slack.circuit.overlay/AnimatedOverlay.exitTransition.<get-exitTransition>|<get-exitTransition>(){}[0]
+
+    abstract fun (androidx.compose.animation/AnimatedVisibilityScope).AnimatedContent(com.slack.circuit.overlay/OverlayNavigator<#A>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.overlay/AnimatedOverlay.AnimatedContent|AnimatedContent@androidx.compose.animation.AnimatedVisibilityScope(com.slack.circuit.overlay.OverlayNavigator<1:0>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    final fun Content(com.slack.circuit.overlay/OverlayNavigator<#A>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.overlay/AnimatedOverlay.Content|Content(com.slack.circuit.overlay.OverlayNavigator<1:0>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final val com.slack.circuit.overlay/LocalOverlayHost // com.slack.circuit.overlay/LocalOverlayHost|{}LocalOverlayHost[0]
+    final fun <get-LocalOverlayHost>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.overlay/OverlayHost> // com.slack.circuit.overlay/LocalOverlayHost.<get-LocalOverlayHost>|<get-LocalOverlayHost>(){}[0]
+final val com.slack.circuit.overlay/LocalOverlayState // com.slack.circuit.overlay/LocalOverlayState|{}LocalOverlayState[0]
+    final fun <get-LocalOverlayState>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.overlay/OverlayState> // com.slack.circuit.overlay/LocalOverlayState.<get-LocalOverlayState>|<get-LocalOverlayState>(){}[0]
+final val com.slack.circuit.overlay/com_slack_circuit_overlay_AnimatedOverlay$stableprop // com.slack.circuit.overlay/com_slack_circuit_overlay_AnimatedOverlay$stableprop|#static{}com_slack_circuit_overlay_AnimatedOverlay$stableprop[0]
+
+final fun com.slack.circuit.overlay/ContentWithOverlays(androidx.compose.ui/Modifier?, com.slack.circuit.overlay/OverlayHost?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.overlay/ContentWithOverlays|ContentWithOverlays(androidx.compose.ui.Modifier?;com.slack.circuit.overlay.OverlayHost?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.overlay/OverlayEffect(kotlin/Array<out kotlin/Any?>..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin.coroutines/SuspendFunction1<com.slack.circuit.overlay/OverlayScope, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.overlay/OverlayEffect|OverlayEffect(kotlin.Array<out|kotlin.Any?>...;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.coroutines.SuspendFunction1<com.slack.circuit.overlay.OverlayScope,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.overlay/com_slack_circuit_overlay_AnimatedOverlay$stableprop_getter(): kotlin/Int // com.slack.circuit.overlay/com_slack_circuit_overlay_AnimatedOverlay$stableprop_getter|com_slack_circuit_overlay_AnimatedOverlay$stableprop_getter(){}[0]
+final fun com.slack.circuit.overlay/rememberOverlayHost(androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.overlay/OverlayHost // com.slack.circuit.overlay/rememberOverlayHost|rememberOverlayHost(androidx.compose.runtime.Composer?;kotlin.Int){}[0]

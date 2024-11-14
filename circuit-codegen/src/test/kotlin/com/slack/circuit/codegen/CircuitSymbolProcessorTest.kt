@@ -188,12 +188,11 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier, screen
-                = screen) }
+            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier, screen = screen) }
             else -> null
           }
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -324,12 +323,11 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier, screen
-                = screen) }
+            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier, screen = screen) }
             else -> null
           }
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -985,11 +983,9 @@ class CircuitSymbolProcessorTest {
         public abstract class FavoritesPresenterFactoryModule {
           @Binds
           @IntoSet
-          public abstract
-              fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
-              Presenter.Factory
+          public abstract fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory): Presenter.Factory
         }
-      """
+        """
           .trimIndent(),
     )
   }

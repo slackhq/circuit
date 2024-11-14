@@ -61,6 +61,7 @@ androidComponents { beforeVariants { variant -> variant.androidTest.enable = fal
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true
+  @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/379030055
   from(projects.samples.star.benchmark.dependencyProject)
 
   filter {

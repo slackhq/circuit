@@ -1,0 +1,48 @@
+public final class com/slack/circuitx/overlays/AlertDialogOverlayKt {
+	public static final fun alertDialogOverlay (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Landroidx/compose/ui/window/DialogProperties;)Lcom/slack/circuitx/overlays/BasicAlertDialogOverlay;
+	public static synthetic fun alertDialogOverlay$default (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Landroidx/compose/ui/window/DialogProperties;ILjava/lang/Object;)Lcom/slack/circuitx/overlays/BasicAlertDialogOverlay;
+}
+
+public final class com/slack/circuitx/overlays/BasicAlertDialogOverlay : com/slack/circuit/overlay/Overlay {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/window/DialogProperties;Lkotlin/jvm/functions/Function4;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/window/DialogProperties;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun Content (Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/overlays/BasicDialogOverlay : com/slack/circuit/overlay/Overlay {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/window/DialogProperties;Lkotlin/jvm/functions/Function4;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/window/DialogProperties;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun Content (Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/overlays/BottomSheetOverlay : com/slack/circuit/overlay/Overlay {
+	public static final field $stable I
+	public synthetic fun <init> (Ljava/lang/Object;Landroidx/compose/ui/graphics/Color;Landroidx/compose/ui/unit/Dp;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function2;ZZLkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/Object;Landroidx/compose/ui/graphics/Color;Landroidx/compose/ui/unit/Dp;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function2;ZZLkotlin/jvm/functions/Function4;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/graphics/Color;Landroidx/compose/ui/unit/Dp;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function2;ZLandroidx/compose/material3/ModalBottomSheetProperties;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/graphics/Color;Landroidx/compose/ui/unit/Dp;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function2;ZLandroidx/compose/material3/ModalBottomSheetProperties;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun Content (Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/overlays/ComposableSingletons$BottomSheetOverlayKt {
+	public static final field INSTANCE Lcom/slack/circuitx/overlays/ComposableSingletons$BottomSheetOverlayKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function2;
+	public fun <init> ()V
+	public final fun getLambda-1$overlays ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class com/slack/circuitx/overlays/DialogResult : java/lang/Enum {
+	public static final field Cancel Lcom/slack/circuitx/overlays/DialogResult;
+	public static final field Confirm Lcom/slack/circuitx/overlays/DialogResult;
+	public static final field Dismiss Lcom/slack/circuitx/overlays/DialogResult;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/overlays/DialogResult;
+	public static fun values ()[Lcom/slack/circuitx/overlays/DialogResult;
+}
+
+public final class com/slack/circuitx/overlays/FullScreenOverlay_jvmKt {
+	public static final fun showFullScreenOverlay (Lcom/slack/circuit/overlay/OverlayHost;Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

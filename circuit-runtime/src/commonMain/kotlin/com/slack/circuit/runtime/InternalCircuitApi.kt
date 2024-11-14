@@ -3,9 +3,9 @@
 package com.slack.circuit.runtime
 
 /**
- * Marks declarations that are **internal** in Circuit API, which means that should not be used
- * outside of `com.slack.circuit`, because their signatures and semantics will change between future
- * releases without any warnings and without providing any migration aids.
+ * Marks declarations that are **internal** in Circuit's API, meaning that they should not be used
+ * outside of Circuit's first party API. This is their signatures and semantics will change between
+ * future releases without any warnings and without providing any migration aids.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(

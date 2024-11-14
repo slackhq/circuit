@@ -1,0 +1,140 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Alias: apple => [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-test>
+open annotation class com.slack.circuit.test/ExperimentalForInheritanceCircuitTestApi : kotlin/Annotation { // com.slack.circuit.test/ExperimentalForInheritanceCircuitTestApi|null[0]
+    constructor <init>() // com.slack.circuit.test/ExperimentalForInheritanceCircuitTestApi.<init>|<init>(){}[0]
+}
+
+abstract interface <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.test/CircuitReceiveTurbine : app.cash.turbine/ReceiveTurbine<#A> { // com.slack.circuit.test/CircuitReceiveTurbine|null[0]
+    abstract suspend fun awaitUnchanged() // com.slack.circuit.test/CircuitReceiveTurbine.awaitUnchanged|awaitUnchanged(){}[0]
+}
+
+final class <#A: com.slack.circuit.runtime/CircuitUiEvent> com.slack.circuit.test/TestEventSink : com.slack.circuit.test/BaseTestEventSinkType<#A> { // com.slack.circuit.test/TestEventSink|null[0]
+    constructor <init>() // com.slack.circuit.test/TestEventSink.<init>|<init>(){}[0]
+
+    final fun assertEvent(#A): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEvent|assertEvent(1:0){}[0]
+    final fun assertEvent(kotlin/Function1<#A, kotlin/Boolean>): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEvent|assertEvent(kotlin.Function1<1:0,kotlin.Boolean>){}[0]
+    final fun assertEventAt(kotlin/Int, #A): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEventAt|assertEventAt(kotlin.Int;1:0){}[0]
+    final fun assertEventAt(kotlin/Int, kotlin/Function1<#A, kotlin/Boolean>): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEventAt|assertEventAt(kotlin.Int;kotlin.Function1<1:0,kotlin.Boolean>){}[0]
+    final fun assertEventCount(kotlin/Int): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEventCount|assertEventCount(kotlin.Int){}[0]
+    final fun assertEvents(kotlin/Array<out #A>...): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEvents|assertEvents(kotlin.Array<out|1:0>...){}[0]
+    final fun assertEvents(kotlin/Function2<kotlin/Int, #A, kotlin/Boolean>): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertEvents|assertEvents(kotlin.Function2<kotlin.Int,1:0,kotlin.Boolean>){}[0]
+    final fun assertNoEvents(): com.slack.circuit.test/TestEventSink<#A> // com.slack.circuit.test/TestEventSink.assertNoEvents|assertNoEvents(){}[0]
+    final fun invoke(#A) // com.slack.circuit.test/TestEventSink.invoke|invoke(1:0){}[0]
+
+    final object Companion { // com.slack.circuit.test/TestEventSink.Companion|null[0]
+        final val DEFAULT_TIMEOUT // com.slack.circuit.test/TestEventSink.Companion.DEFAULT_TIMEOUT|{}DEFAULT_TIMEOUT[0]
+            final fun <get-DEFAULT_TIMEOUT>(): kotlin.time/Duration // com.slack.circuit.test/TestEventSink.Companion.DEFAULT_TIMEOUT.<get-DEFAULT_TIMEOUT>|<get-DEFAULT_TIMEOUT>(){}[0]
+    }
+}
+
+final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Navigator { // com.slack.circuit.test/FakeNavigator|null[0]
+    constructor <init>(com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>) // com.slack.circuit.test/FakeNavigator.<init>|<init>(com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>){}[0]
+    constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Array<out com.slack.circuit.runtime.screen/Screen>...) // com.slack.circuit.test/FakeNavigator.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Array<out|com.slack.circuit.runtime.screen.Screen>...){}[0]
+
+    final fun assertGoToIsEmpty() // com.slack.circuit.test/FakeNavigator.assertGoToIsEmpty|assertGoToIsEmpty(){}[0]
+    final fun assertIsEmpty() // com.slack.circuit.test/FakeNavigator.assertIsEmpty|assertIsEmpty(){}[0]
+    final fun assertPopIsEmpty() // com.slack.circuit.test/FakeNavigator.assertPopIsEmpty|assertPopIsEmpty(){}[0]
+    final fun assertResetRootIsEmpty() // com.slack.circuit.test/FakeNavigator.assertResetRootIsEmpty|assertResetRootIsEmpty(){}[0]
+    final fun expectNoEvents() // com.slack.circuit.test/FakeNavigator.expectNoEvents|expectNoEvents(){}[0]
+    final fun expectNoGoToEvents() // com.slack.circuit.test/FakeNavigator.expectNoGoToEvents|expectNoGoToEvents(){}[0]
+    final fun expectNoPopEvents() // com.slack.circuit.test/FakeNavigator.expectNoPopEvents|expectNoPopEvents(){}[0]
+    final fun expectNoResetRootEvents() // com.slack.circuit.test/FakeNavigator.expectNoResetRootEvents|expectNoResetRootEvents(){}[0]
+    final fun goTo(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
+    final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.peek|peek(){}[0]
+    final fun peekBackStack(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.peekBackStack|peekBackStack(){}[0]
+    final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
+    final fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+    final fun takeNextScreen(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.takeNextScreen|takeNextScreen(){}[0]
+    final suspend fun awaitNextGoTo(): com.slack.circuit.test/FakeNavigator.GoToEvent // com.slack.circuit.test/FakeNavigator.awaitNextGoTo|awaitNextGoTo(){}[0]
+    final suspend fun awaitNextScreen(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.awaitNextScreen|awaitNextScreen(){}[0]
+    final suspend fun awaitPop(): com.slack.circuit.test/FakeNavigator.PopEvent // com.slack.circuit.test/FakeNavigator.awaitPop|awaitPop(){}[0]
+    final suspend fun awaitResetRoot(): com.slack.circuit.test/FakeNavigator.ResetRootEvent // com.slack.circuit.test/FakeNavigator.awaitResetRoot|awaitResetRoot(){}[0]
+
+    final class GoToEvent { // com.slack.circuit.test/FakeNavigator.GoToEvent|null[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean) // com.slack.circuit.test/FakeNavigator.GoToEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean){}[0]
+
+        final val screen // com.slack.circuit.test/FakeNavigator.GoToEvent.screen|{}screen[0]
+            final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.GoToEvent.screen.<get-screen>|<get-screen>(){}[0]
+        final val success // com.slack.circuit.test/FakeNavigator.GoToEvent.success|{}success[0]
+            final fun <get-success>(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.GoToEvent.success.<get-success>|<get-success>(){}[0]
+
+        final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.GoToEvent.component1|component1(){}[0]
+        final fun component2(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.GoToEvent.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin/Boolean = ...): com.slack.circuit.test/FakeNavigator.GoToEvent // com.slack.circuit.test/FakeNavigator.GoToEvent.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.GoToEvent.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.test/FakeNavigator.GoToEvent.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.test/FakeNavigator.GoToEvent.toString|toString(){}[0]
+    }
+
+    final class PopEvent { // com.slack.circuit.test/FakeNavigator.PopEvent|null[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen?, com.slack.circuit.runtime.screen/PopResult? = ...) // com.slack.circuit.test/FakeNavigator.PopEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen?;com.slack.circuit.runtime.screen.PopResult?){}[0]
+
+        final val poppedScreen // com.slack.circuit.test/FakeNavigator.PopEvent.poppedScreen|{}poppedScreen[0]
+            final fun <get-poppedScreen>(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.PopEvent.poppedScreen.<get-poppedScreen>|<get-poppedScreen>(){}[0]
+        final val result // com.slack.circuit.test/FakeNavigator.PopEvent.result|{}result[0]
+            final fun <get-result>(): com.slack.circuit.runtime.screen/PopResult? // com.slack.circuit.test/FakeNavigator.PopEvent.result.<get-result>|<get-result>(){}[0]
+
+        final fun component1(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.PopEvent.component1|component1(){}[0]
+        final fun component2(): com.slack.circuit.runtime.screen/PopResult? // com.slack.circuit.test/FakeNavigator.PopEvent.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen? = ..., com.slack.circuit.runtime.screen/PopResult? = ...): com.slack.circuit.test/FakeNavigator.PopEvent // com.slack.circuit.test/FakeNavigator.PopEvent.copy|copy(com.slack.circuit.runtime.screen.Screen?;com.slack.circuit.runtime.screen.PopResult?){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.PopEvent.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.test/FakeNavigator.PopEvent.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.test/FakeNavigator.PopEvent.toString|toString(){}[0]
+    }
+
+    final class ResetRootEvent { // com.slack.circuit.test/FakeNavigator.ResetRootEvent|null[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen>, kotlin/Boolean = ..., kotlin/Boolean = ...) // com.slack.circuit.test/FakeNavigator.ResetRootEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlinx.collections.immutable.ImmutableList<com.slack.circuit.runtime.screen.Screen>;kotlin.Boolean;kotlin.Boolean){}[0]
+
+        final val newRoot // com.slack.circuit.test/FakeNavigator.ResetRootEvent.newRoot|{}newRoot[0]
+            final fun <get-newRoot>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.ResetRootEvent.newRoot.<get-newRoot>|<get-newRoot>(){}[0]
+        final val oldScreens // com.slack.circuit.test/FakeNavigator.ResetRootEvent.oldScreens|{}oldScreens[0]
+            final fun <get-oldScreens>(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.ResetRootEvent.oldScreens.<get-oldScreens>|<get-oldScreens>(){}[0]
+        final val restoreState // com.slack.circuit.test/FakeNavigator.ResetRootEvent.restoreState|{}restoreState[0]
+            final fun <get-restoreState>(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ResetRootEvent.restoreState.<get-restoreState>|<get-restoreState>(){}[0]
+        final val saveState // com.slack.circuit.test/FakeNavigator.ResetRootEvent.saveState|{}saveState[0]
+            final fun <get-saveState>(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ResetRootEvent.saveState.<get-saveState>|<get-saveState>(){}[0]
+
+        final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.ResetRootEvent.component1|component1(){}[0]
+        final fun component2(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.ResetRootEvent.component2|component2(){}[0]
+        final fun component3(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ResetRootEvent.component3|component3(){}[0]
+        final fun component4(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ResetRootEvent.component4|component4(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): com.slack.circuit.test/FakeNavigator.ResetRootEvent // com.slack.circuit.test/FakeNavigator.ResetRootEvent.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlinx.collections.immutable.ImmutableList<com.slack.circuit.runtime.screen.Screen>;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ResetRootEvent.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.test/FakeNavigator.ResetRootEvent.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.test/FakeNavigator.ResetRootEvent.toString|toString(){}[0]
+    }
+}
+
+final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop|#static{}com_slack_circuit_test_FakeNavigator$stableprop[0]
+final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop[0]
+final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_PopEvent$stableprop[0]
+final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop[0]
+final val com.slack.circuit.test/com_slack_circuit_test_TestEventSink$stableprop // com.slack.circuit.test/com_slack_circuit_test_TestEventSink$stableprop|#static{}com_slack_circuit_test_TestEventSink$stableprop[0]
+
+final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop_getter|com_slack_circuit_test_FakeNavigator$stableprop_getter(){}[0]
+final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop_getter(){}[0]
+final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_PopEvent$stableprop_getter(){}[0]
+final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop_getter(){}[0]
+final fun com.slack.circuit.test/com_slack_circuit_test_TestEventSink$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_TestEventSink$stableprop_getter|com_slack_circuit_test_TestEventSink$stableprop_getter(){}[0]
+final suspend fun <#A: com.slack.circuit.runtime/CircuitUiState> (com.slack.circuit.runtime.presenter/Presenter<#A>).com.slack.circuit.test/test(kotlin.time/Duration? = ..., kotlin/String? = ..., androidx.compose.runtime/SnapshotMutationPolicy<#A> = ..., kotlin.coroutines/SuspendFunction1<com.slack.circuit.test/CircuitReceiveTurbine<#A>, kotlin/Unit>) // com.slack.circuit.test/test|test@com.slack.circuit.runtime.presenter.Presenter<0:0>(kotlin.time.Duration?;kotlin.String?;androidx.compose.runtime.SnapshotMutationPolicy<0:0>;kotlin.coroutines.SuspendFunction1<com.slack.circuit.test.CircuitReceiveTurbine<0:0>,kotlin.Unit>){0§<com.slack.circuit.runtime.CircuitUiState>}[0]
+final suspend fun <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.test/presenterTestOf(kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, #A>, kotlin.time/Duration? = ..., kotlin/String? = ..., androidx.compose.runtime/SnapshotMutationPolicy<#A> = ..., kotlin.coroutines/SuspendFunction1<com.slack.circuit.test/CircuitReceiveTurbine<#A>, kotlin/Unit>) // com.slack.circuit.test/presenterTestOf|presenterTestOf(kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,0:0>;kotlin.time.Duration?;kotlin.String?;androidx.compose.runtime.SnapshotMutationPolicy<0:0>;kotlin.coroutines.SuspendFunction1<com.slack.circuit.test.CircuitReceiveTurbine<0:0>,kotlin.Unit>){0§<com.slack.circuit.runtime.CircuitUiState>}[0]
+
+// Targets: [apple]
+sealed interface <#A: kotlin/Any?> com.slack.circuit.test/BaseTestEventSinkType : kotlin/Function1<#A, kotlin/Unit> { // com.slack.circuit.test/BaseTestEventSinkType|null[0]
+    abstract fun invoke(#A) // com.slack.circuit.test/BaseTestEventSinkType.invoke|invoke(1:0){}[0]
+}
+
+// Targets: [js, wasmJs]
+sealed interface <#A: kotlin/Any?> com.slack.circuit.test/BaseTestEventSinkType { // com.slack.circuit.test/BaseTestEventSinkType|null[0]
+    abstract fun invoke(#A) // com.slack.circuit.test/BaseTestEventSinkType.invoke|invoke(1:0){}[0]
+}
+
+// Targets: [js, wasmJs]
+final fun <#A: com.slack.circuit.runtime/CircuitUiEvent> (com.slack.circuit.test/TestEventSink<#A>).com.slack.circuit.test/asEventSinkFunction(): kotlin/Function1<#A, kotlin/Unit> // com.slack.circuit.test/asEventSinkFunction|asEventSinkFunction@com.slack.circuit.test.TestEventSink<0:0>(){0§<com.slack.circuit.runtime.CircuitUiEvent>}[0]

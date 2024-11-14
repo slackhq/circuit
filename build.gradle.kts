@@ -472,11 +472,12 @@ apiValidation {
     enabled = true
     strictValidation = false
   }
-  nonPublicMarkers += setOf(
-    "com.slack.circuit.runtime.InternalCircuitApi",
-    "com.slack.circuit.runtime.ExperimentalCircuitApi",
-    "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi"
-  )
+  nonPublicMarkers +=
+    setOf(
+      "com.slack.circuit.runtime.InternalCircuitApi",
+      "com.slack.circuit.runtime.ExperimentalCircuitApi",
+      "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
+    )
   ignoredPackages +=
     setOf("com.slack.circuit.foundation.internal", "com.slack.circuit.runtime.internal")
   // Annoyingly this only uses simple names

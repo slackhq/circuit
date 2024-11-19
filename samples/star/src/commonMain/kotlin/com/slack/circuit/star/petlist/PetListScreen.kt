@@ -2,13 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -92,7 +89,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.AnimatedScreen
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -101,6 +97,7 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.progress
@@ -145,13 +142,7 @@ import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
 
 @CommonParcelize
-data object PetListScreen : AnimatedScreen {
-
-  override fun enterTransition(sharedElementTransition: Boolean) =
-    if (sharedElementTransition) EnterTransition.None else null
-
-  override fun exitTransition(sharedElementTransition: Boolean) =
-    if (sharedElementTransition) ExitTransition.None else fadeOut()
+data object PetListScreen : Screen {
 
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean

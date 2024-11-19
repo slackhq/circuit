@@ -348,27 +348,15 @@ public object NavigatorDefaults {
       // The states are available as `targetState` and `initialState`.
       val diff = targetState.args.size - initialState.args.size
       val sameRoot = targetState.args.lastOrNull() == initialState.args.lastOrNull()
-      val targetScreen = targetState.args.firstOrNull()?.screen
-      val initialScreen = initialState.args.firstOrNull()?.screen
       when {
-        sameRoot && diff > 0 -> contentTransform(targetScreen, initialScreen, forward)
-        sameRoot && diff < 0 -> contentTransform(initialScreen, targetScreen, backward)
+        sameRoot && diff > 0 -> forward
+        sameRoot && diff < 0 -> backward
         else -> fadeIn() togetherWith fadeOut()
       }.using(
         // Disable clipping since the faded slide-in/out should
         // be displayed out of bounds.
         SizeTransform(clip = false)
       )
-    }
-
-    private fun contentTransform(
-      targetScreen: Screen?,
-      initialScreen: Screen?,
-      fallback: ContentTransform,
-    ): ContentTransform {
-      return ((targetScreen as? AnimatedScreen)?.enterTransition()
-        ?: fallback.targetContentEnter) togetherWith
-        ((initialScreen as? AnimatedScreen)?.exitTransition() ?: fallback.initialContentExit)
     }
 
     @Composable

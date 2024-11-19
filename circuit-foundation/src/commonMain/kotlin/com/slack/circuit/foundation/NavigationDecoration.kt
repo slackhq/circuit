@@ -10,7 +10,6 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.SharedContentState
 import androidx.compose.animation.core.Transition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -29,7 +28,6 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
-import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlinx.collections.immutable.ImmutableList
 
@@ -57,21 +55,16 @@ public abstract class AnimatedNavDecoration(
           ProvideAnimatedTransitionScope(Navigation, animatedContentScope) {
             sharedElementTransitionScope ->
             val entry = backStackEntryState.value
-            val animatedModifier =
-              if (sharedElementTransitionScope != null && entry != null) {
-                Modifier.overrideSharedElementAnimations(
-                  transitionScope = sharedElementTransitionScope,
+            Box(
+              modifier =
+                Modifier.overrideAnimations(
                   animatedVisibilityScope = animatedContentScope,
-                  state =
-                    sharedElementTransitionScope.rememberSharedContentState(
-                      NavigationSharedContentKey(entry)
-                    ),
                   screen = targetState.screen,
+                  sharedElementTransition = sharedElementTransitionScope != null && entry != null,
                 )
-              } else {
-                Modifier.overrideAnimations(animatedContentScope, targetState.screen)
-              }
-            Box(modifier = animatedModifier) { AnimatedNavContent(targetState) { content(it) } }
+            ) {
+              AnimatedNavContent(targetState) { content(it) }
+            }
           }
         }
       }
@@ -118,6 +111,22 @@ public interface AnimatedNavState {
 }
 
 /** A [Screen] that supports custom Enter/Exit transitions. */
+// TODO Remove AnimatedScreen and replace it with a mechanism to support custom transitions between
+//  any two given screens
+public interface AnimatedNavigationOverride {
+  // todo Should this indicate if it's a backward navigation or forward navigation?
+  public fun transitionSpec(source: Screen, target: Screen, direction: Direction): ContentTransform?
+
+  // todo If we don't need the sharedBounds we don't need this. It might be nice to have this check
+  //  so we default override any shared transition away from the normal animations?
+  public fun expectsSharedElementTransition(source: Screen, target: Screen): Boolean
+
+  public enum class Direction {
+    Forward,
+    Backward,
+  }
+}
+
 public interface AnimatedScreen : Screen {
   /**
    * A [EnterTransition] to use when showing this screen. If null is returned the screen is animated
@@ -200,8 +209,8 @@ private fun forwardSharedElementBackStackEntry(
 }
 
 /**
- * If navigating backward, with screens I've already seen and we have a key. We are expecting a
- * shared element transition.
+ * If navigating backward, with a shared key, and screens already seen; We are expecting a shared
+ * element transition.
  */
 private fun backwardSharedElementBackStackEntry(
   lastCurrentArg: NavArgBackStackState,
@@ -220,32 +229,14 @@ private fun backwardSharedElementBackStackEntry(
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
-private fun Modifier.overrideSharedElementAnimations(
-  transitionScope: SharedElementTransitionScope,
-  animatedVisibilityScope: AnimatedVisibilityScope,
-  state: SharedContentState,
-  screen: Screen,
-): Modifier {
-  val animatedScreen = screen as? AnimatedScreen
-  val enter = animatedScreen?.enterTransition(sharedElementTransition = true)
-  val exit = animatedScreen?.exitTransition(sharedElementTransition = true)
-  if (enter == null || exit == null) return this
-  return with(transitionScope) {
-    with(animatedVisibilityScope) {
-      then(Modifier.animateEnterExit(enter = enter, exit = exit))
-        .sharedElement(state = state, animatedVisibilityScope = animatedVisibilityScope)
-    }
-  }
-}
-
 private fun Modifier.overrideAnimations(
   animatedVisibilityScope: AnimatedVisibilityScope,
   screen: Screen,
+  sharedElementTransition: Boolean,
 ): Modifier {
   val animatedScreen = screen as? AnimatedScreen
-  val enter = animatedScreen?.enterTransition(sharedElementTransition = false)
-  val exit = animatedScreen?.exitTransition(sharedElementTransition = false)
+  val enter = animatedScreen?.enterTransition(sharedElementTransition)
+  val exit = animatedScreen?.exitTransition(sharedElementTransition)
   if (enter == null || exit == null) return this
   return with(animatedVisibilityScope) { animateEnterExit(enter = enter, exit = exit) }
 }
@@ -261,8 +252,6 @@ private data class SharedElementBackStackEntry(
   val currentScreen: AnimatedScreen,
   val previousScreen: Screen,
 )
-
-private data class NavigationSharedContentKey(val key: Any)
 
 public class DefaultAnimatedNavDecoration(decoratorFactory: AnimatedNavDecorator.Factory) :
   AnimatedNavDecoration(decoratorFactory)

@@ -1,0 +1,52 @@
+public final class com/slack/circuit/sharedelements/AnimatedVisibilityScopeExtKt {
+	public static final fun progress (Landroidx/compose/animation/AnimatedVisibilityScope;)Landroidx/compose/runtime/FloatState;
+}
+
+public abstract interface annotation class com/slack/circuit/sharedelements/DelicateCircuitSharedElementsApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/circuit/sharedelements/SharedElementTransitionLayoutKt {
+	public static final fun PreviewSharedElementTransitionLayout (Landroidx/compose/ui/Modifier;Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun SharedElementTransitionLayout (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getLocalSharedElementTransitionState ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public abstract interface class com/slack/circuit/sharedelements/SharedElementTransitionScope : androidx/compose/animation/SharedTransitionScope {
+	public static final field Companion Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;
+	public abstract fun availableScopes ()Ljava/util/Set;
+	public abstract fun getAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
+	public abstract fun getHasLayoutCoordinates ()Z
+	public fun requireAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
+}
+
+public abstract interface class com/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope {
+}
+
+public final class com/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope$Navigation : com/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope$Navigation;
+}
+
+public final class com/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope$Overlay : com/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope$Overlay;
+}
+
+public final class com/slack/circuit/sharedelements/SharedElementTransitionScope$Companion {
+	public final fun isAvailable (Landroidx/compose/runtime/Composer;I)Z
+}
+
+public final class com/slack/circuit/sharedelements/SharedElementTransitionScopeKt {
+	public static final fun ProvideAnimatedTransitionScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;Landroidx/compose/animation/AnimatedVisibilityScope;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public static final fun SharedElementTransitionScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun requireActiveAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
+}
+
+public final class com/slack/circuit/sharedelements/SharedElementTransitionState : java/lang/Enum {
+	public static final field Available Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
+	public static final field Unavailable Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
+	public static fun values ()[Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
+}
+

@@ -1,0 +1,57 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-shared-elements>
+open annotation class com.slack.circuit.sharedelements/DelicateCircuitSharedElementsApi : kotlin/Annotation { // com.slack.circuit.sharedelements/DelicateCircuitSharedElementsApi|null[0]
+    constructor <init>() // com.slack.circuit.sharedelements/DelicateCircuitSharedElementsApi.<init>|<init>(){}[0]
+}
+
+final enum class com.slack.circuit.sharedelements/SharedElementTransitionState : kotlin/Enum<com.slack.circuit.sharedelements/SharedElementTransitionState> { // com.slack.circuit.sharedelements/SharedElementTransitionState|null[0]
+    enum entry Available // com.slack.circuit.sharedelements/SharedElementTransitionState.Available|null[0]
+    enum entry Unavailable // com.slack.circuit.sharedelements/SharedElementTransitionState.Unavailable|null[0]
+
+    final val entries // com.slack.circuit.sharedelements/SharedElementTransitionState.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuit.sharedelements/SharedElementTransitionState> // com.slack.circuit.sharedelements/SharedElementTransitionState.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.slack.circuit.sharedelements/SharedElementTransitionState // com.slack.circuit.sharedelements/SharedElementTransitionState.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.slack.circuit.sharedelements/SharedElementTransitionState> // com.slack.circuit.sharedelements/SharedElementTransitionState.values|values#static(){}[0]
+}
+
+abstract interface com.slack.circuit.sharedelements/SharedElementTransitionScope : androidx.compose.animation/SharedTransitionScope { // com.slack.circuit.sharedelements/SharedElementTransitionScope|null[0]
+    abstract val hasLayoutCoordinates // com.slack.circuit.sharedelements/SharedElementTransitionScope.hasLayoutCoordinates|{}hasLayoutCoordinates[0]
+        abstract fun <get-hasLayoutCoordinates>(): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.hasLayoutCoordinates.<get-hasLayoutCoordinates>|<get-hasLayoutCoordinates>(){}[0]
+
+    abstract fun availableScopes(): kotlin.collections/Set<com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope> // com.slack.circuit.sharedelements/SharedElementTransitionScope.availableScopes|availableScopes(){}[0]
+    abstract fun getAnimatedScope(com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope): androidx.compose.animation/AnimatedVisibilityScope? // com.slack.circuit.sharedelements/SharedElementTransitionScope.getAnimatedScope|getAnimatedScope(com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope){}[0]
+    open fun requireAnimatedScope(com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope): androidx.compose.animation/AnimatedVisibilityScope // com.slack.circuit.sharedelements/SharedElementTransitionScope.requireAnimatedScope|requireAnimatedScope(com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope){}[0]
+
+    abstract interface AnimatedScope { // com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope|null[0]
+        final object Navigation : com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope // com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope.Navigation|null[0]
+
+        final object Overlay : com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope // com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope.Overlay|null[0]
+    }
+
+    final object Companion { // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion|null[0]
+        final fun isAvailable(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isAvailable|isAvailable(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    }
+}
+
+final val com.slack.circuit.sharedelements/LocalSharedElementTransitionState // com.slack.circuit.sharedelements/LocalSharedElementTransitionState|{}LocalSharedElementTransitionState[0]
+    final fun <get-LocalSharedElementTransitionState>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.sharedelements/SharedElementTransitionState> // com.slack.circuit.sharedelements/LocalSharedElementTransitionState.<get-LocalSharedElementTransitionState>|<get-LocalSharedElementTransitionState>(){}[0]
+final val com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScopeImpl$stableprop // com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScopeImpl$stableprop|#static{}com_slack_circuit_sharedelements_SharedElementTransitionScopeImpl$stableprop[0]
+final val com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Navigation$stableprop // com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Navigation$stableprop|#static{}com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Navigation$stableprop[0]
+final val com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Overlay$stableprop // com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Overlay$stableprop|#static{}com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Overlay$stableprop[0]
+
+final fun (androidx.compose.animation/AnimatedVisibilityScope).com.slack.circuit.sharedelements/progress(): androidx.compose.runtime/FloatState // com.slack.circuit.sharedelements/progress|progress@androidx.compose.animation.AnimatedVisibilityScope(){}[0]
+final fun (com.slack.circuit.sharedelements/SharedElementTransitionScope).com.slack.circuit.sharedelements/requireActiveAnimatedScope(): androidx.compose.animation/AnimatedVisibilityScope // com.slack.circuit.sharedelements/requireActiveAnimatedScope|requireActiveAnimatedScope@com.slack.circuit.sharedelements.SharedElementTransitionScope(){}[0]
+final fun com.slack.circuit.sharedelements/PreviewSharedElementTransitionLayout(androidx.compose.ui/Modifier?, com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.sharedelements/PreviewSharedElementTransitionLayout|PreviewSharedElementTransitionLayout(androidx.compose.ui.Modifier?;com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.sharedelements/ProvideAnimatedTransitionScope(com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope, androidx.compose.animation/AnimatedVisibilityScope, kotlin/Function3<com.slack.circuit.sharedelements/SharedElementTransitionScope?, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.sharedelements/ProvideAnimatedTransitionScope|ProvideAnimatedTransitionScope(com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope;androidx.compose.animation.AnimatedVisibilityScope;kotlin.Function3<com.slack.circuit.sharedelements.SharedElementTransitionScope?,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.slack.circuit.sharedelements/SharedElementTransitionLayout(androidx.compose.ui/Modifier?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.sharedelements/SharedElementTransitionLayout|SharedElementTransitionLayout(androidx.compose.ui.Modifier?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.sharedelements/SharedElementTransitionScope(com.slack.circuit.sharedelements/SharedElementTransitionScope?, kotlin/Function3<com.slack.circuit.sharedelements/SharedElementTransitionScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.sharedelements/SharedElementTransitionScope|SharedElementTransitionScope(com.slack.circuit.sharedelements.SharedElementTransitionScope?;kotlin.Function3<com.slack.circuit.sharedelements.SharedElementTransitionScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScopeImpl$stableprop_getter(): kotlin/Int // com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScopeImpl$stableprop_getter|com_slack_circuit_sharedelements_SharedElementTransitionScopeImpl$stableprop_getter(){}[0]
+final fun com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Navigation$stableprop_getter(): kotlin/Int // com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Navigation$stableprop_getter|com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Navigation$stableprop_getter(){}[0]
+final fun com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Overlay$stableprop_getter(): kotlin/Int // com.slack.circuit.sharedelements/com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Overlay$stableprop_getter|com_slack_circuit_sharedelements_SharedElementTransitionScope_AnimatedScope_Overlay$stableprop_getter(){}[0]

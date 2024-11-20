@@ -32,6 +32,10 @@ public final class com/slack/circuit/backstack/BackStackRecordLocalProviderKt {
 	public static final fun providedValuesForBackStack (Lcom/slack/circuit/backstack/BackStack;Lkotlinx/collections/immutable/ImmutableList;ZLandroidx/compose/runtime/Composer;II)Lkotlinx/collections/immutable/ImmutableMap;
 }
 
+public abstract interface class com/slack/circuit/backstack/NavArgument {
+	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+}
+
 public abstract interface class com/slack/circuit/backstack/NavDecoration {
 	public abstract fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }

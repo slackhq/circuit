@@ -4,6 +4,9 @@ package com.slack.circuit.codegen
 
 import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.PlatformInfo
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.slack.circuit.codegen.FactoryType.UI
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -144,9 +147,10 @@ internal enum class CodegenMode {
    * given scope (e.g. AppScope).
    *
    * ```kotlin
+   * @Inject
    * @ContributesMultibinding(AppScope::class)
-   * public class FavoritesPresenterFactory @Inject constructor(
-   *   private val factory: FavoritesPresenter.Factory,
+   * public class FavoritesPresenterFactory(
+   *   private val provider: () -> FavoritesPresenter,
    * ) : Presenter.Factory { ... }
    * ```
    */
@@ -173,6 +177,10 @@ internal enum class CodegenMode {
     ) {
       classBuilder.addAnnotation(runtime.inject)
     }
+
+    override fun filterValidInjectionSites(candidates: Collection<KSDeclaration>): Collection<KSDeclaration> {
+      return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
+    }
   };
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
@@ -192,6 +200,12 @@ internal enum class CodegenMode {
     classBuilder: TypeSpec.Builder,
     constructorBuilder: FunSpec.Builder,
   )
+
+  /**
+   * Filters the candidates for @Inject annotation placement.
+   */
+  open fun filterValidInjectionSites(candidates: Collection<KSDeclaration>): Collection<KSDeclaration> =
+    candidates.filterIsInstance<KSFunctionDeclaration>()
 
   open val runtime: InjectionRuntime = InjectionRuntime.Javax
 

@@ -178,7 +178,9 @@ internal enum class CodegenMode {
       classBuilder.addAnnotation(runtime.inject)
     }
 
-    override fun filterValidInjectionSites(candidates: Collection<KSDeclaration>): Collection<KSDeclaration> {
+    override fun filterValidInjectionSites(
+      candidates: Collection<KSDeclaration>
+    ): Collection<KSDeclaration> {
       return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
     }
   };
@@ -201,11 +203,10 @@ internal enum class CodegenMode {
     constructorBuilder: FunSpec.Builder,
   )
 
-  /**
-   * Filters the candidates for @Inject annotation placement.
-   */
-  open fun filterValidInjectionSites(candidates: Collection<KSDeclaration>): Collection<KSDeclaration> =
-    candidates.filterIsInstance<KSFunctionDeclaration>()
+  /** Filters the candidates for @Inject annotation placement. */
+  open fun filterValidInjectionSites(
+    candidates: Collection<KSDeclaration>
+  ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
 
   open val runtime: InjectionRuntime = InjectionRuntime.Javax
 

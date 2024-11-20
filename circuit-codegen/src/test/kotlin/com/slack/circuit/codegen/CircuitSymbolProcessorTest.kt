@@ -45,9 +45,10 @@ class CircuitSymbolProcessorTest {
       "Inject.kt",
       """
         package me.tatarka.inject.annotations
-        
+
         annotation class Inject
-      """.trimIndent(),
+      """
+        .trimIndent(),
     )
   private val screens =
     kotlin(
@@ -809,9 +810,10 @@ class CircuitSymbolProcessorTest {
   @Test
   fun presenterClass_simpleInjection_kotlinInjectAnvil() {
     assertGeneratedFile(
-      sourceFile = kotlin(
-        "TestPresenter.kt",
-        """
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
         package test
 
         import com.slack.circuit.codegen.annotations.CircuitInject
@@ -828,8 +830,8 @@ class CircuitSymbolProcessorTest {
           }
         }
         """
-          .trimIndent(),
-      ),
+            .trimIndent(),
+        ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
@@ -1370,10 +1372,7 @@ class CircuitSymbolProcessorTest {
             CodegenMode.ANVIL -> listOf(appScope)
             CodegenMode.HILT -> listOf(singletonComponent)
             CodegenMode.KOTLIN_INJECT_ANVIL -> {
-              listOf(
-                appScope,
-                kotlinInjectAnnotation,
-              )
+              listOf(appScope, kotlinInjectAnnotation)
             }
           }
       inheritClassPath = true

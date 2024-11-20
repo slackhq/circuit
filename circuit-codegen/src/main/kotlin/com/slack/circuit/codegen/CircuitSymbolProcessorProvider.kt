@@ -435,9 +435,9 @@ private class CircuitSymbolProcessor(
         }
         val useProvider =
           !isAssisted &&
-            codegenMode.filterValidInjectionSites(
-              listOfNotNull(creatorOrConstructor, declaration),
-            ).any { it.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) }
+            codegenMode
+              .filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration))
+              .any { it.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) }
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =

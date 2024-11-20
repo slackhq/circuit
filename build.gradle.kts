@@ -14,6 +14,7 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import java.net.URI
+import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -54,6 +55,7 @@ plugins {
   alias(libs.plugins.kotlin.plugin.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
+  alias(libs.plugins.binaryCompatibilityValidator)
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
@@ -232,8 +234,10 @@ subprojects {
       buildUponDefaultConfig = true
     }
 
+    val buildDir = project.layout.buildDirectory.asFile.get().canonicalPath
     tasks.withType<Detekt>().configureEach {
       jvmTarget = jvmTargetProject.get()
+      exclude { it.file.canonicalPath.startsWith(buildDir) }
       reports {
         html.required.set(true)
         xml.required.set(true)
@@ -460,4 +464,38 @@ subprojects {
       }
     }
   }
+}
+
+apiValidation {
+  @OptIn(ExperimentalBCVApi::class)
+  klib {
+    enabled = true
+    strictValidation = false
+  }
+  nonPublicMarkers +=
+    setOf(
+      "com.slack.circuit.runtime.InternalCircuitApi",
+      "com.slack.circuit.runtime.ExperimentalCircuitApi",
+      "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
+    )
+  ignoredPackages +=
+    setOf("com.slack.circuit.foundation.internal", "com.slack.circuit.runtime.internal")
+  // Annoyingly this only uses simple names
+  // https://github.com/Kotlin/binary-compatibility-validator/issues/16
+  ignoredProjects +=
+    listOf(
+      "counter",
+      "circuit-codegen",
+      "apps",
+      "mosaic",
+      "interop",
+      "kotlin-inject",
+      "star",
+      "apk",
+      "benchmark",
+      "coil-rule",
+      "tacos",
+      "tutorial",
+      "internal-test-utils",
+    )
 }

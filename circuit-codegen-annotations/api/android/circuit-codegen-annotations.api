@@ -1,0 +1,5 @@
+public abstract interface annotation class com/slack/circuit/codegen/annotations/CircuitInject : java/lang/annotation/Annotation {
+	public abstract fun scope ()Ljava/lang/Class;
+	public abstract fun screen ()Ljava/lang/Class;
+}
+

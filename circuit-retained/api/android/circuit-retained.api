@@ -60,6 +60,10 @@ public final class com/slack/circuit/retained/RememberRetainedKt {
 	public static final fun rememberRetainedSaveable ([Ljava/lang/Object;Landroidx/compose/runtime/saveable/Saver;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
 }
 
+public final class com/slack/circuit/retained/RetainedStateProviderKt {
+	public static final fun RetainedStateProvider (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+}
+
 public abstract interface class com/slack/circuit/retained/RetainedStateRegistry {
 	public abstract fun consumeValue (Ljava/lang/String;)Ljava/lang/Object;
 	public abstract fun forgetUnclaimedValues ()V

@@ -200,6 +200,7 @@ kotlin {
         optIn.addAll(
           "androidx.compose.material.ExperimentalMaterialApi",
           "androidx.compose.material3.ExperimentalMaterial3Api",
+          "coil3.annotation.ExperimentalCoilApi",
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")

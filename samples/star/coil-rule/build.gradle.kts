@@ -26,4 +26,7 @@ kotlin {
     }
     androidMain { dependencies { implementation(libs.androidx.test.monitor) } }
   }
+
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  compilerOptions { optIn.addAll("coil3.annotation.ExperimentalCoilApi") }
 }

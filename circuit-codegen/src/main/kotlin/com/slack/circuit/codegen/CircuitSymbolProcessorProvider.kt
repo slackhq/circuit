@@ -433,11 +433,11 @@ private class CircuitSymbolProcessor(
           creatorOrConstructor = injectableConstructor
           targetClass = declaration
         }
-        // TODO check for class inject annotation
         val useProvider =
           !isAssisted &&
-            creatorOrConstructor?.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) ==
-              true
+            codegenMode
+              .filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration))
+              .any { it.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) }
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =

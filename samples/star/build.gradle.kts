@@ -69,9 +69,9 @@ kotlin {
     commonMain {
       dependencies {
         implementation(libs.androidx.datastore.preferences)
-        implementation(libs.coil3)
-        implementation(libs.coil3.compose)
-        implementation(libs.coil3.network.ktor)
+        implementation(libs.coil)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.network.ktor)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
@@ -120,7 +120,7 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.dagger)
         implementation(libs.jsoup)
-        implementation(libs.coil3.network.okhttp)
+        implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)

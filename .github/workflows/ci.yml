@@ -228,8 +228,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, build-ios, snapshots]
     if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
-    env:
-      GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
     steps:
       - name: Checkout
@@ -246,21 +244,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          # Only save Gradle User Home state for builds on the 'main' branch.
-          # Builds on other branches will only read existing entries from the cache.
-          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-
-          # Don't reuse cache entries from any other Job.
-          gradle-home-cache-strict-match: true
-
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-
-          # Limit the size of the cache entry.
-          # These directories contain instrumented/transformed dependency jars which can be reconstructed relatively quickly.
-          gradle-home-cache-excludes: |
-            caches/jars-9
-            caches/transforms-3
 
       - name: Publish snapshot (main branch only)
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache --quiet

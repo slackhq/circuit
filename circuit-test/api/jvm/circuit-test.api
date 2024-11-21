@@ -1,0 +1,111 @@
+public abstract interface class com/slack/circuit/test/BaseTestEventSinkType : kotlin/jvm/functions/Function1 {
+	public abstract fun invoke (Ljava/lang/Object;)V
+}
+
+public abstract interface class com/slack/circuit/test/CircuitReceiveTurbine : app/cash/turbine/ReceiveTurbine {
+	public abstract fun awaitUnchanged (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface annotation class com/slack/circuit/test/ExperimentalForInheritanceCircuitTestApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/circuit/test/FakeNavigator : com/slack/circuit/runtime/Navigator {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/backstack/BackStack;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;[Lcom/slack/circuit/runtime/screen/Screen;)V
+	public final fun assertGoToIsEmpty ()V
+	public final fun assertIsEmpty ()V
+	public final fun assertPopIsEmpty ()V
+	public final fun assertResetRootIsEmpty ()V
+	public final fun awaitNextGoTo (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun awaitNextScreen (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun awaitPop (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun awaitResetRoot (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun expectNoEvents ()V
+	public final fun expectNoGoToEvents ()V
+	public final fun expectNoPopEvents ()V
+	public final fun expectNoResetRootEvents ()V
+	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
+	public fun peekBackStack ()Lkotlinx/collections/immutable/ImmutableList;
+	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lkotlinx/collections/immutable/ImmutableList;
+	public final fun takeNextScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+}
+
+public final class com/slack/circuit/test/FakeNavigator$GoToEvent {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Z)V
+	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun component2 ()Z
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Z)Lcom/slack/circuit/test/FakeNavigator$GoToEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$GoToEvent;Lcom/slack/circuit/runtime/screen/Screen;ZILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$GoToEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun getSuccess ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/test/FakeNavigator$PopEvent {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun component2 ()Lcom/slack/circuit/runtime/screen/PopResult;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/test/FakeNavigator$PopEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$PopEvent;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$PopEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPoppedScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun getResult ()Lcom/slack/circuit/runtime/screen/PopResult;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/test/FakeNavigator$ResetRootEvent {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZ)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun component2 ()Lkotlinx/collections/immutable/ImmutableList;
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZ)Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNewRoot ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun getOldScreens ()Lkotlinx/collections/immutable/ImmutableList;
+	public final fun getRestoreState ()Z
+	public final fun getSaveState ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/test/PresenterTestExtensionsKt {
+	public static final fun presenterTestOf-i8z2VEo (Lkotlin/jvm/functions/Function2;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun presenterTestOf-i8z2VEo$default (Lkotlin/jvm/functions/Function2;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun test-i8z2VEo (Lcom/slack/circuit/runtime/presenter/Presenter;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun test-i8z2VEo$default (Lcom/slack/circuit/runtime/presenter/Presenter;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/slack/circuit/test/TestEventSink : com/slack/circuit/test/BaseTestEventSinkType {
+	public static final field $stable I
+	public static final field Companion Lcom/slack/circuit/test/TestEventSink$Companion;
+	public fun <init> ()V
+	public final fun assertEvent (Lcom/slack/circuit/runtime/CircuitUiEvent;)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertEvent (Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertEventAt (ILcom/slack/circuit/runtime/CircuitUiEvent;)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertEventAt (ILkotlin/jvm/functions/Function1;)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertEventCount (I)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertEvents (Lkotlin/jvm/functions/Function2;)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertEvents ([Lcom/slack/circuit/runtime/CircuitUiEvent;)Lcom/slack/circuit/test/TestEventSink;
+	public final fun assertNoEvents ()Lcom/slack/circuit/test/TestEventSink;
+	public fun invoke (Lcom/slack/circuit/runtime/CircuitUiEvent;)V
+	public synthetic fun invoke (Ljava/lang/Object;)Ljava/lang/Object;
+	public synthetic fun invoke (Ljava/lang/Object;)V
+}
+
+public final class com/slack/circuit/test/TestEventSink$Companion {
+	public final fun getDEFAULT_TIMEOUT-UwyO8pc ()J
+}
+

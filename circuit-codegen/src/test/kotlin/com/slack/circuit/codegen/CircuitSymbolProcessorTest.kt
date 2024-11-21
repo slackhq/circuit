@@ -40,6 +40,16 @@ class CircuitSymbolProcessorTest {
           """
         .trimIndent(),
     )
+  private val kotlinInjectAnnotation =
+    kotlin(
+      "Inject.kt",
+      """
+        package me.tatarka.inject.annotations
+
+        annotation class Inject
+      """
+        .trimIndent(),
+    )
   private val screens =
     kotlin(
       "Screens.kt",
@@ -188,12 +198,11 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier, screen
-                = screen) }
+            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier, screen = screen) }
             else -> null
           }
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -324,12 +333,11 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier, screen
-                = screen) }
+            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier, screen = screen) }
             else -> null
           }
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -800,6 +808,66 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
+  fun presenterClass_simpleInjection_kotlinInjectAnvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
+        package test
+
+        import com.slack.circuit.codegen.annotations.CircuitInject
+        import com.slack.circuit.runtime.presenter.Presenter
+        import androidx.compose.runtime.Composable
+        import me.tatarka.inject.annotations.Inject
+
+        @Inject
+        @CircuitInject(FavoritesScreen::class, AppScope::class)
+        class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+          @Composable
+          override fun present(): FavoritesScreen.State {
+            throw NotImplementedError()
+          }
+        }
+        """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        public class FavoritesPresenterFactory(
+          private val provider: () -> FavoritesPresenter,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider()
+            else -> null
+          }
+        }
+      """
+          .trimIndent(),
+      codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
+    )
+  }
+
+  @Test
   fun presenterClass_assistedInjection() {
     assertGeneratedFile(
       sourceFile =
@@ -985,11 +1053,9 @@ class CircuitSymbolProcessorTest {
         public abstract class FavoritesPresenterFactoryModule {
           @Binds
           @IntoSet
-          public abstract
-              fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory):
-              Presenter.Factory
+          public abstract fun bindFavoritesPresenterFactory(favoritesPresenterFactory: FavoritesPresenterFactory): Presenter.Factory
         }
-      """
+        """
           .trimIndent(),
     )
   }
@@ -1265,6 +1331,7 @@ class CircuitSymbolProcessorTest {
   private enum class CodegenMode {
     ANVIL,
     HILT,
+    KOTLIN_INJECT_ANVIL,
   }
 
   private fun assertGeneratedFile(
@@ -1302,8 +1369,11 @@ class CircuitSymbolProcessorTest {
         sourceFiles.toList() +
           screens +
           when (codegenMode) {
-            CodegenMode.ANVIL -> appScope
-            CodegenMode.HILT -> singletonComponent
+            CodegenMode.ANVIL -> listOf(appScope)
+            CodegenMode.HILT -> listOf(singletonComponent)
+            CodegenMode.KOTLIN_INJECT_ANVIL -> {
+              listOf(appScope, kotlinInjectAnnotation)
+            }
           }
       inheritClassPath = true
       symbolProcessorProviders += CircuitSymbolProcessorProvider()

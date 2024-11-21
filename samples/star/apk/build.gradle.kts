@@ -31,6 +31,7 @@ android {
 baselineProfile {
   saveInSrc = true
   dexLayoutOptimization = true
+  @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/379030055
   from(projects.samples.star.benchmark.dependencyProject)
 }
 

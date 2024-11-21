@@ -1,0 +1,12 @@
+public abstract interface class com/slack/circuit/runtime/ui/Ui {
+	public abstract fun Content (Lcom/slack/circuit/runtime/CircuitUiState;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
+}
+
+public abstract interface class com/slack/circuit/runtime/ui/Ui$Factory {
+	public abstract fun create (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/CircuitContext;)Lcom/slack/circuit/runtime/ui/Ui;
+}
+
+public final class com/slack/circuit/runtime/ui/UiKt {
+	public static final fun ui (Lkotlin/jvm/functions/Function4;)Lcom/slack/circuit/runtime/ui/Ui;
+}
+

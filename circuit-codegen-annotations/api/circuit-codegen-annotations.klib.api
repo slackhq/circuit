@@ -1,0 +1,16 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-codegen-annotations>
+open annotation class com.slack.circuit.codegen.annotations/CircuitInject : kotlin/Annotation { // com.slack.circuit.codegen.annotations/CircuitInject|null[0]
+    constructor <init>(kotlin.reflect/KClass<out com.slack.circuit.runtime.screen/Screen>, kotlin.reflect/KClass<*>) // com.slack.circuit.codegen.annotations/CircuitInject.<init>|<init>(kotlin.reflect.KClass<out|com.slack.circuit.runtime.screen.Screen>;kotlin.reflect.KClass<*>){}[0]
+
+    final val scope // com.slack.circuit.codegen.annotations/CircuitInject.scope|{}scope[0]
+        final fun <get-scope>(): kotlin.reflect/KClass<*> // com.slack.circuit.codegen.annotations/CircuitInject.scope.<get-scope>|<get-scope>(){}[0]
+    final val screen // com.slack.circuit.codegen.annotations/CircuitInject.screen|{}screen[0]
+        final fun <get-screen>(): kotlin.reflect/KClass<out com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.codegen.annotations/CircuitInject.screen.<get-screen>|<get-screen>(){}[0]
+}

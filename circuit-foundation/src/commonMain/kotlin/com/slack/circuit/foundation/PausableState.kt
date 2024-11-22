@@ -7,7 +7,6 @@ package com.slack.circuit.foundation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import com.slack.circuit.foundation.internal.withRetainedStateProvider
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 
@@ -57,11 +56,13 @@ public fun <T> pausableState(
   val state = remember(key) { MutableRef<T>(null) }
 
   val saveableStateHolder = rememberSaveableStateHolderWithReturn()
+  val retainedStateHolder = rememberRetainedStateHolderWithReturn()
 
   return if (isActive || state.value == null) {
     val finalKey = key ?: "pausable_state"
-    withRetainedStateProvider(finalKey) {
-        saveableStateHolder.SaveableStateProvider(key = finalKey, content = produceState)
+    saveableStateHolder
+      .SaveableStateProvider(finalKey) {
+        retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
       }
       .also {
         // Store the last emitted state

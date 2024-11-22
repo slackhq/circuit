@@ -39,9 +39,9 @@ import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateProvider
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -104,21 +104,31 @@ public fun <R : Record> NavigableCircuitContent(
    */
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
-
+  val lastBackStack by rememberUpdatedState(backStack)
   val saveableStateHolder = rememberSaveableStateHolder()
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+    val retainedStateHolder = rememberRetainedStateHolder()
+
     decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
+      val recordInBackStackRetainChecker =
+        remember(lastBackStack, record) {
+          CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
+        }
 
       saveableStateHolder.SaveableStateProvider(record.key) {
-        // Remember the `providedValues` lookup because this composition can live longer than
-        // the record is present in the backstack, if the decoration is animated for example.
-        val values = remember(record) { providedValues[record] }?.provideValues()
-        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+        CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+          retainedStateHolder.RetainedStateProvider(record.key) {
+            // Remember the `providedValues` lookup because this composition can live longer than
+            // the record is present in the backstack, if the decoration is animated for example.
+            val values = remember(record) { providedValues[record] }?.provideValues()
+            val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
-        CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-          provider.content(record)
+            CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+              provider.content(record)
+            }
+          }
         }
       }
     }
@@ -168,29 +178,17 @@ private fun <R : Record> buildCircuitContentProviders(
 
   fun createRecordContent() =
     movableContentOf<R> { record ->
-      val recordInBackStackRetainChecker =
-        remember(lastBackStack, record) {
-          CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
-        }
-
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
 
-      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        // Now provide a new registry to the content for it to store any retained state in,
-        // along with a retain checker which is always true (as upstream registries will
-        // maintain the lifetime), and the other provided values
-        RetainedStateProvider(record.registryKey) {
-          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
-            CircuitContent(
-              screen = record.screen,
-              navigator = lastNavigator,
-              circuit = lastCircuit,
-              unavailableContent = lastUnavailableRoute,
-              key = record.key,
-            )
-          }
-        }
+      CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+        CircuitContent(
+          screen = record.screen,
+          navigator = lastNavigator,
+          circuit = lastCircuit,
+          unavailableContent = lastUnavailableRoute,
+          key = record.key,
+        )
       }
     }
 

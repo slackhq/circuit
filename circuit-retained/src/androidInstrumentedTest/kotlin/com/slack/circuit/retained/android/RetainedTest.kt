@@ -40,10 +40,10 @@ import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.ContinuityViewModel
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateProvider
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
@@ -368,8 +368,10 @@ class RetainedTest {
 
     val content =
       @Composable {
-        RetainedStateProvider {
-          RetainedStateProvider {
+        val holder1 = rememberRetainedStateHolder()
+        holder1.RetainedStateProvider("registry1") {
+          val holder2 = rememberRetainedStateHolder()
+          holder2.RetainedStateProvider("registry2") {
             @Suppress("UNUSED_VARIABLE") val retainedSubject = rememberRetained { subject }
           }
         }
@@ -634,10 +636,8 @@ private fun NestedRetains(useKeys: Boolean) {
       label = {},
     )
 
-    val nestedRegistryLevel1 = rememberRetained { RetainedStateRegistry() }
-    CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistryLevel1) {
-      NestedRetainLevel1(useKeys)
-    }
+    val nestedStateHolderLevel1 = rememberRetainedStateHolder()
+    nestedStateHolderLevel1.RetainedStateProvider("registryLevel1") { NestedRetainLevel1(useKeys) }
   }
 }
 
@@ -653,7 +653,8 @@ private fun NestedRetainLevel1(useKeys: Boolean) {
     label = {},
   )
 
-  RetainedStateProvider("retained2-registry") { NestedRetainLevel2(useKeys) }
+  val nestedStateHolderLevel2 = rememberRetainedStateHolder()
+  nestedStateHolderLevel2.RetainedStateProvider("registryLevel2") { NestedRetainLevel2(useKeys) }
 }
 
 @Composable
@@ -698,10 +699,11 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
       Text(text = "Show child")
     }
 
+    val retainedStateHolder = rememberRetainedStateHolder()
     // Keep the retained state registry around even if showNestedContent becomes false
     CompositionLocalProvider(LocalCanRetainChecker provides CanRetainChecker.Always) {
       if (showNestedContent.value) {
-        RetainedStateProvider("retained1_registry") { NestedRetainLevel1(useKeys) }
+        retainedStateHolder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
       }
     }
   }
@@ -737,9 +739,10 @@ private fun NestedRetainWithPushAndPopAndCannotRetain(useKeys: Boolean) {
     }
 
     // Keep the retained state registry around even if showNestedContent becomes false
+    val holder = rememberRetainedStateHolder()
     CompositionLocalProvider(LocalCanRetainChecker provides { false }) {
       if (showNestedContent.value) {
-        RetainedStateProvider("retained1_registry") { NestedRetainLevel1(useKeys) }
+        holder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
       }
     }
   }

@@ -112,11 +112,13 @@ public fun <R : Record> NavigableCircuitContent(
     CompositionLocalProvider(LocalRetainedStateHolder provides retainedStateHolder) {
       decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
         val record = provider.record
+
         saveableStateHolder.SaveableStateProvider(record.key) {
           // Remember the `providedValues` lookup because this composition can live longer than
           // the record is present in the backstack, if the decoration is animated for example.
           val values = remember(record) { providedValues[record] }?.provideValues()
           val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+
           CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
             provider.content(record)
           }
@@ -179,6 +181,9 @@ private fun <R : Record> buildCircuitContentProviders(
       val retainedStateHolder = LocalRetainedStateHolder.current
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+        // Now provide a new registry to the content for it to store any retained state in,
+        // along with a retain checker which is always true (as upstream registries will
+        // maintain the lifetime), and the other provided values
         retainedStateHolder.RetainedStateProvider(record.registryKey) {
           CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
             CircuitContent(

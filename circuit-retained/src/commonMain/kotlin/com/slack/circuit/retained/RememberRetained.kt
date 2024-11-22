@@ -340,19 +340,14 @@ private class RetainableSaveableHolder<T>(
   }
 
   override fun onForgotten() {
-    val v = value
-    val reg = retainedStateRegistry
-    if (reg != null && !canRetainChecker.canRetain(reg)) {
-      when (v) {
-        is RememberObserver -> v.onForgotten()
-        is RetainedStateRegistry -> v.forgetUnclaimedValues()
-      }
-    }
-    saveableStateEntry?.unregister()
-    retainedStateEntry?.unregister()
+    release()
   }
 
   override fun onAbandoned() {
+    release()
+  }
+
+  private fun release() {
     val v = value
     val reg = retainedStateRegistry
     if (reg != null && !canRetainChecker.canRetain(reg)) {

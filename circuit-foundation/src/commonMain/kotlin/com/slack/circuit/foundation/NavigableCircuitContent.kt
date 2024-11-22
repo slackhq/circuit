@@ -119,7 +119,7 @@ public fun <R : Record> NavigableCircuitContent(
 
       saveableStateHolder.SaveableStateProvider(record.key) {
         CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-          retainedStateHolder.RetainedStateProvider(record.key) {
+          retainedStateHolder.RetainedStateProvider(record.registryKey) {
             // Remember the `providedValues` lookup because this composition can live longer than
             // the record is present in the backstack, if the decoration is animated for example.
             val values = remember(record) { providedValues[record] }?.provideValues()

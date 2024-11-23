@@ -2,11 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
-import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.EaseInExpo
+import androidx.compose.animation.core.EaseOutExpo
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -32,8 +38,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -60,6 +66,7 @@ import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.sharedelements.requireActiveAnimatedScope
 import com.slack.circuit.star.di.AppScope
@@ -93,85 +100,77 @@ data class PetPhotoCarouselScreen(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
-internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier = Modifier) =
-  SharedElementTransitionScope {
-    val context = LocalPlatformContext.current
-    // Prefetch images
-    LaunchedEffect(Unit) {
-      for (url in screen.photoUrls) {
-        if (url.isBlank()) continue
-        val request = Builder(context).data(url).build()
-        SingletonImageLoader.get(context).enqueue(request)
-      }
+internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier = Modifier) {
+  val context = LocalPlatformContext.current
+  // Prefetch images
+  LaunchedEffect(Unit) {
+    for (url in screen.photoUrls) {
+      if (url.isBlank()) continue
+      val request = Builder(context).data(url).build()
+      SingletonImageLoader.get(context).enqueue(request)
     }
-
-    val totalPhotos = screen.photoUrls.size
-    val pagerState = rememberPagerState { totalPhotos }
-    val scope = rememberStableCoroutineScope()
-    val requester = remember { FocusRequester() }
-    @Suppress("MagicNumber")
-    val columnModifier =
-      when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Medium,
-        WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
-        else -> modifier.fillMaxSize()
-      }
-    Column(
-      columnModifier
-        .testTag(CAROUSEL_TAG)
-        // Some images are different sizes. We probably want to constrain them to the same
-        // common
-        // size though
-        .animateContentSize()
-        .focusRequester(requester)
-        .focusable()
-        .onKeyEvent { event ->
-          if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
-          val index =
-            when (event.key) {
-              Key.DirectionRight -> {
-                pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
-              }
-              Key.DirectionLeft -> {
-                pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
-              }
-              else -> -1
-            }
-          if (index == -1) {
-            false
-          } else {
-            scope.launch { pagerState.animateScrollToPage(index) }
-            true
-          }
-        }
-    ) {
-      PhotoPager(
-        id = screen.id,
-        pagerState = pagerState,
-        photoUrls = screen.photoUrls,
-        name = screen.name,
-        photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-        modifier =
-          Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(screen.id)),
-            animatedVisibilityScope = requireActiveAnimatedScope(),
-            placeHolderSize = animatedSize,
-            resizeMode = ScaleToBounds(ContentScale.Crop, Center),
-            zIndexInOverlay = 2f,
-          ),
-      )
-
-      HorizontalPagerIndicator(
-        pagerState = pagerState,
-        pageCount = totalPhotos,
-        modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
-        activeColor = MaterialTheme.colorScheme.onBackground,
-      )
-    }
-
-    // Focus the pager so we can cycle through it with arrow keys
-    LaunchedEffect(Unit) { requester.requestFocus() }
   }
+
+  val totalPhotos = screen.photoUrls.size
+  val pagerState = rememberPagerState { totalPhotos }
+  val scope = rememberStableCoroutineScope()
+  val requester = remember { FocusRequester() }
+  @Suppress("MagicNumber")
+  val columnModifier =
+    when (calculateWindowSizeClass().widthSizeClass) {
+      WindowWidthSizeClass.Medium,
+      WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
+      else -> modifier.fillMaxSize()
+    }
+  Column(
+    columnModifier
+      .testTag(CAROUSEL_TAG)
+      // Some images are different sizes. We probably want to constrain them to the same
+      // common
+      // size though
+      .animateContentSize()
+      .focusRequester(requester)
+      .focusable()
+      .onKeyEvent { event ->
+        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
+        val index =
+          when (event.key) {
+            Key.DirectionRight -> {
+              pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
+            }
+            Key.DirectionLeft -> {
+              pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
+            }
+            else -> -1
+          }
+        if (index == -1) {
+          false
+        } else {
+          scope.launch { pagerState.animateScrollToPage(index) }
+          true
+        }
+      }
+  ) {
+    PhotoPager(
+      id = screen.id,
+      pagerState = pagerState,
+      photoUrls = screen.photoUrls,
+      name = screen.name,
+      photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+      modifier = Modifier,
+    )
+
+    HorizontalPagerIndicator(
+      pagerState = pagerState,
+      pageCount = totalPhotos,
+      modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+      activeColor = MaterialTheme.colorScheme.onBackground,
+    )
+  }
+
+  // Focus the pager so we can cycle through it with arrow keys
+  LaunchedEffect(Unit) { requester.requestFocus() }
+}
 
 private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
@@ -199,19 +198,47 @@ private fun PhotoPager(
 
     OverlayEffect(shownOverlayUrl) {
       shownOverlayUrl?.let { url ->
-        showFullScreenOverlay(ImageViewerScreen(id = id, url = url, placeholderKey = url))
+        showFullScreenOverlay(
+          ImageViewerScreen(id = id, url = url, index = page, placeholderKey = url)
+        )
         shownOverlayUrl = null
       }
     }
 
     val shape = CardDefaults.shape
     // TODO implement full screen overlay on non-android targets
+    val animatedVisibilityScope = requireActiveAnimatedScope()
+    val navScope = requireAnimatedScope(Navigation)
+    val exiting =
+      animatedVisibilityScope == navScope &&
+        animatedVisibilityScope.transition.targetState == EnterExitState.PostExit
+
     val clickableModifier =
-      Modifier.clip(shape).clickable(
-        enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null
-      ) {
-        shownOverlayUrl = photoUrl
-      }
+      if (exiting && page != 0) {
+        with(animatedVisibilityScope) {
+          Modifier.animateEnterExit(
+            enter = fadeIn(),
+            exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = EaseOutExpo)),
+          )
+        }
+      } else
+        if (pagerState.currentPage == page) {
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(id, page)),
+              animatedVisibilityScope = animatedVisibilityScope,
+              placeHolderSize = animatedSize,
+              resizeMode = RemeasureToBounds,
+              enter = fadeIn(animationSpec = tween(durationMillis = 20, easing = EaseInExpo)),
+              exit = fadeOut(animationSpec = tween(durationMillis = 20, easing = EaseOutExpo)),
+              zIndexInOverlay = 3f,
+            )
+          } else {
+            Modifier
+          }
+          .clip(shape)
+          .clickable(enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null) {
+            shownOverlayUrl = photoUrl
+          }
     Card(
       shape = shape,
       modifier =

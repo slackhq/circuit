@@ -5,7 +5,7 @@ package com.slack.circuit.star.imageviewer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
@@ -24,10 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
@@ -74,8 +72,12 @@ constructor(
 
   @Composable
   override fun present(): State {
-    return State(id = screen.id, url = screen.url, placeholderKey = screen.placeholderKey) { event
-      ->
+    return State(
+      id = screen.id,
+      url = screen.url,
+      index = screen.index,
+      placeholderKey = screen.placeholderKey,
+    ) { event ->
       when (event) {
         Close -> navigator.pop()
         NoOp -> {}
@@ -135,11 +137,12 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
           modifier =
             Modifier.thenIf(!dismissState.willDismissOnRelease) {
               sharedBounds(
-                sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(state.id)),
+                sharedContentState =
+                  rememberSharedContentState(key = PetImageBoundsKey(state.id, state.index)),
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
                 enter = fadeIn(),
                 exit = fadeOut(animationSpec = tween(easing = LinearEasing)),
-                resizeMode = ScaleToBounds(ContentScale.Crop, Center),
+                resizeMode = RemeasureToBounds,
               )
             },
         ) {

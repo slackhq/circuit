@@ -3,6 +3,10 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -230,6 +234,8 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElem
         sharedBounds(
           sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animalId)),
           animatedVisibilityScope = requireAnimatedScope(Navigation),
+          enter = fadeIn(tween(easing = EaseOutCubic)),
+          exit = fadeOut(tween(easing = EaseOutCubic)),
         )
       },
   ) { padding ->
@@ -255,7 +261,7 @@ private fun TopBar(state: State) {
               sharedBounds(
                 sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
                 animatedVisibilityScope = requireAnimatedScope(Navigation),
-                zIndexInOverlay = 3f,
+                zIndexInOverlay = 2f,
               )
             },
         )

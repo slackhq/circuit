@@ -2,10 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
-import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.ScaleToBounds
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -430,7 +437,8 @@ private fun PetListGridItem(
     remember(boundsState, animatedScope) {
       derivedStateOf { if (boundsState.isMatchFound) animatedScope.progress().value else 1f }
     }
-  val cornerSize = lerp(8.dp, 16.dp, fraction)
+  val topCornerSize = lerp(12.dp, 16.dp, fraction)
+  val bottomCornerSize = lerp(0.dp, 12.dp, 1 - fraction)
   ElevatedCard(
     modifier =
       modifier
@@ -439,9 +447,11 @@ private fun PetListGridItem(
         .sharedBounds(
           sharedContentState = boundsState,
           animatedVisibilityScope = animatedScope,
+          enter = fadeIn(tween(easing = EaseOutCubic)),
+          exit = fadeOut(tween(easing = EaseInCubic)),
           zIndexInOverlay = 1f,
         ),
-    shape = RoundedCornerShape(cornerSize),
+    shape = RoundedCornerShape(topCornerSize),
     colors =
       CardDefaults.elevatedCardColors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -452,13 +462,22 @@ private fun PetListGridItem(
       // Image
       val imageModifier =
         Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id)),
+            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id, 0)),
             animatedVisibilityScope = animatedScope,
             placeHolderSize = animatedSize,
-            resizeMode = ScaleToBounds(ContentScale.Crop, Center),
-            zIndexInOverlay = 2f,
+            resizeMode = RemeasureToBounds,
+            enter = EnterTransition.None,
+            exit = ExitTransition.None,
+            zIndexInOverlay = 3f,
           )
-          .clip(RoundedCornerShape(topStart = cornerSize, topEnd = cornerSize))
+          .clip(
+            RoundedCornerShape(
+              topStart = topCornerSize,
+              topEnd = topCornerSize,
+              bottomStart = bottomCornerSize,
+              bottomEnd = bottomCornerSize,
+            )
+          )
           .fillMaxWidth()
           .testTag(IMAGE_TAG)
       if (animal.imageUrl == null) {
@@ -492,7 +511,7 @@ private fun PetListGridItem(
             Modifier.sharedBounds(
               sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
               animatedVisibilityScope = requireAnimatedScope(Navigation),
-              zIndexInOverlay = 3f,
+              zIndexInOverlay = 2f,
             ),
         )
         // Type

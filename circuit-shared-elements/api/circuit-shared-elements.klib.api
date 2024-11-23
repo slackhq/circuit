@@ -37,6 +37,7 @@ abstract interface com.slack.circuit.sharedelements/SharedElementTransitionScope
 
     final object Companion { // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion|null[0]
         final fun isAvailable(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isAvailable|isAvailable(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+        final fun isTransitionActive(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isTransitionActive|isTransitionActive(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
     }
 }
 

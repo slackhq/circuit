@@ -34,6 +34,7 @@ public final class com/slack/circuit/sharedelements/SharedElementTransitionScope
 
 public final class com/slack/circuit/sharedelements/SharedElementTransitionScope$Companion {
 	public final fun isAvailable (Landroidx/compose/runtime/Composer;I)Z
+	public final fun isTransitionActive (Landroidx/compose/runtime/Composer;I)Z
 }
 
 public final class com/slack/circuit/sharedelements/SharedElementTransitionScopeKt {

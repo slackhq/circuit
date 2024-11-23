@@ -9,6 +9,8 @@ import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.Rem
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.EaseInQuint
+import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -109,7 +111,16 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
   val overlayTransition = getAnimatedScope(Overlay)?.transition
   val backgroundColor =
     overlayTransition
-      ?.animateColor(transitionSpec = { tween() }, label = "Background color") { state ->
+      ?.animateColor(
+        label = "Background color",
+        transitionSpec = {
+          when (targetState) {
+            EnterExitState.PreEnter,
+            EnterExitState.Visible -> tween(delayMillis = 60, easing = EaseInQuint)
+            EnterExitState.PostExit -> tween(easing = EaseOutQuint)
+          }
+        },
+      ) { state ->
         when (state) {
           EnterExitState.PreEnter -> Color.Transparent
           EnterExitState.Visible -> Color.Black
@@ -154,10 +165,8 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
               Builder(LocalContext.current)
                 .data(state.url)
                 .apply {
-                  state.placeholderKey?.let {
-                    placeholderMemoryCacheKey(it)
-                    crossfade(AnimationConstants.DefaultDurationMillis)
-                  }
+                  state.placeholderKey?.let { placeholderMemoryCacheKey(it) }
+                  crossfade(AnimationConstants.DefaultDurationMillis)
                 }
                 .build(),
             contentDescription = "TODO",

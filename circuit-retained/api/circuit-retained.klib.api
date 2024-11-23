@@ -27,6 +27,7 @@ abstract interface <#A: kotlin/Any?> com.slack.circuit.retained/RetainedValueHol
 
 abstract interface com.slack.circuit.retained/RetainedStateHolder { // com.slack.circuit.retained/RetainedStateHolder|null[0]
     abstract fun RetainedStateProvider(kotlin/String, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.retained/RetainedStateHolder.RetainedStateProvider|RetainedStateProvider(kotlin.String;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    abstract fun removeState(kotlin/String) // com.slack.circuit.retained/RetainedStateHolder.removeState|removeState(kotlin.String){}[0]
 }
 
 abstract interface com.slack.circuit.retained/RetainedStateRegistry { // com.slack.circuit.retained/RetainedStateRegistry|null[0]

@@ -62,6 +62,7 @@ public final class com/slack/circuit/retained/RememberRetainedKt {
 
 public abstract interface class com/slack/circuit/retained/RetainedStateHolder {
 	public abstract fun RetainedStateProvider (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun removeState (Ljava/lang/String;)V
 }
 
 public final class com/slack/circuit/retained/RetainedStateHolderKt {

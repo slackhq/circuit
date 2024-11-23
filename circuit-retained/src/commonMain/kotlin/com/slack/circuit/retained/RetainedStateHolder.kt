@@ -20,6 +20,9 @@ public interface RetainedStateHolder {
    * key.
    */
   @Composable public fun RetainedStateProvider(key: String, content: @Composable () -> Unit)
+
+  /** Removes the retained state associated with the passed [key]. */
+  public fun removeState(key: String)
 }
 
 /** Creates and remembers the instance of [RetainedStateHolder]. */
@@ -52,6 +55,10 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
         }
       }
     }
+  }
+
+  override fun removeState(key: String) {
+    consumeValue(key)
   }
 
   override fun consumeValue(key: String): Any? {

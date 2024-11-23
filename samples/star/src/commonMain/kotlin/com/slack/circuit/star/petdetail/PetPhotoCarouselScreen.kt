@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -209,20 +208,19 @@ private fun PhotoPager(
     // TODO implement full screen overlay on non-android targets
     val animatedVisibilityScope = requireActiveAnimatedScope()
     val navScope = requireAnimatedScope(Navigation)
-    val exiting =
+    val exitingToList =
       animatedVisibilityScope == navScope &&
         animatedVisibilityScope.transition.targetState == EnterExitState.PostExit
-
     val clickableModifier =
-      if (exiting && page != 0) {
-        with(animatedVisibilityScope) {
-          Modifier.animateEnterExit(
-            enter = fadeIn(),
-            exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = EaseOutExpo)),
-          )
-        }
-      } else
-        if (pagerState.currentPage == page) {
+      when {
+          exitingToList && page != 0 ->
+            with(animatedVisibilityScope) {
+              Modifier.animateEnterExit(
+                enter = fadeIn(),
+                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = EaseOutExpo)),
+              )
+            }
+          pagerState.currentPage == page ->
             Modifier.sharedBounds(
               sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(id, page)),
               animatedVisibilityScope = animatedVisibilityScope,
@@ -232,13 +230,12 @@ private fun PhotoPager(
               exit = fadeOut(animationSpec = tween(durationMillis = 20, easing = EaseOutExpo)),
               zIndexInOverlay = 3f,
             )
-          } else {
-            Modifier
-          }
-          .clip(shape)
-          .clickable(enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null) {
-            shownOverlayUrl = photoUrl
-          }
+          else -> Modifier
+        }
+        .clip(shape)
+        .clickable(enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null) {
+          shownOverlayUrl = photoUrl
+        }
     Card(
       shape = shape,
       modifier =

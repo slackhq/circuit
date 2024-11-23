@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseInExpo
 import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -447,8 +447,8 @@ private fun PetListGridItem(
         .sharedBounds(
           sharedContentState = boundsState,
           animatedVisibilityScope = animatedScope,
-          enter = fadeIn(tween(easing = EaseOutCubic)),
-          exit = fadeOut(tween(easing = EaseInCubic)),
+          enter = fadeIn(tween(durationMillis = 100, easing = EaseOutCubic)),
+          exit = fadeOut(tween(durationMillis = 40, easing = EaseInCubic)),
           zIndexInOverlay = 1f,
         ),
     shape = RoundedCornerShape(topCornerSize),
@@ -466,8 +466,8 @@ private fun PetListGridItem(
             animatedVisibilityScope = animatedScope,
             placeHolderSize = animatedSize,
             resizeMode = RemeasureToBounds,
-            enter = EnterTransition.None,
-            exit = ExitTransition.None,
+            enter = fadeIn(animationSpec = tween(durationMillis = 80, easing = EaseInExpo)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 80, easing = EaseOutExpo)),
             zIndexInOverlay = 3f,
           )
           .clip(

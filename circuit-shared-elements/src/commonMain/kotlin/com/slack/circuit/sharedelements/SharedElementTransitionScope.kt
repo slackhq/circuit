@@ -64,6 +64,12 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
     public fun isAvailable(): Boolean {
       return LocalSharedElementTransitionState.current == SharedElementTransitionState.Available
     }
+
+    /** Helper to check if a [SharedElementTransitionScope] has an active transition. */
+    @Composable
+    public fun isTransitionActive(): Boolean {
+      return isAvailable() && LocalSharedElementTransitionScope.current.isTransitionActive
+    }
   }
 }
 

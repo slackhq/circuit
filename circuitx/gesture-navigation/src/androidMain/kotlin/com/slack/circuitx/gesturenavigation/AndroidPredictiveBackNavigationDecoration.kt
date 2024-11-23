@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
@@ -45,6 +46,7 @@ import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
@@ -160,6 +162,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     Box(
       Modifier.predictiveBackMotion(
         shape = MaterialTheme.shapes.extraLarge,
+        elevation = if (SharedElementTransitionScope.isTransitionActive()) 0.dp else 6.dp,
         progress = {
           if (swipeProgress != 0f && seekableTransitionState.currentState == targetState) {
             swipeProgress
@@ -184,23 +187,26 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
  *
  * The only piece missing is the vertical shift.
  */
-private fun Modifier.predictiveBackMotion(shape: Shape, progress: () -> Float): Modifier =
-  graphicsLayer {
-    val p = progress()
-    // If we're at progress 0f, skip setting any parameters
-    if (p == 0f) return@graphicsLayer
+private fun Modifier.predictiveBackMotion(
+  shape: Shape,
+  elevation: Dp,
+  progress: () -> Float,
+): Modifier = graphicsLayer {
+  val p = progress()
+  // If we're at progress 0f, skip setting any parameters
+  if (p == 0f) return@graphicsLayer
 
-    translationX = -(8.dp * p).toPx()
-    shadowElevation = 6.dp.toPx()
+  translationX = -(8.dp * p).toPx()
+  shadowElevation = elevation.toPx()
 
-    val scale = lerp(1f, 0.9f, p.absoluteValue)
-    scaleX = scale
-    scaleY = scale
-    transformOrigin = TransformOrigin(pivotFractionX = if (p > 0) 1f else 0f, pivotFractionY = 0.5f)
+  val scale = lerp(1f, 0.9f, p.absoluteValue)
+  scaleX = scale
+  scaleY = scale
+  transformOrigin = TransformOrigin(pivotFractionX = if (p > 0) 1f else 0f, pivotFractionY = 0.5f)
 
-    this.shape = shape
-    clip = true
-  }
+  this.shape = shape
+  clip = true
+}
 
 @RequiresApi(34)
 @Composable

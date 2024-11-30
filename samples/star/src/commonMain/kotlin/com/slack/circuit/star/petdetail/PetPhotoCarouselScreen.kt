@@ -4,7 +4,6 @@ package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -37,6 +36,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LocalPinnableContainer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -63,10 +63,10 @@ import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
 import com.slack.circuitx.overlays.showFullScreenOverlay
-import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @CommonParcelize
 data class PetPhotoCarouselScreen(
@@ -118,7 +118,7 @@ internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
 internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
@@ -187,17 +187,19 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
     )
   }
 
-  // Focus the pager so we can cycle through it with arrow keys
-  LaunchedEffect(Unit) { requester.requestFocus() }
+  // Check for the PinnableContainer to prevent a crash on rotate
+  // https://issuetracker.google.com/issues/381270279
+  if (LocalPinnableContainer.current == null) {
+    // Focus the pager so we can cycle through it with arrow keys
+    LaunchedEffect(Unit) { requester.requestFocus() }
+  }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
 @Suppress("LongParameterList")
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
   pagerState: PagerState,

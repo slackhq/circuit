@@ -63,10 +63,10 @@ import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
 import com.slack.circuitx.overlays.showFullScreenOverlay
+import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
 
 @CommonParcelize
 data class PetPhotoCarouselScreen(

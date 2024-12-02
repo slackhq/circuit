@@ -163,7 +163,7 @@ autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", versi
 
 baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
 
-clikt = "com.github.ajalt.clikt:clikt:5.0.1"
+clikt = "com.github.ajalt.clikt:clikt:5.0.2"
 
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil" }

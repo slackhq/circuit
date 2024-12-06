@@ -57,17 +57,16 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
   }
 
   public companion object {
+
     /** Helper to check if a [SharedElementTransitionScope] is available. */
-    @Composable
-    public fun isAvailable(): Boolean {
-      return LocalSharedElementTransitionState.current == SharedElementTransitionState.Available
-    }
+    public val isAvailable: Boolean
+      @Composable
+      get() = LocalSharedElementTransitionState.current == SharedElementTransitionState.Available
 
     /** Helper to check if a [SharedElementTransitionScope] has an active transition. */
-    @Composable
-    public fun isTransitionActive(): Boolean {
-      return isAvailable() && LocalSharedElementTransitionScope.current.isTransitionActive
-    }
+    public val isTransitionActive: Boolean
+      @Composable
+      get() = isAvailable && LocalSharedElementTransitionScope.current.isTransitionActive
   }
 }
 
@@ -101,7 +100,7 @@ public fun ProvideAnimatedTransitionScope(
   animatedVisibilityScope: AnimatedVisibilityScope,
   content: @Composable (SharedElementTransitionScope?) -> Unit,
 ) {
-  if (SharedElementTransitionScope.isAvailable()) {
+  if (SharedElementTransitionScope.isAvailable) {
     val parent = LocalSharedElementTransitionScope.current
     val scope =
       remember(parent) { SharedElementTransitionScopeImpl(parent) }

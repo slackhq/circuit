@@ -162,7 +162,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     Box(
       Modifier.predictiveBackMotion(
         shape = MaterialTheme.shapes.extraLarge,
-        elevation = if (SharedElementTransitionScope.isTransitionActive()) 0.dp else 6.dp,
+        elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
         progress = {
           if (swipeProgress != 0f && seekableTransitionState.currentState == targetState) {
             swipeProgress

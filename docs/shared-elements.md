@@ -112,7 +112,3 @@ In Circuit the _Navigation_ `AnimatedScope` is setup using a `ProvideAnimatedTra
 ## Non-Circuit usage
 
 Circuit Shared Elements should be usable without any other Circuit artifact. The setup of `SharedElementTransitionLayout` is the same outside the root content, but a non-Circuit setup would require explicit use of `ProvideAnimatedTransitionScope` to provide the desired `AnimatedVisibilityScope`.
-
-
-
-

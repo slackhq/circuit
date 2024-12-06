@@ -23,9 +23,39 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  * layout of [SharedElementTransitionLayout] can then use the [SharedElementTransitionScope]
  * Composable to create standard shared element or shared bounds transitions.
  *
+ * Normally [SharedElementTransitionLayout] should be setup around the root Circuit. It needs to be
+ * outside of a [ContentWithOverlays] or `NavigableCircuitContent` in order for the `Overlay` and
+ * `Navigation` `AnimatedVisibilityScope` to be available.
+ *
+ * ```kotlin
+ * setContent {
+ *   CircuitCompositionLocals(circuit) {
+ *     SharedElementTransitionLayout {
+ *       ContentWithOverlays { NavigableCircuitContent() }
+ *     }
+ *   }
+ * }
+ * ```
+ *
  * Any indirect child layout of the [SharedElementTransitionLayout] can use the
- * [SharedElementTransitionScope] composable to access the [SharedElementTransitionScope] created by
- * this layout.
+ * [SharedElementTransitionScope] composable to access the [SharedTransitionScope] created by this
+ * layout. The allows for normal use of `sharedElement` and `sharedBounds`, while providing access
+ * to the `Overlay` and `Navigation` `AnimatedVisibilityScope`.
+ *
+ * ```kotlin
+ * @CircuitInject(screen = HomeScreen::class)
+ * @Composable
+ * fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
+ *   SharedElementTransitionScope {
+ *     Box(
+ *       modifier =
+ *         Modifier.sharedElement(
+ *           state = rememberSharedContentState(key = ImageElementKey(id)),
+ *           animatedVisibilityScope = requireAnimatedScope(Navigation),
+ *         )
+ *     )
+ *   }
+ * ```
  *
  * @param modifier Modifier to be applied to the layout.
  * @param content The child composable to be laid out.

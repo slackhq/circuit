@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.transition
 
-interface SharedTransitionKey
+import com.slack.circuit.sharedelements.SharedTransitionKey
 
 /** Transition key used for shared bounds transitions of a Pets screen. */
 data class PetCardBoundsKey(val id: Long) : SharedTransitionKey

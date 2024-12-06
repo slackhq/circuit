@@ -49,6 +49,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LocalPinnableContainer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -167,8 +168,12 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
     )
   }
 
-  // Focus the pager so we can cycle through it with arrow keys
-  LaunchedEffect(Unit) { requester.requestFocus() }
+  // Check for the PinnableContainer to prevent a crash on rotate
+  // https://issuetracker.google.com/issues/381270279
+  if (LocalPinnableContainer.current == null) {
+    // Focus the pager so we can cycle through it with arrow keys
+    LaunchedEffect(Unit) { requester.requestFocus() }
+  }
 }
 
 private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {

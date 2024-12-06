@@ -103,7 +103,6 @@ AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { target
     AnimatedNavContent(targetState) { content(it) }
   }
 }
-
 ```
 
 In Circuit the _Navigation_ `AnimatedScope` is setup using a `ProvideAnimatedTransitionScope`. This is done with an implementation of `NavDecoration`, `AnimatedNavDecoration`. It takes an `AnimatedNavDecorator` to customize the Screen animation without having to manually setup a `AnimatedContent` and `SharedElementTransitionScope`. An example of a custom `AnimatedNavDecorator` can be seen with the `AndroidPredictiveBackNavigationDecoration` in [`circuitx-gesture-navigation`](https://slackhq.github.io/circuit/circuitx/#gesture-navigation).

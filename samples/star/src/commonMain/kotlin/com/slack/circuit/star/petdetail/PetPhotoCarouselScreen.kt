@@ -58,7 +58,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.overlay.LocalOverlayState
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
@@ -75,6 +74,7 @@ import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_T
 import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
+import com.slack.circuit.star.ui.thenIfNotNull
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList

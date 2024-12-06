@@ -36,7 +36,6 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.RecordContentProvider
-import com.slack.circuit.foundation.thenIf
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -51,6 +50,7 @@ import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
+import com.slack.circuit.star.ui.thenIf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

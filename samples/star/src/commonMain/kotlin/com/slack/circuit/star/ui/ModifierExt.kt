@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.foundation
+package com.slack.circuit.star.ui
 
 import androidx.compose.ui.Modifier
 
@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
  * Note: This is useful in cases where you want to apply a modifier like clickable in certain
  * situations but in others you don't want the View to react (ripple) to tap events.
  */
-public inline fun Modifier.thenIf(
+internal inline fun Modifier.thenIf(
   predicate: Boolean,
   transform: Modifier.() -> Modifier,
 ): Modifier =
@@ -26,7 +26,7 @@ public inline fun Modifier.thenIf(
  * Note: This is useful in cases where you want to apply a modifier like clickable in certain
  * situations but in others you don't want the View to react (ripple) to tap events.
  */
-public inline fun <T> Modifier.thenIfNotNull(
+internal inline fun <T> Modifier.thenIfNotNull(
   value: T?,
   transform: Modifier.(T) -> Modifier,
 ): Modifier {

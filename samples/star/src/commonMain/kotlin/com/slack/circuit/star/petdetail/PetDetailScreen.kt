@@ -41,8 +41,6 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.foundation.thenIf
-import com.slack.circuit.foundation.thenIfNotNull
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -80,6 +78,8 @@ import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.transition.PetCardBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.ExpandableText
+import com.slack.circuit.star.ui.thenIf
+import com.slack.circuit.star.ui.thenIfNotNull
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf

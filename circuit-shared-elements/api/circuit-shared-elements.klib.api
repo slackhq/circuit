@@ -6,8 +6,8 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root:circuit-shared-elements>
-open annotation class com.slack.circuit.sharedelements/DelicateCircuitSharedElementsApi : kotlin/Annotation { // com.slack.circuit.sharedelements/DelicateCircuitSharedElementsApi|null[0]
-    constructor <init>() // com.slack.circuit.sharedelements/DelicateCircuitSharedElementsApi.<init>|<init>(){}[0]
+open annotation class com.slack.circuit.sharedelements/ExperimentalCircuitSharedElementsApi : kotlin/Annotation { // com.slack.circuit.sharedelements/ExperimentalCircuitSharedElementsApi|null[0]
+    constructor <init>() // com.slack.circuit.sharedelements/ExperimentalCircuitSharedElementsApi.<init>|<init>(){}[0]
 }
 
 final enum class com.slack.circuit.sharedelements/SharedElementTransitionState : kotlin/Enum<com.slack.circuit.sharedelements/SharedElementTransitionState> { // com.slack.circuit.sharedelements/SharedElementTransitionState|null[0]
@@ -26,7 +26,7 @@ abstract interface com.slack.circuit.sharedelements/SharedElementTransitionScope
         abstract fun <get-hasLayoutCoordinates>(): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.hasLayoutCoordinates.<get-hasLayoutCoordinates>|<get-hasLayoutCoordinates>(){}[0]
 
     abstract fun availableScopes(): kotlin.collections/Set<com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope> // com.slack.circuit.sharedelements/SharedElementTransitionScope.availableScopes|availableScopes(){}[0]
-    abstract fun getAnimatedScope(com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope): androidx.compose.animation/AnimatedVisibilityScope? // com.slack.circuit.sharedelements/SharedElementTransitionScope.getAnimatedScope|getAnimatedScope(com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope){}[0]
+    abstract fun findAnimatedScope(com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope): androidx.compose.animation/AnimatedVisibilityScope? // com.slack.circuit.sharedelements/SharedElementTransitionScope.findAnimatedScope|findAnimatedScope(com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope){}[0]
     open fun requireAnimatedScope(com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope): androidx.compose.animation/AnimatedVisibilityScope // com.slack.circuit.sharedelements/SharedElementTransitionScope.requireAnimatedScope|requireAnimatedScope(com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope){}[0]
 
     abstract interface AnimatedScope { // com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope|null[0]
@@ -36,10 +36,14 @@ abstract interface com.slack.circuit.sharedelements/SharedElementTransitionScope
     }
 
     final object Companion { // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion|null[0]
-        final fun isAvailable(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isAvailable|isAvailable(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
-        final fun isTransitionActive(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isTransitionActive|isTransitionActive(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+        final val isAvailable // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isAvailable|{}isAvailable[0]
+            final fun <get-isAvailable>(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isAvailable.<get-isAvailable>|<get-isAvailable>(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+        final val isTransitionActive // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isTransitionActive|{}isTransitionActive[0]
+            final fun <get-isTransitionActive>(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.sharedelements/SharedElementTransitionScope.Companion.isTransitionActive.<get-isTransitionActive>|<get-isTransitionActive>(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
     }
 }
+
+abstract interface com.slack.circuit.sharedelements/SharedTransitionKey // com.slack.circuit.sharedelements/SharedTransitionKey|null[0]
 
 final val com.slack.circuit.sharedelements/LocalSharedElementTransitionState // com.slack.circuit.sharedelements/LocalSharedElementTransitionState|{}LocalSharedElementTransitionState[0]
     final fun <get-LocalSharedElementTransitionState>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.sharedelements/SharedElementTransitionState> // com.slack.circuit.sharedelements/LocalSharedElementTransitionState.<get-LocalSharedElementTransitionState>|<get-LocalSharedElementTransitionState>(){}[0]

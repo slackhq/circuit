@@ -2,7 +2,7 @@ public final class com/slack/circuit/sharedelements/AnimatedVisibilityScopeExtKt
 	public static final fun progress (Landroidx/compose/animation/AnimatedVisibilityScope;)Landroidx/compose/runtime/FloatState;
 }
 
-public abstract interface annotation class com/slack/circuit/sharedelements/DelicateCircuitSharedElementsApi : java/lang/annotation/Annotation {
+public abstract interface annotation class com/slack/circuit/sharedelements/ExperimentalCircuitSharedElementsApi : java/lang/annotation/Annotation {
 }
 
 public final class com/slack/circuit/sharedelements/SharedElementTransitionLayoutKt {
@@ -14,7 +14,7 @@ public final class com/slack/circuit/sharedelements/SharedElementTransitionLayou
 public abstract interface class com/slack/circuit/sharedelements/SharedElementTransitionScope : androidx/compose/animation/SharedTransitionScope {
 	public static final field Companion Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;
 	public abstract fun availableScopes ()Ljava/util/Set;
-	public abstract fun getAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
+	public abstract fun findAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
 	public abstract fun getHasLayoutCoordinates ()Z
 	public fun requireAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
 }
@@ -49,5 +49,8 @@ public final class com/slack/circuit/sharedelements/SharedElementTransitionState
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
 	public static fun values ()[Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
+}
+
+public abstract interface class com/slack/circuit/sharedelements/SharedTransitionKey {
 }
 

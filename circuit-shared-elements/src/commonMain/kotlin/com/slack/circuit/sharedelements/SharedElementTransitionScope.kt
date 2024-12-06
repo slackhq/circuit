@@ -20,7 +20,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 /**
  * [SharedElementTransitionScope] provides a [SharedTransitionScope] for the standard shared
  * elements/shared bounds animations. This also provides access to a [AnimatedVisibilityScope],
- * which can be retrieved using [getAnimatedScope] or [requireAnimatedScope].
+ * which can be retrieved using [findAnimatedScope] or [requireAnimatedScope].
  *
  * An [AnimatedScope] can be provided to an existing [SharedElementTransitionScope] using
  * [ProvideAnimatedTransitionScope]. Within Circuit a NavigableCircuitContent using an
@@ -37,11 +37,11 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
   public fun availableScopes(): Set<AnimatedScope>
 
   /** Get the [AnimatedVisibilityScope] for the given [key], if it exists. */
-  public fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope?
+  public fun findAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope?
 
   /** Require the [AnimatedVisibilityScope] for the given [key]. Throwing if it does not. */
   public fun requireAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope {
-    return requireNotNull(getAnimatedScope(key)) { "No AnimatedVisibilityScope found for $key" }
+    return checkNotNull(findAnimatedScope(key)) { "No AnimatedVisibilityScope found for $key" }
   }
 
   /**
@@ -169,7 +169,7 @@ internal data class SharedElementTransitionScopeImpl(
     return animatedVisibilityScopes.keys + (parentScope?.availableScopes() ?: emptySet())
   }
 
-  override fun getAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope? {
-    return animatedVisibilityScopes[key] ?: parentScope?.getAnimatedScope(key)
+  override fun findAnimatedScope(key: AnimatedScope): AnimatedVisibilityScope? {
+    return animatedVisibilityScopes[key] ?: parentScope?.findAnimatedScope(key)
   }
 }

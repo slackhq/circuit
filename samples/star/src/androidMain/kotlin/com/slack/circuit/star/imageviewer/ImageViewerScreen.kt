@@ -108,7 +108,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
     }
   }
 
-  val overlayTransition = getAnimatedScope(Overlay)?.transition
+  val overlayTransition = findAnimatedScope(Overlay)?.transition
   val backgroundColor =
     overlayTransition
       ?.animateColor(

@@ -66,7 +66,7 @@ private fun GridItem(animal: PetListAnimal, modifier: Modifier = Modifier) =
   }
 ```
 
-Shared elements also need an `AnimatedVisibilityScope` in order to animate the shared Composable. Without having to explicitly pass the `AnimatedVisibilityScope` to the Composable, `SharedElementTransitionScope` has methods to access a `AnimatedVisibilityScope` via an [AnimatedScope](#animatedscope) key. This can be done with [`requireAnimatedScope`](https://slackhq.github.io/circuit/api/0.x/circuit-shared-elements/com.slack.circuit.sharedelements/-shared-element-transition-scope/index.html#-994011672%2FFunctions%2F1321375323) to require the  `AnimatedVisibilityScope` or with [`getAnimatedScope`](https://slackhq.github.io/circuit/api/0.x/circuit-shared-elements/com.slack.circuit.sharedelements/-shared-element-transition-scope/index.html#-1088686569%2FFunctions%2F1321375323) for an optional `AnimatedVisibilityScope`.
+Shared elements also need an `AnimatedVisibilityScope` in order to animate the shared Composable. Without having to explicitly pass the `AnimatedVisibilityScope` to the Composable, `SharedElementTransitionScope` has methods to access a `AnimatedVisibilityScope` via an [AnimatedScope](#animatedscope) key. This can be done with [`requireAnimatedScope`](https://slackhq.github.io/circuit/api/0.x/circuit-shared-elements/com.slack.circuit.sharedelements/-shared-element-transition-scope/index.html#-994011672%2FFunctions%2F1321375323) to require the  `AnimatedVisibilityScope` or with [`findAnimatedScope`](https://slackhq.github.io/circuit/api/0.x/circuit-shared-elements/com.slack.circuit.sharedelements/-shared-element-transition-scope/index.html#-1088686569%2FFunctions%2F1321375323) for an optional `AnimatedVisibilityScope`.
 
 ```kotlin
 Box(
@@ -81,7 +81,7 @@ Box(
 ```kotlin
 Box(
   modifier =
-    Modifier.thenIfNotNull(getAnimatedScope(Overlay)) { animatedScope ->
+    Modifier.thenIfNotNull(findAnimatedScope(Overlay)) { animatedScope ->
       sharedElement(
         state = rememberSharedContentState(key = ImageElementKey(id)),
         animatedVisibilityScope = animatedScope,

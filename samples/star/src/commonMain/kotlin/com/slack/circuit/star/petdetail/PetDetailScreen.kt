@@ -46,7 +46,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.sharedelements.DelicateCircuitSharedElementsApi
+import com.slack.circuit.sharedelements.ExperimentalCircuitSharedElementsApi
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.star.common.BackPressNavIcon
@@ -247,7 +247,7 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElem
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class, DelicateCircuitSharedElementsApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitSharedElementsApi::class)
 @Composable
 private fun TopBar(state: State) {
   if (state !is AnimalState) return

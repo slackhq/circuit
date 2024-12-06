@@ -33,7 +33,7 @@ kotlin {
   applyDefaultHierarchyTemplate()
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  compilerOptions.optIn.add("com.slack.circuit.sharedelements.DelicateCircuitSharedElementsApi")
+  compilerOptions.optIn.add("com.slack.circuit.sharedelements.ExperimentalCircuitSharedElementsApi")
 
   sourceSets {
     commonMain {

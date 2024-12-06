@@ -10,11 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
@@ -33,7 +31,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 @OptIn(ExperimentalSharedTransitionApi::class)
 public interface SharedElementTransitionScope : SharedTransitionScope {
 
-  @DelicateCircuitSharedElementsApi public val hasLayoutCoordinates: Boolean
+  @ExperimentalCircuitSharedElementsApi public val hasLayoutCoordinates: Boolean
 
   /** Get the set of available [AnimatedScope]s for this [SharedElementTransitionScope]. */
   public fun availableScopes(): Set<AnimatedScope>

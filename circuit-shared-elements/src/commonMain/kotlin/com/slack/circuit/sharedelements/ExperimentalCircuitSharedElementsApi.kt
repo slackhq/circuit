@@ -5,8 +5,10 @@ package com.slack.circuit.sharedelements
 import kotlin.annotation.AnnotationTarget.FUNCTION
 import kotlin.annotation.AnnotationTarget.PROPERTY
 
-/** Indicates that the annotated shared elements API is delicate and should be used carefully. */
+/**
+ * Indicates that the annotated shared elements API is experimental and should be used carefully.
+ */
 @RequiresOptIn
 @Retention(AnnotationRetention.BINARY)
 @Target(FUNCTION, PROPERTY)
-public annotation class DelicateCircuitSharedElementsApi
+public annotation class ExperimentalCircuitSharedElementsApi

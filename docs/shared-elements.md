@@ -94,7 +94,7 @@ Box(
 
 ### AnimatedScope
 
-By default Circuit provides a _Navigation_ and _Overlay_ `AnimatedVisibilityScope` when a `SharedElementTransitionScope` is available and either `NavigableCircuitContent` or `ContentWithOverlays` has been used. 
+By default Circuit provides a `Navigation` and `Overlay` `AnimatedVisibilityScope` when a `SharedElementTransitionScope` is available and either `NavigableCircuitContent` or `ContentWithOverlays` has been used. 
 
 An `AnimatedScope` can be provided using `ProvideAnimatedTransitionScope`, including custom scopes. Doing so will make the `AnimatedVisibilityScope` available to the `SharedElementTransitionScope` inside the `ProvideAnimatedTransitionScope`. 
 

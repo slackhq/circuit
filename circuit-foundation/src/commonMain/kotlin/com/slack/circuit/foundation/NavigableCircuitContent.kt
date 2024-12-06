@@ -2,14 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,10 +35,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
+import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
+import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -129,7 +136,11 @@ public fun <R : Record> NavigableCircuitContent(
 public class RecordContentProvider<R : Record>(
   public val record: R,
   internal val content: @Composable (R) -> Unit,
-) {
+) : NavArgument {
+
+  override val screen: Screen
+    get() = record.screen
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
@@ -233,10 +244,13 @@ public object NavigatorDefaults {
   private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
-  /** The default [NavDecoration] used in navigation. */
-  // Mirrors the forward and backward transitions of activities in Android 34
-  public object DefaultDecoration : NavDecoration {
-
+  public object DefaultDecoration :
+    AnimatedNavDecoration(
+      decoratorFactory =
+        object : AnimatedNavDecorator.Factory {
+          override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+        }
+    ) {
     /**
      * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
@@ -304,46 +318,62 @@ public object NavigatorDefaults {
 
       return enterTransition togetherWith exitTransition
     }
+  }
+
+  public class DefaultDecorator<T : NavArgument> :
+    AnimatedNavDecorator<T, DefaultAnimatedState<T>> {
+
+    public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
+      AnimatedNavState {
+      override val screen: Screen = args.first().screen
+      override val backStackDepth: Int = args.size
+    }
+
+    override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {
+      return DefaultAnimatedState(args)
+    }
 
     @Composable
-    override fun <T> DecoratedContent(
+    public override fun updateTransition(
       args: ImmutableList<T>,
       backStackDepth: Int,
-      modifier: Modifier,
-      content: @Composable (T) -> Unit,
-    ) {
-      @OptIn(InternalCircuitApi::class)
-      AnimatedContent(
-        targetState = args,
-        modifier = modifier,
-        transitionSpec = {
-          // A transitionSpec should only use values passed into the `AnimatedContent`, to
-          // minimize
-          // the transitionSpec recomposing. The states are available as `targetState` and
-          // `initialState`
-          val diff = targetState.size - initialState.size
-          val sameRoot = targetState.lastOrNull() == initialState.lastOrNull()
+    ): Transition<DefaultAnimatedState<T>> {
+      return updateTransition(targetState(args, backStackDepth))
+    }
 
-          when {
-            sameRoot && diff > 0 -> forward
-            sameRoot && diff < 0 -> backward
-            else -> fadeIn() togetherWith fadeOut()
-          }.using(
-            // Disable clipping since the faded slide-in/out should
-            // be displayed out of bounds.
-            SizeTransform(clip = false)
-          )
-        },
-      ) {
-        content(it.first())
-      }
+    @OptIn(InternalCircuitApi::class)
+    @Composable
+    override fun Transition<DefaultAnimatedState<T>>.transitionSpec():
+      AnimatedContentTransitionScope<DefaultAnimatedState<T>>.() -> ContentTransform = {
+      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize the
+      // transitionSpec recomposing.
+      // The states are available as `targetState` and `initialState`.
+      val diff = targetState.args.size - initialState.args.size
+      val sameRoot = targetState.args.lastOrNull() == initialState.args.lastOrNull()
+      when {
+        sameRoot && diff > 0 -> forward
+        sameRoot && diff < 0 -> backward
+        else -> fadeIn() togetherWith fadeOut()
+      }.using(
+        // Disable clipping since the faded slide-in/out should
+        // be displayed out of bounds.
+        SizeTransform(clip = false)
+      )
+    }
+
+    @Composable
+    public override fun AnimatedContentScope.Decoration(
+      targetState: DefaultAnimatedState<T>,
+      innerContent: @Composable (T) -> Unit,
+    ) {
+      innerContent(targetState.args.first())
     }
   }
 
   /** An empty [NavDecoration] that emits the content with no surrounding decoration or logic. */
   public object EmptyDecoration : NavDecoration {
     @Composable
-    override fun <T> DecoratedContent(
+    override fun <T : NavArgument> DecoratedContent(
       args: ImmutableList<T>,
       backStackDepth: Int,
       modifier: Modifier,

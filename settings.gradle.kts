@@ -208,6 +208,7 @@ include(
   ":circuit-runtime-presenter",
   ":circuit-runtime-screen",
   ":circuit-runtime-ui",
+  ":circuit-shared-elements",
   ":circuit-test",
   ":circuitx:android",
   ":circuitx:effects",

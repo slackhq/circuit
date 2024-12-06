@@ -6,7 +6,7 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
-import com.slack.circuit.star.petdetail.PetDetailScreen.State.Success
+import com.slack.circuit.star.petdetail.PetDetailScreen.State.Full
 import com.slack.circuit.star.petlist.PetListPresenterTest
 import com.slack.circuit.star.petlist.TestRepository
 import com.slack.circuit.test.FakeNavigator
@@ -43,7 +43,7 @@ class PetDetailPresenterTest {
       assertThat(awaitItem()).isEqualTo(State.Loading)
 
       val success = awaitItem()
-      check(success is Success)
+      check(success is Full)
 
       val expected = animal.toPetDetailState(animal.primaryPhotoUrl, eventSink = success.eventSink)
       assertThat(success).isEqualTo(expected)
@@ -62,7 +62,7 @@ class PetDetailPresenterTest {
       assertThat(awaitItem()).isEqualTo(State.Loading)
 
       val successState = awaitItem()
-      check(successState is Success)
+      check(successState is Full)
 
       successState.eventSink(ViewFullBio(animal.url))
       assertThat(navigator.awaitNextScreen()).isEqualTo(OpenUrlScreen(animal.url))

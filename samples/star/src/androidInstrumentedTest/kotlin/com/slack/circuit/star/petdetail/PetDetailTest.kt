@@ -3,8 +3,11 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -16,6 +19,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
@@ -42,7 +46,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { ContentWithOverlays { PetDetail(State.Loading) } }
+      setTestContent { ContentWithOverlays { PetDetail(State.Loading) } }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(UNKNOWN_ANIMAL_TAG).assertDoesNotExist()
@@ -53,7 +57,7 @@ class PetDetailTest {
   @Test
   fun petDetail_show_message_for_unknown_animal_state() {
     composeTestRule.run {
-      setContent { ContentWithOverlays { PetDetail(State.UnknownAnimal) } }
+      setTestContent { ContentWithOverlays { PetDetail(State.UnknownAnimal) } }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(ANIMAL_CONTAINER_TAG).assertDoesNotExist()
@@ -67,7 +71,8 @@ class PetDetailTest {
   @Test
   fun petDetail_show_animal_for_success_state() {
     val success =
-      State.Success(
+      State.Full(
+        id = 1L,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -82,19 +87,20 @@ class PetDetailTest {
       Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
           carouselScreen = screen as PetPhotoCarouselScreen
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen), modifier)
+          PetPhotoCarousel(screen, modifier)
         }
         .build()
 
     val expectedScreen =
       PetPhotoCarouselScreen(
+        id = 1L,
         name = success.name,
         photoUrls = success.photoUrls,
         photoUrlMemoryCacheKey = null,
       )
 
     composeTestRule.run {
-      setContent {
+      setTestContent {
         ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
       }
 
@@ -117,7 +123,8 @@ class PetDetailTest {
     val testSink = TestEventSink<PetDetailScreen.Event>()
 
     val success =
-      State.Success(
+      State.Full(
+        id = 1L,
         url = "url",
         photoUrls = persistentListOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
@@ -130,12 +137,12 @@ class PetDetailTest {
     val circuit =
       Circuit.Builder()
         .setOnUnavailableContent { screen, modifier ->
-          PetPhotoCarousel(PetPhotoCarouselScreen.State(screen as PetPhotoCarouselScreen), modifier)
+          PetPhotoCarousel(screen as PetPhotoCarouselScreen, modifier)
         }
         .build()
 
     composeTestRule.run {
-      setContent {
+      setTestContent {
         ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
       }
 
@@ -145,4 +152,9 @@ class PetDetailTest {
       testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
     }
   }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
+  setContent { PreviewSharedElementTransitionLayout { content() } }
 }

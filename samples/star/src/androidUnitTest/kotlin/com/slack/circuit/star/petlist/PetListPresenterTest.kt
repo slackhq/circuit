@@ -57,16 +57,23 @@ class PetListPresenterTest {
     val repository = TestRepository(listOf(animal))
     val presenter = PetListPresenter(navigator, repository)
 
+    val petListAnimal = animal.toPetListAnimal()
     presenter.test {
       assertThat(Loading).isEqualTo(awaitItem())
       val successState = awaitItem()
       check(successState is Success)
-      assertThat(successState.animals).isEqualTo(listOf(animal).map { it.toPetListAnimal() })
+      assertThat(successState.animals).isEqualTo(listOf(petListAnimal))
 
-      val clickAnimal = ClickAnimal(123L, "key")
+      val clickAnimal = ClickAnimal(123L, "key", petListAnimal)
       successState.eventSink(clickAnimal)
       assertThat(navigator.awaitNextScreen())
-        .isEqualTo(PetDetailScreen(clickAnimal.petId, clickAnimal.photoUrlMemoryCacheKey))
+        .isEqualTo(
+          PetDetailScreen(
+            petId = clickAnimal.petId,
+            photoUrlMemoryCacheKey = clickAnimal.photoUrlMemoryCacheKey,
+            animal = clickAnimal.animal.toPartialAnimal(),
+          )
+        )
     }
   }
 

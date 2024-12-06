@@ -57,11 +57,16 @@ fun FlickToDismiss(
           startDragImmediately = state.isResettingOnRelease,
           onDragStarted = { startedPosition ->
             @Suppress("UnsafeCallOnNullableType")
+            state.isAnimatingOnRelease = false
             dragStartedOnLeftSide.value = startedPosition.x < (state.contentSize.value!!.width / 2f)
           },
           onDragStopped = {
+            state.isAnimatingOnRelease = false
             if (state.willDismissOnRelease) {
-              state.animateDismissal()
+              if (it > 5000) {
+                state.isAnimatingOnRelease = true
+                state.animateDismissal()
+              }
               state.gestureState = Dismissed
             } else {
               state.resetOffset()
@@ -107,6 +112,8 @@ data class FlickToDismissState(
   var isResettingOnRelease: Boolean by mutableStateOf(false)
     private set
 
+  var isAnimatingOnRelease: Boolean by mutableStateOf(false)
+
   var gestureState: FlickGestureState by mutableStateOf(Idle)
     internal set
 
@@ -122,7 +129,6 @@ data class FlickToDismissState(
 
   internal val draggableState = DraggableState { dy ->
     offsetState.floatValue += dy
-
     gestureState =
       when {
         gestureState is Dismissed -> gestureState
@@ -143,6 +149,7 @@ data class FlickToDismissState(
   }
 
   internal suspend fun animateDismissal() {
+    isAnimatingOnRelease = true
     draggableState.drag(MutatePriority.PreventUserInput) {
       @Suppress("UnsafeCallOnNullableType")
       Animatable(offset).animateTo(

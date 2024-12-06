@@ -18,16 +18,22 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
 /** Presentation logic for currently visible routes of a navigable UI. */
 @Stable
 public interface NavDecoration {
   @Composable
-  public fun <T> DecoratedContent(
+  public fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   )
+}
+
+/** Argument provided to [NavDecoration] that exposes the underlying [Screen]. */
+public interface NavArgument {
+  public val screen: Screen
 }

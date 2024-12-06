@@ -62,7 +62,8 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       } else {
         val httpUrl = intent.data.toString().toHttpUrl()
         val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
-        val petDetailScreen = PetDetailScreen(animalId, null, null)
+        val petDetailScreen =
+          PetDetailScreen(petId = animalId, photoUrlMemoryCacheKey = null, animal = null)
         persistentListOf(HomeScreen, petDetailScreen)
       }
 

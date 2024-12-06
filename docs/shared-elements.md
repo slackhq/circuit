@@ -55,7 +55,6 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
 
 ```
 
-
 _Normal UI_
 ```kotlin
 @OptIn(ExperimentalSharedTransitionApi::class)

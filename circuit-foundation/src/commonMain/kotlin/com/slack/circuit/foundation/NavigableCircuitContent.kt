@@ -329,14 +329,16 @@ public object NavigatorDefaults {
       override val backStackDepth: Int = args.size
     }
 
+    override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {
+      return DefaultAnimatedState(args)
+    }
+
     @Composable
-    public override fun Content(
+    public override fun updateTransition(
       args: ImmutableList<T>,
       backStackDepth: Int,
-      modifier: Modifier,
-      content: @Composable Transition<DefaultAnimatedState<T>>.(Modifier) -> Unit,
-    ) {
-      updateTransition(DefaultAnimatedState(args)).content(modifier)
+    ): Transition<DefaultAnimatedState<T>> {
+      return updateTransition(targetState(args, backStackDepth))
     }
 
     @OptIn(InternalCircuitApi::class)
@@ -360,11 +362,11 @@ public object NavigatorDefaults {
     }
 
     @Composable
-    public override fun AnimatedContentScope.AnimatedNavContent(
+    public override fun AnimatedContentScope.Decoration(
       targetState: DefaultAnimatedState<T>,
-      content: @Composable (T) -> Unit,
+      innerContent: @Composable (T) -> Unit,
     ) {
-      content(targetState.args.first())
+      innerContent(targetState.args.first())
     }
   }
 

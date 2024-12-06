@@ -5,6 +5,7 @@ package com.slack.circuit.foundation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Transition
@@ -21,6 +22,13 @@ import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlinx.collections.immutable.ImmutableList
 
+/**
+ * todo Finish docs.
+ *
+ * Animated navigation decoration is an implementation of [NavDecoration] that provides the
+ * [Navigation] [AnimatedVisibilityScope] for shared elements. It also allows for indepth
+ * customization of its [AnimatedContent] through the [AnimatedNavDecorator].
+ */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public abstract class AnimatedNavDecoration(
   private val decoratorFactory: AnimatedNavDecorator.Factory
@@ -38,37 +46,45 @@ public abstract class AnimatedNavDecoration(
       decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
     }
     with(decorator) {
-      Content(args, backStackDepth, modifier) { modifier ->
-        AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { targetState ->
-          ProvideAnimatedTransitionScope(Navigation, this) {
-            AnimatedNavContent(targetState) { content(it) }
-          }
-        }
+      val transition = updateTransition(args, backStackDepth)
+      transition.AnimatedContent(
+        modifier = modifier,
+        transitionSpec = with(transition) { transitionSpec() },
+      ) { targetState ->
+        ProvideAnimatedTransitionScope(Navigation, this) { Decoration(targetState) { content(it) } }
       }
     }
   }
 }
 
+/**
+ * todo Finish docs.
+ *
+ * [AnimatedNavDecorator] is used by [AnimatedNavDecoration] as a way to provide hooks into its
+ * [AnimatedContent], allowing for custom navigation animations.
+ */
 @Stable
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 
-  @Composable
-  public fun Content(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable Transition<S>.(Modifier) -> Unit,
-  )
+  /** For the args and backstack create the expected target [AnimatedNavState]. */
+  public fun targetState(args: ImmutableList<T>, backStackDepth: Int): S
 
+  /**
+   * Sets up a [Transition] for driving an [AnimatedContent] used to navigate between screens. The
+   * transition should be setup from the current [NavDecoration.DecoratedContent] arguments and
+   * backstack depth, and then updated when the arguments or backstack depth change.
+   */
+  @Composable
+  public fun updateTransition(args: ImmutableList<T>, backStackDepth: Int): Transition<S>
+
+  /** Builds the [AnimatedContent] transition spec. */
   @Composable
   public fun Transition<S>.transitionSpec():
     AnimatedContentTransitionScope<S>.() -> ContentTransform
 
+  /** For the [targetState], decorate the [innerContent] as the `content` of [AnimatedContent] */
   @Composable
-  public fun AnimatedContentScope.AnimatedNavContent(
-    targetState: S,
-    content: @Composable (T) -> Unit,
-  )
+  public fun AnimatedContentScope.Decoration(targetState: S, innerContent: @Composable (T) -> Unit)
 
   @Stable
   public interface Factory {
@@ -77,7 +93,7 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
   }
 }
 
-/** A state created for the [Transition] in [AnimatedNavDecorator.Content]. */
+/** A state created for the [Transition] in [AnimatedNavDecorator.Decoration]. */
 @Stable
 public interface AnimatedNavState {
   /** The [Screen] associated with this state. */

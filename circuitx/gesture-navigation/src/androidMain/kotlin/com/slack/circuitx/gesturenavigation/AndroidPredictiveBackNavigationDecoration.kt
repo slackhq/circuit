@@ -79,19 +79,25 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
   private var backStackDepthState by mutableIntStateOf(0)
 
-  @Composable
-  override fun Content(
+  override fun targetState(
     args: ImmutableList<T>,
     backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable (Transition<GestureNavTransitionHolder<T>>.(Modifier) -> Unit),
-  ) {
+  ): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+  }
+
+  @Composable
+  override fun updateTransition(
+    args: ImmutableList<T>,
+    backStackDepth: Int,
+  ): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
-    val current =
-      remember(args) { GestureNavTransitionHolder(args.first(), backStackDepth, args.last()) }
+    val current = remember(args) { targetState(args, backStackDepth) }
     val previous =
       remember(args) {
-        args.getOrNull(1)?.let { GestureNavTransitionHolder(it, backStackDepth - 1, args.last()) }
+        if (args.size > 1) {
+          targetState(args.subList(1, args.size), backStackDepth - 1)
+        } else null
       }
 
     backStackDepthState = backStackDepth
@@ -127,7 +133,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         onBackInvoked = { onBackInvoked() },
       )
     }
-    transition.content(modifier)
+    return transition
   }
 
   @OptIn(InternalCircuitApi::class)
@@ -155,9 +161,9 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   }
 
   @Composable
-  override fun AnimatedContentScope.AnimatedNavContent(
+  override fun AnimatedContentScope.Decoration(
     targetState: GestureNavTransitionHolder<T>,
-    content: @Composable (T) -> Unit,
+    innerContent: @Composable (T) -> Unit,
   ) {
     Box(
       Modifier.predictiveBackMotion(
@@ -170,7 +176,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         },
       )
     ) {
-      content(targetState.record)
+      innerContent(targetState.record)
     }
   }
 

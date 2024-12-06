@@ -28,7 +28,6 @@ setContent {
 A `PreviewSharedElementTransitionLayout` is provided for use when using [`@Preview`](https://developer.android.com/develop/ui/compose/tooling/previews) for any Composable that has a `SharedElementTransitionScope`.
 
 ```kotlin
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable

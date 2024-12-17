@@ -5,39 +5,38 @@ androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
 androidx-lifecycle = "2.8.7"
-agp = "8.7.2"
+agp = "8.7.3"
 anvil = "0.4.0"
-atomicfu = "0.26.0"
+atomicfu = "0.26.1"
 benchmark = "1.3.3"
-coil = "2.7.0"
-coil3 = "3.0.3"
-compose-animation = "1.7.5"
-compose-foundation = "1.7.5"
-compose-material = "1.7.5"
+coil = "3.0.4"
+compose-animation = "1.7.6"
+compose-foundation = "1.7.6"
+compose-material = "1.7.6"
 compose-material3 = "1.3.1"
-compose-runtime = "1.7.5"
-compose-ui = "1.7.5"
+compose-runtime = "1.7.6"
+compose-ui = "1.7.6"
 compose-jb = "1.7.1"
-compose-bom = "2024.11.00"
+compose-bom = "2024.12.01"
 compose-integration-constraintlayout = "1.1.0"
 dagger = "2.52"
 datastore = "1.1.1"
 detekt = "1.23.7"
 dokka = "1.9.20"
-eithernet = "2.0.0-alpha01"
+eithernet = "2.0.0"
 jdk = "22"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
-kct = "0.6.0"
+kct = "0.7.0"
 kotlin = "2.0.21"
 kotlinInject = "0.7.2"
-kotlinInject-anvil = "0.1.0"
+kotlinInject-anvil = "0.1.1"
 kotlinpoet = "2.0.0"
 kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.3"
 ksp = "2.0.21-1.0.28"
 ktfmt = "0.53"
-ktor = "3.0.1"
+ktor = "3.0.2"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.30.0"
@@ -47,9 +46,9 @@ okhttp = "5.0.0-alpha.14"
 okio = "3.9.1"
 paparazzi = "1.3.5"
 picnic = "0.7.0"
-robolectric = "4.14"
-roborazzi = "1.32.2"
-skie = "0.9.3"
+robolectric = "4.14.1"
+roborazzi = "1.34.0"
+skie = "0.10.0"
 spotless = "7.0.0.BETA2"
 sqldelight = "2.0.2"
 telephoto = "0.14.0"
@@ -164,16 +163,13 @@ autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", versi
 
 baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
 
-clikt = "com.github.ajalt.clikt:clikt:5.0.1"
+clikt = "com.github.ajalt.clikt:clikt:5.0.2"
 
-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
-coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
-coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
-coil3-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
-coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
-coil3-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
-coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil" }
 
 compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "kotlin" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
@@ -206,8 +202,8 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.3"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jline = "org.jline:jline:3.27.1"
-jsoup = "org.jsoup:jsoup:1.18.1"
+jline = "org.jline:jline:3.28.0"
+jsoup = "org.jsoup:jsoup:1.18.3"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
@@ -262,7 +258,7 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.9"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.10"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }

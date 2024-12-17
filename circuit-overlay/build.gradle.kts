@@ -38,6 +38,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
         implementation(libs.coroutines)
+        implementation(projects.circuitSharedElements)
       }
     }
     commonTest {

@@ -1,3 +1,25 @@
+public abstract class com/slack/circuit/foundation/AnimatedNavDecoration : com/slack/circuit/backstack/NavDecoration {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/foundation/AnimatedNavDecorator$Factory;)V
+	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public abstract interface class com/slack/circuit/foundation/AnimatedNavDecorator {
+	public abstract fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/AnimatedNavState;
+	public abstract fun transitionSpec (Landroidx/compose/animation/core/Transition;Landroidx/compose/runtime/Composer;I)Lkotlin/jvm/functions/Function1;
+	public abstract fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
+}
+
+public abstract interface class com/slack/circuit/foundation/AnimatedNavDecorator$Factory {
+	public abstract fun create ()Lcom/slack/circuit/foundation/AnimatedNavDecorator;
+}
+
+public abstract interface class com/slack/circuit/foundation/AnimatedNavState {
+	public abstract fun getBackStackDepth ()I
+	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+}
+
 public final class com/slack/circuit/foundation/AnsweringNavigatorKt {
 	public static final fun answeringNavigationAvailable (Landroidx/compose/runtime/Composer;I)Z
 	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
@@ -73,6 +95,11 @@ public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 	public static field lambda-1 Lkotlin/jvm/functions/Function4;
 	public fun <init> ()V
 	public final fun getLambda-1$circuit_foundation_release ()Lkotlin/jvm/functions/Function4;
+}
+
+public final class com/slack/circuit/foundation/DefaultAnimatedNavDecoration : com/slack/circuit/foundation/AnimatedNavDecoration {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/foundation/AnimatedNavDecorator$Factory;)V
 }
 
 public abstract interface annotation class com/slack/circuit/foundation/DelicateCircuitFoundationApi : java/lang/annotation/Annotation {
@@ -161,10 +188,34 @@ public final class com/slack/circuit/foundation/NavigatorDefaults {
 	public static final field INSTANCE Lcom/slack/circuit/foundation/NavigatorDefaults;
 }
 
-public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration : com/slack/circuit/backstack/NavDecoration {
+public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration : com/slack/circuit/foundation/AnimatedNavDecoration {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration;
-	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator : com/slack/circuit/foundation/AnimatedNavDecorator {
+	public static final field $stable I
+	public fun <init> ()V
+	public synthetic fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public synthetic fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/AnimatedNavState;
+	public fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
+	public fun transitionSpec (Landroidx/compose/animation/core/Transition;Landroidx/compose/runtime/Composer;I)Lkotlin/jvm/functions/Function1;
+	public fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
+}
+
+public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState : com/slack/circuit/foundation/AnimatedNavState {
+	public static final field $stable I
+	public fun <init> (Lkotlinx/collections/immutable/ImmutableList;)V
+	public final fun component1 ()Lkotlinx/collections/immutable/ImmutableList;
+	public final fun copy (Lkotlinx/collections/immutable/ImmutableList;)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
+	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;Lkotlinx/collections/immutable/ImmutableList;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArgs ()Lkotlinx/collections/immutable/ImmutableList;
+	public fun getBackStackDepth ()I
+	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/slack/circuit/foundation/NavigatorDefaults$EmptyDecoration : com/slack/circuit/backstack/NavDecoration {
@@ -190,11 +241,12 @@ public final class com/slack/circuit/foundation/PausableStateKt {
 	public static final fun presentWithLifecycle (Lcom/slack/circuit/runtime/presenter/Presenter;Ljava/lang/String;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/CircuitUiState;
 }
 
-public final class com/slack/circuit/foundation/RecordContentProvider {
+public final class com/slack/circuit/foundation/RecordContentProvider : com/slack/circuit/backstack/NavArgument {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function3;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
+	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

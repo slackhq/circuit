@@ -2,9 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.EaseInExpo
+import androidx.compose.animation.core.EaseOutExpo
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -17,6 +25,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -25,9 +34,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
@@ -37,6 +49,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LocalPinnableContainer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -46,50 +59,35 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.overlay.LocalOverlayState
+import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
-import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.StaticScreen
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
+import com.slack.circuit.sharedelements.requireActiveAnimatedScope
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.parcel.CommonParcelize
-import com.slack.circuit.star.petdetail.PetPhotoCarouselScreen.State
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.transition.PetImageBoundsKey
+import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
+import com.slack.circuit.star.ui.thenIfNotNull
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 @CommonParcelize
 data class PetPhotoCarouselScreen(
+  val id: Long,
   val name: String,
   val photoUrls: ImmutableList<String>,
   val photoUrlMemoryCacheKey: String?,
-) : Screen {
-  data class State(
-    val name: String,
-    val photoUrls: ImmutableList<String>,
-    val photoUrlMemoryCacheKey: String?,
-  ) : CircuitUiState {
-    companion object {
-      operator fun invoke(screen: PetPhotoCarouselScreen): State {
-        return State(
-          name = screen.name,
-          photoUrls = screen.photoUrls.toImmutableList(),
-          photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-        )
-      }
-    }
-  }
-}
+) : StaticScreen
 
 /*
  * This is a trivial example of a photo carousel used in the pet detail screen. We'd normally likely
@@ -99,41 +97,21 @@ data class PetPhotoCarouselScreen(
  * This differs from some other screens by only displaying the input screen directly as static
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
-// TODO can we make a StaticStatePresenter for cases like this? Maybe even generate _from_ the
-//  screen type?
-class PetPhotoCarouselPresenter
-@AssistedInject
-constructor(@Assisted private val screen: PetPhotoCarouselScreen) : Presenter<State> {
-
-  @Composable override fun present() = State(screen)
-
-  @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
-  @AssistedFactory
-  interface Factory {
-    fun create(screen: PetPhotoCarouselScreen): PetPhotoCarouselPresenter
-  }
-}
-
-internal object PetPhotoCarouselTestConstants {
-  const val CAROUSEL_TAG = "carousel"
-}
-
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
-internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
-  val (name, photoUrls, photoUrlMemoryCacheKey) = state
+internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier = Modifier) {
   val context = LocalPlatformContext.current
   // Prefetch images
   LaunchedEffect(Unit) {
-    for (url in photoUrls) {
+    for (url in screen.photoUrls) {
       if (url.isBlank()) continue
       val request = Builder(context).data(url).build()
       SingletonImageLoader.get(context).enqueue(request)
     }
   }
 
-  val totalPhotos = photoUrls.size
+  val totalPhotos = screen.photoUrls.size
   val pagerState = rememberPagerState { totalPhotos }
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
@@ -147,7 +125,8 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
   Column(
     columnModifier
       .testTag(CAROUSEL_TAG)
-      // Some images are different sizes. We probably want to constrain them to the same common
+      // Some images are different sizes. We probably want to constrain them to the same
+      // common
       // size though
       .animateContentSize()
       .focusRequester(requester)
@@ -173,10 +152,12 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
       }
   ) {
     PhotoPager(
+      id = screen.id,
       pagerState = pagerState,
-      photoUrls = photoUrls,
-      name = name,
-      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+      photoUrls = screen.photoUrls,
+      name = screen.name,
+      photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+      modifier = Modifier,
     )
 
     HorizontalPagerIndicator(
@@ -187,25 +168,29 @@ internal fun PetPhotoCarousel(state: State, modifier: Modifier = Modifier) {
     )
   }
 
-  // Focus the pager so we can cycle through it with arrow keys
-  LaunchedEffect(Unit) { requester.requestFocus() }
+  // Check for the PinnableContainer to prevent a crash on rotate
+  // https://issuetracker.google.com/issues/381270279
+  if (LocalPinnableContainer.current == null) {
+    // Focus the pager so we can cycle through it with arrow keys
+    LaunchedEffect(Unit) { requester.requestFocus() }
+  }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("LongParameterList")
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoPager(
+  id: Long,
   pagerState: PagerState,
   photoUrls: ImmutableList<String>,
   name: String,
   modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,
-) {
+) = SharedElementTransitionScope {
   HorizontalPager(
     state = pagerState,
     key = photoUrls::get,
@@ -213,25 +198,51 @@ private fun PhotoPager(
     contentPadding = PaddingValues(16.dp),
   ) { page ->
     val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
+    var shownOverlayUrl by remember { mutableStateOf<String?>(null) }
 
+    OverlayEffect(shownOverlayUrl) {
+      shownOverlayUrl?.let { url ->
+        showFullScreenOverlay(
+          ImageViewerScreen(id = id, url = url, index = page, placeholderKey = url)
+        )
+        shownOverlayUrl = null
+      }
+    }
+
+    val shape = CardDefaults.shape
     // TODO implement full screen overlay on non-android targets
+    val animatedVisibilityScope = requireActiveAnimatedScope()
+    val navScope = requireAnimatedScope(Navigation)
+    val exitingToList =
+      animatedVisibilityScope == navScope &&
+        animatedVisibilityScope.transition.targetState == EnterExitState.PostExit
     val clickableModifier =
-      if (LocalOverlayState.current != UNAVAILABLE) {
-        val scope = rememberStableCoroutineScope()
-        val overlayHost = LocalOverlayHost.current
-        photoUrl?.let { url ->
-          Modifier.clickable {
-            scope.launch {
-              overlayHost.showFullScreenOverlay(
-                ImageViewerScreen(id = url, url = url, placeholderKey = name)
+      when {
+          exitingToList && page != 0 ->
+            with(animatedVisibilityScope) {
+              Modifier.animateEnterExit(
+                enter = fadeIn(),
+                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = EaseOutExpo)),
               )
             }
-          }
-        } ?: Modifier
-      } else {
-        Modifier
-      }
+          pagerState.currentPage == page ->
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(id, page)),
+              animatedVisibilityScope = animatedVisibilityScope,
+              placeHolderSize = animatedSize,
+              resizeMode = RemeasureToBounds,
+              enter = fadeIn(animationSpec = tween(durationMillis = 20, easing = EaseInExpo)),
+              exit = fadeOut(animationSpec = tween(durationMillis = 20, easing = EaseOutExpo)),
+              zIndexInOverlay = 3f,
+            )
+          else -> Modifier
+        }
+        .clip(shape)
+        .clickable(enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null) {
+          shownOverlayUrl = photoUrl
+        }
     Card(
+      shape = shape,
       modifier =
         clickableModifier.aspectRatio(1f).graphicsLayer {
           // Calculate the absolute offset for the current page from the
@@ -248,13 +259,22 @@ private fun PhotoPager(
 
           // We animate the alpha, between 50% and 100%
           alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
-        }
+        },
     ) {
       AsyncImage(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+          Modifier.fillMaxWidth().thenIfNotNull(photoUrl) {
+            sharedElement(
+                state = rememberSharedContentState(key = PetImageElementKey(it)),
+                animatedVisibilityScope = requireAnimatedScope(Overlay),
+                zIndexInOverlay = 5f,
+              )
+              .clip(shape)
+          },
         model =
           Builder(LocalPlatformContext.current)
             .data(photoUrl)
+            .memoryCacheKey(photoUrl)
             .apply {
               if (page == 0) {
                 placeholderMemoryCacheKey(photoUrlMemoryCacheKey)
@@ -268,4 +288,8 @@ private fun PhotoPager(
       )
     }
   }
+}
+
+internal object PetPhotoCarouselTestConstants {
+  const val CAROUSEL_TAG = "carousel"
 }

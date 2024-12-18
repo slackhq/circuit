@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.home
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.resources.Res
 import com.slack.circuit.star.resources.star_icon
+import com.slack.circuit.star.ui.StarTheme
 import org.jetbrains.compose.resources.painterResource
 
 @CommonParcelize data object AboutScreen : StaticScreen
@@ -52,9 +54,8 @@ fun About(modifier: Modifier = Modifier) {
   }
 }
 
-// TODO this breaks kapt because it's only on desktop and not other platforms
-// @Preview
-// @Composable
-// private fun AboutPreview() {
-//  StarTheme { About() }
-// }
+@Preview
+@Composable
+private fun AboutPreview() {
+  StarTheme { About() }
+}

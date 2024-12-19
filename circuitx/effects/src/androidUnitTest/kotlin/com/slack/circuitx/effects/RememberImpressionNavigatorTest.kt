@@ -177,8 +177,8 @@ class RememberImpressionNavigatorTest {
   }
 
   private fun ComposeContentTestRule.recreate() {
-    composed.value = false
     registry.saveAll()
+    composed.value = false
     waitForIdle()
     composed.value = true
     waitForIdle()

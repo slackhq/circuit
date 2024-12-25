@@ -4,6 +4,9 @@ package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Immutable
+import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.AnimatedNavState
+import com.slack.circuit.runtime.screen.Screen
 
 internal fun <T> Transition<T>.isStateBeingAnimated(equals: (T) -> Boolean): Boolean {
   return isRunning && (equals(currentState) || equals(targetState))
@@ -17,8 +20,10 @@ internal val Transition<*>.isPending: Boolean
  * the necessary information as an argument, which is optimal for `AnimatedContent`.
  */
 @Immutable
-internal data class GestureNavTransitionHolder<T>(
+internal data class GestureNavTransitionHolder<T : NavArgument>(
   val record: T,
-  val backStackDepth: Int,
+  override val backStackDepth: Int,
   val rootRecord: T,
-)
+) : AnimatedNavState {
+  override val screen: Screen = record.screen
+}

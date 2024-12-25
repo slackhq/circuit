@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
+import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -73,7 +74,7 @@ public class CupertinoGestureNavigationDecoration(
 ) : NavDecoration {
 
   @Composable
-  override fun <T> DecoratedContent(
+  override fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
     backStackDepth: Int,
     modifier: Modifier,

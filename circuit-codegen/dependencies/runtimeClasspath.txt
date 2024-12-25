@@ -10,3 +10,4 @@ org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-reflect
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains:annotations
+org.jspecify:jspecify

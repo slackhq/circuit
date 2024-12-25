@@ -2,7 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseInExpo
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.EaseOutExpo
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -27,7 +37,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -59,6 +68,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -78,6 +88,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
@@ -94,6 +105,9 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.sharedelements.progress
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
@@ -121,6 +135,9 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.transition.PetCardBoundsKey
+import com.slack.circuit.star.transition.PetImageBoundsKey
+import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
 import io.ktor.util.Platform
@@ -129,11 +146,11 @@ import io.ktor.util.platform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 @CommonParcelize
 data object PetListScreen : Screen {
+
   sealed interface State : CircuitUiState {
     val isRefreshing: Boolean
 
@@ -153,7 +170,11 @@ data object PetListScreen : Screen {
   }
 
   sealed interface Event : CircuitUiEvent {
-    data class ClickAnimal(val petId: Long, val photoUrlMemoryCacheKey: String?) : Event
+    data class ClickAnimal(
+      val petId: Long,
+      val photoUrlMemoryCacheKey: String?,
+      val animal: PetListAnimal,
+    ) : Event
 
     data object Refresh : Event
 
@@ -208,7 +229,13 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
         ) { event ->
           when (event) {
             is ClickAnimal -> {
-              navigator.goTo(PetDetailScreen(event.petId, event.photoUrlMemoryCacheKey))
+              navigator.goTo(
+                PetDetailScreen(
+                  event.petId,
+                  event.photoUrlMemoryCacheKey,
+                  event.animal.toPartialAnimal(),
+                )
+              )
             }
             is UpdatedFilters -> {
               isUpdateFiltersModalShowing = false
@@ -246,6 +273,17 @@ internal fun Animal.toPetListAnimal(): PetListAnimal {
     gender = gender,
     size = size,
     age = age,
+  )
+}
+
+internal fun PetListAnimal.toPartialAnimal(): PetDetailScreen.PartialAnimal {
+  return PetDetailScreen.PartialAnimal(
+    id = id,
+    name = name,
+    imageUrl = imageUrl,
+    breed = breed,
+    gender = gender,
+    size = size,
   )
 }
 
@@ -373,8 +411,8 @@ private fun PetListGrid(
     ) {
       items(count = animals.size, key = { i -> animals[i].id }) { index ->
         val animal = animals[index]
-        PetListGridItem(animal, modifier = Modifier.animateItemPlacement()) {
-          eventSink(ClickAnimal(animal.id, animal.imageUrl))
+        PetListGridItem(animal, modifier = Modifier.animateItem()) {
+          eventSink(ClickAnimal(animal.id, animal.imageUrl, animal))
         }
       }
     })
@@ -386,15 +424,34 @@ private fun PetListGrid(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PetListGridItem(
   animal: PetListAnimal,
   modifier: Modifier = Modifier,
   onClick: () -> Unit = {},
-) {
+) = SharedElementTransitionScope {
+  val animatedScope = requireAnimatedScope(Navigation)
+  val boundsState = rememberSharedContentState(key = PetCardBoundsKey(animal.id))
+  val fraction by
+    remember(boundsState, animatedScope) {
+      derivedStateOf { if (boundsState.isMatchFound) animatedScope.progress().value else 1f }
+    }
+  val topCornerSize = lerp(12.dp, 16.dp, fraction)
+  val bottomCornerSize = lerp(0.dp, 12.dp, 1 - fraction)
   ElevatedCard(
-    modifier = modifier.fillMaxWidth().testTag(CARD_TAG),
-    shape = RoundedCornerShape(16.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .testTag(CARD_TAG)
+        .sharedBounds(
+          sharedContentState = boundsState,
+          animatedVisibilityScope = animatedScope,
+          enter = fadeIn(tween(durationMillis = 100, easing = EaseOutCubic)),
+          exit = fadeOut(tween(durationMillis = 40, easing = EaseInCubic)),
+          zIndexInOverlay = 1f,
+        ),
+    shape = RoundedCornerShape(topCornerSize),
     colors =
       CardDefaults.elevatedCardColors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -403,7 +460,26 @@ private fun PetListGridItem(
   ) {
     Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
-      val imageModifier = Modifier.fillMaxWidth().testTag(IMAGE_TAG)
+      val imageModifier =
+        Modifier.sharedBounds(
+            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id, 0)),
+            animatedVisibilityScope = animatedScope,
+            placeHolderSize = animatedSize,
+            resizeMode = RemeasureToBounds,
+            enter = fadeIn(animationSpec = tween(durationMillis = 80, easing = EaseInExpo)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 80, easing = EaseOutExpo)),
+            zIndexInOverlay = 3f,
+          )
+          .clip(
+            RoundedCornerShape(
+              topStart = topCornerSize,
+              topEnd = topCornerSize,
+              bottomStart = bottomCornerSize,
+              bottomEnd = bottomCornerSize,
+            )
+          )
+          .fillMaxWidth()
+          .testTag(IMAGE_TAG)
       if (animal.imageUrl == null) {
         Image(
           rememberVectorPainter(Pets),
@@ -428,9 +504,30 @@ private fun PetListGridItem(
       }
       Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         // Name
-        Text(text = animal.name, style = MaterialTheme.typography.labelLarge)
+        Text(
+          text = animal.name,
+          style = MaterialTheme.typography.labelLarge,
+          modifier =
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
+              animatedVisibilityScope = requireAnimatedScope(Navigation),
+              zIndexInOverlay = 2f,
+            ),
+        )
         // Type
-        animal.breed?.let { Text(text = animal.breed, style = MaterialTheme.typography.bodyMedium) }
+        animal.breed?.let {
+          Text(
+            text = animal.breed,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState =
+                  rememberSharedContentState(key = "tag-${animal.id}-${animal.breed}"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 2f,
+              ),
+          )
+        }
         CompositionLocalProvider(
           LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
         ) {

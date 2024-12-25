@@ -1,0 +1,20 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root.circuitx:gesture-navigation>
+final class com.slack.circuitx.gesturenavigation/CupertinoGestureNavigationDecoration : com.slack.circuit.backstack/NavDecoration { // com.slack.circuitx.gesturenavigation/CupertinoGestureNavigationDecoration|null[0]
+    constructor <init>(kotlin/Float = ..., androidx.compose.material/ThresholdConfig = ..., kotlin/Boolean = ..., kotlin/Function0<kotlin/Unit>) // com.slack.circuitx.gesturenavigation/CupertinoGestureNavigationDecoration.<init>|<init>(kotlin.Float;androidx.compose.material.ThresholdConfig;kotlin.Boolean;kotlin.Function0<kotlin.Unit>){}[0]
+
+    final fun <#A1: com.slack.circuit.backstack/NavArgument> DecoratedContent(kotlinx.collections.immutable/ImmutableList<#A1>, kotlin/Int, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.gesturenavigation/CupertinoGestureNavigationDecoration.DecoratedContent|DecoratedContent(kotlinx.collections.immutable.ImmutableList<0:0>;kotlin.Int;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.backstack.NavArgument>}[0]
+}
+
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_CupertinoGestureNavigationDecoration$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_CupertinoGestureNavigationDecoration$stableprop|#static{}com_slack_circuitx_gesturenavigation_CupertinoGestureNavigationDecoration$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_GestureNavTransitionHolder$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_GestureNavTransitionHolder$stableprop|#static{}com_slack_circuitx_gesturenavigation_GestureNavTransitionHolder$stableprop[0]
+
+final fun com.slack.circuitx.gesturenavigation/GestureNavigationDecoration(com.slack.circuit.backstack/NavDecoration = ..., kotlin/Function0<kotlin/Unit>): com.slack.circuit.backstack/NavDecoration // com.slack.circuitx.gesturenavigation/GestureNavigationDecoration|GestureNavigationDecoration(com.slack.circuit.backstack.NavDecoration;kotlin.Function0<kotlin.Unit>){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_CupertinoGestureNavigationDecoration$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_CupertinoGestureNavigationDecoration$stableprop_getter|com_slack_circuitx_gesturenavigation_CupertinoGestureNavigationDecoration$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_GestureNavTransitionHolder$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_GestureNavTransitionHolder$stableprop_getter|com_slack_circuitx_gesturenavigation_GestureNavTransitionHolder$stableprop_getter(){}[0]

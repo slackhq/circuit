@@ -69,9 +69,9 @@ kotlin {
     commonMain {
       dependencies {
         implementation(libs.androidx.datastore.preferences)
-        implementation(libs.coil3)
-        implementation(libs.coil3.compose)
-        implementation(libs.coil3.network.ktor)
+        implementation(libs.coil)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.network.ktor)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
@@ -81,7 +81,6 @@ kotlin {
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
         implementation(libs.kotlinx.immutable)
-        implementation(libs.kotlinx.serialization.json.okio)
         implementation(libs.ksoup)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
@@ -121,7 +120,7 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.dagger)
         implementation(libs.jsoup)
-        implementation(libs.coil3.network.okhttp)
+        implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
@@ -139,7 +138,7 @@ kotlin {
       androidMain {
         dependencies {
           implementation(libs.androidx.appCompat)
-          implementation(libs.androidx.compose.integration.activity)
+          implementation(libs.androidx.activity.compose)
           implementation(libs.androidx.browser)
           implementation(libs.androidx.compose.accompanist.flowlayout)
           implementation(libs.androidx.compose.accompanist.pager)
@@ -165,7 +164,7 @@ kotlin {
           implementation(libs.roborazzi)
           implementation(libs.roborazzi.compose)
           implementation(libs.roborazzi.rules)
-          implementation(libs.testing.espresso.core)
+          implementation(libs.androidx.test.espresso.core)
           implementation(projects.samples.star.coilRule)
         }
       }
@@ -246,8 +245,13 @@ if (!buildDesktop) {
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
       testApplicationId = "com.slack.circuit.star.apk.androidTest"
     }
-
-    testOptions { unitTests.isIncludeAndroidResources = true }
+    testOptions {
+      unitTests {
+        isIncludeAndroidResources = true
+        // For https://github.com/takahirom/roborazzi/issues/296
+        all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
+      }
+    }
     testBuildType = "release"
   }
 } else {

@@ -59,6 +59,7 @@ kotlin {
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
         api(projects.circuitRetained)
+        api(projects.circuitSharedElements)
         api(libs.compose.ui)
       }
     }
@@ -66,7 +67,7 @@ kotlin {
       dependencies {
         api(libs.androidx.compose.runtime)
         api(libs.androidx.compose.animation)
-        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.androidx.activity.compose)
       }
     }
     commonTest {
@@ -109,7 +110,7 @@ kotlin {
       dependencies {
         implementation(libs.junit)
         implementation(libs.coroutines.android)
-        implementation(libs.androidx.compose.integration.activity)
+        implementation(libs.androidx.activity.compose)
         implementation(libs.compose.ui.testing.junit)
       }
     }
@@ -155,6 +156,7 @@ android {
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true
+  @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/379030055
   from(projects.samples.star.benchmark.dependencyProject)
   filter { include("com.slack.circuit.foundation.**") }
 }

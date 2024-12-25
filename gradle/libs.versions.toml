@@ -1,42 +1,42 @@
 [versions]
-accompanist = "0.34.0"
-androidx-activity = "1.9.2"
-androidx-annotation = "1.8.2"
+accompanist = "0.36.0"
+androidx-activity = "1.9.3"
+androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.6"
-agp = "8.7.1"
-anvil = "0.3.2"
-atomicfu = "0.25.0"
-benchmark = "1.3.2"
-coil = "2.7.0"
-coil3 = "3.0.0-alpha10"
-compose-animation = "1.6.8"
-compose-foundation = "1.6.8"
-compose-material = "1.6.8"
-compose-material3 = "1.2.1"
-compose-runtime = "1.6.8"
-compose-ui = "1.6.8"
-compose-jb = "1.6.11"
-compose-integration-constraintlayout = "1.0.1"
+androidx-lifecycle = "2.8.7"
+agp = "8.7.3"
+anvil = "0.4.0"
+atomicfu = "0.26.1"
+benchmark = "1.3.3"
+coil = "3.0.4"
+compose-animation = "1.7.6"
+compose-foundation = "1.7.6"
+compose-material = "1.7.6"
+compose-material3 = "1.3.1"
+compose-runtime = "1.7.6"
+compose-ui = "1.7.6"
+compose-jb = "1.7.1"
+compose-bom = "2024.12.01"
+compose-integration-constraintlayout = "1.1.0"
 dagger = "2.52"
 datastore = "1.1.1"
 detekt = "1.23.7"
 dokka = "2.0.0"
-eithernet = "2.0.0-alpha01"
+eithernet = "2.0.0"
 jdk = "22"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
-kct = "0.5.1"
+kct = "0.7.0"
 kotlin = "2.0.21"
 kotlinInject = "0.7.2"
-kotlinInject-anvil = "0.0.5"
-kotlinpoet = "1.18.1"
+kotlinInject-anvil = "0.1.1"
+kotlinpoet = "2.0.0"
 kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.3"
-ksp = "2.0.21-1.0.25"
-ktfmt = "0.52"
-ktor = "3.0.0"
+ksp = "2.0.21-1.0.28"
+ktfmt = "0.53"
+ktor = "3.0.3"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.30.0"
@@ -44,16 +44,16 @@ molecule = "2.0.0"
 mosaic = "0.12.0"
 okhttp = "5.0.0-alpha.14"
 okio = "3.9.1"
-paparazzi = "1.3.4"
+paparazzi = "1.3.5"
 picnic = "0.7.0"
-robolectric = "4.13"
-roborazzi = "1.29.0"
-skie = "0.9.3"
+robolectric = "4.14.1"
+roborazzi = "1.37.0"
+skie = "0.10.0"
 spotless = "7.0.0.BETA2"
 sqldelight = "2.0.2"
-telephoto = "0.13.0"
+telephoto = "0.14.0"
 testParameterInjector = "1.18"
-turbine = "1.1.0"
+turbine = "1.2.0"
 versionsPlugin = "0.49.0"
 
 [plugins]
@@ -61,13 +61,13 @@ agp-application = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark"}
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
+binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.17.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.17.0" }
-## Here to trigger Renovate updates
+emulatorWtf = { id = "wtf.emulator.gradle", version = "0.18.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -76,13 +76,11 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
-paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
-skie = { id = "co.touchlab.skie", version.ref = "skie"}
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
@@ -91,7 +89,7 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "versions
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.2" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -107,14 +105,12 @@ androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:ac
 androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.09.03" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
-androidx-compose-integration-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-compose-integration-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "compose-integration-constraintlayout" }
 androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }
-androidx-compose-integration-rxjava3 = { module = "androidx.compose.runtime:runtime-rxjava3", version.ref = "compose-runtime" }
 # Material design icons
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "compose-material" }
 androidx-compose-material-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
@@ -139,7 +135,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
 
-androidx-core = "androidx.core:core-ktx:1.13.1"
+androidx-core = "androidx.core:core-ktx:1.15.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -167,16 +163,13 @@ autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", versi
 
 baselineProfilePlugin = { module = "androidx.benchmark:benchmark-baseline-profile-gradle-plugin", version.ref = "benchmark" }
 
-clikt = "com.github.ajalt.clikt:clikt:5.0.1"
+clikt = "com.github.ajalt.clikt:clikt:5.0.2"
 
-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
-coil-test = { module = "io.coil-kt:coil-test", version.ref = "coil" }
-coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
-coil3-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
-coil3-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil3" }
-coil3-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
-coil3-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil3" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil" }
 
 compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "kotlin" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
@@ -192,7 +185,6 @@ compose-material-icons = { module = "org.jetbrains.compose.material:material-ico
 compose-material-iconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-jb" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb" }
-compose-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "compose-jb" }
 
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -205,13 +197,13 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.2"
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.4"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jline = "org.jline:jline:3.27.1"
-jsoup = "org.jsoup:jsoup:1.18.1"
+jline = "org.jline:jline:3.28.0"
+jsoup = "org.jsoup:jsoup:1.18.3"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
@@ -232,7 +224,7 @@ kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotli
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
-ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.1.9"
+ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
@@ -249,7 +241,7 @@ ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", 
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.1"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
 material = "com.google.android.material:material:1.12.0"
 
@@ -260,13 +252,13 @@ okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
-robolectric = { module = "org.robolectric:robolectric", version.ref="robolectric" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.9"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.10"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
@@ -276,7 +268,6 @@ sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapter
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
-testing-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 truth = "com.google.truth:truth:1.4.4"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }

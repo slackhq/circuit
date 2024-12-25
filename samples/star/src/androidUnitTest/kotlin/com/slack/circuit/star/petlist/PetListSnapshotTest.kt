@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,8 +12,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import coil.annotation.ExperimentalCoilApi
 import com.github.takahirom.roborazzi.RoborazziRule
+import com.github.takahirom.roborazzi.RoborazziTransparentActivity
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
 import com.slack.circuit.star.petlist.PetListScreen.State.Loading
@@ -58,7 +60,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     fun data() = listOf(true, false)
   }
 
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  @get:Rule val composeTestRule = createAndroidComposeRule<RoborazziTransparentActivity>()
 
   @get:Rule
   val roborazziRule =
@@ -104,10 +106,13 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     PetList(NoAnimals(isRefreshing = false), modifier)
   }
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Test
   fun petList_show_list_for_success_state() = snapshot { modifier ->
-    val animals = persistentListOf(ANIMAL)
-    PetList(Success(animals, isRefreshing = false), modifier)
+    PreviewSharedElementTransitionLayout {
+      val animals = persistentListOf(ANIMAL)
+      PetList(Success(animals, isRefreshing = false), modifier)
+    }
   }
 
   @Test

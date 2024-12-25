@@ -1,0 +1,54 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root.circuitx:overlays>
+final enum class com.slack.circuitx.overlays/DialogResult : kotlin/Enum<com.slack.circuitx.overlays/DialogResult> { // com.slack.circuitx.overlays/DialogResult|null[0]
+    enum entry Cancel // com.slack.circuitx.overlays/DialogResult.Cancel|null[0]
+    enum entry Confirm // com.slack.circuitx.overlays/DialogResult.Confirm|null[0]
+    enum entry Dismiss // com.slack.circuitx.overlays/DialogResult.Dismiss|null[0]
+
+    final val entries // com.slack.circuitx.overlays/DialogResult.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuitx.overlays/DialogResult> // com.slack.circuitx.overlays/DialogResult.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.slack.circuitx.overlays/DialogResult // com.slack.circuitx.overlays/DialogResult.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.slack.circuitx.overlays/DialogResult> // com.slack.circuitx.overlays/DialogResult.values|values#static(){}[0]
+}
+
+final class <#A: kotlin/Any, #B: kotlin/Any> com.slack.circuitx.overlays/BasicAlertDialogOverlay : com.slack.circuit.overlay/Overlay<#B> { // com.slack.circuitx.overlays/BasicAlertDialogOverlay|null[0]
+    constructor <init>(#A, kotlin/Function0<#B>, androidx.compose.ui.window/DialogProperties = ..., kotlin/Function4<#A, com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuitx.overlays/BasicAlertDialogOverlay.<init>|<init>(1:0;kotlin.Function0<1:1>;androidx.compose.ui.window.DialogProperties;kotlin.Function4<1:0,com.slack.circuit.overlay.OverlayNavigator<1:1>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
+
+    final fun Content(com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.overlays/BasicAlertDialogOverlay.Content|Content(com.slack.circuit.overlay.OverlayNavigator<1:1>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final class <#A: kotlin/Any, #B: kotlin/Any> com.slack.circuitx.overlays/BasicDialogOverlay : com.slack.circuit.overlay/Overlay<#B> { // com.slack.circuitx.overlays/BasicDialogOverlay|null[0]
+    constructor <init>(#A, kotlin/Function0<#B>, androidx.compose.ui.window/DialogProperties = ..., kotlin/Function4<#A, com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuitx.overlays/BasicDialogOverlay.<init>|<init>(1:0;kotlin.Function0<1:1>;androidx.compose.ui.window.DialogProperties;kotlin.Function4<1:0,com.slack.circuit.overlay.OverlayNavigator<1:1>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
+
+    final fun Content(com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.overlays/BasicDialogOverlay.Content|Content(com.slack.circuit.overlay.OverlayNavigator<1:1>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final class <#A: kotlin/Any, #B: kotlin/Any> com.slack.circuitx.overlays/BottomSheetOverlay : com.slack.circuit.overlay/Overlay<#B> { // com.slack.circuitx.overlays/BottomSheetOverlay|null[0]
+    constructor <init>(#A, androidx.compose.ui.graphics/Color? = ..., androidx.compose.ui.unit/Dp? = ..., androidx.compose.ui.graphics/Shape? = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Function4<#A, com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuitx.overlays/BottomSheetOverlay.<init>|<init>(1:0;androidx.compose.ui.graphics.Color?;androidx.compose.ui.unit.Dp?;androidx.compose.ui.graphics.Shape?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Boolean;kotlin.Boolean;kotlin.Function4<1:0,com.slack.circuit.overlay.OverlayNavigator<1:1>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
+    constructor <init>(#A, kotlin/Function0<#B>, androidx.compose.ui.graphics/Color? = ..., androidx.compose.ui.unit/Dp? = ..., androidx.compose.ui.graphics/Shape? = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ..., kotlin/Boolean = ..., androidx.compose.material3/ModalBottomSheetProperties = ..., kotlin/Function4<#A, com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuitx.overlays/BottomSheetOverlay.<init>|<init>(1:0;kotlin.Function0<1:1>;androidx.compose.ui.graphics.Color?;androidx.compose.ui.unit.Dp?;androidx.compose.ui.graphics.Shape?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Boolean;androidx.compose.material3.ModalBottomSheetProperties;kotlin.Function4<1:0,com.slack.circuit.overlay.OverlayNavigator<1:1>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
+
+    final fun Content(com.slack.circuit.overlay/OverlayNavigator<#B>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.overlays/BottomSheetOverlay.Content|Content(com.slack.circuit.overlay.OverlayNavigator<1:1>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final val com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicAlertDialogOverlay$stableprop // com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicAlertDialogOverlay$stableprop|#static{}com_slack_circuitx_overlays_BasicAlertDialogOverlay$stableprop[0]
+final val com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicDialogOverlay$stableprop // com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicDialogOverlay$stableprop|#static{}com_slack_circuitx_overlays_BasicDialogOverlay$stableprop[0]
+final val com.slack.circuitx.overlays/com_slack_circuitx_overlays_BottomSheetOverlay$stableprop // com.slack.circuitx.overlays/com_slack_circuitx_overlays_BottomSheetOverlay$stableprop|#static{}com_slack_circuitx_overlays_BottomSheetOverlay$stableprop[0]
+final val com.slack.circuitx.overlays/com_slack_circuitx_overlays_DispatchingOverlayNavigator$stableprop // com.slack.circuitx.overlays/com_slack_circuitx_overlays_DispatchingOverlayNavigator$stableprop|#static{}com_slack_circuitx_overlays_DispatchingOverlayNavigator$stableprop[0]
+final val com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay$stableprop // com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay$stableprop|#static{}com_slack_circuitx_overlays_FullScreenOverlay$stableprop[0]
+final val com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay_Callbacks_NoOp$stableprop // com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay_Callbacks_NoOp$stableprop|#static{}com_slack_circuitx_overlays_FullScreenOverlay_Callbacks_NoOp$stableprop[0]
+
+final fun com.slack.circuitx.overlays/alertDialogOverlay(kotlin/Function3<kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ..., kotlin/Function3<kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, androidx.compose.ui.window/DialogProperties = ...): com.slack.circuitx.overlays/BasicAlertDialogOverlay<*, com.slack.circuitx.overlays/DialogResult> // com.slack.circuitx.overlays/alertDialogOverlay|alertDialogOverlay(kotlin.Function3<kotlin.Function0<kotlin.Unit>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Function3<kotlin.Function0<kotlin.Unit>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;androidx.compose.ui.window.DialogProperties){}[0]
+final fun com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicAlertDialogOverlay$stableprop_getter(): kotlin/Int // com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicAlertDialogOverlay$stableprop_getter|com_slack_circuitx_overlays_BasicAlertDialogOverlay$stableprop_getter(){}[0]
+final fun com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicDialogOverlay$stableprop_getter(): kotlin/Int // com.slack.circuitx.overlays/com_slack_circuitx_overlays_BasicDialogOverlay$stableprop_getter|com_slack_circuitx_overlays_BasicDialogOverlay$stableprop_getter(){}[0]
+final fun com.slack.circuitx.overlays/com_slack_circuitx_overlays_BottomSheetOverlay$stableprop_getter(): kotlin/Int // com.slack.circuitx.overlays/com_slack_circuitx_overlays_BottomSheetOverlay$stableprop_getter|com_slack_circuitx_overlays_BottomSheetOverlay$stableprop_getter(){}[0]
+final fun com.slack.circuitx.overlays/com_slack_circuitx_overlays_DispatchingOverlayNavigator$stableprop_getter(): kotlin/Int // com.slack.circuitx.overlays/com_slack_circuitx_overlays_DispatchingOverlayNavigator$stableprop_getter|com_slack_circuitx_overlays_DispatchingOverlayNavigator$stableprop_getter(){}[0]
+final fun com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay$stableprop_getter(): kotlin/Int // com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay$stableprop_getter|com_slack_circuitx_overlays_FullScreenOverlay$stableprop_getter(){}[0]
+final fun com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay_Callbacks_NoOp$stableprop_getter(): kotlin/Int // com.slack.circuitx.overlays/com_slack_circuitx_overlays_FullScreenOverlay_Callbacks_NoOp$stableprop_getter|com_slack_circuitx_overlays_FullScreenOverlay_Callbacks_NoOp$stableprop_getter(){}[0]
+final suspend fun (com.slack.circuit.overlay/OverlayHost).com.slack.circuitx.overlays/showFullScreenOverlay(com.slack.circuit.runtime.screen/Screen): com.slack.circuit.runtime.screen/PopResult? // com.slack.circuitx.overlays/showFullScreenOverlay|showFullScreenOverlay@com.slack.circuit.overlay.OverlayHost(com.slack.circuit.runtime.screen.Screen){}[0]

@@ -2,15 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import coil.annotation.ExperimentalCoilApi
+import coil3.test.FakeImage
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
@@ -25,8 +32,6 @@ import com.slack.circuit.star.petlist.PetListTestConstants.GRID_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
-import com.slack.circuit.star.resources.Res
-import com.slack.circuit.star.resources.dog
 import com.slack.circuit.test.TestEventSink
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -39,12 +44,12 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetListUiTest {
   @get:Rule val composeTestRule = createComposeRule()
-  @get:Rule val coilRule = CoilRule(Res.drawable.dog)
+  @get:Rule val coilRule = CoilRule(FakeImage(100, 100, color = Color.Blue.toArgb()))
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetList(Loading) }
+      setTestContent { PetList(Loading) }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -55,7 +60,7 @@ class PetListUiTest {
   @Test
   fun petList_show_message_for_no_animals_state() {
     composeTestRule.run {
-      setContent { PetList(NoAnimals(isRefreshing = false)) }
+      setTestContent { PetList(NoAnimals(isRefreshing = false)) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
@@ -69,7 +74,7 @@ class PetListUiTest {
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(Success(animals, isRefreshing = false) {}) }
+      setTestContent { PetList(Success(animals, isRefreshing = false) {}) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -87,11 +92,11 @@ class PetListUiTest {
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(Success(animals, isRefreshing = false, eventSink = testSink)) }
+      setTestContent { PetList(Success(animals, isRefreshing = false, eventSink = testSink)) }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 
-      testSink.assertEvent(ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
+      testSink.assertEvent(ClickAnimal(ANIMAL.id, ANIMAL.imageUrl, ANIMAL))
     }
   }
 
@@ -107,4 +112,9 @@ class PetListUiTest {
         age = "12",
       )
   }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
+  setContent { PreviewSharedElementTransitionLayout { content() } }
 }

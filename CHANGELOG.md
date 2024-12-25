@@ -3,7 +3,26 @@ Changelog
 
 **Unreleased**
 --------------
+
+0.25.0
+------
+
+_2024-10-23_
+
 - **New**: Pass `tonalElevation` to `BottomSheetOverlay` so that is reflected in `ModalBottomSheet`.
+- **Enhancement**: Add `-dontwarn` on Anvil classes from codegen annotations.
+- **Enhancement**: Misc small doc fixes and updates.
+- **Enhancement**: Add note about only creating a presenter for supported screen types in tutorial.
+- Update kotlinInject.anvil to `0.0.5`.
+- Update androidx.activity to `1.9.3`.
+- Update androidx.lifecycle to `2.8.6`.
+- Update Kotlin to `2.0.21`.
+- Build against KSP to `2.0.21-1.0.25`.
+- Update Turbine to `1.2.0`.
+- Update Compose Android to `1.7.4`.
+- Update Compose Multiplatform to `1.7.0`.
+
+Special thanks to [@eboudrant](https://github.com/eboudrant), [@bidrohi](https://github.com/bidrohi), [@hossain-khan](https://github.com/hossain-khan), and [@dturner](https://github.com/dturner) for contributing to this release!
 
 0.24.0
 ------

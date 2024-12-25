@@ -267,7 +267,7 @@ subprojects {
 
     configure<DokkaExtension> {
       moduleName.set(project.path.removePrefix(":").replace(":", "/"))
-      dokkaPublicationDirectory.set(layout.buildDirectory.dir("dokkaDir"))
+      basePublicationsDirectory.set(layout.buildDirectory.dir("dokkaDir"))
       dokkaSourceSets.configureEach {
         val readMeProvider = project.layout.projectDirectory.file("README.md")
         if (readMeProvider.asFile.exists()) {

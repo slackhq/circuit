@@ -1,5 +1,4 @@
 [versions]
-accompanist = "0.36.0"
 androidx-activity = "1.9.3"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
@@ -95,15 +94,6 @@ androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 ####### Compose
-# You must enable the SlackProperties.enableCompose property to use these.
-androidx-compose-accompanist-appCompatThemeAdapter = { module = "com.google.accompanist:accompanist-appcompat-theme", version.ref = "accompanist" }
-androidx-compose-accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
-androidx-compose-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
-androidx-compose-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
-androidx-compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
-androidx-compose-accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder", version.ref = "accompanist" }
-androidx-compose-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
-androidx-compose-accompanist-systemUi = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)

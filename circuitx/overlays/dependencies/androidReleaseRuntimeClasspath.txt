@@ -70,7 +70,6 @@ androidx.savedstate:savedstate
 androidx.startup:startup-runtime
 androidx.tracing:tracing
 androidx.versionedparcelable:versionedparcelable
-com.google.accompanist:accompanist-systemuicontroller
 com.google.guava:listenablefuture
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose

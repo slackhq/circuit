@@ -45,7 +45,6 @@ kotlin {
     androidMain {
       dependencies {
         api(libs.androidx.compose.material.material3)
-        implementation(libs.androidx.compose.accompanist.systemUi)
       }
     }
     // We use a common folder instead of a common source set because there is no commonizer

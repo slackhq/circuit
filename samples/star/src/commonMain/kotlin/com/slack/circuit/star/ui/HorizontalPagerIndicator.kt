@@ -63,9 +63,7 @@ import kotlin.math.sign
  * @param indicatorHeight the height of each indicator in [Dp]. Defaults to [indicatorWidth].
  * @param spacing the spacing between each indicator in [Dp].
  * @param indicatorShape the shape representing each indicator. This defaults to [CircleShape].
- * @sample com.google.accompanist.sample.pager.HorizontalPagerIndicatorSample
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HorizontalPagerIndicator(
   pagerState: androidx.compose.foundation.pager.PagerState,

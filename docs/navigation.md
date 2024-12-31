@@ -38,8 +38,8 @@ setContent {
   val backStack = rememberSaveableBackStack(root = HomeScreen)
   BackHandler(onBack = { /* do something on root */ })
   // The Navigator's internal BackHandler will take precedence until it is at the root screen.
-  val navigator = rememberCircuitNavigator(backstack)
-  NavigableCircuitContent(navigator, backstack)
+  val navigator = rememberCircuitNavigator(backStack)
+  NavigableCircuitContent(navigator, backStack)
 }
 ```
 

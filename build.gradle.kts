@@ -13,9 +13,9 @@ import com.squareup.anvil.plugin.AnvilExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import java.net.URI
 import kotlinx.validation.ExperimentalBCVApi
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
@@ -62,9 +62,11 @@ val ktfmtVersion = libs.versions.ktfmt.get()
 val detektVersion = libs.versions.detekt.get()
 val twitterDetektPlugin = libs.detektPlugins.twitterCompose
 
-tasks.dokkaHtmlMultiModule {
-  outputDirectory.set(rootDir.resolve("docs/api/0.x"))
-  includes.from(project.layout.projectDirectory.file("README.md"))
+dokka {
+  dokkaPublications.html {
+    outputDirectory.set(rootDir.resolve("docs/api/0.x"))
+    includes.from(project.layout.projectDirectory.file("README.md"))
+  }
 }
 
 allprojects {
@@ -263,9 +265,9 @@ subprojects {
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
 
-    tasks.withType<DokkaTaskPartial>().configureEach {
+    configure<DokkaExtension> {
       moduleName.set(project.path.removePrefix(":").replace(":", "/"))
-      outputDirectory.set(layout.buildDirectory.dir("docs/partial"))
+      basePublicationsDirectory.set(layout.buildDirectory.dir("dokkaDir"))
       dokkaSourceSets.configureEach {
         val readMeProvider = project.layout.projectDirectory.file("README.md")
         if (readMeProvider.asFile.exists()) {
@@ -276,6 +278,7 @@ subprojects {
           suppress.set(true)
         }
         skipDeprecated.set(true)
+        documentedVisibilities.add(VisibilityModifier.Public)
 
         // Skip internal packages
         perPackageOption {
@@ -287,11 +290,11 @@ subprojects {
 
         // Add source links
         sourceLink {
-          localDirectory.set(layout.projectDirectory.dir("src").asFile)
+          localDirectory.set(layout.projectDirectory.dir("src"))
           val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
-          remoteUrl.set(
+          remoteUrl(
             providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
-              URI("$scmUrl/tree/main/$relPath/src").toURL()
+              "$scmUrl/tree/main/$relPath/src"
             }
           )
           remoteLineSuffix.set("#L")
@@ -498,4 +501,23 @@ apiValidation {
       "tutorial",
       "internal-test-utils",
     )
+}
+
+// Dokka aggregating deps
+dependencies {
+  dokka(projects.backstack)
+  dokka(projects.circuitCodegen)
+  dokka(projects.circuitCodegenAnnotations)
+  dokka(projects.circuitFoundation)
+  dokka(projects.circuitOverlay)
+  dokka(projects.circuitRetained)
+  dokka(projects.circuitRuntime)
+  dokka(projects.circuitRuntimePresenter)
+  dokka(projects.circuitRuntimeScreen)
+  dokka(projects.circuitRuntimeUi)
+  dokka(projects.circuitTest)
+  dokka(projects.circuitx.android)
+  dokka(projects.circuitx.effects)
+  dokka(projects.circuitx.gestureNavigation)
+  dokka(projects.circuitx.overlays)
 }

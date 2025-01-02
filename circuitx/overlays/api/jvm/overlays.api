@@ -28,7 +28,6 @@ public final class com/slack/circuitx/overlays/BottomSheetOverlay : com/slack/ci
 
 public final class com/slack/circuitx/overlays/ComposableSingletons$BottomSheetOverlayKt {
 	public static final field INSTANCE Lcom/slack/circuitx/overlays/ComposableSingletons$BottomSheetOverlayKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function2;
 	public fun <init> ()V
 	public final fun getLambda-1$overlays ()Lkotlin/jvm/functions/Function2;
 }

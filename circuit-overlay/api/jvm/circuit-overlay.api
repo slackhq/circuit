@@ -9,7 +9,6 @@ public abstract class com/slack/circuit/overlay/AnimatedOverlay : com/slack/circ
 
 public final class com/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt {
 	public static final field INSTANCE Lcom/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function4;
 	public fun <init> ()V
 	public final fun getLambda-1$circuit_overlay ()Lkotlin/jvm/functions/Function4;
 }

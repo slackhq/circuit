@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import com.android.build.api.dsl.LibraryExtension
 import com.google.devtools.ksp.gradle.KspAATask
-import com.google.devtools.ksp.gradle.KspTaskJvm
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -279,15 +278,8 @@ afterEvaluate {
     if (target != "Android" && target != "Jvm") continue
     val buildType = if (target == "Android") "Release" else ""
     val kspTaskName = "ksp${buildType}Kotlin${target}"
-    val useKSP2 = providers.gradleProperty("ksp.useKSP2").getOrElse("false").toBoolean()
     val generatedKspKotlinFiles =
-      if (useKSP2) {
-        val kspReleaseTask = tasks.named<KspAATask>(kspTaskName)
-        kspReleaseTask.flatMap { it.kspConfig.kotlinOutputDir }
-      } else {
-        val kspReleaseTask = tasks.named<KspTaskJvm>(kspTaskName)
-        kspReleaseTask.flatMap { it.destination }
-      }
+      tasks.named<KspAATask>(kspTaskName).flatMap { it.kspConfig.kotlinOutputDir }
     tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
       source(generatedKspKotlinFiles)
     }

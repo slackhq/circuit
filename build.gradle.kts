@@ -49,7 +49,6 @@ plugins {
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp) apply false
-  alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.kotlin.plugin.compose) apply false
@@ -171,15 +170,21 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
+  val useK2Kapt =
+    providers.gradleProperty("kapt.use.k2").map { it.toBooleanStrict() }.getOrElse(false)
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
-      // Don't double apply to stub gen
       if (this is KaptGenerateStubsTask) {
-        // TODO due to Anvil we need to force language version 1.9
-        compilerOptions {
-          progressiveMode.set(false)
-          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        if (useK2Kapt) {
+          // K2 Kapt is in alpha
+          compilerOptions.allWarningsAsErrors.set(false)
+        } else {
+          compilerOptions {
+            progressiveMode.set(false)
+            languageVersion.set(KotlinVersion.KOTLIN_1_9)
+          }
         }
+        // Don't double apply to stub gen
         return@configureEach
       }
       val isWasmTask = name.contains("wasm", ignoreCase = true)
@@ -256,10 +261,6 @@ subprojects {
   // version that is empty.
   dependencies.modules {
     module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
-  }
-
-  pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
-    tasks.withType<KaptGenerateStubsTask>().configureEach { useK2Kapt.set(true) }
   }
 
   pluginManager.withPlugin("com.vanniktech.maven.publish") {

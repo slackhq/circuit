@@ -11,8 +11,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import coil.annotation.ExperimentalCoilApi
+import com.github.takahirom.roborazzi.RoborazziActivity
 import com.github.takahirom.roborazzi.RoborazziRule
-import com.github.takahirom.roborazzi.RoborazziTransparentActivity
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
@@ -60,7 +60,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     fun data() = listOf(true, false)
   }
 
-  @get:Rule val composeTestRule = createAndroidComposeRule<RoborazziTransparentActivity>()
+  @get:Rule val composeTestRule = createAndroidComposeRule<RoborazziActivity>()
 
   @get:Rule
   val roborazziRule =

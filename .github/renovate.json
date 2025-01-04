@@ -26,6 +26,13 @@
       "extends": ["schedule:monthly"]
     },
     {
+      "matchDepPatterns": [
+        "^org\\.jetbrains\\.compose.*$"
+      ],
+      "description": "Ignore Jetbrains Compose versions with build identifiers",
+      "allowedVersions": "!/.*\\+[\\w\\d\\.]+$/"
+    },
+    {
       "matchManagers": ["maven"],
       "description": "Disable snapshot versions",
       "matchCurrentVersion": "/.*-SNAPSHOT/",

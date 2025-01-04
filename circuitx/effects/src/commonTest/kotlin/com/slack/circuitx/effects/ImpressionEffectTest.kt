@@ -171,8 +171,8 @@ internal class ImpressionEffectTestSharedImpl : ImpressionEffectTestShared {
 
   /** Simulate a retained leaving and joining of the composition. */
   private fun recreate() {
-    composed.value = false
     registry.saveAll()
+    composed.value = false
     composed.value = true
   }
 }

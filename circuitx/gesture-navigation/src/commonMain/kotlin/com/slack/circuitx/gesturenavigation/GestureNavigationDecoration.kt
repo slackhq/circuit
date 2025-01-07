@@ -3,7 +3,10 @@
 package com.slack.circuitx.gesturenavigation
 
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.AnimatedNavigationTransform
 import com.slack.circuit.foundation.NavigatorDefaults
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Returns a [NavDecoration] implementation which support navigation through appropriate gestures on
@@ -19,6 +22,7 @@ import com.slack.circuit.foundation.NavigatorDefaults
  *   Typically this should call `Navigator.pop()`.
  */
 public expect fun GestureNavigationDecoration(
+  animatedNavOverrides: ImmutableList<AnimatedNavigationTransform> = persistentListOf(),
   fallback: NavDecoration = NavigatorDefaults.DefaultDecoration,
   onBackInvoked: () -> Unit,
 ): NavDecoration

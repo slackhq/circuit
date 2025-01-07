@@ -4,9 +4,12 @@ package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.material.ExperimentalMaterialApi
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.AnimatedNavigationTransform
+import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecoration(
+  animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>,
   fallback: NavDecoration,
   onBackInvoked: () -> Unit,
 ): NavDecoration = CupertinoGestureNavigationDecoration(onBackInvoked = onBackInvoked)

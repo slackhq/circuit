@@ -45,7 +45,8 @@ import com.slack.circuit.foundation.AnimatedNavDecoration
 import com.slack.circuit.foundation.AnimatedNavDecorator
 import com.slack.circuit.foundation.AnimatedNavState
 import com.slack.circuit.foundation.AnimatedNavigationTransform
-import com.slack.circuit.foundation.AnimatedNavigationTransform.Direction
+import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
+import com.slack.circuit.foundation.RequiredAnimatedNavigationTransform
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
@@ -139,17 +140,16 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   }
 
   @OptIn(InternalCircuitApi::class)
-  override val defaultTransform: AnimatedNavigationTransform =
-    object : AnimatedNavigationTransform {
+  override val defaultTransform: RequiredAnimatedNavigationTransform =
+    object : RequiredAnimatedNavigationTransform {
       override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-        direction: Direction,
-        sameRoot: Boolean,
+        navigationEvent: NavigationEvent
       ): ContentTransform {
-        return when (direction) {
+        return when (navigationEvent) {
           // adding to back stack
-          Direction.Forward -> NavigatorDefaults.DefaultDecoration.forward
+          NavigationEvent.GoTo -> NavigatorDefaults.DefaultDecoration.forward
           // come back from back stack
-          Direction.Backward -> {
+          NavigationEvent.Pop -> {
             if (showPrevious) {
                 EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
               } else {
@@ -158,7 +158,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
               .apply { targetContentZIndex = -1f }
           }
           // Root reset. Crossfade
-          Direction.Unknown -> fadeIn() togetherWith fadeOut()
+          NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
         }
       }
     }

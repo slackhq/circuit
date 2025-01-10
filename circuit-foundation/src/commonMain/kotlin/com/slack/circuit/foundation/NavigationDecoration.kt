@@ -7,15 +7,18 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Transition
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.AnimatedNavigationTransform.Direction
+import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
@@ -67,7 +70,7 @@ public class AnimatedNavDecoration(
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 
   /** Builds the default [AnimatedContent] transition spec. */
-  public val defaultTransform: DefaultAnimatedNavigationTransform
+  public val defaultTransform: RequiredAnimatedNavigationTransform
 
   /** For the args and backstack create the expected target [AnimatedNavState]. */
   public fun targetState(args: ImmutableList<T>, backStackDepth: Int): S
@@ -104,10 +107,13 @@ public interface AnimatedNavState {
   public val backStackDepth: Int
 }
 
-public interface DefaultAnimatedNavigationTransform : AnimatedNavigationTransform {
+/**
+ * A non-nullable implementation of [AnimatedNavigationTransform]. Is the default [ContentTransform]
+ * provided by a [AnimatedNavDecorator] to the [AnimatedNavDecoration].
+ */
+public interface RequiredAnimatedNavigationTransform : AnimatedNavigationTransform {
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-    direction: Direction,
-    sameRoot: Boolean,
+    navigationEvent: NavigationEvent
   ): ContentTransform
 }
 
@@ -122,43 +128,48 @@ public interface AnimatedNavigationTransform {
    * while using [AnimatedNavDecorator.defaultTransform] as the overall default.
    *
    * @return The [ContentTransform] to use or null if no override is desired.
+   * @receiver Requires a [AnimatedContentTransitionScope] to access the [Transition.currentState]
+   *   and [Transition.targetState]. Also allows for use of the properties on
+   *   [AnimatedContentTransitionScope], while building the [ContentTransform].
    */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-    direction: Direction,
-    sameRoot: Boolean,
+    navigationEvent: NavigationEvent
   ): ContentTransform?
 
-  // todo Change "Direction" as the name, want to indicate root changes and same diff
-  public enum class Direction {
-    Forward, // Initial -> Target
-    Backward, // Target was the previous Initial
-    Unknown, // Either the root screen has changed or the backstack depth is the same.
+  public enum class NavigationEvent {
+    /** Going to the [Transition.targetState] from the [Transition.currentState] */
+    GoTo,
+    /** Popping from the [Transition.currentState] back to to the [Transition.targetState] */
+    Pop,
+    /** The back stack has been reset to the [Transition.targetState]. */
+    RootReset,
   }
 }
 
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>
-): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = {
+): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
   val diff = targetState.backStackDepth - initialState.backStackDepth
   val sameRoot = targetState.rootScreen == initialState.rootScreen
-  val direction =
+  val navigationEvent =
     when {
-      sameRoot && diff > 0 -> Direction.Forward
-      sameRoot && diff < 0 -> Direction.Backward
-      else -> Direction.Unknown
+      !sameRoot -> NavigationEvent.RootReset
+      diff > 0 -> NavigationEvent.GoTo
+      diff < 0 -> NavigationEvent.Pop
+      // Somehow the back stack has not changed?
+      else -> return@spec EnterTransition.None togetherWith ExitTransition.None
     }
-  animatedNavigationOverride(animatedNavOverrides, direction, sameRoot)
-    ?: with(defaultTransform) { transitionSpec(direction, sameRoot) }
+  val override = animatedNavigationOverride(animatedNavOverrides, navigationEvent)
+  override ?: with(defaultTransform) { transitionSpec(navigationEvent) }
 }
 
 private fun AnimatedContentTransitionScope<AnimatedNavState>.animatedNavigationOverride(
   animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>,
-  direction: Direction,
-  sameRoot: Boolean,
+  navigationEvent: NavigationEvent,
 ): ContentTransform? {
   for (navigationTransform in animatedNavOverrides) {
-    val transform = with(navigationTransform) { transitionSpec(direction, sameRoot) }
+    val transform = with(navigationTransform) { transitionSpec(navigationEvent) }
     if (transform != null) {
       return transform
     }

@@ -9,7 +9,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
 import com.slack.circuit.foundation.AnimatedNavState
 import com.slack.circuit.foundation.AnimatedNavigationTransform
-import com.slack.circuit.foundation.AnimatedNavigationTransform.Direction
+import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
@@ -17,16 +17,15 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 object PetDetailAnimatedNavigationOverride : AnimatedNavigationTransform {
 
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-    direction: Direction,
-    sameRoot: Boolean,
+    navigationEvent: NavigationEvent
   ): ContentTransform? {
     return when {
-      direction == Direction.Forward &&
+      navigationEvent == NavigationEvent.GoTo &&
         initialState.screen is HomeScreen &&
         targetState.screen.isSharedElementDetailScreen() -> {
         // We're expecting shared elements to exist between the source and target so remove the
         // default animations.
-        ContentTransformNone
+        EnterTransition.None togetherWith ExitTransition.None
       }
       else -> null
     }
@@ -36,23 +35,20 @@ object PetDetailAnimatedNavigationOverride : AnimatedNavigationTransform {
 // Split from PetDetailAnimatedNavigationOverride to experiment AnimatedNavigationOverride lookups
 object HomeAnimatedNavigationOverride : AnimatedNavigationTransform {
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-    direction: Direction,
-    sameRoot: Boolean,
+    navigationEvent: NavigationEvent
   ): ContentTransform? {
     return when {
-      direction == Direction.Backward &&
+      navigationEvent == NavigationEvent.Pop &&
         initialState.screen.isSharedElementDetailScreen() &&
         targetState.screen is HomeScreen -> {
         // We're expecting shared elements to exist between the source and target so remove the
         // default animations.
-        ContentTransformNone
+        EnterTransition.None togetherWith ExitTransition.None
       }
       else -> null
     }
   }
 }
-
-private val ContentTransformNone = EnterTransition.None togetherWith ExitTransition.None
 
 private fun Screen.isSharedElementDetailScreen(): Boolean =
   this is PetDetailScreen && this.animal != null

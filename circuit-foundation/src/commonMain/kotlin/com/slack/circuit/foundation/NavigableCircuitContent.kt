@@ -40,7 +40,7 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.foundation.AnimatedNavigationTransform.Direction
+import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
@@ -359,20 +359,18 @@ public object NavigatorDefaults {
     }
 
     @OptIn(InternalCircuitApi::class)
-    override val defaultTransform: AnimatedNavigationTransform =
-      object : AnimatedNavigationTransform {
-
+    override val defaultTransform: RequiredAnimatedNavigationTransform =
+      object : RequiredAnimatedNavigationTransform {
         override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-          direction: Direction,
-          sameRoot: Boolean,
+          navigationEvent: NavigationEvent
         ): ContentTransform {
           // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
           // the transitionSpec recomposing.
           // The states are available as `targetState` and `initialState`.
-          return when (direction) {
-            Direction.Forward -> forward
-            Direction.Backward -> backward
-            Direction.Unknown -> fadeIn() togetherWith fadeOut()
+          return when (navigationEvent) {
+            NavigationEvent.GoTo -> forward
+            NavigationEvent.Pop -> backward
+            NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
           }.using(
             // Disable clipping since the faded slide-in/out should
             // be displayed out of bounds.

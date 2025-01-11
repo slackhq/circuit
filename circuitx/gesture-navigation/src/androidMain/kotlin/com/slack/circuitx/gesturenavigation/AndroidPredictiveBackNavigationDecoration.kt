@@ -40,14 +40,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.AnimatedNavDecoration
 import com.slack.circuit.foundation.AnimatedNavDecorator
 import com.slack.circuit.foundation.AnimatedNavState
-import com.slack.circuit.foundation.AnimatedNavigationTransform
 import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
-import com.slack.circuit.foundation.RequiredAnimatedNavigationTransform
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.RequiredAnimatedNavigationTransform
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -55,19 +52,15 @@ import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
-public actual fun GestureNavigationDecoration(
-  animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>,
-  fallback: NavDecoration,
+public actual fun GestureNavigationDecorationFactory(
+  fallback: AnimatedNavDecorator.Factory,
   onBackInvoked: () -> Unit,
-): NavDecoration =
-  when {
-    Build.VERSION.SDK_INT >= 34 ->
-      AnimatedNavDecoration(
-        decoratorFactory = AndroidPredictiveBackNavDecorator.Factory(onBackInvoked),
-        animatedNavOverrides = animatedNavOverrides,
-      )
+): AnimatedNavDecorator.Factory {
+  return when {
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
     else -> fallback
   }
+}
 
 @Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)

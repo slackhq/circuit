@@ -33,7 +33,7 @@ import kotlinx.collections.immutable.ImmutableList
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public class AnimatedNavDecoration(
-  private val animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>,
+  private val transforms: ImmutableList<AnimatedNavigationTransform>,
   private val decoratorFactory: AnimatedNavDecorator.Factory,
 ) : NavDecoration {
 
@@ -52,7 +52,7 @@ public class AnimatedNavDecoration(
       val transition = updateTransition(args, backStackDepth)
       transition.AnimatedContent(
         modifier = modifier,
-        transitionSpec = transitionSpec(animatedNavOverrides),
+        transitionSpec = transitionSpec(transforms),
       ) { targetState ->
         ProvideAnimatedTransitionScope(Navigation, this) { Decoration(targetState) { content(it) } }
       }

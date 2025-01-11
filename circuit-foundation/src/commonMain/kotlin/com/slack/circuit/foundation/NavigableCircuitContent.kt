@@ -246,25 +246,14 @@ public object NavigatorDefaults {
   private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
-  private object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
+  public object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
   }
 
-  public class DefaultOverridableDecoration(
-    animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>
-  ) :
-    NavDecoration by AnimatedNavDecoration(
-      animatedNavOverrides = animatedNavOverrides,
-      decoratorFactory = DefaultDecoratorFactory,
-    )
-
   public object DefaultDecoration :
     NavDecoration by AnimatedNavDecoration(
-      animatedNavOverrides = persistentListOf(),
-      decoratorFactory =
-        object : AnimatedNavDecorator.Factory {
-          override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
-        },
+      transforms = persistentListOf(),
+      decoratorFactory = DefaultDecoratorFactory,
     ) {
 
     /**

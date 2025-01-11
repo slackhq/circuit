@@ -16,7 +16,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.foundation.AnimatedNavigationTransform
+import com.slack.circuit.foundation.AnimatedNavDecoration
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -36,7 +36,7 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
@@ -71,12 +71,16 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         persistentListOf(HomeScreen, petDetailScreen)
       }
 
-    val overrides =
-      persistentListOf<AnimatedNavigationTransform>(
-        HomeAnimatedNavigationOverride,
-        PetDetailAnimatedNavigationOverride,
-      )
-    val fallback = NavigatorDefaults.DefaultOverridableDecoration(overrides)
+    val localCircuit =
+      circuit
+        .newBuilder()
+        // todo DI these
+        .addAnimatedNavigationTransform(
+          HomeAnimatedNavigationOverride,
+          PetDetailAnimatedNavigationOverride,
+        )
+        .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
+        .build()
     setContent {
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
@@ -84,17 +88,17 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           val backStack = rememberSaveableBackStack(initialBackstack)
           val circuitNavigator = rememberCircuitNavigator(backStack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
-          CircuitCompositionLocals(circuit) {
+          CircuitCompositionLocals(localCircuit) {
             SharedElementTransitionLayout {
               ContentWithOverlays {
                 NavigableCircuitContent(
                   navigator = navigator,
                   backStack = backStack,
                   decoration =
-                    GestureNavigationDecoration(
-                      animatedNavOverrides = overrides,
-                      onBackInvoked = navigator::pop,
-                      fallback = fallback,
+                    AnimatedNavDecoration(
+                      transforms = localCircuit.animatedNavigationTransforms,
+                      decoratorFactory =
+                        GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),
                     ),
                 )
               }

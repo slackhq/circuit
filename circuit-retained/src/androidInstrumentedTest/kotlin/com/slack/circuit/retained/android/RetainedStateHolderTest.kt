@@ -15,6 +15,7 @@
  */
 package com.slack.circuit.retained.android
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
@@ -36,6 +37,7 @@ import org.junit.Test
 import org.junit.rules.RuleChain
 
 // TODO adapt for retained more
+@SuppressLint("RememberReturnType")
 class RetainedStateHolderTest {
 
   private val composeTestRule = createAndroidComposeRule<Activity>()

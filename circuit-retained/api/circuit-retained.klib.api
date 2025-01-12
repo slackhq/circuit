@@ -34,7 +34,7 @@ abstract interface com.slack.circuit.retained/RetainedStateRegistry { // com.sla
     abstract fun consumeValue(kotlin/String): kotlin/Any? // com.slack.circuit.retained/RetainedStateRegistry.consumeValue|consumeValue(kotlin.String){}[0]
     abstract fun forgetUnclaimedValues() // com.slack.circuit.retained/RetainedStateRegistry.forgetUnclaimedValues|forgetUnclaimedValues(){}[0]
     abstract fun registerValue(kotlin/String, com.slack.circuit.retained/RetainedValueProvider): com.slack.circuit.retained/RetainedStateRegistry.Entry // com.slack.circuit.retained/RetainedStateRegistry.registerValue|registerValue(kotlin.String;com.slack.circuit.retained.RetainedValueProvider){}[0]
-    abstract fun saveAll() // com.slack.circuit.retained/RetainedStateRegistry.saveAll|saveAll(){}[0]
+    abstract fun saveAll(): kotlin.collections/Map<kotlin/String, kotlin.collections/List<kotlin/Any?>> // com.slack.circuit.retained/RetainedStateRegistry.saveAll|saveAll(){}[0]
     abstract fun saveValue(kotlin/String) // com.slack.circuit.retained/RetainedStateRegistry.saveValue|saveValue(kotlin.String){}[0]
 
     abstract interface Entry { // com.slack.circuit.retained/RetainedStateRegistry.Entry|null[0]
@@ -51,7 +51,7 @@ final object com.slack.circuit.retained/NoOpRetainedStateRegistry : com.slack.ci
     final fun consumeValue(kotlin/String): kotlin/Any? // com.slack.circuit.retained/NoOpRetainedStateRegistry.consumeValue|consumeValue(kotlin.String){}[0]
     final fun forgetUnclaimedValues() // com.slack.circuit.retained/NoOpRetainedStateRegistry.forgetUnclaimedValues|forgetUnclaimedValues(){}[0]
     final fun registerValue(kotlin/String, com.slack.circuit.retained/RetainedValueProvider): com.slack.circuit.retained/RetainedStateRegistry.Entry // com.slack.circuit.retained/NoOpRetainedStateRegistry.registerValue|registerValue(kotlin.String;com.slack.circuit.retained.RetainedValueProvider){}[0]
-    final fun saveAll() // com.slack.circuit.retained/NoOpRetainedStateRegistry.saveAll|saveAll(){}[0]
+    final fun saveAll(): kotlin.collections/Map<kotlin/String, kotlin.collections/List<kotlin/Any?>> // com.slack.circuit.retained/NoOpRetainedStateRegistry.saveAll|saveAll(){}[0]
     final fun saveValue(kotlin/String) // com.slack.circuit.retained/NoOpRetainedStateRegistry.saveValue|saveValue(kotlin.String){}[0]
 }
 

@@ -29,7 +29,6 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.IntOffset
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained

@@ -4,6 +4,8 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import com.slack.circuit.foundation.internal.withCompositionLocalProvider
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
@@ -16,6 +18,8 @@ import com.slack.circuit.retained.rememberRetained
 internal interface RetainedStateHolder {
 
   @Composable fun <T> RetainedStateProvider(key: String, content: @Composable () -> T): T
+
+  fun removeState(key: String)
 }
 
 /** Creates and remembers the instance of [RetainedStateHolder]. */
@@ -28,27 +32,43 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
 
   private val registry = RetainedStateRegistry()
 
+  private val canRetainCheckers = mutableMapOf<String, EntryCanRetainChecker>()
+
   @Composable
   override fun <T> RetainedStateProvider(key: String, content: @Composable (() -> T)): T {
-    return withCompositionLocalProvider(LocalRetainedStateRegistry provides this) {
-      val canRetainChecker = LocalCanRetainChecker.current ?: CanRetainChecker.Always
-      val childRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
-      withCompositionLocalProvider(
-          LocalRetainedStateRegistry provides childRegistry,
-          LocalCanRetainChecker provides CanRetainChecker.Always,
-        ) {
-          content()
-        }
-        .also {
-          DisposableEffect(key, childRegistry) {
-            onDispose {
-              childRegistry.saveAll()
-              if (canRetainChecker.canRetain(this@RetainedStateHolderImpl)) {
-                saveValue(key)
+    return withCompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+      val parentCanRetainChecker = LocalCanRetainChecker.current ?: CanRetainChecker.Always
+      key(key) {
+        val entryCanRetainChecker =
+          remember(parentCanRetainChecker) { EntryCanRetainChecker(parentCanRetainChecker) }
+        val childRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
+        withCompositionLocalProvider(
+            LocalRetainedStateRegistry provides childRegistry,
+            LocalCanRetainChecker provides CanRetainChecker.Always,
+            content = content,
+          )
+          .also {
+            DisposableEffect(Unit) {
+              canRetainCheckers[key] = entryCanRetainChecker
+              onDispose {
+                childRegistry.saveAll()
+                if (entryCanRetainChecker.canRetain(registry)) {
+                  registry.saveValue(key)
+                }
+                canRetainCheckers -= key
               }
             }
           }
-        }
+      }
+    }
+  }
+
+  override fun removeState(key: String) {
+    val canRetainChecker = canRetainCheckers[key]
+    if (canRetainChecker != null) {
+      canRetainChecker.shouldSave = false
+    } else {
+      registry.consumeValue(key)
     }
   }
 
@@ -73,5 +93,14 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
 
   override fun forgetUnclaimedValues() {
     registry.forgetUnclaimedValues()
+  }
+
+  private class EntryCanRetainChecker(private val parentChecker: CanRetainChecker) :
+    CanRetainChecker {
+
+    var shouldSave = true
+
+    override fun canRetain(registry: RetainedStateRegistry): Boolean =
+      parentChecker.canRetain(registry) && shouldSave
   }
 }

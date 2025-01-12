@@ -11,7 +11,7 @@ public object NoOpRetainedStateRegistry : RetainedStateRegistry {
     valueProvider: RetainedValueProvider,
   ): RetainedStateRegistry.Entry = NoOpEntry
 
-  override fun saveAll() {}
+  override fun saveAll(): Map<String, List<Any?>> = emptyMap()
 
   override fun saveValue(key: String) {}
 

@@ -41,7 +41,7 @@ public interface RetainedStateRegistry {
    * Executes all the registered value providers and combines these values into a map. We have a
    * list of values for each key as it is allowed to have multiple providers for the same key.
    */
-  public fun saveAll()
+  public fun saveAll(): Map<String, List<Any?>>
 
   /** Executes the value providers registered with the given [key], and saves them for retrieval. */
   public fun saveValue(key: String)
@@ -109,9 +109,19 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     }
   }
 
-  override fun saveAll() {
-    val values =
-      valueProviders.mapValues { (_, list) ->
+  override fun saveAll(): Map<String, List<Any?>> {
+    fun save(value: Any?): Boolean {
+      return when (value) {
+        // If we get a RetainedHolder value, need to unwrap and call again
+        is RetainedValueHolder<*> -> save(value.value)
+        // Dispatch the call to nested registries
+        is RetainedStateRegistry -> value.saveAll().isNotEmpty()
+        else -> true
+      }
+    }
+
+    valueProviders
+      .mapValues { (_, list) ->
         // If we have multiple providers we should store null values as well to preserve
         // the order in which providers were registered. Say there were two providers.
         // the first provider returned null(nothing to save) and the second one returned
@@ -119,13 +129,16 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
         // same as to have nothing to restore) and the second one restore "1".
         list.map(RetainedValueProvider::invoke)
       }
-
-    if (values.isNotEmpty()) {
-      // Store the values in our retained map
-      retained.putAll(values)
-    }
+      .forEach { (key, value) ->
+        val filtered = value.filter { save(it) }
+        if (filtered.isNotEmpty()) {
+          // Store the values in our retained map
+          retained[key] = filtered
+        }
+      }
     // Clear the value providers now that we've stored the values
     valueProviders.clear()
+    return retained
   }
 
   override fun saveValue(key: String) {

@@ -66,13 +66,23 @@ class NavigableCircuitConditionalRetainTest {
   }
 
   @Test
-  fun conditionalRetainedWithPresentWithLifecycle() {
-    conditionalRetained(presentWithLifecycle = true)
+  fun removedConditionalRetainWithPresentWithLifecycle() {
+    removedConditionalRetain(presentWithLifecycle = true)
   }
 
   @Test
-  fun conditionalRetainedWithoutPresentWithLifecycle() {
-    conditionalRetained(presentWithLifecycle = false)
+  fun removedConditionalRetainWithoutPresentWithLifecycle() {
+    removedConditionalRetain(presentWithLifecycle = false)
+  }
+
+  @Test
+  fun addedConditionalRetainWithPresentWithLifecycle() {
+    addedConditionalRetain(presentWithLifecycle = true)
+  }
+
+  @Test
+  fun addedConditionalRetainWithoutPresentWithLifecycle() {
+    addedConditionalRetain(presentWithLifecycle = false)
   }
 
   /** Nested circuit content should not be retained if it is removed */
@@ -85,10 +95,10 @@ class NavigableCircuitConditionalRetainTest {
       onNodeWithTag(TAG_PRESENTER_RETAINED).assertDoesNotExist()
       onNodeWithTag(TAG_UI_RETAINED).assertDoesNotExist()
 
+      dataSource.value = 1
+
       // Show child
       onNodeWithTag(TAG_SHOW_CHILD_BUTTON).performClick()
-
-      dataSource.value = 1
 
       onNodeWithTag(TAG_STATE).assertTextEquals("1")
       onNodeWithTag(TAG_UI_RETAINED).assertTextEquals("1")
@@ -117,7 +127,7 @@ class NavigableCircuitConditionalRetainTest {
    * Conditional rememberRetained should not be retained if it is removed no matter current
    * RetainedStateRegistry is saved or not.
    */
-  private fun conditionalRetained(presentWithLifecycle: Boolean) {
+  private fun removedConditionalRetain(presentWithLifecycle: Boolean) {
     composeTestRule.run {
       val modifiedCircuit = circuit.newBuilder().presentWithLifecycle(presentWithLifecycle).build()
       setUpTestContent(modifiedCircuit, ScreenC)
@@ -152,7 +162,7 @@ class NavigableCircuitConditionalRetainTest {
    * Conditional rememberRetained should be retained if it is added and current
    * RetainedStateRegistry is saved
    */
-  private fun conditionalRetained2(presentWithLifecycle: Boolean) {
+  private fun addedConditionalRetain(presentWithLifecycle: Boolean) {
     composeTestRule.run {
       val modifiedCircuit = circuit.newBuilder().presentWithLifecycle(presentWithLifecycle).build()
       setUpTestContent(modifiedCircuit, ScreenC)

@@ -52,9 +52,13 @@ class RetainedStateRestorationTester(private val composeTestRule: ComposeContent
    */
   fun setContent(composable: @Composable () -> Unit) {
     composeTestRule.setContent {
-      InjectRestorationRegistry { registry ->
-        this.registry = registry
-        composable()
+      CompositionLocalProvider(
+        LocalRetainedStateRegistry provides remember { RetainedStateRegistry() }
+      ) {
+        InjectRestorationRegistry { registry ->
+          this.registry = registry
+          composable()
+        }
       }
     }
   }

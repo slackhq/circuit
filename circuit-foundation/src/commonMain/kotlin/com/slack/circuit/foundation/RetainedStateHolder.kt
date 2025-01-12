@@ -51,8 +51,8 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
             DisposableEffect(Unit) {
               canRetainCheckers[key] = entryCanRetainChecker
               onDispose {
-                childRegistry.saveAll()
-                if (entryCanRetainChecker.canRetain(registry)) {
+                val retained = childRegistry.saveAll()
+                if (retained.isNotEmpty() && entryCanRetainChecker.canRetain(registry)) {
                   registry.saveValue(key)
                 }
                 canRetainCheckers -= key

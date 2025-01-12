@@ -83,8 +83,8 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
     return registry.registerValue(key, valueProvider)
   }
 
-  override fun saveAll() {
-    registry.saveAll()
+  override fun saveAll(): Map<String, List<Any?>> {
+    return registry.saveAll()
   }
 
   override fun saveValue(key: String) {

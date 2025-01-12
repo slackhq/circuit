@@ -26,8 +26,8 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
     return delegate.registerValue(key, valueProvider)
   }
 
-  override fun saveAll() {
-    delegate.saveAll()
+  override fun saveAll(): Map<String, List<Any?>> {
+    return delegate.saveAll()
   }
 
   override fun saveValue(key: String) {

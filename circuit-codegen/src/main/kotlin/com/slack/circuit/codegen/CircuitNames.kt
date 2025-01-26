@@ -48,4 +48,11 @@ internal object CircuitNames {
       internal val CONTRIBUTES_BINDING = ClassName(RUNTIME_PACKAGE, "ContributesBinding")
     }
   }
+
+  object Lattice {
+    private const val RUNTIME_PACKAGE = "dev.zacsweers.lattice"
+    val INJECT = ClassName(RUNTIME_PACKAGE, "Inject")
+    val ASSISTED = ClassName(RUNTIME_PACKAGE, "Assisted")
+    internal val CONTRIBUTES_INTO_SET = ClassName(RUNTIME_PACKAGE, "ContributesIntoSet")
+  }
 }

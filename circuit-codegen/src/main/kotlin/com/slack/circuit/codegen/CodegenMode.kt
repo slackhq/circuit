@@ -183,6 +183,51 @@ internal enum class CodegenMode {
     ): Collection<KSDeclaration> {
       return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
     }
+  },
+
+  /**
+   * The `lattice` code gen mode
+   *
+   * This mode annotates generated factory types with `ContributesMultibinding`, allowing for
+   * KI-Anvil to automatically wire the generated class up to KI's multibinding system within a
+   * given scope (e.g. AppScope).
+   *
+   * ```kotlin
+   * @Inject
+   * @ContributesMultibinding(AppScope::class)
+   * public class FavoritesPresenterFactory(
+   *   private val provider: () -> FavoritesPresenter,
+   * ) : Presenter.Factory { ... }
+   * ```
+   */
+  LATTICE {
+    override val runtime: InjectionRuntime = InjectionRuntime.Lattice
+
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      // KI-Anvil supports all
+      return true
+    }
+
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
+      builder.addAnnotation(
+        AnnotationSpec.builder(CircuitNames.Lattice.CONTRIBUTES_INTO_SET)
+          .addMember("%T::class", scope)
+          .build()
+      )
+    }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder,
+    ) {
+      classBuilder.addAnnotation(runtime.inject)
+    }
+
+    override fun filterValidInjectionSites(
+      candidates: Collection<KSDeclaration>
+    ): Collection<KSDeclaration> {
+      return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
+    }
   };
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
@@ -234,6 +279,19 @@ internal enum class CodegenMode {
     data object KotlinInject : InjectionRuntime {
       override val inject: ClassName = CircuitNames.KotlinInject.INJECT
       override val assisted: ClassName = CircuitNames.KotlinInject.ASSISTED
+
+      override fun asProvider(providedType: TypeName): TypeName {
+        return LambdaTypeName.get(returnType = providedType)
+      }
+
+      override fun getProviderBlock(provider: CodeBlock): CodeBlock {
+        return CodeBlock.of("%L()", provider)
+      }
+    }
+
+    data object Lattice : InjectionRuntime {
+      override val inject: ClassName = CircuitNames.Lattice.INJECT
+      override val assisted: ClassName = CircuitNames.Lattice.ASSISTED
 
       override fun asProvider(providedType: TypeName): TypeName {
         return LambdaTypeName.get(returnType = providedType)

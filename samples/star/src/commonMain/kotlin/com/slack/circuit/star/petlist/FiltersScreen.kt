@@ -20,9 +20,9 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.Assisted
+import dev.zacsweers.lattice.AssistedFactory
 import com.slack.circuit.star.parcel.CommonParcelize
 
 @CommonParcelize
@@ -36,9 +36,8 @@ data class FiltersScreen(val initialFilters: Filters) : Screen {
   @CommonParcelize data class Result(val filters: Filters) : PopResult
 }
 
-class FiltersPresenter
-@AssistedInject
-constructor(
+@Inject
+class FiltersPresenter(
   @Assisted private val navigator: Navigator,
   @Assisted private val screen: FiltersScreen,
 ) : Presenter<FiltersScreen.State> {

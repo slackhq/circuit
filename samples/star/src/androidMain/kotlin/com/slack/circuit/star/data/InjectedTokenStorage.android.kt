@@ -5,11 +5,12 @@ package com.slack.circuit.star.data
 import androidx.datastore.core.Storage
 import androidx.datastore.preferences.core.Preferences
 import com.slack.circuit.star.di.AppScope
-import com.squareup.anvil.annotations.ContributesBinding
-import com.squareup.anvil.annotations.optional.SingleIn
-import javax.inject.Inject
+import dev.zacsweers.lattice.ContributesBinding
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.SingleIn
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
-class InjectedTokenStorage @Inject constructor(storage: Storage<Preferences>) :
+@Inject
+class InjectedTokenStorage(storage: Storage<Preferences>) :
   TokenStorage by TokenStorageImpl(storage)

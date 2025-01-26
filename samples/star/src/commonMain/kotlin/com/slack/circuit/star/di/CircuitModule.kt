@@ -5,14 +5,12 @@ package com.slack.circuit.star.di
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
-import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.annotations.optional.SingleIn
-import dagger.Module
-import dagger.Provides
-import dagger.multibindings.Multibinds
+import dev.zacsweers.lattice.ContributesTo
+import dev.zacsweers.lattice.Multibinds
+import dev.zacsweers.lattice.Provides
+import dev.zacsweers.lattice.SingleIn
 
 @ContributesTo(AppScope::class)
-@Module
 interface CircuitModule {
   @Multibinds fun presenterFactories(): Set<Presenter.Factory>
 
@@ -22,8 +20,8 @@ interface CircuitModule {
     @SingleIn(AppScope::class)
     @Provides
     fun provideCircuit(
-      presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
-      uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
+      presenterFactories: Set<Presenter.Factory>,
+      uiFactories: Set<Ui.Factory>,
     ): Circuit {
       return Circuit.Builder()
         .addPresenterFactories(presenterFactories)

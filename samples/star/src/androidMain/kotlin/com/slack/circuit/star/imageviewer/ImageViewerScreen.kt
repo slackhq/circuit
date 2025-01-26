@@ -51,18 +51,17 @@ import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
 import com.slack.circuit.star.ui.thenIf
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.lattice.Assisted
+import dev.zacsweers.lattice.AssistedFactory
+import dev.zacsweers.lattice.Inject
 import kotlinx.collections.immutable.ImmutableList
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 
-class ImageViewerPresenter
-@AssistedInject
-constructor(
+@Inject
+class ImageViewerPresenter(
   @Assisted private val screen: ImageViewerScreen,
   @Assisted private val navigator: Navigator,
 ) : Presenter<State> {

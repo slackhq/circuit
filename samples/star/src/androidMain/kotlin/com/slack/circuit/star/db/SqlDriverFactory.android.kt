@@ -8,11 +8,10 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlSchema
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.slack.circuit.star.di.ApplicationContext
-import javax.inject.Inject
+import dev.zacsweers.lattice.Inject
 
-actual class SqlDriverFactory
 @Inject
-constructor(@ApplicationContext private val context: Context) {
+actual class SqlDriverFactory(@ApplicationContext private val context: Context) {
   actual fun create(schema: SqlSchema<Value<Unit>>, name: String): SqlDriver {
     return AndroidSqliteDriver(schema, context, name)
   }

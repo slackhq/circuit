@@ -3,12 +3,10 @@
 package com.slack.circuit.star.di
 
 import android.app.Activity
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import dev.zacsweers.lattice.ContributesTo
+import dev.zacsweers.lattice.Multibinds
 
 @ContributesTo(AppScope::class)
-@Module
 interface BaseUiModule {
   @Multibinds fun provideActivityProviders(): Map<Class<out Activity>, Activity>
 }

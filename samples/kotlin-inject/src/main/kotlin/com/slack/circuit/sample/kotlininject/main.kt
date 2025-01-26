@@ -15,14 +15,13 @@ import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import me.tatarka.inject.annotations.Assisted
-import me.tatarka.inject.annotations.Inject
+import dev.zacsweers.lattice.Assisted
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.createGraph
 import software.amazon.lastmile.kotlin.inject.anvil.AppScope
 
-typealias KotlinInjectApp = @Composable () -> Unit
-
 fun main() = application {
-  val app = remember { AppComponent::class.create().kotlinInjectApp }
+  val app = remember { createGraph<AppComponent>().kotlinInjectApp }
 
   Window(onCloseRequest = ::exitApplication, title = "Sample") { app() }
 }

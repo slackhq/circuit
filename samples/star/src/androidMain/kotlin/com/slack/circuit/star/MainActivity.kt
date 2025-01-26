@@ -33,14 +33,16 @@ import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
-import com.squareup.anvil.annotations.ContributesMultibinding
-import javax.inject.Inject
+import dev.zacsweers.lattice.BoundType
+import dev.zacsweers.lattice.ContributesIntoMap
+import dev.zacsweers.lattice.Inject
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
-@ContributesMultibinding(AppScope::class, boundType = Activity::class)
+@ContributesIntoMap(AppScope::class, boundType = BoundType<Activity>())
 @ActivityKey(MainActivity::class)
-class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {
+@Inject
+class MainActivity(private val circuit: Circuit) : AppCompatActivity() {
 
   @OptIn(ExperimentalSharedTransitionApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {

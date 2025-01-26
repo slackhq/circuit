@@ -5,17 +5,15 @@ package com.slack.circuit.sample.kotlininject
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
-import me.tatarka.inject.annotations.Component
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.lattice.DependencyGraph
+import dev.zacsweers.lattice.Provides
+import dev.zacsweers.lattice.SingleIn
 import software.amazon.lastmile.kotlin.inject.anvil.AppScope
-import software.amazon.lastmile.kotlin.inject.anvil.MergeComponent
-import software.amazon.lastmile.kotlin.inject.anvil.SingleIn
 
-@Component
-@MergeComponent(AppScope::class)
+@DependencyGraph(AppScope::class)
 @SingleIn(AppScope::class)
-abstract class AppComponent : AppComponentMerged {
-  abstract val kotlinInjectApp: KotlinInjectApp
+abstract class AppComponent {
+  abstract val kotlinInjectApp: KotlinInjectAppClass
   abstract val presenterFactories: Set<Presenter.Factory>
   abstract val uiFactories: Set<Ui.Factory>
 

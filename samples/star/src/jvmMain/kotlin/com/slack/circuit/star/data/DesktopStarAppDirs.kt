@@ -3,9 +3,9 @@
 package com.slack.circuit.star.data
 
 import com.slack.circuit.star.di.AppScope
-import com.squareup.anvil.annotations.ContributesBinding
-import com.squareup.anvil.annotations.optional.SingleIn
-import javax.inject.Inject
+import dev.zacsweers.lattice.ContributesBinding
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.SingleIn
 import net.harawata.appdirs.AppDirsFactory
 import okio.FileSystem
 import okio.Path
@@ -13,7 +13,8 @@ import okio.Path.Companion.toPath
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class DesktopStarAppDirs @Inject constructor(override val fs: FileSystem) : StarAppDirs {
+@Inject
+class DesktopStarAppDirs(override val fs: FileSystem) : StarAppDirs {
 
   private val appDirs = AppDirsFactory.getInstance()
 

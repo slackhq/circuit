@@ -113,9 +113,9 @@ import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.Assisted
+import dev.zacsweers.lattice.AssistedFactory
 import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
@@ -186,9 +186,8 @@ data object PetListScreen : Screen {
   }
 }
 
-class PetListPresenter
-@AssistedInject
-constructor(@Assisted private val navigator: Navigator, private val petRepo: PetRepository) :
+@Inject
+class PetListPresenter(@Assisted private val navigator: Navigator, private val petRepo: PetRepository) :
   Presenter<State> {
   @Composable
   override fun present(): State {

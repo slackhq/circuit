@@ -56,9 +56,9 @@ import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.Assisted
+import dev.zacsweers.lattice.AssistedFactory
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.parcel.CommonParcelable
 import com.slack.circuit.star.parcel.CommonParcelize
@@ -174,9 +174,8 @@ internal fun PetDetailScreen.toPetDetailState(): State {
   } else Loading
 }
 
-class PetDetailPresenter
-@AssistedInject
-constructor(
+@Inject
+class PetDetailPresenter(
   @Assisted private val screen: PetDetailScreen,
   @Assisted private val navigator: Navigator,
   private val petRepository: PetRepository,

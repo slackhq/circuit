@@ -5,18 +5,17 @@ package com.slack.circuit.star.data
 import android.content.Context
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
-import com.squareup.anvil.annotations.ContributesBinding
-import com.squareup.anvil.annotations.optional.SingleIn
-import javax.inject.Inject
+import dev.zacsweers.lattice.ContributesBinding
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.SingleIn
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class ContextStarAppDirs
 @Inject
-constructor(@ApplicationContext private val context: Context, override val fs: FileSystem) :
+class ContextStarAppDirs(@ApplicationContext private val context: Context, override val fs: FileSystem) :
   StarAppDirs {
 
   override val userConfig: Path by lazy {

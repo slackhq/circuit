@@ -6,15 +6,14 @@ import com.slack.circuit.star.data.petfinder.PetBioParserApi
 import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.di.AppScope
-import com.squareup.anvil.annotations.ContributesBinding
-import com.squareup.anvil.annotations.optional.SingleIn
-import javax.inject.Inject
+import dev.zacsweers.lattice.ContributesBinding
+import dev.zacsweers.lattice.Inject
+import dev.zacsweers.lattice.SingleIn
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class InjectedPetRepository
 @Inject
-constructor(
+class InjectedPetRepository(
   sqliteDriverFactory: SqlDriverFactory,
   private val petFinderApi: PetfinderApi,
   private val petBioParserApi: PetBioParserApi,

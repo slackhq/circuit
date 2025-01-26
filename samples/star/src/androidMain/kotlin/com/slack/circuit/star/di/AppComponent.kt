@@ -4,26 +4,20 @@ package com.slack.circuit.star.di
 
 import android.app.Activity
 import android.content.Context
-import com.slack.circuit.star.data.DataModule
-import com.squareup.anvil.annotations.MergeComponent
-import com.squareup.anvil.annotations.optional.SingleIn
-import dagger.BindsInstance
-import javax.inject.Provider
+import dev.zacsweers.lattice.BindsInstance
+import dev.zacsweers.lattice.DependencyGraph
+import dev.zacsweers.lattice.Provider
+import dev.zacsweers.lattice.SingleIn
 
-@MergeComponent(
+@DependencyGraph(
   scope = AppScope::class,
-  modules = [BaseUiModule::class, CircuitModule::class, DataModule::class],
 )
 @SingleIn(AppScope::class)
 interface AppComponent : CommonAppComponent {
-  val activityProviders: Map<Class<out Activity>, @JvmSuppressWildcards Provider<Activity>>
+  val activityProviders: Map<Class<out Activity>, Provider<Activity>>
 
-  @MergeComponent.Factory
+  @DependencyGraph.Factory
   interface Factory {
     fun create(@ApplicationContext @BindsInstance context: Context): AppComponent
-  }
-
-  companion object {
-    fun create(context: Context): AppComponent = DaggerAppComponent.factory().create(context)
   }
 }

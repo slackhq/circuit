@@ -8,19 +8,19 @@ import android.content.Intent
 import androidx.annotation.Keep
 import androidx.core.app.AppComponentFactory
 import com.slack.circuit.star.StarApp
-import javax.inject.Provider
+import dev.zacsweers.lattice.Provider
 
 @Keep
 class StarAppComponentFactory : AppComponentFactory() {
 
-  private inline fun <reified T> getInstance(
+  private inline fun <reified T : Any> getInstance(
     cl: ClassLoader,
     className: String,
-    providers: Map<Class<out T>, @JvmSuppressWildcards Provider<T>>,
+    providers: Map<Class<out T>, Provider<T>>,
   ): T? {
     val clazz = Class.forName(className, false, cl).asSubclass(T::class.java)
     val modelProvider = providers[clazz] ?: return null
-    return modelProvider.get() as T
+    return modelProvider()
   }
 
   override fun instantiateActivityCompat(

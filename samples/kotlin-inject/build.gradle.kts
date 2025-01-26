@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.ksp)
   alias(libs.plugins.compose)
+  alias(libs.plugins.lattice)
 }
 
 ksp {
@@ -17,10 +18,17 @@ ksp {
   useKsp2.set(false)
 }
 
+lattice {
+  customAnnotations {
+    includeKotlinInject()
+    includeAnvil()
+  }
+}
+
 dependencies {
   ksp(projects.circuitCodegen)
-  ksp(libs.kotlinInject.compiler)
-  ksp(libs.kotlinInject.anvil.compiler)
+//  ksp(libs.kotlinInject.compiler)
+//  ksp(libs.kotlinInject.anvil.compiler)
 
   implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuitFoundation)

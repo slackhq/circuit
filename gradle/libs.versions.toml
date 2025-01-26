@@ -36,7 +36,7 @@ kotlinx-serialization = "1.8.0"
 ksp = "2.1.0-1.0.29"
 ktfmt = "0.54"
 ktor = "3.0.3"
-lattice = "1.0.0-LOCAL1"
+lattice = "1.0.0-LOCAL22"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.30.0"
@@ -213,6 +213,8 @@ kotlinInject-anvil-runtime = { module = "software.amazon.lastmile.kotlin.inject.
 kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime-optional", version.ref = "kotlinInject-anvil" }
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
+
+lattice-runtime = { module = "dev.zacsweers.lattice:runtime", version.ref = "lattice" }
 
 ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"
 

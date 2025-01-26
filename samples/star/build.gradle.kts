@@ -14,12 +14,13 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.agp.library) apply false
-  alias(libs.plugins.kotlin.kapt)
+//  alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.roborazzi)
-  alias(libs.plugins.anvil)
+//  alias(libs.plugins.anvil)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.lattice)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
 }
@@ -41,7 +42,15 @@ if (!buildDesktop) {
   compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
 
-anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
+//anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
+lattice {
+  debug.set(true)
+  reportsDestination.set(layout.buildDirectory.dir("latticeReports"))
+  customAnnotations {
+    includeDagger()
+    includeAnvil()
+  }
+}
 
 kotlin {
   if (buildDesktop) {
@@ -67,6 +76,7 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        api(libs.lattice.runtime)
         implementation(libs.androidx.datastore.preferences)
         implementation(libs.coil)
         implementation(libs.coil.compose)
@@ -114,6 +124,7 @@ kotlin {
     }
     maybeCreate("jvmCommonMain").apply {
       dependencies {
+        api(libs.lattice.runtime)
         api(libs.anvil.annotations)
         api(libs.anvil.annotations.optional)
         implementation(libs.compose.material.icons)
@@ -123,8 +134,8 @@ kotlin {
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
-        val kapt by configurations.getting
-        kapt.dependencies.addLater(libs.dagger.compiler)
+//        val kapt by configurations.getting
+//        kapt.dependencies.addLater(libs.dagger.compiler)
       }
     }
     maybeCreate("jvmCommonTest").apply {
@@ -272,21 +283,24 @@ fun String.capitalizeUS() = replaceFirstChar {
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 
-// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
-afterEvaluate {
-  for (target in kspTargets) {
-    if (target != "Android" && target != "Jvm") continue
-    val buildType = if (target == "Android") "Release" else ""
-    val kspTaskName = "ksp${buildType}Kotlin${target}"
-    val generatedKspKotlinFiles =
-      tasks.named<KspAATask>(kspTaskName).flatMap { it.kspConfig.kotlinOutputDir }
-    tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
-      source(generatedKspKotlinFiles)
-    }
-  }
-}
+//// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
+//afterEvaluate {
+//  for (target in kspTargets) {
+//    if (target != "Android" && target != "Jvm") continue
+//    val buildType = if (target == "Android") "Release" else ""
+//    val kspTaskName = "ksp${buildType}Kotlin${target}"
+//    val generatedKspKotlinFiles =
+//      tasks.named<KspAATask>(kspTaskName).flatMap { it.kspConfig.kotlinOutputDir }
+//    tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
+//      source(generatedKspKotlinFiles)
+//    }
+//  }
+//}
 
-ksp { arg("circuit.codegen.lenient", "true") }
+ksp {
+  arg("circuit.codegen.lenient", "true")
+  arg("circuit.codegen.mode", "lattice")
+}
 
 dependencies {
   for (target in kspTargets) {

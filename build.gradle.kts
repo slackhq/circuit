@@ -197,7 +197,7 @@ subprojects {
           // TODO https://youtrack.jetbrains.com/issue/KT-38719
           allWarningsAsErrors.set(false)
         } else {
-          allWarningsAsErrors.set(true)
+          allWarningsAsErrors.set(false)
         }
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(

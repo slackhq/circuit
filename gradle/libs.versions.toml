@@ -27,16 +27,16 @@ jdk = "22"
 jvmTarget = "11"
 publishedJvmTarget = "1.8"
 kct = "0.7.0"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 kotlinInject = "0.7.2"
 kotlinInject-anvil = "0.1.2"
 kotlinpoet = "2.0.0"
 kotlinx-coroutines = "1.10.1"
 kotlinx-serialization = "1.8.0"
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.10-1.0.29"
 ktfmt = "0.54"
 ktor = "3.0.3"
-lattice = "1.0.0-LOCAL22"
+metro = "1.0.0-LOCAL27"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.30.0"
@@ -76,7 +76,7 @@ kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.re
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-lattice = { id = "dev.zacsweers.lattice", version.ref = "lattice" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
@@ -214,7 +214,7 @@ kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotli
 
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
-lattice-runtime = { module = "dev.zacsweers.lattice:runtime", version.ref = "lattice" }
+metro-runtime = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }
 
 ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"
 

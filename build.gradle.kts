@@ -54,7 +54,7 @@ plugins {
   alias(libs.plugins.kotlin.plugin.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
-  alias(libs.plugins.lattice) apply false
+  alias(libs.plugins.metro) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
 }
 

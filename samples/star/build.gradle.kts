@@ -20,7 +20,7 @@ plugins {
   alias(libs.plugins.roborazzi)
 //  alias(libs.plugins.anvil)
   alias(libs.plugins.ksp)
-  alias(libs.plugins.lattice)
+  alias(libs.plugins.metro)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
 }
@@ -43,9 +43,9 @@ if (!buildDesktop) {
 }
 
 //anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
-lattice {
+metro {
   debug.set(true)
-  reportsDestination.set(layout.buildDirectory.dir("latticeReports"))
+  reportsDestination.set(layout.buildDirectory.dir("metroReports"))
   customAnnotations {
     includeDagger()
     includeAnvil()
@@ -76,7 +76,7 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(libs.lattice.runtime)
+        api(libs.metro.runtime)
         implementation(libs.androidx.datastore.preferences)
         implementation(libs.coil)
         implementation(libs.coil.compose)
@@ -124,7 +124,7 @@ kotlin {
     }
     maybeCreate("jvmCommonMain").apply {
       dependencies {
-        api(libs.lattice.runtime)
+        api(libs.metro.runtime)
         api(libs.anvil.annotations)
         api(libs.anvil.annotations.optional)
         implementation(libs.compose.material.icons)
@@ -299,7 +299,7 @@ val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 
 ksp {
   arg("circuit.codegen.lenient", "true")
-  arg("circuit.codegen.mode", "lattice")
+  arg("circuit.codegen.mode", "metro")
 }
 
 dependencies {

@@ -8,7 +8,7 @@ import android.content.Intent
 import androidx.annotation.Keep
 import androidx.core.app.AppComponentFactory
 import com.slack.circuit.star.StarApp
-import dev.zacsweers.lattice.Provider
+import dev.zacsweers.metro.Provider
 
 @Keep
 class StarAppComponentFactory : AppComponentFactory() {

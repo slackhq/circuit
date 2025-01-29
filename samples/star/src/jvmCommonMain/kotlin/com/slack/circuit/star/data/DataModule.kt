@@ -5,9 +5,9 @@ package com.slack.circuit.star.data
 import com.slack.circuit.star.data.petfinder.PetBioParserApi
 import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.di.AppScope
-import dev.zacsweers.lattice.ContributesTo
-import dev.zacsweers.lattice.Provides
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineFactory

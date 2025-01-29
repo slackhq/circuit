@@ -7,7 +7,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import com.slack.circuit.star.di.AppComponent
-import dev.zacsweers.lattice.createGraphFactory
+import dev.zacsweers.metro.createGraphFactory
 
 class StarApp : Application(), SingletonImageLoader.Factory {
 

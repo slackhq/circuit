@@ -56,9 +56,9 @@ import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
-import dev.zacsweers.lattice.Inject
-import dev.zacsweers.lattice.Assisted
-import dev.zacsweers.lattice.AssistedFactory
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.parcel.CommonParcelable
 import com.slack.circuit.star.parcel.CommonParcelize

@@ -5,9 +5,9 @@ package com.slack.circuit.star.data
 import android.content.Context
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.ApplicationContext
-import dev.zacsweers.lattice.ContributesBinding
-import dev.zacsweers.lattice.Inject
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath

@@ -33,9 +33,9 @@ import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
-import dev.zacsweers.lattice.BoundType
-import dev.zacsweers.lattice.ContributesIntoMap
-import dev.zacsweers.lattice.Inject
+import dev.zacsweers.metro.BoundType
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 

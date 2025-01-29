@@ -31,7 +31,7 @@ import com.slack.circuit.star.di.AppComponent
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.ui.StarTheme
-import dev.zacsweers.lattice.createGraph
+import dev.zacsweers.metro.createGraph
 import java.awt.Desktop
 import java.net.URI
 import kotlinx.collections.immutable.persistentListOf

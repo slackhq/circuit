@@ -4,10 +4,10 @@ package com.slack.circuit.star.di
 
 import android.app.Activity
 import android.content.Context
-import dev.zacsweers.lattice.BindsInstance
-import dev.zacsweers.lattice.DependencyGraph
-import dev.zacsweers.lattice.Provider
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.BindsInstance
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provider
+import dev.zacsweers.metro.SingleIn
 
 @DependencyGraph(
   scope = AppScope::class,

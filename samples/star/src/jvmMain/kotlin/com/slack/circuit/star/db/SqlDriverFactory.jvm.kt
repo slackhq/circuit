@@ -7,7 +7,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlSchema
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.slack.circuit.star.data.StarAppDirs
-import dev.zacsweers.lattice.Inject
+import dev.zacsweers.metro.Inject
 import kotlin.io.path.absolutePathString
 
 @Inject

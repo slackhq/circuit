@@ -51,9 +51,9 @@ import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
 import com.slack.circuit.star.ui.thenIf
-import dev.zacsweers.lattice.Assisted
-import dev.zacsweers.lattice.AssistedFactory
-import dev.zacsweers.lattice.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage

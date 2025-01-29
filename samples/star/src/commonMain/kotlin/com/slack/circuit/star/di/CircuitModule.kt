@@ -5,10 +5,10 @@ package com.slack.circuit.star.di
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
-import dev.zacsweers.lattice.ContributesTo
-import dev.zacsweers.lattice.Multibinds
-import dev.zacsweers.lattice.Provides
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
 interface CircuitModule {

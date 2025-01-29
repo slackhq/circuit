@@ -4,9 +4,9 @@ import androidx.datastore.core.Storage
 import androidx.datastore.preferences.core.Preferences
 import com.slack.circuit.star.datastore.createStorage
 import com.slack.circuit.star.di.AppScope
-import dev.zacsweers.lattice.ContributesTo
-import dev.zacsweers.lattice.Provides
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
 interface TokenStorageModule {

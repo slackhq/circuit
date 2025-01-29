@@ -8,7 +8,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlSchema
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.slack.circuit.star.di.ApplicationContext
-import dev.zacsweers.lattice.Inject
+import dev.zacsweers.metro.Inject
 
 @Inject
 actual class SqlDriverFactory(@ApplicationContext private val context: Context) {

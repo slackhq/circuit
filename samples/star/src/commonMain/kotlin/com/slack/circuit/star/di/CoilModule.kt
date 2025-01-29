@@ -9,9 +9,9 @@ import coil3.network.CacheStrategy
 import coil3.network.NetworkFetcher
 import coil3.network.ktor3.asNetworkClient
 import com.slack.circuit.star.data.StarAppDirs
-import dev.zacsweers.lattice.ContributesTo
-import dev.zacsweers.lattice.Provides
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 
 private const val MAX_CACHE_SIZE = 1024L * 1024L * 100L // 100 MB

@@ -26,9 +26,9 @@ import com.slack.circuit.star.benchmark.ListBenchmarksScreen.State
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.parcel.CommonParcelize
-import dev.zacsweers.lattice.Inject
-import dev.zacsweers.lattice.Assisted
-import dev.zacsweers.lattice.AssistedFactory
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
 
 @CommonParcelize
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {

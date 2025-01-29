@@ -3,9 +3,9 @@
 package com.slack.circuit.star.data
 
 import com.slack.circuit.star.di.AppScope
-import dev.zacsweers.lattice.ContributesBinding
-import dev.zacsweers.lattice.Inject
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import net.harawata.appdirs.AppDirsFactory
 import okio.FileSystem
 import okio.Path

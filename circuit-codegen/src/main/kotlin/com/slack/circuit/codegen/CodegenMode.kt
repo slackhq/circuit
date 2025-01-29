@@ -186,7 +186,7 @@ internal enum class CodegenMode {
   },
 
   /**
-   * The `lattice` code gen mode
+   * The `metro` code gen mode
    *
    * This mode annotates generated factory types with `ContributesMultibinding`, allowing for
    * KI-Anvil to automatically wire the generated class up to KI's multibinding system within a
@@ -200,8 +200,8 @@ internal enum class CodegenMode {
    * ) : Presenter.Factory { ... }
    * ```
    */
-  LATTICE {
-    override val runtime: InjectionRuntime = InjectionRuntime.Lattice
+  METRO {
+    override val runtime: InjectionRuntime = InjectionRuntime.Metro
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
@@ -210,7 +210,7 @@ internal enum class CodegenMode {
 
     override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
       builder.addAnnotation(
-        AnnotationSpec.builder(CircuitNames.Lattice.CONTRIBUTES_INTO_SET)
+        AnnotationSpec.builder(CircuitNames.Metro.CONTRIBUTES_INTO_SET)
           .addMember("%T::class", scope)
           .build()
       )
@@ -289,12 +289,12 @@ internal enum class CodegenMode {
       }
     }
 
-    data object Lattice : InjectionRuntime {
-      override val inject: ClassName = CircuitNames.Lattice.INJECT
-      override val assisted: ClassName = CircuitNames.Lattice.ASSISTED
+    data object Metro : InjectionRuntime {
+      override val inject: ClassName = CircuitNames.Metro.INJECT
+      override val assisted: ClassName = CircuitNames.Metro.ASSISTED
 
       override fun asProvider(providedType: TypeName): TypeName {
-        return LambdaTypeName.get(returnType = providedType)
+        return CircuitNames.Metro.PROVIDER.parameterizedBy(providedType)
       }
 
       override fun getProviderBlock(provider: CodeBlock): CodeBlock {

@@ -5,9 +5,9 @@ package com.slack.circuit.sample.kotlininject
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
-import dev.zacsweers.lattice.DependencyGraph
-import dev.zacsweers.lattice.Provides
-import dev.zacsweers.lattice.SingleIn
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import software.amazon.lastmile.kotlin.inject.anvil.AppScope
 
 @DependencyGraph(AppScope::class)

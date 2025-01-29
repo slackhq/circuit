@@ -6,19 +6,19 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.ksp)
   alias(libs.plugins.compose)
-  alias(libs.plugins.lattice)
+  alias(libs.plugins.metro)
 }
 
 ksp {
   arg("circuit.codegen.lenient", "true")
-  arg("circuit.codegen.mode", "kotlin_inject_anvil")
+  arg("circuit.codegen.mode", "metro")
   @OptIn(KspExperimental::class)
   // kotlin-inject cannot see through typealiases in KSP2
   // https://github.com/evant/kotlin-inject/issues/458
   useKsp2.set(false)
 }
 
-lattice {
+metro {
   customAnnotations {
     includeKotlinInject()
     includeAnvil()

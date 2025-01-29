@@ -15,15 +15,22 @@ import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.lattice.Assisted
-import dev.zacsweers.lattice.Inject
-import dev.zacsweers.lattice.createGraph
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.createGraph
 import software.amazon.lastmile.kotlin.inject.anvil.AppScope
 
 fun main() = application {
   val app = remember { createGraph<AppComponent>().kotlinInjectApp }
 
   Window(onCloseRequest = ::exitApplication, title = "Sample") { app() }
+}
+
+// TODO eventually metro will generate this
+@Inject
+class KotlinInjectAppClass(val circuit: Circuit) {
+  @Composable
+  operator fun invoke() = KotlinInjectApp(circuit)
 }
 
 @Inject

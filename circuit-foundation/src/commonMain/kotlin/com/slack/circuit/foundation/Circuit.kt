@@ -20,6 +20,8 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * [Circuit] adapts [presenter factories][Presenter.Factory] to their corresponding
@@ -71,7 +73,17 @@ public class Circuit private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
-  public val defaultNavDecoration: NavDecoration = builder.defaultNavDecoration
+  public val animatedNavigationTransforms: ImmutableList<AnimatedNavigationTransform> =
+    builder.animatedNavigationTransforms.toImmutableList()
+  public val animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
+    builder.animatedNavDecoratorFactory
+  public val defaultNavDecoration: NavDecoration =
+    builder.defaultNavDecoration
+      ?: AnimatedNavDecoration(
+        transforms = animatedNavigationTransforms,
+        decoratorFactory = animatedNavDecoratorFactory,
+      )
+
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   /**
@@ -142,14 +154,21 @@ public class Circuit private constructor(builder: Builder) {
   public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
+    public val animatedNavigationTransforms: MutableList<AnimatedNavigationTransform> =
+      mutableListOf()
+
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
       UnavailableContent
       private set
 
-    public var defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
+    public var defaultNavDecoration: NavDecoration? = null
       private set
 
     public var eventListenerFactory: EventListener.Factory? = null
+      private set
+
+    public var animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
+      NavigatorDefaults.DefaultDecoratorFactory
       private set
 
     public var presentWithLifecycle: Boolean = true
@@ -158,7 +177,13 @@ public class Circuit private constructor(builder: Builder) {
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
       presenterFactories.addAll(circuit.presenterFactories)
+      animatedNavigationTransforms.addAll(circuit.animatedNavigationTransforms)
+      animatedNavDecoratorFactory = circuit.animatedNavDecoratorFactory
       eventListenerFactory = circuit.eventListenerFactory
+      // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
+      if (circuit.defaultNavDecoration !is AnimatedNavDecoration) {
+        defaultNavDecoration = circuit.defaultNavDecoration
+      }
     }
 
     public inline fun <reified S : Screen, UiState : CircuitUiState> addUi(
@@ -244,11 +269,31 @@ public class Circuit private constructor(builder: Builder) {
       presenterFactories.addAll(factories)
     }
 
+    public fun setAnimatedNavDecoratorFactory(
+      decoratorFactory: AnimatedNavDecorator.Factory
+    ): Builder = apply { animatedNavDecoratorFactory = decoratorFactory }
+
+    public fun addAnimatedNavigationTransform(
+      animatedNavigationTransform: AnimatedNavigationTransform
+    ): Builder = apply { animatedNavigationTransforms.add(animatedNavigationTransform) }
+
+    public fun addAnimatedNavigationTransform(
+      vararg animatedNavigationTransform: AnimatedNavigationTransform
+    ): Builder = apply {
+      for (transform in animatedNavigationTransform) {
+        animatedNavigationTransforms.add(transform)
+      }
+    }
+
+    public fun addAnimatedNavigationTransforms(
+      transforms: Iterable<AnimatedNavigationTransform>
+    ): Builder = apply { animatedNavigationTransforms.addAll(transforms) }
+
     public fun setOnUnavailableContent(
       content: @Composable (screen: Screen, modifier: Modifier) -> Unit
     ): Builder = apply { onUnavailableContent = content }
 
-    public fun setDefaultNavDecoration(decoration: NavDecoration): Builder = apply {
+    public fun setDefaultNavDecoration(decoration: NavDecoration?): Builder = apply {
       defaultNavDecoration = decoration
     }
 

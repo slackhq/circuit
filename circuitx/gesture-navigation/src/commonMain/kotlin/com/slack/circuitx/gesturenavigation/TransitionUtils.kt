@@ -26,4 +26,5 @@ internal data class GestureNavTransitionHolder<T : NavArgument>(
   val rootRecord: T,
 ) : AnimatedNavState {
   override val screen: Screen = record.screen
+  override val rootScreen: Screen = rootRecord.screen
 }

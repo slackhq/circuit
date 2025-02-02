@@ -55,6 +55,7 @@ kotlin {
         api(libs.kotlinx.immutable)
         api(libs.coroutines)
         api(projects.backstack)
+        api(projects.circuitRuntimeScreen)
         api(projects.circuitRuntime)
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)

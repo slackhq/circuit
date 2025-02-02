@@ -43,6 +43,11 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        api(projects.backstack)
+        api(projects.circuitRuntime)
+        api(projects.circuitRuntimeScreen)
+        api(projects.circuitRuntimeUi)
+        api(projects.circuitRuntimePresenter)
         api(projects.circuitFoundation)
         api(libs.compose.runtime)
         api(libs.coroutines)

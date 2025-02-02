@@ -51,6 +51,10 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         implementation(projects.circuitFoundation)
+        implementation(projects.circuitRetained)
+        implementation(projects.circuitRuntime)
+        implementation(projects.circuitRuntimeScreen)
+        implementation(projects.backstack)
       }
     }
     commonTest {

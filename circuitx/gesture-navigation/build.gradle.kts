@@ -34,6 +34,8 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
+        implementation(projects.circuitRuntimeScreen)
+        implementation(projects.backstack)
         // For CupertinoGestureNavigationDecoration
         api(libs.compose.material.material)
       }

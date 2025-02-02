@@ -35,6 +35,8 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.circuitOverlay)
+        implementation(projects.circuitRuntime)
+        api(projects.circuitRuntimeScreen)
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(libs.compose.material.material3)

@@ -15,6 +15,7 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -184,6 +186,32 @@ class RetainedTest {
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
+  }
+
+  @Test
+  fun changingCanRetainCheckerInstanceKeepsState() {
+    var canRetainChecker by mutableStateOf(CanRetainChecker { true })
+
+    setActivityContent {
+      CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+        Column {
+          var count by rememberRetained { mutableIntStateOf(0) }
+          Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = "count: $count")
+          Button(modifier = Modifier.testTag("TAG_BUTTON"), onClick = { count++ }) {
+            Text("Toggle")
+          }
+        }
+      }
+    }
+
+    composeTestRule.onNodeWithTag("TAG_BUTTON").performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("count: 1")
+
+    // Update the can retain checker to a different instance
+    canRetainChecker = CanRetainChecker { true }
+
+    // The state of remember retained should be preserved
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("count: 1")
   }
 
   @Test

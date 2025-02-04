@@ -161,31 +161,38 @@ public fun <T : Any> rememberRetained(
   @Suppress("UNCHECKED_CAST") (saver as Saver<T, Any>)
 
   val canRetainChecker = LocalCanRetainChecker.current ?: rememberCanRetainChecker()
-  val holder =
-    remember(canRetainChecker) {
-      // value is restored using the retained registry first, the saveable registry second, or
-      // created via [init] lambda third
-      @Suppress("UNCHECKED_CAST")
-      val retainedRestored =
-        retainedStateRegistry.consumeValue(finalKey) as? RetainableSaveableHolder.Value<T>
-      val saveableRestored =
-        saveableStateRegistry?.consumeRestored(finalKey)?.let { saver.restore(it) }
-      val finalValue = retainedRestored?.value ?: saveableRestored ?: init()
-      val finalInputs = retainedRestored?.inputs ?: inputs
-      RetainableSaveableHolder(
-        retainedStateRegistry = retainedStateRegistry,
-        canRetainChecker = canRetainChecker,
-        saveableStateRegistry = saveableStateRegistry,
-        saver = saver,
-        key = finalKey,
-        value = finalValue,
-        inputs = finalInputs,
-        hasBeenRestoredFromRetained = retainedRestored != null,
-      )
-    }
+  val holder = remember {
+    // value is restored using the retained registry first, the saveable registry second, or
+    // created via [init] lambda third
+    @Suppress("UNCHECKED_CAST")
+    val retainedRestored =
+      retainedStateRegistry.consumeValue(finalKey) as? RetainableSaveableHolder.Value<T>
+    val saveableRestored =
+      saveableStateRegistry?.consumeRestored(finalKey)?.let { saver.restore(it) }
+    val finalValue = retainedRestored?.value ?: saveableRestored ?: init()
+    val finalInputs = retainedRestored?.inputs ?: inputs
+    RetainableSaveableHolder(
+      retainedStateRegistry = retainedStateRegistry,
+      canRetainChecker = canRetainChecker,
+      saveableStateRegistry = saveableStateRegistry,
+      saver = saver,
+      key = finalKey,
+      value = finalValue,
+      inputs = finalInputs,
+      hasBeenRestoredFromRetained = retainedRestored != null,
+    )
+  }
   val value = holder.getValueIfInputsAreEqual(inputs) ?: init()
   SideEffect {
-    holder.update(retainedStateRegistry, saveableStateRegistry, saver, finalKey, value, inputs)
+    holder.update(
+      retainedStateRegistry = retainedStateRegistry,
+      canRetainChecker = canRetainChecker,
+      saveableStateRegistry = saveableStateRegistry,
+      saver = saver,
+      key = finalKey,
+      value = value,
+      inputs = inputs,
+    )
   }
   return value
 }
@@ -262,6 +269,7 @@ private class RetainableSaveableHolder<T>(
 
   fun update(
     retainedStateRegistry: RetainedStateRegistry?,
+    canRetainChecker: CanRetainChecker,
     saveableStateRegistry: SaveableStateRegistry?,
     saver: Saver<T, Any>,
     key: String,
@@ -277,6 +285,9 @@ private class RetainableSaveableHolder<T>(
     if (this.saveableStateRegistry !== saveableStateRegistry) {
       this.saveableStateRegistry = saveableStateRegistry
       saveableEntryIsOutdated = true
+    }
+    if (this.canRetainChecker !== canRetainChecker) {
+      this.canRetainChecker = canRetainChecker
     }
     if (this.key != key) {
       this.key = key

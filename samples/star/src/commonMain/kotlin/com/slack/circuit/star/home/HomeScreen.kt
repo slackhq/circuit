@@ -128,7 +128,6 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         }
       },
     ) { paddingValues ->
-      contentComposed = true
       val saveableStateHolder = rememberSaveableStateHolder()
       val retainedStateHolder = rememberRetainedStateHolder()
       val currentScreen = state.navItems[state.selectedIndex].screen

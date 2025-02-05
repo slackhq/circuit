@@ -20,7 +20,7 @@ internal fun Modifier.onCounterKeyEvent(onEvent: (CounterScreen.Event) -> Unit):
     when (it) {
       Escape,
       q,
-      Q -> onEvent(CounterScreen.Event.Decrement)
+      Q -> onEvent(CounterScreen.Event.Escape)
       ArrowUp -> onEvent(CounterScreen.Event.Increment)
       ArrowDown -> onEvent(CounterScreen.Event.Decrement)
       else -> return@onKeyEvent false

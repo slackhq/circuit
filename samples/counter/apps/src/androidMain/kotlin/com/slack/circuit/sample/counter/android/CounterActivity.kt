@@ -25,7 +25,7 @@ class CounterActivity : AppCompatActivity() {
         } else {
           dynamicLightColorScheme(context)
         }
-      CounterApp(screen = AndroidCounterScreen, colorScheme = colorScheme)
+      CounterApp(screen = AndroidCounterScreen, colorScheme = colorScheme, onRootPop = ::finish)
     }
   }
 }

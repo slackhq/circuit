@@ -11,7 +11,7 @@ android {
   namespace = "com.slack.circuit.sample.interop"
   defaultConfig {
     minSdk = 28
-    targetSdk = 34
+    targetSdk = 35
     versionCode = 1
     versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

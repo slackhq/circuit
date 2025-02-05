@@ -13,7 +13,7 @@ android {
   namespace = "com.slack.circuit.sample.counter.android"
   defaultConfig {
     minSdk = 31 // For the dynamic m3 theme
-    targetSdk = 34
+    targetSdk = 35
   }
 }
 

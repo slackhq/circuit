@@ -190,6 +190,32 @@ class RetainedTest {
   }
 
   @Test
+  fun changingCanRetainCheckerInstanceKeepsState() {
+    var canRetainChecker by mutableStateOf(CanRetainChecker { true })
+
+    setActivityContent {
+      CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+        Column {
+          var count by rememberRetained { mutableIntStateOf(0) }
+          Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = "count: $count")
+          Button(modifier = Modifier.testTag("TAG_BUTTON"), onClick = { count++ }) {
+            Text("Toggle")
+          }
+        }
+      }
+    }
+
+    composeTestRule.onNodeWithTag("TAG_BUTTON").performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("count: 1")
+
+    // Update the can retain checker to a different instance
+    canRetainChecker = CanRetainChecker { true }
+
+    // The state of remember retained should be preserved
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("count: 1")
+  }
+
+  @Test
   fun singleWithNoKey() {
     val content = @Composable { KeyContent(null) }
     setActivityContent(content)

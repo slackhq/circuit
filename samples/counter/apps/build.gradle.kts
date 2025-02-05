@@ -56,7 +56,6 @@ kotlin {
         implementation(libs.bundles.compose.ui)
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
         implementation(libs.androidx.compose.material.icons)
-        implementation(libs.androidx.compose.accompanist.systemUi)
         implementation(libs.androidx.compose.ui.tooling)
       }
     }

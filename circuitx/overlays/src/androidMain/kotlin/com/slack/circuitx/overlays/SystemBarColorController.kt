@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 
 /*
  * This file is a slimmed down implementation of the original deprecated Accompanist
@@ -167,6 +168,7 @@ internal class AndroidSystemBarColorController(
   ) {
     statusBarDarkContentEnabled = darkIcons
 
+    @Suppress("DEPRECATION")
     window?.statusBarColor =
       when {
         darkIcons && windowInsetsController?.isAppearanceLightStatusBars != true -> {
@@ -188,6 +190,7 @@ internal class AndroidSystemBarColorController(
     navigationBarDarkContentEnabled = darkIcons
     isNavigationBarContrastEnforced = navigationBarContrastEnforced
 
+    @Suppress("DEPRECATION")
     window?.navigationBarColor =
       when {
         darkIcons && windowInsetsController?.isAppearanceLightNavigationBars != true -> {

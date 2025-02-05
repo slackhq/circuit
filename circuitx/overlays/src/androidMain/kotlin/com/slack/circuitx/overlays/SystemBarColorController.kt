@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 
 /*
  * This file is a slimmed down implementation of the original deprecated Accompanist

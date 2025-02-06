@@ -30,17 +30,17 @@ class NavigableCircuitSaveableStateTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  //  @Test fun saveableStateScopedToBackstackWithKeys() = saveableStateScopedToBackstack(true)
-  //
-  //  @Test fun saveableStateScopedToBackstackWithoutKeys() = saveableStateScopedToBackstack(false)
-  //
-  //  @Test
-  //  fun saveableStateScopedToBackstackResetRootsWithKeys() =
-  //    saveableStateScopedToBackstackResetRoots(true)
-  //
-  //  @Test
-  //  fun saveableStateScopedToBackstackResetRootsWithoutKeys() =
-  //    saveableStateScopedToBackstackResetRoots(false)
+  @Test fun saveableStateScopedToBackstackWithKeys() = saveableStateScopedToBackstack(true)
+
+  @Test fun saveableStateScopedToBackstackWithoutKeys() = saveableStateScopedToBackstack(false)
+
+  @Test
+  fun saveableStateScopedToBackstackResetRootsWithKeys() =
+    saveableStateScopedToBackstackResetRoots(true)
+
+  @Test
+  fun saveableStateScopedToBackstackResetRootsWithoutKeys() =
+    saveableStateScopedToBackstackResetRoots(false)
 
   private fun saveableStateScopedToBackstack(useKeys: Boolean) {
     composeTestRule.run {
@@ -220,7 +220,11 @@ class NavigableCircuitSaveableStateTest {
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        val navigator = rememberCircuitNavigator(backStack = backStack)
+        val navigator =
+          rememberCircuitNavigator(
+            backStack = backStack,
+            onRootPop = {}, // no-op for tests
+          )
         CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }

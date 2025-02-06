@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.jakewharton.mosaic.modifier.Modifier
 import com.jakewharton.mosaic.runMosaic
+import com.jakewharton.mosaic.ui.Color
 import com.jakewharton.mosaic.ui.Column
 import com.jakewharton.mosaic.ui.Text
 import com.slack.circuit.foundation.NavigatorDefaults
@@ -39,7 +40,7 @@ private fun counterUi() = ui<CounterScreen.State> { state, _ -> Counter(state) }
 private fun Counter(state: CounterScreen.State) {
   Column(Modifier.onCounterKeyEvent(state.eventSink)) {
     Text("Use arrow keys to increment or decrement the count. Press “q” to exit.")
-    Text("Count: ${state.count}")
+    Text("Count: ${state.count}", color = if (state.count < 0) Color.Red else Color.Unspecified)
   }
 }
 

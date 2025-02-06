@@ -371,6 +371,120 @@ class RetainedTest {
   }
 
   @Test
+  fun rememberObserver_scopedCanRetainChecker() {
+    val subject =
+      object : RememberObserver {
+        var onRememberCalled: Int = 0
+          private set
+
+        var onForgottenCalled: Int = 0
+          private set
+
+        override fun onAbandoned() = Unit
+
+        override fun onForgotten() {
+          onForgottenCalled++
+        }
+
+        override fun onRemembered() {
+          onRememberCalled++
+        }
+      }
+    val canRetainChecker = CanRetainChecker { false }
+
+    val content =
+      @Composable {
+        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+          rememberRetained { subject }
+          Unit
+        }
+      }
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Restart the activity
+    scenario.recreate()
+
+    // Compose our content again
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(1)
+
+    // Now finish the Activity
+    scenario.close()
+
+    // Assert that the observer was forgotten
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(2)
+  }
+
+  @Test
+  fun rememberObserver_scopedCanRetainCheckerSwitch() {
+    val subject =
+      object : RememberObserver {
+        var onRememberCalled: Int = 0
+          private set
+
+        var onForgottenCalled: Int = 0
+          private set
+
+        override fun onAbandoned() = Unit
+
+        override fun onForgotten() {
+          onForgottenCalled++
+        }
+
+        override fun onRemembered() {
+          onRememberCalled++
+        }
+      }
+
+    var canRetainChecker by mutableStateOf(CanRetainChecker { true })
+
+    val content =
+      @Composable {
+        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+          rememberRetained { subject }
+          Unit
+        }
+      }
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Restart the activity
+    scenario.recreate()
+
+    // Compose our content again
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    canRetainChecker = CanRetainChecker { false }
+
+    // Restart the activity
+    scenario.recreate()
+
+    // Compose our content again
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(1)
+
+    // Now finish the Activity
+    scenario.close()
+
+    // Assert that the observer was forgotten
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(2)
+  }
+
+  @Test
   fun rememberObserver_nestedRegistries() {
     val subject =
       object : RememberObserver {

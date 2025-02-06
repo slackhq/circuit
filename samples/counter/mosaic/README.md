@@ -1,7 +1,7 @@
 Counter – Mosaic
 ================
 
-A [Mosiac](https://github.com/JakeWharton/mosaic) counter circuit implementation.
+A [Mosaic](https://github.com/JakeWharton/mosaic) counter circuit implementation.
 
 Usage:
 

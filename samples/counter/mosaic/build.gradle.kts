@@ -12,7 +12,6 @@ version = "1.0.0-SNAPSHOT"
 
 dependencies {
   implementation(libs.mosaic)
-  implementation(libs.jline)
   implementation(projects.samples.counter)
   implementation(projects.circuitFoundation)
 }

@@ -193,6 +193,7 @@ internal class AndroidSystemUiController(private val view: View, private val win
   ) {
     statusBarDarkContentEnabled = darkIcons
 
+    @Suppress("DEPRECATION")
     window?.statusBarColor =
       when {
         darkIcons && windowInsetsController?.isAppearanceLightStatusBars != true -> {
@@ -214,6 +215,7 @@ internal class AndroidSystemUiController(private val view: View, private val win
     navigationBarDarkContentEnabled = darkIcons
     isNavigationBarContrastEnforced = navigationBarContrastEnforced
 
+    @Suppress("DEPRECATION")
     window?.navigationBarColor =
       when {
         darkIcons && windowInsetsController?.isAppearanceLightNavigationBars != true -> {

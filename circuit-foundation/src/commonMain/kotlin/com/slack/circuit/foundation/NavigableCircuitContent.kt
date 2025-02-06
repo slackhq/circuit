@@ -49,6 +49,7 @@ import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -67,14 +68,6 @@ public fun <R : Record> NavigableCircuitContent(
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  val activeContentProviders =
-    buildCircuitContentProviders(
-      backStack = backStack,
-      navigator = navigator,
-      circuit = circuit,
-      unavailableRoute = unavailableRoute,
-    )
-
   if (backStack.isEmpty) return
 
   /*
@@ -113,6 +106,14 @@ public fun <R : Record> NavigableCircuitContent(
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+    val activeContentProviders =
+      buildCircuitContentProviders(
+        backStack = backStack,
+        navigator = navigator,
+        circuit = circuit,
+        unavailableRoute = unavailableRoute,
+      )
+
     decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 
@@ -174,6 +175,7 @@ private fun <R : Record> buildCircuitContentProviders(
   val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
 
   val saveableStateHolder = rememberSaveableStateHolder()
+  val retainedStateHolder = rememberRetainedStateHolder()
 
   fun createRecordContent() =
     movableContentOf<R> { record ->
@@ -186,32 +188,27 @@ private fun <R : Record> buildCircuitContentProviders(
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        // Now provide a new registry to the content for it to store any retained state in,
-        // along with a retain checker which is always true (as upstream registries will
-        // maintain the lifetime), and the other provided values
-        val recordRetainedStateRegistry =
-          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
         saveableStateHolder.SaveableStateProvider(record.registryKey) {
-          CompositionLocalProvider(
-            LocalRetainedStateRegistry provides recordRetainedStateRegistry,
-            LocalCanRetainChecker provides CanRetainChecker.Always,
-            LocalRecordLifecycle provides lifecycle,
-          ) {
-            CircuitContent(
-              screen = record.screen,
-              navigator = lastNavigator,
-              circuit = lastCircuit,
-              unavailableContent = lastUnavailableRoute,
-              key = record.key,
-            )
+          // Provides a RetainedStateRegistry that is maintained independently for each record while
+          // the record exists in the back stack.
+          retainedStateHolder.RetainedStateProvider(record.registryKey) {
+            CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+              CircuitContent(
+                screen = record.screen,
+                navigator = lastNavigator,
+                circuit = lastCircuit,
+                unavailableContent = lastUnavailableRoute,
+                key = record.key,
+              )
+            }
           }
         }
-        // Remove saved states for records that are no longer in the back stack
-        DisposableEffect(record.registryKey) {
-          onDispose {
-            if (!lastBackStack.containsRecord(record, includeSaved = true)) {
-              saveableStateHolder.removeState(record.registryKey)
-            }
+      }
+      // Remove saved states for records that are no longer in the back stack
+      DisposableEffect(record.registryKey) {
+        onDispose {
+          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+            saveableStateHolder.removeState(record.registryKey)
           }
         }
       }

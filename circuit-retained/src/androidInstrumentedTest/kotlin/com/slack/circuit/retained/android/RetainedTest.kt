@@ -14,7 +14,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +42,7 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
@@ -55,6 +55,7 @@ private const val TAG_RETAINED_2 = "retained2"
 private const val TAG_RETAINED_3 = "retained3"
 private const val TAG_BUTTON_SHOW = "btn_show"
 private const val TAG_BUTTON_HIDE = "btn_hide"
+private const val TAG_BUTTON_INC = "btn_inc"
 
 class RetainedTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -370,6 +371,121 @@ class RetainedTest {
   }
 
   @Test
+  fun rememberObserver_scopedCanRetainChecker() {
+    val subject =
+      object : RememberObserver {
+        var onRememberCalled: Int = 0
+          private set
+
+        var onForgottenCalled: Int = 0
+          private set
+
+        override fun onAbandoned() = Unit
+
+        override fun onForgotten() {
+          onForgottenCalled++
+        }
+
+        override fun onRemembered() {
+          onRememberCalled++
+        }
+      }
+    val canRetainChecker = CanRetainChecker { false }
+
+    val content =
+      @Composable {
+        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+          rememberRetained { subject }
+          Unit
+        }
+      }
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Restart the activity
+    scenario.recreate()
+
+    // Compose our content again
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(1)
+
+    // Now finish the Activity
+    scenario.close()
+
+    // Assert that the observer was forgotten
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(2)
+  }
+
+  @Test
+  fun rememberObserver_scopedCanRetainCheckerSwitch() {
+    val subject =
+      object : RememberObserver {
+        var onRememberCalled: Int = 0
+          private set
+
+        var onForgottenCalled: Int = 0
+          private set
+
+        override fun onAbandoned() = Unit
+
+        override fun onForgotten() {
+          onForgottenCalled++
+        }
+
+        override fun onRemembered() {
+          onRememberCalled++
+        }
+      }
+
+    var canRetainChecker by mutableStateOf(CanRetainChecker { true })
+
+    val content =
+      @Composable {
+        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+          rememberRetained { subject }
+          Unit
+        }
+      }
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    // Restart the activity
+    scenario.recreate()
+
+    // Compose our content again
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(1)
+    assertThat(subject.onForgottenCalled).isEqualTo(0)
+
+    canRetainChecker = CanRetainChecker { false }
+    composeTestRule.waitForIdle()
+
+    // Restart the activity
+    scenario.recreate()
+
+    // Compose our content again
+    setActivityContent(content)
+
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(1)
+
+    // Now finish the Activity
+    scenario.close()
+
+    // Assert that the observer was forgotten
+    assertThat(subject.onRememberCalled).isEqualTo(2)
+    assertThat(subject.onForgottenCalled).isEqualTo(2)
+  }
+
+  @Test
   fun rememberObserver_nestedRegistries() {
     val subject =
       object : RememberObserver {
@@ -392,10 +508,10 @@ class RetainedTest {
 
     val content =
       @Composable {
-        val nestedRegistryLevel1 = rememberRetained { RetainedStateRegistry() }
-        CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistryLevel1) {
-          val nestedRegistryLevel2 = rememberRetained { RetainedStateRegistry() }
-          CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistryLevel2) {
+        val holder1 = rememberRetainedStateHolder()
+        holder1.RetainedStateProvider("registry1") {
+          val holder2 = rememberRetainedStateHolder()
+          holder2.RetainedStateProvider("registry2") {
             @Suppress("UNUSED_VARIABLE") val retainedSubject = rememberRetained { subject }
           }
         }
@@ -420,6 +536,54 @@ class RetainedTest {
     // Assert that the observer was forgotten
     assertThat(subject.onRememberCalled).isEqualTo(1)
     assertThat(subject.onForgottenCalled).isEqualTo(1)
+  }
+
+  @Test
+  fun conditionalRetainBeforeSave() {
+    val registry = RetainedStateRegistry()
+    val content = @Composable { ConditionalRetainContent(registry) }
+    setActivityContent(content)
+
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_INC).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("1")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_HIDE).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+  }
+
+  @Test
+  fun conditionalRetainAfterSave() {
+    val registry = RetainedStateRegistry()
+    val content = @Composable { ConditionalRetainContent(registry) }
+    setActivityContent(content)
+
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_INC).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("1")
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_HIDE).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertDoesNotExist()
+
+    registry.saveAll()
+
+    composeTestRule.onNodeWithTag(TAG_BUTTON_SHOW).performClick()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("0")
   }
 
   private fun nestedRegistriesWithPopAndPush(useKeys: Boolean) {
@@ -612,10 +776,8 @@ private fun NestedRetains(useKeys: Boolean) {
       label = {},
     )
 
-    val nestedRegistryLevel1 = rememberRetained { RetainedStateRegistry() }
-    CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistryLevel1) {
-      NestedRetainLevel1(useKeys)
-    }
+    val nestedStateHolderLevel1 = rememberRetainedStateHolder()
+    nestedStateHolderLevel1.RetainedStateProvider("registryLevel1") { NestedRetainLevel1(useKeys) }
   }
 }
 
@@ -631,10 +793,8 @@ private fun NestedRetainLevel1(useKeys: Boolean) {
     label = {},
   )
 
-  val nestedRegistry = rememberRetained { RetainedStateRegistry() }
-  CompositionLocalProvider(LocalRetainedStateRegistry provides nestedRegistry) {
-    NestedRetainLevel2(useKeys)
-  }
+  val nestedStateHolderLevel2 = rememberRetainedStateHolder()
+  nestedStateHolderLevel2.RetainedStateProvider("registryLevel2") { NestedRetainLevel2(useKeys) }
 }
 
 @Composable
@@ -679,16 +839,11 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
       Text(text = "Show child")
     }
 
+    val retainedStateHolder = rememberRetainedStateHolder()
     // Keep the retained state registry around even if showNestedContent becomes false
     CompositionLocalProvider(LocalCanRetainChecker provides CanRetainChecker.Always) {
       if (showNestedContent.value) {
-        val nestedRegistry = rememberRetained { RetainedStateRegistry() }
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides nestedRegistry,
-          LocalCanRetainChecker provides CanRetainChecker.Always,
-        ) {
-          NestedRetainLevel1(useKeys)
-        }
+        retainedStateHolder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
       }
     }
   }
@@ -724,15 +879,10 @@ private fun NestedRetainWithPushAndPopAndCannotRetain(useKeys: Boolean) {
     }
 
     // Keep the retained state registry around even if showNestedContent becomes false
-    CompositionLocalProvider(LocalCanRetainChecker provides CanRetainChecker.Always) {
+    val holder = rememberRetainedStateHolder()
+    CompositionLocalProvider(LocalCanRetainChecker provides { false }) {
       if (showNestedContent.value) {
-        val nestedRegistry = rememberRetained { RetainedStateRegistry() }
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides nestedRegistry,
-          LocalCanRetainChecker provides { false },
-        ) {
-          NestedRetainLevel1(useKeys)
-        }
+        holder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
       }
     }
   }
@@ -755,5 +905,27 @@ private fun InputsContent(input: String) {
       onValueChange = { retainedText = it },
       label = {},
     )
+  }
+}
+
+@Composable
+private fun ConditionalRetainContent(registry: RetainedStateRegistry) {
+  CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+    var showContent by remember { mutableStateOf(false) }
+    Column {
+      Button(modifier = Modifier.testTag(TAG_BUTTON_HIDE), onClick = { showContent = false }) {
+        Text(text = "Hide content")
+      }
+      Button(modifier = Modifier.testTag(TAG_BUTTON_SHOW), onClick = { showContent = true }) {
+        Text(text = "Show content")
+      }
+      if (showContent) {
+        var count by rememberRetained { mutableIntStateOf(0) }
+        Button(modifier = Modifier.testTag(TAG_BUTTON_INC), onClick = { count += 1 }) {
+          Text(text = "Increment")
+        }
+        Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = count.toString())
+      }
+    }
   }
 }

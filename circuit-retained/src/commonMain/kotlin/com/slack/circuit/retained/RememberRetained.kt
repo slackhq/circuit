@@ -331,39 +331,14 @@ private class RetainableSaveableHolder<T>(
   }
 
   /** Value provider called by the registry. */
-  override fun invoke(): Any =
-    Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
+  override fun invoke(): Any? {
+    if (!canBeRetained()) return null
+    return Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
+  }
 
   override fun canBeSaved(value: Any): Boolean {
     val registry = saveableStateRegistry
     return registry == null || registry.canBeSaved(value)
-  }
-
-  fun saveIfRetainable() {
-    val v = value ?: return
-    val reg = retainedStateRegistry ?: return
-
-    if (!canRetainChecker.canRetain(reg)) {
-      retainedStateEntry?.unregister()
-      when (v) {
-        // If value is a RememberObserver, we notify that it has been forgotten.
-        is RememberObserver -> v.onForgotten()
-        // Or if its a registry, we need to tell it to clear, which will forward the 'forgotten'
-        // call onto its values
-        is RetainedStateRegistry -> {
-          // First we saveAll, which flattens down the value providers to our retained list
-          v.saveAll()
-          // Now we drop all retained values
-          v.forgetUnclaimedValues()
-        }
-      }
-    } else if (v is RetainedStateRegistry) {
-      // If the value is a RetainedStateRegistry, we need to take care to retain it.
-      // First we tell it to saveAll, to retain it's values. Then we need to tell the host
-      // registry to retain the child registry.
-      v.saveAll()
-      reg.saveValue(key)
-    }
   }
 
   override fun onRemembered() {
@@ -378,13 +353,27 @@ private class RetainableSaveableHolder<T>(
   }
 
   override fun onForgotten() {
-    saveIfRetainable()
-    saveableStateEntry?.unregister()
+    release()
   }
 
   override fun onAbandoned() {
-    saveIfRetainable()
+    release()
+  }
+
+  private fun release() {
     saveableStateEntry?.unregister()
+    val hasRemoved = retainedStateEntry?.unregister() ?: true
+    if (hasRemoved || !canBeRetained()) {
+      when (val v = value) {
+        is RememberObserver -> v.onForgotten()
+        is RetainedStateRegistry -> v.forgetUnclaimedValues()
+      }
+    }
+  }
+
+  private fun canBeRetained(): Boolean {
+    val registry = retainedStateRegistry ?: return false
+    return canRetainChecker.canRetain(registry)
   }
 
   fun getValueIfInputsAreEqual(inputs: Array<out Any?>): T? {

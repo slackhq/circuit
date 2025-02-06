@@ -11,13 +11,13 @@ public object NoOpRetainedStateRegistry : RetainedStateRegistry {
     valueProvider: RetainedValueProvider,
   ): RetainedStateRegistry.Entry = NoOpEntry
 
-  override fun saveAll() {}
+  override fun saveAll(): Map<String, List<Any?>> = emptyMap()
 
   override fun saveValue(key: String) {}
 
   override fun forgetUnclaimedValues() {}
 
   private object NoOpEntry : RetainedStateRegistry.Entry {
-    override fun unregister() {}
+    override fun unregister(): Boolean = true
   }
 }

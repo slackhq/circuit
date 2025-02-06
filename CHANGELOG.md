@@ -3,6 +3,40 @@ Changelog
 
 **Unreleased**
 --------------
+### Behaviour Change: rememberRetained
+Previously, `rememberRetained` could sometimes restore values when a composable was re-added, depending on whether its parent `RetainedStateRegistry` had been saved (#1783).
+Now, `rememberRetained` aligns with `remember` and `rememberSaveable`: if a composable is removed and later re-added, its value will not be restored unless it is explicitly saved and then restored via the registry.
+
+### Behaviour Change: RetainedStateRegistry
+- `saveAll` now returns the saved values.
+- `RetainedStateRegistry.Entry.unregister` now returns whether the unsaved valueProvider was actually removed.
+- `saveAll` and `saveValue` now skip storing child values when `CanRetainChecker` returns `false`.
+
+### New: RetainedStateHolder
+Similar to `SaveableStateHolder`, `RetainedStateHolder` provides a mechanism to maintain separate `RetainedStateRegistry` entries for specific keys. This allows saving the state defined with `rememberRetained` for a subtree before it is disposed, so that the subtree can later be recomposed with its state restored.
+
+```kotlin
+val retainedStateHolder = rememberRetainedStateHolder()
+var currentTab by remember { mutableStateOf(TabA) }
+
+retainedStateHolder.RetainedStateProvider(key = currentTab.name) {
+  // rememberRetained values in tab content are preserved across tab switches
+  when(currentTab) {
+    TabA -> {
+      TabAContent()
+    }
+    TabB -> {
+      TabBContent()
+    }
+    TabC -> {
+      TabCContent()
+    }
+  }
+}
+```
+
+### Internal Change: NavigableCircuitContent
+The approach of managing a separate `RetainedStateRegistry` for each record has been changed to use `RetainedStateHolder` instead.
 
 0.25.0
 ------

@@ -5,6 +5,8 @@ package com.slack.circuit.retained
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -84,10 +86,11 @@ public fun continuityRetainedStateRegistry(
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
+  val lastCanRetainChecker by rememberUpdatedState(canRetainChecker)
 
   LifecycleStartEffect(vm) {
     onStopOrDispose {
-      if (canRetainChecker.canRetain(vm)) {
+      if (lastCanRetainChecker.canRetain(vm)) {
         vm.saveAll()
       }
     }

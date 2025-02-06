@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ReusableContent
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 
 /**
  * A holder that provides a unique retainedStateRegistry for each subtree and retains all preserved
@@ -42,10 +44,8 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
   @Composable
   override fun RetainedStateProvider(key: String, content: @Composable (() -> Unit)) {
     CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
-      val parentCanRetainChecker = LocalCanRetainChecker.current ?: CanRetainChecker.Always
+      val entryCanRetainChecker = rememberEntryCanRetainChecker()
       ReusableContent(key) {
-        val entryCanRetainChecker =
-          remember(parentCanRetainChecker) { EntryCanRetainChecker(parentCanRetainChecker) }
         val childRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides childRegistry,
@@ -97,13 +97,20 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
   override fun forgetUnclaimedValues() {
     registry.forgetUnclaimedValues()
   }
+}
 
-  private class EntryCanRetainChecker(private val parentChecker: CanRetainChecker) :
-    CanRetainChecker {
+@Composable
+private fun rememberEntryCanRetainChecker(): EntryCanRetainChecker {
+  val canRetainChecker = LocalCanRetainChecker.current ?: CanRetainChecker.Always
+  val currCanRetainChecker by rememberUpdatedState(canRetainChecker)
+  return remember { EntryCanRetainChecker { currCanRetainChecker.canRetain(it) } }
+}
 
-    var shouldSave = true
+private class EntryCanRetainChecker(private val parentChecker: CanRetainChecker) :
+  CanRetainChecker {
 
-    override fun canRetain(registry: RetainedStateRegistry): Boolean =
-      parentChecker.canRetain(registry) && shouldSave
-  }
+  var shouldSave = true
+
+  override fun canRetain(registry: RetainedStateRegistry): Boolean =
+    parentChecker.canRetain(registry) && shouldSave
 }

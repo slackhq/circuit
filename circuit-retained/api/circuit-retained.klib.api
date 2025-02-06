@@ -38,7 +38,7 @@ abstract interface com.slack.circuit.retained/RetainedStateRegistry { // com.sla
     abstract fun saveValue(kotlin/String) // com.slack.circuit.retained/RetainedStateRegistry.saveValue|saveValue(kotlin.String){}[0]
 
     abstract interface Entry { // com.slack.circuit.retained/RetainedStateRegistry.Entry|null[0]
-        abstract fun unregister() // com.slack.circuit.retained/RetainedStateRegistry.Entry.unregister|unregister(){}[0]
+        abstract fun unregister(): kotlin/Boolean // com.slack.circuit.retained/RetainedStateRegistry.Entry.unregister|unregister(){}[0]
     }
 }
 

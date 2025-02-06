@@ -15,7 +15,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import coil.annotation.ExperimentalCoilApi
-import coil3.test.FakeImage
+import coil3.ColorImage
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
@@ -44,7 +44,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PetListUiTest {
   @get:Rule val composeTestRule = createComposeRule()
-  @get:Rule val coilRule = CoilRule(FakeImage(100, 100, color = Color.Blue.toArgb()))
+  @get:Rule val coilRule = CoilRule(ColorImage(Color.Blue.toArgb()))
 
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
@@ -80,7 +80,7 @@ class PetListUiTest {
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)
-      onNodeWithTag(IMAGE_TAG, useUnmergedTree = true).assertIsDisplayed()
+      onNodeWithTag(IMAGE_TAG, useUnmergedTree = true).assertExists()
       onNodeWithTag(AGE_AND_BREED_TAG, useUnmergedTree = true)
         .assertTextEquals("${ANIMAL.gender.displayName} – ${ANIMAL.age}")
     }

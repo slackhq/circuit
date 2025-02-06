@@ -173,9 +173,9 @@ private fun <R : Record> buildCircuitContentProviders(
   val lastNavigator by rememberUpdatedState(navigator)
   val lastCircuit by rememberUpdatedState(circuit)
   val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
-  val retainedStateHolder = rememberRetainedStateHolder()
 
   val saveableStateHolder = rememberSaveableStateHolder()
+  val retainedStateHolder = rememberRetainedStateHolder()
 
   fun createRecordContent() =
     movableContentOf<R> { record ->
@@ -187,8 +187,8 @@ private fun <R : Record> buildCircuitContentProviders(
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
 
-      saveableStateHolder.SaveableStateProvider(record.registryKey) {
-        CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
+        saveableStateHolder.SaveableStateProvider(record.registryKey) {
           // Provides a RetainedStateRegistry that is maintained independently for each record while
           // the record exists in the back stack.
           retainedStateHolder.RetainedStateProvider(record.registryKey) {

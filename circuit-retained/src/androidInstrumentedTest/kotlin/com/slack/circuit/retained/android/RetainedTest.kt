@@ -466,6 +466,7 @@ class RetainedTest {
     assertThat(subject.onForgottenCalled).isEqualTo(0)
 
     canRetainChecker = CanRetainChecker { false }
+    composeTestRule.waitForIdle()
 
     // Restart the activity
     scenario.recreate()

@@ -389,6 +389,7 @@ class RetainedStateHolderTest {
     }
 
     canRetainChecker = CanRetainChecker { true }
+    composeTestRule.waitForIdle()
 
     screen = Screens.Screen2
     composeTestRule.waitForIdle()

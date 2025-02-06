@@ -331,8 +331,10 @@ private class RetainableSaveableHolder<T>(
   }
 
   /** Value provider called by the registry. */
-  override fun invoke(): Any =
-    Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
+  override fun invoke(): Any? {
+    if (!canBeRetained()) return null
+    return Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
+  }
 
   override fun canBeSaved(value: Any): Boolean {
     val registry = saveableStateRegistry
@@ -359,16 +361,19 @@ private class RetainableSaveableHolder<T>(
   }
 
   private fun release() {
-    val v = value
-    val reg = retainedStateRegistry
-    if (reg != null && !canRetainChecker.canRetain(reg)) {
-      when (v) {
+    saveableStateEntry?.unregister()
+    val hasRemoved = retainedStateEntry?.unregister() ?: true
+    if (hasRemoved || !canBeRetained()) {
+      when (val v = value) {
         is RememberObserver -> v.onForgotten()
         is RetainedStateRegistry -> v.forgetUnclaimedValues()
       }
     }
-    saveableStateEntry?.unregister()
-    retainedStateEntry?.unregister()
+  }
+
+  private fun canBeRetained(): Boolean {
+    val registry = retainedStateRegistry ?: return false
+    return canRetainChecker.canRetain(registry)
   }
 
   fun getValueIfInputsAreEqual(inputs: Array<out Any?>): T? {

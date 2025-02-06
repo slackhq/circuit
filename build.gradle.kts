@@ -345,7 +345,7 @@ subprojects {
 
   // Common android config
   val commonAndroidConfig: CommonExtension<*, *, *, *, *, *>.() -> Unit = {
-    compileSdk = 34
+    compileSdk = 35
 
     if (hasCompose) {
       buildFeatures { compose = true }
@@ -370,7 +370,7 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 21 }
-      testOptions { targetSdk = 34 }
+      testOptions { targetSdk = 35 }
     }
 
     // Single-variant libraries

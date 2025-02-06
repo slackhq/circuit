@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.coil.test
 
+import coil3.ColorImage
 import coil3.Image
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.annotation.DelicateCoilApi
 import coil3.annotation.ExperimentalCoilApi
-import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.DrawableResource
@@ -50,7 +50,7 @@ class CoilRule(private val factory: SingletonImageLoader.Factory = defaultFactor
   }
 }
 
-private fun defaultFactory(image: Image = FakeImage()): SingletonImageLoader.Factory =
+private fun defaultFactory(image: Image = ColorImage()): SingletonImageLoader.Factory =
   SingletonImageLoader.Factory { context ->
     ImageLoader.Builder(context)
       .components { add(FakeImageLoaderEngine.Builder().default(image).build()) }

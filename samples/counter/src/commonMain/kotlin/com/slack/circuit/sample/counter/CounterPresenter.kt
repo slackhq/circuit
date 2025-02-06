@@ -21,7 +21,6 @@ fun CounterPresenter(navigator: Navigator): CounterScreen.State {
   var count by remember { mutableStateOf(0) }
 
   return CounterScreen.State(count) { event ->
-    println("Event $event")
     when (event) {
       is CounterScreen.Event.GoTo -> navigator.goTo(event.screen)
       CounterScreen.Event.Increment -> count++

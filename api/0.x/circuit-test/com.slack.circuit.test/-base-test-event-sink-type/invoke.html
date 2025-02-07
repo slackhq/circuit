@@ -25,59 +25,124 @@
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
 <script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../index.html">
-                            circuit-root
-                    </a>            </div>
-            <div class="library-version">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test/androidMain">android</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test/browserCommonMain">browserCommon</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test/commonMain">common</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test/jvmMain">jvm</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test/nativeMain">native</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/androidMain" data-filter=":circuit-test/androidMain">
+                                <span class="checkbox--icon"></span>
+                                android
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/browserCommonMain" data-filter=":circuit-test/browserCommonMain">
+                                <span class="checkbox--icon"></span>
+                                browserCommon
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/commonMain" data-filter=":circuit-test/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/jvmMain" data-filter=":circuit-test/jvmMain">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/nativeMain" data-filter=":circuit-test/nativeMain">
+                                <span class="checkbox--icon"></span>
+                                native
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/androidMain">android</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/commonMain">common</button>
-                <button class="platform-tag platform-selector js-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/jsMain">js</button>
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/jvmMain">jvm</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/nativeMain">native</button>
-                <button class="platform-tag platform-selector wasm-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/wasmJsMain">wasmJs</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageids="circuit-test::com.slack.circuit.test/BaseTestEventSinkType/invoke/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration//-1879462125">
+<div class="main-content" data-page-type="member" id="content" pageids="circuit-test::com.slack.circuit.test/BaseTestEventSinkType/invoke/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration//-386281121">
   <div class="breadcrumbs"><a href="../../index.html">circuit-test</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.test</a><span class="delimiter">/</span><a href="index.html">BaseTestEventSinkType</a><span class="delimiter">/</span><span class="current">invoke</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>invoke</span></span></h1>
   </div>
   <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
-    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/androidMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":circuit-test:dokkaHtmlPartial/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain" data-toggle=":circuit-test:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/jsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/jsMain" data-toggle=":circuit-test:dokkaHtmlPartial/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/jvmMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/jvmMain" data-toggle=":circuit-test:dokkaHtmlPartial/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/nativeMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/nativeMain" data-toggle=":circuit-test:dokkaHtmlPartial/nativeMain">native</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/wasmJsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/wasmJsMain" data-toggle=":circuit-test:dokkaHtmlPartial/wasmJsMain">wasmJs</button></div>
-<div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/androidMain/kotlin/com/slack/circuit/test/TestEventSink.android.kt#L6">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">abstract </span><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/commonMain/kotlin/com/slack/circuit/test/TestEventSink.kt#L19">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/browserMain/kotlin/com/slack/circuit/test/TestEventSink.js.kt#L8">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/jvmMain/kotlin/com/slack/circuit/test/TestEventSink.jvm.kt#L6">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/nativeMain/kotlin/com/slack/circuit/test/TestEventSink.native.kt#L6">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/wasmJsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/browserMain/kotlin/com/slack/circuit/test/TestEventSink.js.kt#L8">source</a>)</span></span></div></div>  </div>
+    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-test/androidMain" data-filterable-set=":circuit-test/androidMain" data-active="" data-toggle=":circuit-test/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":circuit-test/browserCommonMain" data-filterable-set=":circuit-test/browserCommonMain" data-toggle=":circuit-test/browserCommonMain">browserCommon</button><button class="platform-bookmark" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain" data-toggle=":circuit-test/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":circuit-test/jvmMain" data-filterable-set=":circuit-test/jvmMain" data-toggle=":circuit-test/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":circuit-test/nativeMain" data-filterable-set=":circuit-test/nativeMain" data-toggle=":circuit-test/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-togglable=":circuit-test/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/androidMain/kotlin/com/slack/circuit/test/TestEventSink.android.kt#L6">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test/browserCommonMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/browserCommonMain/kotlin/com/slack/circuit/test/TestEventSink.js.kt#L8">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">abstract </span><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/commonMain/kotlin/com/slack/circuit/test/TestEventSink.kt#L19">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/jvmMain/kotlin/com/slack/circuit/test/TestEventSink.jvm.kt#L6">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="invoke.html"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="index.html">UiEvent</a></span></span><span class="token punctuation">)</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/nativeMain/kotlin/com/slack/circuit/test/TestEventSink.native.kt#L6">source</a>)</span></span></div></div>  </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

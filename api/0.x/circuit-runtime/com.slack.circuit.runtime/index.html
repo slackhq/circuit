@@ -25,40 +25,72 @@
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../index.html">
-                            circuit-root
-                    </a>            </div>
-            <div class="library-version">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-runtime/commonMain" data-filter=":circuit-runtime/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime:dokkaHtmlPartial/commonMain">common</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="package" id="content" pageids="circuit-runtime::com.slack.circuit.runtime////PointingToDeclaration//1513182193">
+<div class="main-content" data-page-type="package" id="content" pageids="circuit-runtime::com.slack.circuit.runtime////PointingToDeclaration//2135306989">
   <div class="breadcrumbs"><a href="../index.html">circuit-runtime</a><span class="delimiter">/</span><span class="current">com.slack.circuit.runtime</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
@@ -68,92 +100,107 @@
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="815916036%2FClasslikes%2F1513182193" anchor-label="CircuitContext" id="815916036%2FClasslikes%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+        <div class="table"><a data-name="815916036%2FClasslikes%2F2135306989" anchor-label="CircuitContext" id="815916036%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-circuit-context/index.html"><span>Circuit</span><wbr><span><span>Context</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="815916036%2FClasslikes%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="815916036%2FClasslikes%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">class </span><a href="-circuit-context/index.html">CircuitContext</a>&nbsp;<span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>parent<span class="token operator">: </span><a href="-circuit-context/index.html">CircuitContext</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">tags<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator"> = </span>mutableMapOf()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A <a href="-circuit-context/index.html">CircuitContext</a> is used in <code class="lang-kotlin">Presenter.Factory</code> and <code class="lang-kotlin">Ui.Factory</code> to inform creation of their respective <code class="lang-kotlin">Presenter</code> and <code class="lang-kotlin">Ui</code> instances.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">class </span><a href="-circuit-context/index.html">CircuitContext</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>parent<span class="token operator">: </span><a href="-circuit-context/index.html">CircuitContext</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">tags<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator"> = </span>mutableMapOf()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A <a href="-circuit-context/index.html">CircuitContext</a> is used in <code class="lang-kotlin">Presenter.Factory</code> and <code class="lang-kotlin">Ui.Factory</code> to inform creation of their respective <code class="lang-kotlin">Presenter</code> and <code class="lang-kotlin">Ui</code> instances.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1079989549%2FClasslikes%2F1513182193" anchor-label="CircuitUiEvent" id="1079989549%2FClasslikes%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="1079989549%2FClasslikes%2F2135306989" anchor-label="CircuitUiEvent" id="1079989549%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-circuit-ui-event/index.html"><span>Circuit</span><wbr><span>Ui</span><wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1079989549%2FClasslikes%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1079989549%2FClasslikes%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">interface </span><a href="-circuit-ui-event/index.html">CircuitUiEvent</a></div><div class="brief "><p class="paragraph">Marker interface for all UiEvent types.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">interface </span><a href="-circuit-ui-event/index.html">CircuitUiEvent</a></div><div class="brief "><p class="paragraph">Marker interface for all UiEvent types.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1880577814%2FClasslikes%2F1513182193" anchor-label="CircuitUiState" id="1880577814%2FClasslikes%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="1880577814%2FClasslikes%2F2135306989" anchor-label="CircuitUiState" id="1880577814%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-circuit-ui-state/index.html"><span>Circuit</span><wbr><span>Ui</span><wbr><span><span>State</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1880577814%2FClasslikes%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1880577814%2FClasslikes%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-circuit-ui-state/index.html">CircuitUiState</a></div><div class="brief "><p class="paragraph">Marker interface for all UiState types.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-circuit-ui-state/index.html">CircuitUiState</a></div><div class="brief "><p class="paragraph">Marker interface for all UiState types.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1140892444%2FClasslikes%2F1513182193" anchor-label="GoToNavigator" id="-1140892444%2FClasslikes%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="458646385%2FClasslikes%2F2135306989" anchor-label="ExperimentalCircuitApi" id="458646385%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-experimental-circuit-api/index.html"><span>Experimental</span><wbr><span>Circuit</span><wbr><span><span>Api</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="458646385%2FClasslikes%2F2135306989"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html">AnnotationTarget.CLASS</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html">AnnotationTarget.FUNCTION</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-t-y-p-e-a-l-i-a-s/index.html">AnnotationTarget.TYPEALIAS</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-p-r-o-p-e-r-t-y/index.html">AnnotationTarget.PROPERTY</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-c-o-n-s-t-r-u-c-t-o-r/index.html">AnnotationTarget.CONSTRUCTOR</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-experimental-circuit-api/index.html">ExperimentalCircuitApi</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1140892444%2FClasslikes%2F2135306989" anchor-label="GoToNavigator" id="-1140892444%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-go-to-navigator/index.html"><span>Go</span><wbr><span>To</span><wbr><span><span>Navigator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1140892444%2FClasslikes%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1140892444%2FClasslikes%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-go-to-navigator/index.html">GoToNavigator</a></div><div class="brief "><p class="paragraph">A Navigator that only supports <a href="-go-to-navigator/go-to.html">goTo</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-go-to-navigator/index.html">GoToNavigator</a></div><div class="brief "><p class="paragraph">A Navigator that only supports <a href="-go-to-navigator/go-to.html">goTo</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1304458748%2FClasslikes%2F1513182193" anchor-label="InternalCircuitApi" id="1304458748%2FClasslikes%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="1304458748%2FClasslikes%2F2135306989" anchor-label="InternalCircuitApi" id="1304458748%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-internal-circuit-api/index.html"><span>Internal</span><wbr><span>Circuit</span><wbr><span><span>Api</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1304458748%2FClasslikes%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1304458748%2FClasslikes%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html">AnnotationTarget.CLASS</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html">AnnotationTarget.FUNCTION</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-t-y-p-e-a-l-i-a-s/index.html">AnnotationTarget.TYPEALIAS</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-p-r-o-p-e-r-t-y/index.html">AnnotationTarget.PROPERTY</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-c-o-n-s-t-r-u-c-t-o-r/index.html">AnnotationTarget.CONSTRUCTOR</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-internal-circuit-api/index.html">InternalCircuitApi</a></div><div class="brief "><p class="paragraph">Marks declarations that are <strong>internal</strong> in Circuit API, which means that should not be used outside of <code class="lang-kotlin">com.slack.circuit</code>, because their signatures and semantics will change between future releases without any warnings and without providing any migration aids.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html">AnnotationTarget.CLASS</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html">AnnotationTarget.FUNCTION</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-t-y-p-e-a-l-i-a-s/index.html">AnnotationTarget.TYPEALIAS</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-p-r-o-p-e-r-t-y/index.html">AnnotationTarget.PROPERTY</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-c-o-n-s-t-r-u-c-t-o-r/index.html">AnnotationTarget.CONSTRUCTOR</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-internal-circuit-api/index.html">InternalCircuitApi</a></div><div class="brief "><p class="paragraph">Marks declarations that are <strong>internal</strong> in Circuit's API, meaning that they should not be used outside of Circuit's first party API. This is their signatures and semantics will change between future releases without any warnings and without providing any migration aids.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-292962431%2FClasslikes%2F1513182193" anchor-label="Navigator" id="-292962431%2FClasslikes%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="-292962431%2FClasslikes%2F2135306989" anchor-label="Navigator" id="-292962431%2FClasslikes%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-navigator/index.html"><span><span>Navigator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-292962431%2FClasslikes%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-292962431%2FClasslikes%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-navigator/index.html">Navigator</a> : <a href="-go-to-navigator/index.html">GoToNavigator</a></div><div class="brief "><p class="paragraph">A basic navigation interface for navigating between <a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">screens</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-navigator/index.html">Navigator</a> : <a href="-go-to-navigator/index.html">GoToNavigator</a></div><div class="brief "><p class="paragraph">A basic navigation interface for navigating between <a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">screens</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -162,47 +209,47 @@
       </div>
       <div data-togglable="EXTENSION_FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="354185626%2FFunctions%2F1513182193" anchor-label="popRoot" id="354185626%2FFunctions%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+        <div class="table"><a data-name="354185626%2FFunctions%2F2135306989" anchor-label="popRoot" id="354185626%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="pop-root.html"><span>pop</span><wbr><span><span>Root</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="354185626%2FFunctions%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="354185626%2FFunctions%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-navigator/index.html">Navigator</a><span class="token punctuation">.</span><a href="pop-root.html"><span class="token function">popRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">result<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-pop-result/index.html">PopResult</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Pop the <a href="-navigator/index.html">Navigator</a> as if this was the root <a href="-navigator/pop.html">Navigator.pop</a> call.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-navigator/index.html">Navigator</a><span class="token punctuation">.</span><a href="pop-root.html"><span class="token function">popRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">result<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-pop-result/index.html">PopResult</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Pop the <a href="-navigator/index.html">Navigator</a> as if this was the root <a href="-navigator/pop.html">Navigator.pop</a> call.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="127675894%2FFunctions%2F1513182193" anchor-label="popUntil" id="127675894%2FFunctions%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="127675894%2FFunctions%2F2135306989" anchor-label="popUntil" id="127675894%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="pop-until.html"><span>pop</span><wbr><span><span>Until</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="127675894%2FFunctions%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="127675894%2FFunctions%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-navigator/index.html">Navigator</a><span class="token punctuation">.</span><a href="pop-until.html"><span class="token function">popUntil</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Calls <a href="-navigator/pop.html">Navigator.pop</a> until the given <a href="pop-until.html">predicate</a> is matched or it pops the root.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-navigator/index.html">Navigator</a><span class="token punctuation">.</span><a href="pop-until.html"><span class="token function">popUntil</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Calls <a href="-navigator/pop.html">Navigator.pop</a> until the given <a href="pop-until.html">predicate</a> is matched or it pops the root.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1055799311%2FFunctions%2F1513182193" anchor-label="resetRoot" id="1055799311%2FFunctions%2F1513182193" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime:dokkaHtmlPartial/commonMain">
+<a data-name="1055799311%2FFunctions%2F2135306989" anchor-label="resetRoot" id="1055799311%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="reset-root.html"><span>reset</span><wbr><span><span>Root</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1055799311%2FFunctions%2F1513182193"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1055799311%2FFunctions%2F2135306989"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="-navigator/index.html">Navigator</a><span class="token punctuation">.</span><a href="reset-root.html"><span class="token function">resetRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newRoot<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">saveState<span class="token operator">: </span><span class="token punctuation">(</span>currentRoot<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span>{ false }<span class="token punctuation">, </span></span><span class="parameter ">restoreState<span class="token operator">: </span><span class="token punctuation">(</span>currentRoot<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span>{ false }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clear the existing backstack of <a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">screens</a> and navigate to <a href="reset-root.html">newRoot</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="-navigator/index.html">Navigator</a><span class="token punctuation">.</span><a href="reset-root.html"><span class="token function">resetRoot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newRoot<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">saveState<span class="token operator">: </span><span class="token punctuation">(</span>currentRoot<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span>{ false }<span class="token punctuation">, </span></span><span class="parameter ">restoreState<span class="token operator">: </span><span class="token punctuation">(</span>currentRoot<span class="token operator">: </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span>{ false }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clear the existing backstack of <a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">screens</a> and navigate to <a href="reset-root.html">newRoot</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -212,12 +259,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

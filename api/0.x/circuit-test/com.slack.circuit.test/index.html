@@ -25,45 +25,104 @@
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../index.html">
-                            circuit-root
-                    </a>            </div>
-            <div class="library-version">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test/androidMain">android</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test/browserCommonMain">browserCommon</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test/commonMain">common</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test/jvmMain">jvm</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test/nativeMain">native</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/androidMain" data-filter=":circuit-test/androidMain">
+                                <span class="checkbox--icon"></span>
+                                android
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/browserCommonMain" data-filter=":circuit-test/browserCommonMain">
+                                <span class="checkbox--icon"></span>
+                                browserCommon
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/commonMain" data-filter=":circuit-test/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/jvmMain" data-filter=":circuit-test/jvmMain">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-test/nativeMain" data-filter=":circuit-test/nativeMain">
+                                <span class="checkbox--icon"></span>
+                                native
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/androidMain">android</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/commonMain">common</button>
-                <button class="platform-tag platform-selector js-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/jsMain">js</button>
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/jvmMain">jvm</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/nativeMain">native</button>
-                <button class="platform-tag platform-selector wasm-like" data-active="" data-filter=":circuit-test:dokkaHtmlPartial/wasmJsMain">wasmJs</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="package" id="content" pageids="circuit-test::com.slack.circuit.test////PointingToDeclaration//-1879462125">
+<div class="main-content" data-page-type="package" id="content" pageids="circuit-test::com.slack.circuit.test////PointingToDeclaration//-386281121">
   <div class="breadcrumbs"><a href="../index.html">circuit-test</a><span class="delimiter">/</span><span class="current">com.slack.circuit.test</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
@@ -73,79 +132,79 @@
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="1501614842%2FClasslikes%2F-1879462125" anchor-label="BaseTestEventSinkType" id="1501614842%2FClasslikes%2F-1879462125" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain,:circuit-test:dokkaHtmlPartial/androidMain,:circuit-test:dokkaHtmlPartial/jsMain,:circuit-test:dokkaHtmlPartial/jvmMain,:circuit-test:dokkaHtmlPartial/nativeMain,:circuit-test:dokkaHtmlPartial/wasmJsMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain,:circuit-test:dokkaHtmlPartial/androidMain,:circuit-test:dokkaHtmlPartial/jsMain,:circuit-test:dokkaHtmlPartial/jvmMain,:circuit-test:dokkaHtmlPartial/nativeMain,:circuit-test:dokkaHtmlPartial/wasmJsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain,:circuit-test:dokkaHtmlPartial/androidMain,:circuit-test:dokkaHtmlPartial/jsMain,:circuit-test:dokkaHtmlPartial/jvmMain,:circuit-test:dokkaHtmlPartial/nativeMain,:circuit-test:dokkaHtmlPartial/wasmJsMain">
+        <div class="table"><a data-name="1501614842%2FClasslikes%2F-386281121" anchor-label="BaseTestEventSinkType" id="1501614842%2FClasslikes%2F-386281121" data-filterable-set=":circuit-test/commonMain,:circuit-test/androidMain,:circuit-test/browserCommonMain,:circuit-test/jvmMain,:circuit-test/nativeMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test/commonMain,:circuit-test/androidMain,:circuit-test/browserCommonMain,:circuit-test/jvmMain,:circuit-test/nativeMain" data-filterable-set=":circuit-test/commonMain,:circuit-test/androidMain,:circuit-test/browserCommonMain,:circuit-test/jvmMain,:circuit-test/nativeMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-base-test-event-sink-type/index.html"><span>Base</span><wbr><span>Test</span><wbr><span>Event</span><wbr><span>Sink</span><wbr><span><span>Type</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1501614842%2FClasslikes%2F-1879462125"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1501614842%2FClasslikes%2F-386281121"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
                   <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
-                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/androidMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":circuit-test:dokkaHtmlPartial/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain" data-toggle=":circuit-test:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/jsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/jsMain" data-toggle=":circuit-test:dokkaHtmlPartial/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/jvmMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/jvmMain" data-toggle=":circuit-test:dokkaHtmlPartial/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/nativeMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/nativeMain" data-toggle=":circuit-test:dokkaHtmlPartial/nativeMain">native</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/wasmJsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/wasmJsMain" data-toggle=":circuit-test:dokkaHtmlPartial/wasmJsMain">wasmJs</button></div>
-<div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-function1/index.html">Function1</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt; </span></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">sealed </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Base <code class="lang-kotlin">expect</code> type for <a href="-test-event-sink/index.html">TestEventSink</a>. This layer of indirection is necessary because Kotlin/JS does not allow extension of function types. To work around it, we make this interface extend <code class="lang-kotlin">(UiEvent) -&gt; Unit</code> on all platforms except JS, and then expose an <code class="lang-kotlin">asEventSinkFunction()</code> extension function on <a href="-test-event-sink/index.html">TestEventSink</a> in JS that returns a function wrapper around it.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/jsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-function1/index.html">Function1</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt; </span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-function1/index.html">Function1</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt; </span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/wasmJsMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span></div></div>                  </div>
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-test/androidMain" data-filterable-set=":circuit-test/androidMain" data-active="" data-toggle=":circuit-test/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":circuit-test/browserCommonMain" data-filterable-set=":circuit-test/browserCommonMain" data-toggle=":circuit-test/browserCommonMain">browserCommon</button><button class="platform-bookmark" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain" data-toggle=":circuit-test/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":circuit-test/jvmMain" data-filterable-set=":circuit-test/jvmMain" data-toggle=":circuit-test/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":circuit-test/nativeMain" data-filterable-set=":circuit-test/nativeMain" data-toggle=":circuit-test/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-togglable=":circuit-test/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-function1/index.html">Function1</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt; </span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test/browserCommonMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">sealed </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Base <code class="lang-kotlin">expect</code> type for <a href="-test-event-sink/index.html">TestEventSink</a>. This layer of indirection is necessary because Kotlin/JS does not allow extension of function types. To work around it, we make this interface extend <code class="lang-kotlin">(UiEvent) -&gt; Unit</code> on all platforms except JS, and then expose an <code class="lang-kotlin">asEventSinkFunction()</code> extension function on <a href="-test-event-sink/index.html">TestEventSink</a> in JS that returns a function wrapper around it.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-function1/index.html">Function1</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt; </span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-function1/index.html">Function1</a><span class="token operator">&lt;</span><a href="-base-test-event-sink-type/index.html">UiEvent</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt; </span></div></div>                  </div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1509131593%2FClasslikes%2F1098370717" anchor-label="CircuitReceiveTurbine" id="1509131593%2FClasslikes%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+<a data-name="1509131593%2FClasslikes%2F-290334015" anchor-label="CircuitReceiveTurbine" id="1509131593%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-circuit-receive-turbine/index.html"><span>Circuit</span><wbr><span>Receive</span><wbr><span><span>Turbine</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1509131593%2FClasslikes%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1509131593%2FClasslikes%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-circuit-receive-turbine/index.html">CircuitReceiveTurbine</a><span class="token operator">&lt;</span><a href="-circuit-receive-turbine/index.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt;</span> : <span data-unresolved-link="app.cash.turbine/ReceiveTurbine///PointingToDeclaration/">ReceiveTurbine</span><span class="token operator">&lt;</span><a href="-circuit-receive-turbine/index.html">UiState</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A Circuit-specific extension to <span data-unresolved-link="app.cash.turbine/ReceiveTurbine///PointingToDeclaration/">ReceiveTurbine</span> with extra helper functions for Circuit testing.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-circuit-receive-turbine/index.html">CircuitReceiveTurbine</a><span class="token operator">&lt;</span><a href="-circuit-receive-turbine/index.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt;</span> : <span data-unresolved-link="app.cash.turbine/ReceiveTurbine///PointingToDeclaration/">ReceiveTurbine</span><span class="token operator">&lt;</span><a href="-circuit-receive-turbine/index.html">UiState</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A Circuit-specific extension to <span data-unresolved-link="app.cash.turbine/ReceiveTurbine///PointingToDeclaration/">ReceiveTurbine</span> with extra helper functions for Circuit testing.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="293673788%2FClasslikes%2F1098370717" anchor-label="ExperimentalForInheritanceCircuitTestApi" id="293673788%2FClasslikes%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+<a data-name="293673788%2FClasslikes%2F-290334015" anchor-label="ExperimentalForInheritanceCircuitTestApi" id="293673788%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-experimental-for-inheritance-circuit-test-api/index.html"><span>Experimental</span><wbr><span>For</span><wbr><span>Inheritance</span><wbr><span>Circuit</span><wbr><span>Test</span><wbr><span><span>Api</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="293673788%2FClasslikes%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="293673788%2FClasslikes%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html">AnnotationTarget.CLASS</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-experimental-for-inheritance-circuit-test-api/index.html">ExperimentalForInheritanceCircuitTestApi</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html">AnnotationTarget.CLASS</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-experimental-for-inheritance-circuit-test-api/index.html">ExperimentalForInheritanceCircuitTestApi</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-224160228%2FClasslikes%2F1098370717" anchor-label="FakeNavigator" id="-224160228%2FClasslikes%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+<a data-name="-224160228%2FClasslikes%2F-290334015" anchor-label="FakeNavigator" id="-224160228%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-fake-navigator/index.html"><span>Fake</span><wbr><span><span>Navigator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-224160228%2FClasslikes%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-224160228%2FClasslikes%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-fake-navigator/index.html">FakeNavigator</a> : <a href="../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a></div><div class="brief "><p class="paragraph">A fake <a href="../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a> that can be used in tests to record and assert navigation events.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-fake-navigator/index.html">FakeNavigator</a> : <a href="../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a></div><div class="brief "><p class="paragraph">A fake <a href="../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a> that can be used in tests to record and assert navigation events.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-309774621%2FClasslikes%2F1098370717" anchor-label="TestEventSink" id="-309774621%2FClasslikes%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+<a data-name="-309774621%2FClasslikes%2F-290334015" anchor-label="TestEventSink" id="-309774621%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-test-event-sink/index.html"><span>Test</span><wbr><span>Event</span><wbr><span><span>Sink</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-309774621%2FClasslikes%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-309774621%2FClasslikes%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-test-event-sink/index.html">TestEventSink</a><span class="token operator">&lt;</span><a href="-test-event-sink/index.html">UiEvent</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">CircuitUiEvent</a><span class="token operator">&gt;</span> : <a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-test-event-sink/index.html">UiEvent</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A test event sink that records events from a Circuit UI and allows making assertions about them.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-test-event-sink/index.html">TestEventSink</a><span class="token operator">&lt;</span><a href="-test-event-sink/index.html">UiEvent</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">CircuitUiEvent</a><span class="token operator">&gt;</span> : <a href="-base-test-event-sink-type/index.html">BaseTestEventSinkType</a><span class="token operator">&lt;</span><a href="-test-event-sink/index.html">UiEvent</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A test event sink that records events from a Circuit UI and allows making assertions about them.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -154,49 +213,49 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-2008033786%2FFunctions%2F-67011087" anchor-label="asEventSinkFunction" id="-2008033786%2FFunctions%2F-67011087" data-filterable-set=":circuit-test:dokkaHtmlPartial/jsMain,:circuit-test:dokkaHtmlPartial/wasmJsMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":circuit-test:dokkaHtmlPartial/jsMain,:circuit-test:dokkaHtmlPartial/wasmJsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/jsMain,:circuit-test:dokkaHtmlPartial/wasmJsMain">
+        <div class="table"><a data-name="-2008033786%2FFunctions%2F-1872743243" anchor-label="asEventSinkFunction" id="-2008033786%2FFunctions%2F-1872743243" data-filterable-set=":circuit-test/browserCommonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":circuit-test/browserCommonMain" data-filterable-set=":circuit-test/browserCommonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../../circuit-test/com.slack.circuit.test/[wasm-js]as-event-sink-function.html"><span>as</span><wbr><span>Event</span><wbr><span>Sink</span><wbr><span><span>Function</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2008033786%2FFunctions%2F-67011087"></span>
+                  <div><a href="as-event-sink-function.html"><span>as</span><wbr><span>Event</span><wbr><span>Sink</span><wbr><span><span>Function</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2008033786%2FFunctions%2F-1872743243"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
                   <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
-                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/jsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/jsMain" data-active="" data-toggle=":circuit-test:dokkaHtmlPartial/jsMain">js</button><button class="platform-bookmark" data-filterable-current=":circuit-test:dokkaHtmlPartial/wasmJsMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/wasmJsMain" data-toggle=":circuit-test:dokkaHtmlPartial/wasmJsMain">wasmJs</button></div>
-<div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/jsMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="[js]as-event-sink-function.html">UiEvent</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">CircuitUiEvent</a><span class="token operator">&gt; </span><a href="-test-event-sink/index.html">TestEventSink</a><span class="token operator">&lt;</span><a href="[js]as-event-sink-function.html">UiEvent</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="[js]as-event-sink-function.html"><span class="token function">asEventSinkFunction</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span class="token punctuation">(</span><a href="[js]as-event-sink-function.html">UiEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></div><div class="brief "><p class="paragraph">A helper function for creating a function wrapper around this <a href="-test-event-sink/index.html">TestEventSink</a> for use in tests as an event sink function. We have to do this workaround in JS due to Kotlin/JS not allowing function type extension directly.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-test:dokkaHtmlPartial/wasmJsMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="[wasm-js]as-event-sink-function.html">UiEvent</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">CircuitUiEvent</a><span class="token operator">&gt; </span><a href="-test-event-sink/index.html">TestEventSink</a><span class="token operator">&lt;</span><a href="[wasm-js]as-event-sink-function.html">UiEvent</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="[wasm-js]as-event-sink-function.html"><span class="token function">asEventSinkFunction</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span class="token punctuation">(</span><a href="[wasm-js]as-event-sink-function.html">UiEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></div><div class="brief "><p class="paragraph">A helper function for creating a function wrapper around this <a href="-test-event-sink/index.html">TestEventSink</a> for use in tests as an event sink function. We have to do this workaround in JS due to Kotlin/JS not allowing function type extension directly.</p></div></div>                  </div>
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-test/browserCommonMain" data-filterable-set=":circuit-test/browserCommonMain" data-active="" data-toggle=":circuit-test/browserCommonMain">browserCommon</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/browserCommonMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="as-event-sink-function.html">UiEvent</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">CircuitUiEvent</a><span class="token operator">&gt; </span><a href="-test-event-sink/index.html">TestEventSink</a><span class="token operator">&lt;</span><a href="as-event-sink-function.html">UiEvent</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="as-event-sink-function.html"><span class="token function">asEventSinkFunction</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span class="token punctuation">(</span><a href="as-event-sink-function.html">UiEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></div><div class="brief "><p class="paragraph">A helper function for creating a function wrapper around this <a href="-test-event-sink/index.html">TestEventSink</a> for use in tests as an event sink function. We have to do this workaround in JS due to Kotlin/JS not allowing function type extension directly.</p></div></div>                  </div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2076039264%2FFunctions%2F1098370717" anchor-label="presenterTestOf" id="-2076039264%2FFunctions%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+<a data-name="-2076039264%2FFunctions%2F-290334015" anchor-label="presenterTestOf" id="-2076039264%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="presenter-test-of.html"><span>presenter</span><wbr><span>Test</span><wbr><span><span>Of</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2076039264%2FFunctions%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2076039264%2FFunctions%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="presenter-test-of.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt; </span><a href="presenter-test-of.html"><span class="token function">presenterTestOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">presentFunction<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a>&nbsp;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="presenter-test-of.html">UiState</a><span class="token punctuation">, </span></span><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">policy<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/SnapshotMutationPolicy.html">SnapshotMutationPolicy</a><span class="token operator">&lt;</span><a href="presenter-test-of.html">UiState</a><span class="token operator">&gt;</span><span class="token operator"> = </span>structuralEqualityPolicy()<span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword">suspend </span><a href="-circuit-receive-turbine/index.html">CircuitReceiveTurbine</a><span class="token operator">&lt;</span><a href="presenter-test-of.html">UiState</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Presents this <a href="presenter-test-of.html">presentFunction</a> and invokes a <code class="lang-kotlin">suspend</code> <a href="presenter-test-of.html">CircuitReceiveTurbine</a> that can be used to assert state emissions from it.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="presenter-test-of.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt; </span><a href="presenter-test-of.html"><span class="token function">presenterTestOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">presentFunction<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a>&nbsp;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="presenter-test-of.html">UiState</a><span class="token punctuation">, </span></span><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">policy<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/SnapshotMutationPolicy.html">SnapshotMutationPolicy</a><span class="token operator">&lt;</span><a href="presenter-test-of.html">UiState</a><span class="token operator">&gt;</span><span class="token operator"> = </span>structuralEqualityPolicy()<span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword">suspend </span><a href="-circuit-receive-turbine/index.html">CircuitReceiveTurbine</a><span class="token operator">&lt;</span><a href="presenter-test-of.html">UiState</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Presents this <a href="presenter-test-of.html">presentFunction</a> and invokes a <code class="lang-kotlin">suspend</code> <a href="presenter-test-of.html">CircuitReceiveTurbine</a> that can be used to assert state emissions from it.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="379986829%2FFunctions%2F1098370717" anchor-label="test" id="379986829%2FFunctions%2F1098370717" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":circuit-test:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-test:dokkaHtmlPartial/commonMain">
+<a data-name="379986829%2FFunctions%2F-290334015" anchor-label="test" id="379986829%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="test.html"><span><span>test</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="379986829%2FFunctions%2F1098370717"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="379986829%2FFunctions%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt; </span><a href="../../circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html">Presenter</a><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="test.html"><span class="token function">test</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">policy<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/SnapshotMutationPolicy.html">SnapshotMutationPolicy</a><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator">&gt;</span><span class="token operator"> = </span>structuralEqualityPolicy()<span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword">suspend </span><a href="-circuit-receive-turbine/index.html">CircuitReceiveTurbine</a><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Presents this <a href="../../circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html">Presenter</a> and invokes a <code class="lang-kotlin">suspend</code> <a href="test.html">ReceiveTurbine</a> that can be used to assert state emissions from this presenter.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator"> : </span><a href="../../circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">CircuitUiState</a><span class="token operator">&gt; </span><a href="../../circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html">Presenter</a><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="test.html"><span class="token function">test</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">policy<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/SnapshotMutationPolicy.html">SnapshotMutationPolicy</a><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator">&gt;</span><span class="token operator"> = </span>structuralEqualityPolicy()<span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword">suspend </span><a href="-circuit-receive-turbine/index.html">CircuitReceiveTurbine</a><span class="token operator">&lt;</span><a href="test.html">UiState</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Presents this <a href="../../circuit-runtime-presenter/com.slack.circuit.runtime.presenter/-presenter/index.html">Presenter</a> and invokes a <code class="lang-kotlin">suspend</code> <a href="test.html">ReceiveTurbine</a> that can be used to assert state emissions from this presenter.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -206,12 +265,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

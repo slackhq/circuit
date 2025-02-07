@@ -25,61 +25,93 @@
 <link href="../../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../ui-kit/ui-kit.min.js" defer></script>
 <script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../../index.html">
-                            circuit-root
-                    </a>            </div>
-            <div class="library-version">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-presenter/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-runtime-presenter/commonMain" data-filter=":circuit-runtime-presenter/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain">common</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-runtime-presenter::com.slack.circuit.runtime.presenter/Presenter.Factory///PointingToDeclaration//1353099894">
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-runtime-presenter::com.slack.circuit.runtime.presenter/Presenter.Factory///PointingToDeclaration//-1176728120">
   <div class="breadcrumbs"><a href="../../../index.html">circuit-runtime-presenter</a><span class="delimiter">/</span><a href="../../index.html">com.slack.circuit.runtime.presenter</a><span class="delimiter">/</span><a href="../index.html">Presenter</a><span class="delimiter">/</span><span class="current">Factory</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Factory</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="index.html">Factory</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-presenter/src/commonMain/kotlin/com/slack/circuit/runtime/presenter/Presenter.kt#L189">source</a>)</span></span></div><p class="paragraph">A factory that produces <a href="../index.html">presenters</a> for a given <a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a>. <code class="lang-kotlin">Circuit</code> instances use the created presenter and connects it to a given <code class="lang-kotlin">Ui</code> for the same <a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a>.</p><p class="paragraph">Factories should be simple aggregate multiple presenters for a canonical "whole screen". That is to say, they should be hand-written and aggregate all the presenters responsible for the UI visible within the surface this presents on.</p><h2 class="">Example</h2><p class="paragraph">Consider this example of a Profile UI.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">                              ┌────────────────────┐<br>                         ┌─── │                    │<br>                         │    ├────────────────────┤◄──┐<br>                         │    │ X                  │   │<br>                         │    │                    │ ProfileHeaderPresenter<br>                         │    │ Fred Rogers        │   │<br>                         │    ├────────────────────┤◄──┘<br>                         │    │ ┌───────┐  ┌────┐  │<br>    ProfilePresenterFactory   │ │Message│  │Call│◄─┼─── ProfileActionsPresenter<br>                         │    │ └───────┘  └────┘  │<br>                         │    │                    │<br>                         │    │  - - - - - - - - ◄─┼────┐<br>                         │    │  - - - - - - - -   │    │<br>                         │    │  - - - - - - - -   │  ProfileDetailsPresenter<br>                         │    │  - - - - - - - - ◄─┼────┘<br>                         └─── │                    │<br>                              └────────────────────┘</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">This would be represented by the following factory implementation:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class ProfilePresenter.Factory @Inject constructor(<br>  val headerPresenter: ProfilerHeaderPresenter.Factory,<br>  val actionsPresenter: ProfilerActionsPresenter.Factory,<br>  val detailsPresenter: ProfilerDetailsPresenter.Factory,<br>  val callScreenRouter: CallScreenRouter.Factory<br>) : Presenter.Factory {<br>  override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter&lt;*, *&gt;? {<br>    return when (screen) {<br>      is ProfileHeader -&gt; headerPresenter.create(screen)<br>      is ProfileActions -&gt; actionsPresenter.create(screen, callScreenRouter.create(navigator))<br>      is ProfileDetails -&gt; detailsPresenter.create(screen)<br>      else -&gt; null<br>    }<br>  }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-presenter/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="index.html">Factory</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-presenter/src/commonMain/kotlin/com/slack/circuit/runtime/presenter/Presenter.kt#L189">source</a>)</span></span></div><p class="paragraph">A factory that produces <a href="../index.html">presenters</a> for a given <a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a>. <code class="lang-kotlin">Circuit</code> instances use the created presenter and connects it to a given <code class="lang-kotlin">Ui</code> for the same <a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a>.</p><p class="paragraph">Factories should be simple aggregate multiple presenters for a canonical "whole screen". That is to say, they should be hand-written and aggregate all the presenters responsible for the UI visible within the surface this presents on.</p><h2 class="">Example</h2><p class="paragraph">Consider this example of a Profile UI.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">                              ┌────────────────────┐<br>                         ┌─── │                    │<br>                         │    ├────────────────────┤◄──┐<br>                         │    │ X                  │   │<br>                         │    │                    │ ProfileHeaderPresenter<br>                         │    │ Fred Rogers        │   │<br>                         │    ├────────────────────┤◄──┘<br>                         │    │ ┌───────┐  ┌────┐  │<br>    ProfilePresenterFactory   │ │Message│  │Call│◄─┼─── ProfileActionsPresenter<br>                         │    │ └───────┘  └────┘  │<br>                         │    │                    │<br>                         │    │  - - - - - - - - ◄─┼────┐<br>                         │    │  - - - - - - - -   │    │<br>                         │    │  - - - - - - - -   │  ProfileDetailsPresenter<br>                         │    │  - - - - - - - - ◄─┼────┘<br>                         └─── │                    │<br>                              └────────────────────┘</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">This would be represented by the following factory implementation:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class ProfilePresenter.Factory @Inject constructor(<br>  val headerPresenter: ProfilerHeaderPresenter.Factory,<br>  val actionsPresenter: ProfilerActionsPresenter.Factory,<br>  val detailsPresenter: ProfilerDetailsPresenter.Factory,<br>  val callScreenRouter: CallScreenRouter.Factory<br>) : Presenter.Factory {<br>  override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter&lt;*, *&gt;? {<br>    return when (screen) {<br>      is ProfileHeader -&gt; headerPresenter.create(screen)<br>      is ProfileActions -&gt; actionsPresenter.create(screen, callScreenRouter.create(navigator))<br>      is ProfileDetails -&gt; detailsPresenter.create(screen)<br>      else -&gt; null<br>    }<br>  }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1895459216%2FFunctions%2F1353099894" anchor-label="create" id="1895459216%2FFunctions%2F1353099894" data-filterable-set=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain">
+        <div class="table"><a data-name="1895459216%2FFunctions%2F-1176728120" anchor-label="create" id="1895459216%2FFunctions%2F-1176728120" data-filterable-set=":circuit-runtime-presenter/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-runtime-presenter/commonMain" data-filterable-set=":circuit-runtime-presenter/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="create.html"><span><span>create</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1895459216%2FFunctions%2F1353099894"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1895459216%2FFunctions%2F-1176728120"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-presenter:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">navigator<span class="token operator">: </span><a href="../../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="../../../../circuit-runtime/com.slack.circuit.runtime/-circuit-context/index.html">CircuitContext</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">Presenter</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Creates a <a href="../index.html">Presenter</a> for the given <a href="create.html">screen</a> if it can handle it, or returns null if it cannot handle the given <a href="create.html">screen</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-presenter/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">navigator<span class="token operator">: </span><a href="../../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="../../../../circuit-runtime/com.slack.circuit.runtime/-circuit-context/index.html">CircuitContext</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">Presenter</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Creates a <a href="../index.html">Presenter</a> for the given <a href="create.html">screen</a> if it can handle it, or returns null if it cannot handle the given <a href="create.html">screen</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -89,12 +121,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

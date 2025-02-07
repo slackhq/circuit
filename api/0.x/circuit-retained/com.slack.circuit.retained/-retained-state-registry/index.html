@@ -25,61 +25,93 @@
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
 <script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../index.html">
-                            circuit-root
-                    </a>            </div>
-            <div class="library-version">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-retained/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-retained/commonMain" data-filter=":circuit-retained/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-retained:dokkaHtmlPartial/commonMain">common</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-retained::com.slack.circuit.retained/RetainedStateRegistry///PointingToDeclaration//434727563">
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-retained::com.slack.circuit.retained/RetainedStateRegistry///PointingToDeclaration//-1899959021">
   <div class="breadcrumbs"><a href="../../index.html">circuit-retained</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.retained</a><span class="delimiter">/</span><span class="current">RetainedStateRegistry</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Retained</span><wbr><span>State</span><wbr><span><span>Registry</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">RetainedStateRegistry</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-retained/src/commonMain/kotlin/com/slack/circuit/retained/RetainedStateRegistry.kt#L14">source</a>)</span></span></div><p class="paragraph">Allows components to save and restore their state using the <code class="lang-kotlin">onRetainNonConfigurationInstance</code> mechanism.</p><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-no-op-retained-state-registry/index.html">NoOpRetainedStateRegistry</a></div></span></div><div></div></div></div></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">RetainedStateRegistry</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-retained/src/commonMain/kotlin/com/slack/circuit/retained/RetainedStateRegistry.kt#L14">source</a>)</span></span></div><p class="paragraph">Allows components to save and restore their state using the <code class="lang-kotlin">onRetainNonConfigurationInstance</code> mechanism.</p><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-no-op-retained-state-registry/index.html">NoOpRetainedStateRegistry</a></div></span></div><div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="705419134%2FClasslikes%2F434727563" anchor-label="Entry" id="705419134%2FClasslikes%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+        <div class="table"><a data-name="705419134%2FClasslikes%2F-1899959021" anchor-label="Entry" id="705419134%2FClasslikes%2F-1899959021" data-filterable-set=":circuit-retained/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-entry/index.html"><span><span>Entry</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="705419134%2FClasslikes%2F434727563"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="705419134%2FClasslikes%2F-1899959021"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-entry/index.html">Entry</a></div><div class="brief "><p class="paragraph">The registry entry which you get when you use <a href="register-value.html">registerValue</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-entry/index.html">Entry</a></div><div class="brief "><p class="paragraph">The registry entry which you get when you use <a href="register-value.html">registerValue</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -88,77 +120,77 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1755174172%2FFunctions%2F434727563" anchor-label="consumeValue" id="1755174172%2FFunctions%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+        <div class="table"><a data-name="1755174172%2FFunctions%2F-1899959021" anchor-label="consumeValue" id="1755174172%2FFunctions%2F-1899959021" data-filterable-set=":circuit-retained/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="consume-value.html"><span>consume</span><wbr><span><span>Value</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1755174172%2FFunctions%2F434727563"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1755174172%2FFunctions%2F-1899959021"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="consume-value.html"><span class="token function">consumeValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the restored value for the given key. Once being restored the value is cleared, so you can't restore the same key twice.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="consume-value.html"><span class="token function">consumeValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the restored value for the given key. Once being restored the value is cleared, so you can't restore the same key twice.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="459375110%2FFunctions%2F434727563" anchor-label="forgetUnclaimedValues" id="459375110%2FFunctions%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+<a data-name="459375110%2FFunctions%2F-1899959021" anchor-label="forgetUnclaimedValues" id="459375110%2FFunctions%2F-1899959021" data-filterable-set=":circuit-retained/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="forget-unclaimed-values.html"><span>forget</span><wbr><span>Unclaimed</span><wbr><span><span>Values</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="459375110%2FFunctions%2F434727563"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="459375110%2FFunctions%2F-1899959021"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="forget-unclaimed-values.html"><span class="token function">forgetUnclaimedValues</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Releases all currently unconsumed values. Useful as a GC mechanism for the registry.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="forget-unclaimed-values.html"><span class="token function">forgetUnclaimedValues</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Releases all currently unconsumed values. Useful as a GC mechanism for the registry.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1077280102%2FFunctions%2F434727563" anchor-label="registerValue" id="1077280102%2FFunctions%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+<a data-name="1077280102%2FFunctions%2F-1899959021" anchor-label="registerValue" id="1077280102%2FFunctions%2F-1899959021" data-filterable-set=":circuit-retained/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="register-value.html"><span>register</span><wbr><span><span>Value</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1077280102%2FFunctions%2F434727563"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1077280102%2FFunctions%2F-1899959021"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="register-value.html"><span class="token function">registerValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">valueProvider<span class="token operator">: </span><a href="../-retained-value-provider/index.html">RetainedValueProvider</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-entry/index.html">RetainedStateRegistry.Entry</a></div><div class="brief "><p class="paragraph">Registers the value provider.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="register-value.html"><span class="token function">registerValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">valueProvider<span class="token operator">: </span><a href="../-retained-value-provider/index.html">RetainedValueProvider</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-entry/index.html">RetainedStateRegistry.Entry</a></div><div class="brief "><p class="paragraph">Registers the value provider.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-289254663%2FFunctions%2F434727563" anchor-label="saveAll" id="-289254663%2FFunctions%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+<a data-name="-289254663%2FFunctions%2F-1899959021" anchor-label="saveAll" id="-289254663%2FFunctions%2F-1899959021" data-filterable-set=":circuit-retained/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="save-all.html"><span>save</span><wbr><span><span>All</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-289254663%2FFunctions%2F434727563"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-289254663%2FFunctions%2F-1899959021"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="save-all.html"><span class="token function">saveAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Executes all the registered value providers and combines these values into a map. We have a list of values for each key as it is allowed to have multiple providers for the same key.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="save-all.html"><span class="token function">saveAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Executes all the registered value providers and combines these values into a map. We have a list of values for each key as it is allowed to have multiple providers for the same key.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="344590779%2FFunctions%2F434727563" anchor-label="saveValue" id="344590779%2FFunctions%2F434727563" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained:dokkaHtmlPartial/commonMain" data-filterable-set=":circuit-retained:dokkaHtmlPartial/commonMain">
+<a data-name="344590779%2FFunctions%2F-1899959021" anchor-label="saveValue" id="344590779%2FFunctions%2F-1899959021" data-filterable-set=":circuit-retained/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-retained/commonMain" data-filterable-set=":circuit-retained/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="save-value.html"><span>save</span><wbr><span><span>Value</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="344590779%2FFunctions%2F434727563"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="344590779%2FFunctions%2F-1899959021"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="save-value.html"><span class="token function">saveValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Executes the value providers registered with the given <a href="save-value.html">key</a>, and saves them for retrieval.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="save-value.html"><span class="token function">saveValue</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Executes the value providers registered with the given <a href="save-value.html">key</a>, and saves them for retrieval.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -168,12 +200,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

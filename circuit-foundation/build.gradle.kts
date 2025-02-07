@@ -42,7 +42,13 @@ kotlin {
   }
   // endregion
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    group("browserCommon") {
+      withJs()
+      withWasmJs()
+    }
+  }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   compilerOptions.optIn.add("com.slack.circuit.foundation.DelicateCircuitFoundationApi")
@@ -80,6 +86,8 @@ kotlin {
         implementation(projects.internalTestUtils)
       }
     }
+    get("browserCommonMain").dependsOn(commonMain.get())
+    get("browserCommonTest").dependsOn(commonTest.get())
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependsOn(commonTest.get())
@@ -97,7 +105,7 @@ kotlin {
         implementation(libs.picnic)
       }
     }
-    val androidUnitTest by getting {
+    androidUnitTest {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(libs.robolectric)
@@ -106,7 +114,7 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
-    val androidInstrumentedTest by getting {
+    androidInstrumentedTest {
       dependencies {
         implementation(libs.junit)
         implementation(libs.coroutines.android)
@@ -114,10 +122,6 @@ kotlin {
         implementation(libs.compose.ui.testing.junit)
       }
     }
-    // We use a common folder instead of a common source set because there is no commonizer
-    // which exposes the browser APIs across these two targets.
-    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 

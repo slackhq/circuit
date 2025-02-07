@@ -1,5 +1,6 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
@@ -8,7 +9,6 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.mavenPublish)
-  `java-test-fixtures`
   alias(libs.plugins.emulatorWtf)
 }
 
@@ -42,7 +42,13 @@ kotlin {
   }
   // endregion
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    group("browserCommon") {
+      withJs()
+      withWasmJs()
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -52,6 +58,9 @@ kotlin {
         api(libs.coroutines)
       }
     }
+
+    get("browserCommonMain").dependsOn(commonMain.get())
+    get("browserCommonTest").dependsOn(commonTest.get())
 
     androidMain {
       dependencies {
@@ -77,7 +86,7 @@ kotlin {
     // TODO export this in Android too when it's supported in kotlin projects
     jvmMain { dependencies.add("testFixturesApi", projects.circuitTest) }
 
-    val androidInstrumentedTest by getting {
+    androidInstrumentedTest {
       dependencies {
         commonJvmTest()
         implementation(libs.androidx.activity.compose)
@@ -91,10 +100,6 @@ kotlin {
         implementation(projects.circuitRetained)
       }
     }
-    // We use a common folder instead of a common source set because there is no commonizer
-    // which exposes the browser APIs across these two targets.
-    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 
   targets.configureEach {

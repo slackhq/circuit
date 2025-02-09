@@ -1,14 +1,14 @@
 Deep-linking using Circuit
 ==========================
 
-[Deep linking][deeplinking] to app is a vast topic and the implementation detail can vary based on your application needs.
+Deep linking to application is a vast topic and the implementation detail can vary based on your application needs.
 Deep linking strategy can be highly sophisticated or simple based on the use-case.
 
-To keep things very simple and easy to understand, we will be focusing on deep linking to Android platform only. 
+To keep things very simple and easy to understand, we will be focusing on deep linking to **Android** platform only. 
 You can then extend the idea to other platforms as needed.
 
 !!! info
-    Pre-requisite: You should have basic understanding of deep linking and should go through the Android's official [training guide](https://developer.android.com/training/app-links/deep-linking) that contains useful information about deep linking to Android app.
+    Before you begin, we recommend having a basic understanding of deep linking. To get the most out of this guide, please review Android's official [training guide](https://developer.android.com/training/app-links/deep-linking), which provides valuable insights into deep linking for Android apps.
 
 ### Deep linking strategy
 Essentially, you need to define a strategy for you app to handle the incoming deep link. We will take a look at Circuit's [email app](https://slackhq.github.io/circuit/tutorial/) from the tutorial with following screens:
@@ -81,15 +81,11 @@ private fun parseDeepLink(intent: Intent): List<Screen>? {
     Ideally, you would have deep link components that does the parsing and building screens based on parameters provided in the deep link URI.
 
 
-To test try the following command from the terminal:
+To test, try the following command from the terminal:
 ```shell
 adb shell am start -W \
   -a android.intent.action.VIEW \
   -d "circuitapp://emailonthego/inbox/view_email/new_email/?emailId=2"
 ```
 
-It should launch the app and navigate to the Draft Screen with backstack containing Details Screen and Inbox Screen.
-
-
-[circuit]: https://slackhq.github.io/circuit/
-[deeplinking]: https://en.wikipedia.org/wiki/Mobile_deep_linking
+It should launch the app and navigate to the 'Draft Screen' with backstack containing 'Details Screen' and 'Inbox Screen'.

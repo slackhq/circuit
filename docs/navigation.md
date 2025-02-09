@@ -44,9 +44,10 @@ setContent {
 ```
 
 #### Deep Linking
-As seen above, Circuit allows you to set a stack of screens when navigator is initialized. This can come in handy if you application needs to support deep linking from an URI.
 
-Take a look at the [deep linking](deep-linking-android.md) guide specific for Android platform, that should give an idea on how to manipulate the stack to achieve deeplinked screens.
+Circuit allows initializing a stack of screens in the navigator, which is useful for supporting deep linking into the application.
+
+For more details on handling deep links and manipulating the back stack, refer to the [deep linking guide](deep-linking-android.md) for Android.
 
 ## Results
 

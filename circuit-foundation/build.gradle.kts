@@ -23,12 +23,12 @@ kotlin {
   macosX64()
   macosArm64()
   js(IR) {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser {
       // Necessary for tests
       testTask {

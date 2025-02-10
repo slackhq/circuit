@@ -15,7 +15,7 @@ Happy new year!
 
 After a lot of iteration and work, this release adds support for Compose's new shared elements APIs.
 
-These are still experimental and subject to change, both in Circuit and due to how the underlying
+These are still experimental and subject to change, both in Circuit and the underlying Compose APIs.
 
 See this PR for full details as well as sample integrations: https://github.com/slackhq/circuit/pull/1550. Please share feedback in [this discussion](https://github.com/slackhq/circuit/discussions/1924). More formal docs to come as well, we'll publish updates there!
 

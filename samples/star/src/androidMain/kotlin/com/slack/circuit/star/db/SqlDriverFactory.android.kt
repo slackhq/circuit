@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 actual class SqlDriverFactory
 @Inject
-constructor(@ApplicationContext private val context: Context) {
+constructor(@param:ApplicationContext private val context: Context) {
   actual fun create(schema: SqlSchema<Value<Unit>>, name: String): SqlDriver {
     return AndroidSqliteDriver(schema, context, name)
   }

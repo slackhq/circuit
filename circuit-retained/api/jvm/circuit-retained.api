@@ -39,7 +39,7 @@ public final class com/slack/circuit/retained/NoOpRetainedStateRegistry : com/sl
 	public fun consumeValue (Ljava/lang/String;)Ljava/lang/Object;
 	public fun forgetUnclaimedValues ()V
 	public fun registerValue (Ljava/lang/String;Lcom/slack/circuit/retained/RetainedValueProvider;)Lcom/slack/circuit/retained/RetainedStateRegistry$Entry;
-	public fun saveAll ()V
+	public fun saveAll ()Ljava/util/Map;
 	public fun saveValue (Ljava/lang/String;)V
 }
 
@@ -59,16 +59,25 @@ public final class com/slack/circuit/retained/RememberRetainedKt {
 	public static final fun rememberRetainedSaveable ([Ljava/lang/Object;Landroidx/compose/runtime/saveable/Saver;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
 }
 
+public abstract interface class com/slack/circuit/retained/RetainedStateHolder {
+	public abstract fun RetainedStateProvider (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun removeState (Ljava/lang/String;)V
+}
+
+public final class com/slack/circuit/retained/RetainedStateHolderKt {
+	public static final fun rememberRetainedStateHolder (Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/retained/RetainedStateHolder;
+}
+
 public abstract interface class com/slack/circuit/retained/RetainedStateRegistry {
 	public abstract fun consumeValue (Ljava/lang/String;)Ljava/lang/Object;
 	public abstract fun forgetUnclaimedValues ()V
 	public abstract fun registerValue (Ljava/lang/String;Lcom/slack/circuit/retained/RetainedValueProvider;)Lcom/slack/circuit/retained/RetainedStateRegistry$Entry;
-	public abstract fun saveAll ()V
+	public abstract fun saveAll ()Ljava/util/Map;
 	public abstract fun saveValue (Ljava/lang/String;)V
 }
 
 public abstract interface class com/slack/circuit/retained/RetainedStateRegistry$Entry {
-	public abstract fun unregister ()V
+	public abstract fun unregister ()Z
 }
 
 public final class com/slack/circuit/retained/RetainedStateRegistryKt {

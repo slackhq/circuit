@@ -4,6 +4,100 @@ Changelog
 **Unreleased**
 --------------
 
+0.26.0
+------
+
+_2025-02-06_
+
+Happy new year!
+
+### Shared Elements API!
+
+After a lot of iteration and work, this release adds support for Compose's new shared elements APIs.
+
+These are still experimental and subject to change, both in Circuit and the underlying Compose APIs.
+
+See this PR for full details as well as sample integrations: https://github.com/slackhq/circuit/pull/1550. Please share feedback in [this discussion](https://github.com/slackhq/circuit/discussions/1924). More formal docs to come as well, we'll publish updates there!
+
+For now, the easiest way to support shared element transitions is to wrap your content with a `SharedElementTransitionLayout`.
+
+```kotlin
+CircuitCompositionLocals(circuit) {
+  SharedElementTransitionLayout {
+    NavigableCircuitContent(
+      navigator = navigator,
+      backStack = backStack,
+    )
+  }
+}
+```
+
+`SharedElementTransitionLayout` creates and provides a `SharedElementTransitionScope` to content within it, and in turn exposes a `SharedTransitionScope` for use with standard compose shared elements/bounds animations. This is supported in `NavigableCircuitContent` and overlays.
+
+There is also a `PreviewSharedElementTransitionLayout` for help with Compose previews.
+
+### Behaviour Changes: `rememberRetained`
+
+Previously, `rememberRetained` could sometimes restore values when a composable was re-added, depending on whether its parent `RetainedStateRegistry` had been saved (#1783).
+Now, `rememberRetained` aligns with `remember` and `rememberSaveable`: if a composable is removed and later re-added, its value will not be restored unless it is explicitly saved and then restored via the registry.
+
+Update rememberRetained to allow CanRetainChecker to be updated in place.
+
+### Behaviour Change: `RetainedStateRegistry`
+
+- `saveAll` now returns the saved values.
+- `RetainedStateRegistry.Entry.unregister` now returns whether the unsaved valueProvider was actually removed.
+- `saveAll` and `saveValue` now skip storing child values when `CanRetainChecker` returns `false`.
+
+### New: `RetainedStateHolder`
+
+Similar to `SaveableStateHolder`, `RetainedStateHolder` provides a mechanism to maintain separate `RetainedStateRegistry` entries for specific keys. This allows saving the state defined with `rememberRetained` for a subtree before it is disposed, so that the subtree can later be recomposed with its state restored.
+
+```kotlin
+val retainedStateHolder = rememberRetainedStateHolder()
+var currentTab by remember { mutableStateOf(TabA) }
+
+retainedStateHolder.RetainedStateProvider(key = currentTab.name) {
+  // rememberRetained values in tab content are preserved across tab switches
+  when (currentTab) {
+    TabA -> {
+      TabAContent()
+    }
+    TabB -> {
+      TabBContent()
+    }
+    TabC -> {
+      TabCContent()
+    }
+  }
+}
+```
+
+### Implementation Changes: `NavigableCircuitContent`
+
+- The approach of managing a separate `RetainedStateRegistry` for each record has been changed to use `RetainedStateHolder` instead.
+- Change `SaveableStateHolder` to release saved states of removed records.
+
+### Misc
+
+- Fixe an issue causing codegen to fail for class @Inject annotations.
+- Compile against Android SDK 35.
+- Update Compose Android BOM to `2025.01.01`.
+- Update to androidx.annotation `1.9.1`.
+- Update to androidx.activity `1.10.0`.
+- Update to Compose Android `1.7.7`.
+- Update to Compose Multiplatform `1.7.3`.
+- Update to Kotlin `1.9.10`.
+- [code gen] Update to KSP `1.9.10-1.0.29`.
+- [code gen] Update to Dagger `2.55`.
+- [code gen] Update to KotlinPoet `2.0.0`.
+- [code gen] Build against Anvil-KSP `0.4.1`. Should still be compatible with square/anvil as well.
+- [code gen] Build against kotlin-inject-anvil `0.1.2`. Should still be compatible with square/anvil as well.
+- [samples] Update mosaic + modernize mosaic counter sample to fully use effects.
+- [docs] Fix variable casing in Navigation documentation example.
+
+Special thanks to [@vulpeszerda](https://github.com/vulpeszerda), [@rharter](https://github.com/rharter), [@alexvanyo](https://github.com/alexvanyo), and [@easyhooon](https://github.com/easyhooon) for contributing to this release!
+
 0.25.0
 ------
 

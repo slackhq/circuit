@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
+import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -17,6 +20,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
+import kotlin.test.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -206,6 +210,65 @@ class NavigableCircuitSaveableStateTest {
       // Root Beta should now be active. The top record for Root Beta  is Screen A: (count: 2)
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
+    }
+  }
+
+  @Test
+  fun saveableStateClearRemovedRecordStates() {
+    val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
+    val saveableStateRegistry = SaveableStateRegistry(emptyMap(), { true })
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        val navigator =
+          rememberCircuitNavigator(
+            backStack = backStack,
+            onRootPop = {}, // no-op for tests
+          )
+        CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        }
+      }
+    }
+
+    fun areStructuresEqual(obj1: Any?, obj2: Any?): Boolean =
+      when {
+        obj1 == null && obj2 == null -> true
+        obj1 == null || obj2 == null -> false
+        obj1 is Map<*, *> && obj2 is Map<*, *> ->
+          obj1.keys.size == obj2.keys.size &&
+            obj1.entries.indices.all { i ->
+              val value1 = obj1.entries.elementAt(i).value
+              val value2 = obj2.entries.elementAt(i).value
+              areStructuresEqual(value1, value2)
+            }
+
+        obj1 is List<*> && obj2 is List<*> ->
+          obj1.size == obj2.size && obj1.indices.all { i -> areStructuresEqual(obj1[i], obj2[i]) }
+
+        obj1::class != obj2::class -> false
+        else -> true
+      }
+
+    composeTestRule.run {
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+
+      // Navigate to Screen B
+      onNodeWithTag(TAG_GO_NEXT).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      // Pop to Screen A
+      onNodeWithTag(TAG_POP).performClick()
+
+      val savedStates1 = saveableStateRegistry.performSave()
+
+      // Navigate to Screen B
+      onNodeWithTag(TAG_GO_NEXT).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      // Pop to Screen A
+      onNodeWithTag(TAG_POP).performClick()
+
+      val savedStates2 = saveableStateRegistry.performSave()
+      assertTrue(areStructuresEqual(savedStates1, savedStates2))
     }
   }
 }

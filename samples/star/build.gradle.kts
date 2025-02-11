@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -47,7 +48,11 @@ kotlin {
   if (buildDesktop) {
     jvm { withJava() }
   } else {
-    androidTarget { publishLibraryVariants("release") }
+    androidTarget {
+      publishLibraryVariants("release")
+      @OptIn(ExperimentalKotlinGradlePluginApi::class)
+      instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    }
     if (!disableJvmTarget) {
       jvm()
     }
@@ -164,15 +169,12 @@ kotlin {
         }
       }
       val androidInstrumentedTest by getting {
-        dependsOn(commonTest.get())
         // Annoyingly cannot depend on commonJvmTest
         dependencies {
           implementation(libs.androidx.compose.ui.testing.junit)
           implementation(libs.androidx.compose.ui.testing.manifest)
           implementation(libs.coroutines.test)
-          implementation(libs.junit)
           implementation(libs.leakcanary.android.instrumentation)
-          implementation(libs.truth)
           implementation(projects.circuitTest)
           implementation(projects.samples.star.coilRule)
         }

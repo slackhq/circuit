@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -38,7 +39,13 @@ kotlin {
     }
   }
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    group("browserCommon") {
+      withJs()
+      withWasmJs()
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -50,6 +57,9 @@ kotlin {
         api(libs.molecule.runtime)
       }
     }
+
+    get("browserCommonMain").dependsOn(commonMain.get())
+    get("browserCommonTest").dependsOn(commonTest.get())
 
     commonTest { dependencies { implementation(libs.coroutines.test) } }
 
@@ -64,11 +74,7 @@ kotlin {
         }
       }
     jvmTest { dependsOn(commonJvmTest) }
-    val androidUnitTest by getting { dependsOn(commonJvmTest) }
-    // We use a common folder instead of a common source set because there is no commonizer
-    // which exposes the browser APIs across these two targets.
-    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    androidUnitTest { dependsOn(commonJvmTest) }
   }
 }
 

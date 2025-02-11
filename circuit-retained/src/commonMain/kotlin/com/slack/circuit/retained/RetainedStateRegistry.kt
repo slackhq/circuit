@@ -41,7 +41,7 @@ public interface RetainedStateRegistry {
    * Executes all the registered value providers and combines these values into a map. We have a
    * list of values for each key as it is allowed to have multiple providers for the same key.
    */
-  public fun saveAll()
+  public fun saveAll(): Map<String, List<Any?>>
 
   /** Executes the value providers registered with the given [key], and saves them for retrieval. */
   public fun saveValue(key: String)
@@ -51,8 +51,12 @@ public interface RetainedStateRegistry {
 
   /** The registry entry which you get when you use [registerValue]. */
   public interface Entry {
-    /** Unregister previously registered entry. */
-    public fun unregister()
+    /**
+     * Unregister previously registered entry.
+     *
+     * @return whether it was successfully removed from the RetainedStateRegistry.
+     */
+    public fun unregister(): Boolean
   }
 }
 
@@ -98,41 +102,78 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
     require(key.isNotBlank()) { "Registered key is empty or blank" }
     valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
     return object : Entry {
-      override fun unregister() {
+      override fun unregister(): Boolean {
         val list = valueProviders.remove(key)
-        list?.remove(valueProvider)
+        val removed = list?.remove(valueProvider)
         if (!list.isNullOrEmpty()) {
           // if there are other providers for this key return list back to the map
           valueProviders[key] = list
         }
+        return removed == true
       }
     }
   }
 
-  override fun saveAll() {
-    val values =
-      valueProviders.mapValues { (_, list) ->
-        // If we have multiple providers we should store null values as well to preserve
-        // the order in which providers were registered. Say there were two providers.
-        // the first provider returned null(nothing to save) and the second one returned
-        // "1". When we will be restoring the first provider would restore null (it is the
-        // same as to have nothing to restore) and the second one restore "1".
-        list.map(RetainedValueProvider::invoke)
+  override fun saveAll(): Map<String, List<Any?>> {
+    valueProviders.forEach { (key, providers) ->
+      val saved = performSave(providers)
+      if (saved != null) {
+        retained[key] = saved
+      } else {
+        retained.remove(key)
       }
-
-    if (values.isNotEmpty()) {
-      // Store the values in our retained map
-      retained.putAll(values)
     }
-    // Clear the value providers now that we've stored the values
     valueProviders.clear()
+    return retained
   }
 
   override fun saveValue(key: String) {
     val providers = valueProviders[key]
     if (providers != null) {
-      retained[key] = providers.map { it.invoke() }
+      val saved = performSave(providers)
+      if (saved != null) {
+        retained[key] = saved
+      } else {
+        retained.remove(key)
+      }
       valueProviders.remove(key)
+    }
+  }
+
+  private fun performSave(providers: List<RetainedValueProvider>): List<Any?>? {
+    if (providers.size == 1) {
+      val provider = providers[0]
+      val value = provider.invoke().takeIf { propagateSave(it) }
+      return if (value != null) {
+        listOf(value)
+      } else {
+        null
+      }
+    } else {
+      // If we have multiple providers we should store null values as well to preserve
+      // the order in which providers were registered. Say there were two providers.
+      // the first provider returned null(nothing to save) and the second one returned
+      // "1". When we will be restoring the first provider would restore null (it is the
+      // same as to have nothing to restore) and the second one restore "1".
+      return List(providers.size) { index ->
+        val provider = providers[index]
+        provider.invoke().takeIf { propagateSave(it) }
+      }
+    }
+  }
+
+  /**
+   * Propagates the save operation to the value and its children.
+   *
+   * @return true if saved value exists, false otherwise
+   */
+  private fun propagateSave(value: Any?): Boolean {
+    return when (value) {
+      // If we get a RetainedHolder value, need to unwrap and call again
+      is RetainedValueHolder<*> -> propagateSave(value.value)
+      // Dispatch the call to nested registries
+      is RetainedStateRegistry -> value.saveAll().isNotEmpty()
+      else -> true
     }
   }
 

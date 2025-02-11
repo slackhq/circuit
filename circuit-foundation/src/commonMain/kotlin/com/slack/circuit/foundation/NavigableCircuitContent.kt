@@ -22,6 +22,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -49,6 +50,7 @@ import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -68,14 +70,6 @@ public fun <R : Record> NavigableCircuitContent(
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  val activeContentProviders =
-    buildCircuitContentProviders(
-      backStack = backStack,
-      navigator = navigator,
-      circuit = circuit,
-      unavailableRoute = unavailableRoute,
-    )
-
   if (backStack.isEmpty) return
 
   /*
@@ -113,21 +107,25 @@ public fun <R : Record> NavigableCircuitContent(
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
 
-  val saveableStateHolder = rememberSaveableStateHolder()
-
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+    val activeContentProviders =
+      buildCircuitContentProviders(
+        backStack = backStack,
+        navigator = navigator,
+        circuit = circuit,
+        unavailableRoute = unavailableRoute,
+      )
+
     decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 
-      saveableStateHolder.SaveableStateProvider(record.key) {
-        // Remember the `providedValues` lookup because this composition can live longer than
-        // the record is present in the backstack, if the decoration is animated for example.
-        val values = remember(record) { providedValues[record] }?.provideValues()
-        val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
+      // Remember the `providedValues` lookup because this composition can live longer than
+      // the record is present in the backstack, if the decoration is animated for example.
+      val values = remember(record) { providedValues[record] }?.provideValues()
+      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
-        CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-          provider.content(record)
-        }
+      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+        provider.content(record)
       }
     }
   }
@@ -178,6 +176,9 @@ private fun <R : Record> buildCircuitContentProviders(
   val lastCircuit by rememberUpdatedState(circuit)
   val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
 
+  val saveableStateHolder = rememberSaveableStateHolder()
+  val retainedStateHolder = rememberRetainedStateHolder()
+
   fun createRecordContent() =
     movableContentOf<R> { record ->
       val recordInBackStackRetainChecker =
@@ -189,24 +190,28 @@ private fun <R : Record> buildCircuitContentProviders(
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
 
       CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        // Now provide a new registry to the content for it to store any retained state in,
-        // along with a retain checker which is always true (as upstream registries will
-        // maintain the lifetime), and the other provided values
-        val recordRetainedStateRegistry =
-          rememberRetained(key = record.registryKey) { RetainedStateRegistry() }
-
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides recordRetainedStateRegistry,
-          LocalCanRetainChecker provides CanRetainChecker.Always,
-          LocalRecordLifecycle provides lifecycle,
-        ) {
-          CircuitContent(
-            screen = record.screen,
-            navigator = lastNavigator,
-            circuit = lastCircuit,
-            unavailableContent = lastUnavailableRoute,
-            key = record.key,
-          )
+        saveableStateHolder.SaveableStateProvider(record.registryKey) {
+          // Provides a RetainedStateRegistry that is maintained independently for each record while
+          // the record exists in the back stack.
+          retainedStateHolder.RetainedStateProvider(record.registryKey) {
+            CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+              CircuitContent(
+                screen = record.screen,
+                navigator = lastNavigator,
+                circuit = lastCircuit,
+                unavailableContent = lastUnavailableRoute,
+                key = record.key,
+              )
+            }
+          }
+        }
+      }
+      // Remove saved states for records that are no longer in the back stack
+      DisposableEffect(record.registryKey) {
+        onDispose {
+          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+            saveableStateHolder.removeState(record.registryKey)
+          }
         }
       }
     }

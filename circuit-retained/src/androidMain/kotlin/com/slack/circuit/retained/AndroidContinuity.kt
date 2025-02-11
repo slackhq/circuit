@@ -5,11 +5,12 @@ package com.slack.circuit.retained
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.RememberObserver
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -27,8 +28,8 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
     return delegate.registerValue(key, valueProvider)
   }
 
-  override fun saveAll() {
-    delegate.saveAll()
+  override fun saveAll(): Map<String, List<Any?>> {
+    return delegate.saveAll()
   }
 
   override fun saveValue(key: String) {
@@ -40,7 +41,7 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
   }
 
   override fun onCleared() {
-    delegate.retained.clear()
+    delegate.forgetUnclaimedValues()
     delegate.valueProviders.clear()
   }
 
@@ -85,21 +86,12 @@ public fun continuityRetainedStateRegistry(
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
+  val lastCanRetainChecker by rememberUpdatedState(canRetainChecker)
 
-  remember(vm, canRetainChecker) {
-    object : RememberObserver {
-      override fun onAbandoned() = saveIfRetainable()
-
-      override fun onForgotten() = saveIfRetainable()
-
-      override fun onRemembered() {
-        // Do nothing
-      }
-
-      fun saveIfRetainable() {
-        if (canRetainChecker.canRetain(vm)) {
-          vm.saveAll()
-        }
+  LifecycleStartEffect(vm) {
+    onStopOrDispose {
+      if (lastCanRetainChecker.canRetain(vm)) {
+        vm.saveAll()
       }
     }
   }

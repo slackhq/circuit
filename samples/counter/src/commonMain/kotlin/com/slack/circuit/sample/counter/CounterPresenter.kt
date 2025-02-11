@@ -11,15 +11,10 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.popRoot
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.Screen
-
-sealed interface CounterEvent : CircuitUiEvent {
-  data object Increment : CounterEvent
-
-  data object Decrement : CounterEvent
-}
 
 @Composable
 fun CounterPresenter(navigator: Navigator): CounterScreen.State {
@@ -28,8 +23,9 @@ fun CounterPresenter(navigator: Navigator): CounterScreen.State {
   return CounterScreen.State(count) { event ->
     when (event) {
       is CounterScreen.Event.GoTo -> navigator.goTo(event.screen)
-      is CounterScreen.Event.Increment -> count++
-      is CounterScreen.Event.Decrement -> count--
+      CounterScreen.Event.Increment -> count++
+      CounterScreen.Event.Decrement -> count--
+      CounterScreen.Event.Escape -> navigator.popRoot()
     }
   }
 }
@@ -56,6 +52,8 @@ interface CounterScreen : Screen {
     data object Increment : Event
 
     data object Decrement : Event
+
+    data object Escape : Event
   }
 }
 

@@ -43,6 +43,12 @@ setContent {
 }
 ```
 
+#### Deep Linking
+
+Circuit allows initializing a stack of screens in the navigator, which is useful for supporting deep linking into the application.
+
+For more details on handling deep links and manipulating the back stack, refer to the [deep linking guide](deep-linking-android.md) for Android.
+
 ## Results
 
 In some cases, it makes sense for a screen to return a result to the previous screen. This is done by using the an _answering Navigator_ pattern in Circuit.

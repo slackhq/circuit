@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import com.slack.circuit.foundation.internal.withCompositionLocalProvider
@@ -32,36 +33,36 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
 
   private val registry = RetainedStateRegistry()
 
-  private val entries = mutableMapOf<String, Entry>()
+  private val entryCheckers = mutableMapOf<String, EntryCanRetainChecker>()
 
   @Composable
   override fun <T> RetainedStateProvider(key: String, content: @Composable (() -> T)): T {
     return withCompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
       key(key) {
-        val entry = remember { Entry() }
-        val childRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
-        withCompositionLocalProvider(
-            LocalRetainedStateRegistry provides childRegistry,
-            LocalCanRetainChecker provides CanRetainChecker.Always,
-            content = content,
-          )
-          .also {
-            DisposableEffect(Unit) {
-              entries[key] = entry
-              onDispose {
-                if (entry.shouldSave) {
+        val entryCanRetainChecker = rememberEntryCanRetainChecker()
+        withCompositionLocalProvider(LocalCanRetainChecker provides entryCanRetainChecker) {
+          val childRegistry = rememberRetained(key = key) { RetainedStateRegistry() }
+          withCompositionLocalProvider(
+              LocalRetainedStateRegistry provides childRegistry,
+              LocalCanRetainChecker provides CanRetainChecker.Always,
+              content = content,
+            )
+            .also {
+              DisposableEffect(Unit) {
+                entryCheckers[key] = entryCanRetainChecker
+                onDispose {
                   registry.saveValue(key)
+                  entryCheckers -= key
                 }
-                entries -= key
               }
             }
-          }
+        }
       }
     }
   }
 
   override fun removeState(key: String) {
-    val entry = entries[key]
+    val entry = entryCheckers[key]
     if (entry != null) {
       entry.shouldSave = false
     } else {
@@ -91,6 +92,25 @@ private class RetainedStateHolderImpl : RetainedStateHolder, RetainedStateRegist
   override fun forgetUnclaimedValues() {
     registry.forgetUnclaimedValues()
   }
+}
 
-  private data class Entry(var shouldSave: Boolean = true)
+@Composable
+private fun rememberEntryCanRetainChecker(): EntryCanRetainChecker {
+  val parentChecker = LocalCanRetainChecker.current ?: CanRetainChecker.Always
+  val checker = remember { EntryCanRetainChecker(parentChecker) }
+  SideEffect { checker.update(parentChecker) }
+  return checker
+}
+
+private class EntryCanRetainChecker(
+  private var parentChecker: CanRetainChecker,
+  var shouldSave: Boolean = true,
+) : CanRetainChecker {
+
+  fun update(parentChecker: CanRetainChecker) {
+    this.parentChecker = parentChecker
+  }
+
+  override fun canRetain(registry: RetainedStateRegistry): Boolean =
+    shouldSave && parentChecker.canRetain(registry)
 }

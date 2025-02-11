@@ -96,7 +96,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                   backStack = backStack,
                   decoration =
                     AnimatedNavDecoration(
-                    // todo This is awkward, want to replace just the decoratorFactory
+                      // todo This is awkward, want to replace just the decoratorFactory
                       transforms = localCircuit.animatedNavigationTransforms,
                       decoratorFactory =
                         GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),

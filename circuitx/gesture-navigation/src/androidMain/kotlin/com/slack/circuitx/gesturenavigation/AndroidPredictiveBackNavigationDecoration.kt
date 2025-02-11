@@ -47,6 +47,7 @@ import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
@@ -117,7 +118,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         snapshotFlow { swipeProgress }
           .collect { progress ->
             if (progress != 0f) {
-              seekableTransitionState.seekTo(fraction = progress, targetState = previous)
+              seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
             }
           }
       }

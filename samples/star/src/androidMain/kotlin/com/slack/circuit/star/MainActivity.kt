@@ -74,7 +74,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
     val localCircuit =
       circuit
         .newBuilder()
-        // todo DI these
+        // todo DI these, does CircuitInject make sense?
         .addAnimatedNavigationTransform(
           HomeAnimatedNavigationOverride,
           PetDetailAnimatedNavigationOverride,
@@ -96,6 +96,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                   backStack = backStack,
                   decoration =
                     AnimatedNavDecoration(
+                    // todo This is awkward, want to replace just the decoratorFactory
                       transforms = localCircuit.animatedNavigationTransforms,
                       decoratorFactory =
                         GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),

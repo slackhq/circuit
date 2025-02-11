@@ -5,7 +5,7 @@ package com.slack.circuitx.gesturenavigation
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Immutable
 import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.foundation.AnimatedNavState
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.screen.Screen
 
 internal fun <T> Transition<T>.isStateBeingAnimated(equals: (T) -> Boolean): Boolean {

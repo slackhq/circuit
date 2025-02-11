@@ -7,9 +7,9 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
-import com.slack.circuit.foundation.AnimatedNavState
-import com.slack.circuit.foundation.AnimatedNavigationTransform
-import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
+import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.foundation.animation.AnimatedNavigationTransform
+import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
@@ -32,7 +32,7 @@ object PetDetailAnimatedNavigationOverride : AnimatedNavigationTransform {
   }
 }
 
-// Split from PetDetailAnimatedNavigationOverride to experiment AnimatedNavigationOverride lookups
+// Split from PetDetailAnimatedNavigationOverride to verify AnimatedNavigationOverride lookups
 object HomeAnimatedNavigationOverride : AnimatedNavigationTransform {
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     navigationEvent: NavigationEvent

@@ -40,11 +40,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.foundation.AnimatedNavDecorator
-import com.slack.circuit.foundation.AnimatedNavState
-import com.slack.circuit.foundation.AnimatedNavigationTransform.NavigationEvent
 import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.RequiredAnimatedNavigationTransform
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
+import com.slack.circuit.foundation.animation.RequiredAnimatedNavigationTransform
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope

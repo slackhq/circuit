@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.gesturenavigation
 
-import com.slack.circuit.foundation.AnimatedNavDecorator
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 
 /**
  * Returns a [AnimatedNavDecorator.Factory] implementation which support navigation through

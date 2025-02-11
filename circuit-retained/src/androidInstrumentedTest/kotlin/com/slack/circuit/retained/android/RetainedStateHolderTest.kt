@@ -440,6 +440,31 @@ class RetainedStateHolderTest {
     }
   }
 
+  @Test
+  fun removedStateShouldNotBeRestored() {
+    var increment = 0
+    val screen = Screens.Screen1
+    var restorableStateHolder: RetainedStateHolder? = null
+    var restorableNumberOnScreen1 = -1
+    restorationTester.setContent {
+      val holder = rememberRetainedStateHolder()
+      restorableStateHolder = holder
+      holder.RetainedStateProvider(screen.name) {
+        restorableNumberOnScreen1 = rememberRetained { increment++ }
+      }
+    }
+
+    composeTestRule.runOnIdle {
+      assertThat(restorableNumberOnScreen1).isEqualTo(0)
+      restorableNumberOnScreen1 = -1
+      restorableStateHolder!!.removeState(screen.name)
+    }
+
+    restorationTester.emulateRetainedInstanceStateRestore()
+
+    composeTestRule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
+  }
+
   class Activity : ComponentActivity() {
     fun doFakeSave() {
       onSaveInstanceState(Bundle())

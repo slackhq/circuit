@@ -37,43 +37,46 @@ In our case, we will create a `parseDeepLink` function to parse the incoming dee
 ```kotlin
 // In your `MainActivity.kt` or activity that has the `intent-filter` for custom URI scheme
 override fun onCreate(savedInstanceState: Bundle?) {
-    // ...
+  // ...
 
-    setContent {
-        ComposeAppTheme {
-            // When there is no deeplink data in the intent, default to Inbox Screen as root screen
-            val screensStack: List<Screen> = parseDeepLink(intent) ?: listOf(InboxScreen)
-            val backStack = rememberSaveableBackStack(screensStack)
-            val navigator = rememberCircuitNavigator(backStack)
-
-            // ...
-        }
+  setContent {
+    MaterialTheme {
+      // When there is no deeplink data in the intent, default to Inbox Screen as root screen
+      var stackedScreens: List<Screen> by remember {
+        mutableStateOf(parseDeepLink(intent) ?: listOf(InboxScreen))
+      }
+      val backStack = rememberSaveableBackStack(stackedScreens)
+      val navigator = rememberCircuitNavigator(backStack)
+      
+      // ...
     }
+  }
 }
 ```
 
 And here is a simple implementation of `parseDeepLink` function that creates the list of screens based on the incoming deep link:
 ```kotlin
-/**
- * Parses the deep link from the given [Intent.getData] and returns a list of screens to navigate to.
+/** 
+ * Parses the deep link from the given [Intent.getData] and returns a list of stacked screens 
+ * to navigate to when deep link URI is available. 
  */
 private fun parseDeepLink(intent: Intent): List<Screen>? {
-    val dataUri = intent.data ?: return null
-    val screens = mutableListOf<Screen>()
+  val dataUri = intent.data ?: return null
+  val screens = mutableListOf<Screen>()
 
-    dataUri.pathSegments.filter { it.isNotBlank() }.forEach { pathSegment ->
-        when (pathSegment) {
-            "inbox" -> screens.add(InboxScreen)
-            "view_email" ->
-                dataUri.getQueryParameter("emailId")?.let {
-                    screens.add(DetailScreen(it))
-                }
-            "new_email" -> screens.add(DraftNewEmailScreen)
-            else -> Log.d("App", "Unknown path segment: $pathSegment")
+  dataUri.pathSegments.filter { it.isNotBlank() }.forEach { pathSegment ->
+    when (pathSegment) {
+      "inbox" -> screens.add(InboxScreen)
+      "view_email" ->
+        dataUri.getQueryParameter("emailId")?.let {
+          screens.add(DetailScreen(it))
         }
+      "new_email" -> screens.add(DraftNewEmailScreen)
+      else -> Log.d("App", "Unknown path segment: $pathSegment")
     }
+  }
 
-    return screens.takeIf { it.isNotEmpty() }
+  return screens.takeIf { it.isNotEmpty() }
 }
 ```
 

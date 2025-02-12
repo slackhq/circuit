@@ -26,7 +26,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -78,8 +77,6 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
 
-  private var backStackDepthState by mutableIntStateOf(0)
-
   override fun targetState(
     args: ImmutableList<T>,
     backStackDepth: Int,
@@ -101,9 +98,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         } else null
       }
 
-    backStackDepthState = backStackDepth
     seekableTransitionState = remember { SeekableTransitionState(current) }
-    val transition = rememberTransition(seekableTransitionState, label = "GestureNavDecoration")
 
     LaunchedEffect(current) {
       // When the current state has changed (i.e. any transition has completed),
@@ -134,7 +129,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         onBackInvoked = { onBackInvoked() },
       )
     }
-    return transition
+    return rememberTransition(seekableTransitionState, label = "AndroidPredictiveBackNavDecorator")
   }
 
   @OptIn(InternalCircuitApi::class)

@@ -188,15 +188,15 @@ internal enum class CodegenMode {
   /**
    * The `metro` code gen mode
    *
-   * This mode annotates generated factory types with `ContributesMultibinding`, allowing for
+   * This mode annotates generated factory types with `ContributesIntoSet`, allowing for
    * KI-Anvil to automatically wire the generated class up to KI's multibinding system within a
    * given scope (e.g. AppScope).
    *
    * ```kotlin
    * @Inject
-   * @ContributesMultibinding(AppScope::class)
+   * @ContributesIntoSet(AppScope::class)
    * public class FavoritesPresenterFactory(
-   *   private val provider: () -> FavoritesPresenter,
+   *   private val provider: Provider<FavoritesPresenter>
    * ) : Presenter.Factory { ... }
    * ```
    */

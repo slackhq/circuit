@@ -204,7 +204,7 @@ internal enum class CodegenMode {
     override val runtime: InjectionRuntime = InjectionRuntime.Metro
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
-      // KI-Anvil supports all
+      // Metro supports all
       return true
     }
 

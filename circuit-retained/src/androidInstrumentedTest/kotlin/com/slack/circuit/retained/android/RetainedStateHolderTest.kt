@@ -33,6 +33,7 @@ import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import kotlin.random.Random
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
@@ -305,7 +306,7 @@ class RetainedStateHolderTest {
       }
     }
 
-    composeTestRule.runOnIdle { showFirstPage = false }
+    showFirstPage = false
 
     composeTestRule.runOnIdle {
       val savedData = registry.saveAll()
@@ -315,6 +316,35 @@ class RetainedStateHolderTest {
 
   @Test
   fun saveNothingWhenCanRetainCheckerReturnsFalse() {
+    var showFirstPage by mutableStateOf(true)
+    val registry = RetainedStateRegistry(emptyMap())
+    val canRetainChecker = CanRetainChecker { false }
+    composeTestRule.setContent {
+      CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+        val holder = rememberRetainedStateHolder()
+        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+          holder.RetainedStateProvider(showFirstPage.toString()) {
+            rememberRetained { Random.nextInt() }
+          }
+        }
+      }
+    }
+
+    composeTestRule.runOnIdle {
+      val savedData = registry.saveAll()
+      assertThat(savedData).isEqualTo(emptyMap<String, List<Any?>>())
+    }
+
+    showFirstPage = false
+
+    composeTestRule.runOnIdle {
+      val savedData = registry.saveAll()
+      assertThat(savedData).isEqualTo(emptyMap<String, List<Any?>>())
+    }
+  }
+
+  @Test
+  fun alwaysReinitializeWhenCanRetainCheckerReturnsFalse() {
     var increment = 0
     var restorableNumber = -1
     val registry = RetainedStateRegistry(emptyMap())
@@ -351,7 +381,12 @@ class RetainedStateHolderTest {
     composeTestRule.waitForIdle()
     screen = Screens.Screen1
 
-    composeTestRule.runOnIdle { assertThat(restorableNumber).isEqualTo(2) }
+    composeTestRule.runOnIdle {
+      assertThat(restorableNumber).isEqualTo(2)
+
+      val savedData = registry.saveAll()
+      assertThat(savedData).isEqualTo(emptyMap<String, List<Any?>>())
+    }
   }
 
   @Test
@@ -396,6 +431,38 @@ class RetainedStateHolderTest {
     screen = Screens.Screen1
 
     composeTestRule.runOnIdle { assertThat(restorableNumber).isEqualTo(1) }
+
+    canRetainChecker = CanRetainChecker { false }
+
+    composeTestRule.runOnIdle {
+      val savedData = registry.saveAll()
+      assertThat(savedData).isEqualTo(emptyMap<String, List<Any?>>())
+    }
+  }
+
+  @Test
+  fun removedStateShouldNotBeRestored() {
+    var increment = 0
+    val screen = Screens.Screen1
+    var restorableStateHolder: RetainedStateHolder? = null
+    var restorableNumberOnScreen1 = -1
+    restorationTester.setContent {
+      val holder = rememberRetainedStateHolder()
+      restorableStateHolder = holder
+      holder.RetainedStateProvider(screen.name) {
+        restorableNumberOnScreen1 = rememberRetained { increment++ }
+      }
+    }
+
+    composeTestRule.runOnIdle {
+      assertThat(restorableNumberOnScreen1).isEqualTo(0)
+      restorableNumberOnScreen1 = -1
+      restorableStateHolder!!.removeState(screen.name)
+    }
+
+    restorationTester.emulateRetainedInstanceStateRestore()
+
+    composeTestRule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
   }
 
   class Activity : ComponentActivity() {

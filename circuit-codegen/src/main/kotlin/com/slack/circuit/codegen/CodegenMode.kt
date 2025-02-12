@@ -188,9 +188,9 @@ internal enum class CodegenMode {
   /**
    * The `metro` code gen mode
    *
-   * This mode annotates generated factory types with `ContributesIntoSet`, allowing for
-   * KI-Anvil to automatically wire the generated class up to KI's multibinding system within a
-   * given scope (e.g. AppScope).
+   * This mode annotates generated factory types with `ContributesIntoSet`, allowing for KI-Anvil to
+   * automatically wire the generated class up to KI's multibinding system within a given scope
+   * (e.g. AppScope).
    *
    * ```kotlin
    * @Inject

@@ -183,6 +183,51 @@ internal enum class CodegenMode {
     ): Collection<KSDeclaration> {
       return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
     }
+  },
+
+  /**
+   * The `metro` code gen mode
+   *
+   * This mode annotates generated factory types with `ContributesIntoSet`, allowing for KI-Anvil to
+   * automatically wire the generated class up to KI's multibinding system within a given scope
+   * (e.g. AppScope).
+   *
+   * ```kotlin
+   * @Inject
+   * @ContributesIntoSet(AppScope::class)
+   * public class FavoritesPresenterFactory(
+   *   private val provider: Provider<FavoritesPresenter>
+   * ) : Presenter.Factory { ... }
+   * ```
+   */
+  METRO {
+    override val runtime: InjectionRuntime = InjectionRuntime.Metro
+
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      // Metro supports all
+      return true
+    }
+
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
+      builder.addAnnotation(
+        AnnotationSpec.builder(CircuitNames.Metro.CONTRIBUTES_INTO_SET)
+          .addMember("%T::class", scope)
+          .build()
+      )
+    }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder,
+    ) {
+      classBuilder.addAnnotation(runtime.inject)
+    }
+
+    override fun filterValidInjectionSites(
+      candidates: Collection<KSDeclaration>
+    ): Collection<KSDeclaration> {
+      return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
+    }
   };
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
@@ -237,6 +282,19 @@ internal enum class CodegenMode {
 
       override fun asProvider(providedType: TypeName): TypeName {
         return LambdaTypeName.get(returnType = providedType)
+      }
+
+      override fun getProviderBlock(provider: CodeBlock): CodeBlock {
+        return CodeBlock.of("%L()", provider)
+      }
+    }
+
+    data object Metro : InjectionRuntime {
+      override val inject: ClassName = CircuitNames.Metro.INJECT
+      override val assisted: ClassName = CircuitNames.Metro.ASSISTED
+
+      override fun asProvider(providedType: TypeName): TypeName {
+        return CircuitNames.Metro.PROVIDER.parameterizedBy(providedType)
       }
 
       override fun getProviderBlock(provider: CodeBlock): CodeBlock {

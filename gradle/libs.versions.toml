@@ -191,7 +191,7 @@ jsoup = "org.jsoup:jsoup:1.18.3"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
-kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
+kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.2"
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}

@@ -13,10 +13,6 @@
       
       
       
-        <link rel="prev" href="../setup/">
-      
-      
-        <link rel="next" href="../screen/">
       
       
       <link rel="icon" href="../images/slack_logo_small.png">
@@ -24,7 +20,7 @@
     
     
       
-        <title>States and Events - Circuit</title>
+        <title>Deep-linking using Circuit - Circuit</title>
       
     
     
@@ -78,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#states-and-events" class="md-skip">
+        <a href="#deep-linking-using-circuit" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              States and Events
+              Deep-linking using Circuit
             
           </span>
         </div>
@@ -312,19 +308,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../states-and-events/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -333,7 +320,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -762,6 +748,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deep-linking-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deep linking strategy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-deep-link-in-circuit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling deep link in Circuit
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -778,27 +790,90 @@
   
 
 
-<h1 id="states-and-events">States and Events<a class="headerlink" href="#states-and-events" title="Permanent link">&para;</a></h1>
-<p>The core state and event interfaces in Circuit are <code>CircuitUiState</code> and <code>CircuitUiEvent</code>. All state and event types should implement/extend these marker interfaces.</p>
-<p>Presenters are simple functions that determine and return composable states. UIs are simple functions that render states. Uis can emit events via <code>eventSink</code> properties in state classes, which presenters then handle. These are the core building blocks!</p>
-<p>States should be <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable"><code>@Stable</code></a>; events should be <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable"><code>@Immutable</code></a>.</p>
-<blockquote>
-<p>Wait, event callbacks in state types?</p>
-</blockquote>
-<p>Yep! This may feel like a departure from how you’ve written UDF patterns in the past, but we really like it. We tried different patterns before with event <code>Flow</code>s and having Circuit internals manage these for you, but we found they came with tradeoffs and friction points that we could avoid by just treating event emissions as another aspect of state. The end result is a tidier structure of state + event flows.</p>
-<ul>
-<li>Simpler cognitive overheads due to not always using <code>Flow</code> for events, which comes with caveats in compose (wrapping operators in <code>remember</code> calls, pipelining nested event flows, etc)</li>
-<li>Simple event-less UIs – state just doesn’t have an event sink.</li>
-<li>Simpler testing – no manual event flow needed. You end up writing more realistic tests where you tick along your presenter by emitting with its returned states directly.</li>
-<li>Different state types can have different event handling (e.g. <code>Click</code> may not make sense for <code>Loading</code> states).</li>
-<li>No internal ceremony around setting up a <code>Channel</code> and multicasting event streams.</li>
-<li>No risk of dropping events (unlike <code>Flow</code>).</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Currently, while functions are treated as implicitly <code>Stable</code> by the compose compiler, they&rsquo;re not skippable when they&rsquo;re non-composable Unit-returning lambdas with equal-but-unstable captures. This may change though, and would be another free benefit for this case.</p>
+<h1 id="deep-linking-using-circuit">Deep-linking using Circuit<a class="headerlink" href="#deep-linking-using-circuit" title="Permanent link">&para;</a></h1>
+<p>Deep linking to application is a vast topic and the implementation detail can vary based on your application needs.
+Deep linking strategy can be highly sophisticated or simple based on the use-case.</p>
+<p>To keep things very simple and easy to understand, we will be focusing on deep linking to <strong>Android</strong> platform only. 
+You can then extend the idea to other platforms as needed.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Before you begin, we recommend having a basic understanding of deep linking. To get the most out of this guide, please review Android&rsquo;s official <a href="https://developer.android.com/training/app-links/deep-linking">training guide</a>, which provides valuable insights into deep linking for Android apps.</p>
 </div>
-<p>A longer-form writeup can be found in <a href="https://github.com/slackhq/circuit/pull/146">this PR</a>.</p>
+<h3 id="deep-linking-strategy">Deep linking strategy<a class="headerlink" href="#deep-linking-strategy" title="Permanent link">&para;</a></h3>
+<p>Essentially, you need to define a strategy for you app to handle the incoming deep link. We will take a look at Circuit&rsquo;s <a href="https://slackhq.github.io/circuit/tutorial/">email app</a> from the tutorial with following screens:</p>
+<ul>
+<li><strong>Inbox Screen</strong> - List all incoming emails</li>
+<li><strong>Details Screen</strong> - Show details of the email</li>
+<li><strong>Draft Screen</strong> - Compose a new email <em>(additional screen added for this demo)</em></li>
+</ul>
+<p>By default, the app launches with <strong>Inbox Screen</strong> as the root screen. To deep link into other two screens, we will define URI path segment as:</p>
+<ul>
+<li><strong><code>inbox</code></strong> - Inbox Screen</li>
+<li><strong><code>view_email</code></strong> - Details Screen with <code>emailId</code> as query parameter</li>
+<li><strong><code>new_email</code></strong> - Draft Screen</li>
+</ul>
+<p>Assuming, our app&rsquo;s URI scheme is <code>circuitapp://</code> with host <code>emailonthego</code>, the deep links will look like:</p>
+<ul>
+<li><code>circuitapp://emailonthego/inbox</code> - Deep link to Inbox Screen</li>
+<li><code>circuitapp://emailonthego/inbox/view_email?emailId=2</code> - Deep link to Details Screen with email id 2 with Inbox Screen as parent</li>
+<li><code>circuitapp://emailonthego/inbox/new_email</code> - Deep link to Draft Screen with Inbox Screen as parent</li>
+<li><code>circuitapp://emailonthego/inbox/view_email/new_email?emailId=3</code> - Deep link to Draft Screen and in backstack there is Details Screen and Inbox Screen.</li>
+</ul>
+<p>Once you have added <a href="https://developer.android.com/training/app-links/deep-linking#adding-filters">intent-filter</a> in your <code>AndroidManifest.xml</code> file, you can handle the incoming deep link in your <code>Activity</code>.</p>
+<h3 id="handling-deep-link-in-circuit">Handling deep link in Circuit<a class="headerlink" href="#handling-deep-link-in-circuit" title="Permanent link">&para;</a></h3>
+<p>In our case, we will create a <code>parseDeepLink</code> function to parse the incoming deep link and return the list of screens to be displayed in the app.
+<div class="highlight"><pre><span></span><code><span class="c1">// In your `MainActivity.kt` or activity that has the `intent-filter` for custom URI scheme</span>
+<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span><span class="w"> </span><span class="n">Bundle?)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+
+<span class="w">  </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">MaterialTheme</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// When there is no deeplink data in the intent, default to Inbox Screen as root screen</span>
+<span class="w">      </span><span class="kd">var</span><span class="w"> </span><span class="nv">stackedScreens</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">remember</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="n">parseDeepLink</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">))</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">stackedScreens</span><span class="p">)</span>
+<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+
+<span class="w">      </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>And here is a simple implementation of <code>parseDeepLink</code> function that creates the list of screens based on the incoming deep link:
+<div class="highlight"><pre><span></span><code><span class="cm">/** </span>
+<span class="cm"> * Parses the deep link from the given [Intent.getData] and returns a list of stacked screens </span>
+<span class="cm"> * to navigate to when deep link URI is available. </span>
+<span class="cm"> */</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">parseDeepLink</span><span class="p">(</span><span class="n">intent</span><span class="p">:</span><span class="w"> </span><span class="n">Intent</span><span class="p">):</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;?</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">dataUri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">intent</span><span class="p">.</span><span class="na">data</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">screens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="w">  </span><span class="n">dataUri</span><span class="p">.</span><span class="na">pathSegments</span><span class="p">.</span><span class="na">filter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">isNotBlank</span><span class="p">()</span><span class="w"> </span><span class="p">}.</span><span class="na">forEach</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">pathSegment</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">pathSegment</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s">&quot;inbox&quot;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">screens</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">)</span>
+<span class="w">      </span><span class="s">&quot;view_email&quot;</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">dataUri</span><span class="p">.</span><span class="na">getQueryParameter</span><span class="p">(</span><span class="s">&quot;emailId&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">let</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">screens</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">DetailScreen</span><span class="p">(</span><span class="nb">it</span><span class="p">))</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="s">&quot;new_email&quot;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">screens</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">DraftNewEmailScreen</span><span class="p">)</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Log</span><span class="p">.</span><span class="na">d</span><span class="p">(</span><span class="s">&quot;App&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Unknown path segment: </span><span class="si">$</span><span class="n">pathSegment</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">screens</span><span class="p">.</span><span class="na">takeIf</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Ideally, you would have deep link components that does the parsing and building screens based on parameters provided in the deep link URI.</p>
+</div>
+<p>To test, try the following command from the terminal:
+<div class="highlight"><pre><span></span><code>adb<span class="w"> </span>shell<span class="w"> </span>am<span class="w"> </span>start<span class="w"> </span>-W<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-a<span class="w"> </span>android.intent.action.VIEW<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;circuitapp://emailonthego/inbox/view_email/new_email/?emailId=2&quot;</span>
+</code></pre></div></p>
+<p>It should launch the app and navigate to the &lsquo;Draft Screen&rsquo; with backstack containing &lsquo;Details Screen&rsquo; and &lsquo;Inbox Screen&rsquo;.</p>
 
 
 

@@ -75,10 +75,10 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       circuit
         .newBuilder()
         // todo DI these, does CircuitInject make sense?
-        .addAnimatedNavigationTransform(
-          HomeAnimatedNavigationOverride,
-          PetDetailAnimatedNavigationOverride,
-        )
+//        .addAnimatedNavigationTransform(
+//          HomeAnimatedNavigationOverride,
+//          PetDetailAnimatedNavigationOverride,
+//        )
         .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
         .build()
     setContent {

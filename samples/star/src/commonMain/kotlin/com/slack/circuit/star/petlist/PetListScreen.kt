@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
@@ -96,6 +98,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.animation.transition
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -234,7 +237,12 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
                   event.petId,
                   event.photoUrlMemoryCacheKey,
                   event.animal.toPartialAnimal(),
-                )
+                ),
+                context =
+                  transition {
+                    enterTransition(EnterTransition.None)
+                    exitTransition(ExitTransition.None)
+                  },
               )
             }
             is UpdatedFilters -> {

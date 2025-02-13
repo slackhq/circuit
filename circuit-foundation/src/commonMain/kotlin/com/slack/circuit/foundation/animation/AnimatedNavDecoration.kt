@@ -99,6 +99,10 @@ public class AnimatedNavDecoration(
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedNavigationTransforms: ImmutableList<AnimatedNavigationTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
+  // Order of overrides
+  // 1. Any navigation context
+  // 2. Any overrides
+  // 3. Default
   val diff = targetState.backStackDepth - initialState.backStackDepth
   val sameRoot = targetState.rootScreen == initialState.rootScreen
   val navigationEvent =
@@ -110,7 +114,27 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
       else -> return@spec EnterTransition.None togetherWith ExitTransition.None
     }
   val override = animatedNavigationOverride(animatedNavigationTransforms, navigationEvent)
-  override ?: with(defaultTransform) { transitionSpec(navigationEvent) }
+  val baseTransform = override ?: with(defaultTransform) { transitionSpec(navigationEvent) }
+
+  // todo Bind an AnimatedNavContext for a specific screen and update the base transform with it
+  contextualNavigationOverride(baseTransform)
+}
+
+private fun AnimatedContentTransitionScope<AnimatedNavState>.contextualNavigationOverride(
+  baseTransform: ContentTransform
+): ContentTransform {
+  // If we only pull from the target then the caller needs to apply the transitions on pop as well
+  val targetContext = targetState.context.tag<AnimatedNavContext>()
+  targetContext?.transform?.let {
+    return it
+  }
+  return targetContext?.run {
+    with(baseTransform) {
+      val enter = enterTransition ?: targetContentEnter
+      val exit = exitTransition ?: initialContentExit
+      ContentTransform(enter, exit, targetContentZIndex, sizeTransform)
+    }
+  } ?: baseTransform
 }
 
 private fun AnimatedContentTransitionScope<AnimatedNavState>.animatedNavigationOverride(

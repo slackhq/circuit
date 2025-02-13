@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Immutable
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 
 internal fun <T> Transition<T>.isStateBeingAnimated(equals: (T) -> Boolean): Boolean {
@@ -27,4 +28,5 @@ internal data class GestureNavTransitionHolder<T : NavArgument>(
 ) : AnimatedNavState {
   override val screen: Screen = record.screen
   override val rootScreen: Screen = rootRecord.screen
+  override val context: NavigationContext = record.context
 }

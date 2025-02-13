@@ -44,6 +44,11 @@ import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
+import com.slack.circuit.foundation.animation.RequiredAnimatedNavigationTransform
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -55,6 +60,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -249,13 +255,16 @@ public object NavigatorDefaults {
   private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
+  public object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+  }
+
   public object DefaultDecoration :
-    AnimatedNavDecoration(
-      decoratorFactory =
-        object : AnimatedNavDecorator.Factory {
-          override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
-        }
+    NavDecoration by AnimatedNavDecoration(
+      transforms = persistentListOf(),
+      decoratorFactory = DefaultDecoratorFactory,
     ) {
+
     /**
      * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
      * This isn't meant for public consumption, so be aware that this may be removed/changed at any
@@ -331,6 +340,7 @@ public object NavigatorDefaults {
     public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
       AnimatedNavState {
       override val screen: Screen = args.first().screen
+      override val rootScreen: Screen = args.last().screen
       override val backStackDepth: Int = args.size
     }
 
@@ -347,24 +357,25 @@ public object NavigatorDefaults {
     }
 
     @OptIn(InternalCircuitApi::class)
-    @Composable
-    override fun Transition<DefaultAnimatedState<T>>.transitionSpec():
-      AnimatedContentTransitionScope<DefaultAnimatedState<T>>.() -> ContentTransform = {
-      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize the
-      // transitionSpec recomposing.
-      // The states are available as `targetState` and `initialState`.
-      val diff = targetState.args.size - initialState.args.size
-      val sameRoot = targetState.args.lastOrNull() == initialState.args.lastOrNull()
-      when {
-        sameRoot && diff > 0 -> forward
-        sameRoot && diff < 0 -> backward
-        else -> fadeIn() togetherWith fadeOut()
-      }.using(
-        // Disable clipping since the faded slide-in/out should
-        // be displayed out of bounds.
-        SizeTransform(clip = false)
-      )
-    }
+    override val defaultTransform: RequiredAnimatedNavigationTransform =
+      object : RequiredAnimatedNavigationTransform {
+        override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+          navigationEvent: NavigationEvent
+        ): ContentTransform {
+          // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+          // the transitionSpec recomposing.
+          // The states are available as `targetState` and `initialState`.
+          return when (navigationEvent) {
+            NavigationEvent.GoTo -> forward
+            NavigationEvent.Pop -> backward
+            NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
+          }.using(
+            // Disable clipping since the faded slide-in/out should
+            // be displayed out of bounds.
+            SizeTransform(clip = false)
+          )
+        }
+      }
 
     @Composable
     public override fun AnimatedContentScope.Decoration(

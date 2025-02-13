@@ -16,8 +16,6 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.runtime.screen.Screen
@@ -164,10 +162,7 @@ class RememberImpressionNavigatorTest {
 
   private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit) {
     setContent {
-      CompositionLocalProvider(
-        LocalRetainedStateRegistry provides registry,
-        LocalCanRetainChecker provides CanRetainChecker.Always,
-      ) {
+      CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
         val isCompose by composed.collectAsState(initial = true)
         if (isCompose) {
           content()

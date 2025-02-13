@@ -57,6 +57,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -144,6 +145,9 @@ public class RecordContentProvider<R : Record>(
 
   override val screen: Screen
     get() = record.screen
+
+  override val context: NavigationContext
+    get() = record.context
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -342,6 +346,7 @@ public object NavigatorDefaults {
       override val screen: Screen = args.first().screen
       override val rootScreen: Screen = args.last().screen
       override val backStackDepth: Int = args.size
+      override val context: NavigationContext = args.first().context
     }
 
     override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {

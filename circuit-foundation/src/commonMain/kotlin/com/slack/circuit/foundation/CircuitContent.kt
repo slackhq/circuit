@@ -13,6 +13,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -45,8 +46,8 @@ public fun CircuitContent(
   val navigator =
     remember(onNavEvent) {
       object : Navigator {
-        override fun goTo(screen: Screen): Boolean {
-          onNavEvent(NavEvent.GoTo(screen))
+        override fun goTo(screen: Screen, context: NavigationContext): Boolean {
+          onNavEvent(NavEvent.GoTo(screen, context = context))
           return true
         }
 
@@ -54,13 +55,14 @@ public fun CircuitContent(
           newRoot: Screen,
           saveState: Boolean,
           restoreState: Boolean,
+          context: NavigationContext,
         ): ImmutableList<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
+          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState, context = context))
           return persistentListOf()
         }
 
-        override fun pop(result: PopResult?): Screen? {
-          onNavEvent(NavEvent.Pop(result))
+        override fun pop(result: PopResult?, context: NavigationContext): Screen? {
+          onNavEvent(NavEvent.Pop(result, context = context))
           return null
         }
 

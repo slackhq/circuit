@@ -205,6 +205,7 @@ include(
   ":circuit-overlay",
   ":circuit-retained",
   ":circuit-runtime",
+  ":circuit-runtime-navigation",
   ":circuit-runtime-presenter",
   ":circuit-runtime-screen",
   ":circuit-runtime-ui",

@@ -4,10 +4,13 @@
 
 package com.slack.circuitx.gesturenavigation
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -28,9 +31,8 @@ import androidx.compose.material.ThresholdConfig
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,7 +49,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
-import kotlin.math.absoluteValue
+import com.slack.circuit.foundation.AnimatedNavDecorator
+import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
@@ -65,126 +68,172 @@ import kotlinx.coroutines.flow.filter
  *   navigation. This is useless when you have full width horizontally scrolling layouts. Defaults
  *   to true.
  */
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 public class CupertinoGestureNavigationDecoration(
   private val enterOffsetFraction: Float = 0.25f,
   private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
   private val swipeBackFromNestedScroll: Boolean = true,
   private val onBackInvoked: () -> Unit,
-) : NavDecoration {
+) :
+  NavDecoration by DefaultAnimatedNavDecoration(
+    CupertinoGestureNavigationDecorator.Factory(
+      enterOffsetFraction,
+      swipeThreshold,
+      swipeBackFromNestedScroll,
+      onBackInvoked,
+    )
+  )
 
-  @Composable
-  override fun <T : NavArgument> DecoratedContent(
+@ExperimentalMaterialApi
+internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
+  private val enterOffsetFraction: Float = 0.25f,
+  private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
+  private val swipeBackFromNestedScroll: Boolean = true,
+  private val onBackInvoked: () -> Unit,
+) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
+
+  private lateinit var seekableTransitionState:
+    SeekableTransitionState<GestureNavTransitionHolder<T>>
+
+  private var showPrevious by mutableStateOf(false)
+  private var swipeProgress by mutableFloatStateOf(0f)
+
+  override fun targetState(
     args: ImmutableList<T>,
     backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable (T) -> Unit,
+  ): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+  }
+
+  @Composable
+  override fun updateTransition(
+    args: ImmutableList<T>,
+    backStackDepth: Int,
+  ): Transition<GestureNavTransitionHolder<T>> {
+
+    val current = remember(args) { targetState(args, backStackDepth) }
+    val previous =
+      remember(args) {
+        if (args.size > 1) {
+          targetState(args.subList(1, args.size), backStackDepth - 1)
+        } else null
+      }
+
+    seekableTransitionState = remember { SeekableTransitionState(current) }
+
+    LaunchedEffect(current) {
+      // When the current state has changed (i.e. any transition has completed),
+      // clear out any transient state
+      showPrevious = false
+      swipeProgress = 0f
+      seekableTransitionState.animateTo(current)
+    }
+
+    LaunchedEffect(previous, current) {
+      if (previous != null) {
+        snapshotFlow { swipeProgress }
+          .collect { progress ->
+            if (progress != 0f) {
+              seekableTransitionState.seekTo(fraction = progress, targetState = previous)
+            }
+          }
+      }
+    }
+
+    LaunchedEffect(showPrevious) {
+      if (!showPrevious) {
+        // If the previous was shown but not dismissed make sure seekableTransitionState is reset
+        // correctly.
+        seekableTransitionState.animateTo(current)
+      }
+    }
+
+    return rememberTransition(
+      seekableTransitionState,
+      label = "CupertinoGestureNavigationDecorator",
+    )
+  }
+
+  @Composable
+  override fun Transition<GestureNavTransitionHolder<T>>.transitionSpec():
+    AnimatedContentTransitionScope<GestureNavTransitionHolder<T>>.() -> ContentTransform = {
+    val diff = targetState.backStackDepth - initialState.backStackDepth
+    val sameRoot = targetState.rootRecord == initialState.rootRecord
+
+    when {
+      // adding to back stack
+      sameRoot && diff > 0 -> {
+        slideInHorizontally(initialOffsetX = End)
+          .togetherWith(
+            slideOutHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
+          )
+      }
+      // come back from back stack
+      sameRoot && diff < 0 -> {
+        slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
+          .togetherWith(
+            if (showPrevious) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
+          )
+          .apply { targetContentZIndex = -1f }
+      }
+      // Root reset. Crossfade
+      else -> fadeIn() togetherWith fadeOut()
+    }
+  }
+
+  @Composable
+  override fun AnimatedContentScope.Decoration(
+    targetState: GestureNavTransitionHolder<T>,
+    innerContent: @Composable (T) -> Unit,
   ) {
-    val current = args.first()
-    val previous = args.getOrNull(1)
+    val dismissState = rememberDismissState(targetState.record)
+    var wasSwipeDismissed by remember { mutableStateOf(false) }
+    val swipeEnabled = targetState.backStackDepth > 1
 
-    Box(modifier = modifier) {
-      // Remember the previous stack depth so we know if the navigation is going "back".
-      var prevStackDepth by rememberSaveable { mutableStateOf(backStackDepth) }
-      SideEffect { prevStackDepth = backStackDepth }
+    LaunchedEffect(dismissState) {
+      snapshotFlow { dismissState.isDismissed(DismissDirection.StartToEnd) }
+        .filter { it }
+        .collect {
+          onBackInvoked()
+          wasSwipeDismissed = dismissState.offset.value != 0f
+        }
+    }
 
-      val dismissState = rememberDismissState(current)
-      var offsetWhenPopped by remember { mutableStateOf(0f) }
-
+    if (swipeEnabled) {
       LaunchedEffect(dismissState) {
-        snapshotFlow { dismissState.isDismissed(DismissDirection.StartToEnd) }
-          .filter { it }
-          .collect {
-            onBackInvoked()
-            offsetWhenPopped = dismissState.offset.value
+        snapshotFlow { dismissState.progress }
+          .collect { progress ->
+            showPrevious =
+              progress.to == DismissValue.DismissedToEnd && progress.from == DismissValue.Default
+            swipeProgress = if (showPrevious) abs(progress.fraction) else 0f
           }
       }
+    }
 
-      val transition =
-        updateTransition(
-          targetState = GestureNavTransitionHolder(current, backStackDepth, args.last()),
-          label = "GestureNavDecoration",
-        )
+    if (!wasSwipeDismissed) {
+      SwipeableContent(
+        state = dismissState,
+        swipeEnabled = swipeEnabled,
+        nestedScrollEnabled = swipeEnabled && swipeBackFromNestedScroll,
+        dismissThreshold = swipeThreshold,
+        content = { innerContent(targetState.record) },
+      )
+    }
+  }
 
-      if (
-        previous != null &&
-          !transition.isPending &&
-          !transition.isStateBeingAnimated { it.record == previous }
-      ) {
-        // We display the 'previous' item in the back stack for when the user performs a gesture
-        // to go back.
-        // We only display it here if the transition is not running. When the transition is
-        // running, the record's movable content will still be attached to the
-        // AnimatedContent below. If we call it here too, we will invoke a new copy of
-        // the content (and thus dropping all state). The if statement above keeps the states
-        // exclusive, so that the movable content is only used once at a time.
-        val showPrevious by
-          remember(dismissState) { derivedStateOf { dismissState.offset.value != 0f } }
-
-        OptionalLayout(
-          shouldLayout = { showPrevious },
-          modifier =
-            Modifier.graphicsLayer {
-              translationX =
-                when {
-                  // If we're running in a transition, let it handle any translation
-                  transition.isRunning -> 0f
-                  else -> {
-                    // Otherwise we'll react to the swipe dismiss state
-                    (dismissState.offset.value.absoluteValue - size.width) * enterOffsetFraction
-                  }
-                }
-            },
-          content = { content(previous) },
-        )
-      }
-
-      transition.AnimatedContent(
-        transitionSpec = {
-          val diff = targetState.backStackDepth - initialState.backStackDepth
-          val sameRoot = targetState.rootRecord == initialState.rootRecord
-
-          when {
-            // adding to back stack
-            sameRoot && diff > 0 -> {
-              slideInHorizontally(initialOffsetX = End)
-                .togetherWith(
-                  slideOutHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
-                )
-            }
-
-            // come back from back stack
-            sameRoot && diff < 0 -> {
-              if (offsetWhenPopped != 0f) {
-                // If the record change was caused by a swipe gesture, let's
-                // jump cut
-                EnterTransition.None togetherWith ExitTransition.None
-              } else {
-                slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
-                  .togetherWith(slideOutHorizontally(targetOffsetX = End))
-                  .apply { targetContentZIndex = -1f }
-              }
-            }
-
-            // Root reset. Crossfade
-            else -> fadeIn() togetherWith fadeOut()
-          }
-        },
-        modifier = modifier,
-      ) { holder ->
-        SwipeableContent(
-          state = dismissState,
-          swipeEnabled = holder.backStackDepth > 1,
-          nestedScrollEnabled = holder.backStackDepth > 1 && swipeBackFromNestedScroll,
-          dismissThreshold = swipeThreshold,
-          content = { content(holder.record) },
-        )
-      }
-
-      LaunchedEffect(current) {
-        // Reset the offsetWhenPopped when the top record changes
-        offsetWhenPopped = 0f
-      }
+  internal class Factory(
+    private val enterOffsetFraction: Float = 0.25f,
+    private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
+    private val swipeBackFromNestedScroll: Boolean = true,
+    private val onBackInvoked: () -> Unit,
+  ) : AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
+      return CupertinoGestureNavigationDecorator(
+        enterOffsetFraction = enterOffsetFraction,
+        swipeThreshold = swipeThreshold,
+        swipeBackFromNestedScroll = swipeBackFromNestedScroll,
+        onBackInvoked = onBackInvoked,
+      )
     }
   }
 }
@@ -238,7 +287,7 @@ private class SwipeDismissNestedScrollConnection(private val state: DismissState
   NestedScrollConnection {
   override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
     when {
-      available.x < 0 && source == NestedScrollSource.Drag -> {
+      available.x < 0 && source == NestedScrollSource.UserInput -> {
         // If we're being swiped back to origin, let the SwipeDismiss handle it first
         Offset(x = state.performDrag(available.x), y = 0f)
       }
@@ -251,7 +300,7 @@ private class SwipeDismissNestedScrollConnection(private val state: DismissState
     source: NestedScrollSource,
   ): Offset =
     when (source) {
-      NestedScrollSource.Drag -> Offset(x = state.performDrag(available.x), y = 0f)
+      NestedScrollSource.UserInput -> Offset(x = state.performDrag(available.x), y = 0f)
       else -> Offset.Zero
     }
 
@@ -277,7 +326,7 @@ private fun rememberDismissState(
   initialValue: DismissValue = DismissValue.Default,
   confirmStateChange: (DismissValue) -> Boolean = { true },
 ): DismissState {
-  return rememberSaveable(inputs, saver = DismissState.Saver(confirmStateChange)) {
+  return rememberSaveable(*inputs, saver = DismissState.Saver(confirmStateChange)) {
     DismissState(initialValue, confirmStateChange)
   }
 }

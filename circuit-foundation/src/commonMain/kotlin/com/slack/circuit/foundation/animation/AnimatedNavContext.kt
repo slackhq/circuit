@@ -11,7 +11,9 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.InternalCircuitNavigationApi
 import com.slack.circuit.runtime.navigation.NavigationContext
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
 
 public fun NavigationContext.transition(
   block: AnimatedNavContext.Builder.() -> Unit
@@ -38,13 +40,30 @@ public fun Navigator.goTo(
   screen: Screen,
   transition: AnimatedNavContext.Builder.() -> Unit,
 ): Boolean {
-  return this.goTo(screen, transition(transition))
+  return goTo(screen, transition(transition))
+}
+
+public fun Navigator.pop(
+  result: PopResult? = null,
+  transform: PartialContentTransform.Builder.() -> Unit,
+): Screen? {
+  return pop(result, transition { forward(transform) })
+}
+
+public fun Navigator.resetRoot(
+  newRoot: Screen,
+  saveState: Boolean = false,
+  restoreState: Boolean = false,
+  transform: PartialContentTransform.Builder.() -> Unit,
+): ImmutableList<Screen> {
+  return resetRoot(newRoot = newRoot, saveState, restoreState, transition { forward(transform) })
 }
 
 @Immutable
 public class AnimatedNavContext
 internal constructor(
-  // todo The names here are bad Forward is from the nav event, reverse only applies for pop...
+  // todo Don't like the forward/backward names
+  //    Forward is from the nav event, reverse only applies for a the pop from a goTo
   public val forward: PartialContentTransform? = null,
   public val reverse: PartialContentTransform? = null,
 ) {

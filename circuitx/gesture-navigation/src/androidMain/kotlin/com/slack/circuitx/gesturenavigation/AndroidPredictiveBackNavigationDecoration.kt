@@ -137,13 +137,13 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   ): ContentTransform {
     return when (navigationEvent) {
       // adding to back stack
-      NavigationEvent.GoTo -> NavigatorDefaults.DefaultDecoration.forward
+      NavigationEvent.GoTo -> NavigatorDefaults.forward
       // come back from back stack
       NavigationEvent.Pop -> {
         if (showPrevious) {
             EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
           } else {
-            NavigatorDefaults.DefaultDecoration.backward
+            NavigatorDefaults.backward
           }
           .apply { targetContentZIndex = -1f }
       }

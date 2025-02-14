@@ -98,7 +98,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.animation.forward
 import com.slack.circuit.foundation.animation.goTo
 import com.slack.circuit.foundation.animation.reverse

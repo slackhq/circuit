@@ -15,12 +15,11 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
@@ -77,7 +76,6 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         //          HomeScreen::class to HomeAnimatedNavigationOverride,
         //          PetDetailScreen::class to PetDetailAnimatedNavigationOverride,
         //        )
-        .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
         .build()
     setContent {
       StarTheme {
@@ -92,13 +90,10 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                 NavigableCircuitContent(
                   navigator = navigator,
                   backStack = backStack,
-                  decoration =
-                    AnimatedNavDecoration(
-                      // todo This is awkward, want to replace just the decoratorFactory
-                      animatedScreenTransforms = localCircuit.animatedScreenTransforms,
-                      decoratorFactory =
-                        GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),
-                    ),
+                  decoratorFactory =
+                    remember(navigator) {
+                      GestureNavigationDecorationFactory(onBackInvoked = navigator::pop)
+                    },
                 )
               }
             }

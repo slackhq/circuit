@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -17,8 +18,18 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
+  watchosArm32()
+  watchosArm64()
+  watchosX64()
+  watchosSimulatorArm64()
+  tvosArm64()
+  tvosX64()
+  tvosSimulatorArm64()
   macosX64()
   macosArm64()
+  linuxArm64()
+  linuxX64()
+  mingwX64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()
@@ -30,11 +41,29 @@ kotlin {
   }
   // endregion
 
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    group("browserCommon") {
+      withJs()
+      withWasmJs()
+    }
+  }
+
   sourceSets {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
         api(libs.compose.runtime.saveable)
+      }
+    }
+    get("browserCommonMain").dependsOn(commonMain.get())
+    get("browserCommonTest").dependsOn(commonTest.get())
+  }
+
+  targets.configureEach {
+    compilations.configureEach {
+      compileTaskProvider.configure {
+        compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
       }
     }
   }

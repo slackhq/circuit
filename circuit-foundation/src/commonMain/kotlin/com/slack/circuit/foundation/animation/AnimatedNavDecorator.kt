@@ -120,7 +120,7 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 
   /** Builds the default [AnimatedContent] transition spec. */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-    navigationEvent: NavigationEvent
+    animatedNavEvent: AnimatedNavEvent
   ): ContentTransform
 
   /** For the [targetState], decorate the [innerContent] as the `content` of [AnimatedContent] */
@@ -146,6 +146,6 @@ public interface AnimatedNavState {
   /** The depth of the back stack at the time this state was created. */
   public val backStackDepth: Int
 
-  /** The [NavigationContext] associated with this state. */
+  /** The user defined [NavigationContext] associated with this state. */
   public val context: NavigationContext
 }

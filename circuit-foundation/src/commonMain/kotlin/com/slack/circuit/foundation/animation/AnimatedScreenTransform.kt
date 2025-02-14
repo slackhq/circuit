@@ -3,38 +3,71 @@
 package com.slack.circuit.foundation.animation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
+import com.slack.circuit.runtime.screen.Screen
 
 /**
- * todo Docs
+ * Defines the animated transitions fo a [Screen] based on particular [AnimatedNavEvent]s.
  *
- * This is registered to a particular screen via CircuitInject.
+ * This interface allows you to customize the [EnterTransition], z-index, and [SizeTransform] for a
+ * [Screen] as it becomes the top screen or is replaced by another [Screen] in the navigation stack.
+ * You can also customize the [ExitTransition] for a screen that is no longer the top screen.
+ *
+ * Each of these can be customized based on the [AnimatedNavEvent] that triggered the transition.
+ *
+ * A [AnimatedScreenTransform] can be registered for a [Screen] using via CircuitInject.
  */
 public interface AnimatedScreenTransform {
 
-  /** Transition used when this screen is becoming the top screen, based on [navigationEvent]. */
+  /**
+   * Defines the transition used when this screen is becoming the top screen.
+   *
+   * @param animatedNavEvent The [AnimatedNavEvent] that triggered this transition.
+   * @return An [EnterTransition] or null to use the default enter transition.
+   * @see ContentTransform.targetContentEnter
+   */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
-    navigationEvent: NavigationEvent
+    animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? = null
 
-  /** Transition used when this screen is no longer the top screen, based on [navigationEvent]. */
+  /**
+   * Defines the transition used when this screen is no longer the top screen.
+   *
+   * @param animatedNavEvent The [AnimatedNavEvent] that triggered this transition.
+   * @return An [ExitTransition] or null to use the default exit transition.
+   * @see ContentTransform.initialContentExit
+   */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
-    navigationEvent: NavigationEvent
+    animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? = null
 
-  /** Z index of the screen when it is becoming the top screen, based on [navigationEvent]. */
+  /**
+   * Defines the [ContentTransform.targetContentZIndex] of the screen when it is becoming the top
+   * screen.
+   *
+   * @param animatedNavEvent The [AnimatedNavEvent] that triggered this transition.
+   * @return The z-index or null to use the default z-index.
+   * @see ContentTransform.targetContentZIndex
+   */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.zIndex(
-    navigationEvent: NavigationEvent
-  ): Float? = null // todo non-null
+    animatedNavEvent: AnimatedNavEvent
+  ): Float? = null // todo non-null?
 
   /**
-   * Size transform used when this screen is becoming the top screen, based on [navigationEvent].
+   * Defines the [ContentTransform.sizeTransform] to use when this screen is becoming the top
+   * screen.
+   *
+   * @param animatedNavEvent The [AnimatedNavEvent] that triggered this transition.
+   * @return A [SizeTransform] or null to use the default size transform.
+   * @see ContentTransform.sizeTransform
    */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.sizeTransform(
-    navigationEvent: NavigationEvent
+    animatedNavEvent: AnimatedNavEvent
   ): SizeTransform? = null
 }
 
+/** A default [AnimatedScreenTransform] that does nothing. */
 public object NoOpAnimatedScreenTransform : AnimatedScreenTransform

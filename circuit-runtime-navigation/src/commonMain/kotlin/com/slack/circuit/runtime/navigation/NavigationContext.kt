@@ -12,7 +12,7 @@ public class NavigationContext
 @InternalCircuitNavigationApi
 public constructor(
   // Don't expose the raw map.
-  private val tags: MutableMap<KClass<*>, Any> = mutableMapOf()
+  internal val tags: MutableMap<KClass<*>, Any> = mutableMapOf()
 ) {
 
   /** Returns the tag attached with [type] as a key, or null if no tag is attached with that key. */
@@ -69,4 +69,17 @@ public constructor(
         },
       )
   }
+}
+
+/**
+ * Returns a new [NavigationContext] that contains all the tags from both [this] and [other].
+ *
+ * Tags in [other] will overwrite any matching tags in [this].
+ */
+@OptIn(InternalCircuitNavigationApi::class)
+public operator fun NavigationContext.plus(other: NavigationContext): NavigationContext {
+  val newTags = mutableMapOf<KClass<*>, Any>()
+  newTags.putAll(this.tags)
+  newTags.putAll(other.tags)
+  return NavigationContext(newTags)
 }

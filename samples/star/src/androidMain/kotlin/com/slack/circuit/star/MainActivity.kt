@@ -73,8 +73,8 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         .newBuilder()
         // todo DI this
         //        .addAnimatedScreenTransforms(
-        //          HomeScreen::class to HomeAnimatedNavigationOverride,
-        //          PetDetailScreen::class to PetDetailAnimatedNavigationOverride,
+        //          HomeScreen::class to HomeAnimatedScreenTransform,
+        //          PetDetailScreen::class to PetDetailAnimatedScreenTransform,
         //        )
         .build()
     setContent {

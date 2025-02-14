@@ -42,8 +42,8 @@ import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import com.slack.circuit.foundation.animation.NavigationEvent
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -133,13 +133,13 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
   @OptIn(InternalCircuitApi::class)
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-    navigationEvent: NavigationEvent
+    animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
-    return when (navigationEvent) {
+    return when (animatedNavEvent) {
       // adding to back stack
-      NavigationEvent.GoTo -> NavigatorDefaults.forward
+      AnimatedNavEvent.GoTo -> NavigatorDefaults.forward
       // come back from back stack
-      NavigationEvent.Pop -> {
+      AnimatedNavEvent.Pop -> {
         if (showPrevious) {
             EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
           } else {
@@ -148,7 +148,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
           .apply { targetContentZIndex = -1f }
       }
       // Root reset. Crossfade
-      NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
+      AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
     }
   }
 

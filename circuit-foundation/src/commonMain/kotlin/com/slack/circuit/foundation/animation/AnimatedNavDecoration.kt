@@ -85,23 +85,23 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
   val diff = targetState.backStackDepth - initialState.backStackDepth
   val sameRoot = targetState.rootScreen == initialState.rootScreen
-  val navigationEvent =
+  val animatedNavEvent =
     when {
-      !sameRoot -> NavigationEvent.RootReset
-      diff > 0 -> NavigationEvent.GoTo
-      diff < 0 -> NavigationEvent.Pop
+      !sameRoot -> AnimatedNavEvent.RootReset
+      diff > 0 -> AnimatedNavEvent.GoTo
+      diff < 0 -> AnimatedNavEvent.Pop
       // Somehow the back stack has not changed?
       else -> return@spec EnterTransition.None togetherWith ExitTransition.None
     }
 
-  val baseTransform = transitionSpec(navigationEvent)
-  val screenOverride = screenSpecificOverride(navigationEvent, animatedScreenTransforms)
-  val navigationOverride = navigationSpecificOverride(navigationEvent)
+  val baseTransform = transitionSpec(animatedNavEvent)
+  val screenOverride = screenSpecificOverride(animatedNavEvent, animatedScreenTransforms)
+  val navigationOverride = navigationSpecificOverride(animatedNavEvent)
   contextualNavigationOverride(baseTransform, screenOverride, navigationOverride)
 }
 
 private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverride(
-  navigationEvent: NavigationEvent,
+  animatedNavEvent: AnimatedNavEvent,
   animatedScreenTransforms: Map<KClass<Screen>, AnimatedScreenTransform>,
 ): PartialContentTransform {
   // Read any screen specific overrides
@@ -111,30 +111,30 @@ private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverr
     animatedScreenTransforms[initialState.screen::class] ?: NoOpAnimatedScreenTransform
 
   return PartialContentTransform(
-    enter = targetAnimatedScreenTransform.run { enterTransition(navigationEvent) },
-    exit = initialAnimatedScreenTransform.run { exitTransition(navigationEvent) },
-    zIndex = targetAnimatedScreenTransform.run { zIndex(navigationEvent) },
-    sizeTransform = targetAnimatedScreenTransform.run { sizeTransform(navigationEvent) },
+    enter = targetAnimatedScreenTransform.run { enterTransition(animatedNavEvent) },
+    exit = initialAnimatedScreenTransform.run { exitTransition(animatedNavEvent) },
+    zIndex = targetAnimatedScreenTransform.run { zIndex(animatedNavEvent) },
+    sizeTransform = targetAnimatedScreenTransform.run { sizeTransform(animatedNavEvent) },
   )
 }
 
 private fun AnimatedContentTransitionScope<AnimatedNavState>.navigationSpecificOverride(
-  navigationEvent: NavigationEvent
+  animatedNavEvent: AnimatedNavEvent
 ): PartialContentTransform {
 
   val targetContext = targetState.context.tag<AnimatedNavContext>()
   val initialContext = initialState.context.tag<AnimatedNavContext>()
 
-  return when (navigationEvent) {
-    NavigationEvent.GoTo -> {
+  return when (animatedNavEvent) {
+    AnimatedNavEvent.GoTo -> {
       targetContext?.forward
     }
-    NavigationEvent.Pop -> {
+    AnimatedNavEvent.Pop -> {
       // Read the forward value if it was set during pop, otherwise look for a context specified
       // from the goto call to this screen
       targetContext?.forward ?: initialContext?.reverse
     }
-    NavigationEvent.RootReset -> {
+    AnimatedNavEvent.RootReset -> {
       targetContext?.forward
     }
   } ?: PartialContentTransform.EMPTY

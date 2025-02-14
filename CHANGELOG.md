@@ -4,6 +4,20 @@ Changelog
 **Unreleased**
 --------------
 
+0.26.1
+------
+
+_2025-02-13_
+
+- Fix crash on right side back gesture.
+- Update `CupertinoGestureNavigationDecoration` to be a `AnimatedNavDecorator`.
+- Fix value restoration after `removeState` call in `RetainedStateHolder`.
+- Update Android compose artifacts to `1.7.8`.
+- [docs] Add tutorial for how to use Circuit shared elements.
+- [docs] Added basic reference guide on deep-linking using circuit for Android platform.
+
+Special thanks to [@vulpeszerda](https://github.com/vulpeszerda) for contributing to this release!
+
 0.26.0
 ------
 

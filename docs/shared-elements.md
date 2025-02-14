@@ -8,6 +8,7 @@ There are few core APIs for setting up and providing the required `SharedTransit
 - [SharedElementTransitionLayout](#sharedelementtransitionlayout) is the layout that creates and provides a `SharedElementTransitionScope`
 - [SharedElementTransitionScope](#sharedelementtransitionscope) is a `SharedTransitionScope` which is required to use the shared element modifiers. The `SharedElementTransitionScope` also provides access to a `AnimatedVisibilityScope`.
 
+You can follow along with the [tutorial](shared-elements-tutorial.md) to see how to use these APIs. 
 
 ## Usage
 

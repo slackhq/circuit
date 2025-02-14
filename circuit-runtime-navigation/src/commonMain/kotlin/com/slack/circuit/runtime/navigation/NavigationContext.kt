@@ -53,6 +53,16 @@ public constructor(
     tags.clear()
   }
 
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is NavigationContext) return false
+    return tags == other.tags
+  }
+
+  override fun hashCode(): Int {
+    return tags.hashCode()
+  }
+
   public companion object {
     /** An empty context */
     @Suppress("UNCHECKED_CAST")

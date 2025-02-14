@@ -14,7 +14,6 @@ import androidx.compose.ui.test.swipeRight
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
@@ -26,7 +25,6 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
-import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -98,18 +96,14 @@ class GestureNavigationStateTest(
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoration =
+            decoratorFactory =
               remember {
                 when (decorationOption) {
                   GestureNavDecorationOption.AndroidPredictiveBack -> {
-                    AnimatedNavDecoration(
-                      transforms = persistentListOf(),
-                      decoratorFactory =
-                        GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),
-                    )
+                    AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                   GestureNavDecorationOption.Cupertino -> {
-                    CupertinoGestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    CupertinoGestureNavigationDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                 }
               },
@@ -198,18 +192,14 @@ class GestureNavigationStateTest(
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoration =
+            decoratorFactory =
               remember {
                 when (decorationOption) {
                   GestureNavDecorationOption.AndroidPredictiveBack -> {
-                    AnimatedNavDecoration(
-                      transforms = persistentListOf(),
-                      decoratorFactory =
-                        GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),
-                    )
+                    AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                   GestureNavDecorationOption.Cupertino -> {
-                    CupertinoGestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    CupertinoGestureNavigationDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                 }
               },

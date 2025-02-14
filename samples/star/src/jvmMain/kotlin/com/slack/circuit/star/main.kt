@@ -25,6 +25,7 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.star.di.AppComponent
@@ -46,10 +47,10 @@ fun main() {
     val navigator =
       remember(circuitNavigator) {
         object : Navigator by circuitNavigator {
-          override fun goTo(screen: Screen): Boolean {
+          override fun goTo(screen: Screen, context: NavigationContext): Boolean {
             return when (screen) {
               is OpenUrlScreen -> openUrl(screen.url)
-              else -> circuitNavigator.goTo(screen)
+              else -> circuitNavigator.goTo(screen, context)
             }
           }
         }

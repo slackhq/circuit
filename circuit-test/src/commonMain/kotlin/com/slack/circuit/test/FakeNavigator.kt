@@ -7,6 +7,7 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.Navigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -53,15 +54,15 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   private val resetRootEvents = Turbine<ResetRootEvent>()
   private val popEvents = Turbine<PopEvent>()
 
-  override fun goTo(screen: Screen): Boolean {
-    val success = delegate.goTo(screen)
-    goToEvents.add(GoToEvent(screen, success))
+  override fun goTo(screen: Screen, context: NavigationContext): Boolean {
+    val success = delegate.goTo(screen, context)
+    goToEvents.add(GoToEvent(screen, success, context))
     return success
   }
 
-  override fun pop(result: PopResult?): Screen? {
-    val popped = delegate.pop(result)
-    popEvents.add(PopEvent(popped, result))
+  override fun pop(result: PopResult?, context: NavigationContext): Screen? {
+    val popped = delegate.pop(result, context)
+    popEvents.add(PopEvent(popped, result, context))
     return popped
   }
 
@@ -69,9 +70,10 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     newRoot: Screen,
     saveState: Boolean,
     restoreState: Boolean,
+    context: NavigationContext,
   ): ImmutableList<Screen> {
-    val oldScreens = delegate.resetRoot(newRoot, saveState, restoreState)
-    resetRootEvents.add(ResetRootEvent(newRoot, oldScreens, saveState, restoreState))
+    val oldScreens = delegate.resetRoot(newRoot, saveState, restoreState, context)
+    resetRootEvents.add(ResetRootEvent(newRoot, oldScreens, saveState, restoreState, context))
     return oldScreens
   }
 
@@ -137,10 +139,18 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   }
 
   /** Represents a recorded [Navigator.goTo] event. */
-  public data class GoToEvent(val screen: Screen, val success: Boolean)
+  public data class GoToEvent(
+    val screen: Screen,
+    val success: Boolean,
+    val context: NavigationContext = NavigationContext.EMPTY,
+  )
 
   /** Represents a recorded [Navigator.pop] event. */
-  public data class PopEvent(val poppedScreen: Screen?, val result: PopResult? = null)
+  public data class PopEvent(
+    val poppedScreen: Screen?,
+    val result: PopResult? = null,
+    val context: NavigationContext = NavigationContext.EMPTY,
+  )
 
   /** Represents a recorded [Navigator.resetRoot] event. */
   public data class ResetRootEvent(
@@ -148,6 +158,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     val oldScreens: ImmutableList<Screen>,
     val saveState: Boolean = false,
     val restoreState: Boolean = false,
+    val context: NavigationContext = NavigationContext.EMPTY,
   )
 
   private fun GoToEvent.assertSuccessfulScreen(): Screen {

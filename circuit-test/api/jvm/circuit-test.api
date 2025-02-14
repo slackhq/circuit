@@ -25,22 +25,25 @@ public final class com/slack/circuit/test/FakeNavigator : com/slack/circuit/runt
 	public final fun expectNoGoToEvents ()V
 	public final fun expectNoPopEvents ()V
 	public final fun expectNoResetRootEvents ()V
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Z
 	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun peekBackStack ()Lkotlinx/collections/immutable/ImmutableList;
-	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lkotlinx/collections/immutable/ImmutableList;
+	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/runtime/screen/Screen;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;)Lkotlinx/collections/immutable/ImmutableList;
 	public final fun takeNextScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 }
 
 public final class com/slack/circuit/test/FakeNavigator$GoToEvent {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Z)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZLcom/slack/circuit/runtime/navigation/NavigationContext;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZLcom/slack/circuit/runtime/navigation/NavigationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun component2 ()Z
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Z)Lcom/slack/circuit/test/FakeNavigator$GoToEvent;
-	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$GoToEvent;Lcom/slack/circuit/runtime/screen/Screen;ZILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$GoToEvent;
+	public final fun component3 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;ZLcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/test/FakeNavigator$GoToEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$GoToEvent;Lcom/slack/circuit/runtime/screen/Screen;ZLcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$GoToEvent;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun getSuccess ()Z
 	public fun hashCode ()I
@@ -49,13 +52,15 @@ public final class com/slack/circuit/test/FakeNavigator$GoToEvent {
 
 public final class com/slack/circuit/test/FakeNavigator$PopEvent {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;)V
-	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun component2 ()Lcom/slack/circuit/runtime/screen/PopResult;
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/test/FakeNavigator$PopEvent;
-	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$PopEvent;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$PopEvent;
+	public final fun component3 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/test/FakeNavigator$PopEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$PopEvent;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$PopEvent;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getPoppedScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun getResult ()Lcom/slack/circuit/runtime/screen/PopResult;
 	public fun hashCode ()I
@@ -64,15 +69,17 @@ public final class com/slack/circuit/test/FakeNavigator$PopEvent {
 
 public final class com/slack/circuit/test/FakeNavigator$ResetRootEvent {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZ)V
-	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun component2 ()Lkotlinx/collections/immutable/ImmutableList;
 	public final fun component3 ()Z
 	public final fun component4 ()Z
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZ)Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;
-	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;
+	public final fun component5 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;Lcom/slack/circuit/runtime/screen/Screen;Lkotlinx/collections/immutable/ImmutableList;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$ResetRootEvent;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getNewRoot ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun getOldScreens ()Lkotlinx/collections/immutable/ImmutableList;
 	public final fun getRestoreState ()Z

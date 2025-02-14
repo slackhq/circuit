@@ -1,0 +1,23 @@
+public abstract interface annotation class com/slack/circuit/runtime/navigation/InternalCircuitNavigationApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/circuit/runtime/navigation/NavigationContext {
+	public static final field $stable I
+	public static final field Companion Lcom/slack/circuit/runtime/navigation/NavigationContext$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun clearTags ()V
+	public final fun putTag (Lkotlin/reflect/KClass;Ljava/lang/Object;)V
+	public final fun tag (Lkotlin/reflect/KClass;)Ljava/lang/Object;
+}
+
+public final class com/slack/circuit/runtime/navigation/NavigationContext$Companion {
+	public final fun getEMPTY ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
+}
+
+public final class com/slack/circuit/runtime/navigation/NavigationContextKt {
+	public static final fun plus (Lcom/slack/circuit/runtime/navigation/NavigationContext;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/runtime/navigation/NavigationContext;
+}
+

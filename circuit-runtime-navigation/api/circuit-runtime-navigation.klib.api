@@ -1,0 +1,37 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-runtime-navigation>
+open annotation class com.slack.circuit.runtime.navigation/InternalCircuitNavigationApi : kotlin/Annotation { // com.slack.circuit.runtime.navigation/InternalCircuitNavigationApi|null[0]
+    constructor <init>() // com.slack.circuit.runtime.navigation/InternalCircuitNavigationApi.<init>|<init>(){}[0]
+}
+
+final class com.slack.circuit.runtime.navigation/NavigationContext { // com.slack.circuit.runtime.navigation/NavigationContext|null[0]
+    constructor <init>(kotlin.collections/MutableMap<kotlin.reflect/KClass<*>, kotlin/Any> = ...) // com.slack.circuit.runtime.navigation/NavigationContext.<init>|<init>(kotlin.collections.MutableMap<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
+
+    final fun <#A1: kotlin/Any, #B1: #A1> putTag(kotlin.reflect/KClass<#A1>, #B1?) // com.slack.circuit.runtime.navigation/NavigationContext.putTag|putTag(kotlin.reflect.KClass<0:0>;0:1?){0§<kotlin.Any>;1§<0:0>}[0]
+    final fun <#A1: kotlin/Any> tag(kotlin.reflect/KClass<#A1>): #A1? // com.slack.circuit.runtime.navigation/NavigationContext.tag|tag(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+    final fun clearTags() // com.slack.circuit.runtime.navigation/NavigationContext.clearTags|clearTags(){}[0]
+    final inline fun <#A1: reified kotlin/Any> putTag(#A1?) // com.slack.circuit.runtime.navigation/NavigationContext.putTag|putTag(0:0?){0§<kotlin.Any>}[0]
+    final inline fun <#A1: reified kotlin/Any> tag(): #A1? // com.slack.circuit.runtime.navigation/NavigationContext.tag|tag(){0§<kotlin.Any>}[0]
+
+    final object Companion { // com.slack.circuit.runtime.navigation/NavigationContext.Companion|null[0]
+        final val EMPTY // com.slack.circuit.runtime.navigation/NavigationContext.Companion.EMPTY|{}EMPTY[0]
+            final fun <get-EMPTY>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.runtime.navigation/NavigationContext.Companion.EMPTY.<get-EMPTY>|<get-EMPTY>(){}[0]
+        final val Saver // com.slack.circuit.runtime.navigation/NavigationContext.Companion.Saver|{}Saver[0]
+            final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.runtime.navigation/NavigationContext, kotlin/Any> // com.slack.circuit.runtime.navigation/NavigationContext.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+    }
+}
+
+final val com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpMap$stableprop // com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpMap$stableprop|#static{}com_slack_circuit_runtime_navigation_internal_NoOpMap$stableprop[0]
+final val com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpSet_NoOpIterator$stableprop // com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpSet_NoOpIterator$stableprop|#static{}com_slack_circuit_runtime_navigation_internal_NoOpSet_NoOpIterator$stableprop[0]
+final val com.slack.circuit.runtime.navigation/com_slack_circuit_runtime_navigation_NavigationContext$stableprop // com.slack.circuit.runtime.navigation/com_slack_circuit_runtime_navigation_NavigationContext$stableprop|#static{}com_slack_circuit_runtime_navigation_NavigationContext$stableprop[0]
+
+final fun (com.slack.circuit.runtime.navigation/NavigationContext).com.slack.circuit.runtime.navigation/plus(com.slack.circuit.runtime.navigation/NavigationContext): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.runtime.navigation/plus|plus@com.slack.circuit.runtime.navigation.NavigationContext(com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+final fun com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpMap$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpMap$stableprop_getter|com_slack_circuit_runtime_navigation_internal_NoOpMap$stableprop_getter(){}[0]
+final fun com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpSet_NoOpIterator$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime.navigation.internal/com_slack_circuit_runtime_navigation_internal_NoOpSet_NoOpIterator$stableprop_getter|com_slack_circuit_runtime_navigation_internal_NoOpSet_NoOpIterator$stableprop_getter(){}[0]
+final fun com.slack.circuit.runtime.navigation/com_slack_circuit_runtime_navigation_NavigationContext$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime.navigation/com_slack_circuit_runtime_navigation_NavigationContext$stableprop_getter|com_slack_circuit_runtime_navigation_NavigationContext$stableprop_getter(){}[0]

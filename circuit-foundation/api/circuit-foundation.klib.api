@@ -10,11 +10,21 @@ open annotation class com.slack.circuit.foundation/DelicateCircuitFoundationApi 
     constructor <init>() // com.slack.circuit.foundation/DelicateCircuitFoundationApi.<init>|<init>(){}[0]
 }
 
-abstract interface <#A: com.slack.circuit.backstack/NavArgument, #B: com.slack.circuit.foundation.animation/AnimatedNavState> com.slack.circuit.foundation.animation/AnimatedNavDecorator { // com.slack.circuit.foundation.animation/AnimatedNavDecorator|null[0]
-    abstract val defaultTransform // com.slack.circuit.foundation.animation/AnimatedNavDecorator.defaultTransform|{}defaultTransform[0]
-        abstract fun <get-defaultTransform>(): com.slack.circuit.foundation.animation/RequiredAnimatedNavigationTransform // com.slack.circuit.foundation.animation/AnimatedNavDecorator.defaultTransform.<get-defaultTransform>|<get-defaultTransform>(){}[0]
+final enum class com.slack.circuit.foundation.animation/AnimatedNavEvent : kotlin/Enum<com.slack.circuit.foundation.animation/AnimatedNavEvent> { // com.slack.circuit.foundation.animation/AnimatedNavEvent|null[0]
+    enum entry GoTo // com.slack.circuit.foundation.animation/AnimatedNavEvent.GoTo|null[0]
+    enum entry Pop // com.slack.circuit.foundation.animation/AnimatedNavEvent.Pop|null[0]
+    enum entry RootReset // com.slack.circuit.foundation.animation/AnimatedNavEvent.RootReset|null[0]
 
+    final val entries // com.slack.circuit.foundation.animation/AnimatedNavEvent.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuit.foundation.animation/AnimatedNavEvent> // com.slack.circuit.foundation.animation/AnimatedNavEvent.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.slack.circuit.foundation.animation/AnimatedNavEvent // com.slack.circuit.foundation.animation/AnimatedNavEvent.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.slack.circuit.foundation.animation/AnimatedNavEvent> // com.slack.circuit.foundation.animation/AnimatedNavEvent.values|values#static(){}[0]
+}
+
+abstract interface <#A: com.slack.circuit.backstack/NavArgument, #B: com.slack.circuit.foundation.animation/AnimatedNavState> com.slack.circuit.foundation.animation/AnimatedNavDecorator { // com.slack.circuit.foundation.animation/AnimatedNavDecorator|null[0]
     abstract fun (androidx.compose.animation/AnimatedContentScope).Decoration(#B, kotlin/Function3<#A, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.foundation.animation/AnimatedNavDecorator.Decoration|Decoration@androidx.compose.animation.AnimatedContentScope(1:1;kotlin.Function3<1:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    abstract fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).transitionSpec(com.slack.circuit.foundation.animation/AnimatedNavEvent): androidx.compose.animation/ContentTransform // com.slack.circuit.foundation.animation/AnimatedNavDecorator.transitionSpec|transitionSpec@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavEvent){}[0]
     abstract fun targetState(kotlinx.collections.immutable/ImmutableList<#A>, kotlin/Int): #B // com.slack.circuit.foundation.animation/AnimatedNavDecorator.targetState|targetState(kotlinx.collections.immutable.ImmutableList<1:0>;kotlin.Int){}[0]
     abstract fun updateTransition(kotlinx.collections.immutable/ImmutableList<#A>, kotlin/Int, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.animation.core/Transition<#B> // com.slack.circuit.foundation.animation/AnimatedNavDecorator.updateTransition|updateTransition(kotlinx.collections.immutable.ImmutableList<1:0>;kotlin.Int;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 
@@ -28,30 +38,19 @@ abstract interface <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circ
 abstract interface com.slack.circuit.foundation.animation/AnimatedNavState { // com.slack.circuit.foundation.animation/AnimatedNavState|null[0]
     abstract val backStackDepth // com.slack.circuit.foundation.animation/AnimatedNavState.backStackDepth|{}backStackDepth[0]
         abstract fun <get-backStackDepth>(): kotlin/Int // com.slack.circuit.foundation.animation/AnimatedNavState.backStackDepth.<get-backStackDepth>|<get-backStackDepth>(){}[0]
+    abstract val context // com.slack.circuit.foundation.animation/AnimatedNavState.context|{}context[0]
+        abstract fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation.animation/AnimatedNavState.context.<get-context>|<get-context>(){}[0]
     abstract val rootScreen // com.slack.circuit.foundation.animation/AnimatedNavState.rootScreen|{}rootScreen[0]
         abstract fun <get-rootScreen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation.animation/AnimatedNavState.rootScreen.<get-rootScreen>|<get-rootScreen>(){}[0]
     abstract val screen // com.slack.circuit.foundation.animation/AnimatedNavState.screen|{}screen[0]
         abstract fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation.animation/AnimatedNavState.screen.<get-screen>|<get-screen>(){}[0]
 }
 
-abstract interface com.slack.circuit.foundation.animation/AnimatedNavigationTransform { // com.slack.circuit.foundation.animation/AnimatedNavigationTransform|null[0]
-    abstract fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).transitionSpec(com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent): androidx.compose.animation/ContentTransform? // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.transitionSpec|transitionSpec@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent){}[0]
-
-    final enum class NavigationEvent : kotlin/Enum<com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent> { // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent|null[0]
-        enum entry GoTo // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.GoTo|null[0]
-        enum entry Pop // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.Pop|null[0]
-        enum entry RootReset // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.RootReset|null[0]
-
-        final val entries // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.entries|#static{}entries[0]
-            final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent> // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.entries.<get-entries>|<get-entries>#static(){}[0]
-
-        final fun valueOf(kotlin/String): com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.valueOf|valueOf#static(kotlin.String){}[0]
-        final fun values(): kotlin/Array<com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent> // com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent.values|values#static(){}[0]
-    }
-}
-
-abstract interface com.slack.circuit.foundation.animation/RequiredAnimatedNavigationTransform : com.slack.circuit.foundation.animation/AnimatedNavigationTransform { // com.slack.circuit.foundation.animation/RequiredAnimatedNavigationTransform|null[0]
-    abstract fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).transitionSpec(com.slack.circuit.foundation.animation/AnimatedNavigationTransform.NavigationEvent): androidx.compose.animation/ContentTransform // com.slack.circuit.foundation.animation/RequiredAnimatedNavigationTransform.transitionSpec|transitionSpec@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent){}[0]
+abstract interface com.slack.circuit.foundation.animation/AnimatedScreenTransform { // com.slack.circuit.foundation.animation/AnimatedScreenTransform|null[0]
+    open fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).enterTransition(com.slack.circuit.foundation.animation/AnimatedNavEvent): androidx.compose.animation/EnterTransition? // com.slack.circuit.foundation.animation/AnimatedScreenTransform.enterTransition|enterTransition@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavEvent){}[0]
+    open fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).exitTransition(com.slack.circuit.foundation.animation/AnimatedNavEvent): androidx.compose.animation/ExitTransition? // com.slack.circuit.foundation.animation/AnimatedScreenTransform.exitTransition|exitTransition@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavEvent){}[0]
+    open fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).sizeTransform(com.slack.circuit.foundation.animation/AnimatedNavEvent): androidx.compose.animation/SizeTransform? // com.slack.circuit.foundation.animation/AnimatedScreenTransform.sizeTransform|sizeTransform@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavEvent){}[0]
+    open fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).zIndex(com.slack.circuit.foundation.animation/AnimatedNavEvent): kotlin/Float? // com.slack.circuit.foundation.animation/AnimatedScreenTransform.zIndex|zIndex@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavEvent){}[0]
 }
 
 abstract interface com.slack.circuit.foundation/EventListener { // com.slack.circuit.foundation/EventListener|null[0]
@@ -85,34 +84,42 @@ abstract interface com.slack.circuit.foundation/RecordLifecycle { // com.slack.c
 
 sealed interface com.slack.circuit.foundation/NavEvent : com.slack.circuit.runtime/CircuitUiEvent { // com.slack.circuit.foundation/NavEvent|null[0]
     final class GoTo : com.slack.circuit.foundation/NavEvent { // com.slack.circuit.foundation/NavEvent.GoTo|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen) // com.slack.circuit.foundation/NavEvent.GoTo.<init>|<init>(com.slack.circuit.runtime.screen.Screen){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.navigation/NavigationContext = ...) // com.slack.circuit.foundation/NavEvent.GoTo.<init>|<init>(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
 
+        final val context // com.slack.circuit.foundation/NavEvent.GoTo.context|{}context[0]
+            final fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavEvent.GoTo.context.<get-context>|<get-context>(){}[0]
         final val screen // com.slack.circuit.foundation/NavEvent.GoTo.screen|{}screen[0]
             final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.GoTo.screen.<get-screen>|<get-screen>(){}[0]
 
         final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.GoTo.component1|component1(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ...): com.slack.circuit.foundation/NavEvent.GoTo // com.slack.circuit.foundation/NavEvent.GoTo.copy|copy(com.slack.circuit.runtime.screen.Screen){}[0]
+        final fun component2(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavEvent.GoTo.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...): com.slack.circuit.foundation/NavEvent.GoTo // com.slack.circuit.foundation/NavEvent.GoTo.copy|copy(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.GoTo.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.foundation/NavEvent.GoTo.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.foundation/NavEvent.GoTo.toString|toString(){}[0]
     }
 
     final class Pop : com.slack.circuit.foundation/NavEvent { // com.slack.circuit.foundation/NavEvent.Pop|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/PopResult? = ...) // com.slack.circuit.foundation/NavEvent.Pop.<init>|<init>(com.slack.circuit.runtime.screen.PopResult?){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/PopResult? = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...) // com.slack.circuit.foundation/NavEvent.Pop.<init>|<init>(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
 
+        final val context // com.slack.circuit.foundation/NavEvent.Pop.context|{}context[0]
+            final fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavEvent.Pop.context.<get-context>|<get-context>(){}[0]
         final val result // com.slack.circuit.foundation/NavEvent.Pop.result|{}result[0]
             final fun <get-result>(): com.slack.circuit.runtime.screen/PopResult? // com.slack.circuit.foundation/NavEvent.Pop.result.<get-result>|<get-result>(){}[0]
 
         final fun component1(): com.slack.circuit.runtime.screen/PopResult? // com.slack.circuit.foundation/NavEvent.Pop.component1|component1(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/PopResult? = ...): com.slack.circuit.foundation/NavEvent.Pop // com.slack.circuit.foundation/NavEvent.Pop.copy|copy(com.slack.circuit.runtime.screen.PopResult?){}[0]
+        final fun component2(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavEvent.Pop.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/PopResult? = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...): com.slack.circuit.foundation/NavEvent.Pop // com.slack.circuit.foundation/NavEvent.Pop.copy|copy(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.Pop.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.foundation/NavEvent.Pop.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.foundation/NavEvent.Pop.toString|toString(){}[0]
     }
 
     final class ResetRoot : com.slack.circuit.foundation/NavEvent { // com.slack.circuit.foundation/NavEvent.ResetRoot|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean, com.slack.circuit.runtime.navigation/NavigationContext = ...) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
 
+        final val context // com.slack.circuit.foundation/NavEvent.ResetRoot.context|{}context[0]
+            final fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavEvent.ResetRoot.context.<get-context>|<get-context>(){}[0]
         final val newRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.newRoot|{}newRoot[0]
             final fun <get-newRoot>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.ResetRoot.newRoot.<get-newRoot>|<get-newRoot>(){}[0]
         final val restoreState // com.slack.circuit.foundation/NavEvent.ResetRoot.restoreState|{}restoreState[0]
@@ -123,7 +130,8 @@ sealed interface com.slack.circuit.foundation/NavEvent : com.slack.circuit.runti
         final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.ResetRoot.component1|component1(){}[0]
         final fun component2(): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.component2|component2(){}[0]
         final fun component3(): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.component3|component3(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): com.slack.circuit.foundation/NavEvent.ResetRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun component4(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavEvent.ResetRoot.component4|component4(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...): com.slack.circuit.foundation/NavEvent.ResetRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.foundation/NavEvent.ResetRoot.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.foundation/NavEvent.ResetRoot.toString|toString(){}[0]
@@ -133,6 +141,8 @@ sealed interface com.slack.circuit.foundation/NavEvent : com.slack.circuit.runti
 final class <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.foundation/RecordContentProvider : com.slack.circuit.backstack/NavArgument { // com.slack.circuit.foundation/RecordContentProvider|null[0]
     constructor <init>(#A, kotlin/Function3<#A, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuit.foundation/RecordContentProvider.<init>|<init>(1:0;kotlin.Function3<1:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
 
+    final val context // com.slack.circuit.foundation/RecordContentProvider.context|{}context[0]
+        final fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/RecordContentProvider.context.<get-context>|<get-context>(){}[0]
     final val record // com.slack.circuit.foundation/RecordContentProvider.record|{}record[0]
         final fun <get-record>(): #A // com.slack.circuit.foundation/RecordContentProvider.record.<get-record>|<get-record>(){}[0]
     final val screen // com.slack.circuit.foundation/RecordContentProvider.screen|{}screen[0]
@@ -143,17 +153,85 @@ final class <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit
     final fun toString(): kotlin/String // com.slack.circuit.foundation/RecordContentProvider.toString|toString(){}[0]
 }
 
+final class com.slack.circuit.foundation.animation/AnimatedNavContext { // com.slack.circuit.foundation.animation/AnimatedNavContext|null[0]
+    final val forward // com.slack.circuit.foundation.animation/AnimatedNavContext.forward|{}forward[0]
+        final fun <get-forward>(): com.slack.circuit.foundation.animation/PartialContentTransform? // com.slack.circuit.foundation.animation/AnimatedNavContext.forward.<get-forward>|<get-forward>(){}[0]
+    final val reverse // com.slack.circuit.foundation.animation/AnimatedNavContext.reverse|{}reverse[0]
+        final fun <get-reverse>(): com.slack.circuit.foundation.animation/PartialContentTransform? // com.slack.circuit.foundation.animation/AnimatedNavContext.reverse.<get-reverse>|<get-reverse>(){}[0]
+
+    final fun buildUpon(): com.slack.circuit.foundation.animation/AnimatedNavContext.Builder // com.slack.circuit.foundation.animation/AnimatedNavContext.buildUpon|buildUpon(){}[0]
+
+    final class Builder { // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder|null[0]
+        constructor <init>() // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.<init>|<init>(){}[0]
+
+        final var forward // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.forward|{}forward[0]
+            final fun <get-forward>(): com.slack.circuit.foundation.animation/PartialContentTransform? // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.forward.<get-forward>|<get-forward>(){}[0]
+            final fun <set-forward>(com.slack.circuit.foundation.animation/PartialContentTransform?) // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.forward.<set-forward>|<set-forward>(com.slack.circuit.foundation.animation.PartialContentTransform?){}[0]
+        final var reverse // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.reverse|{}reverse[0]
+            final fun <get-reverse>(): com.slack.circuit.foundation.animation/PartialContentTransform? // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.reverse.<get-reverse>|<get-reverse>(){}[0]
+            final fun <set-reverse>(com.slack.circuit.foundation.animation/PartialContentTransform?) // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.reverse.<set-reverse>|<set-reverse>(com.slack.circuit.foundation.animation.PartialContentTransform?){}[0]
+
+        final fun build(): com.slack.circuit.foundation.animation/AnimatedNavContext // com.slack.circuit.foundation.animation/AnimatedNavContext.Builder.build|build(){}[0]
+    }
+}
+
 final class com.slack.circuit.foundation.animation/AnimatedNavDecoration : com.slack.circuit.backstack/NavDecoration { // com.slack.circuit.foundation.animation/AnimatedNavDecoration|null[0]
-    constructor <init>(kotlinx.collections.immutable/ImmutableList<com.slack.circuit.foundation.animation/AnimatedNavigationTransform>, com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory) // com.slack.circuit.foundation.animation/AnimatedNavDecoration.<init>|<init>(kotlinx.collections.immutable.ImmutableList<com.slack.circuit.foundation.animation.AnimatedNavigationTransform>;com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory){}[0]
+    constructor <init>(kotlinx.collections.immutable/ImmutableMap<kotlin.reflect/KClass<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform>, com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory) // com.slack.circuit.foundation.animation/AnimatedNavDecoration.<init>|<init>(kotlinx.collections.immutable.ImmutableMap<kotlin.reflect.KClass<com.slack.circuit.runtime.screen.Screen>,com.slack.circuit.foundation.animation.AnimatedScreenTransform>;com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory){}[0]
 
     final fun <#A1: com.slack.circuit.backstack/NavArgument> DecoratedContent(kotlinx.collections.immutable/ImmutableList<#A1>, kotlin/Int, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.foundation.animation/AnimatedNavDecoration.DecoratedContent|DecoratedContent(kotlinx.collections.immutable.ImmutableList<0:0>;kotlin.Int;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.backstack.NavArgument>}[0]
+}
+
+final class com.slack.circuit.foundation.animation/PartialContentTransform { // com.slack.circuit.foundation.animation/PartialContentTransform|null[0]
+    constructor <init>(androidx.compose.animation/EnterTransition?, androidx.compose.animation/ExitTransition?, kotlin/Float?, androidx.compose.animation/SizeTransform?) // com.slack.circuit.foundation.animation/PartialContentTransform.<init>|<init>(androidx.compose.animation.EnterTransition?;androidx.compose.animation.ExitTransition?;kotlin.Float?;androidx.compose.animation.SizeTransform?){}[0]
+
+    final val enter // com.slack.circuit.foundation.animation/PartialContentTransform.enter|{}enter[0]
+        final fun <get-enter>(): androidx.compose.animation/EnterTransition? // com.slack.circuit.foundation.animation/PartialContentTransform.enter.<get-enter>|<get-enter>(){}[0]
+    final val exit // com.slack.circuit.foundation.animation/PartialContentTransform.exit|{}exit[0]
+        final fun <get-exit>(): androidx.compose.animation/ExitTransition? // com.slack.circuit.foundation.animation/PartialContentTransform.exit.<get-exit>|<get-exit>(){}[0]
+    final val sizeTransform // com.slack.circuit.foundation.animation/PartialContentTransform.sizeTransform|{}sizeTransform[0]
+        final fun <get-sizeTransform>(): androidx.compose.animation/SizeTransform? // com.slack.circuit.foundation.animation/PartialContentTransform.sizeTransform.<get-sizeTransform>|<get-sizeTransform>(){}[0]
+    final val zIndex // com.slack.circuit.foundation.animation/PartialContentTransform.zIndex|{}zIndex[0]
+        final fun <get-zIndex>(): kotlin/Float? // com.slack.circuit.foundation.animation/PartialContentTransform.zIndex.<get-zIndex>|<get-zIndex>(){}[0]
+
+    final fun component1(): androidx.compose.animation/EnterTransition? // com.slack.circuit.foundation.animation/PartialContentTransform.component1|component1(){}[0]
+    final fun component2(): androidx.compose.animation/ExitTransition? // com.slack.circuit.foundation.animation/PartialContentTransform.component2|component2(){}[0]
+    final fun component3(): kotlin/Float? // com.slack.circuit.foundation.animation/PartialContentTransform.component3|component3(){}[0]
+    final fun component4(): androidx.compose.animation/SizeTransform? // com.slack.circuit.foundation.animation/PartialContentTransform.component4|component4(){}[0]
+    final fun copy(androidx.compose.animation/EnterTransition? = ..., androidx.compose.animation/ExitTransition? = ..., kotlin/Float? = ..., androidx.compose.animation/SizeTransform? = ...): com.slack.circuit.foundation.animation/PartialContentTransform // com.slack.circuit.foundation.animation/PartialContentTransform.copy|copy(androidx.compose.animation.EnterTransition?;androidx.compose.animation.ExitTransition?;kotlin.Float?;androidx.compose.animation.SizeTransform?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation.animation/PartialContentTransform.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.slack.circuit.foundation.animation/PartialContentTransform.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.slack.circuit.foundation.animation/PartialContentTransform.toString|toString(){}[0]
+
+    final class Builder { // com.slack.circuit.foundation.animation/PartialContentTransform.Builder|null[0]
+        constructor <init>() // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.<init>|<init>(){}[0]
+
+        final var enter // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.enter|{}enter[0]
+            final fun <get-enter>(): androidx.compose.animation/EnterTransition? // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.enter.<get-enter>|<get-enter>(){}[0]
+            final fun <set-enter>(androidx.compose.animation/EnterTransition?) // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.enter.<set-enter>|<set-enter>(androidx.compose.animation.EnterTransition?){}[0]
+        final var exit // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.exit|{}exit[0]
+            final fun <get-exit>(): androidx.compose.animation/ExitTransition? // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.exit.<get-exit>|<get-exit>(){}[0]
+            final fun <set-exit>(androidx.compose.animation/ExitTransition?) // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.exit.<set-exit>|<set-exit>(androidx.compose.animation.ExitTransition?){}[0]
+        final var sizeTransform // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.sizeTransform|{}sizeTransform[0]
+            final fun <get-sizeTransform>(): androidx.compose.animation/SizeTransform? // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.sizeTransform.<get-sizeTransform>|<get-sizeTransform>(){}[0]
+            final fun <set-sizeTransform>(androidx.compose.animation/SizeTransform?) // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.sizeTransform.<set-sizeTransform>|<set-sizeTransform>(androidx.compose.animation.SizeTransform?){}[0]
+        final var zIndex // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.zIndex|{}zIndex[0]
+            final fun <get-zIndex>(): kotlin/Float? // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.zIndex.<get-zIndex>|<get-zIndex>(){}[0]
+            final fun <set-zIndex>(kotlin/Float?) // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.zIndex.<set-zIndex>|<set-zIndex>(kotlin.Float?){}[0]
+
+        final fun build(): com.slack.circuit.foundation.animation/PartialContentTransform // com.slack.circuit.foundation.animation/PartialContentTransform.Builder.build|build(){}[0]
+    }
+
+    final object Companion { // com.slack.circuit.foundation.animation/PartialContentTransform.Companion|null[0]
+        final val EMPTY // com.slack.circuit.foundation.animation/PartialContentTransform.Companion.EMPTY|{}EMPTY[0]
+            final fun <get-EMPTY>(): com.slack.circuit.foundation.animation/PartialContentTransform // com.slack.circuit.foundation.animation/PartialContentTransform.Companion.EMPTY.<get-EMPTY>|<get-EMPTY>(){}[0]
+    }
 }
 
 final class com.slack.circuit.foundation/Circuit { // com.slack.circuit.foundation/Circuit|null[0]
     final val animatedNavDecoratorFactory // com.slack.circuit.foundation/Circuit.animatedNavDecoratorFactory|{}animatedNavDecoratorFactory[0]
         final fun <get-animatedNavDecoratorFactory>(): com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory // com.slack.circuit.foundation/Circuit.animatedNavDecoratorFactory.<get-animatedNavDecoratorFactory>|<get-animatedNavDecoratorFactory>(){}[0]
-    final val animatedNavigationTransforms // com.slack.circuit.foundation/Circuit.animatedNavigationTransforms|{}animatedNavigationTransforms[0]
-        final fun <get-animatedNavigationTransforms>(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.foundation.animation/AnimatedNavigationTransform> // com.slack.circuit.foundation/Circuit.animatedNavigationTransforms.<get-animatedNavigationTransforms>|<get-animatedNavigationTransforms>(){}[0]
+    final val animatedScreenTransforms // com.slack.circuit.foundation/Circuit.animatedScreenTransforms|{}animatedScreenTransforms[0]
+        final fun <get-animatedScreenTransforms>(): kotlinx.collections.immutable/ImmutableMap<kotlin.reflect/KClass<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform> // com.slack.circuit.foundation/Circuit.animatedScreenTransforms.<get-animatedScreenTransforms>|<get-animatedScreenTransforms>(){}[0]
     final val defaultNavDecoration // com.slack.circuit.foundation/Circuit.defaultNavDecoration|{}defaultNavDecoration[0]
         final fun <get-defaultNavDecoration>(): com.slack.circuit.backstack/NavDecoration // com.slack.circuit.foundation/Circuit.defaultNavDecoration.<get-defaultNavDecoration>|<get-defaultNavDecoration>(){}[0]
     final val onUnavailableContent // com.slack.circuit.foundation/Circuit.onUnavailableContent|{}onUnavailableContent[0]
@@ -170,8 +248,8 @@ final class com.slack.circuit.foundation/Circuit { // com.slack.circuit.foundati
     final class Builder { // com.slack.circuit.foundation/Circuit.Builder|null[0]
         constructor <init>() // com.slack.circuit.foundation/Circuit.Builder.<init>|<init>(){}[0]
 
-        final val animatedNavigationTransforms // com.slack.circuit.foundation/Circuit.Builder.animatedNavigationTransforms|{}animatedNavigationTransforms[0]
-            final fun <get-animatedNavigationTransforms>(): kotlin.collections/MutableList<com.slack.circuit.foundation.animation/AnimatedNavigationTransform> // com.slack.circuit.foundation/Circuit.Builder.animatedNavigationTransforms.<get-animatedNavigationTransforms>|<get-animatedNavigationTransforms>(){}[0]
+        final val animatedScreenTransforms // com.slack.circuit.foundation/Circuit.Builder.animatedScreenTransforms|{}animatedScreenTransforms[0]
+            final fun <get-animatedScreenTransforms>(): kotlin.collections/MutableMap<kotlin.reflect/KClass<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform> // com.slack.circuit.foundation/Circuit.Builder.animatedScreenTransforms.<get-animatedScreenTransforms>|<get-animatedScreenTransforms>(){}[0]
         final val presenterFactories // com.slack.circuit.foundation/Circuit.Builder.presenterFactories|{}presenterFactories[0]
             final fun <get-presenterFactories>(): kotlin.collections/MutableList<com.slack.circuit.runtime.presenter/Presenter.Factory> // com.slack.circuit.foundation/Circuit.Builder.presenterFactories.<get-presenterFactories>|<get-presenterFactories>(){}[0]
         final val uiFactories // com.slack.circuit.foundation/Circuit.Builder.uiFactories|{}uiFactories[0]
@@ -188,9 +266,9 @@ final class com.slack.circuit.foundation/Circuit { // com.slack.circuit.foundati
         final var presentWithLifecycle // com.slack.circuit.foundation/Circuit.Builder.presentWithLifecycle|{}presentWithLifecycle[0]
             final fun <get-presentWithLifecycle>(): kotlin/Boolean // com.slack.circuit.foundation/Circuit.Builder.presentWithLifecycle.<get-presentWithLifecycle>|<get-presentWithLifecycle>(){}[0]
 
-        final fun addAnimatedNavigationTransform(com.slack.circuit.foundation.animation/AnimatedNavigationTransform): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addAnimatedNavigationTransform|addAnimatedNavigationTransform(com.slack.circuit.foundation.animation.AnimatedNavigationTransform){}[0]
-        final fun addAnimatedNavigationTransform(kotlin/Array<out com.slack.circuit.foundation.animation/AnimatedNavigationTransform>...): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addAnimatedNavigationTransform|addAnimatedNavigationTransform(kotlin.Array<out|com.slack.circuit.foundation.animation.AnimatedNavigationTransform>...){}[0]
-        final fun addAnimatedNavigationTransforms(kotlin.collections/Iterable<com.slack.circuit.foundation.animation/AnimatedNavigationTransform>): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addAnimatedNavigationTransforms|addAnimatedNavigationTransforms(kotlin.collections.Iterable<com.slack.circuit.foundation.animation.AnimatedNavigationTransform>){}[0]
+        final fun addAnimatedScreenTransform(kotlin.reflect/KClass<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addAnimatedScreenTransform|addAnimatedScreenTransform(kotlin.reflect.KClass<com.slack.circuit.runtime.screen.Screen>;com.slack.circuit.foundation.animation.AnimatedScreenTransform){}[0]
+        final fun addAnimatedScreenTransforms(kotlin.collections/Map<kotlin.reflect/KClass<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform>): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addAnimatedScreenTransforms|addAnimatedScreenTransforms(kotlin.collections.Map<kotlin.reflect.KClass<com.slack.circuit.runtime.screen.Screen>,com.slack.circuit.foundation.animation.AnimatedScreenTransform>){}[0]
+        final fun addAnimatedScreenTransforms(kotlin/Array<out kotlin/Pair<kotlin.reflect/KClass<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform>>...): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addAnimatedScreenTransforms|addAnimatedScreenTransforms(kotlin.Array<out|kotlin.Pair<kotlin.reflect.KClass<com.slack.circuit.runtime.screen.Screen>,com.slack.circuit.foundation.animation.AnimatedScreenTransform>>...){}[0]
         final fun addPresenterFactories(kotlin.collections/Iterable<com.slack.circuit.runtime.presenter/Presenter.Factory>): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addPresenterFactories|addPresenterFactories(kotlin.collections.Iterable<com.slack.circuit.runtime.presenter.Presenter.Factory>){}[0]
         final fun addPresenterFactory(com.slack.circuit.runtime.presenter/Presenter.Factory): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addPresenterFactory|addPresenterFactory(com.slack.circuit.runtime.presenter.Presenter.Factory){}[0]
         final fun addPresenterFactory(kotlin/Array<out com.slack.circuit.runtime.presenter/Presenter.Factory>...): com.slack.circuit.foundation/Circuit.Builder // com.slack.circuit.foundation/Circuit.Builder.addPresenterFactory|addPresenterFactory(kotlin.Array<out|com.slack.circuit.runtime.presenter.Presenter.Factory>...){}[0]
@@ -210,14 +288,14 @@ final class com.slack.circuit.foundation/Circuit { // com.slack.circuit.foundati
     }
 }
 
+final object com.slack.circuit.foundation.animation/NoOpAnimatedScreenTransform : com.slack.circuit.foundation.animation/AnimatedScreenTransform // com.slack.circuit.foundation.animation/NoOpAnimatedScreenTransform|null[0]
+
 final object com.slack.circuit.foundation/NavigatorDefaults { // com.slack.circuit.foundation/NavigatorDefaults|null[0]
     final class <#A1: com.slack.circuit.backstack/NavArgument> DefaultDecorator : com.slack.circuit.foundation.animation/AnimatedNavDecorator<#A1, com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState<#A1>> { // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator|null[0]
         constructor <init>() // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.<init>|<init>(){}[0]
 
-        final val defaultTransform // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.defaultTransform|{}defaultTransform[0]
-            final fun <get-defaultTransform>(): com.slack.circuit.foundation.animation/RequiredAnimatedNavigationTransform // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.defaultTransform.<get-defaultTransform>|<get-defaultTransform>(){}[0]
-
         final fun (androidx.compose.animation/AnimatedContentScope).Decoration(com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState<#A1>, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.Decoration|Decoration@androidx.compose.animation.AnimatedContentScope(com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState<1:0>;kotlin.Function3<1:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+        final fun (androidx.compose.animation/AnimatedContentTransitionScope<com.slack.circuit.foundation.animation/AnimatedNavState>).transitionSpec(com.slack.circuit.foundation.animation/AnimatedNavEvent): androidx.compose.animation/ContentTransform // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.transitionSpec|transitionSpec@androidx.compose.animation.AnimatedContentTransitionScope<com.slack.circuit.foundation.animation.AnimatedNavState>(com.slack.circuit.foundation.animation.AnimatedNavEvent){}[0]
         final fun targetState(kotlinx.collections.immutable/ImmutableList<#A1>, kotlin/Int): com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState<#A1> // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.targetState|targetState(kotlinx.collections.immutable.ImmutableList<1:0>;kotlin.Int){}[0]
         final fun updateTransition(kotlinx.collections.immutable/ImmutableList<#A1>, kotlin/Int, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.animation.core/Transition<com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState<#A1>> // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.updateTransition|updateTransition(kotlinx.collections.immutable.ImmutableList<1:0>;kotlin.Int;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 
@@ -228,6 +306,8 @@ final object com.slack.circuit.foundation/NavigatorDefaults { // com.slack.circu
                 final fun <get-args>(): kotlinx.collections.immutable/ImmutableList<#A2> // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.args.<get-args>|<get-args>(){}[0]
             final val backStackDepth // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.backStackDepth|{}backStackDepth[0]
                 final fun <get-backStackDepth>(): kotlin/Int // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.backStackDepth.<get-backStackDepth>|<get-backStackDepth>(){}[0]
+            final val context // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.context|{}context[0]
+                final fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.context.<get-context>|<get-context>(){}[0]
             final val rootScreen // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.rootScreen|{}rootScreen[0]
                 final fun <get-rootScreen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.rootScreen.<get-rootScreen>|<get-rootScreen>(){}[0]
             final val screen // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecorator.DefaultAnimatedState.screen|{}screen[0]
@@ -241,10 +321,6 @@ final object com.slack.circuit.foundation/NavigatorDefaults { // com.slack.circu
         }
     }
 
-    final object DefaultDecoration : com.slack.circuit.backstack/NavDecoration { // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecoration|null[0]
-        final fun <#A2: com.slack.circuit.backstack/NavArgument> DecoratedContent(kotlinx.collections.immutable/ImmutableList<#A2>, kotlin/Int, androidx.compose.ui/Modifier, kotlin/Function3<#A2, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecoration.DecoratedContent|DecoratedContent(kotlinx.collections.immutable.ImmutableList<0:0>;kotlin.Int;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.backstack.NavArgument>}[0]
-    }
-
     final object DefaultDecoratorFactory : com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory { // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecoratorFactory|null[0]
         final fun <#A2: com.slack.circuit.backstack/NavArgument> create(): com.slack.circuit.foundation.animation/AnimatedNavDecorator<#A2, *> // com.slack.circuit.foundation/NavigatorDefaults.DefaultDecoratorFactory.create|create(){0§<com.slack.circuit.backstack.NavArgument>}[0]
     }
@@ -254,7 +330,12 @@ final object com.slack.circuit.foundation/NavigatorDefaults { // com.slack.circu
     }
 }
 
+final val com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext$stableprop // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext$stableprop|#static{}com_slack_circuit_foundation_animation_AnimatedNavContext$stableprop[0]
+final val com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext_Builder$stableprop // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext_Builder$stableprop|#static{}com_slack_circuit_foundation_animation_AnimatedNavContext_Builder$stableprop[0]
 final val com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavDecoration$stableprop // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavDecoration$stableprop|#static{}com_slack_circuit_foundation_animation_AnimatedNavDecoration$stableprop[0]
+final val com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_NoOpAnimatedScreenTransform$stableprop // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_NoOpAnimatedScreenTransform$stableprop|#static{}com_slack_circuit_foundation_animation_NoOpAnimatedScreenTransform$stableprop[0]
+final val com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform$stableprop // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform$stableprop|#static{}com_slack_circuit_foundation_animation_PartialContentTransform$stableprop[0]
+final val com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform_Builder$stableprop // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform_Builder$stableprop|#static{}com_slack_circuit_foundation_animation_PartialContentTransform_Builder$stableprop[0]
 final val com.slack.circuit.foundation/LocalBackStack // com.slack.circuit.foundation/LocalBackStack|{}LocalBackStack[0]
     final fun <get-LocalBackStack>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>?> // com.slack.circuit.foundation/LocalBackStack.<get-LocalBackStack>|<get-LocalBackStack>(){}[0]
 final val com.slack.circuit.foundation/LocalCircuit // com.slack.circuit.foundation/LocalCircuit|{}LocalCircuit[0]
@@ -269,7 +350,6 @@ final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_GoT
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_Pop$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_Pop$stableprop|#static{}com_slack_circuit_foundation_NavEvent_Pop$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_ResetRoot$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_ResetRoot$stableprop|#static{}com_slack_circuit_foundation_NavEvent_ResetRoot$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults$stableprop|#static{}com_slack_circuit_foundation_NavigatorDefaults$stableprop[0]
-final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoration$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoration$stableprop|#static{}com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoration$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator$stableprop|#static{}com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoratorFactory$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoratorFactory$stableprop|#static{}com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoratorFactory$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator_DefaultAnimatedState$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator_DefaultAnimatedState$stableprop|#static{}com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator_DefaultAnimatedState$stableprop[0]
@@ -289,13 +369,26 @@ final var com.slack.circuit.foundation/config // com.slack.circuit.foundation/co
     final fun (com.slack.circuit.runtime/CircuitContext).<get-config>(): com.slack.circuit.foundation/Circuit // com.slack.circuit.foundation/config.<get-config>|<get-config>@com.slack.circuit.runtime.CircuitContext(){}[0]
     final fun (com.slack.circuit.runtime/CircuitContext).<set-config>(com.slack.circuit.foundation/Circuit) // com.slack.circuit.foundation/config.<set-config>|<set-config>@com.slack.circuit.runtime.CircuitContext(com.slack.circuit.foundation.Circuit){}[0]
 
+final fun (androidx.compose.animation/ContentTransform).com.slack.circuit.foundation.animation/asPartialContentTransform(): com.slack.circuit.foundation.animation/PartialContentTransform // com.slack.circuit.foundation.animation/asPartialContentTransform|asPartialContentTransform@androidx.compose.animation.ContentTransform(){}[0]
+final fun (com.slack.circuit.foundation.animation/AnimatedNavContext.Builder).com.slack.circuit.foundation.animation/forward(kotlin/Function1<com.slack.circuit.foundation.animation/PartialContentTransform.Builder, kotlin/Unit>) // com.slack.circuit.foundation.animation/forward|forward@com.slack.circuit.foundation.animation.AnimatedNavContext.Builder(kotlin.Function1<com.slack.circuit.foundation.animation.PartialContentTransform.Builder,kotlin.Unit>){}[0]
+final fun (com.slack.circuit.foundation.animation/AnimatedNavContext.Builder).com.slack.circuit.foundation.animation/reverse(kotlin/Function1<com.slack.circuit.foundation.animation/PartialContentTransform.Builder, kotlin/Unit>) // com.slack.circuit.foundation.animation/reverse|reverse@com.slack.circuit.foundation.animation.AnimatedNavContext.Builder(kotlin.Function1<com.slack.circuit.foundation.animation.PartialContentTransform.Builder,kotlin.Unit>){}[0]
+final fun (com.slack.circuit.runtime.navigation/NavigationContext).com.slack.circuit.foundation.animation/transition(kotlin/Function1<com.slack.circuit.foundation.animation/AnimatedNavContext.Builder, kotlin/Unit>): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation.animation/transition|transition@com.slack.circuit.runtime.navigation.NavigationContext(kotlin.Function1<com.slack.circuit.foundation.animation.AnimatedNavContext.Builder,kotlin.Unit>){}[0]
+final fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.foundation.animation/goTo(com.slack.circuit.runtime.screen/Screen, kotlin/Function1<com.slack.circuit.foundation.animation/AnimatedNavContext.Builder, kotlin/Unit>): kotlin/Boolean // com.slack.circuit.foundation.animation/goTo|goTo@com.slack.circuit.runtime.Navigator(com.slack.circuit.runtime.screen.Screen;kotlin.Function1<com.slack.circuit.foundation.animation.AnimatedNavContext.Builder,kotlin.Unit>){}[0]
+final fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.foundation.animation/pop(com.slack.circuit.runtime.screen/PopResult? = ..., kotlin/Function1<com.slack.circuit.foundation.animation/PartialContentTransform.Builder, kotlin/Unit>): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.foundation.animation/pop|pop@com.slack.circuit.runtime.Navigator(com.slack.circuit.runtime.screen.PopResult?;kotlin.Function1<com.slack.circuit.foundation.animation.PartialContentTransform.Builder,kotlin.Unit>){}[0]
+final fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.foundation.animation/resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Function1<com.slack.circuit.foundation.animation/PartialContentTransform.Builder, kotlin/Unit>): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.foundation.animation/resetRoot|resetRoot@com.slack.circuit.runtime.Navigator(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;kotlin.Function1<com.slack.circuit.foundation.animation.PartialContentTransform.Builder,kotlin.Unit>){}[0]
 final fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.foundation/onNavEvent(com.slack.circuit.foundation/NavEvent) // com.slack.circuit.foundation/onNavEvent|onNavEvent@com.slack.circuit.runtime.Navigator(com.slack.circuit.foundation.NavEvent){}[0]
-final fun <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.foundation/NavigableCircuitContent(com.slack.circuit.runtime/Navigator, com.slack.circuit.backstack/BackStack<#A>, androidx.compose.ui/Modifier?, com.slack.circuit.foundation/Circuit?, kotlinx.collections.immutable/ImmutableMap<out com.slack.circuit.backstack/BackStack.Record, com.slack.circuit.backstack/ProvidedValues>?, com.slack.circuit.backstack/NavDecoration?, kotlin/Function4<com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.foundation/NavigableCircuitContent|NavigableCircuitContent(com.slack.circuit.runtime.Navigator;com.slack.circuit.backstack.BackStack<0:0>;androidx.compose.ui.Modifier?;com.slack.circuit.foundation.Circuit?;kotlinx.collections.immutable.ImmutableMap<out|com.slack.circuit.backstack.BackStack.Record,com.slack.circuit.backstack.ProvidedValues>?;com.slack.circuit.backstack.NavDecoration?;kotlin.Function4<com.slack.circuit.runtime.screen.Screen,androidx.compose.ui.Modifier,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.backstack.BackStack.Record>}[0]
+final fun <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.foundation/NavigableCircuitContent(com.slack.circuit.runtime/Navigator, com.slack.circuit.backstack/BackStack<#A>, androidx.compose.ui/Modifier?, com.slack.circuit.foundation/Circuit?, kotlinx.collections.immutable/ImmutableMap<out com.slack.circuit.backstack/BackStack.Record, com.slack.circuit.backstack/ProvidedValues>?, com.slack.circuit.backstack/NavDecoration?, com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory?, kotlin/Function4<com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.foundation/NavigableCircuitContent|NavigableCircuitContent(com.slack.circuit.runtime.Navigator;com.slack.circuit.backstack.BackStack<0:0>;androidx.compose.ui.Modifier?;com.slack.circuit.foundation.Circuit?;kotlinx.collections.immutable.ImmutableMap<out|com.slack.circuit.backstack.BackStack.Record,com.slack.circuit.backstack.ProvidedValues>?;com.slack.circuit.backstack.NavDecoration?;com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory?;kotlin.Function4<com.slack.circuit.runtime.screen.Screen,androidx.compose.ui.Modifier,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.backstack.BackStack.Record>}[0]
 final fun <#A: com.slack.circuit.runtime.screen/PopResult> com.slack.circuit.foundation/rememberAnsweringNavigator(com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>, kotlin.reflect/KClass<#A>, kotlin.coroutines/SuspendFunction2<kotlinx.coroutines/CoroutineScope, #A, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.runtime/GoToNavigator // com.slack.circuit.foundation/rememberAnsweringNavigator|rememberAnsweringNavigator(com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>;kotlin.reflect.KClass<0:0>;kotlin.coroutines.SuspendFunction2<kotlinx.coroutines.CoroutineScope,0:0,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.screen.PopResult>}[0]
 final fun <#A: com.slack.circuit.runtime.screen/PopResult> com.slack.circuit.foundation/rememberAnsweringNavigator(com.slack.circuit.runtime/Navigator, kotlin.reflect/KClass<#A>, kotlin.coroutines/SuspendFunction2<kotlinx.coroutines/CoroutineScope, #A, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.runtime/GoToNavigator // com.slack.circuit.foundation/rememberAnsweringNavigator|rememberAnsweringNavigator(com.slack.circuit.runtime.Navigator;kotlin.reflect.KClass<0:0>;kotlin.coroutines.SuspendFunction2<kotlinx.coroutines.CoroutineScope,0:0,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.screen.PopResult>}[0]
 final fun <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.foundation/CircuitContent(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.presenter/Presenter<#A>, com.slack.circuit.runtime.ui/Ui<#A>, androidx.compose.ui/Modifier?, com.slack.circuit.foundation/EventListener?, kotlin/Any?, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.foundation/CircuitContent|CircuitContent(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.presenter.Presenter<0:0>;com.slack.circuit.runtime.ui.Ui<0:0>;androidx.compose.ui.Modifier?;com.slack.circuit.foundation.EventListener?;kotlin.Any?;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.runtime.CircuitUiState>}[0]
 final fun <#A: kotlin/Any?> com.slack.circuit.foundation/pausableState(kotlin/String?, kotlin/Boolean, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, #A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.slack.circuit.foundation/pausableState|pausableState(kotlin.String?;kotlin.Boolean;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext$stableprop_getter|com_slack_circuit_foundation_animation_AnimatedNavContext$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext_Builder$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavContext_Builder$stableprop_getter|com_slack_circuit_foundation_animation_AnimatedNavContext_Builder$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavDecoration$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_AnimatedNavDecoration$stableprop_getter|com_slack_circuit_foundation_animation_AnimatedNavDecoration$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_NoOpAnimatedScreenTransform$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_NoOpAnimatedScreenTransform$stableprop_getter|com_slack_circuit_foundation_animation_NoOpAnimatedScreenTransform$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform$stableprop_getter|com_slack_circuit_foundation_animation_PartialContentTransform$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform_Builder$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.animation/com_slack_circuit_foundation_animation_PartialContentTransform_Builder$stableprop_getter|com_slack_circuit_foundation_animation_PartialContentTransform_Builder$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation.animation/transition(kotlin/Function1<com.slack.circuit.foundation.animation/AnimatedNavContext.Builder, kotlin/Unit>): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.foundation.animation/transition|transition(kotlin.Function1<com.slack.circuit.foundation.animation.AnimatedNavContext.Builder,kotlin.Unit>){}[0]
 final fun com.slack.circuit.foundation/CircuitCompositionLocals(com.slack.circuit.foundation/Circuit, com.slack.circuit.retained/RetainedStateRegistry?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.foundation/CircuitCompositionLocals|CircuitCompositionLocals(com.slack.circuit.foundation.Circuit;com.slack.circuit.retained.RetainedStateRegistry?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.slack.circuit.foundation/CircuitContent(com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier?, com.slack.circuit.foundation/Circuit?, kotlin/Function4<com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Any?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.foundation/CircuitContent|CircuitContent(com.slack.circuit.runtime.screen.Screen;androidx.compose.ui.Modifier?;com.slack.circuit.foundation.Circuit?;kotlin.Function4<com.slack.circuit.runtime.screen.Screen,androidx.compose.ui.Modifier,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Any?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.slack.circuit.foundation/CircuitContent(com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier?, kotlin/Function1<com.slack.circuit.foundation/NavEvent, kotlin/Unit>, com.slack.circuit.foundation/Circuit?, kotlin/Function4<com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Any?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.foundation/CircuitContent|CircuitContent(com.slack.circuit.runtime.screen.Screen;androidx.compose.ui.Modifier?;kotlin.Function1<com.slack.circuit.foundation.NavEvent,kotlin.Unit>;com.slack.circuit.foundation.Circuit?;kotlin.Function4<com.slack.circuit.runtime.screen.Screen,androidx.compose.ui.Modifier,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Any?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -311,7 +404,6 @@ final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_GoT
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_Pop$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_Pop$stableprop_getter|com_slack_circuit_foundation_NavEvent_Pop$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_ResetRoot$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavEvent_ResetRoot$stableprop_getter|com_slack_circuit_foundation_NavEvent_ResetRoot$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults$stableprop_getter|com_slack_circuit_foundation_NavigatorDefaults$stableprop_getter(){}[0]
-final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoration$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoration$stableprop_getter|com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoration$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator$stableprop_getter|com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoratorFactory$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoratorFactory$stableprop_getter|com_slack_circuit_foundation_NavigatorDefaults_DefaultDecoratorFactory$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator_DefaultAnimatedState$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator_DefaultAnimatedState$stableprop_getter|com_slack_circuit_foundation_NavigatorDefaults_DefaultDecorator_DefaultAnimatedState$stableprop_getter(){}[0]

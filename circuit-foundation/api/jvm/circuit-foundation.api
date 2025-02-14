@@ -8,7 +8,7 @@ public final class com/slack/circuit/foundation/Circuit {
 	public static final field $stable I
 	public synthetic fun <init> (Lcom/slack/circuit/foundation/Circuit$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
-	public final fun getAnimatedNavigationTransforms ()Lkotlinx/collections/immutable/ImmutableList;
+	public final fun getAnimatedScreenTransforms ()Lkotlinx/collections/immutable/ImmutableMap;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/backstack/NavDecoration;
 	public final fun getOnUnavailableContent ()Lkotlin/jvm/functions/Function4;
 	public final fun getPresentWithLifecycle ()Z
@@ -24,9 +24,9 @@ public final class com/slack/circuit/foundation/Circuit {
 public final class com/slack/circuit/foundation/Circuit$Builder {
 	public static final field $stable I
 	public fun <init> ()V
-	public final fun addAnimatedNavigationTransform (Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform;)Lcom/slack/circuit/foundation/Circuit$Builder;
-	public final fun addAnimatedNavigationTransform ([Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform;)Lcom/slack/circuit/foundation/Circuit$Builder;
-	public final fun addAnimatedNavigationTransforms (Ljava/lang/Iterable;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun addAnimatedScreenTransform (Lkotlin/reflect/KClass;Lcom/slack/circuit/foundation/animation/AnimatedScreenTransform;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun addAnimatedScreenTransforms (Ljava/util/Map;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun addAnimatedScreenTransforms ([Lkotlin/Pair;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addPresenterFactories (Ljava/lang/Iterable;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addPresenterFactory (Lcom/slack/circuit/runtime/presenter/Presenter$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addPresenterFactory ([Lcom/slack/circuit/runtime/presenter/Presenter$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
@@ -36,7 +36,7 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 	public final fun build ()Lcom/slack/circuit/foundation/Circuit;
 	public final fun eventListenerFactory (Lcom/slack/circuit/foundation/EventListener$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
-	public final fun getAnimatedNavigationTransforms ()Ljava/util/List;
+	public final fun getAnimatedScreenTransforms ()Ljava/util/Map;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/backstack/NavDecoration;
 	public final fun getEventListenerFactory ()Lcom/slack/circuit/foundation/EventListener$Factory;
 	public final fun getOnUnavailableContent ()Lkotlin/jvm/functions/Function4;
@@ -114,11 +114,14 @@ public abstract interface class com/slack/circuit/foundation/NavEvent : com/slac
 
 public final class com/slack/circuit/foundation/NavEvent$GoTo : com/slack/circuit/foundation/NavEvent {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuit/foundation/NavEvent$GoTo;
-	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavEvent$GoTo;Lcom/slack/circuit/runtime/screen/Screen;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavEvent$GoTo;
+	public final fun component2 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/foundation/NavEvent$GoTo;
+	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavEvent$GoTo;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavEvent$GoTo;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -127,12 +130,14 @@ public final class com/slack/circuit/foundation/NavEvent$GoTo : com/slack/circui
 public final class com/slack/circuit/foundation/NavEvent$Pop : com/slack/circuit/foundation/NavEvent {
 	public static final field $stable I
 	public fun <init> ()V
-	public fun <init> (Lcom/slack/circuit/runtime/screen/PopResult;)V
-	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/PopResult;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/PopResult;
-	public final fun copy (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/foundation/NavEvent$Pop;
-	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavEvent$Pop;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavEvent$Pop;
+	public final fun component2 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/foundation/NavEvent$Pop;
+	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavEvent$Pop;Lcom/slack/circuit/runtime/screen/PopResult;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavEvent$Pop;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getResult ()Lcom/slack/circuit/runtime/screen/PopResult;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -140,13 +145,16 @@ public final class com/slack/circuit/foundation/NavEvent$Pop : com/slack/circuit
 
 public final class com/slack/circuit/foundation/NavEvent$ResetRoot : com/slack/circuit/foundation/NavEvent {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZZ)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun component2 ()Z
 	public final fun component3 ()Z
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuit/foundation/NavEvent$ResetRoot;
-	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavEvent$ResetRoot;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Lcom/slack/circuit/foundation/NavEvent$ResetRoot;
+	public final fun component4 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;)Lcom/slack/circuit/foundation/NavEvent$ResetRoot;
+	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavEvent$ResetRoot;Lcom/slack/circuit/runtime/screen/Screen;ZZLcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavEvent$ResetRoot;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getNewRoot ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun getRestoreState ()Z
 	public final fun getSaveState ()Z
@@ -159,7 +167,7 @@ public final class com/slack/circuit/foundation/NavEventKt {
 }
 
 public final class com/slack/circuit/foundation/NavigableCircuitContentKt {
-	public static final fun NavigableCircuitContent (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/backstack/BackStack;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/foundation/Circuit;Lkotlinx/collections/immutable/ImmutableMap;Lcom/slack/circuit/backstack/NavDecoration;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
+	public static final fun NavigableCircuitContent (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/backstack/BackStack;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/foundation/Circuit;Lkotlinx/collections/immutable/ImmutableMap;Lcom/slack/circuit/backstack/NavDecoration;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getLocalBackStack ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
@@ -168,20 +176,14 @@ public final class com/slack/circuit/foundation/NavigatorDefaults {
 	public static final field INSTANCE Lcom/slack/circuit/foundation/NavigatorDefaults;
 }
 
-public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration : com/slack/circuit/backstack/NavDecoration {
-	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecoration;
-	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-}
-
 public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator : com/slack/circuit/foundation/animation/AnimatedNavDecorator {
 	public static final field $stable I
 	public fun <init> ()V
 	public fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 	public synthetic fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/animation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-	public fun getDefaultTransform ()Lcom/slack/circuit/foundation/animation/RequiredAnimatedNavigationTransform;
 	public fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
 	public synthetic fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
+	public fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ContentTransform;
 	public fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
 }
 
@@ -194,6 +196,7 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorat
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getArgs ()Lkotlinx/collections/immutable/ImmutableList;
 	public fun getBackStackDepth ()I
+	public fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public fun getRootScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun hashCode ()I
@@ -229,6 +232,7 @@ public final class com/slack/circuit/foundation/RecordContentProvider : com/slac
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function3;)V
 	public fun equals (Ljava/lang/Object;)Z
+	public fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public final fun getRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun hashCode ()I
@@ -247,16 +251,47 @@ public final class com/slack/circuit/foundation/SaveableBackstack_ScreenKt {
 	public static final synthetic fun getScreen (Lcom/slack/circuit/backstack/SaveableBackStack$Record;)Lcom/slack/circuit/runtime/screen/Screen;
 }
 
+public final class com/slack/circuit/foundation/animation/AnimatedNavContext {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun buildUpon ()Lcom/slack/circuit/foundation/animation/AnimatedNavContext$Builder;
+	public final fun getForward ()Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public final fun getReverse ()Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+}
+
+public final class com/slack/circuit/foundation/animation/AnimatedNavContext$Builder {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun build ()Lcom/slack/circuit/foundation/animation/AnimatedNavContext;
+	public final fun getForward ()Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public final fun getReverse ()Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public final fun setForward (Lcom/slack/circuit/foundation/animation/PartialContentTransform;)V
+	public final fun setReverse (Lcom/slack/circuit/foundation/animation/PartialContentTransform;)V
+}
+
+public final class com/slack/circuit/foundation/animation/AnimatedNavContextKt {
+	public static final fun asPartialContentTransform (Landroidx/compose/animation/ContentTransform;)Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public static final fun forward (Lcom/slack/circuit/foundation/animation/AnimatedNavContext$Builder;Lkotlin/jvm/functions/Function1;)V
+	public static final fun goTo (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;)Z
+	public static final fun pop (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/PopResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/screen/Screen;
+	public static synthetic fun pop$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/PopResult;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/Screen;
+	public static final fun resetRoot (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZLkotlin/jvm/functions/Function1;)Lkotlinx/collections/immutable/ImmutableList;
+	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/collections/immutable/ImmutableList;
+	public static final fun reverse (Lcom/slack/circuit/foundation/animation/AnimatedNavContext$Builder;Lkotlin/jvm/functions/Function1;)V
+	public static final fun transition (Lcom/slack/circuit/runtime/navigation/NavigationContext;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public static final fun transition (Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/navigation/NavigationContext;
+}
+
 public final class com/slack/circuit/foundation/animation/AnimatedNavDecoration : com/slack/circuit/backstack/NavDecoration {
 	public static final field $stable I
-	public fun <init> (Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)V
+	public fun <init> (Lkotlinx/collections/immutable/ImmutableMap;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)V
 	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }
 
 public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavDecorator {
 	public abstract fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/animation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-	public abstract fun getDefaultTransform ()Lcom/slack/circuit/foundation/animation/RequiredAnimatedNavigationTransform;
 	public abstract fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
+	public abstract fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ContentTransform;
 	public abstract fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
 }
 
@@ -264,26 +299,68 @@ public abstract interface class com/slack/circuit/foundation/animation/AnimatedN
 	public abstract fun create ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator;
 }
 
+public final class com/slack/circuit/foundation/animation/AnimatedNavEvent : java/lang/Enum {
+	public static final field GoTo Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;
+	public static final field Pop Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;
+	public static final field RootReset Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;
+	public static fun values ()[Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;
+}
+
 public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavState {
 	public abstract fun getBackStackDepth ()I
+	public abstract fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public abstract fun getRootScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 }
 
-public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavigationTransform {
-	public abstract fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;)Landroidx/compose/animation/ContentTransform;
+public abstract interface class com/slack/circuit/foundation/animation/AnimatedScreenTransform {
+	public fun enterTransition (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/EnterTransition;
+	public fun exitTransition (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ExitTransition;
+	public fun sizeTransform (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/SizeTransform;
+	public fun zIndex (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Ljava/lang/Float;
 }
 
-public final class com/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent : java/lang/Enum {
-	public static final field GoTo Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;
-	public static final field Pop Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;
-	public static final field RootReset Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;
-	public static fun values ()[Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;
+public final class com/slack/circuit/foundation/animation/NoOpAnimatedScreenTransform : com/slack/circuit/foundation/animation/AnimatedScreenTransform {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuit/foundation/animation/NoOpAnimatedScreenTransform;
 }
 
-public abstract interface class com/slack/circuit/foundation/animation/RequiredAnimatedNavigationTransform : com/slack/circuit/foundation/animation/AnimatedNavigationTransform {
-	public abstract fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavigationTransform$NavigationEvent;)Landroidx/compose/animation/ContentTransform;
+public final class com/slack/circuit/foundation/animation/PartialContentTransform {
+	public static final field $stable I
+	public static final field Companion Lcom/slack/circuit/foundation/animation/PartialContentTransform$Companion;
+	public fun <init> (Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Ljava/lang/Float;Landroidx/compose/animation/SizeTransform;)V
+	public final fun component1 ()Landroidx/compose/animation/EnterTransition;
+	public final fun component2 ()Landroidx/compose/animation/ExitTransition;
+	public final fun component3 ()Ljava/lang/Float;
+	public final fun component4 ()Landroidx/compose/animation/SizeTransform;
+	public final fun copy (Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Ljava/lang/Float;Landroidx/compose/animation/SizeTransform;)Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/animation/PartialContentTransform;Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Ljava/lang/Float;Landroidx/compose/animation/SizeTransform;ILjava/lang/Object;)Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnter ()Landroidx/compose/animation/EnterTransition;
+	public final fun getExit ()Landroidx/compose/animation/ExitTransition;
+	public final fun getSizeTransform ()Landroidx/compose/animation/SizeTransform;
+	public final fun getZIndex ()Ljava/lang/Float;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/foundation/animation/PartialContentTransform$Builder {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun build ()Lcom/slack/circuit/foundation/animation/PartialContentTransform;
+	public final fun getEnter ()Landroidx/compose/animation/EnterTransition;
+	public final fun getExit ()Landroidx/compose/animation/ExitTransition;
+	public final fun getSizeTransform ()Landroidx/compose/animation/SizeTransform;
+	public final fun getZIndex ()Ljava/lang/Float;
+	public final fun setEnter (Landroidx/compose/animation/EnterTransition;)V
+	public final fun setExit (Landroidx/compose/animation/ExitTransition;)V
+	public final fun setSizeTransform (Landroidx/compose/animation/SizeTransform;)V
+	public final fun setZIndex (Ljava/lang/Float;)V
+}
+
+public final class com/slack/circuit/foundation/animation/PartialContentTransform$Companion {
+	public final fun getEMPTY ()Lcom/slack/circuit/foundation/animation/PartialContentTransform;
 }
 

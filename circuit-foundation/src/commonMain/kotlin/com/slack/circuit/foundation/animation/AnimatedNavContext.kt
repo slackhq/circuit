@@ -59,8 +59,6 @@ public fun AnimatedNavContext.Builder.reverse(block: PartialContentTransform.Bui
 }
 
 /**
- * Navigates to the given [screen] with the specified transition behavior.
- *
  * This is a convenience function that combines [Navigator.goTo] with a transition.
  *
  * @param screen The [Screen] to navigate to.
@@ -75,8 +73,6 @@ public fun Navigator.goTo(
 }
 
 /**
- * Pops the current screen off the navigation stack with a specified transition.
- *
  * This is a convenience function that combines [Navigator.pop] with a transition.
  *
  * @param result The result to return to the previous screen, if any.
@@ -91,9 +87,7 @@ public fun Navigator.pop(
 }
 
 /**
- * Resets the navigation stack to the given [newRoot] with a specified transition.
- *
- * This is a convenience function that combines `resetRoot` with a transition.
+ * This is a convenience function that combines [Navigator.resetRoot] with a transition.
  *
  * @param newRoot The new root [Screen] of the navigation stack.
  * @param saveState Whether to save the state of the current stack.

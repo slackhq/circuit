@@ -13,7 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform
+import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
@@ -23,8 +23,9 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlin.reflect.KClass
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 
 /**
  * [Circuit] adapts [presenter factories][Presenter.Factory] to their corresponding
@@ -76,14 +77,14 @@ public class Circuit private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
-  public val animatedNavigationTransforms: ImmutableList<AnimatedNavigationTransform> =
-    builder.animatedNavigationTransforms.toImmutableList()
+  public val animatedScreenTransforms: ImmutableMap<KClass<Screen>, AnimatedScreenTransform> =
+    builder.animatedScreenTransforms.toImmutableMap()
   public val animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
     builder.animatedNavDecoratorFactory
   public val defaultNavDecoration: NavDecoration =
     builder.defaultNavDecoration
       ?: AnimatedNavDecoration(
-        transforms = animatedNavigationTransforms,
+        animatedScreenTransforms = animatedScreenTransforms,
         decoratorFactory = animatedNavDecoratorFactory,
       )
 
@@ -157,8 +158,8 @@ public class Circuit private constructor(builder: Builder) {
   public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
-    public val animatedNavigationTransforms: MutableList<AnimatedNavigationTransform> =
-      mutableListOf()
+    public val animatedScreenTransforms: MutableMap<KClass<Screen>, AnimatedScreenTransform> =
+      mutableMapOf()
 
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
       UnavailableContent
@@ -180,7 +181,7 @@ public class Circuit private constructor(builder: Builder) {
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
       presenterFactories.addAll(circuit.presenterFactories)
-      animatedNavigationTransforms.addAll(circuit.animatedNavigationTransforms)
+      animatedScreenTransforms.putAll(circuit.animatedScreenTransforms)
       animatedNavDecoratorFactory = circuit.animatedNavDecoratorFactory
       eventListenerFactory = circuit.eventListenerFactory
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
@@ -276,21 +277,18 @@ public class Circuit private constructor(builder: Builder) {
       decoratorFactory: AnimatedNavDecorator.Factory
     ): Builder = apply { animatedNavDecoratorFactory = decoratorFactory }
 
-    public fun addAnimatedNavigationTransform(
-      animatedNavigationTransform: AnimatedNavigationTransform
-    ): Builder = apply { animatedNavigationTransforms.add(animatedNavigationTransform) }
+    public fun addAnimatedScreenTransform(
+      screen: KClass<Screen>,
+      animatedNavigationTransform: AnimatedScreenTransform,
+    ): Builder = apply { animatedScreenTransforms[screen] = animatedNavigationTransform }
 
-    public fun addAnimatedNavigationTransform(
-      vararg animatedNavigationTransform: AnimatedNavigationTransform
-    ): Builder = apply {
-      for (transform in animatedNavigationTransform) {
-        animatedNavigationTransforms.add(transform)
-      }
-    }
+    public fun addAnimatedScreenTransforms(
+      vararg pairs: Pair<KClass<Screen>, AnimatedScreenTransform>
+    ): Builder = apply { animatedScreenTransforms.putAll(pairs) }
 
-    public fun addAnimatedNavigationTransforms(
-      transforms: Iterable<AnimatedNavigationTransform>
-    ): Builder = apply { animatedNavigationTransforms.addAll(transforms) }
+    public fun addAnimatedScreenTransforms(
+      transforms: Map<KClass<Screen>, AnimatedScreenTransform>
+    ): Builder = apply { animatedScreenTransforms.putAll(transforms) }
 
     public fun setOnUnavailableContent(
       content: @Composable (screen: Screen, modifier: Modifier) -> Unit

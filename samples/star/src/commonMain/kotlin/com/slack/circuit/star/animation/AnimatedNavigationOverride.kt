@@ -3,50 +3,52 @@
 package com.slack.circuit.star.animation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.togetherWith
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
+import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.foundation.animation.NavigationEvent
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 
-object PetDetailAnimatedNavigationOverride : AnimatedNavigationTransform {
+// @CircuitInject(PetDetailScreen::class, AppScope::class)
+object PetDetailAnimatedNavigationOverride : AnimatedScreenTransform {
 
-  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
     navigationEvent: NavigationEvent
-  ): ContentTransform? {
-    return when {
-      navigationEvent == NavigationEvent.GoTo &&
-        initialState.screen is HomeScreen &&
-        targetState.screen.isSharedElementDetailScreen() -> {
-        // We're expecting shared elements to exist between the source and target so remove the
-        // default animations.
-        EnterTransition.None togetherWith ExitTransition.None
-      }
-      else -> null
-    }
+  ): EnterTransition? {
+    // Going to the detail screen
+    if (initialState.screen !is HomeScreen) return null
+    if (!targetState.screen.isSharedElementDetailScreen()) return null
+    return EnterTransition.None
+  }
+
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+    navigationEvent: NavigationEvent
+  ): ExitTransition? {
+    // Going back to the home screen
+    if (targetState.screen !is HomeScreen) return null
+    if (!initialState.screen.isSharedElementDetailScreen()) return null
+    return ExitTransition.None
   }
 }
 
-// Split from PetDetailAnimatedNavigationOverride to verify AnimatedNavigationOverride lookups
-object HomeAnimatedNavigationOverride : AnimatedNavigationTransform {
-  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+// @CircuitInject(HomeScreen::class, AppScope::class)
+object HomeAnimatedNavigationOverride : AnimatedScreenTransform {
+
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
     navigationEvent: NavigationEvent
-  ): ContentTransform? {
-    return when {
-      navigationEvent == NavigationEvent.Pop &&
-        initialState.screen.isSharedElementDetailScreen() &&
-        targetState.screen is HomeScreen -> {
-        // We're expecting shared elements to exist between the source and target so remove the
-        // default animations.
-        EnterTransition.None togetherWith ExitTransition.None
-      }
-      else -> null
-    }
+  ): EnterTransition? {
+    // Coming from the detail screen with shared elements
+    return if (initialState.screen.isSharedElementDetailScreen()) EnterTransition.None else null
+  }
+
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+    navigationEvent: NavigationEvent
+  ): ExitTransition? {
+    // Going to the detail screen with shared elements
+    return if (targetState.screen.isSharedElementDetailScreen()) ExitTransition.None else null
   }
 }
 

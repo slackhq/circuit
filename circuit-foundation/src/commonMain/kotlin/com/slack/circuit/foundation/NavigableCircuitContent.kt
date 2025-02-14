@@ -47,8 +47,7 @@ import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAn
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
-import com.slack.circuit.foundation.animation.RequiredAnimatedNavigationTransform
+import com.slack.circuit.foundation.animation.NavigationEvent
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -57,10 +56,11 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -144,6 +144,9 @@ public class RecordContentProvider<R : Record>(
 
   override val screen: Screen
     get() = record.screen
+
+  override val context: NavigationContext
+    get() = record.context
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -261,7 +264,7 @@ public object NavigatorDefaults {
 
   public object DefaultDecoration :
     NavDecoration by AnimatedNavDecoration(
-      transforms = persistentListOf(),
+      animatedScreenTransforms = persistentMapOf(),
       decoratorFactory = DefaultDecoratorFactory,
     ) {
 
@@ -342,6 +345,7 @@ public object NavigatorDefaults {
       override val screen: Screen = args.first().screen
       override val rootScreen: Screen = args.last().screen
       override val backStackDepth: Int = args.size
+      override val context: NavigationContext = args.first().context
     }
 
     override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {
@@ -357,25 +361,22 @@ public object NavigatorDefaults {
     }
 
     @OptIn(InternalCircuitApi::class)
-    override val defaultTransform: RequiredAnimatedNavigationTransform =
-      object : RequiredAnimatedNavigationTransform {
-        override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-          navigationEvent: NavigationEvent
-        ): ContentTransform {
-          // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
-          // the transitionSpec recomposing.
-          // The states are available as `targetState` and `initialState`.
-          return when (navigationEvent) {
-            NavigationEvent.GoTo -> forward
-            NavigationEvent.Pop -> backward
-            NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
-          }.using(
-            // Disable clipping since the faded slide-in/out should
-            // be displayed out of bounds.
-            SizeTransform(clip = false)
-          )
-        }
-      }
+    override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+      navigationEvent: NavigationEvent
+    ): ContentTransform {
+      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+      // the transitionSpec recomposing.
+      // The states are available as `targetState` and `initialState`.
+      return when (navigationEvent) {
+        NavigationEvent.GoTo -> forward
+        NavigationEvent.Pop -> backward
+        NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
+      }.using(
+        // Disable clipping since the faded slide-in/out should
+        // be displayed out of bounds.
+        SizeTransform(clip = false)
+      )
+    }
 
     @Composable
     public override fun AnimatedContentScope.Decoration(

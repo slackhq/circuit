@@ -19,9 +19,13 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuit.star.animation.HomeAnimatedNavigationOverride
+import com.slack.circuit.star.animation.PetDetailAnimatedNavigationOverride
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -32,7 +36,7 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
@@ -67,6 +71,16 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         persistentListOf(HomeScreen, petDetailScreen)
       }
 
+    val localCircuit =
+      circuit
+        .newBuilder()
+        // todo DI these, does CircuitInject make sense?
+        .addAnimatedNavigationTransform(
+          HomeAnimatedNavigationOverride,
+          PetDetailAnimatedNavigationOverride,
+        )
+        .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
+        .build()
     setContent {
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
@@ -74,13 +88,19 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           val backStack = rememberSaveableBackStack(initialBackstack)
           val circuitNavigator = rememberCircuitNavigator(backStack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
-          CircuitCompositionLocals(circuit) {
+          CircuitCompositionLocals(localCircuit) {
             SharedElementTransitionLayout {
               ContentWithOverlays {
                 NavigableCircuitContent(
                   navigator = navigator,
                   backStack = backStack,
-                  decoration = GestureNavigationDecoration(onBackInvoked = navigator::pop),
+                  decoration =
+                    AnimatedNavDecoration(
+                      // todo This is awkward, want to replace just the decoratorFactory
+                      transforms = localCircuit.animatedNavigationTransforms,
+                      decoratorFactory =
+                        GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),
+                    ),
                 )
               }
             }

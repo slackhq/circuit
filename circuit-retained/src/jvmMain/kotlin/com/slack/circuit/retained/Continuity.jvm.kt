@@ -9,5 +9,11 @@ public actual fun continuityRetainedStateRegistry(
   key: String,
   canRetainChecker: CanRetainChecker,
 ): RetainedStateRegistry {
-  return RetainedStateRegistryImpl(null)
+  return RetainedStateRegistryImpl(CanRetainChecker.Always, null)
+}
+
+/** Checks whether or not we can retain in the current composable context. */
+@Composable
+public actual fun rememberContinuityCanRetainChecker(): CanRetainChecker {
+  return CanRetainChecker.Always
 }

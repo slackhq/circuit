@@ -37,7 +37,6 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.ContinuityViewModel
-import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
@@ -187,32 +186,6 @@ class RetainedTest {
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("")
-  }
-
-  @Test
-  fun changingCanRetainCheckerInstanceKeepsState() {
-    var canRetainChecker by mutableStateOf(CanRetainChecker { true })
-
-    setActivityContent {
-      CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
-        Column {
-          var count by rememberRetained { mutableIntStateOf(0) }
-          Text(modifier = Modifier.testTag(TAG_RETAINED_1), text = "count: $count")
-          Button(modifier = Modifier.testTag("TAG_BUTTON"), onClick = { count++ }) {
-            Text("Toggle")
-          }
-        }
-      }
-    }
-
-    composeTestRule.onNodeWithTag("TAG_BUTTON").performClick()
-    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("count: 1")
-
-    // Update the can retain checker to a different instance
-    canRetainChecker = CanRetainChecker { true }
-
-    // The state of remember retained should be preserved
-    composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextEquals("count: 1")
   }
 
   @Test
@@ -394,7 +367,8 @@ class RetainedTest {
 
     val content =
       @Composable {
-        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+        val registry = rememberRetained { RetainedStateRegistry({ canRetainChecker.canRetain() }) }
+        CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
           rememberRetained { subject }
           Unit
         }
@@ -446,7 +420,8 @@ class RetainedTest {
 
     val content =
       @Composable {
-        CompositionLocalProvider(LocalCanRetainChecker provides canRetainChecker) {
+        val registry = rememberRetained { RetainedStateRegistry({ canRetainChecker.canRetain() }) }
+        CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
           rememberRetained { subject }
           Unit
         }
@@ -841,10 +816,8 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
 
     val retainedStateHolder = rememberRetainedStateHolder()
     // Keep the retained state registry around even if showNestedContent becomes false
-    CompositionLocalProvider(LocalCanRetainChecker provides CanRetainChecker.Always) {
-      if (showNestedContent.value) {
-        retainedStateHolder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
-      }
+    if (showNestedContent.value) {
+      retainedStateHolder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
     }
   }
 }
@@ -879,11 +852,9 @@ private fun NestedRetainWithPushAndPopAndCannotRetain(useKeys: Boolean) {
     }
 
     // Keep the retained state registry around even if showNestedContent becomes false
-    val holder = rememberRetainedStateHolder()
-    CompositionLocalProvider(LocalCanRetainChecker provides { false }) {
-      if (showNestedContent.value) {
-        holder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
-      }
+    val holder = rememberRetainedStateHolder { false }
+    if (showNestedContent.value) {
+      holder.RetainedStateProvider("registry") { NestedRetainLevel1(useKeys) }
     }
   }
 }

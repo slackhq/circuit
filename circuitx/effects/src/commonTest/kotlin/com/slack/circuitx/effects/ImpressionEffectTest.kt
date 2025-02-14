@@ -9,8 +9,6 @@ import androidx.compose.runtime.getValue
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
-import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import kotlin.test.Ignore
@@ -158,10 +156,7 @@ internal class ImpressionEffectTestSharedImpl : ImpressionEffectTestShared {
   /** Simulating a screen with this. */
   @Composable
   private fun setRetainedContent(content: @Composable () -> Unit = {}) {
-    CompositionLocalProvider(
-      LocalRetainedStateRegistry provides registry,
-      LocalCanRetainChecker provides CanRetainChecker.Always,
-    ) {
+    CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
       val isCompose by composed.collectAsState(initial = true)
       if (isCompose) {
         content()

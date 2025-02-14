@@ -16,11 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
+import kotlin.reflect.KClass
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 
 /**
  * Animated navigation decoration is an implementation of [NavDecoration] that provides the
@@ -34,21 +36,22 @@ import kotlinx.collections.immutable.ImmutableList
  * - On the obtained decorator, [AnimatedNavDecorator.updateTransition] is called passing the
  *   current navigation arguments and back stack depth.
  * - An [AnimatedContent] container is then created on the returned [Transition].
- * - Using the decorator and [transforms], build the [AnimatedContent] `transitionSpec`. This will
- *   compare each of the available transforms and select the first one that is able to handle the
- *   current transition. If no `AnimatedNavigationTransform` is able to handle the transition, then
- *   the default transition provided by the `AnimatedNavDecorator.defaultTransform` will be used.
+ * - Using the decorator and [animatedScreenTransforms], build the [AnimatedContent]
+ *   `transitionSpec`. This will compare each of the available transforms and select the first one
+ *   that is able to handle the current transition. If no `AnimatedNavigationTransform` is able to
+ *   handle the transition, then the default transition provided by the
+ *   `AnimatedNavDecorator.defaultTransform` will be used.
  * - Then for each of the applicable [AnimatedContent] states the [Navigation]
  *   [SharedElementTransitionScope] is created and the [AnimatedNavDecorator.Decoration] is used to
  *   render the content.
  *
- * @param transforms A list of [AnimatedNavigationTransform] that might be used to override the
- *   default [ContentTransform] provided by the [AnimatedNavDecorator].
+ * @param animatedScreenTransforms A Map of [AnimatedScreenTransform] that might be used to override
+ *   the default [ContentTransform] provided by the [AnimatedNavDecorator].
  * @param decoratorFactory A factory used to create a [AnimatedNavDecorator] instance.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public class AnimatedNavDecoration(
-  private val transforms: ImmutableList<AnimatedNavigationTransform>,
+  private val animatedScreenTransforms: ImmutableMap<KClass<Screen>, AnimatedScreenTransform>,
   private val decoratorFactory: AnimatedNavDecorator.Factory,
 ) : NavDecoration {
 
@@ -67,7 +70,7 @@ public class AnimatedNavDecoration(
       val transition = updateTransition(args, backStackDepth)
       transition.AnimatedContent(
         modifier = modifier,
-        transitionSpec = transitionSpec(transforms),
+        transitionSpec = transitionSpec(animatedScreenTransforms),
       ) { targetState ->
         ProvideAnimatedTransitionScope(Navigation, this) { Decoration(targetState) { content(it) } }
       }
@@ -75,34 +78,11 @@ public class AnimatedNavDecoration(
   }
 }
 
-/**
- * Constructs the transition specification used in [AnimatedNavDecoration].
- *
- * This logic is used to select which type of animation to be used by the [AnimatedContent]. It uses
- * the [AnimatedNavigationTransform] to decide on this custom animation.
- *
- * **How this works:**
- * - First calculates the [AnimatedNavigationTransform.NavigationEvent] based on the difference
- *   between the `targetState` and `initialState`.
- * - After determining the [NavigationEvent] then look for an applicable
- *   [AnimatedNavigationTransform] in the [animatedNavigationTransforms] list.
- * - If a [AnimatedNavigationTransform.transitionSpec] returns a non-null [ContentTransform], that
- *   transition is used.
- * - If no applicable transform is found the one defined by [AnimatedNavDecorator.defaultTransform]
- *   is used.
- *
- * @param animatedNavigationTransforms A list of [AnimatedNavigationTransform]s that can be used to
- *   override the default transition.
- * @return A lambda that constructs the transition specification.
- */
+/** Constructs the transition specification used in [AnimatedNavDecoration]. */
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
-  animatedNavigationTransforms: ImmutableList<AnimatedNavigationTransform>
+  animatedScreenTransforms: ImmutableMap<KClass<Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
-  // Order of overrides
-  // 1. Any navigation context
-  // 2. Any overrides
-  // 3. Default
   val diff = targetState.backStackDepth - initialState.backStackDepth
   val sameRoot = targetState.rootScreen == initialState.rootScreen
   val navigationEvent =
@@ -113,39 +93,64 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
       // Somehow the back stack has not changed?
       else -> return@spec EnterTransition.None togetherWith ExitTransition.None
     }
-  val override = animatedNavigationOverride(animatedNavigationTransforms, navigationEvent)
-  val baseTransform = override ?: with(defaultTransform) { transitionSpec(navigationEvent) }
 
-  // todo Bind an AnimatedNavContext for a specific screen and update the base transform with it
-  contextualNavigationOverride(baseTransform)
+  val baseTransform = transitionSpec(navigationEvent)
+  val screenOverride = screenSpecificOverride(navigationEvent, animatedScreenTransforms)
+  val navigationOverride = navigationSpecificOverride(navigationEvent)
+  contextualNavigationOverride(baseTransform, screenOverride, navigationOverride)
 }
 
-private fun AnimatedContentTransitionScope<AnimatedNavState>.contextualNavigationOverride(
-  baseTransform: ContentTransform
-): ContentTransform {
-  // If we only pull from the target then the caller needs to apply the transitions on pop as well
-  val targetContext = targetState.context.tag<AnimatedNavContext>()
-  targetContext?.transform?.let {
-    return it
-  }
-  return targetContext?.run {
-    with(baseTransform) {
-      val enter = enterTransition ?: targetContentEnter
-      val exit = exitTransition ?: initialContentExit
-      ContentTransform(enter, exit, targetContentZIndex, sizeTransform)
-    }
-  } ?: baseTransform
-}
-
-private fun AnimatedContentTransitionScope<AnimatedNavState>.animatedNavigationOverride(
-  animatedNavOverrides: ImmutableList<AnimatedNavigationTransform>,
+private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverride(
   navigationEvent: NavigationEvent,
-): ContentTransform? {
-  for (navigationTransform in animatedNavOverrides) {
-    val transform = with(navigationTransform) { transitionSpec(navigationEvent) }
-    if (transform != null) {
-      return transform
+  animatedScreenTransforms: Map<KClass<Screen>, AnimatedScreenTransform>,
+): PartialContentTransform {
+  // Read any screen specific overrides
+  val targetAnimatedScreenTransform =
+    animatedScreenTransforms[targetState.screen::class] ?: NoOpAnimatedScreenTransform
+  val initialAnimatedScreenTransform =
+    animatedScreenTransforms[initialState.screen::class] ?: NoOpAnimatedScreenTransform
+
+  return PartialContentTransform(
+    enter = targetAnimatedScreenTransform.run { enterTransition(navigationEvent) },
+    exit = initialAnimatedScreenTransform.run { exitTransition(navigationEvent) },
+    zIndex = targetAnimatedScreenTransform.run { zIndex(navigationEvent) },
+    sizeTransform = targetAnimatedScreenTransform.run { sizeTransform(navigationEvent) },
+  )
+}
+
+private fun AnimatedContentTransitionScope<AnimatedNavState>.navigationSpecificOverride(
+  navigationEvent: NavigationEvent
+): PartialContentTransform {
+
+  val targetContext = targetState.context.tag<AnimatedNavContext>()
+  val initialContext = initialState.context.tag<AnimatedNavContext>()
+
+  return when (navigationEvent) {
+    NavigationEvent.GoTo -> {
+      targetContext?.forward
     }
+    NavigationEvent.Pop -> {
+      // Read the forward value if it was set during pop, otherwise look for a context specified
+      // from the goto call to this screen
+      targetContext?.forward ?: initialContext?.reverse
+    }
+    NavigationEvent.RootReset -> {
+      targetContext?.forward
+    }
+  } ?: PartialContentTransform.EMPTY
+}
+
+private fun contextualNavigationOverride(
+  baseTransform: ContentTransform,
+  screenOverride: PartialContentTransform,
+  navigationOverride: PartialContentTransform,
+): ContentTransform {
+  // Call site takes precedent over the screen specific override
+  return with(baseTransform) {
+    val enter = navigationOverride.enter ?: screenOverride.enter ?: targetContentEnter
+    val exit = navigationOverride.exit ?: screenOverride.exit ?: initialContentExit
+    val zIndex = navigationOverride.zIndex ?: screenOverride.zIndex ?: targetContentZIndex
+    val size = navigationOverride.sizeTransform ?: screenOverride.sizeTransform ?: sizeTransform
+    ContentTransform(enter, exit, zIndex, size)
   }
-  return null
 }

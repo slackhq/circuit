@@ -1,12 +1,17 @@
+// Copyright (C) 2025 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation.animation
 
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.InternalCircuitNavigationApi
 import com.slack.circuit.runtime.navigation.NavigationContext
+import com.slack.circuit.runtime.screen.Screen
 
 public fun NavigationContext.transition(
   block: AnimatedNavContext.Builder.() -> Unit
@@ -21,65 +26,80 @@ public fun transition(block: AnimatedNavContext.Builder.() -> Unit): NavigationC
   return NavigationContext().apply { putTag(AnimatedNavContext.Builder().apply(block).build()) }
 }
 
+public fun AnimatedNavContext.Builder.forward(block: PartialContentTransform.Builder.() -> Unit) {
+  forward = PartialContentTransform.Builder().apply(block).build()
+}
+
+public fun AnimatedNavContext.Builder.reverse(block: PartialContentTransform.Builder.() -> Unit) {
+  reverse = PartialContentTransform.Builder().apply(block).build()
+}
+
+public fun Navigator.goTo(
+  screen: Screen,
+  transition: AnimatedNavContext.Builder.() -> Unit,
+): Boolean {
+  return this.goTo(screen, transition(transition))
+}
+
 @Immutable
 public class AnimatedNavContext
 internal constructor(
-  public val enterTransition: EnterTransition? = null,
-  public val exitTransition: ExitTransition? = null,
-  public val transform: ContentTransform? = null,
+  // todo The names here are bad Forward is from the nav event, reverse only applies for pop...
+  public val forward: PartialContentTransform? = null,
+  public val reverse: PartialContentTransform? = null,
 ) {
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other == null || this::class != other::class) return false
-
-    other as AnimatedNavContext
-
-    if (enterTransition != other.enterTransition) return false
-    if (exitTransition != other.exitTransition) return false
-    if (transform != other.transform) return false
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    var result = enterTransition?.hashCode() ?: 0
-    result = 31 * result + (exitTransition?.hashCode() ?: 0)
-    result = 31 * result + (transform?.hashCode() ?: 0)
-    return result
-  }
 
   public fun buildUpon(): Builder {
     return Builder().apply {
-      enterTransition(enterTransition)
-      exitTransition(exitTransition)
-      transform(transform)
+      forward = this@AnimatedNavContext.forward
+      reverse = this@AnimatedNavContext.reverse
     }
   }
 
   @Stable
   public class Builder {
+    // Forward A - goTo -> B
+    // Backward B - pop -> A
 
-    private var enterTransition: EnterTransition? = null
-    private var exitTransition: ExitTransition? = null
-    private var contentTransform: ContentTransform? = null
-
-    public fun enterTransition(enter: EnterTransition?): Builder {
-      enterTransition = enter
-      return this
-    }
-
-    public fun exitTransition(exit: ExitTransition?): Builder {
-      exitTransition = exit
-      return this
-    }
-
-    public fun transform(transform: ContentTransform?): Builder {
-      contentTransform = transform
-      return this
-    }
+    public var forward: PartialContentTransform? = null
+    public var reverse: PartialContentTransform? = null
 
     public fun build(): AnimatedNavContext {
-      return AnimatedNavContext(enterTransition, exitTransition, contentTransform)
+      return AnimatedNavContext(forward = forward, reverse = reverse)
     }
   }
+}
+
+public data class PartialContentTransform(
+  val enter: EnterTransition?,
+  val exit: ExitTransition?,
+  val zIndex: Float?,
+  val sizeTransform: SizeTransform?,
+) {
+
+  @Stable
+  public class Builder {
+    public var enter: EnterTransition? = null
+    public var exit: ExitTransition? = null
+    public var zIndex: Float? = null
+    public var sizeTransform: SizeTransform? = null
+
+    public fun build(): PartialContentTransform {
+      return PartialContentTransform(enter, exit, zIndex, sizeTransform)
+    }
+  }
+
+  public companion object {
+    public val EMPTY: PartialContentTransform =
+      PartialContentTransform(enter = null, exit = null, zIndex = null, sizeTransform = null)
+  }
+}
+
+public fun ContentTransform.asPartialContentTransform(): PartialContentTransform {
+  return PartialContentTransform(
+    enter = targetContentEnter,
+    exit = initialContentExit,
+    zIndex = targetContentZIndex,
+    sizeTransform = sizeTransform,
+  )
 }

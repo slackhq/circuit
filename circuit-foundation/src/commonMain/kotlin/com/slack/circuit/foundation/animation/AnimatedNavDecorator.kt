@@ -4,6 +4,8 @@ package com.slack.circuit.foundation.animation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -101,14 +103,10 @@ import kotlinx.collections.immutable.ImmutableList
  * @param S The type of navigation state, which must implement [AnimatedNavState].
  * @see AnimatedNavDecoration
  * @see AnimatedNavState
- * @see AnimatedNavigationTransform
+ * @see AnimatedScreenTransform
  */
 @Stable
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
-
-  /** Builds the default [AnimatedContent] transition spec. */
-  public val defaultTransform: RequiredAnimatedNavigationTransform
-
   /** For the args and backstack create the expected target [AnimatedNavState]. */
   public fun targetState(args: ImmutableList<T>, backStackDepth: Int): S
 
@@ -119,6 +117,11 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
    */
   @Composable
   public fun updateTransition(args: ImmutableList<T>, backStackDepth: Int): Transition<S>
+
+  /** Builds the default [AnimatedContent] transition spec. */
+  public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+    navigationEvent: NavigationEvent
+  ): ContentTransform
 
   /** For the [targetState], decorate the [innerContent] as the `content` of [AnimatedContent] */
   @Composable
@@ -143,6 +146,6 @@ public interface AnimatedNavState {
   /** The depth of the back stack at the time this state was created. */
   public val backStackDepth: Int
 
-  /** The NavigationContext associated with this state. */
+  /** The [NavigationContext] associated with this state. */
   public val context: NavigationContext
 }

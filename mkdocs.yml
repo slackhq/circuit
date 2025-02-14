@@ -37,9 +37,6 @@ theme:
     - content.code.copy
     - content.code.select
 
-extra_css:
-  - 'css/app.css'
-
 markdown_extensions:
   - smarty
   - codehilite:

@@ -44,8 +44,6 @@ import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
-import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
@@ -179,28 +177,21 @@ private fun <R : Record> buildCircuitContentProviders(
 
   fun createRecordContent() =
     movableContentOf<R> { record ->
-      val recordInBackStackRetainChecker =
-        remember(lastBackStack, record) {
-          CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
-        }
-
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
 
-      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        saveableStateHolder.SaveableStateProvider(record.registryKey) {
-          // Provides a RetainedStateRegistry that is maintained independently for each record while
-          // the record exists in the back stack.
-          retainedStateHolder.RetainedStateProvider(record.registryKey) {
-            CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
-              CircuitContent(
-                screen = record.screen,
-                navigator = lastNavigator,
-                circuit = lastCircuit,
-                unavailableContent = lastUnavailableRoute,
-                key = record.key,
-              )
-            }
+      saveableStateHolder.SaveableStateProvider(record.registryKey) {
+        // Provides a RetainedStateRegistry that is maintained independently for each record while
+        // the record exists in the back stack.
+        retainedStateHolder.RetainedStateProvider(record.registryKey) {
+          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+            CircuitContent(
+              screen = record.screen,
+              navigator = lastNavigator,
+              circuit = lastCircuit,
+              unavailableContent = lastUnavailableRoute,
+              key = record.key,
+            )
           }
         }
       }
@@ -208,6 +199,7 @@ private fun <R : Record> buildCircuitContentProviders(
       DisposableEffect(record.registryKey) {
         onDispose {
           if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+            retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)
           }
         }

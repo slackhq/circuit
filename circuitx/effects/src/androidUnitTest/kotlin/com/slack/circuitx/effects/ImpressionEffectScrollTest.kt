@@ -17,8 +17,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import kotlin.test.assertEquals
@@ -89,12 +87,7 @@ class ImpressionEffectScrollTest {
 
   private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit = {}) {
     setContent {
-      CompositionLocalProvider(
-        LocalRetainedStateRegistry provides registry,
-        LocalCanRetainChecker provides CanRetainChecker.Always,
-      ) {
-        content()
-      }
+      CompositionLocalProvider(LocalRetainedStateRegistry provides registry) { content() }
     }
   }
 }

@@ -17,18 +17,8 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
-  watchosArm32()
-  watchosArm64()
-  watchosX64()
-  watchosSimulatorArm64()
-  tvosArm64()
-  tvosX64()
-  tvosSimulatorArm64()
   macosX64()
   macosArm64()
-  linuxArm64()
-  linuxX64()
-  mingwX64()
   js(IR) {
     moduleName = property("POM_ARTIFACT_ID").toString()
     browser()
@@ -40,22 +30,17 @@ kotlin {
   }
   // endregion
 
-  applyDefaultHierarchyTemplate()
-
   sourceSets {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
-        api(libs.coroutines)
-        api(libs.kotlinx.immutable)
-        api(projects.circuitRuntimeScreen)
-        api(projects.circuitRuntimeNavigation)
+        api(libs.compose.runtime.saveable)
       }
     }
   }
 }
 
-android { namespace = "com.slack.circuit.runtime" }
+android { namespace = "com.slack.circuit.runtime.navigation" }
 
 androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
@@ -64,9 +49,5 @@ baselineProfile {
   saveInSrc = true
   @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/379030055
   from(projects.samples.star.benchmark.dependencyProject)
-
-  filter {
-    // Don't include subpackages, only one star
-    include("com.slack.circuit.runtime.*")
-  }
+  filter { include("com.slack.circuit.runtime.navigation.**") }
 }

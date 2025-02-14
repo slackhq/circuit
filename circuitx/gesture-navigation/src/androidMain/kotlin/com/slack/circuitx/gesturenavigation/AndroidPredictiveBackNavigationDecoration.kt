@@ -42,9 +42,8 @@ import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform.NavigationEvent
-import com.slack.circuit.foundation.animation.RequiredAnimatedNavigationTransform
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -133,28 +132,25 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   }
 
   @OptIn(InternalCircuitApi::class)
-  override val defaultTransform: RequiredAnimatedNavigationTransform =
-    object : RequiredAnimatedNavigationTransform {
-      override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
-        navigationEvent: NavigationEvent
-      ): ContentTransform {
-        return when (navigationEvent) {
-          // adding to back stack
-          NavigationEvent.GoTo -> NavigatorDefaults.DefaultDecoration.forward
-          // come back from back stack
-          NavigationEvent.Pop -> {
-            if (showPrevious) {
-                EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
-              } else {
-                NavigatorDefaults.DefaultDecoration.backward
-              }
-              .apply { targetContentZIndex = -1f }
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+    animatedNavEvent: AnimatedNavEvent
+  ): ContentTransform {
+    return when (animatedNavEvent) {
+      // adding to back stack
+      AnimatedNavEvent.GoTo -> NavigatorDefaults.forward
+      // come back from back stack
+      AnimatedNavEvent.Pop -> {
+        if (showPrevious) {
+            EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
+          } else {
+            NavigatorDefaults.backward
           }
-          // Root reset. Crossfade
-          NavigationEvent.RootReset -> fadeIn() togetherWith fadeOut()
-        }
+          .apply { targetContentZIndex = -1f }
       }
+      // Root reset. Crossfade
+      AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
     }
+  }
 
   @Composable
   override fun AnimatedContentScope.Decoration(

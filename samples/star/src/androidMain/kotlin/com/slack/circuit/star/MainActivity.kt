@@ -15,17 +15,14 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
-import com.slack.circuit.star.animation.HomeAnimatedNavigationOverride
-import com.slack.circuit.star.animation.PetDetailAnimatedNavigationOverride
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -74,12 +71,11 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
     val localCircuit =
       circuit
         .newBuilder()
-        // todo DI these, does CircuitInject make sense?
-        .addAnimatedNavigationTransform(
-          HomeAnimatedNavigationOverride,
-          PetDetailAnimatedNavigationOverride,
-        )
-        .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
+        // todo DI this
+        //        .addAnimatedScreenTransforms(
+        //          HomeScreen::class to HomeAnimatedScreenTransform,
+        //          PetDetailScreen::class to PetDetailAnimatedScreenTransform,
+        //        )
         .build()
     setContent {
       StarTheme {
@@ -94,13 +90,10 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
                 NavigableCircuitContent(
                   navigator = navigator,
                   backStack = backStack,
-                  decoration =
-                    AnimatedNavDecoration(
-                      // todo This is awkward, want to replace just the decoratorFactory
-                      transforms = localCircuit.animatedNavigationTransforms,
-                      decoratorFactory =
-                        GestureNavigationDecorationFactory(onBackInvoked = navigator::pop),
-                    ),
+                  decoratorFactory =
+                    remember(navigator) {
+                      GestureNavigationDecorationFactory(onBackInvoked = navigator::pop)
+                    },
                 )
               }
             }

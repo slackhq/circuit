@@ -3,14 +3,16 @@
 package com.slack.circuit.star.di
 
 import com.slack.circuit.foundation.Circuit
-import com.slack.circuit.foundation.animation.AnimatedNavigationTransform
+import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.Multibinds
+import kotlin.reflect.KClass
 
 @ContributesTo(AppScope::class)
 @Module
@@ -19,7 +21,7 @@ interface CircuitModule {
 
   @Multibinds fun viewFactories(): Set<Ui.Factory>
 
-  @Multibinds fun animationTransforms(): Set<AnimatedNavigationTransform>
+  @Multibinds fun animatedScreenTransforms(): Map<KClass<Screen>, AnimatedScreenTransform>
 
   companion object {
     @SingleIn(AppScope::class)
@@ -27,12 +29,12 @@ interface CircuitModule {
     fun provideCircuit(
       presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
       uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-      animationTransforms: @JvmSuppressWildcards Set<AnimatedNavigationTransform>,
+      animatedScreenTransforms: @JvmSuppressWildcards Map<KClass<Screen>, AnimatedScreenTransform>,
     ): Circuit {
       return Circuit.Builder()
         .addPresenterFactories(presenterFactories)
         .addUiFactories(uiFactories)
-        .addAnimatedNavigationTransforms(animationTransforms)
+        .addAnimatedScreenTransforms(animatedScreenTransforms)
         .build()
     }
   }

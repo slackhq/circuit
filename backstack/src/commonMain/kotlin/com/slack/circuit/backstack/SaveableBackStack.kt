@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
+import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.uuid.ExperimentalUuidApi
@@ -92,12 +93,21 @@ internal constructor(
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public override fun push(screen: Screen, resultKey: String?): Boolean {
-    return push(screen, emptyMap(), resultKey)
+  public override fun push(
+    screen: Screen,
+    resultKey: String?,
+    context: NavigationContext,
+  ): Boolean {
+    return push(screen, emptyMap(), resultKey, context)
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?): Boolean {
-    return push(Record(screen, args), resultKey)
+  public fun push(
+    screen: Screen,
+    args: Map<String, Any?>,
+    resultKey: String?,
+    context: NavigationContext,
+  ): Boolean {
+    return push(Record(screen, args, context = context), resultKey)
   }
 
   public override fun push(record: Record, resultKey: String?): Boolean {
@@ -112,7 +122,7 @@ internal constructor(
     } else false
   }
 
-  override fun pop(result: PopResult?): Record? {
+  public override fun pop(result: PopResult?, context: NavigationContext): Record? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.
     return Snapshot.withMutableSnapshot {
       val popped = entryList.removeFirstOrNull()
@@ -158,6 +168,7 @@ internal constructor(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
+    override val context: NavigationContext = NavigationContext.EMPTY,
   ) : BackStack.Record {
     /**
      * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
@@ -193,6 +204,7 @@ internal constructor(
     }
 
     internal companion object {
+
       val Saver: Saver<Record, Any> =
         mapSaver(
           save = { value ->
@@ -200,6 +212,7 @@ internal constructor(
               put("screen", value.screen)
               put("args", value.args)
               put("key", value.key)
+              put("context", with(NavigationContext.Saver) { save(value.context) })
               put("resultKey", value.resultKey)
               put("result", value.readResult())
             }
@@ -210,6 +223,8 @@ internal constructor(
                 screen = map["screen"] as Screen,
                 args = map["args"] as Map<String, Any?>,
                 key = map["key"] as String,
+                context =
+                  NavigationContext.Saver.restore(map["context"] as Any) ?: NavigationContext.EMPTY,
               )
               .apply {
                 // NOTE order matters here, prepareForResult() clears the buffer

@@ -16,6 +16,8 @@ final class com.slack.circuit.runtime.navigation/NavigationContext { // com.slac
     final fun <#A1: kotlin/Any, #B1: #A1> putTag(kotlin.reflect/KClass<#A1>, #B1?) // com.slack.circuit.runtime.navigation/NavigationContext.putTag|putTag(kotlin.reflect.KClass<0:0>;0:1?){0§<kotlin.Any>;1§<0:0>}[0]
     final fun <#A1: kotlin/Any> tag(kotlin.reflect/KClass<#A1>): #A1? // com.slack.circuit.runtime.navigation/NavigationContext.tag|tag(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
     final fun clearTags() // com.slack.circuit.runtime.navigation/NavigationContext.clearTags|clearTags(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.runtime.navigation/NavigationContext.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.slack.circuit.runtime.navigation/NavigationContext.hashCode|hashCode(){}[0]
     final inline fun <#A1: reified kotlin/Any> putTag(#A1?) // com.slack.circuit.runtime.navigation/NavigationContext.putTag|putTag(0:0?){0§<kotlin.Any>}[0]
     final inline fun <#A1: reified kotlin/Any> tag(): #A1? // com.slack.circuit.runtime.navigation/NavigationContext.tag|tag(){0§<kotlin.Any>}[0]
 

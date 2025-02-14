@@ -8,6 +8,8 @@ public final class com/slack/circuit/runtime/navigation/NavigationContext {
 	public fun <init> (Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun clearTags ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public final fun putTag (Lkotlin/reflect/KClass;Ljava/lang/Object;)V
 	public final fun tag (Lkotlin/reflect/KClass;)Ljava/lang/Object;
 }

@@ -60,9 +60,9 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     return success
   }
 
-  override fun pop(result: PopResult?, context: NavigationContext): Screen? {
-    val popped = delegate.pop(result, context)
-    popEvents.add(PopEvent(popped, result, context))
+  override fun pop(result: PopResult?): Screen? {
+    val popped = delegate.pop(result)
+    popEvents.add(PopEvent(popped, result))
     return popped
   }
 
@@ -142,15 +142,11 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   public data class GoToEvent(
     val screen: Screen,
     val success: Boolean,
-    val context: NavigationContext = NavigationContext.EMPTY,
+    val context: NavigationContext = NavigationContext.Empty,
   )
 
   /** Represents a recorded [Navigator.pop] event. */
-  public data class PopEvent(
-    val poppedScreen: Screen?,
-    val result: PopResult? = null,
-    val context: NavigationContext = NavigationContext.EMPTY,
-  )
+  public data class PopEvent(val poppedScreen: Screen?, val result: PopResult? = null)
 
   /** Represents a recorded [Navigator.resetRoot] event. */
   public data class ResetRootEvent(
@@ -158,7 +154,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     val oldScreens: ImmutableList<Screen>,
     val saveState: Boolean = false,
     val restoreState: Boolean = false,
-    val context: NavigationContext = NavigationContext.EMPTY,
+    val context: NavigationContext = NavigationContext.Empty,
   )
 
   private fun GoToEvent.assertSuccessfulScreen(): Screen {

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.InternalCircuitNavigationApi
 import com.slack.circuit.runtime.navigation.NavigationContext
-import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
@@ -70,20 +69,6 @@ public fun Navigator.goTo(
   transition: AnimatedNavContext.Builder.() -> Unit,
 ): Boolean {
   return goTo(screen, transition(transition))
-}
-
-/**
- * This is a convenience function that combines [Navigator.pop] with a transition.
- *
- * @param result The result to return to the previous screen, if any.
- * @param transform A lambda that configures a [PartialContentTransform].
- * @return The [Screen] that was popped.
- */
-public fun Navigator.pop(
-  result: PopResult? = null,
-  transform: PartialContentTransform.Builder.() -> Unit,
-): Screen? {
-  return pop(result, transition { forward(transform) })
 }
 
 /**

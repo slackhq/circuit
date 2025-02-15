@@ -58,7 +58,7 @@ public interface BackStack<R : Record> : Iterable<R> {
   public fun push(
     screen: Screen,
     resultKey: String? = null,
-    context: NavigationContext = NavigationContext.EMPTY,
+    context: NavigationContext = NavigationContext.Empty,
   ): Boolean
 
   /**
@@ -68,10 +68,8 @@ public interface BackStack<R : Record> : Iterable<R> {
    * @param result An optional [PopResult] that will be passed to previous record on the stack after
    *   this record is removed.
    */
-  public fun pop(
-    result: PopResult? = null,
-    context: NavigationContext = NavigationContext.EMPTY,
-  ): R?
+  // todo Does context here make any sense? The existing record has to be mutated in place.
+  public fun pop(result: PopResult? = null): R?
 
   /**
    * Pop records off the top of the backstack until one is found that matches the given predicate.

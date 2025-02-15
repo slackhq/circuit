@@ -75,7 +75,7 @@ internal class DispatchingOverlayNavigator(
     error("goTo() is not supported in full screen overlays!")
   }
 
-  override fun pop(result: PopResult?, context: NavigationContext): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(FullScreenOverlay.Result(result))
     onPop()
     return null

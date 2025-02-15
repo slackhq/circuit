@@ -18,7 +18,7 @@ public interface GoToNavigator {
    *
    * @return If the navigator successfully went to the [screen]
    */
-  public fun goTo(screen: Screen, context: NavigationContext = NavigationContext.EMPTY): Boolean
+  public fun goTo(screen: Screen, context: NavigationContext = NavigationContext.Empty): Boolean
 }
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
@@ -27,10 +27,7 @@ public interface Navigator : GoToNavigator {
 
   public override fun goTo(screen: Screen, context: NavigationContext): Boolean
 
-  public fun pop(
-    result: PopResult? = null,
-    context: NavigationContext = NavigationContext.EMPTY,
-  ): Screen?
+  public fun pop(result: PopResult? = null): Screen?
 
   /** Returns current top most screen of backstack, or null if backstack is empty. */
   public fun peek(): Screen?
@@ -89,13 +86,13 @@ public interface Navigator : GoToNavigator {
     newRoot: Screen,
     saveState: Boolean = false,
     restoreState: Boolean = false,
-    context: NavigationContext = NavigationContext.EMPTY,
+    context: NavigationContext = NavigationContext.Empty,
   ): ImmutableList<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen, context: NavigationContext): Boolean = true
 
-    override fun pop(result: PopResult?, context: NavigationContext): Screen? = null
+    override fun pop(result: PopResult?): Screen? = null
 
     override fun peek(): Screen? = null
 

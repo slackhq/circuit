@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.runtime.navigation.NavigationContext
+import com.slack.circuit.runtime.navigation.plus
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.uuid.ExperimentalUuidApi
@@ -98,23 +99,14 @@ internal constructor(
     resultKey: String?,
     context: NavigationContext,
   ): Boolean {
-    return push(screen, emptyMap(), resultKey, context)
-  }
-
-  public fun push(
-    screen: Screen,
-    args: Map<String, Any?>,
-    resultKey: String?,
-    context: NavigationContext,
-  ): Boolean {
-    return push(Record(screen, args, context = context), resultKey)
+    return push(Record(screen = screen, context = context), resultKey)
   }
 
   public override fun push(record: Record, resultKey: String?): Boolean {
     val topRecord = Snapshot.withoutReadObservation { entryList.firstOrNull() }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
-    return if (topRecord?.screen != record.screen || topRecord.args != record.args) {
+    return if (topRecord?.screen != record.screen || topRecord.context != record.context) {
       entryList.add(0, record)
       // Clear the cached pending result from the previous top record
       entryList.getOrNull(1)?.apply { resultKey?.let(::prepareForResult) }
@@ -122,7 +114,7 @@ internal constructor(
     } else false
   }
 
-  public override fun pop(result: PopResult?, context: NavigationContext): Record? {
+  public override fun pop(result: PopResult?): Record? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.
     return Snapshot.withMutableSnapshot {
       val popped = entryList.removeFirstOrNull()
@@ -166,9 +158,8 @@ internal constructor(
 
   public data class Record(
     override val screen: Screen,
-    val args: Map<String, Any?> = emptyMap(),
+    override val context: NavigationContext = NavigationContext.Empty,
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
-    override val context: NavigationContext = NavigationContext.EMPTY,
   ) : BackStack.Record {
     /**
      * A [Channel] of pending results. Note we use this instead of a [CompletableDeferred] because
@@ -210,7 +201,6 @@ internal constructor(
           save = { value ->
             buildMap {
               put("screen", value.screen)
-              put("args", value.args)
               put("key", value.key)
               put("context", with(NavigationContext.Saver) { save(value.context) })
               put("resultKey", value.resultKey)
@@ -218,13 +208,11 @@ internal constructor(
             }
           },
           restore = { map ->
-            @Suppress("UNCHECKED_CAST")
             Record(
                 screen = map["screen"] as Screen,
-                args = map["args"] as Map<String, Any?>,
                 key = map["key"] as String,
                 context =
-                  NavigationContext.Saver.restore(map["context"] as Any) ?: NavigationContext.EMPTY,
+                  NavigationContext.Saver.restore(map["context"] as Any) ?: NavigationContext.Empty,
               )
               .apply {
                 // NOTE order matters here, prepareForResult() clears the buffer

@@ -47,7 +47,7 @@ public fun CircuitContent(
     remember(onNavEvent) {
       object : Navigator {
         override fun goTo(screen: Screen, context: NavigationContext): Boolean {
-          onNavEvent(NavEvent.GoTo(screen, context = context))
+          onNavEvent(NavEvent.GoTo(screen = screen, context = context))
           return true
         }
 
@@ -57,12 +57,19 @@ public fun CircuitContent(
           restoreState: Boolean,
           context: NavigationContext,
         ): ImmutableList<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState, context = context))
+          onNavEvent(
+            NavEvent.ResetRoot(
+              newRoot = newRoot,
+              saveState = saveState,
+              restoreState = restoreState,
+              context = context,
+            )
+          )
           return persistentListOf()
         }
 
-        override fun pop(result: PopResult?, context: NavigationContext): Screen? {
-          onNavEvent(NavEvent.Pop(result, context = context))
+        override fun pop(result: PopResult?): Screen? {
+          onNavEvent(NavEvent.Pop(result))
           return null
         }
 

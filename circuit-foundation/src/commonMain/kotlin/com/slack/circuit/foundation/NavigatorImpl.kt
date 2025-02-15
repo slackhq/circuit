@@ -59,13 +59,13 @@ internal class NavigatorImpl(
     return backStack.push(screen, context = context)
   }
 
-  override fun pop(result: PopResult?, context: NavigationContext): Screen? {
+  override fun pop(result: PopResult?): Screen? {
     if (backStack.isAtRoot) {
       onRootPop(result)
       return null
     }
 
-    return backStack.pop(result, context)?.screen
+    return backStack.pop(result)?.screen
   }
 
   override fun peek(): Screen? = backStack.firstOrNull()?.screen

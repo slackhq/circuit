@@ -231,7 +231,7 @@ material = "com.google.android.material:material:1.12.0"
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
-mosaic = "com.jakewharton.mosaic:mosaic-runtime:0.15.0"
+mosaic = "com.jakewharton.mosaic:mosaic-runtime:0.16.0"
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }

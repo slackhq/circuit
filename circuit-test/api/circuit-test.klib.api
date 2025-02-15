@@ -49,7 +49,7 @@ final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Nav
     final fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.navigation/NavigationContext): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
     final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.peek|peek(){}[0]
     final fun peekBackStack(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.peekBackStack|peekBackStack(){}[0]
-    final fun pop(com.slack.circuit.runtime.screen/PopResult?, com.slack.circuit.runtime.navigation/NavigationContext): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+    final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
     final fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean, com.slack.circuit.runtime.navigation/NavigationContext): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
     final fun takeNextScreen(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.takeNextScreen|takeNextScreen(){}[0]
     final suspend fun awaitNextGoTo(): com.slack.circuit.test/FakeNavigator.GoToEvent // com.slack.circuit.test/FakeNavigator.awaitNextGoTo|awaitNextGoTo(){}[0]
@@ -77,10 +77,8 @@ final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Nav
     }
 
     final class PopEvent { // com.slack.circuit.test/FakeNavigator.PopEvent|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen?, com.slack.circuit.runtime.screen/PopResult? = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...) // com.slack.circuit.test/FakeNavigator.PopEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen?;com.slack.circuit.runtime.screen.PopResult?;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen?, com.slack.circuit.runtime.screen/PopResult? = ...) // com.slack.circuit.test/FakeNavigator.PopEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen?;com.slack.circuit.runtime.screen.PopResult?){}[0]
 
-        final val context // com.slack.circuit.test/FakeNavigator.PopEvent.context|{}context[0]
-            final fun <get-context>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.test/FakeNavigator.PopEvent.context.<get-context>|<get-context>(){}[0]
         final val poppedScreen // com.slack.circuit.test/FakeNavigator.PopEvent.poppedScreen|{}poppedScreen[0]
             final fun <get-poppedScreen>(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.PopEvent.poppedScreen.<get-poppedScreen>|<get-poppedScreen>(){}[0]
         final val result // com.slack.circuit.test/FakeNavigator.PopEvent.result|{}result[0]
@@ -88,8 +86,7 @@ final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Nav
 
         final fun component1(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.PopEvent.component1|component1(){}[0]
         final fun component2(): com.slack.circuit.runtime.screen/PopResult? // com.slack.circuit.test/FakeNavigator.PopEvent.component2|component2(){}[0]
-        final fun component3(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.test/FakeNavigator.PopEvent.component3|component3(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen? = ..., com.slack.circuit.runtime.screen/PopResult? = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...): com.slack.circuit.test/FakeNavigator.PopEvent // com.slack.circuit.test/FakeNavigator.PopEvent.copy|copy(com.slack.circuit.runtime.screen.Screen?;com.slack.circuit.runtime.screen.PopResult?;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen? = ..., com.slack.circuit.runtime.screen/PopResult? = ...): com.slack.circuit.test/FakeNavigator.PopEvent // com.slack.circuit.test/FakeNavigator.PopEvent.copy|copy(com.slack.circuit.runtime.screen.Screen?;com.slack.circuit.runtime.screen.PopResult?){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.PopEvent.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.test/FakeNavigator.PopEvent.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.test/FakeNavigator.PopEvent.toString|toString(){}[0]

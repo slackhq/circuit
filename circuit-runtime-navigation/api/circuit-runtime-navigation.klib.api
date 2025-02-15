@@ -11,7 +11,8 @@ open annotation class com.slack.circuit.runtime.navigation/InternalCircuitNaviga
 }
 
 final class com.slack.circuit.runtime.navigation/NavigationContext { // com.slack.circuit.runtime.navigation/NavigationContext|null[0]
-    constructor <init>(kotlin.collections/MutableMap<kotlin.reflect/KClass<*>, kotlin/Any> = ...) // com.slack.circuit.runtime.navigation/NavigationContext.<init>|<init>(kotlin.collections.MutableMap<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
+    constructor <init>() // com.slack.circuit.runtime.navigation/NavigationContext.<init>|<init>(){}[0]
+    constructor <init>(kotlin.collections/MutableMap<kotlin/String, kotlin/Any>) // com.slack.circuit.runtime.navigation/NavigationContext.<init>|<init>(kotlin.collections.MutableMap<kotlin.String,kotlin.Any>){}[0]
 
     final fun <#A1: kotlin/Any, #B1: #A1> putTag(kotlin.reflect/KClass<#A1>, #B1?) // com.slack.circuit.runtime.navigation/NavigationContext.putTag|putTag(kotlin.reflect.KClass<0:0>;0:1?){0§<kotlin.Any>;1§<0:0>}[0]
     final fun <#A1: kotlin/Any> tag(kotlin.reflect/KClass<#A1>): #A1? // com.slack.circuit.runtime.navigation/NavigationContext.tag|tag(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
@@ -22,8 +23,8 @@ final class com.slack.circuit.runtime.navigation/NavigationContext { // com.slac
     final inline fun <#A1: reified kotlin/Any> tag(): #A1? // com.slack.circuit.runtime.navigation/NavigationContext.tag|tag(){0§<kotlin.Any>}[0]
 
     final object Companion { // com.slack.circuit.runtime.navigation/NavigationContext.Companion|null[0]
-        final val EMPTY // com.slack.circuit.runtime.navigation/NavigationContext.Companion.EMPTY|{}EMPTY[0]
-            final fun <get-EMPTY>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.runtime.navigation/NavigationContext.Companion.EMPTY.<get-EMPTY>|<get-EMPTY>(){}[0]
+        final val Empty // com.slack.circuit.runtime.navigation/NavigationContext.Companion.Empty|{}Empty[0]
+            final fun <get-Empty>(): com.slack.circuit.runtime.navigation/NavigationContext // com.slack.circuit.runtime.navigation/NavigationContext.Companion.Empty.<get-Empty>|<get-Empty>(){}[0]
         final val Saver // com.slack.circuit.runtime.navigation/NavigationContext.Companion.Saver|{}Saver[0]
             final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.runtime.navigation/NavigationContext, kotlin/Any> // com.slack.circuit.runtime.navigation/NavigationContext.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
     }

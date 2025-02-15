@@ -4,6 +4,7 @@ package com.slack.circuit.runtime.navigation
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
 import com.slack.circuit.runtime.navigation.internal.NoOpMap
 import kotlin.reflect.KClass
 
@@ -12,13 +13,18 @@ public class NavigationContext
 @InternalCircuitNavigationApi
 public constructor(
   // Don't expose the raw map.
-  internal val tags: MutableMap<KClass<*>, Any> = mutableMapOf()
+  internal val tags: MutableMap<String, Any>
 ) {
+
+  @Suppress("UnnecessaryOptInAnnotation") // Needed for the primary constructor.
+  @OptIn(InternalCircuitNavigationApi::class)
+  public constructor() : this(mutableMapOf())
 
   /** Returns the tag attached with [type] as a key, or null if no tag is attached with that key. */
   public fun <T : Any> tag(type: KClass<T>): T? {
+    val key = tagKey(type) ?: return null
     @Suppress("UNCHECKED_CAST")
-    return tags[type] as T?
+    return tags[key] as T?
   }
 
   /** Returns the tag attached with [T] as a key, or null if no tag is attached with that key. */
@@ -41,10 +47,11 @@ public constructor(
    * read it in other APIs or callbacks.
    */
   public fun <S : Any, T : S> putTag(type: KClass<S>, tag: T?) {
+    val key = tagKey(type) ?: return
     if (tag == null) {
-      this.tags.remove(type)
+      this.tags.remove(key)
     } else {
-      this.tags[type] = tag
+      this.tags[key] = tag
     }
   }
 
@@ -64,22 +71,42 @@ public constructor(
   }
 
   public companion object {
-    /** An empty context */
+    /** An empty [NavigationContext] */
     @Suppress("UNCHECKED_CAST")
     @OptIn(InternalCircuitNavigationApi::class)
-    public val EMPTY: NavigationContext = NavigationContext(NoOpMap as MutableMap<KClass<*>, Any>)
+    public val Empty: NavigationContext = NavigationContext(NoOpMap as MutableMap<String, Any>)
 
     @OptIn(InternalCircuitNavigationApi::class)
     public val Saver: Saver<NavigationContext, Any> =
-      Saver(
-        save = { value -> mapOf("tags" to value.tags) },
-        restore = { value ->
-          @Suppress("UNCHECKED_CAST")
-          NavigationContext((value as Map<String, Any>)["tags"] as MutableMap<KClass<*>, Any>)
+      // Same approach as mapSaver
+      listSaver(
+        save = { context ->
+          mutableListOf<Any>().apply {
+            context.tags.forEach { (key, value) ->
+              if (canBeSaved(value)) {
+                add(key)
+                add(value)
+              }
+            }
+          }
+        },
+        restore = { list ->
+          val tags = mutableMapOf<String, Any>()
+          check(list.size.rem(2) == 0) { "non-zero remainder" }
+          var index = 0
+          while (index < list.size) {
+            val key = list[index] as String
+            val value = list[index + 1] as Any
+            tags[key] = value
+            index += 2
+          }
+          NavigationContext(tags)
         },
       )
   }
 }
+
+internal expect fun tagKey(type: KClass<*>): String?
 
 /**
  * Returns a new [NavigationContext] that contains all the tags from both [this] and [other].
@@ -88,8 +115,8 @@ public constructor(
  */
 @OptIn(InternalCircuitNavigationApi::class)
 public operator fun NavigationContext.plus(other: NavigationContext): NavigationContext {
-  val newTags = mutableMapOf<KClass<*>, Any>()
-  newTags.putAll(this.tags)
+  val newTags = mutableMapOf<String, Any>()
+  tags.putAll(this.tags)
   newTags.putAll(other.tags)
   return NavigationContext(newTags)
 }

@@ -58,6 +58,7 @@ kotlin {
     }
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
+    commonTest { dependencies { implementation(libs.kotlin.test) } }
   }
 
   targets.configureEach {

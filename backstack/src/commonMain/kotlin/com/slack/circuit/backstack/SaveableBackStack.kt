@@ -212,7 +212,8 @@ internal constructor(
                 screen = map["screen"] as Screen,
                 key = map["key"] as String,
                 context =
-                  NavigationContext.Saver.restore(map["context"] as Any) ?: NavigationContext.Empty,
+                  map["context"]?.let { NavigationContext.Saver.restore(it) }
+                    ?: NavigationContext.Empty,
               )
               .apply {
                 // NOTE order matters here, prepareForResult() clears the buffer

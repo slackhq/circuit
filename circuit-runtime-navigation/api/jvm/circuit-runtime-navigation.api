@@ -5,7 +5,6 @@ public final class com/slack/circuit/runtime/navigation/NavigationContext {
 	public static final field $stable I
 	public static final field Companion Lcom/slack/circuit/runtime/navigation/NavigationContext$Companion;
 	public fun <init> ()V
-	public fun <init> (Ljava/util/Map;)V
 	public final fun clearTags ()V
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I

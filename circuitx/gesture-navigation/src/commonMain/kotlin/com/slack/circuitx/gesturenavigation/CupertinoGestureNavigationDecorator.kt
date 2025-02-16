@@ -48,17 +48,17 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
 import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.AnimatedNavDecorator
-import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 
 /**
- * Cupertino specific version of [GestureNavigationDecoration]. This is shipped as common code, to
- * allow easier debugging and testing of this implementation from any platform.
+ * Cupertino specific version of [AnimatedNavDecorator]. This is shipped as common code, to allow
+ * easier debugging and testing of this implementation from any platform.
  *
  * @param enterOffsetFraction The fraction (from 0f to 1f) of the entering content's width which the
  *   content starts from. Defaults to 0.25f (25%).
@@ -68,22 +68,6 @@ import kotlinx.coroutines.flow.filter
  *   navigation. This is useless when you have full width horizontally scrolling layouts. Defaults
  *   to true.
  */
-@OptIn(ExperimentalMaterialApi::class)
-public class CupertinoGestureNavigationDecoration(
-  private val enterOffsetFraction: Float = 0.25f,
-  private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
-  private val swipeBackFromNestedScroll: Boolean = true,
-  private val onBackInvoked: () -> Unit,
-) :
-  NavDecoration by DefaultAnimatedNavDecoration(
-    CupertinoGestureNavigationDecorator.Factory(
-      enterOffsetFraction,
-      swipeThreshold,
-      swipeBackFromNestedScroll,
-      onBackInvoked,
-    )
-  )
-
 @ExperimentalMaterialApi
 internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
@@ -154,13 +138,13 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
     )
   }
 
-  @Composable
-  override fun Transition<GestureNavTransitionHolder<T>>.transitionSpec():
-    AnimatedContentTransitionScope<GestureNavTransitionHolder<T>>.() -> ContentTransform = {
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+    animatedNavEvent: AnimatedNavEvent
+  ): ContentTransform {
     val diff = targetState.backStackDepth - initialState.backStackDepth
-    val sameRoot = targetState.rootRecord == initialState.rootRecord
+    val sameRoot = targetState.rootScreen == initialState.rootScreen
 
-    when {
+    return when {
       // adding to back stack
       sameRoot && diff > 0 -> {
         slideInHorizontally(initialOffsetX = End)

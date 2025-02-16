@@ -31,11 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.request.ImageRequest.Builder
-import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.RecordContentProvider
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -54,7 +50,6 @@ import com.slack.circuit.star.ui.thenIf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.collections.immutable.ImmutableList
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
@@ -203,30 +198,5 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
         }
       }
     }
-  }
-}
-
-// TODO
-//  generalize this when there's a factory pattern for it in Circuit
-//  shared element transitions?
-class ImageViewerAwareNavDecoration(
-  private val defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
-) : NavDecoration {
-  @Suppress("UnstableCollections")
-  @Composable
-  override fun <T : NavArgument> DecoratedContent(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-    modifier: Modifier,
-    content: @Composable (T) -> Unit,
-  ) {
-    val firstArg = args.firstOrNull()
-    val decoration =
-      if (firstArg is RecordContentProvider<*> && firstArg.record.screen is ImageViewerScreen) {
-        NavigatorDefaults.EmptyDecoration
-      } else {
-        defaultNavDecoration
-      }
-    decoration.DecoratedContent(args, backStackDepth, modifier, content)
   }
 }

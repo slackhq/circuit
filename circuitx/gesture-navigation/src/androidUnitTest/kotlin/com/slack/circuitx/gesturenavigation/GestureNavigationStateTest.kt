@@ -96,14 +96,14 @@ class GestureNavigationStateTest(
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoration =
+            decoratorFactory =
               remember {
                 when (decorationOption) {
                   GestureNavDecorationOption.AndroidPredictiveBack -> {
-                    AndroidPredictiveBackNavigationDecoration(onBackInvoked = navigator::pop)
+                    AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                   GestureNavDecorationOption.Cupertino -> {
-                    CupertinoGestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    CupertinoGestureNavigationDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                 }
               },
@@ -192,14 +192,14 @@ class GestureNavigationStateTest(
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoration =
+            decoratorFactory =
               remember {
                 when (decorationOption) {
                   GestureNavDecorationOption.AndroidPredictiveBack -> {
-                    AndroidPredictiveBackNavigationDecoration(onBackInvoked = navigator::pop)
+                    AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                   GestureNavDecorationOption.Cupertino -> {
-                    CupertinoGestureNavigationDecoration(onBackInvoked = navigator::pop)
+                    CupertinoGestureNavigationDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                 }
               },

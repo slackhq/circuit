@@ -15,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.internal.test.TestContent
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config
 @Config(minSdk = 34)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class BackNavigationTest(
-  private val decoration: (() -> Unit) -> NavDecoration,
+  private val decoration: (() -> Unit) -> AnimatedNavDecorator.Factory,
   private val androidNavigator: Boolean,
 ) {
 
@@ -67,7 +67,7 @@ class BackNavigationTest(
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoration = remember { decoration(navigator::pop) },
+            decoratorFactory = remember { decoration(navigator::pop) },
           )
         }
       }
@@ -96,10 +96,10 @@ class BackNavigationTest(
 
     class Provider(
       private val name: String,
-      private val decoration: (() -> Unit) -> NavDecoration,
-    ) : (() -> Unit) -> NavDecoration {
-      override fun invoke(onBackInvoked: () -> Unit): NavDecoration {
-        return decoration(onBackInvoked)
+      private val decoratorFactory: (() -> Unit) -> AnimatedNavDecorator.Factory,
+    ) : (() -> Unit) -> AnimatedNavDecorator.Factory {
+      override fun invoke(onBackInvoked: () -> Unit): AnimatedNavDecorator.Factory {
+        return decoratorFactory(onBackInvoked)
       }
 
       override fun toString(): String = name
@@ -110,12 +110,13 @@ class BackNavigationTest(
     fun params(): List<Array<Any>> {
       val cupertino =
         Provider("Cupertino") { onBackInvoked: () -> Unit ->
-          CupertinoGestureNavigationDecoration(onBackInvoked = onBackInvoked)
+          CupertinoGestureNavigationDecorator.Factory(onBackInvoked = onBackInvoked)
         }
       val android =
         Provider("Android") { onBackInvoked: () -> Unit ->
-          AndroidPredictiveBackNavigationDecoration(onBackInvoked = onBackInvoked)
+          AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = onBackInvoked)
         }
+
       return listOf(
         arrayOf(cupertino, true),
         arrayOf(cupertino, false),

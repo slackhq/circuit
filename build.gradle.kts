@@ -480,12 +480,17 @@ apiValidation {
   }
   nonPublicMarkers +=
     setOf(
-      "com.slack.circuit.runtime.InternalCircuitApi",
       "com.slack.circuit.runtime.ExperimentalCircuitApi",
+      "com.slack.circuit.runtime.InternalCircuitApi",
+      "com.slack.circuit.runtime.navigation.InternalCircuitNavigationApi",
       "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
     )
   ignoredPackages +=
-    setOf("com.slack.circuit.foundation.internal", "com.slack.circuit.runtime.internal")
+    setOf(
+      "com.slack.circuit.foundation.internal",
+      "com.slack.circuit.runtime.internal",
+      "com.slack.circuit.runtime.navigation.internal",
+    )
   // Annoyingly this only uses simple names
   // https://github.com/Kotlin/binary-compatibility-validator/issues/16
   ignoredProjects +=
@@ -515,6 +520,7 @@ dependencies {
   dokka(projects.circuitOverlay)
   dokka(projects.circuitRetained)
   dokka(projects.circuitRuntime)
+  dokka(projects.circuitRuntimeNavigation)
   dokka(projects.circuitRuntimePresenter)
   dokka(projects.circuitRuntimeScreen)
   dokka(projects.circuitRuntimeUi)

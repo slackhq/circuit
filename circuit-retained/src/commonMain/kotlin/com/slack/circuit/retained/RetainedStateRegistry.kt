@@ -70,9 +70,13 @@ internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
  * @param values The map of the restored values
  */
 public fun RetainedStateRegistry(
-  values: Map<String, List<Any?>> = emptyMap()
+  canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
+  values: Map<String, List<Any?>> = emptyMap(),
 ): RetainedStateRegistry =
-  RetainedStateRegistryImpl(values.mapValues { it.value.toMutableList() }.toMutableMap())
+  RetainedStateRegistryImpl(
+    canRetainChecker,
+    values.mapValues { it.value.toMutableList() }.toMutableMap(),
+  )
 
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
 public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateRegistry> =
@@ -80,8 +84,10 @@ public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateR
     NoOpRetainedStateRegistry
   }
 
-internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>>?) :
-  MutableRetainedStateRegistry {
+internal class RetainedStateRegistryImpl(
+  private val canRetainChecker: CanRetainChecker,
+  retained: MutableMap<String, List<Any?>>?,
+) : MutableRetainedStateRegistry {
 
   override val retained: MutableMap<String, List<Any?>> = retained?.toMutableMap() ?: mutableMapOf()
   internal val valueProviders = mutableMapOf<String, MutableList<RetainedValueProvider>>()
@@ -115,6 +121,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun saveAll(): Map<String, List<Any?>> {
+    if (!canRetainChecker.canRetain()) return emptyMap()
     valueProviders.forEach { (key, providers) ->
       val saved = performSave(providers)
       if (saved != null) {
@@ -128,6 +135,7 @@ internal class RetainedStateRegistryImpl(retained: MutableMap<String, List<Any?>
   }
 
   override fun saveValue(key: String) {
+    if (!canRetainChecker.canRetain()) return
     val providers = valueProviders[key]
     if (providers != null) {
       val saved = performSave(providers)

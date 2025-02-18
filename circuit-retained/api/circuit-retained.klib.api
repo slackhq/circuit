@@ -17,6 +17,8 @@ abstract fun interface com.slack.circuit.retained/CanRetainChecker { // com.slac
     final object Companion { // com.slack.circuit.retained/CanRetainChecker.Companion|null[0]
         final val Always // com.slack.circuit.retained/CanRetainChecker.Companion.Always|{}Always[0]
             final fun <get-Always>(): com.slack.circuit.retained/CanRetainChecker // com.slack.circuit.retained/CanRetainChecker.Companion.Always.<get-Always>|<get-Always>(){}[0]
+        final val Never // com.slack.circuit.retained/CanRetainChecker.Companion.Never|{}Never[0]
+            final fun <get-Never>(): com.slack.circuit.retained/CanRetainChecker // com.slack.circuit.retained/CanRetainChecker.Companion.Never.<get-Never>|<get-Never>(){}[0]
     }
 }
 

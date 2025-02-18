@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalContext
@@ -100,7 +100,10 @@ public fun continuityRetainedStateRegistry(
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
-  vm.update(canRetainChecker)
+  DisposableEffect(vm) {
+    vm.update(canRetainChecker)
+    onDispose { vm.update(CanRetainChecker.Never) }
+  }
 
   LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
 

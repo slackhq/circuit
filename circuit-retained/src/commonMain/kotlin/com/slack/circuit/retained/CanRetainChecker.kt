@@ -11,5 +11,6 @@ public fun interface CanRetainChecker {
 
   public companion object {
     public val Always: CanRetainChecker = CanRetainChecker { true }
+    public val Never: CanRetainChecker = CanRetainChecker { false }
   }
 }

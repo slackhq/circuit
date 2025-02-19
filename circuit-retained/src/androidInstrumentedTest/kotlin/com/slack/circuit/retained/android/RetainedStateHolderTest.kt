@@ -18,6 +18,8 @@ package com.slack.circuit.retained.android
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -25,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -49,6 +52,9 @@ class RetainedStateHolderTest {
     RuleChain.emptyRuleChain().detectLeaksAfterTestSuccessWrapping(tag = "ActivitiesDestroyed") {
       around(composeTestRule)
     }
+
+  private val scenario: ActivityScenario<Activity>
+    get() = composeTestRule.activityRule.scenario
 
   private val restorationTester = RetainedStateRestorationTester(composeTestRule)
 
@@ -456,6 +462,61 @@ class RetainedStateHolderTest {
     restorationTester.emulateRetainedInstanceStateRestore()
 
     composeTestRule.runOnIdle { assertThat(restorableNumberOnScreen1).isEqualTo(1) }
+  }
+
+  @Test
+  fun canRetainChangeAfterRecreate() {
+    var increment = 0
+    var restorableNumber = -1
+    val registry = RetainedStateRegistry(values = emptyMap())
+    lateinit var canRetainChecker: ModifiableCanRetainChecker
+    val screen = Screens.Screen1
+    val content =
+      @Composable {
+        CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+          canRetainChecker = remember { ModifiableCanRetainChecker() }
+          val holder = rememberRetainedStateHolder(canRetainChecker)
+          holder.RetainedStateProvider(screen.name) {
+            restorableNumber = rememberRetained { increment++ }
+          }
+        }
+      }
+
+    scenario.onActivity { activity -> activity.setContent(content = content) }
+
+    composeTestRule.runOnIdle {
+      assertThat(restorableNumber).isEqualTo(0)
+      restorableNumber = -1
+    }
+
+    canRetainChecker.setCanRetain(true)
+    registry.saveAll()
+    scenario.recreate()
+
+    scenario.onActivity { activity -> activity.setContent(content = content) }
+
+    composeTestRule.runOnIdle {
+      assertThat(restorableNumber).isEqualTo(0)
+      restorableNumber = -1
+    }
+
+    canRetainChecker.setCanRetain(false)
+    registry.saveAll()
+    scenario.recreate()
+
+    scenario.onActivity { activity -> activity.setContent(content = content) }
+
+    composeTestRule.runOnIdle { assertThat(restorableNumber).isEqualTo(1) }
+  }
+
+  private class ModifiableCanRetainChecker : CanRetainChecker {
+    private var canRetain = false
+
+    override fun canRetain(): Boolean = canRetain
+
+    fun setCanRetain(value: Boolean) {
+      canRetain = value
+    }
   }
 
   class Activity : ComponentActivity() {

@@ -21,7 +21,7 @@ interface CircuitModule {
 
   @Multibinds fun viewFactories(): Set<Ui.Factory>
 
-  @Multibinds fun animatedScreenTransforms(): Map<KClass<Screen>, AnimatedScreenTransform>
+  @Multibinds fun animatedScreenTransforms(): Map<KClass<out Screen>, AnimatedScreenTransform>
 
   companion object {
     @SingleIn(AppScope::class)
@@ -29,7 +29,9 @@ interface CircuitModule {
     fun provideCircuit(
       presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
       uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-      animatedScreenTransforms: @JvmSuppressWildcards Map<KClass<Screen>, AnimatedScreenTransform>,
+      animatedScreenTransforms:
+        @JvmSuppressWildcards
+        Map<KClass<out Screen>, AnimatedScreenTransform>,
     ): Circuit {
       return Circuit.Builder()
         .addPresenterFactories(presenterFactories)

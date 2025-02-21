@@ -51,7 +51,7 @@ import kotlinx.collections.immutable.ImmutableMap
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 public class AnimatedNavDecoration(
-  private val animatedScreenTransforms: ImmutableMap<KClass<Screen>, AnimatedScreenTransform>,
+  private val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>,
   private val decoratorFactory: AnimatedNavDecorator.Factory,
 ) : NavDecoration {
 
@@ -81,7 +81,7 @@ public class AnimatedNavDecoration(
 /** Constructs the transition specification used in [AnimatedNavDecoration]. */
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
-  animatedScreenTransforms: ImmutableMap<KClass<Screen>, AnimatedScreenTransform>
+  animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
   val diff = targetState.backStackDepth - initialState.backStackDepth
   val sameRoot = targetState.rootScreen == initialState.rootScreen
@@ -102,7 +102,7 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
 
 private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverride(
   animatedNavEvent: AnimatedNavEvent,
-  animatedScreenTransforms: Map<KClass<Screen>, AnimatedScreenTransform>,
+  animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
 ): PartialContentTransform {
   // Read any screen specific overrides
   val targetAnimatedScreenTransform =

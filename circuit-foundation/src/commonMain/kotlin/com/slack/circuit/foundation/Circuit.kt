@@ -77,7 +77,7 @@ public class Circuit private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
-  public val animatedScreenTransforms: ImmutableMap<KClass<Screen>, AnimatedScreenTransform> =
+  public val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform> =
     builder.animatedScreenTransforms.toImmutableMap()
   public val animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
     builder.animatedNavDecoratorFactory
@@ -158,7 +158,7 @@ public class Circuit private constructor(builder: Builder) {
   public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
-    public val animatedScreenTransforms: MutableMap<KClass<Screen>, AnimatedScreenTransform> =
+    public val animatedScreenTransforms: MutableMap<KClass<out Screen>, AnimatedScreenTransform> =
       mutableMapOf()
 
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
@@ -287,7 +287,7 @@ public class Circuit private constructor(builder: Builder) {
     ): Builder = apply { animatedScreenTransforms.putAll(pairs) }
 
     public fun addAnimatedScreenTransforms(
-      transforms: Map<KClass<Screen>, AnimatedScreenTransform>
+      transforms: Map<KClass<out Screen>, AnimatedScreenTransform>
     ): Builder = apply { animatedScreenTransforms.putAll(transforms) }
 
     public fun setOnUnavailableContent(

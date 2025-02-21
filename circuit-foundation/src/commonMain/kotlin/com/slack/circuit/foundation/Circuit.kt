@@ -278,12 +278,12 @@ public class Circuit private constructor(builder: Builder) {
     ): Builder = apply { animatedNavDecoratorFactory = decoratorFactory }
 
     public fun addAnimatedScreenTransform(
-      screen: KClass<Screen>,
+      screen: KClass<out Screen>,
       animatedNavigationTransform: AnimatedScreenTransform,
     ): Builder = apply { animatedScreenTransforms[screen] = animatedNavigationTransform }
 
     public fun addAnimatedScreenTransforms(
-      vararg pairs: Pair<KClass<Screen>, AnimatedScreenTransform>
+      vararg pairs: Pair<KClass<out Screen>, AnimatedScreenTransform>
     ): Builder = apply { animatedScreenTransforms.putAll(pairs) }
 
     public fun addAnimatedScreenTransforms(

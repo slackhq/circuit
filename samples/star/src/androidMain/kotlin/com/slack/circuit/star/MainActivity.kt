@@ -23,6 +23,8 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuit.star.animation.HomeAnimatedScreenTransform
+import com.slack.circuit.star.animation.PetDetailAnimatedScreenTransform
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -72,10 +74,10 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       circuit
         .newBuilder()
         // todo DI this
-        //        .addAnimatedScreenTransforms(
-        //          HomeScreen::class to HomeAnimatedScreenTransform,
-        //          PetDetailScreen::class to PetDetailAnimatedScreenTransform,
-        //        )
+        .addAnimatedScreenTransforms(
+          HomeScreen::class to HomeAnimatedScreenTransform,
+          PetDetailScreen::class to PetDetailAnimatedScreenTransform,
+        )
         .build()
     setContent {
       StarTheme {

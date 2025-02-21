@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 
@@ -47,10 +46,10 @@ private class AndroidScreenAwareNavigator(
   private val delegate: Navigator,
   private val starter: AndroidScreenStarter,
 ) : Navigator by delegate {
-  override fun goTo(screen: Screen, context: NavigationContext): Boolean {
+  override fun goTo(screen: Screen): Boolean {
     return when (screen) {
       is AndroidScreen -> starter.start(screen)
-      else -> delegate.goTo(screen, context)
+      else -> delegate.goTo(screen)
     }
   }
 }

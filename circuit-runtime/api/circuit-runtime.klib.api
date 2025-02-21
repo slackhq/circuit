@@ -19,22 +19,22 @@ abstract interface com.slack.circuit.runtime/CircuitUiEvent // com.slack.circuit
 abstract interface com.slack.circuit.runtime/CircuitUiState // com.slack.circuit.runtime/CircuitUiState|null[0]
 
 abstract interface com.slack.circuit.runtime/GoToNavigator { // com.slack.circuit.runtime/GoToNavigator|null[0]
-    abstract fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.navigation/NavigationContext = ...): kotlin/Boolean // com.slack.circuit.runtime/GoToNavigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+    abstract fun goTo(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.runtime/GoToNavigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
 }
 
 abstract interface com.slack.circuit.runtime/Navigator : com.slack.circuit.runtime/GoToNavigator { // com.slack.circuit.runtime/Navigator|null[0]
-    abstract fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.navigation/NavigationContext): kotlin/Boolean // com.slack.circuit.runtime/Navigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+    abstract fun goTo(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.runtime/Navigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
     abstract fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.peek|peek(){}[0]
     abstract fun peekBackStack(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.peekBackStack|peekBackStack(){}[0]
     abstract fun pop(com.slack.circuit.runtime.screen/PopResult? = ...): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
-    abstract fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ..., com.slack.circuit.runtime.navigation/NavigationContext = ...): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+    abstract fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ...): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
 
     final object NoOp : com.slack.circuit.runtime/Navigator { // com.slack.circuit.runtime/Navigator.NoOp|null[0]
-        final fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.navigation/NavigationContext): kotlin/Boolean // com.slack.circuit.runtime/Navigator.NoOp.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+        final fun goTo(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.runtime/Navigator.NoOp.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
         final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.NoOp.peek|peek(){}[0]
         final fun peekBackStack(): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.NoOp.peekBackStack|peekBackStack(){}[0]
         final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.NoOp.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
-        final fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean, com.slack.circuit.runtime.navigation/NavigationContext): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.NoOp.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;com.slack.circuit.runtime.navigation.NavigationContext){}[0]
+        final fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean): kotlinx.collections.immutable/ImmutableList<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.NoOp.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
     }
 }
 

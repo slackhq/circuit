@@ -4,12 +4,9 @@ androidx.annotation:annotation
 androidx.collection:collection-jvm
 androidx.collection:collection
 androidx.compose.runtime:runtime-android
-androidx.compose.runtime:runtime-saveable-android
-androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
 org.jetbrains.compose.annotation-internal:annotation
 org.jetbrains.compose.collection-internal:collection
-org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom

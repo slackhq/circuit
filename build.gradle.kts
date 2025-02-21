@@ -520,7 +520,6 @@ dependencies {
   dokka(projects.circuitOverlay)
   dokka(projects.circuitRetained)
   dokka(projects.circuitRuntime)
-  dokka(projects.circuitRuntimeNavigation)
   dokka(projects.circuitRuntimePresenter)
   dokka(projects.circuitRuntimeScreen)
   dokka(projects.circuitRuntimeUi)

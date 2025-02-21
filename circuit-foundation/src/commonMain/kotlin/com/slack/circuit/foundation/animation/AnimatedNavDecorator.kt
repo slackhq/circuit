@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
@@ -145,7 +144,4 @@ public interface AnimatedNavState {
 
   /** The depth of the back stack at the time this state was created. */
   public val backStackDepth: Int
-
-  /** The user defined [NavigationContext] associated with this state. */
-  public val context: NavigationContext
 }

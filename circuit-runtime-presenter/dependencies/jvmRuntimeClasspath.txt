@@ -5,8 +5,6 @@ androidx.collection:collection
 org.jetbrains.compose.annotation-internal:annotation
 org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-desktop
-org.jetbrains.compose.runtime:runtime-saveable-desktop
-org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-stdlib

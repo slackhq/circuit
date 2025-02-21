@@ -17,7 +17,6 @@ package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.BackStack.Record
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -55,11 +54,7 @@ public interface BackStack<R : Record> : Iterable<R> {
    *   The previous record on the stack will receive this key.
    * @return If the [screen] was successfully pushed onto the back stack
    */
-  public fun push(
-    screen: Screen,
-    resultKey: String? = null,
-    context: NavigationContext = NavigationContext.Empty,
-  ): Boolean
+  public fun push(screen: Screen, resultKey: String? = null): Boolean
 
   /**
    * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
@@ -68,7 +63,6 @@ public interface BackStack<R : Record> : Iterable<R> {
    * @param result An optional [PopResult] that will be passed to previous record on the stack after
    *   this record is removed.
    */
-  // todo Does context here make any sense? The existing record has to be mutated in place.
   public fun pop(result: PopResult? = null): R?
 
   /**
@@ -122,9 +116,6 @@ public interface BackStack<R : Record> : Iterable<R> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
-
-    /** The [NavigationContext] associated with this record. */
-    public val context: NavigationContext
 
     /**
      * Awaits a [PopResult] produced by the record that previously sat on top of the stack above

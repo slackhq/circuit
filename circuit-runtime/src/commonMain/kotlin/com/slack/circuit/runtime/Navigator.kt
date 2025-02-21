@@ -4,7 +4,6 @@ package com.slack.circuit.runtime
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.Snapshot
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -18,14 +17,13 @@ public interface GoToNavigator {
    *
    * @return If the navigator successfully went to the [screen]
    */
-  public fun goTo(screen: Screen, context: NavigationContext = NavigationContext.Empty): Boolean
+  public fun goTo(screen: Screen): Boolean
 }
 
 /** A basic navigation interface for navigating between [screens][Screen]. */
 @Stable
 public interface Navigator : GoToNavigator {
-
-  public override fun goTo(screen: Screen, context: NavigationContext): Boolean
+  public override fun goTo(screen: Screen): Boolean
 
   public fun pop(result: PopResult? = null): Screen?
 
@@ -86,11 +84,10 @@ public interface Navigator : GoToNavigator {
     newRoot: Screen,
     saveState: Boolean = false,
     restoreState: Boolean = false,
-    context: NavigationContext = NavigationContext.Empty,
   ): ImmutableList<Screen>
 
   public object NoOp : Navigator {
-    override fun goTo(screen: Screen, context: NavigationContext): Boolean = true
+    override fun goTo(screen: Screen): Boolean = true
 
     override fun pop(result: PopResult?): Screen? = null
 
@@ -102,7 +99,6 @@ public interface Navigator : GoToNavigator {
       newRoot: Screen,
       saveState: Boolean,
       restoreState: Boolean,
-      context: NavigationContext,
     ): ImmutableList<Screen> = persistentListOf()
   }
 }

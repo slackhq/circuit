@@ -10,7 +10,6 @@ import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -55,8 +54,8 @@ internal class NavigatorImpl(
     check(!backStack.isEmpty) { "Backstack size must not be empty." }
   }
 
-  override fun goTo(screen: Screen, context: NavigationContext): Boolean {
-    return backStack.push(screen, context = context)
+  override fun goTo(screen: Screen): Boolean {
+    return backStack.push(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
@@ -76,7 +75,6 @@ internal class NavigatorImpl(
     newRoot: Screen,
     saveState: Boolean,
     restoreState: Boolean,
-    context: NavigationContext,
   ): ImmutableList<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
     val currentStack =
@@ -88,7 +86,7 @@ internal class NavigatorImpl(
         // If we're not restoring state, or the restore didn't work, we need to push the new root
         // onto the stack
         if (!restoreState || !backStack.restoreState(newRoot)) {
-          backStack.push(newRoot, context = context)
+          backStack.push(newRoot)
         }
         popped
       }

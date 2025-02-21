@@ -12,7 +12,6 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -73,9 +72,9 @@ public fun rememberImpressionNavigator(
 }
 
 private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () -> Unit) : Navigator {
-  override fun goTo(screen: Screen, context: NavigationContext): Boolean {
+  override fun goTo(screen: Screen): Boolean {
     onNavEvent()
-    return delegate.goTo(screen, context)
+    return delegate.goTo(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
@@ -91,9 +90,8 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
     newRoot: Screen,
     saveState: Boolean,
     restoreState: Boolean,
-    context: NavigationContext,
   ): ImmutableList<Screen> {
     onNavEvent()
-    return delegate.resetRoot(newRoot, saveState, restoreState, context)
+    return delegate.resetRoot(newRoot, saveState, restoreState)
   }
 }

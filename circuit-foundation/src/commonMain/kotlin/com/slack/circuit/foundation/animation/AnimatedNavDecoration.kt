@@ -96,8 +96,7 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
 
   val baseTransform = transitionSpec(animatedNavEvent)
   val screenOverride = screenSpecificOverride(animatedNavEvent, animatedScreenTransforms)
-  val navigationOverride = navigationSpecificOverride(animatedNavEvent)
-  contextualNavigationOverride(baseTransform, screenOverride, navigationOverride)
+  contextualNavigationOverride(baseTransform, screenOverride)
 }
 
 private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverride(
@@ -118,39 +117,16 @@ private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverr
   )
 }
 
-private fun AnimatedContentTransitionScope<AnimatedNavState>.navigationSpecificOverride(
-  animatedNavEvent: AnimatedNavEvent
-): PartialContentTransform {
-
-  val targetContext = targetState.context.tag<AnimatedNavContext>()
-  val initialContext = initialState.context.tag<AnimatedNavContext>()
-
-  return when (animatedNavEvent) {
-    AnimatedNavEvent.GoTo -> {
-      targetContext?.forward
-    }
-    AnimatedNavEvent.Pop -> {
-      // Read the forward value if it was set during pop, otherwise look for a context specified
-      // from the goto call to this screen
-      targetContext?.forward ?: initialContext?.reverse
-    }
-    AnimatedNavEvent.RootReset -> {
-      targetContext?.forward
-    }
-  } ?: PartialContentTransform.EMPTY
-}
-
 private fun contextualNavigationOverride(
   baseTransform: ContentTransform,
   screenOverride: PartialContentTransform,
-  navigationOverride: PartialContentTransform,
 ): ContentTransform {
   // Call site takes precedent over the screen specific override
   return with(baseTransform) {
-    val enter = navigationOverride.enter ?: screenOverride.enter ?: targetContentEnter
-    val exit = navigationOverride.exit ?: screenOverride.exit ?: initialContentExit
-    val zIndex = navigationOverride.zIndex ?: screenOverride.zIndex ?: targetContentZIndex
-    val size = navigationOverride.sizeTransform ?: screenOverride.sizeTransform ?: sizeTransform
+    val enter = screenOverride.enter ?: targetContentEnter
+    val exit = screenOverride.exit ?: initialContentExit
+    val zIndex = screenOverride.zIndex ?: targetContentZIndex
+    val size = screenOverride.sizeTransform ?: sizeTransform
     ContentTransform(enter, exit, zIndex, size)
   }
 }

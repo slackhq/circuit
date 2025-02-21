@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
@@ -126,8 +125,8 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   }
   val answeringNavigator = remember {
     object : GoToNavigator {
-      override fun goTo(screen: Screen, context: NavigationContext): Boolean {
-        currentBackStack.push(screen, key, context = context)
+      override fun goTo(screen: Screen): Boolean {
+        currentBackStack.push(screen, key)
         launched = true
         return true
       }

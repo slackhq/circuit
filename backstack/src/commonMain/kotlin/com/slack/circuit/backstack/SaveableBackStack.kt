@@ -22,8 +22,6 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
-import com.slack.circuit.runtime.navigation.NavigationContext
-import com.slack.circuit.runtime.navigation.plus
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.uuid.ExperimentalUuidApi
@@ -94,19 +92,19 @@ internal constructor(
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
-  public override fun push(
-    screen: Screen,
-    resultKey: String?,
-    context: NavigationContext,
-  ): Boolean {
-    return push(Record(screen = screen, context = context), resultKey)
+  public override fun push(screen: Screen, resultKey: String?): Boolean {
+    return push(screen, emptyMap(), resultKey)
+  }
+
+  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?): Boolean {
+    return push(Record(screen, args), resultKey)
   }
 
   public override fun push(record: Record, resultKey: String?): Boolean {
     val topRecord = Snapshot.withoutReadObservation { entryList.firstOrNull() }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
-    return if (topRecord?.screen != record.screen || topRecord.context != record.context) {
+    return if (topRecord?.screen != record.screen || topRecord.args != record.args) {
       entryList.add(0, record)
       // Clear the cached pending result from the previous top record
       entryList.getOrNull(1)?.apply { resultKey?.let(::prepareForResult) }
@@ -114,7 +112,7 @@ internal constructor(
     } else false
   }
 
-  public override fun pop(result: PopResult?): Record? {
+  override fun pop(result: PopResult?): Record? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.
     return Snapshot.withMutableSnapshot {
       val popped = entryList.removeFirstOrNull()
@@ -158,7 +156,7 @@ internal constructor(
 
   public data class Record(
     override val screen: Screen,
-    override val context: NavigationContext = NavigationContext.Empty,
+    val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : BackStack.Record {
     /**
@@ -195,25 +193,23 @@ internal constructor(
     }
 
     internal companion object {
-
       val Saver: Saver<Record, Any> =
         mapSaver(
           save = { value ->
             buildMap {
               put("screen", value.screen)
+              put("args", value.args)
               put("key", value.key)
-              put("context", with(NavigationContext.Saver) { save(value.context) })
               put("resultKey", value.resultKey)
               put("result", value.readResult())
             }
           },
           restore = { map ->
+            @Suppress("UNCHECKED_CAST")
             Record(
                 screen = map["screen"] as Screen,
+                args = map["args"] as Map<String, Any?>,
                 key = map["key"] as String,
-                context =
-                  map["context"]?.let { NavigationContext.Saver.restore(it) }
-                    ?: NavigationContext.Empty,
               )
               .apply {
                 // NOTE order matters here, prepareForResult() clears the buffer

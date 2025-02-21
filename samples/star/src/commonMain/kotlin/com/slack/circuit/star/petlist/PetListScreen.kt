@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
@@ -70,7 +68,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -98,9 +95,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.animation.forward
-import com.slack.circuit.foundation.animation.goTo
-import com.slack.circuit.foundation.animation.reverse
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
@@ -241,18 +235,7 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
                     event.photoUrlMemoryCacheKey,
                     event.animal.toPartialAnimal(),
                   )
-              ) {
-                // transition to the next screen
-                forward {
-                  enter = EnterTransition.None
-                  exit = fadeOut()
-                }
-                // transition coming back to this screen
-                reverse {
-                  enter = fadeIn()
-                  exit = ExitTransition.None
-                }
-              }
+              )
             }
             is UpdatedFilters -> {
               isUpdateFiltersModalShowing = false

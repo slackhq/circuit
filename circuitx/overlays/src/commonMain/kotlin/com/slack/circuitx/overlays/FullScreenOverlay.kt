@@ -13,7 +13,6 @@ import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.jvm.JvmInline
@@ -71,7 +70,7 @@ internal class DispatchingOverlayNavigator(
   private val overlayNavigator: OverlayNavigator<FullScreenOverlay.Result>,
   private val onPop: () -> Unit,
 ) : Navigator {
-  override fun goTo(screen: Screen, context: NavigationContext): Boolean {
+  override fun goTo(screen: Screen): Boolean {
     error("goTo() is not supported in full screen overlays!")
   }
 
@@ -89,7 +88,6 @@ internal class DispatchingOverlayNavigator(
     newRoot: Screen,
     saveState: Boolean,
     restoreState: Boolean,
-    context: NavigationContext,
   ): ImmutableList<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }

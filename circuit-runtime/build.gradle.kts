@@ -49,7 +49,6 @@ kotlin {
         api(libs.coroutines)
         api(libs.kotlinx.immutable)
         api(projects.circuitRuntimeScreen)
-        api(projects.circuitRuntimeNavigation)
       }
     }
   }

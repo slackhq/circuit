@@ -6,16 +6,15 @@ public abstract interface class com/slack/circuit/backstack/BackStack : java/lan
 	public static synthetic fun pop$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun popUntil (Lkotlin/jvm/functions/Function1;)Lkotlinx/collections/immutable/ImmutableList;
 	public abstract fun push (Lcom/slack/circuit/backstack/BackStack$Record;Ljava/lang/String;)Z
-	public abstract fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Z
+	public abstract fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;)Z
 	public static synthetic fun push$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/backstack/BackStack$Record;Ljava/lang/String;ILjava/lang/Object;)Z
-	public static synthetic fun push$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;Lcom/slack/circuit/runtime/navigation/NavigationContext;ILjava/lang/Object;)Z
+	public static synthetic fun push$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;ILjava/lang/Object;)Z
 	public abstract fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public abstract fun saveState ()V
 }
 
 public abstract interface class com/slack/circuit/backstack/BackStack$Record {
 	public abstract fun awaitResult (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public abstract fun getKey ()Ljava/lang/String;
 	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 }
@@ -34,7 +33,6 @@ public final class com/slack/circuit/backstack/BackStackRecordLocalProviderKt {
 }
 
 public abstract interface class com/slack/circuit/backstack/NavArgument {
-	public abstract fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
 	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 }
 
@@ -60,23 +58,24 @@ public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/cir
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;
 	public synthetic fun push (Lcom/slack/circuit/backstack/BackStack$Record;Ljava/lang/String;)Z
 	public fun push (Lcom/slack/circuit/backstack/SaveableBackStack$Record;Ljava/lang/String;)Z
-	public fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;Lcom/slack/circuit/runtime/navigation/NavigationContext;)Z
+	public fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;)Z
+	public final fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;Ljava/lang/String;)Z
 	public fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun saveState ()V
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStack$Record : com/slack/circuit/backstack/BackStack$Record {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;Ljava/lang/String;)V
-	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun awaitResult (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
-	public final fun component2 ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun component2 ()Ljava/util/Map;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;Ljava/lang/String;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;
-	public static synthetic fun copy$default (Lcom/slack/circuit/backstack/SaveableBackStack$Record;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/navigation/NavigationContext;Ljava/lang/String;ILjava/lang/Object;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;Ljava/lang/String;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;
+	public static synthetic fun copy$default (Lcom/slack/circuit/backstack/SaveableBackStack$Record;Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;Ljava/lang/String;ILjava/lang/Object;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getContext ()Lcom/slack/circuit/runtime/navigation/NavigationContext;
+	public final fun getArgs ()Ljava/util/Map;
 	public fun getKey ()Ljava/lang/String;
 	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun hashCode ()I

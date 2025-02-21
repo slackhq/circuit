@@ -18,7 +18,6 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import com.slack.circuit.runtime.navigation.NavigationContext
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
@@ -37,5 +36,4 @@ public interface NavDecoration {
 /** Argument provided to [NavDecoration] that exposes the underlying [Screen]. */
 public interface NavArgument {
   public val screen: Screen
-  public val context: NavigationContext
 }

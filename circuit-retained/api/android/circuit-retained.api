@@ -79,6 +79,7 @@ public final class com/slack/circuit/retained/RetainedStateRegistryKt {
 	public static final fun RetainedStateRegistry (Lcom/slack/circuit/retained/CanRetainChecker;Ljava/util/Map;)Lcom/slack/circuit/retained/RetainedStateRegistry;
 	public static synthetic fun RetainedStateRegistry$default (Lcom/slack/circuit/retained/CanRetainChecker;Ljava/util/Map;ILjava/lang/Object;)Lcom/slack/circuit/retained/RetainedStateRegistry;
 	public static final fun getLocalRetainedStateRegistry ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun rememberRetainedStateRegistry ([Ljava/lang/Object;Ljava/lang/String;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
 }
 
 public abstract interface class com/slack/circuit/retained/RetainedValueHolder {

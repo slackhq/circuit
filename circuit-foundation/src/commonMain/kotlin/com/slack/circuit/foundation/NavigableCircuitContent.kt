@@ -45,9 +45,8 @@ import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateRegistry
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import com.slack.circuit.retained.rememberRetainedStateRegistry
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -101,7 +100,7 @@ public fun <R : Record> NavigableCircuitContent(
    * └─────────────┘
    */
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
-  val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
+  val outerRegistry = rememberRetainedStateRegistry(key = outerKey)
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     val activeContentProviders =

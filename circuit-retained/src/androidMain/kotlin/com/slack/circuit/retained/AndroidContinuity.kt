@@ -20,8 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
-
-  private var canRetainChecker: CanRetainChecker = CanRetainChecker.Always
+  private var canRetainChecker: CanRetainChecker = CanRetainChecker.Never
 
   fun update(canRetainChecker: CanRetainChecker) {
     this.canRetainChecker = canRetainChecker
@@ -100,10 +99,8 @@ public fun continuityRetainedStateRegistry(
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
-  DisposableEffect(vm) {
-    vm.update(canRetainChecker)
-    onDispose { vm.update(CanRetainChecker.Never) }
-  }
+  vm.update(canRetainChecker)
+  DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
 
   LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
 

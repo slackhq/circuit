@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.retained
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -78,6 +79,19 @@ public fun RetainedStateRegistry(
     values.mapValues { it.value.toMutableList() }.toMutableMap(),
   )
 
+/** Creates and remembers the instance of [RetainedStateRegistry]. */
+@Composable
+public fun rememberRetainedStateRegistry(
+  vararg inputs: Any?,
+  key: String? = null,
+  canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
+): RetainedStateRegistry {
+  return rememberRetained(inputs = inputs, key = key) {
+      RetainedStateRegistryImpl(canRetainChecker, null)
+    }
+    .apply { update(canRetainChecker) }
+}
+
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
 public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateRegistry> =
   staticCompositionLocalOf {
@@ -85,7 +99,7 @@ public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateR
   }
 
 internal class RetainedStateRegistryImpl(
-  private val canRetainChecker: CanRetainChecker,
+  private var canRetainChecker: CanRetainChecker,
   retained: MutableMap<String, List<Any?>>?,
 ) : MutableRetainedStateRegistry {
 
@@ -199,5 +213,9 @@ internal class RetainedStateRegistryImpl(
 
     retained.values.forEach { it.forEach(::clearValue) }
     retained.clear()
+  }
+
+  fun update(canRetainChecker: CanRetainChecker) {
+    this.canRetainChecker = canRetainChecker
   }
 }

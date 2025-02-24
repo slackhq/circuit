@@ -15,6 +15,7 @@ import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -22,6 +23,8 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuit.star.animation.HomeAnimatedScreenTransform
+import com.slack.circuit.star.animation.PetDetailAnimatedScreenTransform
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.di.AppScope
@@ -32,7 +35,7 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
@@ -67,6 +70,15 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
         persistentListOf(HomeScreen, petDetailScreen)
       }
 
+    val localCircuit =
+      circuit
+        .newBuilder()
+        // todo DI this
+        .addAnimatedScreenTransforms(
+          HomeScreen::class to HomeAnimatedScreenTransform,
+          PetDetailScreen::class to PetDetailAnimatedScreenTransform,
+        )
+        .build()
     setContent {
       StarTheme {
         // TODO why isn't the windowBackground enough so we don't need to do this?
@@ -74,13 +86,16 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
           val backStack = rememberSaveableBackStack(initialBackstack)
           val circuitNavigator = rememberCircuitNavigator(backStack)
           val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
-          CircuitCompositionLocals(circuit) {
+          CircuitCompositionLocals(localCircuit) {
             SharedElementTransitionLayout {
               ContentWithOverlays {
                 NavigableCircuitContent(
                   navigator = navigator,
                   backStack = backStack,
-                  decoration = GestureNavigationDecoration(onBackInvoked = navigator::pop),
+                  decoratorFactory =
+                    remember(navigator) {
+                      GestureNavigationDecorationFactory(onBackInvoked = navigator::pop)
+                    },
                 )
               }
             }

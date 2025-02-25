@@ -142,18 +142,12 @@ public class RecordContentProvider<R : Record>(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
-
     other as RecordContentProvider<*>
-
-    if (record != other.record) return false
-    if (content != other.content) return false
-
-    return true
+    return record == other.record
   }
 
   override fun hashCode(): Int {
-    var result = record.hashCode()
-    result = 31 * result + content.hashCode()
+    val result = record.hashCode()
     return result
   }
 

@@ -39,7 +39,7 @@ class SaveableRestRootTest {
   - Record A has a new content provider created, but the key is retained
   - RecordContentProviders are not equal because they have different content
   - Transition has Record A -> Record A with different content which is !=
-  - Animated content is rendered for both, saveable blows up 
+  - Animated content is rendered for both, saveable blows up
    */
   @Test
   fun testReset() = runTest {
@@ -53,8 +53,8 @@ class SaveableRestRootTest {
       navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
       mainClock.advanceTimeByFrame()
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
-      onNodeWithTag(TAG_LABEL).assertTextEquals(TestScreen.ScreenB.label)
+      mainClock.autoAdvance = true
+      onNodeWithTag(TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)
     }
   }
 

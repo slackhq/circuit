@@ -50,8 +50,6 @@
       
     
     
-      <link rel="stylesheet" href="../css/app.css">
-    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -958,6 +956,15 @@
 </code></pre></div>
 <p>For Gradle JVM projects, you can use Gradle test fixtures syntax on the core circuit artifact.</p>
 <div class="highlight"><pre><span></span><code><span class="n">testImplementation</span><span class="p">(</span><span class="n">testFixtures</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit:&lt;version&gt;&quot;</span><span class="p">))</span>
+</code></pre></div>
+<p>For unit tests on the JVM in an Android module, please set below in your project&rsquo;s AGP config.</p>
+<div class="highlight"><pre><span></span><code>android {
+  ...
+  testOptions {
+    unitTests.isReturnDefaultValues = true
+  }
+  ...
+}
 </code></pre></div>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Testing a Circuit Presenter and UI is a breeze! Consider the following example:</p>

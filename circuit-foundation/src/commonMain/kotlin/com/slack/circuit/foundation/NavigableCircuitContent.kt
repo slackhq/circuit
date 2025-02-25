@@ -177,8 +177,6 @@ private fun <R : Record> buildCircuitContentProviders(
 ): ImmutableList<RecordContentProvider<R>> {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   return backStack
-    .iterator()
-    .asSequence()
     .map { record ->
       // Query the previous content providers map, so that we use the same
       // RecordContentProvider instances across calls.

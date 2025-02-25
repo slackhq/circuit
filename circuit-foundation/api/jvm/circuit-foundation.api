@@ -96,6 +96,19 @@ public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 	public final fun getLambda-1$circuit_foundation ()Lkotlin/jvm/functions/Function4;
 }
 
+public final class com/slack/circuit/foundation/ComposableSingletons$NavigableCircuitContentKt {
+	public static final field INSTANCE Lcom/slack/circuit/foundation/ComposableSingletons$NavigableCircuitContentKt;
+	public fun <init> ()V
+	public final fun getLambda-1$circuit_foundation ()Lkotlin/jvm/functions/Function4;
+}
+
+public final class com/slack/circuit/foundation/ContentProviderState {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/runtime/saveable/SaveableStateHolder;Lcom/slack/circuit/retained/RetainedStateHolder;Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function4;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+}
+
 public final class com/slack/circuit/foundation/DefaultAnimatedNavDecoration : com/slack/circuit/foundation/AnimatedNavDecoration {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/foundation/AnimatedNavDecorator$Factory;)V
@@ -238,7 +251,7 @@ public final class com/slack/circuit/foundation/PausableStateKt {
 
 public final class com/slack/circuit/foundation/RecordContentProvider : com/slack/circuit/backstack/NavArgument {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function3;)V
+	public fun <init> (Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function4;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;

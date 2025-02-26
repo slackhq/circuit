@@ -176,7 +176,7 @@ The call to `requireAnimatedScope` is accessing a `AnimatedVisibilityScope` that
 
 === "Android"
     <div markdown>
-    <video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="/videos/shared-elements-tutorial-step-4.mp4" ></video>
+    <video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-4.mp4" ></video>
 
     With that we now have a shared element transition where the sender image transitions across the two screens!
     </div>
@@ -244,7 +244,7 @@ Text(
 === "Android"
     <div markdown>
 
-    <video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="/videos/shared-elements-tutorial-step-5.mp4" ></video>
+    <video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-5.mp4" ></video>
 
     After the `Modifier.sharedBounds()` is added to each of the three `Text` in the `EmailItem` composable and the `EmailDetailContent` composable you should now see the majority of the email tranistioning across the two `Screens`.
 

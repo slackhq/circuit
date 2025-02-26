@@ -24,6 +24,18 @@ For Gradle JVM projects, you can use Gradle test fixtures syntax on the core cir
 testImplementation(testFixtures("com.slack.circuit:circuit:<version>"))
 ```
 
+For unit tests on the JVM in an Android module, please set below in your project's AGP config.
+
+```gradle
+android {
+  ...
+  testOptions {
+    unitTests.isReturnDefaultValues = true
+  }
+  ...
+}
+```
+
 ## Example
 
 Testing a Circuit Presenter and UI is a breeze! Consider the following example:

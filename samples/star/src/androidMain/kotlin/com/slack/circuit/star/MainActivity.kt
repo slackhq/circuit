@@ -22,6 +22,7 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.star.animation.HomeAnimatedScreenTransform
 import com.slack.circuit.star.animation.PetDetailAnimatedScreenTransform
@@ -41,6 +42,7 @@ import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
+@OptIn(ExperimentalCircuitApi::class)
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
 @ActivityKey(MainActivity::class)
 class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {

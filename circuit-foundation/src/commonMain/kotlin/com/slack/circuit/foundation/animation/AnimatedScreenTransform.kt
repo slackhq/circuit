@@ -7,6 +7,7 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -20,6 +21,7 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * A [AnimatedScreenTransform] can be registered for a [Screen] using via CircuitInject.
  */
+@ExperimentalCircuitApi
 public interface AnimatedScreenTransform {
 
   /**
@@ -70,4 +72,4 @@ public interface AnimatedScreenTransform {
 }
 
 /** A default [AnimatedScreenTransform] that does nothing. */
-public object NoOpAnimatedScreenTransform : AnimatedScreenTransform
+@ExperimentalCircuitApi public object NoOpAnimatedScreenTransform : AnimatedScreenTransform

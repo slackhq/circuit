@@ -56,6 +56,7 @@ import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -63,6 +64,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
+@OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,

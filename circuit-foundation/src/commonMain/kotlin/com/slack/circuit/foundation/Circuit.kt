@@ -16,6 +16,7 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -77,10 +78,13 @@ public class Circuit private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
+  @ExperimentalCircuitApi
   public val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform> =
     builder.animatedScreenTransforms.toImmutableMap()
   public val animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
     builder.animatedNavDecoratorFactory
+
+  @OptIn(ExperimentalCircuitApi::class)
   public val defaultNavDecoration: NavDecoration =
     builder.defaultNavDecoration
       ?: AnimatedNavDecoration(
@@ -158,6 +162,8 @@ public class Circuit private constructor(builder: Builder) {
   public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
+
+    @ExperimentalCircuitApi
     public val animatedScreenTransforms: MutableMap<KClass<out Screen>, AnimatedScreenTransform> =
       mutableMapOf()
 
@@ -178,6 +184,7 @@ public class Circuit private constructor(builder: Builder) {
     public var presentWithLifecycle: Boolean = true
       private set
 
+    @OptIn(ExperimentalCircuitApi::class)
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
       presenterFactories.addAll(circuit.presenterFactories)
@@ -277,15 +284,18 @@ public class Circuit private constructor(builder: Builder) {
       decoratorFactory: AnimatedNavDecorator.Factory
     ): Builder = apply { animatedNavDecoratorFactory = decoratorFactory }
 
+    @ExperimentalCircuitApi
     public fun addAnimatedScreenTransform(
       screen: KClass<out Screen>,
       animatedNavigationTransform: AnimatedScreenTransform,
     ): Builder = apply { animatedScreenTransforms[screen] = animatedNavigationTransform }
 
+    @ExperimentalCircuitApi
     public fun addAnimatedScreenTransforms(
       vararg pairs: Pair<KClass<out Screen>, AnimatedScreenTransform>
     ): Builder = apply { animatedScreenTransforms.putAll(pairs) }
 
+    @ExperimentalCircuitApi
     public fun addAnimatedScreenTransforms(
       transforms: Map<KClass<out Screen>, AnimatedScreenTransform>
     ): Builder = apply { animatedScreenTransforms.putAll(transforms) }

@@ -8,11 +8,13 @@ import androidx.compose.animation.ExitTransition
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 
 // todo @CircuitInject(PetDetailScreen::class, AppScope::class)
+@ExperimentalCircuitApi
 object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
 
   override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
@@ -35,6 +37,7 @@ object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
 }
 
 // todo @CircuitInject(HomeScreen::class, AppScope::class)
+@ExperimentalCircuitApi
 object HomeAnimatedScreenTransform : AnimatedScreenTransform {
 
   override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(

@@ -4,6 +4,7 @@ package com.slack.circuit.star.di
 
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -14,6 +15,9 @@ import dagger.Provides
 import dagger.multibindings.Multibinds
 import kotlin.reflect.KClass
 
+@OptIn(
+  ExperimentalCircuitApi::class // For AnimatedScreenTransform
+)
 @ContributesTo(AppScope::class)
 @Module
 interface CircuitModule {

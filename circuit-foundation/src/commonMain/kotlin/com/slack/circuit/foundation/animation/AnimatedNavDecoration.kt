@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -49,7 +50,7 @@ import kotlinx.collections.immutable.ImmutableMap
  *   the default [ContentTransform] provided by the [AnimatedNavDecorator].
  * @param decoratorFactory A factory used to create a [AnimatedNavDecorator] instance.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitApi::class)
 public class AnimatedNavDecoration(
   private val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>,
   private val decoratorFactory: AnimatedNavDecorator.Factory,
@@ -79,6 +80,7 @@ public class AnimatedNavDecoration(
 }
 
 /** Constructs the transition specification used in [AnimatedNavDecoration]. */
+@OptIn(ExperimentalCircuitApi::class)
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>
@@ -99,6 +101,7 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
   contextualNavigationOverride(baseTransform, screenOverride)
 }
 
+@OptIn(ExperimentalCircuitApi::class)
 private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverride(
   animatedNavEvent: AnimatedNavEvent,
   animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,

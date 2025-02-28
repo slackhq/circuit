@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '22'
+          java-version: '23'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -123,7 +123,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '22'
+          java-version: '23'
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -157,7 +157,7 @@ jobs:
 
       - run: brew install swiftlint
 
-# TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/22191
+# TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/23191
 #      - name: Run lint on iOS samples
 #        run: bundle exec fastlane ios lint
 
@@ -188,7 +188,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '22'
+          java-version: '23'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -237,7 +237,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '22'
+          java-version: '23'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4

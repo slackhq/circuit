@@ -402,7 +402,7 @@ private fun PetListGrid(
 
     val spacing = if (columnSpan >= 4) 32.dp else 16.dp
     @Suppress("MagicNumber")
-    (LazyVerticalStaggeredGrid(
+    LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(columnSpan),
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = spacing,
@@ -415,7 +415,7 @@ private fun PetListGrid(
           eventSink(ClickAnimal(animal.id, animal.imageUrl, animal))
         }
       }
-    })
+    }
     PullRefreshIndicator(
       modifier = Modifier.align(Alignment.TopCenter),
       refreshing = isRefreshing,

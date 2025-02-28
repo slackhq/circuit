@@ -25,13 +25,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
@@ -49,6 +52,7 @@ import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalCanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
@@ -119,13 +123,26 @@ public fun <R : Record> NavigableCircuitContent(
     }
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
-    val activeContentProviders =
-      buildCircuitContentProviders(
-        backStack = backStack,
-        navigator = navigator,
-        circuit = circuit,
-        unavailableRoute = unavailableRoute,
-      )
+    val saveableStateHolder = rememberSaveableStateHolder()
+    val retainedStateHolder = rememberRetainedStateHolder()
+    val contentProviderState =
+      remember(saveableStateHolder, retainedStateHolder) {
+          ContentProviderState(
+            saveableStateHolder = saveableStateHolder,
+            retainedStateHolder = retainedStateHolder,
+            backStack = backStack,
+            navigator = navigator,
+            circuit = circuit,
+            unavailableRoute = unavailableRoute,
+          )
+        }
+        .apply {
+          lastBackStack = backStack
+          lastNavigator = navigator
+          lastCircuit = circuit
+          lastUnavailableRoute = unavailableRoute
+        }
+    val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
 
     navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
@@ -136,7 +153,7 @@ public fun <R : Record> NavigableCircuitContent(
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
       CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-        provider.content(record)
+        provider.content(record, contentProviderState)
       }
     }
   }
@@ -146,7 +163,7 @@ public fun <R : Record> NavigableCircuitContent(
 @Immutable
 public class RecordContentProvider<R : Record>(
   public val record: R,
-  internal val content: @Composable (R) -> Unit,
+  internal val content: @Composable (R, ContentProviderState<R>) -> Unit,
 ) : NavArgument {
 
   override val screen: Screen
@@ -155,18 +172,12 @@ public class RecordContentProvider<R : Record>(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
-
     other as RecordContentProvider<*>
-
-    if (record != other.record) return false
-    if (content != other.content) return false
-
-    return true
+    return record == other.record
   }
 
   override fun hashCode(): Int {
-    var result = record.hashCode()
-    result = 31 * result + content.hashCode()
+    val result = record.hashCode()
     return result
   }
 
@@ -175,23 +186,62 @@ public class RecordContentProvider<R : Record>(
 
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
+  backStack: BackStack<R>
+): ImmutableList<RecordContentProvider<R>> {
+  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
+  return backStack
+    .map { record ->
+      // Query the previous content providers map, so that we use the same
+      // RecordContentProvider instances across calls.
+      previousContentProviders.getOrPut(record.key) {
+        RecordContentProvider(record = record, content = createRecordContent())
+      }
+    }
+    .toImmutableList()
+    .also { list ->
+      // Update the previousContentProviders map so we can reference it on the next call
+      previousContentProviders.clear()
+      for (provider in list) {
+        previousContentProviders[provider.record.key] = provider
+      }
+    }
+}
+
+@Stable
+public class ContentProviderState<R : Record>(
+  internal val saveableStateHolder: SaveableStateHolder,
+  internal val retainedStateHolder: RetainedStateHolder,
   backStack: BackStack<R>,
   navigator: Navigator,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
-): ImmutableList<RecordContentProvider<R>> {
-  val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
+) {
 
-  val lastBackStack by rememberUpdatedState(backStack)
-  val lastNavigator by rememberUpdatedState(navigator)
-  val lastCircuit by rememberUpdatedState(circuit)
-  val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
+  internal var lastBackStack by mutableStateOf(backStack)
+  internal var lastNavigator by mutableStateOf(navigator)
+  internal var lastCircuit by mutableStateOf(circuit)
+  internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
 
-  val saveableStateHolder = rememberSaveableStateHolder()
-  val retainedStateHolder = rememberRetainedStateHolder()
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is ContentProviderState<*>) return false
 
-  fun createRecordContent() =
-    movableContentOf<R> { record ->
+    if (saveableStateHolder != other.saveableStateHolder) return false
+    if (retainedStateHolder != other.retainedStateHolder) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = saveableStateHolder.hashCode()
+    result = 31 * result + retainedStateHolder.hashCode()
+    return result
+  }
+}
+
+private fun <R : Record> createRecordContent() =
+  movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
+    with(contentProviderState) {
       val recordInBackStackRetainChecker =
         remember(lastBackStack, record) {
           CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
@@ -226,26 +276,7 @@ private fun <R : Record> buildCircuitContentProviders(
         }
       }
     }
-
-  return lastBackStack
-    .iterator()
-    .asSequence()
-    .map { record ->
-      // Query the previous content providers map, so that we use the same
-      // RecordContentProvider instances across calls.
-      previousContentProviders.getOrPut(record.key) {
-        RecordContentProvider(record = record, content = createRecordContent())
-      }
-    }
-    .toImmutableList()
-    .also { list ->
-      // Update the previousContentProviders map so we can reference it on the next call
-      previousContentProviders.clear()
-      for (provider in list) {
-        previousContentProviders[provider.record.key] = provider
-      }
-    }
-}
+  }
 
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36

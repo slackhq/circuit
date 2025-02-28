@@ -1328,6 +1328,54 @@ class CircuitSymbolProcessorTest {
     }
   }
 
+  // Regression test for https://github.com/slackhq/circuit/issues/1704
+  @Test
+  fun parameterOrderDoesNotMatter() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "ParameterOrdering.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.screen.StaticScreen
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          data object Static : StaticScreen
+          
+          @CircuitInject(Static::class, AppScope::class)
+          @Composable
+          fun StaticUi(screen: Static, modifier: Modifier) {} 
+        """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/StaticUiFactory.kt",
+      expectedContent =
+        """
+        package test
+        
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        
+        @ContributesMultibinding(AppScope::class)
+        public class StaticUiFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen) }
+            else -> null
+          }
+        }
+      """
+          .trimIndent(),
+    )
+  }
+
   private enum class CodegenMode {
     ANVIL,
     HILT,

@@ -303,13 +303,7 @@ private class CircuitSymbolProcessor(
             FactoryType.UI
           }
         val assistedParams =
-          fd.assistedParameters(
-            symbols,
-            logger,
-            screenKSType,
-            factoryType == FactoryType.PRESENTER,
-            includeParameterNames = codegenMode != KOTLIN_INJECT_ANVIL,
-          )
+          fd.assistedParameters(symbols, logger, screenKSType, factoryType == FactoryType.PRESENTER)
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
@@ -476,7 +470,6 @@ private class CircuitSymbolProcessor(
               logger,
               screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
-              includeParameterNames = codegenMode != KOTLIN_INJECT_ANVIL,
             )
           }
         codeBlock =
@@ -548,7 +541,6 @@ private fun KSFunctionDeclaration.assistedParameters(
   logger: KSPLogger,
   screenType: KSType,
   allowNavigator: Boolean,
-  includeParameterNames: Boolean,
 ): CodeBlock {
   return buildSet {
       for (param in parameters) {
@@ -583,15 +575,7 @@ private fun KSFunctionDeclaration.assistedParameters(
       }
     }
     .toList()
-    .map {
-      val prefix =
-        if (includeParameterNames) {
-          "${it.name} = "
-        } else {
-          ""
-        }
-      CodeBlock.of("$prefix${it.factoryName}")
-    }
+    .map { CodeBlock.of("${it.name} = ${it.factoryName}") }
     .joinToCode(",·")
 }
 

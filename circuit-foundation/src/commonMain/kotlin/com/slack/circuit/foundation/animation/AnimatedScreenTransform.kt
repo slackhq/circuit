@@ -19,7 +19,26 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * Each of these can be customized based on the [AnimatedNavEvent] that triggered the transition.
  *
- * A [AnimatedScreenTransform] can be registered for a [Screen] using via CircuitInject.
+ * ### Example
+ *
+ * ```kotlin
+ * object CustomScreenAnimatedTransform : AnimatedScreenTransform {
+ *
+ *   override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
+ *     animatedNavEvent: AnimatedNavEvent
+ *   ): EnterTransition? {
+ *     // Coming from `HomeScreen` we override the transition to slide in horizontally.
+ *     return if (initialState.screen is HomeScreen) slideInHorizontally() else null
+ *   }
+ *
+ *   override fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+ *     animatedNavEvent: AnimatedNavEvent
+ *   ): ExitTransition? {
+ *     // Going to `HomeScreen` we override the transition fade out.
+ *     return if (targetState.screen is HomeScreen) fadeOut() else null
+ *   }
+ * }
+ * ```
  */
 @ExperimentalCircuitApi
 public interface AnimatedScreenTransform {

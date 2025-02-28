@@ -26,9 +26,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 
 /**
- * Animated navigation decoration is an implementation of [NavDecoration] that provides the
- * [Navigation] [AnimatedVisibilityScope] for shared elements. It also allows for indepth
- * customization of its [AnimatedContent] through a [AnimatedNavDecorator].
+ * `AnimatedNavDecoration` is an implementation of [NavDecoration] that provides the `Navigation`
+ * [AnimatedVisibilityScope] for shared elements. It also allows for indepth customization of its
+ * [AnimatedContent] through a [AnimatedNavDecorator]. `AnimatedNavDecoration` is the default
+ * `NavDecoration` used by Circuit.
  *
  * **How this works:**
  * - The [DecoratedContent] method is called to render content by the Navigation system in Circuit,
@@ -46,9 +47,49 @@ import kotlinx.collections.immutable.ImmutableMap
  *   [SharedElementTransitionScope] is created and the [AnimatedNavDecorator.Decoration] is used to
  *   render the content.
  *
+ * ### Examples
+ *
+ * Using this `AnimatedNavDecorator.Factory` for the `CustomDecorator` in the [AnimatedNavDecorator]
+ * example.
+ *
+ * ```kotlin
+ * class CustomAnimatedNavDecoratorFactory() : AnimatedNavDecorator.Factory {
+ *   override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
+ *     return CustomDecorator()
+ *   }
+ * }
+ * ```
+ *
+ * You can customize the default `AnimatedNavDecoration` when building a Circuit instance by
+ * providing the `CustomAnimatedNavDecoratorFactory` to the `Circuit.Builder`. You can also add an
+ * `AnimatedScreenTransform` for a specific `Screen`.
+ *
+ * ```kotlin
+ * Circuit.Builder()
+ *   .addUiFactories()
+ *   .addPresenterFactories()
+ *   .addAnimatedScreenTransform(CustomScreen::class, CustomScreenAnimatedTransform)
+ *   .setAnimatedNavDecoratorFactory(CustomAnimatedNavDecoratorFactory())
+ *   .build()
+ * ```
+ *
+ * You can also customize the `AnimatedNavDecoration` for a specific `NavigableCircuitContent` by
+ * providing it with an `AnimatedNavDecorator.Factory`. The provided `AnimatedNavDecorator.Factory`
+ * will override any existing `NavDecoration` for that `NavigableCircuitContent`.
+ *
+ * ```kotlin
+ * NavigableCircuitContent(
+ *   navigator = navigator,
+ *   backStack = backStack,
+ *   decoratorFactory = remember { CustomAnimatedNavDecoratorFactory() },
+ * )
+ * ```
+ *
  * @param animatedScreenTransforms A Map of [AnimatedScreenTransform] that might be used to override
  *   the default [ContentTransform] provided by the [AnimatedNavDecorator].
  * @param decoratorFactory A factory used to create a [AnimatedNavDecorator] instance.
+ * @see AnimatedNavDecorator
+ * @see AnimatedScreenTransform
  */
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitApi::class)
 public class AnimatedNavDecoration(
@@ -124,7 +165,7 @@ private fun contextualNavigationOverride(
   baseTransform: ContentTransform,
   screenOverride: PartialContentTransform,
 ): ContentTransform {
-  // Call site takes precedent over the screen specific override
+  // Screen specific override takes precedence over the AnimatedNavDecorator baseTransform
   return with(baseTransform) {
     val enter = screenOverride.enter ?: targetContentEnter
     val exit = screenOverride.exit ?: initialContentExit

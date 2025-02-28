@@ -24,12 +24,12 @@ import kotlinx.collections.immutable.ImmutableList
  *
  * ### Usage
  *
- * **Implement `defaultTransform`**
- * - Provide a `RequiredAnimatedNavigationTransform` instance. This defines the default transition
- *   behavior used when no other override is provided by a `AnimatedNavigationTransform`.
+ * **Implement `transitionSpec`**
+ * - Provide a `ContentTransform` instance. This defines the default transition behavior used when
+ *   no other override is provided.
  *
  * **Implement `targetState`**
- * - This is called to create a `AnimatedNavState` object for the incoming navigation destination.
+ * - This is called to create an `AnimatedNavState` object for the incoming navigation destination.
  * - It should use the provided `args` and `backStackDepth` to construct an instance of a custom
  *   `AnimatedNavState` that represents the target state of the navigation.
  *
@@ -47,53 +47,44 @@ import kotlinx.collections.immutable.ImmutableList
  *   screen's content.
  * - It will be used to compose the ui in the [AnimatedContent].
  *
- * **Override Transitions (Optional)**
- * - When using an [AnimatedNavDecoration], you can optionally pass in a list of
- *   [AnimatedNavigationTransform]. This list can be used to override transitions based on the
- *   different [AnimatedNavigationTransform.NavigationEvent] that can occur during a transition.
- *
  * ### Example
  *
  * ```kotlin
- * data class CustomNavState(
- *   override val screen: Screen,
- *   override val rootScreen: Screen,
+ * data class CustomNavState<T : NavArgument>(
+ *   val args: ImmutableList<T>,
  *   override val backStackDepth: Int,
+ *   override val screen: Screen = args.first().screen,
+ *   override val rootScreen: Screen = args.last().screen,
  * ) : AnimatedNavState
  *
- * class CustomDecorator<T : NavArgument>(private val rootScreen: Screen) :
- *   AnimatedNavDecorator<T, CustomNavState> {
+ * class CustomDecorator<T : NavArgument>() : AnimatedNavDecorator<T, CustomNavState<T>> {
  *
- *   override val defaultTransform: RequiredAnimatedNavigationTransform =
- *     object : RequiredAnimatedNavigationTransform {
- *       override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
- *         navigationEvent: AnimatedNavigationTransform.NavigationEvent
- *       ): ContentTransform {
- *         return slideInVertically() + fadeIn() togetherWith slideOutVertically() + fadeOut()
- *       }
- *     }
+ *   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+ *     animatedNavEvent: AnimatedNavEvent
+ *   ): ContentTransform {
+ *     return slideInVertically() + fadeIn() togetherWith slideOutVertically() + fadeOut()
+ *   }
  *
- *   override fun targetState(args: ImmutableList<T>, backStackDepth: Int): CustomNavState {
+ *   override fun targetState(args: ImmutableList<T>, backStackDepth: Int): CustomNavState<T> {
  *     // Logic to build your custom navigation state
- *     val currentScreen = args.last() // Example
- *     return CustomNavState(currentScreen, rootScreen, backStackDepth)
+ *     return CustomNavState(args, backStackDepth)
  *   }
  *
  *   @Composable
  *   override fun updateTransition(
  *     args: ImmutableList<T>,
  *     backStackDepth: Int,
- *   ): Transition<CustomNavState> {
+ *   ): Transition<CustomNavState<T>> {
  *     val targetState = targetState(args, backStackDepth)
  *     return updateTransition(targetState = targetState, label = "CustomDecoratorTransition")
  *   }
  *
  *   @Composable
  *   override fun AnimatedContentScope.Decoration(
- *     targetState: CustomNavState,
+ *     targetState: CustomNavState<T>,
  *     innerContent: @Composable (T) -> Unit,
  *   ) {
- *     Box(modifier = Modifier.fillMaxSize()) { innerContent(targetState.screen) }
+ *     Box(modifier = Modifier.fillMaxSize()) { innerContent(targetState.args.first()) }
  *   }
  * }
  * ```

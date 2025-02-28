@@ -139,7 +139,7 @@ anvil-annotations-optional = { module = "dev.zacsweers.anvil:annotations-optiona
 
 # Utilities for local storage dirs on Desktop
 # https://github.com/harawata/appdirs
-appDirs = "net.harawata:appdirs:1.3.0"
+appDirs = "net.harawata:appdirs:1.4.0"
 
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 

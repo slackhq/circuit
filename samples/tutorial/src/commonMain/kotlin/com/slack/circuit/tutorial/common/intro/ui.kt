@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.tutorial.common
+package com.slack.circuit.tutorial.common.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.tutorial.common.Email
 
 /** A simple email item to show in a list. */
 @Composable

@@ -1,18 +1,31 @@
 Changelog
 =========
 
-**Unreleased**
---------------
+Unreleased
+----------
 
 ### Screen based animation overrides
 
-Adds experimental support for dynamic animations based on the type of navigation event and the source/target screens.
+We have added experimental support for animations based on the source/target screens and the type of navigation event. This can be accomplished with the the new `AnimatedScreenTransform` interface, allowing customization of the `ContentTransform` used when transitioning between screens. Having support for screen based animation overrides is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.
 
-This is done with a new `AnimatedScreenTransform` interface, allowing customization of the `ContentTransform` used when transitioning between screens.
+See this [PR](https://github.com/slackhq/circuit/pull/1901) for more details and example implementations. Please share feedback in [this discussion](https://github.com/slackhq/circuit/discussions/1982).
 
-This is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.
+### Behaviour Changes: 
 
-See this PR for more details and example implementations: https://github.com/slackhq/circuit/pull/1901.
+State retention logic was simplified by removing `LocalCanRetainChecker`, with `CanRetainChecker` becoming an implementation detail of a `RetainedStateRegistry`.  
+This potentially impacts uses of `rememberRetained` that depended on `LocalCanRetainChecker`, as `rememberRetained` would use the composition local before using `rememberCanRetainChecker`. Also, as `rememberCanRetainChecker` was only needed for `Continuity` it has been renamed to `rememberContinuityCanRetainChecker`.
+
+### Misc:
+
+- Fix a crash caused by calling `resetRoot` while `NavigableCircuitContent` was animating.
+- Update androidx.activity to `v1.10.1`.
+- [code gen] Make assisted injection detection more robust.
+- [code gen] Update to KSP `2.1.10-1.0.31`.
+- [code gen] Update to KotlinPoet `2.1.0`.
+- [samples] Update mosaic to `0.16.0`
+- [samples] Include shared element tutorial changes.
+
+Special thanks to [@vulpeszerda](https://github.com/vulpeszerda) for contributing to this release!
 
 0.26.1
 ------

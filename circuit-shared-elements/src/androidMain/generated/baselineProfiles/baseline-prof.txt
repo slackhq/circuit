@@ -36,7 +36,6 @@ Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;-><clinit>()V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;-><init>()V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;->isAvailable(Landroidx/compose/runtime/Composer;I)Z
-HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScope$Companion;->isTransitionActive(Landroidx/compose/runtime/Composer;I)Z
 Lcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;-><clinit>()V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;-><init>(Landroidx/compose/animation/SharedTransitionScope;)V

@@ -505,7 +505,7 @@
         
   
   <span class="md-ellipsis">
-    Documentation
+    Usage
     
   </span>
   
@@ -1114,11 +1114,17 @@
 </span><span class="w">            </span><span class="p">)</span>
 </code></pre></div>
 <p>The call to <code>requireAnimatedScope</code> is accessing a <code>AnimatedVisibilityScope</code> that is used in Circuit navigation. Circuit provides a few scopes by default which are detailed in the shared elements <a href="../shared-elements/#animatedscope">documentation</a>.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Android</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Android</label><label for="__tabbed_1_2">Desktop</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p><div markdown>
-<video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-4.mp4" ></video></p>
+<video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-4-android.mp4" ></video></p>
+<p>With that we now have a shared element transition where the sender image transitions across the two screens!
+</div></p>
+</div>
+<div class="tabbed-block">
+<p><div markdown>
+<video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-4-desktop.mp4" ></video></p>
 <p>With that we now have a shared element transition where the sender image transitions across the two screens!
 </div></p>
 </div>
@@ -1175,11 +1181,17 @@ Initially the <code>sharedBounds()</code> setup should be the same for each type
 <span class="w">    </span><span class="p">),</span>
 <span class="w">    </span><span class="c1">// ...</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Android</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Android</label><label for="__tabbed_2_2">Desktop</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div markdown>
-<p><video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-5.mp4" ></video></p>
+<p><video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-5-android.mp4" ></video></p>
+<p>After the <code>Modifier.sharedBounds()</code> is added to each of the three <code>Text</code> in the <code>EmailItem</code> composable and the <code>EmailDetailContent</code> composable you should now see the majority of the email tranistioning across the two <code>Screens</code>.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<div markdown>
+<p><video style="float: left; margin-right: 0.8em;" width="400" controls="true" autoplay="true" loop="true" src="../videos/shared-elements-tutorial-step-5-desktop.mp4" ></video></p>
 <p>After the <code>Modifier.sharedBounds()</code> is added to each of the three <code>Text</code> in the <code>EmailItem</code> composable and the <code>EmailDetailContent</code> composable you should now see the majority of the email tranistioning across the two <code>Screens</code>.</p>
 </div>
 </div>

@@ -9,6 +9,7 @@ module:circuit-codegen-annotations
 com.slack.circuit.codegen.annotations
 module:circuit-foundation
 com.slack.circuit.foundation
+com.slack.circuit.foundation.animation
 com.slack.circuit.foundation.internal
 module:circuit-overlay
 com.slack.circuit.overlay

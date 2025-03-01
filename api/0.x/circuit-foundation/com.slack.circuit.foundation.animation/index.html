@@ -1,0 +1,246 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.slack.circuit.foundation.animation</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../index.html">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-foundation/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-foundation/commonMain" data-filter=":circuit-foundation/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="circuit-foundation::com.slack.circuit.foundation.animation////PointingToDeclaration//2116295586">
+  <div class="breadcrumbs"><a href="../index.html">circuit-foundation</a><span class="delimiter">/</span><span class="current">com.slack.circuit.foundation.animation</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="1844542903%2FClasslikes%2F2116295586" anchor-label="AnimatedNavDecoration" id="1844542903%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-nav-decoration/index.html"><span>Animated</span><wbr><span>Nav</span><wbr><span><span>Decoration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1844542903%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-animated-nav-decoration/index.html">AnimatedNavDecoration</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">animatedScreenTransforms<span class="token operator">: </span><span data-unresolved-link="kotlinx.collections.immutable/ImmutableMap///PointingToDeclaration/">ImmutableMap</span><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span><span class="token punctuation">, </span><a href="-animated-screen-transform/index.html">AnimatedScreenTransform</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">decoratorFactory<span class="token operator">: </span><a href="-animated-nav-decorator/-factory/index.html">AnimatedNavDecorator.Factory</a></span></span><span class="token punctuation">)</span> : <a href="../../backstack/com.slack.circuit.backstack/-nav-decoration/index.html">NavDecoration</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">AnimatedNavDecoration</code> is an implementation of <a href="../../backstack/com.slack.circuit.backstack/-nav-decoration/index.html">NavDecoration</a> that provides the <code class="lang-kotlin">Navigation</code> <a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/AnimatedVisibilityScope.html">AnimatedVisibilityScope</a> for shared elements. It also allows for indepth customization of its <a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/package-summary.html">AnimatedContent</a> through a <a href="-animated-nav-decorator/index.html">AnimatedNavDecorator</a>. <code class="lang-kotlin">AnimatedNavDecoration</code> is the default <code class="lang-kotlin">NavDecoration</code> used by Circuit.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1357802848%2FClasslikes%2F2116295586" anchor-label="AnimatedNavDecorator" id="1357802848%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-nav-decorator/index.html"><span>Animated</span><wbr><span>Nav</span><wbr><span><span>Decorator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1357802848%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-animated-nav-decorator/index.html">AnimatedNavDecorator</a><span class="token operator">&lt;</span><a href="-animated-nav-decorator/index.html">T</a><span class="token operator"> : </span><a href="../../backstack/com.slack.circuit.backstack/-nav-argument/index.html">NavArgument</a><span class="token punctuation">, </span><a href="-animated-nav-decorator/index.html">S</a><span class="token operator"> : </span><a href="-animated-nav-state/index.html">AnimatedNavState</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph"><a href="-animated-nav-decorator/index.html">AnimatedNavDecorator</a> is used by <a href="-animated-nav-decoration/index.html">AnimatedNavDecoration</a> as a way to provide hooks into its <a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/package-summary.html">AnimatedContent</a>, allowing for custom navigation animations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1238540063%2FClasslikes%2F2116295586" anchor-label="AnimatedNavEvent" id="-1238540063%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-nav-event/index.html"><span>Animated</span><wbr><span>Nav</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1238540063%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-animated-nav-event/index.html">AnimatedNavEvent</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-animated-nav-event/index.html">AnimatedNavEvent</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Represents the type of navigation event that occurred within the context of an <a href="-animated-nav-decoration/index.html">AnimatedNavDecoration</a>. This is used to drive transitions and other navigation-related behaviors within the <a href="-animated-nav-decoration/index.html">AnimatedNavDecoration</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-437951798%2FClasslikes%2F2116295586" anchor-label="AnimatedNavState" id="-437951798%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-nav-state/index.html"><span>Animated</span><wbr><span>Nav</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-437951798%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="-animated-nav-state/index.html">AnimatedNavState</a></div><div class="brief "><p class="paragraph">A state created for the <a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/Transition.html">Transition</a> in <a href="-animated-nav-decorator/-decoration.html">AnimatedNavDecorator.Decoration</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="546935274%2FClasslikes%2F2116295586" anchor-label="AnimatedScreenTransform" id="546935274%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-screen-transform/index.html"><span>Animated</span><wbr><span>Screen</span><wbr><span><span>Transform</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="546935274%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-animated-screen-transform/index.html">AnimatedScreenTransform</a></div><div class="brief "><p class="paragraph">Defines the animated transitions fo a <a href="../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a> based on particular <a href="-animated-nav-event/index.html">AnimatedNavEvent</a>s.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="966302348%2FClasslikes%2F2116295586" anchor-label="NoOpAnimatedScreenTransform" id="966302348%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-no-op-animated-screen-transform/index.html"><span>No</span><wbr><span>Op</span><wbr><span>Animated</span><wbr><span>Screen</span><wbr><span><span>Transform</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="966302348%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-no-op-animated-screen-transform/index.html">NoOpAnimatedScreenTransform</a> : <a href="-animated-screen-transform/index.html">AnimatedScreenTransform</a></div><div class="brief "><p class="paragraph">A default <a href="-animated-screen-transform/index.html">AnimatedScreenTransform</a> that does nothing.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-557248653%2FClasslikes%2F2116295586" anchor-label="PartialContentTransform" id="-557248653%2FClasslikes%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-partial-content-transform/index.html"><span>Partial</span><wbr><span>Content</span><wbr><span><span>Transform</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-557248653%2FClasslikes%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-partial-content-transform/index.html">PartialContentTransform</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>enter<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/EnterTransition.html">EnterTransition</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>exit<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/ExitTransition.html">ExitTransition</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>zIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sizeTransform<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/SizeTransform.html">SizeTransform</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents a partial <a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/ContentTransform.html">ContentTransform</a> for animated navigation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1711930406%2FFunctions%2F2116295586" anchor-label="asPartialContentTransform" id="1711930406%2FFunctions%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="as-partial-content-transform.html"><span>as</span><wbr><span>Partial</span><wbr><span>Content</span><wbr><span><span>Transform</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1711930406%2FFunctions%2F2116295586"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/ContentTransform.html">ContentTransform</a><span class="token punctuation">.</span><a href="as-partial-content-transform.html"><span class="token function">asPartialContentTransform</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-partial-content-transform/index.html">PartialContentTransform</a></div><div class="brief "><p class="paragraph">Converts a <a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/ContentTransform.html">ContentTransform</a> to a <a href="-partial-content-transform/index.html">PartialContentTransform</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

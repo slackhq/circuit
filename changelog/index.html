@@ -503,7 +503,7 @@
         
   
   <span class="md-ellipsis">
-    Documentation
+    Usage
     
   </span>
   
@@ -751,6 +751,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#screen-based-animation-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screen based animation overrides
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behaviour-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Behaviour Changes:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misc:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -818,7 +851,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc" class="md-nav__link">
+  <a href="#misc_1" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -968,7 +1001,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_1" class="md-nav__link">
+  <a href="#misc_2" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -1046,7 +1079,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_2" class="md-nav__link">
+  <a href="#misc_3" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -1211,7 +1244,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_3" class="md-nav__link">
+  <a href="#misc_4" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -1499,6 +1532,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#screen-based-animation-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screen based animation overrides
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behaviour-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Behaviour Changes:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misc:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1566,7 +1632,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc" class="md-nav__link">
+  <a href="#misc_1" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -1716,7 +1782,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_1" class="md-nav__link">
+  <a href="#misc_2" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -1794,7 +1860,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_2" class="md-nav__link">
+  <a href="#misc_3" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -1959,7 +2025,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_3" class="md-nav__link">
+  <a href="#misc_4" class="md-nav__link">
     <span class="md-ellipsis">
       Misc
     </span>
@@ -2184,7 +2250,24 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h2 id="unreleased"><strong>Unreleased</strong><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h3 id="screen-based-animation-overrides">Screen based animation overrides<a class="headerlink" href="#screen-based-animation-overrides" title="Permanent link">&para;</a></h3>
+<p>We have added experimental support for animations based on the source/target screens and the type of navigation event. This can be accomplished with the the new <code>AnimatedScreenTransform</code> interface, allowing customization of the <code>ContentTransform</code> used when transitioning between screens. Having support for screen based animation overrides is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.</p>
+<p>See this <a href="https://github.com/slackhq/circuit/pull/1901">PR</a> for more details and example implementations. Please share feedback in <a href="https://github.com/slackhq/circuit/discussions/1982">this discussion</a>.</p>
+<h3 id="behaviour-changes">Behaviour Changes:<a class="headerlink" href="#behaviour-changes" title="Permanent link">&para;</a></h3>
+<p>State retention logic was simplified by removing <code>LocalCanRetainChecker</code>, with <code>CanRetainChecker</code> becoming an implementation detail of a <code>RetainedStateRegistry</code>.<br />
+This potentially impacts uses of <code>rememberRetained</code> that depended on <code>LocalCanRetainChecker</code>, as <code>rememberRetained</code> would use the composition local before using <code>rememberCanRetainChecker</code>. Also, as <code>rememberCanRetainChecker</code> was only needed for <code>Continuity</code> it has been renamed to <code>rememberContinuityCanRetainChecker</code>.</p>
+<h3 id="misc">Misc:<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix a crash caused by calling <code>resetRoot</code> while <code>NavigableCircuitContent</code> was animating.</li>
+<li>Update androidx.activity to <code>v1.10.1</code>.</li>
+<li>[code gen] Make assisted injection detection more robust.</li>
+<li>[code gen] Update to KSP <code>2.1.10-1.0.31</code>.</li>
+<li>[code gen] Update to KotlinPoet <code>2.1.0</code>.</li>
+<li>[samples] Update mosaic to <code>0.16.0</code></li>
+<li>[samples] Include shared element tutorial changes.</li>
+</ul>
+<p>Special thanks to <a href="https://github.com/vulpeszerda">@vulpeszerda</a> for contributing to this release!</p>
 <h2 id="0261">0.26.1<a class="headerlink" href="#0261" title="Permanent link">&para;</a></h2>
 <p><em>2025-02-13</em></p>
 <ul>
@@ -2250,7 +2333,7 @@ Now, <code>rememberRetained</code> aligns with <code>remember</code> and <code>r
 <li>The approach of managing a separate <code>RetainedStateRegistry</code> for each record has been changed to use <code>RetainedStateHolder</code> instead.</li>
 <li>Change <code>SaveableStateHolder</code> to release saved states of removed records.</li>
 </ul>
-<h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
+<h3 id="misc_1">Misc<a class="headerlink" href="#misc_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixe an issue causing codegen to fail for class @Inject annotations.</li>
 <li>Compile against Android SDK 35.</li>
@@ -2505,7 +2588,7 @@ Now, <code>rememberRetained</code> aligns with <code>remember</code> and <code>r
 <li>Mark <code>OverlayHost</code> as <code>@ReadOnlyOverlayApi</code> to indicate that it&rsquo;s not intended for direct implementation by consumers.</li>
 <li>Mark <code>Overlay</code> as <code>@Stable</code>.</li>
 </ul>
-<h3 id="misc_1">Misc<a class="headerlink" href="#misc_1" title="Permanent link">&para;</a></h3>
+<h3 id="misc_2">Misc<a class="headerlink" href="#misc_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Make <code>NavEvent.screen</code> public.</li>
 <li>Change <code>Navigator.popUntil</code> to be exclusive.</li>
@@ -2580,7 +2663,7 @@ forgotten based on the current circuit-retained strategy.</p>
 <p>Docs: <a href="https://slackhq.github.io/circuit/circuitx/#effects">https://slackhq.github.io/circuit/circuitx/#effects</a></p>
 <h3 id="new-add-codegen-mode-to-support-both-anvil-and-hilt"><strong>New</strong>: Add codegen mode to support both Anvil and Hilt<a class="headerlink" href="#new-add-codegen-mode-to-support-both-anvil-and-hilt" title="Permanent link">&para;</a></h3>
 <p>Circuit&rsquo;s code gen artifact now supports generating for Hilt projects. See the docs for usage instructions: <a href="https://slackhq.github.io/circuit/code-gen/">https://slackhq.github.io/circuit/code-gen/</a></p>
-<h3 id="misc_2">Misc<a class="headerlink" href="#misc_2" title="Permanent link">&para;</a></h3>
+<h3 id="misc_3">Misc<a class="headerlink" href="#misc_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Decompose various <code>CircuitContent</code> internals like <code>rememberPresenter()</code>, <code>rememberUi</code>, etc for reuse.</li>
 <li>Make <code>CircuitContent()</code> overload that accepts a pre-constructed presenter/ui parameters public to allow for more control over content.</li>
@@ -2777,7 +2860,7 @@ forgotten based on the current circuit-retained strategy.</p>
 <p>Following the announcement of Compose for iOS alpha, this release adds <code>ios()</code> and <code>iosSimulatorArm64()</code> targets for the Circuit core artifacts. Note that this support doesn&rsquo;t come with any extra APIs yet for iOS, just basic target support only. We&rsquo;re not super sure what direction we want to take with iOS, but encourage others to try it out and let us know what patterns you like. We have updated the Counter sample to include an iOS app target as well, using Circuit for the presentation layer only and SwiftUI for the UI.</p>
 <p>Note that circuit-codegen and circuit-codegen-annotations don&rsquo;t support these yet, as Anvil and Dagger only support JVM targets.</p>
 <p>More details can be found in the PR: <a href="https://github.com/slackhq/circuit/pull/583">https://github.com/slackhq/circuit/pull/583</a></p>
-<h3 id="misc_3">Misc<a class="headerlink" href="#misc_3" title="Permanent link">&para;</a></h3>
+<h3 id="misc_4">Misc<a class="headerlink" href="#misc_4" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Use new baseline profile plugin for generating baseline profiles.</li>
 <li>Misc sample app fixes and updates.</li>

@@ -72,7 +72,7 @@ nav:
   - 'Ui': ui.md
   - 'Overlays': overlays.md
   - 'Shared Elements':
-      'Documentation': shared-elements.md
+      'Usage': shared-elements.md
       'Tutorial': shared-elements-tutorial.md
   - 'Testing': testing.md
   - 'Factories': factories.md

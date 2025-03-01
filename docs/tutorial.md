@@ -570,6 +570,10 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
 
 On Android, `NavigableCircuitContent` automatically hooks into [BackHandler](https://developer.android.com/reference/kotlin/androidx/activity/compose/package-summary#BackHandler(kotlin.Boolean,kotlin.Function0)) to automatically pop on system back presses. On Desktop, it's recommended to wire the ESC key.
 
+## Shared Elements
+
+You can continue this tutorial by seting up [shared element transitions](shared-elements-tutorial.md) between the Inbox and Detail screens.
+
 ## Conclusion
 
 This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](api/0.x/index.html), and check out other Circuit tools like [circuit-retained](https://slackhq.github.io/circuit/presenter/#retention), [CircuitX](https://slackhq.github.io/circuit/circuitx/), [factory code gen](https://slackhq.github.io/circuit/code-gen/), [overlays](https://slackhq.github.io/circuit/overlays/), [navigation with results](https://slackhq.github.io/circuit/navigation/#results), [testing](https://slackhq.github.io/circuit/testing/), [multiplatform](https://slackhq.github.io/circuit/setup/#platform-support), and more.

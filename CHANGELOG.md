@@ -13,9 +13,9 @@ We have added experimental support for animations based on the source/target scr
 
 See this [PR](https://github.com/slackhq/circuit/pull/1901) for more details and example implementations. Please share feedback in [this discussion](https://github.com/slackhq/circuit/discussions/1982).
 
-### Behaviour Changes: 
+### Behaviour Changes:
 
-State retention logic was simplified by removing `LocalCanRetainChecker`, with `CanRetainChecker` becoming an implementation detail of a `RetainedStateRegistry`.  
+State retention logic was simplified by removing `LocalCanRetainChecker`, with `CanRetainChecker` becoming an implementation detail of a `RetainedStateRegistry`.
 This potentially impacts uses of `rememberRetained` that depended on `LocalCanRetainChecker`, as `rememberRetained` would use the composition local before using `rememberCanRetainChecker`. Also, as `rememberCanRetainChecker` was only needed for `Continuity` it has been renamed to `rememberContinuityCanRetainChecker`.
 
 ### Misc:

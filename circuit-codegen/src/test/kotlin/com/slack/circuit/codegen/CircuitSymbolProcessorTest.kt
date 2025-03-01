@@ -1344,10 +1344,10 @@ class CircuitSymbolProcessorTest {
           import androidx.compose.ui.Modifier
 
           data object Static : StaticScreen
-          
+
           @CircuitInject(Static::class, AppScope::class)
           @Composable
-          fun StaticUi(screen: Static, modifier: Modifier) {} 
+          fun StaticUi(screen: Static, modifier: Modifier) {}
         """
             .trimIndent(),
         ),
@@ -1355,7 +1355,7 @@ class CircuitSymbolProcessorTest {
       expectedContent =
         """
         package test
-        
+
         import com.slack.circuit.runtime.CircuitContext
         import com.slack.circuit.runtime.CircuitUiState
         import com.slack.circuit.runtime.screen.Screen
@@ -1363,7 +1363,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
         import javax.inject.Inject
-        
+
         @ContributesMultibinding(AppScope::class)
         public class StaticUiFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {

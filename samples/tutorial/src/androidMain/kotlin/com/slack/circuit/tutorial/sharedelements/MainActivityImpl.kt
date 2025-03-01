@@ -3,15 +3,18 @@
 package com.slack.circuit.tutorial.sharedelements
 
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.tutorial.MainActivity
 import com.slack.circuit.tutorial.common.EmailRepository
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun MainActivity.sharedElementsTutorialOnCreate() {
   val emailRepository = EmailRepository()
   val circuit: Circuit =
@@ -26,7 +29,9 @@ fun MainActivity.sharedElementsTutorialOnCreate() {
       val backStack = rememberSaveableBackStack(InboxScreen)
       val navigator = rememberCircuitNavigator(backStack)
       CircuitCompositionLocals(circuit) {
-        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        SharedElementTransitionLayout {
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        }
       }
     }
   }

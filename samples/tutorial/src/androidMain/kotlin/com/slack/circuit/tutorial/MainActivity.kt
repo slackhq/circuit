@@ -19,5 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     // TODO replace with your own impl if following the tutorial!
     introTutorialOnCreate()
+    // sharedElementsTutorialOnCreate()
   }
 }

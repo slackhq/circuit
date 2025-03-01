@@ -4,6 +4,16 @@ Changelog
 **Unreleased**
 --------------
 
+### Screen based animation overrides
+
+Adds experimental support for dynamic animations based on the type of navigation event and the source/target screens.
+
+This is done with a new `AnimatedScreenTransform` interface, allowing customization of the `ContentTransform` used when transitioning between screens.
+
+This is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.
+
+See this PR for more details and example implementations: https://github.com/slackhq/circuit/pull/1901.
+
 0.26.1
 ------
 

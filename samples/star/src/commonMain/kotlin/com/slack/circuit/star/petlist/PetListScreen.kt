@@ -68,7 +68,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -230,11 +229,12 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
           when (event) {
             is ClickAnimal -> {
               navigator.goTo(
-                PetDetailScreen(
-                  event.petId,
-                  event.photoUrlMemoryCacheKey,
-                  event.animal.toPartialAnimal(),
-                )
+                screen =
+                  PetDetailScreen(
+                    event.petId,
+                    event.photoUrlMemoryCacheKey,
+                    event.animal.toPartialAnimal(),
+                  )
               )
             }
             is UpdatedFilters -> {

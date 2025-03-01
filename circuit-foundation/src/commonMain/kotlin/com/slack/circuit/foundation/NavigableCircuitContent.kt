@@ -44,13 +44,16 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateRegistry
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -58,6 +61,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
+@OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,
@@ -66,6 +70,7 @@ public fun <R : Record> NavigableCircuitContent(
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
   decoration: NavDecoration = circuit.defaultNavDecoration,
+  decoratorFactory: AnimatedNavDecorator.Factory? = null,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
@@ -106,6 +111,16 @@ public fun <R : Record> NavigableCircuitContent(
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetainedStateRegistry(key = outerKey)
 
+  val navDecoration =
+    remember(decoration, decoratorFactory) {
+      // User specified decorator takes precedence over a default decoration.
+      if (decoratorFactory != null) {
+        AnimatedNavDecoration(circuit.animatedScreenTransforms, decoratorFactory)
+      } else {
+        decoration
+      }
+    }
+
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
@@ -128,7 +143,7 @@ public fun <R : Record> NavigableCircuitContent(
         }
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
 
-    decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
+    navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
@@ -271,80 +286,73 @@ public object NavigatorDefaults {
   private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
-  public object DefaultDecoration :
-    AnimatedNavDecoration(
-      decoratorFactory =
-        object : AnimatedNavDecorator.Factory {
-          override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+  public object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+  }
+
+  /**
+   * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack). This
+   * isn't meant for public consumption, so be aware that this may be removed/changed at any time.
+   */
+  @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
+
+  /**
+   * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
+   * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+   * time.
+   */
+  @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
+
+  private fun computeTransition(sign: Int): ContentTransform {
+    val enterTransition =
+      fadeIn(
+        animationSpec =
+          tween(
+            durationMillis = SHORT_DURATION,
+            delayMillis = if (sign > 0) 50 else 0,
+            easing = LinearEasing,
+          )
+      ) +
+        slideInHorizontally(
+          initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
+          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+        ) +
+        if (sign > 0) {
+          expandHorizontally(
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+            initialWidth = { (it * .9f).toInt() },
+            expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
+          )
+        } else {
+          EnterTransition.None
         }
-    ) {
-    /**
-     * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
-     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
-     * time.
-     */
-    @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
 
-    /**
-     * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
-     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
-     * time.
-     */
-    @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
-
-    private fun computeTransition(sign: Int): ContentTransform {
-      val enterTransition =
-        fadeIn(
-          animationSpec =
-            tween(
-              durationMillis = SHORT_DURATION,
-              delayMillis = if (sign > 0) 50 else 0,
-              easing = LinearEasing,
-            )
+    val exitTransition =
+      fadeOut(
+        animationSpec =
+          tween(
+            durationMillis = if (sign > 0) NORMAL_DURATION else SHORT_DURATION,
+            delayMillis = if (sign > 0) 0 else 50,
+            easing = AccelerateEasing,
+          )
+      ) +
+        slideOutHorizontally(
+          targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
+          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
         ) +
-          slideInHorizontally(
-            initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
+        if (sign > 0) {
+          shrinkHorizontally(
             animationSpec =
               tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-          ) +
-          if (sign > 0) {
-            expandHorizontally(
-              animationSpec =
-                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-              initialWidth = { (it * .9f).toInt() },
-              expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
-            )
-          } else {
-            EnterTransition.None
-          }
+            targetWidth = { (it * .9f).toInt() },
+            shrinkTowards = Alignment.End,
+          )
+        } else {
+          ExitTransition.None
+        }
 
-      val exitTransition =
-        fadeOut(
-          animationSpec =
-            tween(
-              durationMillis = if (sign > 0) NORMAL_DURATION else SHORT_DURATION,
-              delayMillis = if (sign > 0) 0 else 50,
-              easing = AccelerateEasing,
-            )
-        ) +
-          slideOutHorizontally(
-            targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
-            animationSpec =
-              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-          ) +
-          if (sign > 0) {
-            shrinkHorizontally(
-              animationSpec =
-                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-              targetWidth = { (it * .9f).toInt() },
-              shrinkTowards = Alignment.End,
-            )
-          } else {
-            ExitTransition.None
-          }
-
-      return enterTransition togetherWith exitTransition
-    }
+    return enterTransition togetherWith exitTransition
   }
 
   public class DefaultDecorator<T : NavArgument> :
@@ -353,6 +361,7 @@ public object NavigatorDefaults {
     public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
       AnimatedNavState {
       override val screen: Screen = args.first().screen
+      override val rootScreen: Screen = args.last().screen
       override val backStackDepth: Int = args.size
     }
 
@@ -369,18 +378,16 @@ public object NavigatorDefaults {
     }
 
     @OptIn(InternalCircuitApi::class)
-    @Composable
-    override fun Transition<DefaultAnimatedState<T>>.transitionSpec():
-      AnimatedContentTransitionScope<DefaultAnimatedState<T>>.() -> ContentTransform = {
-      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize the
-      // transitionSpec recomposing.
+    override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+      animatedNavEvent: AnimatedNavEvent
+    ): ContentTransform {
+      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+      // the transitionSpec recomposing.
       // The states are available as `targetState` and `initialState`.
-      val diff = targetState.args.size - initialState.args.size
-      val sameRoot = targetState.args.lastOrNull() == initialState.args.lastOrNull()
-      when {
-        sameRoot && diff > 0 -> forward
-        sameRoot && diff < 0 -> backward
-        else -> fadeIn() togetherWith fadeOut()
+      return when (animatedNavEvent) {
+        AnimatedNavEvent.GoTo -> forward
+        AnimatedNavEvent.Pop -> backward
+        AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
       }.using(
         // Disable clipping since the faded slide-in/out should
         // be displayed out of bounds.

@@ -1,12 +1,5 @@
-public final class com/slack/circuitx/gesturenavigation/CupertinoGestureNavigationDecoration : com/slack/circuit/backstack/NavDecoration {
-	public static final field $stable I
-	public fun <init> (FLandroidx/compose/material/ThresholdConfig;ZLkotlin/jvm/functions/Function0;)V
-	public synthetic fun <init> (FLandroidx/compose/material/ThresholdConfig;ZLkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-}
-
-public final class com/slack/circuitx/gesturenavigation/GestureNavigationDecorationKt {
-	public static final fun GestureNavigationDecoration (Lcom/slack/circuit/backstack/NavDecoration;Lkotlin/jvm/functions/Function0;)Lcom/slack/circuit/backstack/NavDecoration;
-	public static synthetic fun GestureNavigationDecoration$default (Lcom/slack/circuit/backstack/NavDecoration;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcom/slack/circuit/backstack/NavDecoration;
+public final class com/slack/circuitx/gesturenavigation/GestureNavigationDecoration_jvmKt {
+	public static final fun GestureNavigationDecorationFactory (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function0;)Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
+	public static synthetic fun GestureNavigationDecorationFactory$default (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
 }
 

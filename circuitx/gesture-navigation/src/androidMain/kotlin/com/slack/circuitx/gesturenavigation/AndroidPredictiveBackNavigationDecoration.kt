@@ -39,10 +39,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.foundation.AnimatedNavDecorator
-import com.slack.circuit.foundation.DefaultAnimatedNavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -51,20 +51,15 @@ import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
-public actual fun GestureNavigationDecoration(
-  fallback: NavDecoration,
+public actual fun GestureNavigationDecorationFactory(
+  fallback: AnimatedNavDecorator.Factory,
   onBackInvoked: () -> Unit,
-): NavDecoration =
-  when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavigationDecoration(onBackInvoked)
+): AnimatedNavDecorator.Factory {
+  return when {
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
     else -> fallback
   }
-
-@RequiresApi(34)
-public class AndroidPredictiveBackNavigationDecoration(private val onBackInvoked: () -> Unit) :
-  NavDecoration by DefaultAnimatedNavDecoration(
-    AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
-  )
+}
 
 @Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)
@@ -133,26 +128,23 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   }
 
   @OptIn(InternalCircuitApi::class)
-  @Composable
-  override fun Transition<GestureNavTransitionHolder<T>>.transitionSpec():
-    AnimatedContentTransitionScope<GestureNavTransitionHolder<T>>.() -> ContentTransform = {
-    val diff = targetState.backStackDepth - initialState.backStackDepth
-    val sameRoot = targetState.rootRecord == initialState.rootRecord
-
-    when {
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+    animatedNavEvent: AnimatedNavEvent
+  ): ContentTransform {
+    return when (animatedNavEvent) {
       // adding to back stack
-      sameRoot && diff > 0 -> NavigatorDefaults.DefaultDecoration.forward
+      AnimatedNavEvent.GoTo -> NavigatorDefaults.forward
       // come back from back stack
-      sameRoot && diff < 0 -> {
+      AnimatedNavEvent.Pop -> {
         if (showPrevious) {
             EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
           } else {
-            NavigatorDefaults.DefaultDecoration.backward
+            NavigatorDefaults.backward
           }
           .apply { targetContentZIndex = -1f }
       }
       // Root reset. Crossfade
-      else -> fadeIn() togetherWith fadeOut()
+      AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
     }
   }
 

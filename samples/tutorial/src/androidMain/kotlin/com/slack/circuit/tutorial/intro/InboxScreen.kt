@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.tutorial.impl
+package com.slack.circuit.tutorial.intro
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,8 +19,8 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.tutorial.common.Email
-import com.slack.circuit.tutorial.common.EmailItem
 import com.slack.circuit.tutorial.common.EmailRepository
+import com.slack.circuit.tutorial.common.intro.EmailItem
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

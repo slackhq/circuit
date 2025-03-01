@@ -1,7 +1,8 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.tutorial.impl
+package com.slack.circuit.tutorial.sharedelements
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -10,8 +11,10 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.tutorial.common.EmailRepository
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
   val emailRepository = EmailRepository()
   val circuit: Circuit =
@@ -27,7 +30,9 @@ fun main() {
         val backStack = rememberSaveableBackStack(InboxScreen)
         val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
         CircuitCompositionLocals(circuit) {
-          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+          SharedElementTransitionLayout {
+            NavigableCircuitContent(navigator = navigator, backStack = backStack)
+          }
         }
       }
     }

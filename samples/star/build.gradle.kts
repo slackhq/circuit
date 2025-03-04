@@ -171,11 +171,16 @@ kotlin {
       val androidInstrumentedTest by getting {
         // Annoyingly cannot depend on commonJvmTest
         dependencies {
+          implementation(libs.androidx.activity.compose)
           implementation(libs.androidx.compose.ui.testing.junit)
           implementation(libs.androidx.compose.ui.testing.manifest)
+          implementation(libs.compose.ui.testing.junit)
+          implementation(libs.coroutines.android)
           implementation(libs.coroutines.test)
+          implementation(libs.junit)
           implementation(libs.leakcanary.android.instrumentation)
           implementation(projects.circuitTest)
+          implementation(projects.internalTestUtils)
           implementation(projects.samples.star.coilRule)
         }
       }

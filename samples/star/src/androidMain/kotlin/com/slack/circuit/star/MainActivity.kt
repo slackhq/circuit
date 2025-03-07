@@ -41,6 +41,7 @@ import com.squareup.anvil.annotations.ContributesMultibinding
 import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalCircuitApi::class)
 @ContributesMultibinding(AppScope::class, boundType = Activity::class)
@@ -121,7 +122,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
       .setShowTitle(true)
       .build()
-      .launchUrl(this, Uri.parse(screen.url))
+      .launchUrl(this, screen.url.toUri())
     return true
   }
 }

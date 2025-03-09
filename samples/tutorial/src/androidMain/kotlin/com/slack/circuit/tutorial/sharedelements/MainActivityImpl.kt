@@ -1,18 +1,21 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.tutorial.impl
+package com.slack.circuit.tutorial.sharedelements
 
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.tutorial.MainActivity
 import com.slack.circuit.tutorial.common.EmailRepository
 
-fun MainActivity.tutorialOnCreate() {
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun MainActivity.sharedElementsTutorialOnCreate() {
   val emailRepository = EmailRepository()
   val circuit: Circuit =
     Circuit.Builder()
@@ -26,7 +29,9 @@ fun MainActivity.tutorialOnCreate() {
       val backStack = rememberSaveableBackStack(InboxScreen)
       val navigator = rememberCircuitNavigator(backStack)
       CircuitCompositionLocals(circuit) {
-        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        SharedElementTransitionLayout {
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        }
       }
     }
   }

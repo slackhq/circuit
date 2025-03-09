@@ -119,8 +119,8 @@ private class CircuitSymbolProcessor(
 
     // If we annotated a class, check that the class isn't using assisted inject. If so, error and
     // return
-    if (instantiationType == InstantiationType.CLASS && codegenMode != KOTLIN_INJECT_ANVIL) {
-      (annotatedElement as KSClassDeclaration).checkForAssistedInjection {
+    if (instantiationType == InstantiationType.CLASS) {
+      (annotatedElement as KSClassDeclaration).checkForAssistedInjection(codegenMode) {
         return
       }
     }
@@ -226,12 +226,18 @@ private class CircuitSymbolProcessor(
     }
   }
 
-  private inline fun KSClassDeclaration.checkForAssistedInjection(exit: () -> Nothing) {
+  private inline fun KSClassDeclaration.checkForAssistedInjection(
+    codegenMode: CodegenMode,
+    exit: () -> Nothing,
+  ) {
+    val assistedInjectClassName = codegenMode.runtime.assistedInject ?: return
     // Check for an AssistedInject constructor
-    if (findConstructorAnnotatedWith(CircuitNames.ASSISTED_INJECT) != null) {
+    if (findConstructorAnnotatedWith(assistedInjectClassName) != null) {
       val assistedFactory =
-        declarations.filterIsInstance<KSClassDeclaration>().find {
-          it.isAnnotationPresentWithLeniency(CircuitNames.ASSISTED_FACTORY)
+        declarations.filterIsInstance<KSClassDeclaration>().find { nestedClass ->
+          codegenMode.runtime.assistedFactory?.let {
+            nestedClass.isAnnotationPresentWithLeniency(it)
+          } == true
         }
       val suffix =
         if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
@@ -409,12 +415,13 @@ private class CircuitSymbolProcessor(
               ?.filter { it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted) }
               .orEmpty()
           }
+
         val isAssisted =
-          if (codegenMode == KOTLIN_INJECT_ANVIL) {
-            assistedKSParams.isNotEmpty()
-          } else {
-            declaration.isAnnotationPresentWithLeniency(CircuitNames.ASSISTED_FACTORY)
-          }
+          assistedKSParams.isNotEmpty() ||
+            codegenMode.runtime.assistedFactory?.let {
+              declaration.isAnnotationPresentWithLeniency(it)
+            } == true
+
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {

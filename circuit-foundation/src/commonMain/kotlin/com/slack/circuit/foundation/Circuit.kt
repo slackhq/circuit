@@ -11,8 +11,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -20,6 +24,9 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import kotlin.reflect.KClass
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 
 /**
  * [Circuit] adapts [presenter factories][Presenter.Factory] to their corresponding
@@ -71,7 +78,20 @@ public class Circuit private constructor(builder: Builder) {
   private val presenterFactories: List<Presenter.Factory> = builder.presenterFactories.toList()
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
-  public val defaultNavDecoration: NavDecoration = builder.defaultNavDecoration
+  @ExperimentalCircuitApi
+  public val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform> =
+    builder.animatedScreenTransforms.toImmutableMap()
+  public val animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
+    builder.animatedNavDecoratorFactory
+
+  @OptIn(ExperimentalCircuitApi::class)
+  public val defaultNavDecoration: NavDecoration =
+    builder.defaultNavDecoration
+      ?: AnimatedNavDecoration(
+        animatedScreenTransforms = animatedScreenTransforms,
+        decoratorFactory = animatedNavDecoratorFactory,
+      )
+
   internal val eventListenerFactory: EventListener.Factory? = builder.eventListenerFactory
 
   /**
@@ -142,23 +162,39 @@ public class Circuit private constructor(builder: Builder) {
   public class Builder() {
     public val uiFactories: MutableList<Ui.Factory> = mutableListOf()
     public val presenterFactories: MutableList<Presenter.Factory> = mutableListOf()
+
+    @ExperimentalCircuitApi
+    public val animatedScreenTransforms: MutableMap<KClass<out Screen>, AnimatedScreenTransform> =
+      mutableMapOf()
+
     public var onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
       UnavailableContent
       private set
 
-    public var defaultNavDecoration: NavDecoration = NavigatorDefaults.DefaultDecoration
+    public var defaultNavDecoration: NavDecoration? = null
       private set
 
     public var eventListenerFactory: EventListener.Factory? = null
       private set
 
+    public var animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
+      NavigatorDefaults.DefaultDecoratorFactory
+      private set
+
     public var presentWithLifecycle: Boolean = true
       private set
 
+    @OptIn(ExperimentalCircuitApi::class)
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
       presenterFactories.addAll(circuit.presenterFactories)
+      animatedScreenTransforms.putAll(circuit.animatedScreenTransforms)
+      animatedNavDecoratorFactory = circuit.animatedNavDecoratorFactory
       eventListenerFactory = circuit.eventListenerFactory
+      // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
+      if (circuit.defaultNavDecoration !is AnimatedNavDecoration) {
+        defaultNavDecoration = circuit.defaultNavDecoration
+      }
     }
 
     public inline fun <reified S : Screen, UiState : CircuitUiState> addUi(
@@ -244,11 +280,31 @@ public class Circuit private constructor(builder: Builder) {
       presenterFactories.addAll(factories)
     }
 
+    public fun setAnimatedNavDecoratorFactory(
+      decoratorFactory: AnimatedNavDecorator.Factory
+    ): Builder = apply { animatedNavDecoratorFactory = decoratorFactory }
+
+    @ExperimentalCircuitApi
+    public fun addAnimatedScreenTransform(
+      screen: KClass<out Screen>,
+      animatedNavigationTransform: AnimatedScreenTransform,
+    ): Builder = apply { animatedScreenTransforms[screen] = animatedNavigationTransform }
+
+    @ExperimentalCircuitApi
+    public fun addAnimatedScreenTransforms(
+      vararg pairs: Pair<KClass<out Screen>, AnimatedScreenTransform>
+    ): Builder = apply { animatedScreenTransforms.putAll(pairs) }
+
+    @ExperimentalCircuitApi
+    public fun addAnimatedScreenTransforms(
+      transforms: Map<KClass<out Screen>, AnimatedScreenTransform>
+    ): Builder = apply { animatedScreenTransforms.putAll(transforms) }
+
     public fun setOnUnavailableContent(
       content: @Composable (screen: Screen, modifier: Modifier) -> Unit
     ): Builder = apply { onUnavailableContent = content }
 
-    public fun setDefaultNavDecoration(decoration: NavDecoration): Builder = apply {
+    public fun setDefaultNavDecoration(decoration: NavDecoration?): Builder = apply {
       defaultNavDecoration = decoration
     }
 

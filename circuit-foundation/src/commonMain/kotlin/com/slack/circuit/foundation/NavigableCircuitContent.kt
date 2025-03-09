@@ -25,13 +25,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
@@ -41,15 +44,16 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.backward
-import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecoration.forward
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
-import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.LocalCanRetainChecker
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateRegistry
-import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import com.slack.circuit.retained.rememberRetainedStateRegistry
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -57,6 +61,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
+@OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,
@@ -65,6 +70,7 @@ public fun <R : Record> NavigableCircuitContent(
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
   decoration: NavDecoration = circuit.defaultNavDecoration,
+  decoratorFactory: AnimatedNavDecorator.Factory? = null,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
@@ -103,18 +109,41 @@ public fun <R : Record> NavigableCircuitContent(
    * └─────────────┘
    */
   val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
-  val outerRegistry = rememberRetained(key = outerKey) { RetainedStateRegistry() }
+  val outerRegistry = rememberRetainedStateRegistry(key = outerKey)
+
+  val navDecoration =
+    remember(decoration, decoratorFactory) {
+      // User specified decorator takes precedence over a default decoration.
+      if (decoratorFactory != null) {
+        AnimatedNavDecoration(circuit.animatedScreenTransforms, decoratorFactory)
+      } else {
+        decoration
+      }
+    }
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
-    val activeContentProviders =
-      buildCircuitContentProviders(
-        backStack = backStack,
-        navigator = navigator,
-        circuit = circuit,
-        unavailableRoute = unavailableRoute,
-      )
+    val saveableStateHolder = rememberSaveableStateHolder()
+    val retainedStateHolder = rememberRetainedStateHolder()
+    val contentProviderState =
+      remember(saveableStateHolder, retainedStateHolder) {
+          ContentProviderState(
+            saveableStateHolder = saveableStateHolder,
+            retainedStateHolder = retainedStateHolder,
+            backStack = backStack,
+            navigator = navigator,
+            circuit = circuit,
+            unavailableRoute = unavailableRoute,
+          )
+        }
+        .apply {
+          lastBackStack = backStack
+          lastNavigator = navigator
+          lastCircuit = circuit
+          lastUnavailableRoute = unavailableRoute
+        }
+    val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
 
-    decoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
+    navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
@@ -123,7 +152,7 @@ public fun <R : Record> NavigableCircuitContent(
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
       CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-        provider.content(record)
+        provider.content(record, contentProviderState)
       }
     }
   }
@@ -133,7 +162,7 @@ public fun <R : Record> NavigableCircuitContent(
 @Immutable
 public class RecordContentProvider<R : Record>(
   public val record: R,
-  internal val content: @Composable (R) -> Unit,
+  internal val content: @Composable (R, ContentProviderState<R>) -> Unit,
 ) : NavArgument {
 
   override val screen: Screen
@@ -142,18 +171,12 @@ public class RecordContentProvider<R : Record>(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
-
     other as RecordContentProvider<*>
-
-    if (record != other.record) return false
-    if (content != other.content) return false
-
-    return true
+    return record == other.record
   }
 
   override fun hashCode(): Int {
-    var result = record.hashCode()
-    result = 31 * result + content.hashCode()
+    val result = record.hashCode()
     return result
   }
 
@@ -162,61 +185,10 @@ public class RecordContentProvider<R : Record>(
 
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
-  backStack: BackStack<R>,
-  navigator: Navigator,
-  circuit: Circuit,
-  unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
+  backStack: BackStack<R>
 ): ImmutableList<RecordContentProvider<R>> {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
-
-  val lastBackStack by rememberUpdatedState(backStack)
-  val lastNavigator by rememberUpdatedState(navigator)
-  val lastCircuit by rememberUpdatedState(circuit)
-  val lastUnavailableRoute by rememberUpdatedState(unavailableRoute)
-
-  val saveableStateHolder = rememberSaveableStateHolder()
-  val retainedStateHolder = rememberRetainedStateHolder()
-
-  fun createRecordContent() =
-    movableContentOf<R> { record ->
-      val recordInBackStackRetainChecker =
-        remember(lastBackStack, record) {
-          CanRetainChecker { lastBackStack.containsRecord(record, includeSaved = true) }
-        }
-
-      val lifecycle =
-        remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
-
-      CompositionLocalProvider(LocalCanRetainChecker provides recordInBackStackRetainChecker) {
-        saveableStateHolder.SaveableStateProvider(record.registryKey) {
-          // Provides a RetainedStateRegistry that is maintained independently for each record while
-          // the record exists in the back stack.
-          retainedStateHolder.RetainedStateProvider(record.registryKey) {
-            CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
-              CircuitContent(
-                screen = record.screen,
-                navigator = lastNavigator,
-                circuit = lastCircuit,
-                unavailableContent = lastUnavailableRoute,
-                key = record.key,
-              )
-            }
-          }
-        }
-      }
-      // Remove saved states for records that are no longer in the back stack
-      DisposableEffect(record.registryKey) {
-        onDispose {
-          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
-            saveableStateHolder.removeState(record.registryKey)
-          }
-        }
-      }
-    }
-
-  return lastBackStack
-    .iterator()
-    .asSequence()
+  return backStack
     .map { record ->
       // Query the previous content providers map, so that we use the same
       // RecordContentProvider instances across calls.
@@ -234,6 +206,71 @@ private fun <R : Record> buildCircuitContentProviders(
     }
 }
 
+@Stable
+public class ContentProviderState<R : Record>(
+  internal val saveableStateHolder: SaveableStateHolder,
+  internal val retainedStateHolder: RetainedStateHolder,
+  backStack: BackStack<R>,
+  navigator: Navigator,
+  circuit: Circuit,
+  unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
+) {
+
+  internal var lastBackStack by mutableStateOf(backStack)
+  internal var lastNavigator by mutableStateOf(navigator)
+  internal var lastCircuit by mutableStateOf(circuit)
+  internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is ContentProviderState<*>) return false
+
+    if (saveableStateHolder != other.saveableStateHolder) return false
+    if (retainedStateHolder != other.retainedStateHolder) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = saveableStateHolder.hashCode()
+    result = 31 * result + retainedStateHolder.hashCode()
+    return result
+  }
+}
+
+private fun <R : Record> createRecordContent() =
+  movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
+    with(contentProviderState) {
+      val lifecycle =
+        remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
+
+      saveableStateHolder.SaveableStateProvider(record.registryKey) {
+        // Provides a RetainedStateRegistry that is maintained independently for each record while
+        // the record exists in the back stack.
+        retainedStateHolder.RetainedStateProvider(record.registryKey) {
+          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+            CircuitContent(
+              screen = record.screen,
+              navigator = lastNavigator,
+              circuit = lastCircuit,
+              unavailableContent = lastUnavailableRoute,
+              key = record.key,
+            )
+          }
+        }
+      }
+      // Remove saved states for records that are no longer in the back stack
+      DisposableEffect(record.registryKey) {
+        onDispose {
+          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+            retainedStateHolder.removeState(record.registryKey)
+            saveableStateHolder.removeState(record.registryKey)
+          }
+        }
+      }
+    }
+  }
+
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36
 
@@ -249,80 +286,73 @@ public object NavigatorDefaults {
   private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
-  public object DefaultDecoration :
-    AnimatedNavDecoration(
-      decoratorFactory =
-        object : AnimatedNavDecorator.Factory {
-          override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+  public object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+  }
+
+  /**
+   * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack). This
+   * isn't meant for public consumption, so be aware that this may be removed/changed at any time.
+   */
+  @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
+
+  /**
+   * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
+   * This isn't meant for public consumption, so be aware that this may be removed/changed at any
+   * time.
+   */
+  @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
+
+  private fun computeTransition(sign: Int): ContentTransform {
+    val enterTransition =
+      fadeIn(
+        animationSpec =
+          tween(
+            durationMillis = SHORT_DURATION,
+            delayMillis = if (sign > 0) 50 else 0,
+            easing = LinearEasing,
+          )
+      ) +
+        slideInHorizontally(
+          initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
+          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+        ) +
+        if (sign > 0) {
+          expandHorizontally(
+            animationSpec =
+              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+            initialWidth = { (it * .9f).toInt() },
+            expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
+          )
+        } else {
+          EnterTransition.None
         }
-    ) {
-    /**
-     * The [ContentTransform] used for 'forward' navigation changes (i.e. items added to stack).
-     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
-     * time.
-     */
-    @InternalCircuitApi public val forward: ContentTransform by lazy { computeTransition(1) }
 
-    /**
-     * The [ContentTransform] used for 'backward' navigation changes (i.e. items popped off stack).
-     * This isn't meant for public consumption, so be aware that this may be removed/changed at any
-     * time.
-     */
-    @InternalCircuitApi public val backward: ContentTransform by lazy { computeTransition(-1) }
-
-    private fun computeTransition(sign: Int): ContentTransform {
-      val enterTransition =
-        fadeIn(
-          animationSpec =
-            tween(
-              durationMillis = SHORT_DURATION,
-              delayMillis = if (sign > 0) 50 else 0,
-              easing = LinearEasing,
-            )
+    val exitTransition =
+      fadeOut(
+        animationSpec =
+          tween(
+            durationMillis = if (sign > 0) NORMAL_DURATION else SHORT_DURATION,
+            delayMillis = if (sign > 0) 0 else 50,
+            easing = AccelerateEasing,
+          )
+      ) +
+        slideOutHorizontally(
+          targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
+          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
         ) +
-          slideInHorizontally(
-            initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
+        if (sign > 0) {
+          shrinkHorizontally(
             animationSpec =
               tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-          ) +
-          if (sign > 0) {
-            expandHorizontally(
-              animationSpec =
-                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-              initialWidth = { (it * .9f).toInt() },
-              expandFrom = if (sign > 0) Alignment.Start else Alignment.End,
-            )
-          } else {
-            EnterTransition.None
-          }
+            targetWidth = { (it * .9f).toInt() },
+            shrinkTowards = Alignment.End,
+          )
+        } else {
+          ExitTransition.None
+        }
 
-      val exitTransition =
-        fadeOut(
-          animationSpec =
-            tween(
-              durationMillis = if (sign > 0) NORMAL_DURATION else SHORT_DURATION,
-              delayMillis = if (sign > 0) 0 else 50,
-              easing = AccelerateEasing,
-            )
-        ) +
-          slideOutHorizontally(
-            targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
-            animationSpec =
-              tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-          ) +
-          if (sign > 0) {
-            shrinkHorizontally(
-              animationSpec =
-                tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-              targetWidth = { (it * .9f).toInt() },
-              shrinkTowards = Alignment.End,
-            )
-          } else {
-            ExitTransition.None
-          }
-
-      return enterTransition togetherWith exitTransition
-    }
+    return enterTransition togetherWith exitTransition
   }
 
   public class DefaultDecorator<T : NavArgument> :
@@ -331,6 +361,7 @@ public object NavigatorDefaults {
     public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
       AnimatedNavState {
       override val screen: Screen = args.first().screen
+      override val rootScreen: Screen = args.last().screen
       override val backStackDepth: Int = args.size
     }
 
@@ -347,18 +378,16 @@ public object NavigatorDefaults {
     }
 
     @OptIn(InternalCircuitApi::class)
-    @Composable
-    override fun Transition<DefaultAnimatedState<T>>.transitionSpec():
-      AnimatedContentTransitionScope<DefaultAnimatedState<T>>.() -> ContentTransform = {
-      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize the
-      // transitionSpec recomposing.
+    override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+      animatedNavEvent: AnimatedNavEvent
+    ): ContentTransform {
+      // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
+      // the transitionSpec recomposing.
       // The states are available as `targetState` and `initialState`.
-      val diff = targetState.args.size - initialState.args.size
-      val sameRoot = targetState.args.lastOrNull() == initialState.args.lastOrNull()
-      when {
-        sameRoot && diff > 0 -> forward
-        sameRoot && diff < 0 -> backward
-        else -> fadeIn() togetherWith fadeOut()
+      return when (animatedNavEvent) {
+        AnimatedNavEvent.GoTo -> forward
+        AnimatedNavEvent.Pop -> backward
+        AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
       }.using(
         // Disable clipping since the faded slide-in/out should
         // be displayed out of bounds.

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.gesturenavigation
 
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 
-public actual fun GestureNavigationDecoration(
-  fallback: NavDecoration,
+public actual fun GestureNavigationDecorationFactory(
+  fallback: AnimatedNavDecorator.Factory,
   onBackInvoked: () -> Unit,
-): NavDecoration = fallback
+): AnimatedNavDecorator.Factory = fallback

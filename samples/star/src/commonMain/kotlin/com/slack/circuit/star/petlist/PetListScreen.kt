@@ -68,7 +68,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -230,11 +229,12 @@ constructor(@Assisted private val navigator: Navigator, private val petRepo: Pet
           when (event) {
             is ClickAnimal -> {
               navigator.goTo(
-                PetDetailScreen(
-                  event.petId,
-                  event.photoUrlMemoryCacheKey,
-                  event.animal.toPartialAnimal(),
-                )
+                screen =
+                  PetDetailScreen(
+                    event.petId,
+                    event.photoUrlMemoryCacheKey,
+                    event.animal.toPartialAnimal(),
+                  )
               )
             }
             is UpdatedFilters -> {
@@ -402,7 +402,7 @@ private fun PetListGrid(
 
     val spacing = if (columnSpan >= 4) 32.dp else 16.dp
     @Suppress("MagicNumber")
-    (LazyVerticalStaggeredGrid(
+    LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Fixed(columnSpan),
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = spacing,
@@ -415,7 +415,7 @@ private fun PetListGrid(
           eventSink(ClickAnimal(animal.id, animal.imageUrl, animal))
         }
       }
-    })
+    }
     PullRefreshIndicator(
       modifier = Modifier.align(Alignment.TopCenter),
       refreshing = isRefreshing,

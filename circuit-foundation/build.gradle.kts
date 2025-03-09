@@ -116,10 +116,12 @@ kotlin {
     }
     androidInstrumentedTest {
       dependencies {
-        implementation(libs.junit)
-        implementation(libs.coroutines.android)
         implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.compose.ui.testing.junit)
+        implementation(libs.coroutines.android)
+        implementation(libs.junit)
+        implementation(projects.internalTestUtils)
       }
     }
   }
@@ -132,7 +134,10 @@ tasks
     compilerOptions {
       freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
 
-      if (name == "compileReleaseUnitTestKotlinAndroid") {
+      if (
+        name == "compileReleaseUnitTestKotlinAndroid" ||
+          name == "compileReleaseAndroidTestKotlinAndroid"
+      ) {
         freeCompilerArgs.addAll(
           "-P",
           "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",

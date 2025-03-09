@@ -3,7 +3,6 @@
 package com.slack.circuit.star
 
 import android.app.Activity
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,6 +15,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
+import androidx.core.net.toUri
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -121,7 +121,7 @@ class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompat
       .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
       .setShowTitle(true)
       .build()
-      .launchUrl(this, Uri.parse(screen.url))
+      .launchUrl(this, screen.url.toUri())
     return true
   }
 }

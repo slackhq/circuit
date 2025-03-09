@@ -80,7 +80,7 @@ public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 public final class com/slack/circuit/foundation/ComposableSingletons$NavigableCircuitContentKt {
 	public static final field INSTANCE Lcom/slack/circuit/foundation/ComposableSingletons$NavigableCircuitContentKt;
 	public fun <init> ()V
-	public final fun getLambda-1$circuit_foundation_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$1981191745$circuit_foundation_release ()Lkotlin/jvm/functions/Function4;
 }
 
 public final class com/slack/circuit/foundation/ContentProviderState {

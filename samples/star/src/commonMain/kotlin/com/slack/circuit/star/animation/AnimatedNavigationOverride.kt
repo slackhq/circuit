@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.animation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
-import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.foundation.animation.AnyTransitionScope
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.home.HomeScreen
@@ -17,7 +16,7 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 @ExperimentalCircuitApi
 object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
 
-  override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
+  override fun AnyTransitionScope.enterTransition(
     animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? {
     // Going to the detail screen
@@ -26,7 +25,7 @@ object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
     return EnterTransition.None
   }
 
-  override fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+  override fun AnyTransitionScope.exitTransition(
     animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? {
     // Going back to the home screen
@@ -40,14 +39,14 @@ object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
 @ExperimentalCircuitApi
 object HomeAnimatedScreenTransform : AnimatedScreenTransform {
 
-  override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
+  override fun AnyTransitionScope.enterTransition(
     animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? {
     // Coming from the detail screen with shared elements
     return if (initialState.screen.isSharedElementDetailScreen()) EnterTransition.None else null
   }
 
-  override fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+  override fun AnyTransitionScope.exitTransition(
     animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? {
     // Going to the detail screen with shared elements

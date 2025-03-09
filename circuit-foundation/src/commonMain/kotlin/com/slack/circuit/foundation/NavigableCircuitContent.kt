@@ -3,7 +3,6 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -25,11 +24,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.SaveableStateHolder
@@ -45,10 +44,12 @@ import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
+import com.slack.circuit.foundation.animation.AnimatedContentState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.foundation.animation.TransitionScope
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateHolder
@@ -168,6 +169,9 @@ public class RecordContentProvider<R : Record>(
   override val screen: Screen
     get() = record.screen
 
+  override val key: String
+    get() = record.key
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || this::class != other::class) return false
@@ -224,10 +228,8 @@ public class ContentProviderState<R : Record>(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is ContentProviderState<*>) return false
-
     if (saveableStateHolder != other.saveableStateHolder) return false
     if (retainedStateHolder != other.retainedStateHolder) return false
-
     return true
   }
 
@@ -239,11 +241,26 @@ public class ContentProviderState<R : Record>(
 }
 
 private fun <R : Record> createRecordContent() =
-  movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
+  @Composable { record: R, contentProviderState: ContentProviderState<R> ->
     with(contentProviderState) {
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
+      val key = currentCompositeKeyHash
+      remember {
+        object : RememberObserver {
+          override fun onAbandoned() {
+            println("RC onAbandoned ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+          }
 
+          override fun onForgotten() {
+            println("RC onForgotten ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+          }
+
+          override fun onRemembered() {
+            println("RC onRemembered ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+          }
+        }
+      }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
@@ -358,27 +375,35 @@ public object NavigatorDefaults {
   public class DefaultDecorator<T : NavArgument> :
     AnimatedNavDecorator<T, DefaultAnimatedState<T>> {
 
-    public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
-      AnimatedNavState {
-      override val screen: Screen = args.first().screen
-      override val rootScreen: Screen = args.last().screen
-      override val backStackDepth: Int = args.size
-    }
+    public data class DefaultAnimatedState<T : NavArgument>(
+      override val navArgument: T,
+      override val rootNavArgument: T,
+      override val backStackDepth: Int,
+    ) : AnimatedNavState<T>
 
-    override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {
-      return DefaultAnimatedState(args)
+    override fun targetState(
+      args: ImmutableList<T>,
+      backStackDepth: Int,
+    ): AnimatedContentState<T, DefaultAnimatedState<T>> {
+      return AnimatedContentState(
+        DefaultAnimatedState(
+          navArgument = args.first(),
+          rootNavArgument = args.last(),
+          backStackDepth = backStackDepth,
+        )
+      )
     }
 
     @Composable
     public override fun updateTransition(
       args: ImmutableList<T>,
       backStackDepth: Int,
-    ): Transition<DefaultAnimatedState<T>> {
+    ): Transition<AnimatedContentState<T, DefaultAnimatedState<T>>> {
       return updateTransition(targetState(args, backStackDepth))
     }
 
     @OptIn(InternalCircuitApi::class)
-    override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+    override fun TransitionScope<T, DefaultAnimatedState<T>>.transitionSpec(
       animatedNavEvent: AnimatedNavEvent
     ): ContentTransform {
       // A transitionSpec should only use values passed into the `AnimatedContent`, to minimize
@@ -397,10 +422,10 @@ public object NavigatorDefaults {
 
     @Composable
     public override fun AnimatedContentScope.Decoration(
-      targetState: DefaultAnimatedState<T>,
+      targetState: AnimatedContentState<T, DefaultAnimatedState<T>>,
       innerContent: @Composable (T) -> Unit,
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navArgument)
     }
   }
 

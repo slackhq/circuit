@@ -1,5 +1,6 @@
 package com.slack.circuit.star
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.internal.test.TestContentTags
 import com.slack.circuit.internal.test.TestCountPresenter
@@ -22,7 +24,8 @@ import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import com.slack.circuitx.gesturenavigation.AndroidPredictiveBackNavDecorator
+import com.slack.circuitx.gesturenavigation.CupertinoGestureNavigationDecorator
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -51,21 +54,35 @@ class GestureSaveableRestRootTest {
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.RootAlpha.label)
       mainClock.autoAdvance = false
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
+      repeat(10) {
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenC, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+      }
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
       mainClock.autoAdvance = true
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)
     }
   }
 
+  @SuppressLint("NewApi")
   @OptIn(ExperimentalSharedTransitionApi::class)
   private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
     val circuit =
       createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
         .newBuilder()
-        .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory {})
+        .setAnimatedNavDecoratorFactory(CupertinoGestureNavigationDecorator.Factory {})
+        .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
+        .setAnimatedNavDecoratorFactory(AndroidPredictiveBackNavDecorator.Factory {})
         .build()
     setContent {
       PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }

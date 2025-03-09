@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation.animation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -50,7 +49,7 @@ public interface AnimatedScreenTransform {
    * @return An [EnterTransition] or null to use the default enter transition.
    * @see ContentTransform.targetContentEnter
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
+  public fun AnyTransitionScope.enterTransition(
     animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? = null
 
@@ -61,7 +60,7 @@ public interface AnimatedScreenTransform {
    * @return An [ExitTransition] or null to use the default exit transition.
    * @see ContentTransform.initialContentExit
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+  public fun AnyTransitionScope.exitTransition(
     animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? = null
 
@@ -73,9 +72,8 @@ public interface AnimatedScreenTransform {
    * @return The z-index or null to use the default z-index.
    * @see ContentTransform.targetContentZIndex
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.zIndex(
-    animatedNavEvent: AnimatedNavEvent
-  ): Float? = null // todo non-null?
+  public fun AnyTransitionScope.zIndex(animatedNavEvent: AnimatedNavEvent): Float? =
+    null // todo non-null?
 
   /**
    * Defines the [ContentTransform.sizeTransform] to use when this screen is becoming the top
@@ -85,9 +83,8 @@ public interface AnimatedScreenTransform {
    * @return A [SizeTransform] or null to use the default size transform.
    * @see ContentTransform.sizeTransform
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.sizeTransform(
-    animatedNavEvent: AnimatedNavEvent
-  ): SizeTransform? = null
+  public fun AnyTransitionScope.sizeTransform(animatedNavEvent: AnimatedNavEvent): SizeTransform? =
+    null
 }
 
 /** A default [AnimatedScreenTransform] that does nothing. */

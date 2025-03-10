@@ -111,9 +111,7 @@ public class AnimatedNavDecoration(
     }
     with(decorator) {
       val transition = updateTransition(args, backStackDepth)
-      println("AND ${decorator::class.simpleName} ${transition.hashCode()}")
       println("AND ${transition.currentState.log()} -> ${transition.targetState.log()}")
-
       transition.AnimatedContent(
         modifier = modifier,
         transitionSpec = transitionSpec(animatedScreenTransforms),

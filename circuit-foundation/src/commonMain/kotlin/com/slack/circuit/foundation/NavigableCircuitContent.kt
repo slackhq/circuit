@@ -29,6 +29,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.SaveableStateHolder
@@ -241,7 +242,8 @@ public class ContentProviderState<R : Record>(
 }
 
 private fun <R : Record> createRecordContent() =
-  @Composable { record: R, contentProviderState: ContentProviderState<R> ->
+  //  @Composable { record: R, contentProviderState: ContentProviderState<R> ->
+  movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }

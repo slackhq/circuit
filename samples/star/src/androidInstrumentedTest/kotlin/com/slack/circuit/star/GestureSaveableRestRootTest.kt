@@ -76,23 +76,24 @@ class GestureSaveableRestRootTest {
       mainClock.autoAdvance = false
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
       mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenC, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
+      repeat(10) {
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenC, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+      }
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
       mainClock.autoAdvance = true
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)
     }
   }
 
-  @Test
   fun testMovable() = runTest {
     composeTestRule.run {
       lateinit var state: SnapshotStateList<TestScreen>

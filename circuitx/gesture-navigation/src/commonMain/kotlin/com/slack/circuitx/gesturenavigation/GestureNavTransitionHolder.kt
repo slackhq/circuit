@@ -12,7 +12,7 @@ import com.slack.circuit.runtime.screen.Screen
  * the necessary information as an argument, which is optimal for `AnimatedContent`.
  */
 @Immutable
-internal data class GestureNavTransitionHolder<T : NavArgument>(
+public data class GestureNavTransitionHolder<T : NavArgument>(
   val record: T,
   override val backStackDepth: Int,
   val rootRecord: T,

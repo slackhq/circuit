@@ -25,6 +25,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
@@ -247,7 +248,22 @@ private fun <R : Record> createRecordContent():
           val lifecycle =
             remember { MutableRecordLifecycle() }
               .apply { isActive = lastBackStack.topRecord == record }
+          val key = currentCompositeKeyHash
+          remember {
+            object : RememberObserver {
+              override fun onAbandoned() {
+                println("RC onAbandoned ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+              }
 
+              override fun onForgotten() {
+                println("RC onForgotten ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+              }
+
+              override fun onRemembered() {
+                println("RC onRemembered ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+              }
+            }
+          }
           saveableStateHolder.SaveableStateProvider(record.registryKey) {
             // Provides a RetainedStateRegistry that is maintained independently for each record
             // while

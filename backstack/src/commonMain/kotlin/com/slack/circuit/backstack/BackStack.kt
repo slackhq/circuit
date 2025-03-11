@@ -117,6 +117,8 @@ public interface BackStack<R : Record> : Iterable<R> {
     /** The [Screen] that should present this record. */
     public val screen: Screen
 
+    public fun log(): String = "${screen}(${key})"
+
     /**
      * Awaits a [PopResult] produced by the record that previously sat on top of the stack above
      * this one. Returns null if no result was produced.

@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.SeekableTransitionState
@@ -39,10 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
-import com.slack.circuit.foundation.animation.AnimatedContentState
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
-import com.slack.circuit.foundation.animation.TransitionScope
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -63,29 +63,27 @@ public actual fun GestureNavigationDecorationFactory(
 
 @Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)
-public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   private val onBackInvoked: () -> Unit
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   private lateinit var seekableTransitionState:
-    SeekableTransitionState<AnimatedContentState<T, GestureNavTransitionHolder<T>>>
+    SeekableTransitionState<GestureNavTransitionHolder<T>>
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
 
   override fun targetState(
     args: ImmutableList<T>,
     backStackDepth: Int,
-  ): AnimatedContentState<T, GestureNavTransitionHolder<T>> {
-    return AnimatedContentState(
-      GestureNavTransitionHolder(args.first(), args.last(), backStackDepth)
-    )
+  ): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
   }
 
   @Composable
   override fun updateTransition(
     args: ImmutableList<T>,
     backStackDepth: Int,
-  ): Transition<AnimatedContentState<T, GestureNavTransitionHolder<T>>> {
+  ): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
     val current = remember(args) { targetState(args, backStackDepth) }
     val previous =
@@ -102,10 +100,6 @@ public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
       // clear out any transient state
       showPrevious = false
       swipeProgress = 0f
-      // If we're interrupting an animation snap it to the end state.
-      if (seekableTransitionState.currentState != seekableTransitionState.targetState) {
-        seekableTransitionState.snapTo(seekableTransitionState.targetState)
-      }
       seekableTransitionState.animateTo(current)
     }
 
@@ -134,7 +128,7 @@ public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   }
 
   @OptIn(InternalCircuitApi::class)
-  override fun TransitionScope<T, GestureNavTransitionHolder<T>>.transitionSpec(
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
     return when (animatedNavEvent) {
@@ -156,7 +150,7 @@ public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
   @Composable
   override fun AnimatedContentScope.Decoration(
-    targetState: AnimatedContentState<T, GestureNavTransitionHolder<T>>,
+    targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
     Box(
@@ -170,11 +164,11 @@ public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         },
       )
     ) {
-      innerContent(targetState.navArgument)
+      innerContent(targetState.record)
     }
   }
 
-  public class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
+  class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
       return AndroidPredictiveBackNavDecorator(onBackInvoked = onBackInvoked)
     }

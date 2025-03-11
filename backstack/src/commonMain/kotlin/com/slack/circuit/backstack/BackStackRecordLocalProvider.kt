@@ -46,7 +46,7 @@ public fun <R : BackStack.Record> providedValuesForBackStack(
 ): ImmutableMap<R, ProvidedValues> =
   buildMap(backStack.size) {
       backStack.forEach { record ->
-        key(record.key) {
+        key(record) {
           put(
             record,
             CompositeProvidedValues(

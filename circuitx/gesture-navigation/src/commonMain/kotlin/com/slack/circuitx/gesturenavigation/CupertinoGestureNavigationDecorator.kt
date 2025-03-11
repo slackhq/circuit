@@ -48,10 +48,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
 import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.foundation.animation.AnimatedContentState
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
-import com.slack.circuit.foundation.animation.TransitionScope
+import com.slack.circuit.foundation.animation.AnimatedNavState
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
@@ -70,7 +69,7 @@ import kotlinx.coroutines.flow.filter
  *   to true.
  */
 @ExperimentalMaterialApi
-public class CupertinoGestureNavigationDecorator<T : NavArgument>(
+internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
   private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
   private val swipeBackFromNestedScroll: Boolean = true,
@@ -78,7 +77,7 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   private lateinit var seekableTransitionState:
-    SeekableTransitionState<AnimatedContentState<T, GestureNavTransitionHolder<T>>>
+    SeekableTransitionState<GestureNavTransitionHolder<T>>
 
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
@@ -86,17 +85,15 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
   override fun targetState(
     args: ImmutableList<T>,
     backStackDepth: Int,
-  ): AnimatedContentState<T, GestureNavTransitionHolder<T>> {
-    return AnimatedContentState(
-      GestureNavTransitionHolder(args.first(), args.last(), backStackDepth)
-    )
+  ): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
   }
 
   @Composable
   override fun updateTransition(
     args: ImmutableList<T>,
     backStackDepth: Int,
-  ): Transition<AnimatedContentState<T, GestureNavTransitionHolder<T>>> {
+  ): Transition<GestureNavTransitionHolder<T>> {
 
     val current = remember(args) { targetState(args, backStackDepth) }
     val previous =
@@ -141,8 +138,9 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
     )
   }
 
-  override fun TransitionScope<T, GestureNavTransitionHolder<T>>
-    .transitionSpec(animatedNavEvent: AnimatedNavEvent): ContentTransform {
+  override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
+    animatedNavEvent: AnimatedNavEvent
+  ): ContentTransform {
     val diff = targetState.backStackDepth - initialState.backStackDepth
     val sameRoot = targetState.rootScreen == initialState.rootScreen
 
@@ -169,12 +167,12 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
 
   @Composable
   override fun AnimatedContentScope.Decoration(
-    targetState: AnimatedContentState<T, GestureNavTransitionHolder<T>>,
+    targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
-    val dismissState = rememberDismissState(targetState.navArgument)
+    val dismissState = rememberDismissState(targetState.record)
     var wasSwipeDismissed by remember { mutableStateOf(false) }
-    val swipeEnabled = targetState.animatedNavState.backStackDepth > 1
+    val swipeEnabled = targetState.backStackDepth > 1
 
     LaunchedEffect(dismissState) {
       snapshotFlow { dismissState.isDismissed(DismissDirection.StartToEnd) }
@@ -202,12 +200,12 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
         swipeEnabled = swipeEnabled,
         nestedScrollEnabled = swipeEnabled && swipeBackFromNestedScroll,
         dismissThreshold = swipeThreshold,
-        content = { innerContent(targetState.navArgument) },
+        content = { innerContent(targetState.record) },
       )
     }
   }
 
-  public class Factory(
+  internal class Factory(
     private val enterOffsetFraction: Float = 0.25f,
     private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
     private val swipeBackFromNestedScroll: Boolean = true,

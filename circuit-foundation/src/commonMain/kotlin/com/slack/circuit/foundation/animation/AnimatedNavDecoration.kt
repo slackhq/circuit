@@ -12,7 +12,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavArgument
@@ -107,20 +106,14 @@ public class AnimatedNavDecoration(
   ) {
     val decorator = remember {
       @Suppress("UNCHECKED_CAST")
-      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState<T>>
+      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
     }
     with(decorator) {
       val transition = updateTransition(args, backStackDepth)
-      println("AND ${transition.currentState.log()} -> ${transition.targetState.log()}")
       transition.AnimatedContent(
         modifier = modifier,
         transitionSpec = transitionSpec(animatedScreenTransforms),
-        contentKey = { it.navArgument.key },
       ) { targetState ->
-        DisposableEffect(targetState) {
-          println("AND Entered ${targetState.log()}")
-          onDispose { println("AND Disposed ${targetState.log()}") }
-        }
         ProvideAnimatedTransitionScope(Navigation, this) { Decoration(targetState) { content(it) } }
       }
     }
@@ -130,9 +123,9 @@ public class AnimatedNavDecoration(
 /** Constructs the transition specification used in [AnimatedNavDecoration]. */
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
-private fun <T : NavArgument, S : AnimatedNavState<T>> AnimatedNavDecorator<T, S>.transitionSpec(
+private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>
-): AnimatedContentTransitionScope<AnimatedContentState<T, S>>.() -> ContentTransform = spec@{
+): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
   val diff = targetState.backStackDepth - initialState.backStackDepth
   val sameRoot = targetState.rootScreen == initialState.rootScreen
   val animatedNavEvent =
@@ -150,26 +143,22 @@ private fun <T : NavArgument, S : AnimatedNavState<T>> AnimatedNavDecorator<T, S
 }
 
 @OptIn(ExperimentalCircuitApi::class)
-private fun <T : NavArgument, S : AnimatedNavState<T>> TransitionScope<T, S>.screenSpecificOverride(
+private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverride(
   animatedNavEvent: AnimatedNavEvent,
   animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
 ): PartialContentTransform {
-  val initialScreen = initialState.screen
-  val targetScreen = targetState.screen
   // Read any screen specific overrides
   val targetAnimatedScreenTransform =
-    animatedScreenTransforms[targetScreen::class] ?: NoOpAnimatedScreenTransform
+    animatedScreenTransforms[targetState.screen::class] ?: NoOpAnimatedScreenTransform
   val initialAnimatedScreenTransform =
-    animatedScreenTransforms[initialScreen::class] ?: NoOpAnimatedScreenTransform
-  @Suppress("UNCHECKED_CAST")
-  return with(this as TransitionScope<NavArgument, AnimatedNavState<NavArgument>>) {
-    PartialContentTransform(
-      enter = targetAnimatedScreenTransform.run { enterTransition(animatedNavEvent) },
-      exit = initialAnimatedScreenTransform.run { exitTransition(animatedNavEvent) },
-      zIndex = targetAnimatedScreenTransform.run { zIndex(animatedNavEvent) },
-      sizeTransform = targetAnimatedScreenTransform.run { sizeTransform(animatedNavEvent) },
-    )
-  }
+    animatedScreenTransforms[initialState.screen::class] ?: NoOpAnimatedScreenTransform
+
+  return PartialContentTransform(
+    enter = targetAnimatedScreenTransform.run { enterTransition(animatedNavEvent) },
+    exit = initialAnimatedScreenTransform.run { exitTransition(animatedNavEvent) },
+    zIndex = targetAnimatedScreenTransform.run { zIndex(animatedNavEvent) },
+    sizeTransform = targetAnimatedScreenTransform.run { sizeTransform(animatedNavEvent) },
+  )
 }
 
 private fun contextualNavigationOverride(

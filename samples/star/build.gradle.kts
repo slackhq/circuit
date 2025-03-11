@@ -254,7 +254,7 @@ if (!buildDesktop) {
         all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
       }
     }
-    testBuildType = "debug"
+    testBuildType = "release"
   }
 } else {
   tasks.withType<JavaCompile>().configureEach {

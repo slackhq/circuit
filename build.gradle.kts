@@ -377,9 +377,9 @@ subprojects {
     // Single-variant libraries
     extensions.configure<LibraryAndroidComponentsExtension> {
       beforeVariants { builder ->
-//        if (builder.buildType == "debug") {
-//          builder.enable = false
-//        }
+        if (builder.buildType == "debug") {
+          builder.enable = false
+        }
       }
     }
   }

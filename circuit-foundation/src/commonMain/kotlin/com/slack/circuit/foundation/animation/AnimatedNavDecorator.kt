@@ -4,6 +4,7 @@ package com.slack.circuit.foundation.animation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
@@ -89,14 +90,15 @@ import kotlinx.collections.immutable.ImmutableList
  * ```
  *
  * @param T The type of navigation arguments.
+ * @param S The type of navigation state, which must implement [AnimatedNavState].
  * @see AnimatedNavDecoration
- * @see AnimatedContentState
+ * @see AnimatedNavState
  * @see AnimatedScreenTransform
  */
 @Stable
-public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState<T>> {
+public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
   /** For the args and backstack create the expected target [AnimatedNavState]. */
-  public fun targetState(args: ImmutableList<T>, backStackDepth: Int): AnimatedContentState<T, S>
+  public fun targetState(args: ImmutableList<T>, backStackDepth: Int): S
 
   /**
    * Sets up a [Transition] for driving an [AnimatedContent] used to navigate between screens. The
@@ -104,59 +106,33 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState<T>> 
    * backstack depth, and then updated when the arguments or backstack depth change.
    */
   @Composable
-  public fun updateTransition(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): Transition<AnimatedContentState<T, S>>
+  public fun updateTransition(args: ImmutableList<T>, backStackDepth: Int): Transition<S>
 
   /** Builds the default [AnimatedContent] transition spec. */
-  public fun TransitionScope<T, S>.transitionSpec(
+  public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform
 
   /** For the [targetState], decorate the [innerContent] as the `content` of [AnimatedContent] */
   @Composable
-  public fun AnimatedContentScope.Decoration(
-    targetState: AnimatedContentState<T, S>,
-    innerContent: @Composable (T) -> Unit,
-  )
+  public fun AnimatedContentScope.Decoration(targetState: S, innerContent: @Composable (T) -> Unit)
 
   @Stable
   public interface Factory {
+
     public fun <T : NavArgument> create(): AnimatedNavDecorator<T, *>
   }
 }
 
+/** A state created for the [Transition] in [AnimatedNavDecorator.Decoration]. */
 @Stable
-public interface AnimatedNavState<T : NavArgument> {
+public interface AnimatedNavState {
   /** The [Screen] associated with this state. */
-  public val navArgument: T
+  public val screen: Screen
 
   /** The root screen of the back stack at the time this state was created. */
-  public val rootNavArgument: T
+  public val rootScreen: Screen
 
   /** The depth of the back stack at the time this state was created. */
   public val backStackDepth: Int
-}
-
-public class AnimatedContentState<T : NavArgument, out S : AnimatedNavState<T>>(
-  public val animatedNavState: S
-) {
-  public val navArgument: T = animatedNavState.navArgument
-  public val screen: Screen = animatedNavState.navArgument.screen
-  public val rootScreen: Screen = animatedNavState.rootNavArgument.screen
-  public val backStackDepth: Int = animatedNavState.backStackDepth
-
-  public fun log(): String = "${navArgument.screen}(${navArgument.key})"
-
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is AnimatedContentState<*, *>) return false
-    if (navArgument.key != other.navArgument.key) return false
-    return true
-  }
-
-  override fun hashCode(): Int {
-    return navArgument.key.hashCode()
-  }
 }

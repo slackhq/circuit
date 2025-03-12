@@ -142,7 +142,6 @@ public fun <R : Record> NavigableCircuitContent(
           lastUnavailableRoute = unavailableRoute
         }
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
-    println("${activeContentProviders.joinToString { it.record.log() }}")
     navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 

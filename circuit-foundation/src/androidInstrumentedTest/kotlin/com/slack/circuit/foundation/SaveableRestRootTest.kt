@@ -50,8 +50,18 @@ class SaveableRestRootTest {
       mainClock.autoAdvance = false
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
       mainClock.advanceTimeByFrame()
-      navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
-      mainClock.advanceTimeByFrame()
+      repeat(10) {
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenC, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        mainClock.advanceTimeByFrame()
+      }
       navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
       mainClock.autoAdvance = true
       onNodeWithTag(TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)

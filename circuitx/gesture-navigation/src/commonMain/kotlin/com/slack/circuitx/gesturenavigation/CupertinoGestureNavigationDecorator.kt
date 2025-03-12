@@ -69,7 +69,7 @@ import kotlinx.coroutines.flow.filter
  *   to true.
  */
 @ExperimentalMaterialApi
-public class CupertinoGestureNavigationDecorator<T : NavArgument>(
+internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
   private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
   private val swipeBackFromNestedScroll: Boolean = true,
@@ -205,7 +205,7 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
     }
   }
 
-  public class Factory(
+  internal class Factory(
     private val enterOffsetFraction: Float = 0.25f,
     private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
     private val swipeBackFromNestedScroll: Boolean = true,

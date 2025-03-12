@@ -63,7 +63,7 @@ public actual fun GestureNavigationDecorationFactory(
 
 @Suppress("SlotReused") // This is an advanced use case
 @RequiresApi(34)
-public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   private val onBackInvoked: () -> Unit
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
@@ -168,7 +168,7 @@ public class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     }
   }
 
-  public class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
+  class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
       return AndroidPredictiveBackNavDecorator(onBackInvoked = onBackInvoked)
     }

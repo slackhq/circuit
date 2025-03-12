@@ -59,8 +59,9 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.collections.immutable.toPersistentSet
 
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
@@ -189,12 +190,17 @@ private fun <R : Record> buildCircuitContentProviders(
 ): ImmutableList<RecordContentProvider<R>> {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
-  val recordKeys = backStack.map { it.key }.toImmutableSet()
+  val recordKeys by
+    remember { mutableStateOf(persistentSetOf<String>()) }
+      .apply { value = backStack.map { it.key }.toPersistentSet() }
   DisposableEffect(recordKeys) {
     // Delay cleanup until the next backstack change.
     val contentNotInBackStack = previousContentProviders.keys.toSet() - recordKeys
     onDispose {
-      (contentNotInBackStack - activeRecordKeys).forEach { previousContentProviders.remove(it) }
+      // Only remove the keys that are no longer in the backstack or composition.
+      (contentNotInBackStack - recordKeys - activeRecordKeys).forEach {
+        previousContentProviders.remove(it)
+      }
     }
   }
   return backStack
@@ -206,12 +212,8 @@ private fun <R : Record> buildCircuitContentProviders(
           record = record,
           content =
             createRecordContent(
-              forRecord = record,
-              onActive = { record -> activeRecordKeys.add(record.key) },
-              onDispose = { record ->
-                activeRecordKeys.remove(record.key)
-                previousContentProviders.remove(record.key)
-              },
+              onActive = { activeRecordKeys.add(record.key) },
+              onDispose = { activeRecordKeys.remove(record.key) },
             ),
         )
       }
@@ -251,11 +253,7 @@ public class ContentProviderState<R : Record>(
   }
 }
 
-private fun <R : Record> createRecordContent(
-  forRecord: R,
-  onActive: (R) -> Unit,
-  onDispose: (R) -> Unit,
-) =
+private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
       val lifecycle =
@@ -285,9 +283,10 @@ private fun <R : Record> createRecordContent(
         }
       }
     }
+    // Track if the movableContent is still active to correctly reuse it and not create a new one.
     DisposableEffect(Unit) {
-      onActive(forRecord)
-      onDispose { onDispose(forRecord) }
+      onActive()
+      onDispose { onDispose() }
     }
   }
 

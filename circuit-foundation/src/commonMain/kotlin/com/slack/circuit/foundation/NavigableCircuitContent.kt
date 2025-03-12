@@ -153,7 +153,7 @@ public fun <R : Record> NavigableCircuitContent(
       val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
 
       CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-        provider.content()(record, contentProviderState)
+        provider.content(record, contentProviderState)
       }
     }
   }
@@ -163,7 +163,7 @@ public fun <R : Record> NavigableCircuitContent(
 @Immutable
 public class RecordContentProvider<R : Record>(
   public val record: R,
-  internal val content: @Composable () -> @Composable (R, ContentProviderState<R>) -> Unit,
+  internal val content: @Composable (R, ContentProviderState<R>) -> Unit,
 ) : NavArgument {
 
   override val screen: Screen
@@ -239,61 +239,53 @@ public class ContentProviderState<R : Record>(
   }
 }
 
-private fun <R : Record> createRecordContent():
-  @Composable () -> @Composable (R, ContentProviderState<R>) -> Unit {
-  return {
-    remember {
-      movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
-        with(contentProviderState) {
-          val lifecycle =
-            remember { MutableRecordLifecycle() }
-              .apply { isActive = lastBackStack.topRecord == record }
-          val key = currentCompositeKeyHash
-          remember {
+private fun <R : Record> createRecordContent() =
+  movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
+    with(contentProviderState) {
+      val lifecycle =
+        remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
+        val key = currentCompositeKeyHash
+        remember {
             object : RememberObserver {
-              override fun onAbandoned() {
-                println("RC onAbandoned ${record.log()} $key ${record.hashCode()} ${hashCode()}")
-              }
+                override fun onAbandoned() {
+                    println("RC onAbandoned ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+                }
 
-              override fun onForgotten() {
-                println("RC onForgotten ${record.log()} $key ${record.hashCode()} ${hashCode()}")
-              }
+                override fun onForgotten() {
+                    println("RC onForgotten ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+                }
 
-              override fun onRemembered() {
-                println("RC onRemembered ${record.log()} $key ${record.hashCode()} ${hashCode()}")
-              }
+                override fun onRemembered() {
+                    println("RC onRemembered ${record.log()} $key ${record.hashCode()} ${hashCode()}")
+                }
             }
+        }
+      saveableStateHolder.SaveableStateProvider(record.registryKey) {
+        // Provides a RetainedStateRegistry that is maintained independently for each record while
+        // the record exists in the back stack.
+        retainedStateHolder.RetainedStateProvider(record.registryKey) {
+          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+            CircuitContent(
+              screen = record.screen,
+              navigator = lastNavigator,
+              circuit = lastCircuit,
+              unavailableContent = lastUnavailableRoute,
+              key = record.key,
+            )
           }
-          saveableStateHolder.SaveableStateProvider(record.registryKey) {
-            // Provides a RetainedStateRegistry that is maintained independently for each record
-            // while
-            // the record exists in the back stack.
-            retainedStateHolder.RetainedStateProvider(record.registryKey) {
-              CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
-                CircuitContent(
-                  screen = record.screen,
-                  navigator = lastNavigator,
-                  circuit = lastCircuit,
-                  unavailableContent = lastUnavailableRoute,
-                  key = record.key,
-                )
-              }
-            }
-          }
-          // Remove saved states for records that are no longer in the back stack
-          DisposableEffect(record.registryKey) {
-            onDispose {
-              if (!lastBackStack.containsRecord(record, includeSaved = true)) {
-                retainedStateHolder.removeState(record.registryKey)
-                saveableStateHolder.removeState(record.registryKey)
-              }
-            }
+        }
+      }
+      // Remove saved states for records that are no longer in the back stack
+      DisposableEffect(record.registryKey) {
+        onDispose {
+          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+            retainedStateHolder.removeState(record.registryKey)
+            saveableStateHolder.removeState(record.registryKey)
           }
         }
       }
     }
   }
-}
 
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36

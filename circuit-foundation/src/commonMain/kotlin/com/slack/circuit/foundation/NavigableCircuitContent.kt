@@ -25,7 +25,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHash
@@ -143,7 +142,7 @@ public fun <R : Record> NavigableCircuitContent(
           lastUnavailableRoute = unavailableRoute
         }
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
-
+    println("${activeContentProviders.joinToString { it.record.log() }}")
     navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
       val record = provider.record
 
@@ -194,17 +193,13 @@ private fun <R : Record> buildCircuitContentProviders(
       // Query the previous content providers map, so that we use the same
       // RecordContentProvider instances across calls.
       previousContentProviders.getOrPut(record.key) {
-        RecordContentProvider(record = record, content = createRecordContent())
+        RecordContentProvider(
+          record = record,
+          content = createRecordContent { previousContentProviders.remove(record.key) },
+        )
       }
     }
     .toImmutableList()
-    .also { list ->
-      // Update the previousContentProviders map so we can reference it on the next call
-      previousContentProviders.clear()
-      for (provider in list) {
-        previousContentProviders[provider.record.key] = provider
-      }
-    }
 }
 
 @Stable
@@ -239,27 +234,11 @@ public class ContentProviderState<R : Record>(
   }
 }
 
-private fun <R : Record> createRecordContent() =
+private fun <R : Record> createRecordContent(onDispose: (R) -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
       val lifecycle =
         remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
-        val key = currentCompositeKeyHash
-        remember {
-            object : RememberObserver {
-                override fun onAbandoned() {
-                    println("RC onAbandoned ${record.log()} $key ${record.hashCode()} ${hashCode()}")
-                }
-
-                override fun onForgotten() {
-                    println("RC onForgotten ${record.log()} $key ${record.hashCode()} ${hashCode()}")
-                }
-
-                override fun onRemembered() {
-                    println("RC onRemembered ${record.log()} $key ${record.hashCode()} ${hashCode()}")
-                }
-            }
-        }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
@@ -278,6 +257,7 @@ private fun <R : Record> createRecordContent() =
       // Remove saved states for records that are no longer in the back stack
       DisposableEffect(record.registryKey) {
         onDispose {
+          onDispose(record)
           if (!lastBackStack.containsRecord(record, includeSaved = true)) {
             retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)

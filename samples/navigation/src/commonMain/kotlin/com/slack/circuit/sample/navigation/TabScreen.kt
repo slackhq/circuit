@@ -1,8 +1,11 @@
 package com.slack.circuit.sample.navigation
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.slack.circuit.runtime.CircuitContext
@@ -15,34 +18,31 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.navigation.parcel.CommonParcelize
 import kotlin.reflect.KClass
+import kotlinx.collections.immutable.persistentListOf
 
 @CommonParcelize
 sealed interface TabScreen : Screen {
   val label: String
 
-  data object Root : TabScreen {
-    override val label: String = "Root"
-  }
+  @CommonParcelize data class Root(override val label: String = "Root") : TabScreen
 
-  data object Screen1 : TabScreen {
-    override val label: String = "Screen 1"
-  }
+  @CommonParcelize data class Screen1(override val label: String = "Screen 1") : TabScreen
 
-  data object Screen2 : TabScreen {
-    override val label: String = "Screen 2"
-  }
+  @CommonParcelize data class Screen2(override val label: String = "Screen 2") : TabScreen
 
-  data object Screen3 : TabScreen {
-    override val label: String = "Screen 3"
-  }
+  @CommonParcelize data class Screen3(override val label: String = "Screen 3") : TabScreen
 
   fun next(): TabScreen {
     return when (this) {
-      Root -> Screen1
-      Screen1 -> Screen2
-      Screen2 -> Screen3
-      Screen3 -> Root
+      is Root -> Screen1()
+      is Screen1 -> Screen2()
+      is Screen2 -> Screen3()
+      is Screen3 -> Root()
     }
+  }
+
+  companion object {
+    val all = persistentListOf(Root(), Screen1(), Screen2(), Screen3())
   }
 }
 
@@ -83,13 +83,17 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 
 @Composable
 fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
-  Text(
-    text = state.label,
+  Box(
     modifier =
-      modifier.testTag(ContentTags.TAG_LABEL).clickable {
+      modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {
         state.eventSink(TabScreenCircuit.Event.Next)
-      },
-  )
+      }
+  ) {
+    Text(
+      text = state.label,
+      modifier = Modifier.testTag(ContentTags.TAG_LABEL).align(Alignment.Center),
+    )
+  }
 }
 
 class TabUiFactory(private val tabClass: KClass<out TabScreen>) : Ui.Factory {

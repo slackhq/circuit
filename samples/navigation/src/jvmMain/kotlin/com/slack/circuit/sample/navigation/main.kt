@@ -10,13 +10,11 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
-import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
 
-  val tabs =
-    persistentListOf(TabScreen.Root, TabScreen.Screen1, TabScreen.Screen2, TabScreen.Screen3)
+  val tabs = TabScreen.all
   val circuit = buildCircuitForTabs(tabs)
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {

@@ -2,11 +2,13 @@ package com.slack.circuit.sample.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
@@ -57,16 +59,18 @@ private fun BottomTabRow(
         .windowInsetsPadding(WindowInsets.safeContent.only(WindowInsetsSides.Bottom))
   ) {
     tabs.forEach { tab ->
-      val selected = tab == backStack.topRecord?.screen
+      val selected = tab == backStack.last().screen
       Text(
         text = tab.label,
         color = if (selected) MaterialTheme.colorScheme.onSecondary else Color.Unspecified,
         textAlign = TextAlign.Center,
+        maxLines = 1,
         modifier =
           Modifier.weight(1f)
+            .height(IntrinsicSize.Max)
             .clickable { navigator.resetRoot(tab, saveState = true, restoreState = true) }
             .background(if (selected) MaterialTheme.colorScheme.secondary else Color.Unspecified)
-            .padding(20.dp),
+            .padding(horizontal = 8.dp, vertical = 20.dp),
       )
     }
   }

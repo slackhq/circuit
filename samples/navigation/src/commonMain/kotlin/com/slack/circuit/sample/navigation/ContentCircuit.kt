@@ -10,5 +10,6 @@ fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
         addUiFactory(TabUiFactory(tab::class))
       }
     }
+    .setAnimatedNavDecoratorFactory(CrossFadeNavDecoratorFactory)
     .build()
 }

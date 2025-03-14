@@ -11,7 +11,6 @@ import androidx.core.view.WindowCompat
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
-import kotlinx.collections.immutable.persistentListOf
 
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,8 +21,7 @@ class MainActivity : AppCompatActivity() {
       ?.let { WindowCompat.getInsetsController(it, window.decorView) }
       ?.isAppearanceLightStatusBars = true
 
-    val tabs =
-      persistentListOf(TabScreen.Root, TabScreen.Screen1, TabScreen.Screen2, TabScreen.Screen3)
+    val tabs = TabScreen.all
     val circuit = buildCircuitForTabs(tabs)
     setContent {
       MaterialTheme {

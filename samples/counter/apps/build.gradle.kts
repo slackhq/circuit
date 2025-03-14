@@ -31,7 +31,7 @@ kotlin {
   iosArm64()
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = "counterApp"
+    outputModuleName = "counterApp"
     browser { commonWebpackConfig { outputFileName = "counterApp.js" } }
     binaries.executable()
   }

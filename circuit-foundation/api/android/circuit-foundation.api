@@ -77,12 +77,6 @@ public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 	public final fun getLambda-1$circuit_foundation_release ()Lkotlin/jvm/functions/Function4;
 }
 
-public final class com/slack/circuit/foundation/ComposableSingletons$NavigableCircuitContentKt {
-	public static final field INSTANCE Lcom/slack/circuit/foundation/ComposableSingletons$NavigableCircuitContentKt;
-	public fun <init> ()V
-	public final fun getLambda-1$circuit_foundation_release ()Lkotlin/jvm/functions/Function4;
-}
-
 public final class com/slack/circuit/foundation/ContentProviderState {
 	public static final field $stable I
 	public fun <init> (Landroidx/compose/runtime/saveable/SaveableStateHolder;Lcom/slack/circuit/retained/RetainedStateHolder;Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function4;)V

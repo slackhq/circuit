@@ -1,13 +1,20 @@
 package com.slack.circuit.sample.navigation
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+import com.slack.circuit.foundation.DelicateCircuitFoundationApi
+import com.slack.circuit.foundation.LocalBackStack
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -19,6 +26,7 @@ import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.navigation.parcel.CommonParcelize
 import kotlin.reflect.KClass
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @CommonParcelize
 sealed interface TabScreen : Screen {
@@ -81,18 +89,34 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   }
 }
 
+@OptIn(DelicateCircuitFoundationApi::class)
 @Composable
 fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
-  Box(
-    modifier =
-      modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {
-        state.eventSink(TabScreenCircuit.Event.Next)
-      }
-  ) {
+  val backStack = LocalBackStack.current?.toImmutableList() ?: persistentListOf()
+  Column(modifier = modifier.fillMaxSize()) {
     Text(
       text = state.label,
-      modifier = Modifier.testTag(ContentTags.TAG_LABEL).align(Alignment.Center),
+      style = MaterialTheme.typography.headlineMedium,
+      modifier =
+        Modifier.testTag(ContentTags.TAG_LABEL)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .padding(top = 24.dp, bottom = 8.dp),
     )
+    LazyColumn(
+      modifier =
+        Modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {
+          state.eventSink(TabScreenCircuit.Event.Next)
+        }
+    ) {
+      itemsIndexed(backStack) { i, item ->
+        Text(
+          text = "$i: ${item.screen}",
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+      }
+    }
   }
 }
 

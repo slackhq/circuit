@@ -21,8 +21,6 @@ android {
   testOptions { unitTests { isIncludeAndroidResources = true } }
 }
 
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = true } }
-
 kotlin {
   androidTarget()
   jvm {

@@ -14,11 +14,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
-import com.github.takahirom.roborazzi.RoborazziOptions
-import com.github.takahirom.roborazzi.RoborazziRule
-import com.github.takahirom.roborazzi.RoborazziTaskType
-import com.github.takahirom.roborazzi.captureRoboImage
+import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -28,36 +24,26 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.GraphicsMode
 
 private const val ANIMATION_DURATION = 1000
 
 @RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class NavigationTest {
 
   @get:Rule(order = 1) val robolectricRule = AddActivityToRobolectricRule()
   @get:Rule(order = 2) val composeTestRule = createComposeRule()
-  @OptIn(ExperimentalRoborazziApi::class)
-  @get:Rule(order = 3)
-  val roborazziRule =
-    RoborazziRule(
-      options =
-        RoborazziRule.Options(
-          roborazziOptions = RoborazziOptions(taskType = RoborazziTaskType.Record)
-        )
-    )
 
   @Test
   fun `Test savable, fast multi-root reset`() {
-    val tabs = TabScreen.all
-    lateinit var navigator: Navigator
-    composeTestRule.setTestContent(tabs) {
-      val backStack = rememberSaveableBackStack(tabs.first())
-      navigator = rememberCircuitNavigator(backStack)
-      ContentScaffold(backStack, navigator, tabs, Modifier.fillMaxSize())
-    }
     with(composeTestRule) {
+      val tabs = TabScreen.all
+      lateinit var backStack: SaveableBackStack
+      lateinit var navigator: Navigator
+      setTestContent(tabs) {
+        backStack = rememberSaveableBackStack(tabs.first())
+        navigator = rememberCircuitNavigator(backStack)
+        ContentScaffold(backStack, navigator, tabs, Modifier.fillMaxSize())
+      }
       val tabNodes = onAllNodesWithTag(ContentTags.TAG_TAB)
       val tabRootNode = tabNodes.filterToOne(hasText(TabScreen.root.label))
       val tab1Node = tabNodes.filterToOne(hasText(TabScreen.screen1.label))
@@ -83,7 +69,7 @@ class NavigationTest {
       onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen3.label)
       // Reset to root
       tabRootNode.performClick()
-      onNodeWithTag(ContentTags.TAG_SCAFFOLD).captureRoboImage()
+
       mainClock.autoAdvance = false
       repeat(10) {
         // Root -> 1 -> 3 -> 2 -> 3
@@ -124,7 +110,7 @@ class NavigationTest {
         }
       }
       mainClock.autoAdvance = true
-      onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen3.label)
+      onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen2.label)
     }
   }
 

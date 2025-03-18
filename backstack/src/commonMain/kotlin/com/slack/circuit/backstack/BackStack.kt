@@ -106,7 +106,7 @@ public interface BackStack<R : Record> : Iterable<R> {
    */
   public fun containsRecord(record: R, includeSaved: Boolean): Boolean
 
-  public fun containsRecordKey(key: String, includeSaved: Boolean): Boolean
+  public fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean
 
   @Stable
   public interface Record {

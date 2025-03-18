@@ -19,7 +19,6 @@ import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.RoborazziTaskType
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -52,10 +51,9 @@ class NavigationTest {
   @Test
   fun `Test savable, fast multi-root reset`() {
     val tabs = TabScreen.all
-    var navigator: Navigator
-    var backStack: SaveableBackStack
+    lateinit var navigator: Navigator
     composeTestRule.setTestContent(tabs) {
-      backStack = rememberSaveableBackStack(tabs.first())
+      val backStack = rememberSaveableBackStack(tabs.first())
       navigator = rememberCircuitNavigator(backStack)
       ContentScaffold(backStack, navigator, tabs, Modifier.fillMaxSize())
     }
@@ -68,7 +66,6 @@ class NavigationTest {
       // Check the title
       onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.root.label)
       tabRootNode.assertIsSelected()
-
       // Root backstack
       repeat(6) { onNodeWithTag(ContentTags.TAG_CONTENT).performClick() }
       onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen2.label)
@@ -104,6 +101,27 @@ class NavigationTest {
 
         tab3Node.performClick()
         mainClock.advanceTimeBy(200L)
+      }
+      repeat(10) {
+        // Root -> 1 -> 3 -> 2 -> 3
+        tabRootNode.performClick()
+        mainClock.advanceTimeBy(200L)
+
+        tab1Node.performClick()
+        mainClock.advanceTimeBy(200L)
+
+        tab3Node.performClick()
+        mainClock.advanceTimeBy(200L)
+
+        tab2Node.performClick()
+        mainClock.advanceTimeBy(200L)
+
+        tab3Node.performClick()
+        mainClock.advanceTimeBy(200L)
+        if (it == 5) {
+          navigator.pop()
+          mainClock.advanceTimeBy(200L)
+        }
       }
       mainClock.autoAdvance = true
       onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen3.label)

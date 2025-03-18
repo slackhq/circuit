@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.CompletableDeferred
@@ -157,14 +158,18 @@ internal constructor(
     return false
   }
 
-  override fun containsRecordKey(key: String, includeSaved: Boolean): Boolean {
-    // If it's in the main entry list, return true
-    if (entryList.find { it.key == key } != null) return true
-
+  override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
+    if (depth < 1) return false
+    // Check in the current entry list
+    for (i in 0 until min(depth, entryList.size)) {
+      if (entryList[i].key == key) return true
+    }
+    // If includeSaved, check saved backstack states too
     if (includeSaved && stateStore.isNotEmpty()) {
-      // If we're checking our saved lists too, iterate through them and check
-      for (stored in stateStore.values) {
-        if (stored.find { it.key == key } != null) return true
+      val storedValues = stateStore.values
+      for ((i, stored) in storedValues.withIndex()) {
+        if (i >= depth) break
+        if (stored.getOrNull(i)?.key == key) return true
       }
     }
     return false

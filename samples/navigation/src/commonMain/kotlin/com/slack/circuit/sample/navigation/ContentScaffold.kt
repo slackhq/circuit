@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.backstack.SaveableBackStack
@@ -37,7 +39,7 @@ fun ContentScaffold(
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
     bottomBar = { BottomTabRow(tabs, backStack, navigator) },
   ) { innerPadding ->
     NavigableCircuitContent(
@@ -70,6 +72,7 @@ private fun BottomTabRow(
         maxLines = 1,
         modifier =
           Modifier.testTag(ContentTags.TAG_TAB)
+            .semantics { this.selected = selected }
             .weight(1f)
             .height(IntrinsicSize.Max)
             .clickable { navigator.resetRoot(tab, saveState = true, restoreState = true) }

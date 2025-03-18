@@ -197,10 +197,14 @@ private fun <R : Record> buildCircuitContentProviders(
   val latestBackStack by rememberUpdatedState(backStack)
   DisposableEffect(recordKeys) {
     // Delay cleanup until the next backstack change.
+    // - Any record in composition is considered active
+    // - Any record in the backstack can be shown by a decorator
+    // - Any reachable record can be shown on a root reset
     val contentNotInBackStack =
       previousContentProviders.keys.filterNot {
-        latestBackStack.isRecordReachable(key = it, depth = 1, includeSaved = true) ||
-          it in activeRecordKeys
+        it in activeRecordKeys ||
+          it in recordKeys ||
+          latestBackStack.isRecordReachable(key = it, depth = 1, includeSaved = true)
       }
     onDispose {
       // Only remove the keys that are no longer in the backstack or composition.

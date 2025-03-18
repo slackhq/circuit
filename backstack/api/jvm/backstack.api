@@ -1,7 +1,9 @@
 public abstract interface class com/slack/circuit/backstack/BackStack : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public abstract fun containsRecord (Lcom/slack/circuit/backstack/BackStack$Record;Z)Z
+	public abstract fun getRootRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public abstract fun getSize ()I
 	public abstract fun getTopRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
+	public abstract fun isRecordReachable (Ljava/lang/String;IZ)Z
 	public abstract fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public static synthetic fun pop$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun popUntil (Lkotlin/jvm/functions/Function1;)Lkotlinx/collections/immutable/ImmutableList;
@@ -50,9 +52,12 @@ public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/cir
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;)V
 	public synthetic fun containsRecord (Lcom/slack/circuit/backstack/BackStack$Record;Z)Z
 	public fun containsRecord (Lcom/slack/circuit/backstack/SaveableBackStack$Record;Z)Z
+	public synthetic fun getRootRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
+	public fun getRootRecord ()Lcom/slack/circuit/backstack/SaveableBackStack$Record;
 	public fun getSize ()I
 	public synthetic fun getTopRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun getTopRecord ()Lcom/slack/circuit/backstack/SaveableBackStack$Record;
+	public fun isRecordReachable (Ljava/lang/String;IZ)Z
 	public fun iterator ()Ljava/util/Iterator;
 	public synthetic fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;

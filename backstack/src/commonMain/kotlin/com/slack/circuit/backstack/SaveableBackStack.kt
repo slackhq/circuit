@@ -92,6 +92,9 @@ internal constructor(
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
+  override val rootRecord: Record?
+    get() = entryList.lastOrNull()
+
   public override fun push(screen: Screen, resultKey: String?): Boolean {
     return push(screen, emptyMap(), resultKey)
   }
@@ -149,6 +152,19 @@ internal constructor(
       // If we're checking our saved lists too, iterate through them and check
       for (stored in stateStore.values) {
         if (record in stored) return true
+      }
+    }
+    return false
+  }
+
+  override fun containsRecordKey(key: String, includeSaved: Boolean): Boolean {
+    // If it's in the main entry list, return true
+    if (entryList.find { it.key == key } != null) return true
+
+    if (includeSaved && stateStore.isNotEmpty()) {
+      // If we're checking our saved lists too, iterate through them and check
+      for (stored in stateStore.values) {
+        if (stored.find { it.key == key } != null) return true
       }
     }
     return false

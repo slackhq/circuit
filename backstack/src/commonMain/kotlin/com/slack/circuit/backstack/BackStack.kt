@@ -35,6 +35,9 @@ public interface BackStack<R : Record> : Iterable<R> {
   /** The top-most record in the [BackStack], or `null` if the [BackStack] is empty. */
   public val topRecord: R?
 
+  /** The bottom-most record in the [BackStack], or `null` if the [BackStack] is empty. */
+  public val rootRecord: R?
+
   /**
    * Push a new [Record] onto the back stack. The new record will become the top of the stack.
    *
@@ -102,6 +105,8 @@ public interface BackStack<R : Record> : Iterable<R> {
    *   state. See [saveState].
    */
   public fun containsRecord(record: R, includeSaved: Boolean): Boolean
+
+  public fun containsRecordKey(key: String, includeSaved: Boolean): Boolean
 
   @Stable
   public interface Record {

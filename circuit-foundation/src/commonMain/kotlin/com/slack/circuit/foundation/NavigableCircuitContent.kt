@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -193,14 +194,20 @@ private fun <R : Record> buildCircuitContentProviders(
   val recordKeys by
     remember { mutableStateOf(persistentSetOf<String>()) }
       .apply { value = backStack.map { it.key }.toPersistentSet() }
+  val latestBackStack by rememberUpdatedState(backStack)
   DisposableEffect(recordKeys) {
     // Delay cleanup until the next backstack change.
-    val contentNotInBackStack = previousContentProviders.keys.toSet() - recordKeys
+    val contentNotInBackStack =
+      previousContentProviders.keys.filterNot {
+        latestBackStack.containsRecordKey(it, includeSaved = true)
+      }
     onDispose {
       // Only remove the keys that are no longer in the backstack or composition.
-      (contentNotInBackStack - recordKeys - activeRecordKeys).forEach {
-        previousContentProviders.remove(it)
-      }
+      contentNotInBackStack
+        .filterNot {
+          latestBackStack.containsRecordKey(it, includeSaved = true) || it in activeRecordKeys
+        }
+        .forEach { previousContentProviders.remove(it) }
     }
   }
   return backStack

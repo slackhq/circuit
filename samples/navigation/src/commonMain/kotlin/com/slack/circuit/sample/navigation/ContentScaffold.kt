@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.backstack.SaveableBackStack
@@ -61,14 +62,15 @@ private fun BottomTabRow(
         .windowInsetsPadding(WindowInsets.safeContent.only(WindowInsetsSides.Bottom))
   ) {
     tabs.forEach { tab ->
-      val selected = tab == backStack.last().screen
+      val selected = tab == backStack.rootRecord?.screen
       Text(
         text = tab.label,
         color = if (selected) MaterialTheme.colorScheme.onSecondary else Color.Unspecified,
         textAlign = TextAlign.Center,
         maxLines = 1,
         modifier =
-          Modifier.weight(1f)
+          Modifier.testTag(ContentTags.TAG_TAB)
+            .weight(1f)
             .height(IntrinsicSize.Max)
             .clickable { navigator.resetRoot(tab, saveState = true, restoreState = true) }
             .background(if (selected) MaterialTheme.colorScheme.secondary else Color.Unspecified)

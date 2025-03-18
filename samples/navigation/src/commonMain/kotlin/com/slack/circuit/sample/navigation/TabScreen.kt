@@ -53,6 +53,10 @@ sealed interface TabScreen : Screen {
 
   companion object {
     val all = persistentListOf(Root(), Screen1(), Screen2(), Screen3())
+    val root  = Root()
+    val screen1 = Screen1()
+    val screen2 = Screen2()
+    val screen3 = Screen3()
   }
 }
 

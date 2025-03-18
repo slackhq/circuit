@@ -18,9 +18,10 @@ android {
     minSdk = 21
     targetSdk = 35
   }
+  testOptions { unitTests { isIncludeAndroidResources = true } }
 }
 
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = true } }
 
 kotlin {
   androidTarget()
@@ -51,10 +52,17 @@ kotlin {
         implementation(libs.material)
       }
     }
+    androidUnitTest {
+      dependencies {
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
+        implementation(libs.robolectric)
+        implementation(libs.androidx.test.espresso.core)
+      }
+    }
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
 
     configureEach {
-      @OptIn(ExperimentalKotlinGradlePluginApi::class)
       compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")

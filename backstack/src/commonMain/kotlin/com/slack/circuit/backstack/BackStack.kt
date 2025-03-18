@@ -106,6 +106,18 @@ public interface BackStack<R : Record> : Iterable<R> {
    */
   public fun containsRecord(record: R, includeSaved: Boolean): Boolean
 
+  /**
+   * Whether a record with the given [key] is reachable within the back stack or saved state.
+   * Reachable means that it is either currently in the visible back stack or if we popped `depth`
+   * times, it would be found.
+   *
+   * @param key The record's key to look for.
+   * @param depth How many records to consider popping from the top of the stack before considering
+   *   the key unreachable. A depth of zero means only check the current visible stack. A depth of 1
+   *   means check the current visible stack plus one record popped off the top, and so on.
+   * @param includeSaved Whether to also check if the record is contained by any saved back stack
+   *   state. See [saveState].
+   */
   public fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean
 
   @Stable

@@ -159,7 +159,7 @@ internal constructor(
   }
 
   override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
-    if (depth < 1) return false
+    if (depth < 0) return false
     // Check in the current entry list
     for (i in 0 until min(depth, entryList.size)) {
       if (entryList[i].key == key) return true
@@ -169,6 +169,7 @@ internal constructor(
       val storedValues = stateStore.values
       for ((i, stored) in storedValues.withIndex()) {
         if (i >= depth) break
+        // stored can mutate, so safely get the record.
         if (stored.getOrNull(i)?.key == key) return true
       }
     }

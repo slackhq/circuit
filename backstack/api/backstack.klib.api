@@ -15,12 +15,15 @@ abstract fun interface com.slack.circuit.backstack/ProvidedValues { // com.slack
 }
 
 abstract interface <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.backstack/BackStack : kotlin.collections/Iterable<#A> { // com.slack.circuit.backstack/BackStack|null[0]
+    abstract val rootRecord // com.slack.circuit.backstack/BackStack.rootRecord|{}rootRecord[0]
+        abstract fun <get-rootRecord>(): #A? // com.slack.circuit.backstack/BackStack.rootRecord.<get-rootRecord>|<get-rootRecord>(){}[0]
     abstract val size // com.slack.circuit.backstack/BackStack.size|{}size[0]
         abstract fun <get-size>(): kotlin/Int // com.slack.circuit.backstack/BackStack.size.<get-size>|<get-size>(){}[0]
     abstract val topRecord // com.slack.circuit.backstack/BackStack.topRecord|{}topRecord[0]
         abstract fun <get-topRecord>(): #A? // com.slack.circuit.backstack/BackStack.topRecord.<get-topRecord>|<get-topRecord>(){}[0]
 
     abstract fun containsRecord(#A, kotlin/Boolean): kotlin/Boolean // com.slack.circuit.backstack/BackStack.containsRecord|containsRecord(1:0;kotlin.Boolean){}[0]
+    abstract fun isRecordReachable(kotlin/String, kotlin/Int, kotlin/Boolean): kotlin/Boolean // com.slack.circuit.backstack/BackStack.isRecordReachable|isRecordReachable(kotlin.String;kotlin.Int;kotlin.Boolean){}[0]
     abstract fun pop(com.slack.circuit.runtime.screen/PopResult? = ...): #A? // com.slack.circuit.backstack/BackStack.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
     abstract fun push(#A, kotlin/String? = ...): kotlin/Boolean // com.slack.circuit.backstack/BackStack.push|push(1:0;kotlin.String?){}[0]
     abstract fun push(com.slack.circuit.runtime.screen/Screen, kotlin/String? = ...): kotlin/Boolean // com.slack.circuit.backstack/BackStack.push|push(com.slack.circuit.runtime.screen.Screen;kotlin.String?){}[0]
@@ -51,12 +54,15 @@ final class com.slack.circuit.backstack/SaveableBackStack : com.slack.circuit.ba
     constructor <init>(com.slack.circuit.backstack/SaveableBackStack.Record) // com.slack.circuit.backstack/SaveableBackStack.<init>|<init>(com.slack.circuit.backstack.SaveableBackStack.Record){}[0]
     constructor <init>(com.slack.circuit.runtime.screen/Screen) // com.slack.circuit.backstack/SaveableBackStack.<init>|<init>(com.slack.circuit.runtime.screen.Screen){}[0]
 
+    final val rootRecord // com.slack.circuit.backstack/SaveableBackStack.rootRecord|{}rootRecord[0]
+        final fun <get-rootRecord>(): com.slack.circuit.backstack/SaveableBackStack.Record? // com.slack.circuit.backstack/SaveableBackStack.rootRecord.<get-rootRecord>|<get-rootRecord>(){}[0]
     final val size // com.slack.circuit.backstack/SaveableBackStack.size|{}size[0]
         final fun <get-size>(): kotlin/Int // com.slack.circuit.backstack/SaveableBackStack.size.<get-size>|<get-size>(){}[0]
     final val topRecord // com.slack.circuit.backstack/SaveableBackStack.topRecord|{}topRecord[0]
         final fun <get-topRecord>(): com.slack.circuit.backstack/SaveableBackStack.Record? // com.slack.circuit.backstack/SaveableBackStack.topRecord.<get-topRecord>|<get-topRecord>(){}[0]
 
     final fun containsRecord(com.slack.circuit.backstack/SaveableBackStack.Record, kotlin/Boolean): kotlin/Boolean // com.slack.circuit.backstack/SaveableBackStack.containsRecord|containsRecord(com.slack.circuit.backstack.SaveableBackStack.Record;kotlin.Boolean){}[0]
+    final fun isRecordReachable(kotlin/String, kotlin/Int, kotlin/Boolean): kotlin/Boolean // com.slack.circuit.backstack/SaveableBackStack.isRecordReachable|isRecordReachable(kotlin.String;kotlin.Int;kotlin.Boolean){}[0]
     final fun iterator(): kotlin.collections/Iterator<com.slack.circuit.backstack/SaveableBackStack.Record> // com.slack.circuit.backstack/SaveableBackStack.iterator|iterator(){}[0]
     final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.backstack/SaveableBackStack.Record? // com.slack.circuit.backstack/SaveableBackStack.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
     final fun push(com.slack.circuit.backstack/SaveableBackStack.Record, kotlin/String?): kotlin/Boolean // com.slack.circuit.backstack/SaveableBackStack.push|push(com.slack.circuit.backstack.SaveableBackStack.Record;kotlin.String?){}[0]

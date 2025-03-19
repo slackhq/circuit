@@ -140,7 +140,7 @@ tasks
       ) {
         freeCompilerArgs.addAll(
           "-P",
-          "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
+          "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
         )
       }
     }

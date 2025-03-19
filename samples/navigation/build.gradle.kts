@@ -37,6 +37,7 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.compose.ui.tooling.preview)
         implementation(projects.circuitFoundation)
+        implementation(projects.internalRuntime)
       }
     }
     androidMain {
@@ -65,7 +66,6 @@ kotlin {
       }
     }
   }
-
   targets.configureEach {
     if (platformType == KotlinPlatformType.androidJvm) {
       compilations.configureEach {
@@ -73,7 +73,7 @@ kotlin {
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.sample.navigation.parcel.CommonParcelize",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
             )
           }
         }

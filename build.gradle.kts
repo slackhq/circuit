@@ -496,6 +496,7 @@ apiValidation {
       "circuit-codegen",
       "coil-rule",
       "counter",
+      "internal-runtime",
       "internal-test-utils",
       "interop",
       "kotlin-inject",

@@ -98,6 +98,7 @@ kotlin {
         implementation(projects.circuitRetained)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.overlays)
+        implementation(projects.internalRuntime)
         implementation(libs.eithernet)
       }
     }
@@ -213,7 +214,7 @@ kotlin {
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.star.parcel.CommonParcelize",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
             )
           }
         }

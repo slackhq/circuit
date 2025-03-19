@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
 import com.slack.circuit.foundation.LocalBackStack
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -25,22 +26,21 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuit.sample.navigation.parcel.CommonParcelize
 import kotlin.reflect.KClass
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-@CommonParcelize
+@Parcelize
 sealed interface TabScreen : Screen {
   val label: String
 
-  @CommonParcelize data class Root(override val label: String = "Root") : TabScreen
+  @Parcelize data class Root(override val label: String = "Root") : TabScreen
 
-  @CommonParcelize data class Screen1(override val label: String = "Screen 1") : TabScreen
+  @Parcelize data class Screen1(override val label: String = "Screen 1") : TabScreen
 
-  @CommonParcelize data class Screen2(override val label: String = "Screen 2") : TabScreen
+  @Parcelize data class Screen2(override val label: String = "Screen 2") : TabScreen
 
-  @CommonParcelize data class Screen3(override val label: String = "Screen 3") : TabScreen
+  @Parcelize data class Screen3(override val label: String = "Screen 3") : TabScreen
 
   fun next(): TabScreen {
     return when (this) {

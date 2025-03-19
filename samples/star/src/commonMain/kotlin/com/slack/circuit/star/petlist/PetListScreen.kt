@@ -96,6 +96,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -115,7 +116,6 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
 import com.slack.circuit.star.di.AssistedInject
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
@@ -147,7 +147,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
 
-@CommonParcelize
+@Parcelize
 data object PetListScreen : Screen {
 
   sealed interface State : CircuitUiState {

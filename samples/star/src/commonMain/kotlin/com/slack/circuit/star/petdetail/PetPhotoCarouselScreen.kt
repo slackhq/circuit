@@ -59,6 +59,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.LocalOverlayState
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
@@ -70,7 +71,6 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 import com.slack.circuit.sharedelements.requireActiveAnimatedScope
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetImageElementKey
@@ -81,7 +81,7 @@ import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
-@CommonParcelize
+@Parcelize
 data class PetPhotoCarouselScreen(
   val id: Long,
   val name: String,

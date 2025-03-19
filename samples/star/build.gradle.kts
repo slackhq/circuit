@@ -4,8 +4,6 @@ import com.android.build.api.dsl.LibraryExtension
 import com.google.devtools.ksp.gradle.KspAATask
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -38,8 +36,6 @@ val disableJvmTarget =
 if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
   apply(plugin = libs.plugins.kotlin.plugin.parcelize.get().pluginId)
-} else {
-  compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
 
 anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
@@ -206,10 +202,6 @@ kotlin {
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
-
-        if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
-        }
       }
     }
   }

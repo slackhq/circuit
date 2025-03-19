@@ -35,6 +35,9 @@ public interface BackStack<R : Record> : Iterable<R> {
   /** The top-most record in the [BackStack], or `null` if the [BackStack] is empty. */
   public val topRecord: R?
 
+  /** The bottom-most record in the [BackStack], or `null` if the [BackStack] is empty. */
+  public val rootRecord: R?
+
   /**
    * Push a new [Record] onto the back stack. The new record will become the top of the stack.
    *
@@ -102,6 +105,20 @@ public interface BackStack<R : Record> : Iterable<R> {
    *   state. See [saveState].
    */
   public fun containsRecord(record: R, includeSaved: Boolean): Boolean
+
+  /**
+   * Whether a record with the given [key] is reachable within the back stack or saved state.
+   * Reachable means that it is either currently in the visible back stack or if we popped `depth`
+   * times, it would be found.
+   *
+   * @param key The record's key to look for.
+   * @param depth How many records to consider popping from the top of the stack before considering
+   *   the key unreachable. A depth of zero means only check the current visible stack. A depth of 1
+   *   means check the current visible stack plus one record popped off the top, and so on.
+   * @param includeSaved Whether to also check if the record is contained by any saved back stack
+   *   state. See [saveState].
+   */
+  public fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean
 
   @Stable
   public interface Record {

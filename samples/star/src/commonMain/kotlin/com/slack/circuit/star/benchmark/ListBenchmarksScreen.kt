@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
@@ -29,9 +30,8 @@ import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
 import com.slack.circuit.star.di.AssistedInject
 import com.slack.circuit.star.di.Inject
-import com.slack.circuit.star.parcel.CommonParcelize
 
-@CommonParcelize
+@Parcelize
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
   data class State(val useNestedContent: Boolean) : CircuitUiState
 }
@@ -70,7 +70,7 @@ fun ListBenchmarks(state: State, modifier: Modifier = Modifier) {
   Platform.ReportDrawnWhen { contentComposed }
 }
 
-@CommonParcelize
+@Parcelize
 data class ListBenchmarksItemScreen(val index: Int) : Screen {
   data class State(val index: Int) : CircuitUiState
 }

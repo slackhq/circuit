@@ -1,4 +1,4 @@
-// Copyright (C) 2023 Slack Technologies, LLC
+// Copyright (C) 2025 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -8,12 +8,11 @@ plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
-  alias(libs.plugins.compose)
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget()
+  androidTarget { publishLibraryVariants("release") }
   jvm()
   iosX64()
   iosArm64()
@@ -21,12 +20,12 @@ kotlin {
   macosX64()
   macosArm64()
   js(IR) {
-    moduleName = "internal-test-utils"
+    moduleName = "internal-runtime"
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = "internal-test-utils"
+    moduleName = "internal-runtime"
     browser()
   }
   // endregion
@@ -40,32 +39,16 @@ kotlin {
   }
 
   sourceSets {
-    commonMain {
-      dependencies {
-        api(libs.compose.runtime)
-        api(libs.compose.foundation)
-        api(libs.kotlinx.immutable)
-        api(libs.coroutines)
-        api(projects.backstack)
-        api(projects.circuitFoundation)
-        api(projects.internalRuntime)
-        api(libs.compose.ui)
-      }
-    }
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
+    configureEach { compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") } }
   }
 
   targets.configureEach {
-    val isAndroidTarget = platformType == KotlinPlatformType.androidJvm
-    compilations.configureEach {
-      compileTaskProvider.configure {
-        compilerOptions {
-          freeCompilerArgs.addAll(
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xexpect-actual-classes", // used for Parcelize in tests
-          )
-          if (isAndroidTarget) {
+    if (platformType == KotlinPlatformType.androidJvm) {
+      compilations.configureEach {
+        compileTaskProvider.configure {
+          compilerOptions {
             freeCompilerArgs.addAll(
               "-P",
               "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
@@ -77,4 +60,6 @@ kotlin {
   }
 }
 
-android { namespace = "com.slack.circuit.internal.test" }
+android { namespace = "com.slack.circuit.internal.runtime" }
+
+androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }

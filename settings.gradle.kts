@@ -226,6 +226,7 @@ include(
   ":samples:star:coil-rule",
   ":samples:tacos",
   ":samples:tutorial",
+  ":internal-runtime",
   ":internal-test-utils",
 )
 

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -23,9 +24,8 @@ import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
 import com.slack.circuit.star.di.AssistedInject
-import com.slack.circuit.star.parcel.CommonParcelize
 
-@CommonParcelize
+@Parcelize
 data class FiltersScreen(val initialFilters: Filters) : Screen {
   data class State(val initialFilters: Filters, val eventSink: (Event) -> Unit) : CircuitUiState
 
@@ -33,7 +33,7 @@ data class FiltersScreen(val initialFilters: Filters) : Screen {
     data class Save(val filters: Filters) : Event
   }
 
-  @CommonParcelize data class Result(val filters: Filters) : PopResult
+  @Parcelize data class Result(val filters: Filters) : PopResult
 }
 
 class FiltersPresenter

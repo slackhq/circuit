@@ -45,7 +45,9 @@ There’s some glue code missing from this example that's covered in the [Code G
 
 ```kotlin
 @Parcelize
-data object CounterScreen : Screen {
+data object CounterScreen : Screen
+
+data object CounterCircuit {
   data class CounterState(
     val count: Int,
     val eventSink: (CounterEvent) -> Unit,

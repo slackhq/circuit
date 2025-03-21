@@ -48,6 +48,7 @@ kotlin {
         api(libs.coroutines)
         api(projects.backstack)
         api(projects.circuitFoundation)
+        api(projects.internalRuntime)
         api(libs.compose.ui)
       }
     }
@@ -67,7 +68,7 @@ kotlin {
           if (isAndroidTarget) {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
             )
           }
         }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.CompletableDeferred
@@ -92,6 +93,9 @@ internal constructor(
   public override val topRecord: Record?
     get() = entryList.firstOrNull()
 
+  override val rootRecord: Record?
+    get() = entryList.lastOrNull()
+
   public override fun push(screen: Screen, resultKey: String?): Boolean {
     return push(screen, emptyMap(), resultKey)
   }
@@ -149,6 +153,24 @@ internal constructor(
       // If we're checking our saved lists too, iterate through them and check
       for (stored in stateStore.values) {
         if (record in stored) return true
+      }
+    }
+    return false
+  }
+
+  override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
+    if (depth < 0) return false
+    // Check in the current entry list
+    for (i in 0 until min(depth, entryList.size)) {
+      if (entryList[i].key == key) return true
+    }
+    // If includeSaved, check saved backstack states too
+    if (includeSaved && stateStore.isNotEmpty()) {
+      val storedValues = stateStore.values
+      for ((i, stored) in storedValues.withIndex()) {
+        if (i >= depth) break
+        // stored can mutate, so safely get the record.
+        if (stored.getOrNull(i)?.key == key) return true
       }
     }
     return false

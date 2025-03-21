@@ -492,19 +492,21 @@ apiValidation {
   // https://github.com/Kotlin/binary-compatibility-validator/issues/16
   ignoredProjects +=
     listOf(
-      "counter",
-      "circuit-codegen",
+      "apk",
       "apps",
-      "mosaic",
+      "benchmark",
+      "circuit-codegen",
+      "coil-rule",
+      "counter",
+      "internal-runtime",
+      "internal-test-utils",
       "interop",
       "kotlin-inject",
+      "mosaic",
+      "navigation",
       "star",
-      "apk",
-      "benchmark",
-      "coil-rule",
       "tacos",
       "tutorial",
-      "internal-test-utils",
     )
 }
 

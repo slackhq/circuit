@@ -219,12 +219,14 @@ include(
   ":samples:counter:mosaic",
   ":samples:interop",
   ":samples:kotlin-inject",
+  ":samples:navigation",
   ":samples:star",
   ":samples:star:apk",
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
   ":samples:tutorial",
+  ":internal-runtime",
   ":internal-test-utils",
 )
 

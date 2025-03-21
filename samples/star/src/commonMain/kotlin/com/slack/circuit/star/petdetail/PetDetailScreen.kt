@@ -41,6 +41,8 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.internal.runtime.Parcelable
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -60,8 +62,6 @@ import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
 import com.slack.circuit.star.di.AssistedInject
 import com.slack.circuit.star.navigation.OpenUrlScreen
-import com.slack.circuit.star.parcel.CommonParcelable
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
@@ -84,14 +84,14 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 
-@CommonParcelize
+@Parcelize
 data class PetDetailScreen(
   val petId: Long,
   val photoUrlMemoryCacheKey: String? = null,
   val animal: PartialAnimal? = null,
 ) : Screen {
 
-  @CommonParcelize
+  @Parcelize
   data class PartialAnimal(
     val id: Long,
     val name: String,
@@ -99,7 +99,7 @@ data class PetDetailScreen(
     val breed: String?,
     val gender: Gender,
     val size: Size,
-  ) : CommonParcelable
+  ) : Parcelable
 
   sealed interface State : CircuitUiState {
     data object Loading : State

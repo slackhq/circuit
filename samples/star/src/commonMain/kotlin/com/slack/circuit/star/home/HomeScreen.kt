@@ -31,6 +31,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.onNavEvent
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -44,13 +45,12 @@ import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.ui.StarTheme
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-@CommonParcelize
+@Parcelize
 data object HomeScreen : Screen {
 
   data class State(

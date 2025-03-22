@@ -18,12 +18,12 @@ kotlin {
   androidTarget { publishLibraryVariants("release") }
   jvm()
   js(IR) {
-    moduleName = "counterbrowser"
+    outputModuleName = "counterbrowser"
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = "counterbrowser"
+    outputModuleName = "counterbrowser"
     browser()
   }
   listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {

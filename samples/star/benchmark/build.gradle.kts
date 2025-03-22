@@ -20,7 +20,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  testOptions.managedDevices.devices {
+  testOptions.managedDevices.allDevices {
     create<ManagedVirtualDevice>(mvdName) {
       device = "Pixel 6"
       apiLevel = mvdApi

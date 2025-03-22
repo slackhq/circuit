@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -99,7 +100,7 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 @Composable
 fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
   val backStack = LocalBackStack.current?.toImmutableList() ?: persistentListOf()
-  Column(modifier = modifier.fillMaxSize()) {
+  Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
     Text(
       text = state.label,
       style = MaterialTheme.typography.headlineMedium,

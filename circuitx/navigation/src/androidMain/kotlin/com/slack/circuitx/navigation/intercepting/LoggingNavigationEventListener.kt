@@ -11,7 +11,7 @@ import kotlinx.collections.immutable.ImmutableList
 public object LoggingNavigationEventListener : CircuitNavigationEventListener {
 
   override fun onBackStackChanged(backStack: ImmutableList<Screen>) {
-    log("new backstack ${backStack.joinToString { it.loggingName() ?: "" }}")
+    log("Backstack changed ${backStack.joinToString { it.loggingName() ?: "" }}")
   }
 
   override fun goTo(screen: Screen) {

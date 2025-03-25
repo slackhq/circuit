@@ -23,17 +23,15 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 public fun rememberCircuitInterceptingNavigator(
   backStack: SaveableBackStack,
-  interceptors: ImmutableList<CircuitNavigationInterceptor>,
+  navigator: Navigator,
+  interceptors: ImmutableList<CircuitNavigationInterceptor> = persistentListOf(),
   eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
   notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
-  onRootPop: ((result: PopResult?) -> Unit)? = null,
 ): Navigator {
   BackStackChangedEffect(eventListeners, backStack)
-  // Build the delegate Navigator.
-  val backstackNavigator = rememberCircuitInterceptingBackStackNavigator(backStack, onRootPop)
-  // Handle our NavigationInterceptors.
+  // Handle the NavigationInterceptors.
   return rememberCircuitInterceptingNavigator(
-    navigator = backstackNavigator,
+    navigator = navigator,
     interceptors = interceptors,
     eventListeners = eventListeners,
     notifier = notifier,
@@ -131,16 +129,6 @@ public class CircuitInterceptingNavigator(
     public fun popInterceptorFailure(result: Result.Failure)
   }
 }
-
-/**
- * Provides a [Navigator] that is delegated to by the [CircuitInterceptingNavigator] if navigation
- * was not intercepted by a [CircuitNavigationInterceptor].
- */
-@Composable
-public expect fun rememberCircuitInterceptingBackStackNavigator(
-  backStack: SaveableBackStack,
-  onRootPop: ((result: PopResult?) -> Unit)?,
-): Navigator
 
 /** A SideEffect that notifies the [CircuitNavigationEventListener] when the backstack changes. */
 @Composable

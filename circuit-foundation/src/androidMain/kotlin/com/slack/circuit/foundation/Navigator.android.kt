@@ -30,7 +30,6 @@ public fun rememberCircuitNavigator(
     enabled = enableBackHandler && backStack.size > 1,
     onBack = onBack(backStack, navigator),
   )
-
   return navigator
 }
 

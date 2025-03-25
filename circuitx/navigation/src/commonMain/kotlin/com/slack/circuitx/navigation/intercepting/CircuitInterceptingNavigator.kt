@@ -3,8 +3,12 @@
 package com.slack.circuitx.navigation.intercepting
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeRuntimeApi
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
@@ -20,6 +24,7 @@ import kotlinx.collections.immutable.persistentListOf
  *
  * @see CircuitInterceptingNavigator
  */
+@OptIn(ExperimentalComposeRuntimeApi::class)
 @Composable
 public fun rememberCircuitInterceptingNavigator(
   navigator: Navigator,
@@ -40,10 +45,18 @@ public fun rememberCircuitInterceptingNavigator(
     }
   // Handle the back button here to get pop events from it.
   if (enableBackHandler) {
-    BackHandler { interceptingNavigator.pop() }
+    var handledRoot by remember(navigator.peekBackStack()) { mutableStateOf(false) }
+    BackHandler(enabled = !handledRoot) {
+      // Check the backStack on each call as the `BackHandler` enabled state only updates on
+      // composition.
+      if (navigator.peekBackStack().size <= 1) {
+        handledRoot = true
+      }
+      interceptingNavigator.pop()
+    }
   }
-  // Handle the backstack changing event listeners.
-  BackStackChangedEffect(navigator, eventListeners)
+  // Handle backstack changed event listeners.
+  BackStackChangedEffect(interceptingNavigator, eventListeners)
   return interceptingNavigator
 }
 

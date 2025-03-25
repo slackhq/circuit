@@ -200,7 +200,6 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 }
 
 private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
-private const val FadeThreshold = .35f
 
 /**
  * Implements most of the treatment specified at
@@ -220,37 +219,7 @@ private fun Modifier.predictiveBackMotion(
   // If we're at progress 0f, skip setting any parameters
   if (!enabled || p == 0f || !o.isValid()) return@graphicsLayer
 
-  //  fullScreenSurfaces(transition.targetState, p)
   sharedElementTransition(isSeeking, shape, elevation, transition, p, o)
-}
-
-// https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#full-screen-surfaces
-private fun GraphicsLayerScope.fullScreenSurfaces(targetState: EnterExitState, progress: Float) {
-  clip = false
-  when (targetState) {
-    EnterExitState.PreEnter -> Unit
-    EnterExitState.Visible -> {
-      val scale = lerp(1.1f, 1f, progress.absoluteValue)
-      scaleX = scale
-      scaleY = scale
-      // Enter fade starts at the 35% progress threshold
-      val adjustedProgress =
-        if (progress.absoluteValue < FadeThreshold) {
-          0f
-        } else {
-          (progress.absoluteValue - FadeThreshold) / (1f - FadeThreshold)
-        }
-      alpha = lerp(0f, 1f, adjustedProgress)
-    }
-    EnterExitState.PostExit -> {
-      val scale = lerp(1f, 0.9f, progress.absoluteValue) // 0f .. 0.35f
-      scaleX = scale
-      scaleY = scale
-      // Fades to target value at the 35% progress threshold
-      val adjustedProgress = (progress.absoluteValue / FadeThreshold).coerceAtMost(1f)
-      alpha = lerp(1f, 0f, adjustedProgress)
-    }
-  }
 }
 
 // https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#shared-element-transition

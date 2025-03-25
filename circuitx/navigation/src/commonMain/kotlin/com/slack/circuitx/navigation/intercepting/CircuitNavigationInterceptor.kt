@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
+import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -32,6 +33,9 @@ public interface CircuitNavigationInterceptor {
 
     /** The [CircuitNavigationInterceptor] did not intercept the interaction. */
     public data object Skipped : Result
+
+    /** The [CircuitNavigationInterceptor] intercepted and rewrote the navigation destination. */
+    public data class Rewrite(val navEvent: NavEvent) : Result
 
     /**
      * The [CircuitNavigationInterceptor] interaction was successful.

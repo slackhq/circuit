@@ -5,7 +5,8 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.foundation.internal.BackHandler
+import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -13,51 +14,37 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Result
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 /**
- * Creates and remembers a [CircuitNavigationInterceptor] from a [SaveableBackStack].
+ * Creates and remembers a [CircuitNavigationInterceptor] from a [Navigator].
  *
  * @see CircuitInterceptingNavigator
  */
 @Composable
 public fun rememberCircuitInterceptingNavigator(
-  backStack: SaveableBackStack,
   navigator: Navigator,
   interceptors: ImmutableList<CircuitNavigationInterceptor> = persistentListOf(),
   eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
   notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
+  enableBackHandler: Boolean = true,
 ): Navigator {
-  BackStackChangedEffect(eventListeners, backStack)
   // Handle the NavigationInterceptors.
-  return rememberCircuitInterceptingNavigator(
-    navigator = navigator,
-    interceptors = interceptors,
-    eventListeners = eventListeners,
-    notifier = notifier,
-  )
-}
-
-/**
- * Creates and remembers a [CircuitNavigationInterceptor] using a delegate [Navigator].
- *
- * @see CircuitInterceptingNavigator
- */
-@Composable
-public fun rememberCircuitInterceptingNavigator(
-  navigator: Navigator,
-  interceptors: ImmutableList<CircuitNavigationInterceptor>,
-  eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
-  notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
-): Navigator {
-  return remember(navigator, interceptors, eventListeners, notifier) {
-    CircuitInterceptingNavigator(
-      delegate = navigator,
-      interceptors = interceptors,
-      eventListeners = eventListeners,
-      notifier = notifier,
-    )
+  val interceptingNavigator =
+    remember(navigator, interceptors, eventListeners, notifier) {
+      CircuitInterceptingNavigator(
+        delegate = navigator,
+        interceptors = interceptors,
+        eventListeners = eventListeners,
+        notifier = notifier,
+      )
+    }
+  // Handle the back button here to get pop events from it.
+  if (enableBackHandler) {
+    BackHandler { interceptingNavigator.pop() }
   }
+  // Handle the backstack changing event listeners.
+  BackStackChangedEffect(navigator, eventListeners)
+  return interceptingNavigator
 }
 
 /**
@@ -90,6 +77,10 @@ public class CircuitInterceptingNavigator(
           notifier?.goToInterceptorFailure(interceptorResult)
           if (interceptorResult.consumed) return false
         }
+        is Result.Rewrite -> {
+          onNavEvent(interceptorResult.navEvent)
+          return true
+        }
       }
     }
     eventListeners.forEach { it.goTo(screen) }
@@ -105,6 +96,10 @@ public class CircuitInterceptingNavigator(
         is Result.Failure -> {
           notifier?.popInterceptorFailure(interceptorResult)
           if (interceptorResult.consumed) return null
+        }
+        is Result.Rewrite -> {
+          onNavEvent(interceptorResult.navEvent)
+          return null
         }
       }
     }
@@ -132,14 +127,11 @@ public class CircuitInterceptingNavigator(
 
 /** A SideEffect that notifies the [CircuitNavigationEventListener] when the backstack changes. */
 @Composable
-public fun BackStackChangedEffect(
+private fun BackStackChangedEffect(
+  navigator: Navigator,
   eventListeners: ImmutableList<CircuitNavigationEventListener>,
-  backStack: SaveableBackStack,
 ) {
   // Key using the screen as it'll be the same through rotation, as the record key will change.
-  val screens = backStack.map { it.screen }.toImmutableList()
-  rememberRetained(screens) {
-    val backStackScreens = backStack.map { it.screen }.toImmutableList()
-    eventListeners.forEach { it.onBackStackChanged(backStackScreens) }
-  }
+  val screens = navigator.peekBackStack()
+  rememberRetained(screens) { eventListeners.forEach { it.onBackStackChanged(screens) } }
 }

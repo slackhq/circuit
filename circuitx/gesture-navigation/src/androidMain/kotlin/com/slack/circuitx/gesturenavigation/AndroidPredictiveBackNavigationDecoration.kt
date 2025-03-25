@@ -11,13 +11,15 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
@@ -32,8 +34,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -69,8 +72,14 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
   private lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
+
   private var showPrevious by mutableStateOf(false)
+  private var isSeeking by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
+  private var swipeOffset by mutableStateOf(Offset.Zero)
+
+  // Track popped zIndex so screens are layered correctly
+  private var zIndexDepth = 0f
 
   override fun targetState(
     args: ImmutableList<T>,
@@ -96,11 +105,13 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     seekableTransitionState = remember { SeekableTransitionState(current) }
 
     LaunchedEffect(current) {
-      // When the current state has changed (i.e. any transition has completed),
+      swipeProgress = 0f
+      isSeeking = false
+      seekableTransitionState.animateTo(current)
+      // After the current state has changed (i.e. any transition has completed),
       // clear out any transient state
       showPrevious = false
-      swipeProgress = 0f
-      seekableTransitionState.animateTo(current)
+      swipeOffset = Offset.Zero
     }
 
     LaunchedEffect(previous, current) {
@@ -108,6 +119,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         snapshotFlow { swipeProgress }
           .collect { progress ->
             if (progress != 0f) {
+              isSeeking = true
               seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
             }
           }
@@ -116,11 +128,17 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
     if (backStackDepth > 1) {
       BackHandler(
-        onBackProgress = { progress ->
+        onBackProgress = { progress, offset ->
           showPrevious = progress != 0f
           swipeProgress = progress
+          swipeOffset = offset
         },
-        onBackCancelled = { scope.launch { seekableTransitionState.snapTo(current) } },
+        onBackCancelled = {
+          scope.launch {
+            isSeeking = false
+            seekableTransitionState.snapTo(current)
+          }
+        },
         onBackInvoked = { onBackInvoked() },
       )
     }
@@ -133,18 +151,24 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   ): ContentTransform {
     return when (animatedNavEvent) {
       // adding to back stack
-      AnimatedNavEvent.GoTo -> NavigatorDefaults.forward
+      AnimatedNavEvent.GoTo -> {
+        NavigatorDefaults.forward
+      }
       // come back from back stack
       AnimatedNavEvent.Pop -> {
         if (showPrevious) {
-            EnterTransition.None togetherWith scaleOut(targetScale = 0.8f) + fadeOut()
+            // Handle all the animation in predictiveBackMotion
+            EnterTransition.None togetherWith ExitTransition.None
           } else {
             NavigatorDefaults.backward
           }
-          .apply { targetContentZIndex = -1f }
+          .apply { targetContentZIndex = --zIndexDepth }
       }
       // Root reset. Crossfade
-      AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
+      AnimatedNavEvent.RootReset -> {
+        zIndexDepth = 0f
+        fadeIn() togetherWith fadeOut()
+      }
     }
   }
 
@@ -155,13 +179,13 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   ) {
     Box(
       Modifier.predictiveBackMotion(
+        enabled = showPrevious,
+        isSeeking = isSeeking,
         shape = MaterialTheme.shapes.extraLarge,
         elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
-        progress = {
-          if (swipeProgress != 0f && seekableTransitionState.currentState == targetState) {
-            swipeProgress
-          } else 0f
-        },
+        transition = transition,
+        offset = { swipeOffset },
+        progress = { seekableTransitionState.fraction },
       )
     ) {
       innerContent(targetState.record)
@@ -175,37 +199,82 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   }
 }
 
+private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
+
 /**
  * Implements most of the treatment specified at
- * https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#designing-gesture
- *
- * The only piece missing is the vertical shift.
+ * https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back
  */
 private fun Modifier.predictiveBackMotion(
+  enabled: Boolean,
+  isSeeking: Boolean,
   shape: Shape,
   elevation: Dp,
+  transition: Transition<EnterExitState>,
   progress: () -> Float,
+  offset: () -> Offset,
 ): Modifier = graphicsLayer {
   val p = progress()
+  val o = offset()
   // If we're at progress 0f, skip setting any parameters
-  if (p == 0f) return@graphicsLayer
+  if (!enabled || p == 0f || !o.isValid()) return@graphicsLayer
 
-  translationX = -(8.dp * p).toPx()
+  sharedElementTransition(isSeeking, shape, elevation, transition, p, o)
+}
+
+// https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#shared-element-transition
+private fun GraphicsLayerScope.sharedElementTransition(
+  isSeeking: Boolean,
+  shape: Shape,
+  elevation: Dp,
+  transition: Transition<EnterExitState>,
+  progress: Float,
+  offset: Offset,
+) {
+  // Only animate the element that is exiting.
+  when (transition.targetState) {
+    EnterExitState.PreEnter,
+    EnterExitState.Visible -> return
+    EnterExitState.PostExit -> Unit
+  }
+
+  clip = true
+  this.shape = shape
   shadowElevation = elevation.toPx()
 
-  val scale = lerp(1f, 0.9f, p.absoluteValue)
+  val scale = lerp(1f, 0.9f, progress.absoluteValue)
   scaleX = scale
   scaleY = scale
-  transformOrigin = TransformOrigin(pivotFractionX = if (p > 0) 1f else 0f, pivotFractionY = 0.5f)
 
-  this.shape = shape
-  clip = true
+  // Ramp margin from 0.dp to 8.dp as it becomes available.
+  val marginX = ((size.width * (1 - scale)) / 2).coerceAtMost(8.dp.toPx())
+  val marginY = ((size.height * (1 - scale)) / 2).coerceAtMost(8.dp.toPx())
+  val maxTranslationX = (progress.absoluteValue * (size.width / 20))
+  // Determine a y axis easing to match the x progress
+  val progressY = (offset.y.absoluteValue / size.height).coerceIn(0f, 1f)
+  val transformY = DecelerateEasing.transform(progressY)
+  val maxTranslationY = (transformY * (size.height / 20))
+
+  translationX =
+    offset.x.coerceIn(
+      (-maxTranslationX + marginX).coerceAtMost(0f),
+      (maxTranslationX - marginX).coerceAtLeast(0f),
+    )
+  translationY =
+    offset.y.coerceIn(
+      (-maxTranslationY + marginY).coerceAtMost(0f),
+      (maxTranslationY - marginY).coerceAtLeast(0f),
+    )
+
+  if (!isSeeking) {
+    alpha = lerp(1f, 0f, progress.absoluteValue)
+  }
 }
 
 @RequiresApi(34)
 @Composable
 private fun BackHandler(
-  onBackProgress: (Float) -> Unit,
+  onBackProgress: (Float, Offset) -> Unit,
   onBackCancelled: () -> Unit,
   animatedEnabled: Boolean = true,
   onBackInvoked: () -> Unit,
@@ -222,9 +291,12 @@ private fun BackHandler(
     val callback =
       object : OnBackPressedCallback(true) {
 
+        var initialTouch = Offset.Zero
+
         override fun handleOnBackStarted(backEvent: BackEventCompat) {
           if (lastAnimatedEnabled) {
-            lastOnBackProgress(0f)
+            initialTouch = Offset(backEvent.touchX, backEvent.touchY)
+            lastOnBackProgress(0f, Offset.Zero)
           }
         }
 
@@ -234,18 +306,23 @@ private fun BackHandler(
               when (backEvent.swipeEdge) {
                 BackEvent.EDGE_LEFT -> backEvent.progress
                 else -> -backEvent.progress
-              }
+              },
+              Offset(backEvent.touchX, backEvent.touchY) - initialTouch,
             )
           }
         }
 
         override fun handleOnBackCancelled() {
+          initialTouch = Offset.Zero
           if (lastAnimatedEnabled) {
             lastOnBackCancelled()
           }
         }
 
-        override fun handleOnBackPressed() = lastOnBackInvoked()
+        override fun handleOnBackPressed() {
+          lastOnBackInvoked()
+          initialTouch = Offset.Zero
+        }
       }
 
     onBackDispatcher.addCallback(callback)

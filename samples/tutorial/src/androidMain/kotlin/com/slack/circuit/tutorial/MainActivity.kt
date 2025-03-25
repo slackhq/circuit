@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import com.slack.circuit.tutorial.impl.tutorialOnCreate
+import com.slack.circuit.tutorial.intro.introTutorialOnCreate
 
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
       ?.isAppearanceLightStatusBars = true
 
     // TODO replace with your own impl if following the tutorial!
-    tutorialOnCreate()
+    introTutorialOnCreate()
+    // sharedElementsTutorialOnCreate()
   }
 }

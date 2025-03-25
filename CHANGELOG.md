@@ -1,8 +1,162 @@
 Changelog
 =========
 
-**Unreleased**
---------------
+Unreleased
+----------
+
+0.27.0
+------
+
+### Screen based animation overrides
+
+We have added experimental support for animations based on the source/target screens and the type of navigation event. This can be accomplished with the the new `AnimatedScreenTransform` interface, allowing customization of the `ContentTransform` used when transitioning between screens. Having support for screen based animation overrides is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.
+
+See this [PR](https://github.com/slackhq/circuit/pull/1901) for more details and example implementations. Please share feedback in [this discussion](https://github.com/slackhq/circuit/discussions/1982).
+
+### Behaviour Changes:
+
+State retention logic was simplified by removing `LocalCanRetainChecker`, with `CanRetainChecker` becoming an implementation detail of a `RetainedStateRegistry`.
+This potentially impacts uses of `rememberRetained` that depended on `LocalCanRetainChecker`, as `rememberRetained` would use the composition local before using `rememberCanRetainChecker`. Also, as `rememberCanRetainChecker` was only needed for `Continuity` it has been renamed to `rememberContinuityCanRetainChecker`.
+
+### Misc:
+
+- Fix a crash caused by calling `resetRoot` while `NavigableCircuitContent` was animating.
+- Update androidx.activity to `v1.10.1`.
+- [code gen] Make assisted injection detection more robust.
+- [code gen] Update to KSP `2.1.10-1.0.31`.
+- [code gen] Update to KotlinPoet `2.1.0`.
+- [samples] Update mosaic to `0.16.0`
+- [samples] Include shared element tutorial changes.
+
+Special thanks to [@vulpeszerda](https://github.com/vulpeszerda) for contributing to this release!
+
+0.26.1
+------
+
+_2025-02-13_
+
+- Fix crash on right side back gesture.
+- Update `CupertinoGestureNavigationDecoration` to be a `AnimatedNavDecorator`.
+- Fix value restoration after `removeState` call in `RetainedStateHolder`.
+- Update Android compose artifacts to `1.7.8`.
+- [docs] Add tutorial for how to use Circuit shared elements.
+- [docs] Added basic reference guide on deep-linking using circuit for Android platform.
+
+Special thanks to [@vulpeszerda](https://github.com/vulpeszerda) for contributing to this release!
+
+0.26.0
+------
+
+_2025-02-06_
+
+Happy new year!
+
+### Shared Elements API!
+
+After a lot of iteration and work, this release adds support for Compose's new shared elements APIs.
+
+These are still experimental and subject to change, both in Circuit and the underlying Compose APIs.
+
+See this PR for full details as well as sample integrations: https://github.com/slackhq/circuit/pull/1550. Please share feedback in [this discussion](https://github.com/slackhq/circuit/discussions/1924). More formal docs to come as well, we'll publish updates there!
+
+For now, the easiest way to support shared element transitions is to wrap your content with a `SharedElementTransitionLayout`.
+
+```kotlin
+CircuitCompositionLocals(circuit) {
+  SharedElementTransitionLayout {
+    NavigableCircuitContent(
+      navigator = navigator,
+      backStack = backStack,
+    )
+  }
+}
+```
+
+`SharedElementTransitionLayout` creates and provides a `SharedElementTransitionScope` to content within it, and in turn exposes a `SharedTransitionScope` for use with standard compose shared elements/bounds animations. This is supported in `NavigableCircuitContent` and overlays.
+
+There is also a `PreviewSharedElementTransitionLayout` for help with Compose previews.
+
+### Behaviour Changes: `rememberRetained`
+
+Previously, `rememberRetained` could sometimes restore values when a composable was re-added, depending on whether its parent `RetainedStateRegistry` had been saved (#1783).
+Now, `rememberRetained` aligns with `remember` and `rememberSaveable`: if a composable is removed and later re-added, its value will not be restored unless it is explicitly saved and then restored via the registry.
+
+Update rememberRetained to allow CanRetainChecker to be updated in place.
+
+### Behaviour Change: `RetainedStateRegistry`
+
+- `saveAll` now returns the saved values.
+- `RetainedStateRegistry.Entry.unregister` now returns whether the unsaved valueProvider was actually removed.
+- `saveAll` and `saveValue` now skip storing child values when `CanRetainChecker` returns `false`.
+
+### New: `RetainedStateHolder`
+
+Similar to `SaveableStateHolder`, `RetainedStateHolder` provides a mechanism to maintain separate `RetainedStateRegistry` entries for specific keys. This allows saving the state defined with `rememberRetained` for a subtree before it is disposed, so that the subtree can later be recomposed with its state restored.
+
+```kotlin
+val retainedStateHolder = rememberRetainedStateHolder()
+var currentTab by remember { mutableStateOf(TabA) }
+
+retainedStateHolder.RetainedStateProvider(key = currentTab.name) {
+  // rememberRetained values in tab content are preserved across tab switches
+  when (currentTab) {
+    TabA -> {
+      TabAContent()
+    }
+    TabB -> {
+      TabBContent()
+    }
+    TabC -> {
+      TabCContent()
+    }
+  }
+}
+```
+
+### Implementation Changes: `NavigableCircuitContent`
+
+- The approach of managing a separate `RetainedStateRegistry` for each record has been changed to use `RetainedStateHolder` instead.
+- Change `SaveableStateHolder` to release saved states of removed records.
+
+### Misc
+
+- Fixe an issue causing codegen to fail for class @Inject annotations.
+- Compile against Android SDK 35.
+- Update Compose Android BOM to `2025.01.01`.
+- Update to androidx.annotation `1.9.1`.
+- Update to androidx.activity `1.10.0`.
+- Update to Compose Android `1.7.7`.
+- Update to Compose Multiplatform `1.7.3`.
+- Update to Kotlin `1.9.10`.
+- [code gen] Update to KSP `1.9.10-1.0.29`.
+- [code gen] Update to Dagger `2.55`.
+- [code gen] Update to KotlinPoet `2.0.0`.
+- [code gen] Build against Anvil-KSP `0.4.1`. Should still be compatible with square/anvil as well.
+- [code gen] Build against kotlin-inject-anvil `0.1.2`. Should still be compatible with square/anvil as well.
+- [samples] Update mosaic + modernize mosaic counter sample to fully use effects.
+- [docs] Fix variable casing in Navigation documentation example.
+
+Special thanks to [@vulpeszerda](https://github.com/vulpeszerda), [@rharter](https://github.com/rharter), [@alexvanyo](https://github.com/alexvanyo), and [@easyhooon](https://github.com/easyhooon) for contributing to this release!
+
+0.25.0
+------
+
+_2024-10-23_
+
+- **New**: Pass `tonalElevation` to `BottomSheetOverlay` so that is reflected in `ModalBottomSheet`.
+- **Enhancement**: Add `-dontwarn` on Anvil classes from codegen annotations.
+- **Enhancement**: Misc small doc fixes and updates.
+- **Enhancement**: Add note about only creating a presenter for supported screen types in tutorial.
+- Update kotlinInject.anvil to `0.0.5`.
+- Update androidx.activity to `1.9.3`.
+- Update androidx.lifecycle to `2.8.6`.
+- Update Kotlin to `2.0.21`.
+- Build against KSP to `2.0.21-1.0.25`.
+- Update Turbine to `1.2.0`.
+- Update Compose Android to `1.7.4`.
+- Update Compose Multiplatform to `1.7.0`.
+
+Special thanks to [@eboudrant](https://github.com/eboudrant), [@bidrohi](https://github.com/bidrohi), [@hossain-khan](https://github.com/hossain-khan), and [@dturner](https://github.com/dturner) for contributing to this release!
 
 0.24.0
 ------

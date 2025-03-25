@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -36,51 +41,97 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.internal.runtime.Parcelable
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.sharedelements.ExperimentalCircuitSharedElementsApi
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
+import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.di.Assisted
 import com.slack.circuit.star.di.AssistedFactory
 import com.slack.circuit.star.di.AssistedInject
 import com.slack.circuit.star.navigation.OpenUrlScreen
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State
+import com.slack.circuit.star.petdetail.PetDetailScreen.State.AnimalState
+import com.slack.circuit.star.petdetail.PetDetailScreen.State.Full
 import com.slack.circuit.star.petdetail.PetDetailScreen.State.Loading
-import com.slack.circuit.star.petdetail.PetDetailScreen.State.Success
+import com.slack.circuit.star.petdetail.PetDetailScreen.State.Partial
 import com.slack.circuit.star.petdetail.PetDetailScreen.State.UnknownAnimal
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.repo.PetRepository
+import com.slack.circuit.star.transition.PetCardBoundsKey
+import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.ExpandableText
+import com.slack.circuit.star.ui.thenIf
+import com.slack.circuit.star.ui.thenIfNotNull
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
 
-@CommonParcelize
-data class PetDetailScreen(val petId: Long, val photoUrlMemoryCacheKey: String?) : Screen {
+@Parcelize
+data class PetDetailScreen(
+  val petId: Long,
+  val photoUrlMemoryCacheKey: String? = null,
+  val animal: PartialAnimal? = null,
+) : Screen {
+
+  @Parcelize
+  data class PartialAnimal(
+    val id: Long,
+    val name: String,
+    val imageUrl: String?,
+    val breed: String?,
+    val gender: Gender,
+    val size: Size,
+  ) : Parcelable
+
   sealed interface State : CircuitUiState {
     data object Loading : State
 
     data object UnknownAnimal : State
 
-    data class Success(
+    sealed interface AnimalState : State {
+      val id: Long
+      val photoUrls: ImmutableList<String>
+      val photoUrlMemoryCacheKey: String?
+      val name: String
+      val tags: ImmutableList<String>
+    }
+
+    data class Partial(
+      override val id: Long,
+      override val photoUrls: ImmutableList<String>,
+      override val photoUrlMemoryCacheKey: String,
+      override val name: String,
+      override val tags: ImmutableList<String>,
+    ) : AnimalState
+
+    data class Full(
+      override val id: Long,
       val url: String,
-      val photoUrls: ImmutableList<String>,
-      val photoUrlMemoryCacheKey: String?,
-      val name: String,
+      override val photoUrls: ImmutableList<String>,
+      override val photoUrlMemoryCacheKey: String?,
+      override val name: String,
       val description: String,
-      val tags: ImmutableList<String>,
+      override val tags: ImmutableList<String>,
       val eventSink: (Event) -> Unit,
-    ) : State
+    ) : AnimalState
   }
 
   sealed interface Event : CircuitUiEvent {
@@ -93,7 +144,8 @@ internal fun Animal.toPetDetailState(
   description: String = this.description,
   eventSink: (Event) -> Unit,
 ): State {
-  return Success(
+  return Full(
+    id = id,
     url = url,
     photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
@@ -104,6 +156,24 @@ internal fun Animal.toPetDetailState(
   )
 }
 
+internal fun PetDetailScreen.toPetDetailState(): State {
+  return if (animal != null && photoUrlMemoryCacheKey != null) {
+    Partial(
+      id = animal.id,
+      photoUrls =
+        persistentListOf<String>().mutate { list -> animal.imageUrl?.let { list.add(it) } },
+      photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+      name = animal.name,
+      tags =
+        persistentListOf<String>().mutate { list ->
+          animal.breed?.let { list.add(it) }
+          list.add(animal.gender.displayName)
+          list.add(animal.size.name.lowercase())
+        },
+    )
+  } else Loading
+}
+
 class PetDetailPresenter
 @AssistedInject
 constructor(
@@ -111,11 +181,14 @@ constructor(
   @Assisted private val navigator: Navigator,
   private val petRepository: PetRepository,
 ) : Presenter<State> {
+
+  private val initialState = screen.toPetDetailState()
+
   @Composable
   override fun present(): State {
     var title by remember { mutableStateOf<String?>(null) }
     val state by
-      produceState<State>(Loading) {
+      produceState<State>(initialState) {
         val animal = petRepository.getAnimal(screen.petId)
         val bioText = petRepository.getAnimalBio(screen.petId)
         value =
@@ -150,22 +223,52 @@ internal object PetDetailTestConstants {
   const val FULL_BIO_TAG = "full_bio"
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
-internal fun PetDetail(state: State, modifier: Modifier = Modifier) {
-  Scaffold(modifier = modifier, topBar = { TopBar(state) }) { padding ->
+internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
+  Scaffold(
+    topBar = { TopBar(state) },
+    modifier =
+      modifier.thenIfNotNull((state as? AnimalState)?.id) { animalId ->
+        sharedBounds(
+          sharedContentState = rememberSharedContentState(key = PetCardBoundsKey(animalId)),
+          animatedVisibilityScope = requireAnimatedScope(Navigation),
+          enter = fadeIn(tween(easing = EaseOutCubic)),
+          exit = fadeOut(tween(easing = EaseOutCubic)),
+        )
+      },
+  ) { padding ->
     when (state) {
       is Loading -> Loading(padding)
       is UnknownAnimal -> UnknownAnimal(padding)
-      is Success -> ShowAnimal(state, padding)
+      is AnimalState -> ShowAnimal(state, padding)
     }
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitSharedElementsApi::class)
 @Composable
 private fun TopBar(state: State) {
-  if (state !is Success) return
-  CenterAlignedTopAppBar(title = { Text(state.name) }, navigationIcon = { BackPressNavIcon() })
+  if (state !is AnimalState) return
+  SharedElementTransitionScope {
+    CenterAlignedTopAppBar(
+      title = {
+        Text(
+          state.name,
+          modifier =
+            Modifier.thenIf(hasLayoutCoordinates) {
+              sharedBounds(
+                sharedContentState = rememberSharedContentState(PetNameBoundsKey(state.id)),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 2f,
+              )
+            },
+        )
+      },
+      navigationIcon = { BackPressNavIcon() },
+    )
+  }
 }
 
 @Composable
@@ -192,32 +295,36 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
 }
 
 @Composable
-private fun ShowAnimal(state: Success, padding: PaddingValues) {
+private fun ShowAnimal(state: AnimalState, padding: PaddingValues) {
+  val sharedModifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)
   val carouselContent = remember {
-    movableContentOf {
+    movableContentOf<AnimalState> {
       CircuitContent(
-        PetPhotoCarouselScreen(
-          name = state.name,
-          photoUrls = state.photoUrls,
-          photoUrlMemoryCacheKey = state.photoUrlMemoryCacheKey,
-        )
+        screen =
+          PetPhotoCarouselScreen(
+            id = it.id,
+            name = it.name,
+            photoUrls = it.photoUrls,
+            photoUrlMemoryCacheKey = it.photoUrlMemoryCacheKey,
+          ),
+        key = it.id,
       )
     }
   }
-  return when (Platform.isLandscape()) {
-    true -> ShowAnimalLandscape(state, padding, carouselContent)
-    false -> ShowAnimalPortrait(state, padding, carouselContent)
+  when (Platform.isLandscape()) {
+    true -> ShowAnimalLandscape(state, sharedModifier, carouselContent)
+    false -> ShowAnimalPortrait(state, sharedModifier, carouselContent)
   }
 }
 
 @Composable
 private fun ShowAnimalLandscape(
-  state: Success,
-  padding: PaddingValues,
-  carouselContent: @Composable () -> Unit,
+  state: AnimalState,
+  modifier: Modifier = Modifier,
+  carouselContent: @Composable (AnimalState) -> Unit,
 ) {
-  Row(modifier = Modifier.padding(padding), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-    carouselContent()
+  Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    carouselContent(state)
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -230,61 +337,75 @@ private fun ShowAnimalLandscape(
 
 @Composable
 private fun ShowAnimalPortrait(
-  state: Success,
-  padding: PaddingValues,
-  carouselContent: @Composable () -> Unit,
+  state: AnimalState,
+  modifier: Modifier = Modifier,
+  carouselContent: @Composable (AnimalState) -> Unit,
 ) {
   LazyColumn(
-    modifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG),
+    modifier = modifier,
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    item { carouselContent() }
+    item { carouselContent(state) }
     petDetailDescriptions(state)
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-private fun LazyListScope.petDetailDescriptions(state: Success) {
+@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
+private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
   // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
   item(state.tags.hashCode()) {
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-      verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
-    ) {
-      state.tags.forEach { tag ->
-        Surface(
-          color = MaterialTheme.colorScheme.tertiary,
-          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
-        ) {
-          Text(
-            modifier = Modifier.padding(12.dp),
-            text = tag.capitalize(LocaleList.current),
-            color = MaterialTheme.colorScheme.onTertiary,
-            style = MaterialTheme.typography.labelLarge,
-          )
+    SharedElementTransitionScope {
+      FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+      ) {
+        state.tags.forEach { tag ->
+          Surface(
+            color = MaterialTheme.colorScheme.tertiary,
+            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "tag-${state.id}-${tag}"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+                zIndexInOverlay = 2f,
+              ),
+          ) {
+            Text(
+              modifier = Modifier.padding(12.dp),
+              text = tag.capitalize(LocaleList.current),
+              color = MaterialTheme.colorScheme.onTertiary,
+              style = MaterialTheme.typography.labelLarge,
+            )
+          }
         }
       }
     }
   }
 
-  item(state.description) {
-    ExpandableText(
-      text = state.description,
-      style = MaterialTheme.typography.bodyLarge,
-      initiallyExpanded = true,
-    )
-  }
-
-  item(state.url) {
-    Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
-      Text(
-        modifier = Modifier.testTag(FULL_BIO_TAG),
-        text = "Full bio on Petfinder ➡",
-        style = MaterialTheme.typography.headlineSmall,
-      )
+  when (state) {
+    is Partial -> {
+      item("partial-${state.id}") { Loading(PaddingValues(0.dp)) }
+    }
+    is Full -> {
+      item(state.description) {
+        ExpandableText(
+          text = state.description,
+          style = MaterialTheme.typography.bodyLarge,
+          initiallyExpanded = true,
+        )
+      }
+      item(state.url) {
+        Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
+          Text(
+            modifier = Modifier.testTag(FULL_BIO_TAG),
+            text = "Full bio on Petfinder ➡",
+            style = MaterialTheme.typography.headlineSmall,
+          )
+        }
+      }
     }
   }
 }

@@ -1,0 +1,65 @@
+public abstract class com/slack/circuit/overlay/AnimatedOverlay : com/slack/circuit/overlay/Overlay {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;)V
+	public abstract fun AnimatedContent (Landroidx/compose/animation/AnimatedVisibilityScope;Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+	public final fun Content (Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+	public final fun getEnterTransition ()Landroidx/compose/animation/EnterTransition;
+	public final fun getExitTransition ()Landroidx/compose/animation/ExitTransition;
+}
+
+public final class com/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt {
+	public static final field INSTANCE Lcom/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt;
+	public fun <init> ()V
+	public final fun getLambda-1$circuit_overlay_release ()Lkotlin/jvm/functions/Function4;
+}
+
+public final class com/slack/circuit/overlay/ContentWithOverlaysKt {
+	public static final fun ContentWithOverlays (Landroidx/compose/ui/Modifier;Lcom/slack/circuit/overlay/OverlayHost;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class com/slack/circuit/overlay/Overlay {
+	public abstract fun Content (Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuit/overlay/OverlayEffectKt {
+	public static final fun OverlayEffect ([Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class com/slack/circuit/overlay/OverlayHost {
+	public abstract fun getCurrentOverlayData ()Lcom/slack/circuit/overlay/OverlayHostData;
+	public abstract fun show (Lcom/slack/circuit/overlay/Overlay;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/slack/circuit/overlay/OverlayHostData {
+	public abstract fun finish (Ljava/lang/Object;)V
+	public abstract fun getOverlay ()Lcom/slack/circuit/overlay/Overlay;
+}
+
+public final class com/slack/circuit/overlay/OverlayKt {
+	public static final fun getLocalOverlayHost ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun rememberOverlayHost (Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/overlay/OverlayHost;
+}
+
+public abstract interface class com/slack/circuit/overlay/OverlayNavigator {
+	public abstract fun finish (Ljava/lang/Object;)V
+}
+
+public abstract interface class com/slack/circuit/overlay/OverlayScope : com/slack/circuit/overlay/OverlayHost, kotlinx/coroutines/CoroutineScope {
+}
+
+public final class com/slack/circuit/overlay/OverlayState : java/lang/Enum {
+	public static final field HIDDEN Lcom/slack/circuit/overlay/OverlayState;
+	public static final field SHOWING Lcom/slack/circuit/overlay/OverlayState;
+	public static final field UNAVAILABLE Lcom/slack/circuit/overlay/OverlayState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuit/overlay/OverlayState;
+	public static fun values ()[Lcom/slack/circuit/overlay/OverlayState;
+}
+
+public final class com/slack/circuit/overlay/OverlayStateKt {
+	public static final fun getLocalOverlayState ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public abstract interface annotation class com/slack/circuit/overlay/ReadOnlyOverlayApi : java/lang/annotation/Annotation {
+}
+

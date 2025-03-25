@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import com.android.build.api.dsl.LibraryExtension
 import com.google.devtools.ksp.gradle.KspAATask
-import com.google.devtools.ksp.gradle.KspTaskJvm
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -38,8 +36,6 @@ val disableJvmTarget =
 if (!buildDesktop) {
   apply(plugin = libs.plugins.agp.library.get().pluginId)
   apply(plugin = libs.plugins.kotlin.plugin.parcelize.get().pluginId)
-} else {
-  compose { desktop { application { mainClass = "com.slack.circuit.star.MainKt" } } }
 }
 
 anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
@@ -48,7 +44,11 @@ kotlin {
   if (buildDesktop) {
     jvm { withJava() }
   } else {
-    androidTarget { publishLibraryVariants("release") }
+    androidTarget {
+      publishLibraryVariants("release")
+      @OptIn(ExperimentalKotlinGradlePluginApi::class)
+      instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    }
     if (!disableJvmTarget) {
       jvm()
     }
@@ -69,9 +69,9 @@ kotlin {
     commonMain {
       dependencies {
         implementation(libs.androidx.datastore.preferences)
-        implementation(libs.coil3)
-        implementation(libs.coil3.compose)
-        implementation(libs.coil3.network.ktor)
+        implementation(libs.coil)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.network.ktor)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
@@ -81,7 +81,6 @@ kotlin {
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
         implementation(libs.kotlinx.immutable)
-        implementation(libs.kotlinx.serialization.json.okio)
         implementation(libs.ksoup)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
@@ -100,6 +99,7 @@ kotlin {
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navigation)
         implementation(projects.circuitx.overlays)
+        implementation(projects.internalRuntime)
         implementation(libs.eithernet)
       }
     }
@@ -122,7 +122,7 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.dagger)
         implementation(libs.jsoup)
-        implementation(libs.coil3.network.okhttp)
+        implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
@@ -140,12 +140,8 @@ kotlin {
       androidMain {
         dependencies {
           implementation(libs.androidx.appCompat)
-          implementation(libs.androidx.compose.integration.activity)
+          implementation(libs.androidx.activity.compose)
           implementation(libs.androidx.browser)
-          implementation(libs.androidx.compose.accompanist.flowlayout)
-          implementation(libs.androidx.compose.accompanist.pager)
-          implementation(libs.androidx.compose.accompanist.pager.indicators)
-          implementation(libs.androidx.compose.accompanist.systemUi)
           implementation(libs.androidx.compose.googleFonts)
           implementation(libs.androidx.compose.ui.tooling)
           implementation(libs.coroutines.android)
@@ -166,21 +162,23 @@ kotlin {
           implementation(libs.roborazzi)
           implementation(libs.roborazzi.compose)
           implementation(libs.roborazzi.rules)
-          implementation(libs.testing.espresso.core)
+          implementation(libs.androidx.test.espresso.core)
           implementation(projects.samples.star.coilRule)
         }
       }
       val androidInstrumentedTest by getting {
-        dependsOn(commonTest.get())
         // Annoyingly cannot depend on commonJvmTest
         dependencies {
+          implementation(libs.androidx.activity.compose)
           implementation(libs.androidx.compose.ui.testing.junit)
           implementation(libs.androidx.compose.ui.testing.manifest)
+          implementation(libs.compose.ui.testing.junit)
+          implementation(libs.coroutines.android)
           implementation(libs.coroutines.test)
           implementation(libs.junit)
           implementation(libs.leakcanary.android.instrumentation)
-          implementation(libs.truth)
           implementation(projects.circuitTest)
+          implementation(projects.internalTestUtils)
           implementation(projects.samples.star.coilRule)
         }
       }
@@ -206,10 +204,6 @@ kotlin {
           "kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
-
-        if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(libs.versions.jvmTarget.map { JvmTarget.fromTarget(it) })
-        }
       }
     }
   }
@@ -221,7 +215,7 @@ kotlin {
           compilerOptions {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.star.parcel.CommonParcelize",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
             )
           }
         }
@@ -247,8 +241,13 @@ if (!buildDesktop) {
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
       testApplicationId = "com.slack.circuit.star.apk.androidTest"
     }
-
-    testOptions { unitTests.isIncludeAndroidResources = true }
+    testOptions {
+      unitTests {
+        isIncludeAndroidResources = true
+        // For https://github.com/takahirom/roborazzi/issues/296
+        all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
+      }
+    }
     testBuildType = "release"
   }
 } else {
@@ -280,15 +279,8 @@ afterEvaluate {
     if (target != "Android" && target != "Jvm") continue
     val buildType = if (target == "Android") "Release" else ""
     val kspTaskName = "ksp${buildType}Kotlin${target}"
-    val useKSP2 = providers.gradleProperty("ksp.useKSP2").getOrElse("false").toBoolean()
     val generatedKspKotlinFiles =
-      if (useKSP2) {
-        val kspReleaseTask = tasks.named<KspAATask>(kspTaskName)
-        kspReleaseTask.flatMap { it.kspConfig.kotlinOutputDir }
-      } else {
-        val kspReleaseTask = tasks.named<KspTaskJvm>(kspTaskName)
-        kspReleaseTask.flatMap { it.destination }
-      }
+      tasks.named<KspAATask>(kspTaskName).flatMap { it.kspConfig.kotlinOutputDir }
     tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
       source(generatedKspKotlinFiles)
     }

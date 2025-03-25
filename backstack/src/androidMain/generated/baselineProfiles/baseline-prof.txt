@@ -22,6 +22,7 @@ Lcom/slack/circuit/backstack/CompositeProvidedValues;
 HSPLcom/slack/circuit/backstack/CompositeProvidedValues;-><clinit>()V
 HSPLcom/slack/circuit/backstack/CompositeProvidedValues;-><init>(Ljava/util/List;)V
 HSPLcom/slack/circuit/backstack/CompositeProvidedValues;->provideValues(Landroidx/compose/runtime/Composer;I)Lkotlinx/collections/immutable/ImmutableList;
+Lcom/slack/circuit/backstack/NavArgument;
 Lcom/slack/circuit/backstack/NavDecoration;
 Lcom/slack/circuit/backstack/NestedRememberObserver;
 HSPLcom/slack/circuit/backstack/NestedRememberObserver;-><init>(Lkotlin/jvm/functions/Function0;)V

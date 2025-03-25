@@ -1,0 +1,97 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-retained>
+open annotation class com.slack.circuit.retained/DelicateCircuitRetainedApi : kotlin/Annotation { // com.slack.circuit.retained/DelicateCircuitRetainedApi|null[0]
+    constructor <init>() // com.slack.circuit.retained/DelicateCircuitRetainedApi.<init>|<init>(){}[0]
+}
+
+abstract fun interface com.slack.circuit.retained/CanRetainChecker { // com.slack.circuit.retained/CanRetainChecker|null[0]
+    abstract fun canRetain(): kotlin/Boolean // com.slack.circuit.retained/CanRetainChecker.canRetain|canRetain(){}[0]
+
+    final object Companion { // com.slack.circuit.retained/CanRetainChecker.Companion|null[0]
+        final val Always // com.slack.circuit.retained/CanRetainChecker.Companion.Always|{}Always[0]
+            final fun <get-Always>(): com.slack.circuit.retained/CanRetainChecker // com.slack.circuit.retained/CanRetainChecker.Companion.Always.<get-Always>|<get-Always>(){}[0]
+        final val Never // com.slack.circuit.retained/CanRetainChecker.Companion.Never|{}Never[0]
+            final fun <get-Never>(): com.slack.circuit.retained/CanRetainChecker // com.slack.circuit.retained/CanRetainChecker.Companion.Never.<get-Never>|<get-Never>(){}[0]
+    }
+}
+
+abstract interface <#A: kotlin/Any?> com.slack.circuit.retained/RetainedValueHolder { // com.slack.circuit.retained/RetainedValueHolder|null[0]
+    abstract val value // com.slack.circuit.retained/RetainedValueHolder.value|{}value[0]
+        abstract fun <get-value>(): #A // com.slack.circuit.retained/RetainedValueHolder.value.<get-value>|<get-value>(){}[0]
+}
+
+abstract interface com.slack.circuit.retained/RetainedStateHolder { // com.slack.circuit.retained/RetainedStateHolder|null[0]
+    abstract fun RetainedStateProvider(kotlin/String, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.retained/RetainedStateHolder.RetainedStateProvider|RetainedStateProvider(kotlin.String;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    abstract fun removeState(kotlin/String) // com.slack.circuit.retained/RetainedStateHolder.removeState|removeState(kotlin.String){}[0]
+}
+
+abstract interface com.slack.circuit.retained/RetainedStateRegistry { // com.slack.circuit.retained/RetainedStateRegistry|null[0]
+    abstract fun consumeValue(kotlin/String): kotlin/Any? // com.slack.circuit.retained/RetainedStateRegistry.consumeValue|consumeValue(kotlin.String){}[0]
+    abstract fun forgetUnclaimedValues() // com.slack.circuit.retained/RetainedStateRegistry.forgetUnclaimedValues|forgetUnclaimedValues(){}[0]
+    abstract fun registerValue(kotlin/String, com.slack.circuit.retained/RetainedValueProvider): com.slack.circuit.retained/RetainedStateRegistry.Entry // com.slack.circuit.retained/RetainedStateRegistry.registerValue|registerValue(kotlin.String;com.slack.circuit.retained.RetainedValueProvider){}[0]
+    abstract fun saveAll(): kotlin.collections/Map<kotlin/String, kotlin.collections/List<kotlin/Any?>> // com.slack.circuit.retained/RetainedStateRegistry.saveAll|saveAll(){}[0]
+    abstract fun saveValue(kotlin/String) // com.slack.circuit.retained/RetainedStateRegistry.saveValue|saveValue(kotlin.String){}[0]
+
+    abstract interface Entry { // com.slack.circuit.retained/RetainedStateRegistry.Entry|null[0]
+        abstract fun unregister(): kotlin/Boolean // com.slack.circuit.retained/RetainedStateRegistry.Entry.unregister|unregister(){}[0]
+    }
+}
+
+final object com.slack.circuit.retained/Continuity { // com.slack.circuit.retained/Continuity|null[0]
+    final const val KEY // com.slack.circuit.retained/Continuity.KEY|{}KEY[0]
+        final fun <get-KEY>(): kotlin/String // com.slack.circuit.retained/Continuity.KEY.<get-KEY>|<get-KEY>(){}[0]
+}
+
+final object com.slack.circuit.retained/NoOpRetainedStateRegistry : com.slack.circuit.retained/RetainedStateRegistry { // com.slack.circuit.retained/NoOpRetainedStateRegistry|null[0]
+    final fun consumeValue(kotlin/String): kotlin/Any? // com.slack.circuit.retained/NoOpRetainedStateRegistry.consumeValue|consumeValue(kotlin.String){}[0]
+    final fun forgetUnclaimedValues() // com.slack.circuit.retained/NoOpRetainedStateRegistry.forgetUnclaimedValues|forgetUnclaimedValues(){}[0]
+    final fun registerValue(kotlin/String, com.slack.circuit.retained/RetainedValueProvider): com.slack.circuit.retained/RetainedStateRegistry.Entry // com.slack.circuit.retained/NoOpRetainedStateRegistry.registerValue|registerValue(kotlin.String;com.slack.circuit.retained.RetainedValueProvider){}[0]
+    final fun saveAll(): kotlin.collections/Map<kotlin/String, kotlin.collections/List<kotlin/Any?>> // com.slack.circuit.retained/NoOpRetainedStateRegistry.saveAll|saveAll(){}[0]
+    final fun saveValue(kotlin/String) // com.slack.circuit.retained/NoOpRetainedStateRegistry.saveValue|saveValue(kotlin.String){}[0]
+}
+
+final val com.slack.circuit.retained/LocalRetainedStateRegistry // com.slack.circuit.retained/LocalRetainedStateRegistry|{}LocalRetainedStateRegistry[0]
+    final fun <get-LocalRetainedStateRegistry>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.retained/RetainedStateRegistry> // com.slack.circuit.retained/LocalRetainedStateRegistry.<get-LocalRetainedStateRegistry>|<get-LocalRetainedStateRegistry>(){}[0]
+final val com.slack.circuit.retained/com_slack_circuit_retained_Continuity$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_Continuity$stableprop|#static{}com_slack_circuit_retained_Continuity$stableprop[0]
+final val com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop|#static{}com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop[0]
+final val com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop|#static{}com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop[0]
+final val com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop|#static{}com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop[0]
+
+final fun <#A: #B, #B: kotlin/Any?> (kotlinx.coroutines.flow/Flow<#A>).com.slack.circuit.retained/collectAsRetainedState(#B, kotlin.coroutines/CoroutineContext?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.runtime/State<#B> // com.slack.circuit.retained/collectAsRetainedState|collectAsRetainedState@kotlinx.coroutines.flow.Flow<0:0>(0:1;kotlin.coroutines.CoroutineContext?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<0:1>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any> com.slack.circuit.retained/rememberRetained(kotlin/Array<out kotlin/Any?>..., androidx.compose.runtime.saveable/Saver<#A, out kotlin/Any>, kotlin/String?, kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.slack.circuit.retained/rememberRetained|rememberRetained(kotlin.Array<out|kotlin.Any?>...;androidx.compose.runtime.saveable.Saver<0:0,out|kotlin.Any>;kotlin.String?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any> com.slack.circuit.retained/rememberRetained(kotlin/Array<out kotlin/Any?>..., kotlin/String?, kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.slack.circuit.retained/rememberRetained|rememberRetained(kotlin.Array<out|kotlin.Any?>...;kotlin.String?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any> com.slack.circuit.retained/rememberRetainedSaveable(kotlin/Array<out kotlin/Any?>..., androidx.compose.runtime.saveable/Saver<#A, out kotlin/Any>?, kotlin/String?, kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.slack.circuit.retained/rememberRetainedSaveable|rememberRetainedSaveable(kotlin.Array<out|kotlin.Any?>...;androidx.compose.runtime.saveable.Saver<0:0,out|kotlin.Any>?;kotlin.String?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.coroutines.flow/StateFlow<#A>).com.slack.circuit.retained/collectAsRetainedState(kotlin.coroutines/CoroutineContext?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.runtime/State<#A> // com.slack.circuit.retained/collectAsRetainedState|collectAsRetainedState@kotlinx.coroutines.flow.StateFlow<0:0>(kotlin.coroutines.CoroutineContext?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/produceRetainedState(#A, kotlin.coroutines/SuspendFunction1<androidx.compose.runtime/ProduceStateScope<#A>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.runtime/State<#A> // com.slack.circuit.retained/produceRetainedState|produceRetainedState(0:0;kotlin.coroutines.SuspendFunction1<androidx.compose.runtime.ProduceStateScope<0:0>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/produceRetainedState(#A, kotlin/Any?, kotlin.coroutines/SuspendFunction1<androidx.compose.runtime/ProduceStateScope<#A>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.runtime/State<#A> // com.slack.circuit.retained/produceRetainedState|produceRetainedState(0:0;kotlin.Any?;kotlin.coroutines.SuspendFunction1<androidx.compose.runtime.ProduceStateScope<0:0>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/produceRetainedState(#A, kotlin/Any?, kotlin/Any?, kotlin.coroutines/SuspendFunction1<androidx.compose.runtime/ProduceStateScope<#A>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.runtime/State<#A> // com.slack.circuit.retained/produceRetainedState|produceRetainedState(0:0;kotlin.Any?;kotlin.Any?;kotlin.coroutines.SuspendFunction1<androidx.compose.runtime.ProduceStateScope<0:0>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/produceRetainedState(#A, kotlin/Any?, kotlin/Any?, kotlin/Any?, kotlin.coroutines/SuspendFunction1<androidx.compose.runtime/ProduceStateScope<#A>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.runtime/State<#A> // com.slack.circuit.retained/produceRetainedState|produceRetainedState(0:0;kotlin.Any?;kotlin.Any?;kotlin.Any?;kotlin.coroutines.SuspendFunction1<androidx.compose.runtime.ProduceStateScope<0:0>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/produceRetainedState(#A, kotlin/Array<out kotlin/Any?>..., kotlin.coroutines/SuspendFunction1<androidx.compose.runtime/ProduceStateScope<#A>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.runtime/State<#A> // com.slack.circuit.retained/produceRetainedState|produceRetainedState(0:0;kotlin.Array<out|kotlin.Any?>...;kotlin.coroutines.SuspendFunction1<androidx.compose.runtime.ProduceStateScope<0:0>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/rememberRetained(kotlin/Array<out kotlin/Any?>..., androidx.compose.runtime.saveable/Saver<#A, out kotlin/Any>, kotlin/String?, kotlin/Function0<androidx.compose.runtime/MutableState<#A>>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.runtime/MutableState<#A> // com.slack.circuit.retained/rememberRetained|rememberRetained(kotlin.Array<out|kotlin.Any?>...;androidx.compose.runtime.saveable.Saver<0:0,out|kotlin.Any>;kotlin.String?;kotlin.Function0<androidx.compose.runtime.MutableState<0:0>>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> com.slack.circuit.retained/rememberRetainedSaveable(kotlin/Array<out kotlin/Any?>..., androidx.compose.runtime.saveable/Saver<#A, out kotlin/Any>, kotlin/String?, kotlin/Function0<androidx.compose.runtime/MutableState<#A>>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.runtime/MutableState<#A> // com.slack.circuit.retained/rememberRetainedSaveable|rememberRetainedSaveable(kotlin.Array<out|kotlin.Any?>...;androidx.compose.runtime.saveable.Saver<0:0,out|kotlin.Any>;kotlin.String?;kotlin.Function0<androidx.compose.runtime.MutableState<0:0>>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun com.slack.circuit.retained/RetainedStateRegistry(com.slack.circuit.retained/CanRetainChecker = ..., kotlin.collections/Map<kotlin/String, kotlin.collections/List<kotlin/Any?>> = ...): com.slack.circuit.retained/RetainedStateRegistry // com.slack.circuit.retained/RetainedStateRegistry|RetainedStateRegistry(com.slack.circuit.retained.CanRetainChecker;kotlin.collections.Map<kotlin.String,kotlin.collections.List<kotlin.Any?>>){}[0]
+final fun com.slack.circuit.retained/com_slack_circuit_retained_Continuity$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_Continuity$stableprop_getter|com_slack_circuit_retained_Continuity$stableprop_getter(){}[0]
+final fun com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop_getter|com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop_getter(){}[0]
+final fun com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop_getter|com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop_getter(){}[0]
+final fun com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop_getter|com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop_getter(){}[0]
+final fun com.slack.circuit.retained/continuityRetainedStateRegistry(kotlin/String?, com.slack.circuit.retained/CanRetainChecker?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.retained/RetainedStateRegistry // com.slack.circuit.retained/continuityRetainedStateRegistry|continuityRetainedStateRegistry(kotlin.String?;com.slack.circuit.retained.CanRetainChecker?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.retained/rememberContinuityCanRetainChecker(androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.retained/CanRetainChecker // com.slack.circuit.retained/rememberContinuityCanRetainChecker|rememberContinuityCanRetainChecker(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.slack.circuit.retained/rememberRetainedStateHolder(com.slack.circuit.retained/CanRetainChecker?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.retained/RetainedStateHolder // com.slack.circuit.retained/rememberRetainedStateHolder|rememberRetainedStateHolder(com.slack.circuit.retained.CanRetainChecker?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.retained/rememberRetainedStateRegistry(kotlin/Array<out kotlin/Any?>..., kotlin/String?, com.slack.circuit.retained/CanRetainChecker?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.retained/RetainedStateRegistry // com.slack.circuit.retained/rememberRetainedStateRegistry|rememberRetainedStateRegistry(kotlin.Array<out|kotlin.Any?>...;kotlin.String?;com.slack.circuit.retained.CanRetainChecker?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+
+// Targets: [native]
+abstract fun interface com.slack.circuit.retained/RetainedValueProvider : kotlin/Function0<kotlin/Any?> { // com.slack.circuit.retained/RetainedValueProvider|null[0]
+    abstract fun invoke(): kotlin/Any? // com.slack.circuit.retained/RetainedValueProvider.invoke|invoke(){}[0]
+}
+
+// Targets: [js, wasmJs]
+abstract fun interface com.slack.circuit.retained/RetainedValueProvider { // com.slack.circuit.retained/RetainedValueProvider|null[0]
+    abstract fun invoke(): kotlin/Any? // com.slack.circuit.retained/RetainedValueProvider.invoke|invoke(){}[0]
+}

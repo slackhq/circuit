@@ -13,7 +13,7 @@ android {
   namespace = "com.slack.circuit.sample.counter.android"
   defaultConfig {
     minSdk = 31 // For the dynamic m3 theme
-    targetSdk = 34
+    targetSdk = 35
   }
 }
 
@@ -52,11 +52,10 @@ kotlin {
     androidMain {
       dependencies {
         implementation(libs.androidx.appCompat)
+        implementation(libs.androidx.activity.compose)
         implementation(libs.bundles.compose.ui)
-        implementation(libs.androidx.compose.integration.activity)
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
         implementation(libs.androidx.compose.material.icons)
-        implementation(libs.androidx.compose.accompanist.systemUi)
         implementation(libs.androidx.compose.ui.tooling)
       }
     }

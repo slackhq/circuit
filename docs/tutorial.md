@@ -295,7 +295,7 @@ val navigator = rememberCircuitNavigator(backStack) {
 Once you have these two components created, you can pass them to an advanced version of `CircuitContent` that supports navigation called `NavigableCircuitContent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-navigable-circuit-content.html)).
 
 ```kotlin title="NavigableCircuitContent"
-NavigableCircuitContent(navigator = navigator, backstack = backStack)
+NavigableCircuitContent(navigator = navigator, backStack = backStack)
 ```
 
 This composable will automatically manage the backstack and navigation for you, essentially rendering the "top" of the back stack as your _navigator_ navigates it. This also handles transitions between screens ([`NavDecoration`](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html)) and fallback behavior with `Circuit.Builder.onUnavailableRoute` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/on-unavailable-content.html)).
@@ -308,7 +308,7 @@ val navigator = rememberCircuitNavigator(backStack) {
   // Do something when the root screen is popped, usually exiting the app
 }
 CircuitCompositionLocals(circuit) {
-  NavigableCircuitContent(navigator = navigator, backstack = backStack)
+  NavigableCircuitContent(navigator = navigator, backStack = backStack)
 }
 ```
 
@@ -388,7 +388,9 @@ class DetailPresenter(...) : Presenter<DetailScreen.State> {
 }
 ```
 
-Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.
+Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter. 
+
+Note: Circuit assumes that the `create` method will only return presenter instances for screen types it supports. If the screen type isn't supported, it's important to return `null` instead.
 
 We can then wire these detail components to our `Circuit` instance too.
 
@@ -568,6 +570,10 @@ Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` 
 
 On Android, `NavigableCircuitContent` automatically hooks into [BackHandler](https://developer.android.com/reference/kotlin/androidx/activity/compose/package-summary#BackHandler(kotlin.Boolean,kotlin.Function0)) to automatically pop on system back presses. On Desktop, it's recommended to wire the ESC key.
 
+## Shared Elements
+
+You can continue this tutorial by seting up [shared element transitions](shared-elements-tutorial.md) between the Inbox and Detail screens.
+
 ## Conclusion
 
-This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](../api/0.x/index.html), and check out other Circuit tools like [circuit-retained](https://slackhq.github.io/circuit/presenter/#retention), [CircuitX](https://slackhq.github.io/circuit/circuitx/), [factory code gen](https://slackhq.github.io/circuit/code-gen/), [overlays](https://slackhq.github.io/circuit/overlays/), [navigation with results](https://slackhq.github.io/circuit/navigation/#results), [testing](https://slackhq.github.io/circuit/testing/), [multiplatform](https://slackhq.github.io/circuit/setup/#platform-support), and more.
+This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](api/0.x/index.html), and check out other Circuit tools like [circuit-retained](https://slackhq.github.io/circuit/presenter/#retention), [CircuitX](https://slackhq.github.io/circuit/circuitx/), [factory code gen](https://slackhq.github.io/circuit/code-gen/), [overlays](https://slackhq.github.io/circuit/overlays/), [navigation with results](https://slackhq.github.io/circuit/navigation/#results), [testing](https://slackhq.github.io/circuit/testing/), [multiplatform](https://slackhq.github.io/circuit/setup/#platform-support), and more.

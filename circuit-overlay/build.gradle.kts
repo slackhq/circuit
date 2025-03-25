@@ -38,6 +38,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
         implementation(libs.coroutines)
+        implementation(projects.circuitSharedElements)
       }
     }
     commonTest {
@@ -60,7 +61,7 @@ kotlin {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)
-        implementation(libs.compose.test.junit4)
+        implementation(libs.compose.ui.testing.junit)
       }
     }
   }
@@ -73,6 +74,7 @@ androidComponents { beforeVariants { variant -> variant.androidTest.enable = fal
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true
+  @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/379030055
   from(projects.samples.star.benchmark.dependencyProject)
   filter { include("com.slack.circuit.overlay.**") }
 }

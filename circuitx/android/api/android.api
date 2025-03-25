@@ -1,0 +1,39 @@
+public abstract interface class com/slack/circuitx/android/AndroidScreen : com/slack/circuit/runtime/screen/Screen {
+}
+
+public final class com/slack/circuitx/android/AndroidScreenAwareNavigatorKt {
+	public static final fun rememberAndroidScreenAwareNavigator (Lcom/slack/circuit/runtime/Navigator;Landroid/content/Context;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
+	public static final fun rememberAndroidScreenAwareNavigator (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuitx/android/AndroidScreenStarter;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
+}
+
+public abstract interface class com/slack/circuitx/android/AndroidScreenStarter {
+	public abstract fun start (Lcom/slack/circuitx/android/AndroidScreen;)Z
+}
+
+public final class com/slack/circuitx/android/IntentScreen : com/slack/circuitx/android/AndroidScreen {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public fun <init> (Landroid/content/Intent;Landroid/os/Bundle;)V
+	public synthetic fun <init> (Landroid/content/Intent;Landroid/os/Bundle;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Landroid/content/Intent;
+	public final fun component2 ()Landroid/os/Bundle;
+	public final fun copy (Landroid/content/Intent;Landroid/os/Bundle;)Lcom/slack/circuitx/android/IntentScreen;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/android/IntentScreen;Landroid/content/Intent;Landroid/os/Bundle;ILjava/lang/Object;)Lcom/slack/circuitx/android/IntentScreen;
+	public final fun describeContents ()I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIntent ()Landroid/content/Intent;
+	public final fun getOptions ()Landroid/os/Bundle;
+	public fun hashCode ()I
+	public final fun startWith (Landroid/content/Context;)Z
+	public fun toString ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/slack/circuitx/android/IntentScreen$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/slack/circuitx/android/IntentScreen;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/slack/circuitx/android/IntentScreen;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+

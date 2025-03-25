@@ -37,9 +37,6 @@ theme:
     - content.code.copy
     - content.code.select
 
-extra_css:
-  - 'css/app.css'
-
 markdown_extensions:
   - smarty
   - codehilite:
@@ -74,6 +71,9 @@ nav:
   - 'Presenter': presenter.md
   - 'Ui': ui.md
   - 'Overlays': overlays.md
+  - 'Shared Elements':
+      'Usage': shared-elements.md
+      'Tutorial': shared-elements-tutorial.md
   - 'Testing': testing.md
   - 'Factories': factories.md
   - 'Code Generation': code-gen.md

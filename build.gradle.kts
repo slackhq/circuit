@@ -13,8 +13,9 @@ import com.squareup.anvil.plugin.AnvilExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import java.net.URI
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import kotlinx.validation.ExperimentalBCVApi
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
@@ -48,21 +49,23 @@ plugins {
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp) apply false
-  alias(libs.plugins.versionsPlugin)
   alias(libs.plugins.dependencyGuard) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.kotlin.plugin.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
+  alias(libs.plugins.binaryCompatibilityValidator)
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
 val detektVersion = libs.versions.detekt.get()
 val twitterDetektPlugin = libs.detektPlugins.twitterCompose
 
-tasks.dokkaHtmlMultiModule {
-  outputDirectory.set(rootDir.resolve("docs/api/0.x"))
-  includes.from(project.layout.projectDirectory.file("README.md"))
+dokka {
+  dokkaPublications.html {
+    outputDirectory.set(rootDir.resolve("docs/api/0.x"))
+    includes.from(project.layout.projectDirectory.file("README.md"))
+  }
 }
 
 allprojects {
@@ -104,6 +107,8 @@ allprojects {
         "**/Remove.kt",
         "**/Pets.kt",
         "**/SystemUiController.kt",
+        "**/RetainedStateHolderTest.kt",
+        "**/RetainedStateRestorationTester.kt",
       )
     }
   }
@@ -167,15 +172,21 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
+  val useK2Kapt =
+    providers.gradleProperty("kapt.use.k2").map { it.toBooleanStrict() }.getOrElse(false)
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
-      // Don't double apply to stub gen
       if (this is KaptGenerateStubsTask) {
-        // TODO due to Anvil we need to force language version 1.9
-        compilerOptions {
-          progressiveMode.set(false)
-          languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        if (useK2Kapt) {
+          // K2 Kapt is in alpha
+          compilerOptions.allWarningsAsErrors.set(false)
+        } else {
+          compilerOptions {
+            progressiveMode.set(false)
+            languageVersion.set(KotlinVersion.KOTLIN_1_9)
+          }
         }
+        // Don't double apply to stub gen
         return@configureEach
       }
       val isWasmTask = name.contains("wasm", ignoreCase = true)
@@ -232,8 +243,10 @@ subprojects {
       buildUponDefaultConfig = true
     }
 
+    val buildDir = project.layout.buildDirectory.asFile.get().canonicalPath
     tasks.withType<Detekt>().configureEach {
       jvmTarget = jvmTargetProject.get()
+      exclude { it.file.canonicalPath.startsWith(buildDir) }
       reports {
         html.required.set(true)
         xml.required.set(true)
@@ -252,16 +265,12 @@ subprojects {
     module("com.google.guava:listenablefuture") { replacedBy("com.google.guava:guava") }
   }
 
-  pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
-    tasks.withType<KaptGenerateStubsTask>().configureEach { useK2Kapt.set(true) }
-  }
-
   pluginManager.withPlugin("com.vanniktech.maven.publish") {
     apply(plugin = "org.jetbrains.dokka")
 
-    tasks.withType<DokkaTaskPartial>().configureEach {
+    configure<DokkaExtension> {
       moduleName.set(project.path.removePrefix(":").replace(":", "/"))
-      outputDirectory.set(layout.buildDirectory.dir("docs/partial"))
+      basePublicationsDirectory.set(layout.buildDirectory.dir("dokkaDir"))
       dokkaSourceSets.configureEach {
         val readMeProvider = project.layout.projectDirectory.file("README.md")
         if (readMeProvider.asFile.exists()) {
@@ -272,6 +281,7 @@ subprojects {
           suppress.set(true)
         }
         skipDeprecated.set(true)
+        documentedVisibilities.add(VisibilityModifier.Public)
 
         // Skip internal packages
         perPackageOption {
@@ -283,11 +293,11 @@ subprojects {
 
         // Add source links
         sourceLink {
-          localDirectory.set(layout.projectDirectory.dir("src").asFile)
+          localDirectory.set(layout.projectDirectory.dir("src"))
           val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
-          remoteUrl.set(
+          remoteUrl(
             providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
-              URI("$scmUrl/tree/main/$relPath/src").toURL()
+              "$scmUrl/tree/main/$relPath/src"
             }
           )
           remoteLineSuffix.set("#L")
@@ -336,7 +346,7 @@ subprojects {
 
   // Common android config
   val commonAndroidConfig: CommonExtension<*, *, *, *, *, *>.() -> Unit = {
-    compileSdk = 34
+    compileSdk = 35
 
     if (hasCompose) {
       buildFeatures { compose = true }
@@ -361,7 +371,7 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 21 }
-      testOptions { targetSdk = 34 }
+      testOptions { targetSdk = 35 }
     }
 
     // Single-variant libraries
@@ -460,4 +470,59 @@ subprojects {
       }
     }
   }
+}
+
+apiValidation {
+  @OptIn(ExperimentalBCVApi::class)
+  klib {
+    enabled = true
+    strictValidation = false
+  }
+  nonPublicMarkers +=
+    setOf(
+      "com.slack.circuit.runtime.InternalCircuitApi",
+      "com.slack.circuit.runtime.ExperimentalCircuitApi",
+      "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
+    )
+  ignoredPackages +=
+    setOf("com.slack.circuit.foundation.internal", "com.slack.circuit.runtime.internal")
+  // Annoyingly this only uses simple names
+  // https://github.com/Kotlin/binary-compatibility-validator/issues/16
+  ignoredProjects +=
+    listOf(
+      "apk",
+      "apps",
+      "benchmark",
+      "circuit-codegen",
+      "coil-rule",
+      "counter",
+      "internal-runtime",
+      "internal-test-utils",
+      "interop",
+      "kotlin-inject",
+      "mosaic",
+      "navigation",
+      "star",
+      "tacos",
+      "tutorial",
+    )
+}
+
+// Dokka aggregating deps
+dependencies {
+  dokka(projects.backstack)
+  dokka(projects.circuitCodegen)
+  dokka(projects.circuitCodegenAnnotations)
+  dokka(projects.circuitFoundation)
+  dokka(projects.circuitOverlay)
+  dokka(projects.circuitRetained)
+  dokka(projects.circuitRuntime)
+  dokka(projects.circuitRuntimePresenter)
+  dokka(projects.circuitRuntimeScreen)
+  dokka(projects.circuitRuntimeUi)
+  dokka(projects.circuitTest)
+  dokka(projects.circuitx.android)
+  dokka(projects.circuitx.effects)
+  dokka(projects.circuitx.gestureNavigation)
+  dokka(projects.circuitx.overlays)
 }

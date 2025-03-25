@@ -2,17 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.imageviewer
 
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.star.parcel.CommonParcelize
 
-@CommonParcelize
-data class ImageViewerScreen(val id: String, val url: String, val placeholderKey: String?) :
-  Screen {
+@Parcelize
+data class ImageViewerScreen(
+  val id: Long,
+  val url: String,
+  val index: Int,
+  val placeholderKey: String?,
+) : Screen {
   data class State(
-    val id: String,
+    val id: Long,
     val url: String,
+    val index: Int,
     val placeholderKey: String?,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState

@@ -1,5 +1,6 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
@@ -30,7 +31,13 @@ kotlin {
   }
   // endregion
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    group("browserCommon") {
+      withJs()
+      withWasmJs()
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -41,13 +48,12 @@ kotlin {
         api(libs.coroutines)
         api(projects.backstack)
         api(projects.circuitFoundation)
+        api(projects.internalRuntime)
         api(libs.compose.ui)
       }
     }
-    // We use a common folder instead of a common source set because there is no commonizer
-    // which exposes the browser APIs across these two targets.
-    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
+    get("browserCommonMain").dependsOn(commonMain.get())
+    get("browserCommonTest").dependsOn(commonTest.get())
   }
 
   targets.configureEach {
@@ -62,7 +68,7 @@ kotlin {
           if (isAndroidTarget) {
             freeCompilerArgs.addAll(
               "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.test.Parcelize",
+              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
             )
           }
         }

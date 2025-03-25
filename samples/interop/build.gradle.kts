@@ -11,7 +11,7 @@ android {
   namespace = "com.slack.circuit.sample.interop"
   defaultConfig {
     minSdk = 28
-    targetSdk = 34
+    targetSdk = 35
     versionCode = 1
     versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -24,18 +24,13 @@ android {
 
 dependencies {
   implementation(projects.circuitFoundation)
-  implementation(libs.androidx.compose.integration.activity)
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)
   implementation(libs.bundles.compose.ui)
   implementation(libs.androidx.compose.ui.util)
   implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.androidx.compose.material.icons)
-  implementation(libs.androidx.compose.accompanist.pager)
-  implementation(libs.androidx.compose.accompanist.pager.indicators)
-  implementation(libs.androidx.compose.accompanist.flowlayout)
-  implementation(libs.androidx.compose.accompanist.swiperefresh)
-  implementation(libs.androidx.compose.accompanist.systemUi)
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.windowSizeClass)
   implementation(libs.bundles.androidx.activity)

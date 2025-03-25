@@ -1,0 +1,9 @@
+public abstract interface class com/slack/circuit/runtime/screen/PopResult {
+}
+
+public abstract interface class com/slack/circuit/runtime/screen/Screen {
+}
+
+public abstract interface class com/slack/circuit/runtime/screen/StaticScreen : com/slack/circuit/runtime/screen/Screen {
+}
+

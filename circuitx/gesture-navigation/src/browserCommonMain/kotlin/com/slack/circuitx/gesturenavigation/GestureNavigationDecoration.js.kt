@@ -1,0 +1,10 @@
+// Copyright (C) 2023 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+package com.slack.circuitx.gesturenavigation
+
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+
+public actual fun GestureNavigationDecorationFactory(
+  fallback: AnimatedNavDecorator.Factory,
+  onBackInvoked: () -> Unit,
+): AnimatedNavDecorator.Factory = fallback

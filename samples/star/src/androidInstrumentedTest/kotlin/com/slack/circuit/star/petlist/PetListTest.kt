@@ -3,15 +3,19 @@
 package com.slack.circuit.star.petlist
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.sample.coil.test.CoilRule
+import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Gender.MALE
 import com.slack.circuit.star.db.Size.SMALL
@@ -39,7 +43,7 @@ class PetListTest {
   @Test
   fun petList_show_progress_indicator_for_loading_state() {
     composeTestRule.run {
-      setContent { PetList(Loading) }
+      setTestContent { PetList(Loading) }
 
       onNodeWithTag(PROGRESS_TAG).assertIsDisplayed()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -50,7 +54,7 @@ class PetListTest {
   @Test
   fun petList_show_message_for_no_animals_state() {
     composeTestRule.run {
-      setContent { PetList(NoAnimals(isRefreshing = false)) }
+      setTestContent { PetList(NoAnimals(isRefreshing = false)) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(GRID_TAG).assertDoesNotExist()
@@ -64,7 +68,7 @@ class PetListTest {
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(Success(animals, isRefreshing = false) {}) }
+      setTestContent { PetList(Success(animals, isRefreshing = false) {}) }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
       onNodeWithTag(NO_ANIMALS_TAG).assertDoesNotExist()
@@ -83,11 +87,11 @@ class PetListTest {
     val animals = persistentListOf(ANIMAL)
 
     composeTestRule.run {
-      setContent { PetList(Success(animals, isRefreshing = false, eventSink = testSink)) }
+      setTestContent { PetList(Success(animals, isRefreshing = false, eventSink = testSink)) }
 
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)[0].performClick()
 
-      testSink.assertEvent(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl))
+      testSink.assertEvent(PetListScreen.Event.ClickAnimal(ANIMAL.id, ANIMAL.imageUrl, ANIMAL))
     }
   }
 
@@ -103,4 +107,9 @@ class PetListTest {
         age = "12",
       )
   }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
+  setContent { PreviewSharedElementTransitionLayout { content() } }
 }

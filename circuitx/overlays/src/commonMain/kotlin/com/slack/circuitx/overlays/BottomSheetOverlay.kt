@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.Overlay
@@ -49,6 +50,7 @@ private constructor(
   private val onDismiss: (() -> Result)?,
   private val sheetShape: Shape?,
   private val sheetContainerColor: Color?,
+  private val tonalElevation: Dp?,
   private val dragHandle: (@Composable () -> Unit)?,
   private val skipPartiallyExpandedState: Boolean,
   private val properties: ModalBottomSheetProperties,
@@ -70,6 +72,7 @@ private constructor(
   public constructor(
     model: Model,
     sheetContainerColor: Color? = null,
+    tonalElevation: Dp? = null,
     sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
@@ -82,9 +85,9 @@ private constructor(
     dragHandle = dragHandle,
     sheetShape = sheetShape,
     sheetContainerColor = sheetContainerColor,
+    tonalElevation = tonalElevation,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
-    properties =
-      createBottomSheetProperties(isFocusable = isFocusable, shouldDismissOnBackPress = false),
+    properties = createBottomSheetProperties(shouldDismissOnBackPress = false),
     content = content,
   )
 
@@ -104,6 +107,7 @@ private constructor(
     model: Model,
     onDismiss: (() -> Result),
     sheetContainerColor: Color? = null,
+    tonalElevation: Dp? = null,
     sheetShape: Shape? = null,
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
@@ -116,6 +120,7 @@ private constructor(
     dragHandle = dragHandle,
     sheetShape = sheetShape,
     sheetContainerColor = sheetContainerColor,
+    tonalElevation = tonalElevation,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
     properties = properties,
     content = content,
@@ -161,9 +166,10 @@ private constructor(
       sheetState = sheetState,
       shape = sheetShape ?: RoundedCornerShape(32.dp),
       containerColor = sheetContainerColor ?: BottomSheetDefaults.ContainerColor,
+      tonalElevation = tonalElevation ?: 0.dp,
       dragHandle = dragHandle ?: { BottomSheetDefaults.DragHandle() },
       // Go edge-to-edge
-      windowInsets = WindowInsets(0, 0, 0, 0),
+      contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
       onDismissRequest = {
         // Only possible if dismissOnTapOutside is false
         check(dismissOnTapOutside)
@@ -191,10 +197,9 @@ private constructor(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties()
+internal val DEFAULT_PROPERTIES: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal expect fun createBottomSheetProperties(
-  isFocusable: Boolean = DEFAULT_PROPERTIES.isFocusable,
-  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress,
+  shouldDismissOnBackPress: Boolean = DEFAULT_PROPERTIES.shouldDismissOnBackPress
 ): ModalBottomSheetProperties

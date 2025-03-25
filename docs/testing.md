@@ -24,6 +24,18 @@ For Gradle JVM projects, you can use Gradle test fixtures syntax on the core cir
 testImplementation(testFixtures("com.slack.circuit:circuit:<version>"))
 ```
 
+For unit tests on the JVM in an Android module, please set below in your project's AGP config.
+
+```gradle
+android {
+  ...
+  testOptions {
+    unitTests.isReturnDefaultValues = true
+  }
+  ...
+}
+```
+
 ## Example
 
 Testing a Circuit Presenter and UI is a breeze! Consider the following example:
@@ -104,7 +116,7 @@ private fun Favorite(favorite: Favorite, eventSink: (FavoritesScreen.Event) -> U
 
 ### Presenter Unit Tests
 
-Here’s a test to verify presenter emissions using the `Presenter.test()` helper. This function acts as a shorthand over Molecule + Turbine to give you a `ReceiveTurbine.() -> Unit` lambda.
+Here’s a test to verify presenter emissions using the `Presenter.test()` helper. This function acts as a shorthand over Molecule + Turbine to give you a `CircuitReceiveTurbine.() -> Unit` lambda.
 
 ```kotlin
 @Test 

@@ -19,15 +19,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.parcel.CommonParcelize
 import com.slack.circuit.star.resources.Res
 import com.slack.circuit.star.resources.star_icon
 import org.jetbrains.compose.resources.painterResource
 
-@CommonParcelize data object AboutScreen : StaticScreen
+@Parcelize data object AboutScreen : StaticScreen
 
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable

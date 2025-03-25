@@ -48,4 +48,13 @@ internal object CircuitNames {
       internal val CONTRIBUTES_BINDING = ClassName(RUNTIME_PACKAGE, "ContributesBinding")
     }
   }
+
+  object Metro {
+    private const val RUNTIME_PACKAGE = "dev.zacsweers.metro"
+    val INJECT = ClassName(RUNTIME_PACKAGE, "Inject")
+    val ASSISTED = ClassName(RUNTIME_PACKAGE, "Assisted")
+    val ASSISTED_FACTORY = ClassName(RUNTIME_PACKAGE, "AssistedFactory")
+    val PROVIDER = ClassName(RUNTIME_PACKAGE, "Provider")
+    internal val CONTRIBUTES_INTO_SET = ClassName(RUNTIME_PACKAGE, "ContributesIntoSet")
+  }
 }

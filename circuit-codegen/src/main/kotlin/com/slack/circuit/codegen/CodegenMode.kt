@@ -4,6 +4,9 @@ package com.slack.circuit.codegen
 
 import com.google.devtools.ksp.processing.JvmPlatformInfo
 import com.google.devtools.ksp.processing.PlatformInfo
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.slack.circuit.codegen.FactoryType.UI
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -144,9 +147,10 @@ internal enum class CodegenMode {
    * given scope (e.g. AppScope).
    *
    * ```kotlin
+   * @Inject
    * @ContributesMultibinding(AppScope::class)
-   * public class FavoritesPresenterFactory @Inject constructor(
-   *   private val factory: FavoritesPresenter.Factory,
+   * public class FavoritesPresenterFactory(
+   *   private val provider: () -> FavoritesPresenter,
    * ) : Presenter.Factory { ... }
    * ```
    */
@@ -173,6 +177,57 @@ internal enum class CodegenMode {
     ) {
       classBuilder.addAnnotation(runtime.inject)
     }
+
+    override fun filterValidInjectionSites(
+      candidates: Collection<KSDeclaration>
+    ): Collection<KSDeclaration> {
+      return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
+    }
+  },
+
+  /**
+   * The `metro` code gen mode
+   *
+   * This mode annotates generated factory types with `ContributesIntoSet`, allowing for KI-Anvil to
+   * automatically wire the generated class up to KI's multibinding system within a given scope
+   * (e.g. AppScope).
+   *
+   * ```kotlin
+   * @Inject
+   * @ContributesIntoSet(AppScope::class)
+   * public class FavoritesPresenterFactory(
+   *   private val provider: Provider<FavoritesPresenter>
+   * ) : Presenter.Factory { ... }
+   * ```
+   */
+  METRO {
+    override val runtime: InjectionRuntime = InjectionRuntime.Metro
+
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      // Metro supports all
+      return true
+    }
+
+    override fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {
+      builder.addAnnotation(
+        AnnotationSpec.builder(CircuitNames.Metro.CONTRIBUTES_INTO_SET)
+          .addMember("%T::class", scope)
+          .build()
+      )
+    }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder,
+    ) {
+      classBuilder.addAnnotation(runtime.inject)
+    }
+
+    override fun filterValidInjectionSites(
+      candidates: Collection<KSDeclaration>
+    ): Collection<KSDeclaration> {
+      return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
+    }
   };
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
@@ -193,11 +248,18 @@ internal enum class CodegenMode {
     constructorBuilder: FunSpec.Builder,
   )
 
+  /** Filters the candidates for @Inject annotation placement. */
+  open fun filterValidInjectionSites(
+    candidates: Collection<KSDeclaration>
+  ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
+
   open val runtime: InjectionRuntime = InjectionRuntime.Javax
 
   sealed interface InjectionRuntime {
     val inject: ClassName
     val assisted: ClassName
+    val assistedInject: ClassName?
+    val assistedFactory: ClassName?
 
     fun asProvider(providedType: TypeName): TypeName
 
@@ -206,6 +268,8 @@ internal enum class CodegenMode {
     data object Javax : InjectionRuntime {
       override val inject: ClassName = CircuitNames.INJECT
       override val assisted: ClassName = CircuitNames.ASSISTED
+      override val assistedInject: ClassName = CircuitNames.ASSISTED_INJECT
+      override val assistedFactory: ClassName = CircuitNames.ASSISTED_FACTORY
 
       override fun asProvider(providedType: TypeName): TypeName {
         return CircuitNames.PROVIDER.parameterizedBy(providedType)
@@ -219,9 +283,26 @@ internal enum class CodegenMode {
     data object KotlinInject : InjectionRuntime {
       override val inject: ClassName = CircuitNames.KotlinInject.INJECT
       override val assisted: ClassName = CircuitNames.KotlinInject.ASSISTED
+      override val assistedInject: ClassName? = null
+      override val assistedFactory: ClassName? = null // It has no annotation
 
       override fun asProvider(providedType: TypeName): TypeName {
         return LambdaTypeName.get(returnType = providedType)
+      }
+
+      override fun getProviderBlock(provider: CodeBlock): CodeBlock {
+        return CodeBlock.of("%L()", provider)
+      }
+    }
+
+    data object Metro : InjectionRuntime {
+      override val inject: ClassName = CircuitNames.Metro.INJECT
+      override val assisted: ClassName = CircuitNames.Metro.ASSISTED
+      override val assistedInject: ClassName? = null
+      override val assistedFactory: ClassName = CircuitNames.Metro.ASSISTED_FACTORY
+
+      override fun asProvider(providedType: TypeName): TypeName {
+        return CircuitNames.Metro.PROVIDER.parameterizedBy(providedType)
       }
 
       override fun getProviderBlock(provider: CodeBlock): CodeBlock {

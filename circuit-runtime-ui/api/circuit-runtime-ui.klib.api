@@ -1,0 +1,17 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-runtime-ui>
+abstract interface <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.runtime.ui/Ui { // com.slack.circuit.runtime.ui/Ui|null[0]
+    abstract fun Content(#A, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.runtime.ui/Ui.Content|Content(1:0;androidx.compose.ui.Modifier;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+
+    abstract fun interface Factory { // com.slack.circuit.runtime.ui/Ui.Factory|null[0]
+        abstract fun create(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/CircuitContext): com.slack.circuit.runtime.ui/Ui<*>? // com.slack.circuit.runtime.ui/Ui.Factory.create|create(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.CircuitContext){}[0]
+    }
+}
+
+final inline fun <#A: com.slack.circuit.runtime/CircuitUiState> com.slack.circuit.runtime.ui/ui(crossinline kotlin/Function4<#A, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>): com.slack.circuit.runtime.ui/Ui<#A> // com.slack.circuit.runtime.ui/ui|ui(kotlin.Function4<0:0,androidx.compose.ui.Modifier,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){0§<com.slack.circuit.runtime.CircuitUiState>}[0]

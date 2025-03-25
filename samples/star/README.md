@@ -4,7 +4,7 @@ STAR
 Android
 -------
 
-Simple build the apk project like a standard Android app.
+Simply build the apk project like a standard Android app.
 
 Desktop
 -------

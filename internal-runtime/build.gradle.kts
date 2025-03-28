@@ -20,12 +20,12 @@ kotlin {
   macosX64()
   macosArm64()
   js(IR) {
-    moduleName = "internal-runtime"
+    outputModuleName = "internal-runtime"
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = "internal-runtime"
+    outputModuleName = "internal-runtime"
     browser()
   }
   // endregion

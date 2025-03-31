@@ -10,11 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.slack.circuit.foundation.internal.BackHandler
-import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.InterceptorGoToResult
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Result
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -98,8 +98,8 @@ public class CircuitInterceptingNavigator(
           notifier?.goToInterceptorFailure(interceptorResult)
           if (interceptorResult.consumed) return false
         }
-        is Result.Rewrite -> {
-          onNavEvent(interceptorResult.navEvent)
+        is InterceptorGoToResult.Rewrite -> {
+          delegate.goTo(screen)
           return true
         }
       }
@@ -117,10 +117,6 @@ public class CircuitInterceptingNavigator(
         is Result.Failure -> {
           notifier?.popInterceptorFailure(interceptorResult)
           if (interceptorResult.consumed) return null
-        }
-        is Result.Rewrite -> {
-          onNavEvent(interceptorResult.navEvent)
-          return null
         }
       }
     }

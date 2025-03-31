@@ -15,13 +15,13 @@ import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor
+import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.InterceptorGoToResult
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
 import com.slack.circuitx.navigation.intercepting.rememberCircuitInterceptingNavigator
@@ -73,13 +73,11 @@ class MainActivity : AppCompatActivity() {
 }
 
 private object InfoScreenRewriteInterceptor : CircuitNavigationInterceptor {
-  override fun goTo(screen: Screen): CircuitNavigationInterceptor.Result {
+  override fun goTo(screen: Screen): InterceptorGoToResult {
     return when (screen) {
       is InfoScreen -> {
-        CircuitNavigationInterceptor.Result.Rewrite(
-          NavEvent.GoTo(
-            IntentScreen(Intent(Intent.ACTION_VIEW, "https://slackhq.github.io/circuit/".toUri()))
-          )
+        InterceptorGoToResult.Rewrite(
+          IntentScreen(Intent(Intent.ACTION_VIEW, "https://slackhq.github.io/circuit/".toUri()))
         )
       }
       else -> CircuitNavigationInterceptor.Skipped

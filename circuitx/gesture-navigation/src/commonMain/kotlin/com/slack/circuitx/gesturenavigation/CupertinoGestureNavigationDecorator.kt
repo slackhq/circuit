@@ -1,6 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 @file:Suppress("DEPRECATION") // TODO migrate!
+@file:OptIn(ExperimentalMaterialApi::class)
 
 package com.slack.circuitx.gesturenavigation
 
@@ -68,7 +69,6 @@ import kotlinx.coroutines.flow.filter
  *   navigation. This is useless when you have full width horizontally scrolling layouts. Defaults
  *   to true.
  */
-@ExperimentalMaterialApi
 internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
   private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),

@@ -3,8 +3,8 @@
 package com.slack.circuitx.navigation.intercepting
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeRuntimeApi
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +24,6 @@ import kotlinx.collections.immutable.persistentListOf
  *
  * @see CircuitInterceptingNavigator
  */
-@OptIn(ExperimentalComposeRuntimeApi::class)
 @Composable
 public fun rememberCircuitInterceptingNavigator(
   navigator: Navigator,
@@ -45,14 +44,23 @@ public fun rememberCircuitInterceptingNavigator(
     }
   // Handle the back button here to get pop events from it.
   if (enableBackHandler) {
-    var handledRoot by remember(navigator.peekBackStack()) { mutableStateOf(false) }
-    BackHandler(enabled = !handledRoot) {
-      // Check the backStack on each call as the `BackHandler` enabled state only updates on
-      // composition.
-      if (navigator.peekBackStack().size <= 1) {
-        handledRoot = true
+    var trigger by remember { mutableStateOf(false) }
+    BackHandler(!trigger && enableBackHandler) {
+      // Root pop check to prevent an infinite loop if this is used with the Android variant of
+      // rememberCircuitNavigator that calls `OnBackPressedDispatcher.onBackPressed`. We need to
+      // unload this BackHandler from the composition before the root pop is triggered, so dealy
+      // calling pop until after the next composition.
+      if (navigator.peekBackStack().size > 1) {
+        interceptingNavigator.pop()
+      } else {
+        trigger = true
       }
-      interceptingNavigator.pop()
+    }
+    if (trigger) {
+      SideEffect {
+        interceptingNavigator.pop()
+        trigger = false
+      }
     }
   }
   // Handle backstack changed event listeners.

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.gesturenavigation
 
+import androidx.compose.material.ExperimentalMaterialApi
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 
-@Suppress("OPT_IN_USAGE_FUTURE_ERROR") // TODO remove after migrating to AnchoredDraggable APIs
+@OptIn(ExperimentalMaterialApi::class)
 public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory,
   onBackInvoked: () -> Unit,

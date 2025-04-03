@@ -7,6 +7,8 @@ Unreleased
 0.27.0
 ------
 
+_2025-03-01_
+
 ### Screen based animation overrides
 
 We have added experimental support for animations based on the source/target screens and the type of navigation event. This can be accomplished with the the new `AnimatedScreenTransform` interface, allowing customization of the `ContentTransform` used when transitioning between screens. Having support for screen based animation overrides is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.

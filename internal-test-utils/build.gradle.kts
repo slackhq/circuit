@@ -21,12 +21,12 @@ kotlin {
   macosX64()
   macosArm64()
   js(IR) {
-    moduleName = "internal-test-utils"
+    outputModuleName = "internal-test-utils"
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = "internal-test-utils"
+    outputModuleName = "internal-test-utils"
     browser()
   }
   // endregion

@@ -20,6 +20,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 
@@ -65,6 +66,19 @@ sealed class TestScreen(val label: String) : Screen {
   @Parcelize data object RootAlpha : TestScreen("Root Alpha")
 
   @Parcelize data object RootBeta : TestScreen("Root Beta")
+}
+
+sealed class TestPopResult : PopResult {
+
+  @Parcelize data object PopResultA : TestPopResult()
+
+  @Parcelize data object PopResultB : TestPopResult()
+
+  @Parcelize data object PopResultC : TestPopResult()
+
+  @Parcelize data object PopResultRootAlpha : TestPopResult()
+
+  @Parcelize data object PopResultRootBeta : TestPopResult()
 }
 
 @Composable

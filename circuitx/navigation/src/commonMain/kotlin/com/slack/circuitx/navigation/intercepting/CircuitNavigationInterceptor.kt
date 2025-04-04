@@ -14,60 +14,78 @@ import kotlinx.collections.immutable.ImmutableList
 public interface CircuitNavigationInterceptor {
 
   /**
-   * Navigates to the [screen], returning a [Result] for the navigation.
+   * Navigates to the [screen], returning a [InterceptorGoToResult] for the navigation.
    *
-   * By default this will skip the navigation and return [Skipped].
+   * By default this will skip intercepting the navigation and return [Skipped].
    */
   public fun goTo(screen: Screen): InterceptorGoToResult = Skipped
 
   /**
-   * Navigates back looking at the [peekBackStack], returning a [Result] for the navigation.
+   * Navigates back looking at the [peekBackStack], returning a [InterceptorPopResult] for the
+   * navigation.
    *
-   * By default this will skip the navigation and return [Skipped].
+   * By default this will skip intercepting the navigation and return [Skipped].
    */
   public fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptorPopResult =
     Skipped
 
-  /** The result of [CircuitNavigationInterceptor.goTo] being intercepted. */
-  public sealed interface InterceptorGoToResult {
-    /** The [CircuitNavigationInterceptor] intercepted and rewrote the navigation destination. */
-    public data class Rewrite(val screen: Screen) : InterceptorGoToResult
-  }
-
-  /** The result of [CircuitNavigationInterceptor.pop] being intercepted. */
-  public sealed interface InterceptorPopResult
-
-  /** The result of the [CircuitNavigationInterceptor] intercepting [goTo] or [pop]. */
-  public sealed interface Result : InterceptorGoToResult, InterceptorPopResult {
-
-    /** The [CircuitNavigationInterceptor] did not intercept the interaction. */
-    public data object Skipped : Result
-
-    /**
-     * The [CircuitNavigationInterceptor] interaction was successful.
-     *
-     * @param consumed If the [CircuitNavigationInterceptor] consumed the interaction.
-     */
-    public data class Success(val consumed: Boolean) : Result
-
-    /**
-     * The [CircuitNavigationInterceptor] interaction was unsuccessful.
-     *
-     * @param consumed If the [CircuitNavigationInterceptor] consumed the interaction.
-     */
-    public data class Failure(val consumed: Boolean, val reason: Throwable? = null) : Result
-  }
+  /**
+   * Resets the back stack to the [newRoot], returning a [InterceptorResetRootResult] for the
+   * navigation.
+   *
+   * By default this will skip intercepting the navigation and return [Skipped].
+   */
+  public fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): InterceptorResetRootResult = Skipped
 
   public companion object {
     /**
-     * Shorthand for a [Result.Skipped] interceptor result where the interceptor did not intercept
-     * the navigation.
+     * Shorthand for a [InterceptorResult.Skipped] interceptor result where the interceptor did not
+     * intercept the navigation.
      */
-    public val Skipped: Result = Result.Skipped
+    public val Skipped: InterceptorResult = InterceptorResult.Skipped
     /**
-     * Shorthand for a [Result.Success] interceptor result where the interceptor has consumed the
-     * navigation.
+     * Shorthand for a [InterceptorResult.Success] interceptor result where the interceptor has
+     * consumed the navigation.
      */
-    public val ConsumedSuccess: Result = Result.Success(consumed = true)
+    public val ConsumedSuccess: InterceptorResult = InterceptorResult.Success(consumed = true)
   }
+}
+
+/** The result of [CircuitNavigationInterceptor.goTo] being intercepted. */
+public sealed interface InterceptorGoToResult {
+  /** The [CircuitNavigationInterceptor] intercepted and rewrote the navigation destination. */
+  public data class Rewrite(val screen: Screen) : InterceptorGoToResult
+}
+
+/** The result of [CircuitNavigationInterceptor.resetRoot] being intercepted. */
+public sealed interface InterceptorResetRootResult {
+  /** The [CircuitNavigationInterceptor] intercepted and rewrote the new root screen. */
+  public data class Rewrite(val screen: Screen, val saveState: Boolean, val restoreState: Boolean) :
+    InterceptorResetRootResult
+}
+
+/** The result of [CircuitNavigationInterceptor.pop] being intercepted. */
+public sealed interface InterceptorPopResult
+
+/** The result of the [CircuitNavigationInterceptor] intercepting [goTo] or [pop]. */
+public sealed interface InterceptorResult :
+  InterceptorGoToResult, InterceptorPopResult, InterceptorResetRootResult {
+
+  /** The [CircuitNavigationInterceptor] did not intercept the interaction. */
+  public data object Skipped : InterceptorResult
+
+  /**
+   * The [CircuitNavigationInterceptor] interaction was successful.
+   *
+   * @param consumed If the [CircuitNavigationInterceptor] consumed the interaction.
+   */
+  public data class Success(val consumed: Boolean) : InterceptorResult
+
+  /**
+   * The [CircuitNavigationInterceptor] interaction was unsuccessful.
+   *
+   * @param consumed If the [CircuitNavigationInterceptor] consumed the interaction.
+   */
+  public data class Failure(val consumed: Boolean, val reason: Throwable? = null) :
+    InterceptorResult
 }

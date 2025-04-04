@@ -32,4 +32,13 @@ public interface CircuitNavigationEventListener {
    * @see CircuitInterceptingNavigator.pop
    */
   public fun pop(backStack: ImmutableList<Screen>, result: PopResult?) {}
+
+  /**
+   * Called when the [CircuitInterceptingNavigator] resets the back stack to [newRoot].
+   *
+   * This is not called if navigation was intercepted.
+   *
+   * @see CircuitInterceptingNavigator.resetRoot
+   */
+  public fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean) {}
 }

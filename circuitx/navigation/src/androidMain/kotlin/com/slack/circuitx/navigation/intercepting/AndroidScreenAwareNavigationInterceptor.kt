@@ -24,13 +24,13 @@ public class AndroidScreenAwareNavigationInterceptor(private val starter: Androi
     }
   )
 
-  override fun goTo(screen: Screen): CircuitNavigationInterceptor.Result {
+  override fun goTo(screen: Screen): InterceptorGoToResult {
     return when (screen) {
       is AndroidScreen ->
         if (starter.start(screen)) {
           CircuitNavigationInterceptor.ConsumedSuccess
         } else {
-          CircuitNavigationInterceptor.Result.Failure(consumed = true)
+          InterceptorResult.Failure(consumed = true)
         }
       else -> CircuitNavigationInterceptor.Skipped
     }

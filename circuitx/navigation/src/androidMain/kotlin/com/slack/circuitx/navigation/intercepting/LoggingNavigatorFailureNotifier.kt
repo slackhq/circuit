@@ -9,12 +9,16 @@ import android.util.Log
  * interception failures.
  */
 public object LoggingNavigatorFailureNotifier : CircuitInterceptingNavigator.FailureNotifier {
-  override fun goToInterceptorFailure(result: CircuitNavigationInterceptor.Result.Failure) {
-    log("goToInterceptorFailure: $result")
+  override fun goToInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
+    log("goToInterceptorFailure: $interceptorResult")
   }
 
-  override fun popInterceptorFailure(result: CircuitNavigationInterceptor.Result.Failure) {
-    log("popInterceptorFailure: $result")
+  override fun popInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
+    log("popInterceptorFailure: $interceptorResult")
+  }
+
+  override fun rootResetInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
+    log("rootResetInterceptorFailure: $interceptorResult")
   }
 
   private fun log(message: String) = Log.i("Circuit Navigation", message)

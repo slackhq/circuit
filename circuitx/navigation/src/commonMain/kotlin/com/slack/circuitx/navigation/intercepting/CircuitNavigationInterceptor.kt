@@ -35,7 +35,11 @@ public interface CircuitNavigationInterceptor {
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): InterceptorResetRootResult = Skipped
+  public fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): InterceptorResetRootResult = Skipped
 
   public companion object {
     /**

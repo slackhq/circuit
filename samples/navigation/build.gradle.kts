@@ -38,6 +38,7 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitx.gestureNavigation)
+        implementation(projects.circuitx.navigation)
         implementation(projects.internalRuntime)
       }
     }

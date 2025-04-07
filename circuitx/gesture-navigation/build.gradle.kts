@@ -42,7 +42,7 @@ kotlin {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
         // For CupertinoGestureNavigationDecoration
-        api(libs.compose.material.material)
+        implementation(libs.compose.material.material)
       }
     }
 

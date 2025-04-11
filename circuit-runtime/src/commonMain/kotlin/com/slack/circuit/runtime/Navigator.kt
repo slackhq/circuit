@@ -79,6 +79,7 @@ public interface Navigator : GoToNavigator {
    * @param restoreState Whether any previously saved state for the given [newRoot] should be
    *   restored. If this is `false` or there is no previous state, the back stack will only contain
    *   [newRoot].
+   * @return The backstack before it was reset.
    */
   public fun resetRoot(
     newRoot: Screen,

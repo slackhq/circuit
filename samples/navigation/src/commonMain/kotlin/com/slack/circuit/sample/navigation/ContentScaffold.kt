@@ -15,10 +15,15 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -58,10 +63,11 @@ private fun BottomTabRow(
   modifier: Modifier = Modifier,
 ) {
   Row(
+    verticalAlignment = Alignment.CenterVertically,
     modifier =
       modifier
         .fillMaxWidth()
-        .windowInsetsPadding(WindowInsets.safeContent.only(WindowInsetsSides.Bottom))
+        .windowInsetsPadding(WindowInsets.safeContent.only(WindowInsetsSides.Bottom)),
   ) {
     tabs.forEach { tab ->
       val selected = tab == backStack.rootRecord?.screen
@@ -80,5 +86,14 @@ private fun BottomTabRow(
             .padding(horizontal = 8.dp, vertical = 20.dp),
       )
     }
+    Icon(
+      Icons.Default.Info,
+      contentDescription = "Info",
+      modifier =
+        Modifier.clickable { navigator.goTo(InfoScreen) }
+          .height(IntrinsicSize.Max)
+          .minimumInteractiveComponentSize()
+          .padding(horizontal = 8.dp, vertical = 20.dp),
+    )
   }
 }

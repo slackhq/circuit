@@ -120,7 +120,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
 
-androidx-core = "androidx.core:core-ktx:1.15.0"
+androidx-core = "androidx.core:core-ktx:1.16.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 

@@ -4,8 +4,26 @@ Changelog
 Unreleased
 ----------
 
+0.27.1
+------
+
+_2025-04-14_
+
+- **Fix**: Crash caused by calling `resetRoot` while the same `Screen` was still in the composition
+- **New**: Added a sample app demonstrating bottom bar navigation
+- [gesture-navigation] Update `AndroidPredictiveBackNavDecorator` to behave more like the Android predictive back motion spec
+- [gesture-navigation] Change the Compose Material dependency to not be exposed as an api
+- Update compose-bom to `2025.04.00`
+- Update dagger to `2.56.1`
+- Update kotlinInject.anvil to `0.1.3`
+- Update kotlinx-coroutines to `1.10.2`
+- Update androidx.core to `1.16.0`
+- [samples] Update mosaic to `0.17.0`
+
 0.27.0
 ------
+
+_2025-02-28_
 
 ### Screen based animation overrides
 

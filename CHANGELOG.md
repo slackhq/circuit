@@ -20,6 +20,8 @@ _2025-04-14_
 - Update androidx.core to `1.16.0`
 - [samples] Update mosaic to `0.17.0`
 
+Special thanks to [@OSemenovBoyarka](https://github.com/OSemenovBoyarka) and [@asapha](https://github.com/asapha) for contributing to this release!
+
 0.27.0
 ------
 

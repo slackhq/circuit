@@ -754,6 +754,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0271" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.27.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0270" class="md-nav__link">
     <span class="md-ellipsis">
       0.27.0
@@ -1544,6 +1553,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0271" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.27.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0270" class="md-nav__link">
     <span class="md-ellipsis">
       0.27.0
@@ -2269,12 +2287,27 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0271">0.27.1<a class="headerlink" href="#0271" title="Permanent link">&para;</a></h2>
+<p><em>2025-04-14</em></p>
+<ul>
+<li><strong>Fix</strong>: Crash caused by calling <code>resetRoot</code> while the same <code>Screen</code> was still in the composition</li>
+<li><strong>New</strong>: Added a sample app demonstrating bottom bar navigation</li>
+<li>[gesture-navigation] Update <code>AndroidPredictiveBackNavDecorator</code> to behave more like the Android predictive back motion spec</li>
+<li>[gesture-navigation] Change the Compose Material dependency to not be exposed as an api</li>
+<li>Update compose-bom to <code>2025.04.00</code></li>
+<li>Update dagger to <code>2.56.1</code></li>
+<li>Update kotlinInject.anvil to <code>0.1.3</code></li>
+<li>Update kotlinx-coroutines to <code>1.10.2</code></li>
+<li>Update androidx.core to <code>1.16.0</code></li>
+<li>[samples] Update mosaic to <code>0.17.0</code></li>
+</ul>
 <h2 id="0270">0.27.0<a class="headerlink" href="#0270" title="Permanent link">&para;</a></h2>
+<p><em>2025-02-28</em></p>
 <h3 id="screen-based-animation-overrides">Screen based animation overrides<a class="headerlink" href="#screen-based-animation-overrides" title="Permanent link">&para;</a></h3>
 <p>We have added experimental support for animations based on the source/target screens and the type of navigation event. This can be accomplished with the the new <code>AnimatedScreenTransform</code> interface, allowing customization of the <code>ContentTransform</code> used when transitioning between screens. Having support for screen based animation overrides is especially important for use with shared element transitions, as it provides the ability to replace the transition before the shared elements are loaded.</p>
 <p>See this <a href="https://github.com/slackhq/circuit/pull/1901">PR</a> for more details and example implementations. Please share feedback in <a href="https://github.com/slackhq/circuit/discussions/1982">this discussion</a>.</p>
 <h3 id="behaviour-changes">Behaviour Changes:<a class="headerlink" href="#behaviour-changes" title="Permanent link">&para;</a></h3>
-<p>State retention logic was simplified by removing <code>LocalCanRetainChecker</code>, with <code>CanRetainChecker</code> becoming an implementation detail of a <code>RetainedStateRegistry</code>.<br />
+<p>State retention logic was simplified by removing <code>LocalCanRetainChecker</code>, with <code>CanRetainChecker</code> becoming an implementation detail of a <code>RetainedStateRegistry</code>.
 This potentially impacts uses of <code>rememberRetained</code> that depended on <code>LocalCanRetainChecker</code>, as <code>rememberRetained</code> would use the composition local before using <code>rememberCanRetainChecker</code>. Also, as <code>rememberCanRetainChecker</code> was only needed for <code>Continuity</code> it has been renamed to <code>rememberContinuityCanRetainChecker</code>.</p>
 <h3 id="misc">Misc:<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
 <ul>

@@ -21,7 +21,7 @@ import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor
-import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.InterceptorGoToResult
+import com.slack.circuitx.navigation.intercepting.InterceptorGoToResult
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
 import com.slack.circuitx.navigation.intercepting.rememberCircuitInterceptingNavigator

@@ -7,6 +7,7 @@ import com.slack.circuit.internal.runtime.IgnoreOnParcel
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor
+import com.slack.circuitx.navigation.intercepting.InterceptorGoToResult
 
 @Parcelize
 object InfoScreen : Screen {
@@ -14,7 +15,7 @@ object InfoScreen : Screen {
 }
 
 class InfoScreenInterceptor(private val uriHandler: UriHandler) : CircuitNavigationInterceptor {
-  override fun goTo(screen: Screen): CircuitNavigationInterceptor.Result {
+  override fun goTo(screen: Screen): InterceptorGoToResult {
     return when (screen) {
       is InfoScreen -> {
         uriHandler.openUri(screen.url)

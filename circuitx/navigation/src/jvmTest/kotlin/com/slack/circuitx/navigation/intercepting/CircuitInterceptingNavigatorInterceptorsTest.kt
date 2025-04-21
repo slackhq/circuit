@@ -2,17 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
-import androidx.compose.runtime.remember
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
-import app.cash.turbine.Turbine
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
-import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.resetRoot
-import com.slack.circuit.runtime.screen.PopResult
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.test.FakeNavigator
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.ConsumedSuccess
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.Skipped
 import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationInterceptor.GoToEvent
@@ -23,16 +15,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
-private val FailConsumed = InterceptorResult.Failure(consumed = true)
-private val FailUnconsumed = InterceptorResult.Failure(consumed = false)
-private val SuccessUnconsumed = InterceptorResult.Success(consumed = false)
-
-class CircuitInterceptingNavigatorTest {
+class CircuitInterceptingNavigatorInterceptorsTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -698,105 +685,4 @@ class CircuitInterceptingNavigatorTest {
   }
 }
 
-private fun ComposeContentTestRule.setTestContent(
-  interceptors: ImmutableList<CircuitNavigationInterceptor> = persistentListOf(),
-  eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
-  notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
-): Pair<FakeNavigator, Navigator> {
-  val navigator = FakeNavigator(TestScreen.RootAlpha)
-  lateinit var interceptingNavigator: Navigator
-  setContent {
-    interceptingNavigator = remember {
-      CircuitInterceptingNavigator(navigator, interceptors, eventListeners, notifier)
-    }
-  }
-  return navigator to interceptingNavigator
-}
 
-// TODO put this in a tests artifact
-/** A fake implementation of CircuitNavigationInterceptor for testing. */
-private class FakeCircuitNavigationInterceptor : CircuitNavigationInterceptor {
-
-  private val goToEvents = Turbine<GoToEvent>()
-  private val popEvents = Turbine<PopEvent>()
-  private val resetRootEvents = Turbine<ResetRootEvent>()
-
-  private val goToResults = mutableListOf<InterceptorGoToResult>()
-  private val popResults = mutableListOf<InterceptorPopResult>()
-  private val resetRootResults = mutableListOf<InterceptorResetRootResult>()
-
-  override fun goTo(screen: Screen): InterceptorGoToResult {
-    val result = goToResults.removeFirst()
-    goToEvents.add(GoToEvent(screen, result))
-    return result
-  }
-
-  override fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptorPopResult {
-    val interceptorPopResult = popResults.removeFirst()
-    popEvents.add(PopEvent(peekBackStack, result, interceptorPopResult))
-    return interceptorPopResult
-  }
-
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): InterceptorResetRootResult {
-    val interceptorResetRootResult = resetRootResults.removeFirst()
-    resetRootEvents.add(
-      ResetRootEvent(newRoot, interceptorResetRootResult, saveState, restoreState)
-    )
-    return interceptorResetRootResult
-  }
-
-  fun queueGoTo(vararg interceptorGoToResult: InterceptorGoToResult) {
-    goToResults.addAll(interceptorGoToResult)
-  }
-
-  fun queuePop(vararg interceptorPopResult: InterceptorPopResult) {
-    popResults.addAll(interceptorPopResult)
-  }
-
-  fun queueResetRoot(vararg interceptorResetRootResult: InterceptorResetRootResult) {
-    resetRootResults.addAll(interceptorResetRootResult)
-  }
-
-  /** Awaits the next [goTo] or throws if no goTo are performed. */
-  suspend fun awaitGoTo(): GoToEvent = goToEvents.awaitItem()
-
-  /** Awaits the next [pop] event or throws if no pops are performed. */
-  suspend fun awaitPop(): PopEvent = popEvents.awaitItem()
-
-  /** Awaits the next [resetRoot] or throws if no resets were performed. */
-  suspend fun awaitResetRoot(): ResetRootEvent = resetRootEvents.awaitItem()
-
-  fun assertGoToIsEmpty() {
-    goToEvents.ensureAllEventsConsumed()
-  }
-
-  fun assertPopIsEmpty() {
-    popEvents.ensureAllEventsConsumed()
-  }
-
-  fun assertResetRootIsEmpty() {
-    resetRootEvents.ensureAllEventsConsumed()
-  }
-
-  /** Represents a recorded [CircuitNavigationInterceptor.goTo] event. */
-  data class GoToEvent(val screen: Screen, val interceptorGoToResult: InterceptorGoToResult)
-
-  /** Represents a recorded [CircuitNavigationInterceptor.pop] event. */
-  data class PopEvent(
-    val peekBackStack: ImmutableList<Screen>,
-    val result: PopResult?,
-    val interceptorGoToResult: InterceptorPopResult,
-  )
-
-  /** Represents a recorded [CircuitNavigationInterceptor.resetRoot] event. */
-  data class ResetRootEvent(
-    val newRoot: Screen,
-    val interceptorResetRootResult: InterceptorResetRootResult,
-    val saveState: Boolean = false,
-    val restoreState: Boolean = false,
-  )
-}

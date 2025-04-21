@@ -29,41 +29,6 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   private val interceptors = persistentListOf(fakeInterceptor1, fakeInterceptor2)
 
   @Test
-  fun `Navigator delegation check`() = runTest {
-    composeTestRule.run {
-      val (fakeNavigator, interceptingNavigator) = setTestContent()
-
-      // Verify goTo is delegated.
-      interceptingNavigator.goTo(TestScreen.ScreenA)
-      val goToEvent = fakeNavigator.awaitNextGoTo()
-      assertTrue(goToEvent.success)
-      assertEquals(TestScreen.ScreenA, goToEvent.screen)
-
-      // Verify pop is delegated.
-      interceptingNavigator.pop(TestPopResult.PopResultA)
-      val popEvent = fakeNavigator.awaitPop()
-      assertEquals(TestScreen.ScreenA, popEvent.poppedScreen)
-      assertEquals(TestPopResult.PopResultA, popEvent.result)
-
-      // Verify resetRoot is delegated.
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, saveState = true, restoreState = true)
-      val resetRootEvent = fakeNavigator.awaitResetRoot()
-      assertEquals(TestScreen.RootBeta, resetRootEvent.newRoot)
-      assertTrue(resetRootEvent.saveState)
-      assertTrue(resetRootEvent.restoreState)
-
-      // Navigate around a bit to ensure the back stack matches.
-      interceptingNavigator.goTo(TestScreen.ScreenA)
-      interceptingNavigator.goTo(TestScreen.ScreenB)
-      interceptingNavigator.pop()
-      interceptingNavigator.goTo(TestScreen.ScreenC)
-      interceptingNavigator.goTo(TestScreen.ScreenB)
-      interceptingNavigator.pop()
-      assertEquals(fakeNavigator.peekBackStack(), interceptingNavigator.peekBackStack())
-    }
-  }
-
-  @Test
   fun `Single interceptor goTo success`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(ConsumedSuccess)

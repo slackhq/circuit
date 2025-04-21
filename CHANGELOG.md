@@ -4,6 +4,8 @@ Changelog
 Unreleased
 ----------
 
+- Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
+
 0.27.1
 ------
 

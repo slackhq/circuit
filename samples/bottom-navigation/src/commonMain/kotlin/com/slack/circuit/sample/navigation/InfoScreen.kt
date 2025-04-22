@@ -19,7 +19,7 @@ class InfoScreenInterceptor(private val uriHandler: UriHandler) : CircuitNavigat
     return when (screen) {
       is InfoScreen -> {
         uriHandler.openUri(screen.url)
-        CircuitNavigationInterceptor.ConsumedSuccess
+        CircuitNavigationInterceptor.SuccessConsumed
       }
       else -> CircuitNavigationInterceptor.Skipped
     }

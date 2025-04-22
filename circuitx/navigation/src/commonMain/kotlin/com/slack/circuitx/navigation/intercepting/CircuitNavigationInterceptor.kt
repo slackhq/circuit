@@ -51,7 +51,7 @@ public interface CircuitNavigationInterceptor {
      * Shorthand for a [InterceptorResult.Success] interceptor result where the interceptor has
      * consumed the navigation.
      */
-    public val ConsumedSuccess: InterceptorResult = InterceptorResult.Success(consumed = true)
+    public val SuccessConsumed: InterceptorResult = InterceptorResult.Success(consumed = true)
   }
 }
 

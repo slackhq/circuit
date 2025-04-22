@@ -5,7 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
-import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.ConsumedSuccess
+import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.SuccessConsumed
 import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.Skipped
 import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationInterceptor.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationInterceptor.PopEvent
@@ -19,7 +19,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
-class CircuitInterceptingNavigatorInterceptorsTest {
+class CircuitNavigationInterceptorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -31,10 +31,10 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Single interceptor goTo success`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queueGoTo(ConsumedSuccess)
+      fakeInterceptor1.queueGoTo(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, ConsumedSuccess), fakeInterceptor1.awaitGoTo())
+      assertEquals(GoToEvent(TestScreen.ScreenA, SuccessConsumed), fakeInterceptor1.awaitGoTo())
       fakeNavigator.assertGoToIsEmpty()
     }
   }
@@ -95,7 +95,7 @@ class CircuitInterceptingNavigatorInterceptorsTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(
         InterceptorGoToResult.Rewrite(TestScreen.RootBeta),
-        ConsumedSuccess,
+        SuccessConsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should not be called and nav should succeed.
@@ -104,7 +104,7 @@ class CircuitInterceptingNavigatorInterceptorsTest {
         GoToEvent(TestScreen.ScreenA, InterceptorGoToResult.Rewrite(TestScreen.RootBeta)),
         fakeInterceptor1.awaitGoTo(),
       )
-      assertEquals(GoToEvent(TestScreen.RootBeta, ConsumedSuccess), fakeInterceptor1.awaitGoTo())
+      assertEquals(GoToEvent(TestScreen.RootBeta, SuccessConsumed), fakeInterceptor1.awaitGoTo())
       fakeNavigator.assertGoToIsEmpty()
     }
   }
@@ -131,11 +131,11 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Multiple interceptors goTo success`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queueGoTo(ConsumedSuccess)
+      fakeInterceptor1.queueGoTo(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Intercepted by the first so the second one and the navigator should not be called.
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, ConsumedSuccess), fakeInterceptor1.awaitGoTo())
+      assertEquals(GoToEvent(TestScreen.ScreenA, SuccessConsumed), fakeInterceptor1.awaitGoTo())
       fakeInterceptor2.assertGoToIsEmpty()
       fakeNavigator.assertGoToIsEmpty()
     }
@@ -185,13 +185,13 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Single interceptor pop success consumed`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queuePop(ConsumedSuccess)
+      fakeInterceptor1.queuePop(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       fakeNavigator.goTo(TestScreen.ScreenA)
       val peekBackStack = fakeNavigator.peekBackStack()
       assertNull(interceptingNavigator.pop(TestPopResult.PopResultA))
       assertEquals(
-        PopEvent(peekBackStack, TestPopResult.PopResultA, ConsumedSuccess),
+        PopEvent(peekBackStack, TestPopResult.PopResultA, SuccessConsumed),
         fakeInterceptor1.awaitPop(),
       )
       fakeNavigator.assertPopIsEmpty()
@@ -254,14 +254,14 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Multiple interceptors pop success consumed`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queuePop(ConsumedSuccess)
+      fakeInterceptor1.queuePop(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       fakeNavigator.goTo(TestScreen.ScreenA)
       val peekBackStack = fakeNavigator.peekBackStack()
       // Intercepted by the first so the second one and the navigator should not be called.
       assertNull(interceptingNavigator.pop(TestPopResult.PopResultA))
       assertEquals(
-        PopEvent(peekBackStack, TestPopResult.PopResultA, ConsumedSuccess),
+        PopEvent(peekBackStack, TestPopResult.PopResultA, SuccessConsumed),
         fakeInterceptor1.awaitPop(),
       )
       fakeInterceptor2.assertPopIsEmpty()
@@ -272,14 +272,14 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Multiple interceptors pop success unconsumed`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queuePop(ConsumedSuccess)
+      fakeInterceptor1.queuePop(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       fakeNavigator.goTo(TestScreen.ScreenA)
       val peekBackStack = fakeNavigator.peekBackStack()
       // Intercepted by the first so the second one and the navigator should not be called.
       assertNull(interceptingNavigator.pop(TestPopResult.PopResultA))
       assertEquals(
-        PopEvent(peekBackStack, TestPopResult.PopResultA, ConsumedSuccess),
+        PopEvent(peekBackStack, TestPopResult.PopResultA, SuccessConsumed),
         fakeInterceptor1.awaitPop(),
       )
       fakeInterceptor2.assertPopIsEmpty()
@@ -357,11 +357,11 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Single interceptor resetRoot success`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queueResetRoot(ConsumedSuccess)
+      fakeInterceptor1.queueResetRoot(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       assertTrue(interceptingNavigator.resetRoot(TestScreen.RootBeta).isEmpty())
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, ConsumedSuccess),
+        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeNavigator.assertResetRootIsEmpty()
@@ -459,7 +459,7 @@ class CircuitInterceptingNavigatorInterceptorsTest {
           saveState = false,
           restoreState = false,
         ),
-        ConsumedSuccess,
+        SuccessConsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should not be called and nav should succeed.
@@ -476,7 +476,7 @@ class CircuitInterceptingNavigatorInterceptorsTest {
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, ConsumedSuccess),
+        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeNavigator.assertGoToIsEmpty()
@@ -520,12 +520,12 @@ class CircuitInterceptingNavigatorInterceptorsTest {
   @Test
   fun `Multiple interceptors resetRoot success`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queueResetRoot(ConsumedSuccess)
+      fakeInterceptor1.queueResetRoot(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Intercepted by the first so the second one and the navigator should not be called.
       assertTrue(interceptingNavigator.resetRoot(TestScreen.RootBeta).isEmpty())
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, ConsumedSuccess),
+        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeInterceptor2.assertResetRootIsEmpty()

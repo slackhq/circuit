@@ -1,9 +1,9 @@
 package com.slack.circuitx.navigation.intercepting
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -16,13 +16,14 @@ internal fun ComposeContentTestRule.setTestContent(
   interceptors: ImmutableList<CircuitNavigationInterceptor> = persistentListOf(),
   eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
   notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
+  initialScreen: Screen = TestScreen.RootAlpha,
+  additionalScreens: Array<Screen> = arrayOf(),
 ): Pair<FakeNavigator, Navigator> {
-  val navigator = FakeNavigator(TestScreen.RootAlpha)
+  val navigator = FakeNavigator(initialScreen, *additionalScreens)
   lateinit var interceptingNavigator: Navigator
   setContent {
-    interceptingNavigator = remember {
-      CircuitInterceptingNavigator(navigator, interceptors, eventListeners, notifier)
-    }
+    interceptingNavigator =
+      rememberCircuitInterceptingNavigator(navigator, interceptors, eventListeners, notifier)
   }
   return navigator to interceptingNavigator
 }

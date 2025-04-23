@@ -36,6 +36,7 @@ androidx.compose.ui:ui-util
 androidx.compose.ui:ui
 androidx.concurrent:concurrent-futures
 androidx.core:core-ktx
+androidx.core:core-viewtree
 androidx.core:core
 androidx.customview:customview-poolingcontainer
 androidx.emoji2:emoji2

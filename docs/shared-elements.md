@@ -72,7 +72,7 @@ Shared elements also need an `AnimatedVisibilityScope` in order to animate the s
 Box(
   modifier =
     Modifier.sharedElement(
-      state = rememberSharedContentState(key = ImageElementKey(id)),
+      sharedContentState = rememberSharedContentState(key = ImageElementKey(id)),
       animatedVisibilityScope = requireAnimatedScope(Navigation),
     )
 )
@@ -83,7 +83,7 @@ Box(
   modifier =
     Modifier.thenIfNotNull(findAnimatedScope(Overlay)) { animatedScope ->
       sharedElement(
-        state = rememberSharedContentState(key = ImageElementKey(id)),
+        sharedContentState = rememberSharedContentState(key = ImageElementKey(id)),
         animatedVisibilityScope = animatedScope,
       )
     }

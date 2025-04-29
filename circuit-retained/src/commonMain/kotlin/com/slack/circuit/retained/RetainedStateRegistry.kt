@@ -120,7 +120,7 @@ internal class RetainedStateRegistryImpl(
 
   override fun registerValue(key: String, valueProvider: RetainedValueProvider): Entry {
     require(key.isNotBlank()) { "Registered key is empty or blank" }
-    valueProviders.getOrPut(key) { mutableListOf() }.add(valueProvider)
+    valueProviders.getOrPut(key, ::mutableListOf).add(valueProvider)
     return object : Entry {
       override fun unregister(): Boolean {
         val list = valueProviders.remove(key)

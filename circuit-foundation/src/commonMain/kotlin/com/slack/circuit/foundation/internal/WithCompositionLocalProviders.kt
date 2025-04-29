@@ -6,14 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.currentComposer
+import com.slack.circuit.runtime.InternalCircuitApi
 
 /**
  * A slightly more efficient version of [withCompositionLocalProvider] that only accepts a single
  * [value].
  */
 @Composable
+@InternalCircuitApi
 @OptIn(InternalComposeApi::class)
-internal fun <R> withCompositionLocalProvider(
+public fun <R> withCompositionLocalProvider(
   value: ProvidedValue<*>,
   content: @Composable () -> R,
 ): R {
@@ -30,8 +32,9 @@ internal fun <R> withCompositionLocalProvider(
  * @param content The content to provide the value to.
  */
 @Composable
+@InternalCircuitApi
 @OptIn(InternalComposeApi::class)
-internal fun <R> withCompositionLocalProvider(
+public fun <R> withCompositionLocalProvider(
   vararg values: ProvidedValue<*>,
   content: @Composable () -> R,
 ): R {

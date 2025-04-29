@@ -222,6 +222,8 @@ subprojects {
               // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
               "-Xtype-enhancement-improvements-strict-mode",
               "-Xjspecify-annotations=strict",
+              // https://youtrack.jetbrains.com/issue/KT-73255
+              "-Xannotation-default-target=param-property",
             )
           }
         }

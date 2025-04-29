@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
+- Update to Kotlin `2.1.20`.
 
 0.27.1
 ------

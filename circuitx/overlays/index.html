@@ -13,25 +13,25 @@
       
       
       
-        <link rel="prev" href="../tutorial/">
+        <link rel="prev" href="../gesture-navigation/">
       
       
-        <link rel="next" href="../states-and-events/">
+        <link rel="next" href="../../deep-linking-android/">
       
       
-      <link rel="icon" href="../images/slack_logo_small.png">
+      <link rel="icon" href="../../images/slack_logo_small.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
     
     
       
-        <title>Setting up Circuit - Circuit</title>
+        <title>Overlays - Circuit</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,7 +50,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#setting-up-circuit" class="md-skip">
+        <a href="#bottomsheetoverlay" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +92,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Circuit" class="md-header__button md-logo" aria-label="Circuit" data-md-component="logo">
+    <a href="../.." title="Circuit" class="md-header__button md-logo" aria-label="Circuit" data-md-component="logo">
       
-  <img src="../images/slack_logo.png" alt="logo">
+  <img src="../../images/slack_logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Setting up Circuit
+              Overlays
             
           </span>
         </div>
@@ -224,9 +224,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Circuit" class="md-nav__button md-logo" aria-label="Circuit" data-md-component="logo">
+    <a href="../.." title="Circuit" class="md-nav__button md-logo" aria-label="Circuit" data-md-component="logo">
       
-  <img src="../images/slack_logo.png" alt="logo">
+  <img src="../../images/slack_logo.png" alt="logo">
 
     </a>
     Circuit
@@ -253,7 +253,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -273,7 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorial/" class="md-nav__link">
+      <a href="../../tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -290,30 +290,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Setting up Circuit
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -322,62 +302,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Installation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Setup
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#granular-artifacts" class="md-nav__link">
-    <span class="md-ellipsis">
-      Granular Artifacts
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#platform-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      Platform Support
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -389,7 +313,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../states-and-events/" class="md-nav__link">
+      <a href="../../states-and-events/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -409,7 +333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../screen/" class="md-nav__link">
+      <a href="../../screen/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -429,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../circuit-content/" class="md-nav__link">
+      <a href="../../circuit-content/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -449,7 +373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../navigation/" class="md-nav__link">
+      <a href="../../navigation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -469,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../presenter/" class="md-nav__link">
+      <a href="../../presenter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -489,7 +413,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ui/" class="md-nav__link">
+      <a href="../../ui/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -509,7 +433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../overlays/" class="md-nav__link">
+      <a href="../../overlays/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -564,7 +488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../shared-elements/" class="md-nav__link">
+      <a href="../../shared-elements/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -585,7 +509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../shared-elements-tutorial/" class="md-nav__link">
+      <a href="../../shared-elements-tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -613,7 +537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../../testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -633,7 +557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../factories/" class="md-nav__link">
+      <a href="../../factories/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -653,7 +577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../code-gen/" class="md-nav__link">
+      <a href="../../code-gen/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -673,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../interop/" class="md-nav__link">
+      <a href="../../interop/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -690,17 +614,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
         
           
           <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
@@ -714,7 +640,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_16">
             <span class="md-nav__icon md-icon"></span>
             CircuitX
@@ -728,7 +654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../circuitx/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -749,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../circuitx/android/" class="md-nav__link">
+      <a href="../android/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -770,7 +696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../circuitx/effects/" class="md-nav__link">
+      <a href="../effects/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -791,7 +717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../circuitx/gesture-navigation/" class="md-nav__link">
+      <a href="../gesture-navigation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -809,10 +735,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../circuitx/overlays/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Overlays
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -821,6 +765,51 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bottomsheetoverlay" class="md-nav__link">
+    <span class="md-ellipsis">
+      BottomSheetOverlay
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dialog-overlays" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dialog Overlays
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fullscreenoverlay" class="md-nav__link">
+    <span class="md-ellipsis">
+      FullScreenOverlay
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -840,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deep-linking-android/" class="md-nav__link">
+      <a href="../../deep-linking-android/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -860,7 +849,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/0.x/" class="md-nav__link">
+      <a href="../../api/0.x/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -900,7 +889,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../../changelog/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -920,7 +909,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -940,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../code-of-conduct/" class="md-nav__link">
+      <a href="../../code-of-conduct/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -970,8 +959,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -980,36 +967,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
+  <a href="#bottomsheetoverlay" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation
+      BottomSheetOverlay
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
+  <a href="#dialog-overlays" class="md-nav__link">
     <span class="md-ellipsis">
-      Setup
+      Dialog Overlays
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#granular-artifacts" class="md-nav__link">
+  <a href="#fullscreenoverlay" class="md-nav__link">
     <span class="md-ellipsis">
-      Granular Artifacts
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#platform-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      Platform Support
+      FullScreenOverlay
     </span>
   </a>
   
@@ -1033,165 +1011,71 @@
   
 
 
-<h1 id="setting-up-circuit">Setting up Circuit<a class="headerlink" href="#setting-up-circuit" title="Permanent link">&para;</a></h1>
-<p>Setting up Circuit is a breeze! Just add the following to your build:</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>The simplest way to get up and running is with the <code>circuit-foundation</code> dependency, which includes all the core Circuit artifacts.</p>
+  <h1>Overlays</h1>
+
+<p>CircuitX provides a few out-of-the-box <code>Overlay</code> implementations that you can use to build common
+UIs.</p>
 <div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-foundation:&lt;version&gt;&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuitx-overlays:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
-<p>Create a <code>Circuit</code> instance. This controls all your common configuration, Presenter/Ui factories, etc.</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
-<span class="w">  </span><span class="p">.</span><span class="na">addUiFactory</span><span class="p">(</span><span class="n">AddFavoritesUiFactory</span><span class="p">())</span>
-<span class="w">  </span><span class="p">.</span><span class="na">addPresenterFactory</span><span class="p">(</span><span class="n">AddFavoritesPresenterFactory</span><span class="p">())</span>
-<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-</code></pre></div>
-<p>This configuration can be rebuilt via <code>newBuilder()</code> and usually would live in your program&rsquo;s DI graph.</p>
-<p>Once you have a configuration ready, the simplest way to get going with Circuit is via <code>CircuitCompositionLocals</code>. This automatically exposes the config to all child Circuit composables and allows you to get off the ground quickly with <code>CircuitContent</code>, <code>NavigableCircuitContent</code>, etc.</p>
-<div class="highlight"><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">CircuitContent</span><span class="p">(</span><span class="n">AddFavoritesScreen</span><span class="p">())</span>
+<h3 id="bottomsheetoverlay"><code>BottomSheetOverlay</code><a class="headerlink" href="#bottomsheetoverlay" title="Permanent link">&para;</a></h3>
+<p><code>BottomSheetOverlay</code> is an overlay that shows a bottom sheet with a strongly-typed API for the input
+model to the sheet content and result type. This allows you to easily use a bottom sheet to prompt
+for user input and suspend the underlying Circuit content until that result is returned.</p>
+<div class="highlight"><pre><span></span><code><span class="cm">/** A hypothetical bottom sheet of available actions when long-pressing a list item. */</span>
+<span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="n">OverlayHost</span><span class="p">.</span><span class="nf">showLongPressActionsSheet</span><span class="p">():</span><span class="w"> </span><span class="n">Action</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">show</span><span class="p">(</span>
+<span class="w">    </span><span class="n">BottomSheetOverlay</span><span class="p">(</span>
+<span class="w">      </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOfActions</span><span class="p">()</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">actions</span><span class="p">,</span><span class="w"> </span><span class="n">overlayNavigator</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">      </span><span class="n">ActionsSheet</span><span class="p">(</span>
+<span class="w">        </span><span class="n">actions</span><span class="p">,</span>
+<span class="w">        </span><span class="n">overlayNavigator</span><span class="o">::</span><span class="n">finish</span><span class="w"> </span><span class="c1">// Finish the overlay with the clicked Action</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">ActionsSheet</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Action</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">onActionClicked</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Action</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Column</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">actions</span><span class="p">.</span><span class="na">forEach</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">      </span><span class="n">TextButton</span><span class="p">(</span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">onActionClicked</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Text</span><span class="p">(</span><span class="n">action</span><span class="p">.</span><span class="na">title</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>See the docs for <code>CircuitContent</code> and <code>NavigableCircuitContent</code> for more information.</p>
-<h2 id="granular-artifacts">Granular Artifacts<a class="headerlink" href="#granular-artifacts" title="Permanent link">&para;</a></h2>
-<p>Circuit is split into a few different artifacts to allow for more granular control over your dependencies. The following table shows the available artifacts and their purpose:</p>
-<table>
-<thead>
-<tr>
-<th>Artifact ID</th>
-<th>Dependencies</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>circuit-backstack</code></td>
-<td>Circuit&rsquo;s backstack implementation.</td>
-</tr>
-<tr>
-<td><code>circuit-runtime</code></td>
-<td>Common runtime components like <code>Screen</code>, <code>Navigator</code>, etc.</td>
-</tr>
-<tr>
-<td><code>circuit-runtime-presenter</code></td>
-<td>The <code>Presenter</code> API, depends on <code>circuit-runtime</code>.</td>
-</tr>
-<tr>
-<td><code>circuit-runtime-ui</code></td>
-<td>The <code>Ui</code> API, depends on <code>circuit-runtime</code>.</td>
-</tr>
-<tr>
-<td><code>circuit-foundation</code></td>
-<td>The Circuit foundational APIs like <code>Circuit</code>, <code>CircuitContent</code>, etc. Depends on the first three.</td>
-</tr>
-<tr>
-<td><code>circuit-test</code></td>
-<td>First-party test APIs for testing navigation, state emissions, and event sinks.</td>
-</tr>
-<tr>
-<td><code>circuit-overlay</code></td>
-<td>Optional <code>Overlay</code> APIs.</td>
-</tr>
-<tr>
-<td><code>circuit-retained</code></td>
-<td>Optional <code>rememberRetained()</code> APIs.</td>
-</tr>
-</tbody>
-</table>
-<h2 id="platform-support">Platform Support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h2>
-<p>Circuit is a multiplatform library, but not all features are available on all platforms. The following table shows which features are available on which platforms:</p>
-<ul>
-<li>✅ Available</li>
-<li>❌ Not available</li>
-<li>– Not applicable</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Android</th>
-<th>JVM</th>
-<th>iOS</th>
-<th>JS</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Backstack</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>CircuitContent</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>ContentWithOverlays</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>NavigableCircuitContent</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>Navigator</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>SaveableBackstack</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>Saveable is a no-op on non-android.</td>
-</tr>
-<tr>
-<td><code>rememberCircuitNavigator</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>rememberRetained</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td></td>
-</tr>
-<tr>
-<td><code>TestEventSink</code></td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
-<td>On JS you must use <code>asEventSinkFunction()</code>.</td>
-</tr>
-</tbody>
-</table>
+<h3 id="dialog-overlays">Dialog Overlays<a class="headerlink" href="#dialog-overlays" title="Permanent link">&para;</a></h3>
+<p><code>alertDialogOverlay</code> is function that returns an Overlay that shows a simple confirmation dialog with configurable inputs. This acts more or less as an <code>Overlay</code> shim over the Material 3 <code>AlertDialog</code> API.</p>
+<div class="highlight"><pre><span></span><code><span class="cm">/** A hypothetical confirmation dialog. */</span>
+<span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="n">OverlayHost</span><span class="p">.</span><span class="nf">showConfirmationDialog</span><span class="p">():</span><span class="w"> </span><span class="n">Action</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">show</span><span class="p">(</span>
+<span class="w">    </span><span class="n">alertDialogOverlay</span><span class="p">(</span>
+<span class="w">      </span><span class="n">titleText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Are you sure?&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="n">confirmButton</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">onClick</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Button</span><span class="p">(</span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">onClick</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Yes&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="n">dismissButton</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">onClick</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Button</span><span class="p">(</span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">onClick</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;No&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>There are also more generic <code>BasicAlertDialog</code> and <code>BasicDialog</code> implementations that allow more customization.</p>
+<h3 id="fullscreenoverlay"><code>FullScreenOverlay</code><a class="headerlink" href="#fullscreenoverlay" title="Permanent link">&para;</a></h3>
+<p>Sometimes it&rsquo;s useful to have a full-screen overlay that can be used to show a screen in full above
+the current content. This API is fairly simple to use and just takes a <code>Screen</code> input of what
+content you want to show in the overlay.</p>
+<div class="highlight"><pre><span></span><code><span class="n">overlayHost</span><span class="p">.</span><span class="na">showFullScreenOverlay</span><span class="p">(</span>
+<span class="w">  </span><span class="n">ImageViewerScreen</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">placeholderKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">When to use <code>FullScreenOverlay</code> vs navigating to a <code>Screen</code>?</p>
+</div>
+<p>While they achieve similar results, the key difference is that <code>FullScreenOverlay</code> is
+inherently an ephemeral UI that is <em>controlled</em> by an underlying primary UI. It cannot
+navigate elsewhere and it does not participate in the backstack.</p>
 
 
 
@@ -1242,10 +1126,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
       
     
   </body>

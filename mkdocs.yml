@@ -79,6 +79,7 @@ nav:
   - 'Code Generation': code-gen.md
   - 'Interop': interop.md
   - 'CircuitX': circuitx.md
+  - 'Deep Linking': deep-linking-android.md
   - 'API': api/0.x/index.html
   - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
   - 'Change Log': changelog.md

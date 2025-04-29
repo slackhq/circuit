@@ -4,7 +4,8 @@ Changelog
 Unreleased
 ----------
 
-- Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
+- Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`.
+- Compile against Android SDK 36.
 
 0.27.1
 ------

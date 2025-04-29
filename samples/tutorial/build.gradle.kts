@@ -13,7 +13,7 @@ android {
   namespace = "com.slack.circuit.tutorial"
   defaultConfig {
     minSdk = 21
-    targetSdk = 35
+    targetSdk = 36
   }
 }
 

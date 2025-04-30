@@ -102,3 +102,4 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core
 org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-test
 org.jetbrains:annotations
+org.jspecify:jspecify

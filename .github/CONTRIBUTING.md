@@ -8,8 +8,6 @@ checkout.
 Circuit is a Kotlin Multiplatform project, so ensure you have your environment set up 
 accordingly: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html
 
-The primary project is `circuit`. The primary sample is `samples/star`.
-
 This project is written in Kotlin and should only use Kotlin.
 
 Code formatting is checked via [Spotless](https://github.com/diffplug/spotless). To run the

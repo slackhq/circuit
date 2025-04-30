@@ -20,6 +20,7 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -445,7 +446,7 @@ public object NavigatorDefaults {
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {
-      content(args.first())
+      Box(modifier = modifier) { content(args.first()) }
     }
   }
 }

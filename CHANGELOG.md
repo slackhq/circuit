@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
+- [docs] Add more alternative state designs.
 
 0.27.1
 ------

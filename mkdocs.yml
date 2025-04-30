@@ -78,7 +78,13 @@ nav:
   - 'Factories': factories.md
   - 'Code Generation': code-gen.md
   - 'Interop': interop.md
-  - 'CircuitX': circuitx.md
+  - 'CircuitX':
+      'About': circuitx.md
+      'Android': circuitx/android.md
+      'Effects': circuitx/effects.md
+      'Gesture Navigation': circuitx/gesture-navigation.md
+      'Overlays': circuitx/overlays.md
+  - 'Deep Linking': deep-linking-android.md
   - 'API': api/0.x/index.html
   - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
   - 'Change Log': changelog.md

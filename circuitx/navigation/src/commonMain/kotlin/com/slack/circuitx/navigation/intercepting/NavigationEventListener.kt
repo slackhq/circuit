@@ -7,7 +7,7 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
 /** Listener that will be notified of Circuit navigation changes. */
-public interface CircuitNavigationEventListener {
+public interface NavigationEventListener {
 
   /**
    * Called when a back stack has changed. Will be called with the initial state and any other
@@ -16,29 +16,29 @@ public interface CircuitNavigationEventListener {
   public fun onBackStackChanged(backStack: ImmutableList<Screen>) {}
 
   /**
-   * Called when the [CircuitInterceptingNavigator] goes to the [Screen].
+   * Called when the [InterceptingNavigator] goes to the [Screen].
    *
    * This is not called if navigation was intercepted.
    *
-   * @see CircuitInterceptingNavigator.goTo
+   * @see InterceptingNavigator.goTo
    */
   public fun goTo(screen: Screen) {}
 
   /**
-   * Called when the [CircuitInterceptingNavigator] pops the [backStack].
+   * Called when the [InterceptingNavigator] pops the [backStack].
    *
    * This is not called if navigation was intercepted.
    *
-   * @see CircuitInterceptingNavigator.pop
+   * @see InterceptingNavigator.pop
    */
   public fun pop(backStack: ImmutableList<Screen>, result: PopResult?) {}
 
   /**
-   * Called when the [CircuitInterceptingNavigator] resets the back stack to [newRoot].
+   * Called when the [InterceptingNavigator] resets the back stack to [newRoot].
    *
    * This is not called if navigation was intercepted.
    *
-   * @see CircuitInterceptingNavigator.resetRoot
+   * @see InterceptingNavigator.resetRoot
    */
   public fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean) {}
 }

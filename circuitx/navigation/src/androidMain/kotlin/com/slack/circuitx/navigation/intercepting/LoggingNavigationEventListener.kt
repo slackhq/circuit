@@ -7,8 +7,8 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
-/** A [CircuitNavigationEventListener] that adds Logcat logging for Circuit navigation. */
-public object LoggingNavigationEventListener : CircuitNavigationEventListener {
+/** A [NavigationEventListener] that adds Logcat logging for Circuit navigation. */
+public object LoggingNavigationEventListener : NavigationEventListener {
 
   override fun onBackStackChanged(backStack: ImmutableList<Screen>) {
     log("Backstack changed ${backStack.joinToString { it.loggingName() ?: "" }}")

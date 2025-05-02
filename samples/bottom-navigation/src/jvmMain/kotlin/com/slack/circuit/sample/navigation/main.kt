@@ -14,7 +14,7 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
-import com.slack.circuitx.navigation.intercepting.rememberCircuitInterceptingNavigator
+import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -31,7 +31,7 @@ fun main() {
         val uriHandler = LocalUriHandler.current
         val interceptors = remember { persistentListOf(InfoScreenInterceptor(uriHandler)) }
         val interceptingNavigator =
-          rememberCircuitInterceptingNavigator(navigator = navigator, interceptors = interceptors)
+          rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
         CircuitCompositionLocals(circuit) {
           SharedElementTransitionLayout {
             ContentScaffold(backStack, interceptingNavigator, tabs, Modifier.fillMaxSize())

@@ -9,9 +9,9 @@ import com.slack.circuitx.android.AndroidScreenStarter
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 
-/** A [CircuitNavigationInterceptor] version of [rememberAndroidScreenAwareNavigator] */
+/** A [NavigationInterceptor] version of [rememberAndroidScreenAwareNavigator] */
 public class AndroidScreenAwareNavigationInterceptor(private val starter: AndroidScreenStarter) :
-  CircuitNavigationInterceptor {
+  NavigationInterceptor {
 
   public constructor(
     context: Context
@@ -24,15 +24,15 @@ public class AndroidScreenAwareNavigationInterceptor(private val starter: Androi
     }
   )
 
-  override fun goTo(screen: Screen): InterceptorGoToResult {
+  override fun goTo(screen: Screen): InterceptedGoToResult {
     return when (screen) {
       is AndroidScreen ->
         if (starter.start(screen)) {
-          CircuitNavigationInterceptor.ConsumedSuccess
+          NavigationInterceptor.ConsumedSuccess
         } else {
-          InterceptorResult.Failure(consumed = true)
+          InterceptedResult.Failure(consumed = true)
         }
-      else -> CircuitNavigationInterceptor.Skipped
+      else -> NavigationInterceptor.Skipped
     }
   }
 }

@@ -5,20 +5,20 @@ package com.slack.circuitx.navigation.intercepting
 import android.util.Log
 
 /**
- * A [CircuitInterceptingNavigator.FailureNotifier] that adds Logcat logging for CircuitX navigation
+ * A [InterceptingNavigator.FailureNotifier] that adds Logcat logging for CircuitX navigation
  * interception failures.
  */
-public object LoggingNavigatorFailureNotifier : CircuitInterceptingNavigator.FailureNotifier {
-  override fun goToInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
-    log("goToInterceptorFailure: $interceptorResult")
+public object LoggingNavigatorFailureNotifier : InterceptingNavigator.FailureNotifier {
+  override fun goToFailure(InterceptedResult: InterceptedResult.Failure) {
+    log("goToFailure: $InterceptedResult")
   }
 
-  override fun popInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
-    log("popInterceptorFailure: $interceptorResult")
+  override fun popFailure(InterceptedResult: InterceptedResult.Failure) {
+    log("popFailure: $InterceptedResult")
   }
 
-  override fun rootResetInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
-    log("rootResetInterceptorFailure: $interceptorResult")
+  override fun rootResetFailure(InterceptedResult: InterceptedResult.Failure) {
+    log("rootResetFailure: $InterceptedResult")
   }
 
   private fun log(message: String) = Log.i("Circuit Navigation", message)

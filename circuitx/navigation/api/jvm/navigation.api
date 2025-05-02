@@ -1,72 +1,32 @@
-public final class com/slack/circuitx/navigation/intercepting/CircuitInterceptingNavigator : com/slack/circuit/runtime/Navigator {
-	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/CircuitInterceptingNavigator$FailureNotifier;)V
-	public synthetic fun <init> (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/CircuitInterceptingNavigator$FailureNotifier;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
-	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
-	public fun peekBackStack ()Lkotlinx/collections/immutable/ImmutableList;
-	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lkotlinx/collections/immutable/ImmutableList;
+public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptedGoToResult {
 }
 
-public abstract interface class com/slack/circuitx/navigation/intercepting/CircuitInterceptingNavigator$FailureNotifier {
-	public abstract fun goToInterceptorFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Failure;)V
-	public abstract fun popInterceptorFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Failure;)V
-	public abstract fun rootResetInterceptorFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Failure;)V
-}
-
-public final class com/slack/circuitx/navigation/intercepting/CircuitInterceptingNavigatorKt {
-	public static final fun rememberCircuitInterceptingNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/CircuitInterceptingNavigator$FailureNotifier;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/Navigator;
-}
-
-public abstract interface class com/slack/circuitx/navigation/intercepting/CircuitNavigationEventListener {
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)V
-	public fun onBackStackChanged (Lkotlinx/collections/immutable/ImmutableList;)V
-	public fun pop (Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuit/runtime/screen/PopResult;)V
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)V
-}
-
-public abstract interface class com/slack/circuitx/navigation/intercepting/CircuitNavigationInterceptor {
-	public static final field Companion Lcom/slack/circuitx/navigation/intercepting/CircuitNavigationInterceptor$Companion;
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptorGoToResult;
-	public fun pop (Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuitx/navigation/intercepting/InterceptorPopResult;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuitx/navigation/intercepting/InterceptorResetRootResult;
-}
-
-public final class com/slack/circuitx/navigation/intercepting/CircuitNavigationInterceptor$Companion {
-	public final fun getConsumedSuccess ()Lcom/slack/circuitx/navigation/intercepting/InterceptorResult;
-	public final fun getSkipped ()Lcom/slack/circuitx/navigation/intercepting/InterceptorResult;
-}
-
-public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptorGoToResult {
-}
-
-public final class com/slack/circuitx/navigation/intercepting/InterceptorGoToResult$Rewrite : com/slack/circuitx/navigation/intercepting/InterceptorGoToResult {
+public final class com/slack/circuitx/navigation/intercepting/InterceptedGoToResult$Rewrite : com/slack/circuitx/navigation/intercepting/InterceptedGoToResult {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptorGoToResult$Rewrite;
-	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptorGoToResult$Rewrite;Lcom/slack/circuit/runtime/screen/Screen;ILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptorGoToResult$Rewrite;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult$Rewrite;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult$Rewrite;Lcom/slack/circuit/runtime/screen/Screen;ILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult$Rewrite;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptorPopResult {
+public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptedPopResult {
 }
 
-public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptorResetRootResult {
+public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptedResetRootResult {
 }
 
-public final class com/slack/circuitx/navigation/intercepting/InterceptorResetRootResult$Rewrite : com/slack/circuitx/navigation/intercepting/InterceptorResetRootResult {
+public final class com/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite : com/slack/circuitx/navigation/intercepting/InterceptedResetRootResult {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZZ)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun component2 ()Z
 	public final fun component3 ()Z
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuitx/navigation/intercepting/InterceptorResetRootResult$Rewrite;
-	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptorResetRootResult$Rewrite;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptorResetRootResult$Rewrite;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRestoreState ()Z
 	public final fun getSaveState ()Z
@@ -75,17 +35,17 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptorResetRo
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptorResult : com/slack/circuitx/navigation/intercepting/InterceptorGoToResult, com/slack/circuitx/navigation/intercepting/InterceptorPopResult, com/slack/circuitx/navigation/intercepting/InterceptorResetRootResult {
+public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptedResult : com/slack/circuitx/navigation/intercepting/InterceptedGoToResult, com/slack/circuitx/navigation/intercepting/InterceptedPopResult, com/slack/circuitx/navigation/intercepting/InterceptedResetRootResult {
 }
 
-public final class com/slack/circuitx/navigation/intercepting/InterceptorResult$Failure : com/slack/circuitx/navigation/intercepting/InterceptorResult {
+public final class com/slack/circuitx/navigation/intercepting/InterceptedResult$Failure : com/slack/circuitx/navigation/intercepting/InterceptedResult {
 	public static final field $stable I
 	public fun <init> (ZLjava/lang/Throwable;)V
 	public synthetic fun <init> (ZLjava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Z
 	public final fun component2 ()Ljava/lang/Throwable;
-	public final fun copy (ZLjava/lang/Throwable;)Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Failure;
-	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Failure;ZLjava/lang/Throwable;ILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Failure;
+	public final fun copy (ZLjava/lang/Throwable;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;ZLjava/lang/Throwable;ILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConsumed ()Z
 	public final fun getReason ()Ljava/lang/Throwable;
@@ -93,23 +53,63 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptorResult$
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/slack/circuitx/navigation/intercepting/InterceptorResult$Skipped : com/slack/circuitx/navigation/intercepting/InterceptorResult {
+public final class com/slack/circuitx/navigation/intercepting/InterceptedResult$Skipped : com/slack/circuitx/navigation/intercepting/InterceptedResult {
 	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Skipped;
+	public static final field INSTANCE Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Skipped;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/slack/circuitx/navigation/intercepting/InterceptorResult$Success : com/slack/circuitx/navigation/intercepting/InterceptorResult {
+public final class com/slack/circuitx/navigation/intercepting/InterceptedResult$Success : com/slack/circuitx/navigation/intercepting/InterceptedResult {
 	public static final field $stable I
 	public fun <init> (Z)V
 	public final fun component1 ()Z
-	public final fun copy (Z)Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Success;
-	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Success;ZILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptorResult$Success;
+	public final fun copy (Z)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Success;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Success;ZILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Success;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConsumed ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuitx/navigation/intercepting/InterceptingNavigator : com/slack/circuit/runtime/Navigator {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
+	public fun peekBackStack ()Lkotlinx/collections/immutable/ImmutableList;
+	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lkotlinx/collections/immutable/ImmutableList;
+}
+
+public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier {
+	public abstract fun goToFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;)V
+	public abstract fun popFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;)V
+	public abstract fun rootResetFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;)V
+}
+
+public final class com/slack/circuitx/navigation/intercepting/InterceptingNavigatorKt {
+	public static final fun rememberInterceptingNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/Navigator;
+}
+
+public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationEventListener {
+	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)V
+	public fun onBackStackChanged (Lkotlinx/collections/immutable/ImmutableList;)V
+	public fun pop (Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuit/runtime/screen/PopResult;)V
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)V
+}
+
+public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationInterceptor {
+	public static final field Companion Lcom/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion;
+	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult;
+	public fun pop (Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuitx/navigation/intercepting/InterceptedPopResult;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult;
+}
+
+public final class com/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion {
+	public final fun getConsumedSuccess ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
+	public final fun getSkipped ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
 }
 

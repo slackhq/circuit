@@ -101,9 +101,15 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptingNaviga
 	public static final fun rememberInterceptingNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlinx/collections/immutable/ImmutableList;Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/Navigator;
 }
 
+public final class com/slack/circuitx/navigation/intercepting/LogcatLogger : com/slack/circuitx/navigation/intercepting/NavigationLogger {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuitx/navigation/intercepting/LogcatLogger;
+	public fun log (Ljava/lang/String;)V
+}
+
 public final class com/slack/circuitx/navigation/intercepting/LoggingNavigationEventListener : com/slack/circuitx/navigation/intercepting/NavigationEventListener {
 	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuitx/navigation/intercepting/LoggingNavigationEventListener;
+	public fun <init> (Lcom/slack/circuitx/navigation/intercepting/NavigationLogger;)V
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)V
 	public fun onBackStackChanged (Lkotlinx/collections/immutable/ImmutableList;)V
 	public fun pop (Lkotlinx/collections/immutable/ImmutableList;Lcom/slack/circuit/runtime/screen/PopResult;)V
@@ -111,7 +117,7 @@ public final class com/slack/circuitx/navigation/intercepting/LoggingNavigationE
 
 public final class com/slack/circuitx/navigation/intercepting/LoggingNavigatorFailureNotifier : com/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier {
 	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuitx/navigation/intercepting/LoggingNavigatorFailureNotifier;
+	public fun <init> (Lcom/slack/circuitx/navigation/intercepting/NavigationLogger;)V
 	public fun goToFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;)V
 	public fun popFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;)V
 	public fun rootResetFailure (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Failure;)V
@@ -134,5 +140,9 @@ public abstract interface class com/slack/circuitx/navigation/intercepting/Navig
 public final class com/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion {
 	public final fun getConsumedSuccess ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
 	public final fun getSkipped ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
+}
+
+public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationLogger {
+	public abstract fun log (Ljava/lang/String;)V
 }
 

@@ -96,18 +96,18 @@ public class InterceptingNavigator(
 
   override fun goTo(screen: Screen): Boolean {
     for (interceptor in interceptors) {
-      when (val InterceptedResult = interceptor.goTo(screen)) {
+      when (val interceptedResult = interceptor.goTo(screen)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
-          if (InterceptedResult.consumed) return true
+          if (interceptedResult.consumed) return true
         }
         is InterceptedResult.Failure -> {
-          notifier?.goToFailure(InterceptedResult)
-          if (InterceptedResult.consumed) return false
+          notifier?.goToFailure(interceptedResult)
+          if (interceptedResult.consumed) return false
         }
         is InterceptedGoToResult.Rewrite -> {
           // Recurse in case another interceptor wants to intercept the new screen.
-          return goTo(InterceptedResult.screen)
+          return goTo(interceptedResult.screen)
         }
       }
     }
@@ -118,14 +118,14 @@ public class InterceptingNavigator(
   override fun pop(result: PopResult?): Screen? {
     val backStack = peekBackStack()
     for (interceptor in interceptors) {
-      when (val InterceptedResult = interceptor.pop(backStack, result)) {
+      when (val interceptedResult = interceptor.pop(backStack, result)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
-          if (InterceptedResult.consumed) return null
+          if (interceptedResult.consumed) return null
         }
         is InterceptedResult.Failure -> {
-          notifier?.popFailure(InterceptedResult)
-          if (InterceptedResult.consumed) return null
+          notifier?.popFailure(interceptedResult)
+          if (interceptedResult.consumed) return null
         }
       }
     }
@@ -139,21 +139,21 @@ public class InterceptingNavigator(
     restoreState: Boolean,
   ): ImmutableList<Screen> {
     for (interceptor in interceptors) {
-      when (val InterceptedResult = interceptor.resetRoot(newRoot, saveState, restoreState)) {
+      when (val interceptedResult = interceptor.resetRoot(newRoot, saveState, restoreState)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
-          if (InterceptedResult.consumed) return persistentListOf()
+          if (interceptedResult.consumed) return persistentListOf()
         }
         is InterceptedResult.Failure -> {
-          notifier?.rootResetFailure(InterceptedResult)
-          if (InterceptedResult.consumed) return persistentListOf()
+          notifier?.rootResetFailure(interceptedResult)
+          if (interceptedResult.consumed) return persistentListOf()
         }
         is InterceptedResetRootResult.Rewrite -> {
           // Recurse in case another interceptor wants to intercept the new screen.
           return resetRoot(
-            InterceptedResult.screen,
-            InterceptedResult.saveState,
-            InterceptedResult.restoreState,
+            interceptedResult.screen,
+            interceptedResult.saveState,
+            interceptedResult.restoreState,
           )
         }
       }
@@ -170,19 +170,19 @@ public class InterceptingNavigator(
      * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
      * [NavigationInterceptor.goTo].
      */
-    public fun goToFailure(InterceptedResult: InterceptedResult.Failure)
+    public fun goToFailure(interceptedResult: InterceptedResult.Failure)
 
     /**
      * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
      * [NavigationInterceptor.pop].
      */
-    public fun popFailure(InterceptedResult: InterceptedResult.Failure)
+    public fun popFailure(interceptedResult: InterceptedResult.Failure)
 
     /**
      * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
      * [NavigationInterceptor.resetRoot].
      */
-    public fun rootResetFailure(InterceptedResult: InterceptedResult.Failure)
+    public fun rootResetFailure(interceptedResult: InterceptedResult.Failure)
   }
 }
 

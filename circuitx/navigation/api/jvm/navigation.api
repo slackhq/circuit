@@ -125,8 +125,8 @@ public abstract interface class com/slack/circuitx/navigation/intercepting/Navig
 }
 
 public final class com/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion {
-	public final fun getConsumedSuccess ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
 	public final fun getSkipped ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
+	public final fun getSuccessConsumed ()Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
 }
 
 public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationLogger {

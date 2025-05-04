@@ -19,7 +19,7 @@ class InfoScreenInterceptor(private val uriHandler: UriHandler) : NavigationInte
     return when (screen) {
       is InfoScreen -> {
         uriHandler.openUri(screen.url)
-        NavigationInterceptor.ConsumedSuccess
+        NavigationInterceptor.SuccessConsumed
       }
       else -> NavigationInterceptor.Skipped
     }

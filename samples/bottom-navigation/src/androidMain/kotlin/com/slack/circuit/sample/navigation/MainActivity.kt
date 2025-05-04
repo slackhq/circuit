@@ -23,6 +23,7 @@ import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationIn
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LogcatLogger
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
+import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import kotlinx.collections.immutable.persistentListOf

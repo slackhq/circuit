@@ -1,6 +1,6 @@
 # Circuitx Navigation
 
-Circuitx navigation is and optinal intercepting system that lets you hook into and modify
+Circuitx navigation is an optional intercepting system that lets you hook into and modify
 navigation before it happens. The `InterceptingNavigator` sits before a regular Circuit `Navigator`,
 giving you a chance to inspect or change navigation events. With the `NavigationInterceptor`
 interface, you can handle `goTo`, `pop`, and `resetRoot` calls and decide if they should proceed,

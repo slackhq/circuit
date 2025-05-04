@@ -19,10 +19,10 @@ abstract interface com.slack.circuitx.navigation.intercepting/NavigationIntercep
     open fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
 
     final object Companion { // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion|null[0]
-        final val ConsumedSuccess // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.ConsumedSuccess|{}ConsumedSuccess[0]
-            final fun <get-ConsumedSuccess>(): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.ConsumedSuccess.<get-ConsumedSuccess>|<get-ConsumedSuccess>(){}[0]
         final val Skipped // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.Skipped|{}Skipped[0]
             final fun <get-Skipped>(): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.Skipped.<get-Skipped>|<get-Skipped>(){}[0]
+        final val SuccessConsumed // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.SuccessConsumed|{}SuccessConsumed[0]
+            final fun <get-SuccessConsumed>(): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.SuccessConsumed.<get-SuccessConsumed>|<get-SuccessConsumed>(){}[0]
     }
 }
 

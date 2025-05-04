@@ -6,13 +6,13 @@ Unreleased
 
 ### **New**: circuitx-navigation adding navigation interception capabilities:
 
-We've added a new navigation intercepting system to Circuit that lets you hook into and modify 
-navigation before it happens. The `InterceptingNavigator` sits before a regular Circuit `Navigator`, 
-giving you a chance to inspect or change navigation events. With the `NavigationInterceptor` 
-interface, you can handle `goTo`, `pop`, and `resetRoot` calls and decide if they should proceed, 
-fail, be skipped, or be rewritten to navigate somewhere else. There's also a`NavigationEventListener` 
-if you just want to know when navigation happens without changing it. 
-This new system is handy for advanced routing, blocking navigation, or tracking navigation events 
+We've added a new navigation intercepting system to Circuit that lets you hook into and modify
+navigation before it happens. The `InterceptingNavigator` sits before a regular Circuit `Navigator`,
+giving you a chance to inspect or change navigation events. With the `NavigationInterceptor`
+interface, you can handle `goTo`, `pop`, and `resetRoot` calls and decide if they should proceed,
+fail, be skipped, or be rewritten to navigate somewhere else. There's also a`NavigationEventListener`
+if you just want to know when navigation happens without changing it.
+This new system is handy for advanced routing, blocking navigation, or tracking navigation events
 for analytics.
 
 ```kotlin

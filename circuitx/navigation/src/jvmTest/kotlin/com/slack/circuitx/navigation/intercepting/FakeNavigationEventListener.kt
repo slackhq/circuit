@@ -1,12 +1,11 @@
 package com.slack.circuitx.navigation.intercepting
 
 import app.cash.turbine.Turbine
-import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
-class FakeCircuitNavigationEventListener : CircuitNavigationEventListener {
+class FakeNavigationEventListener : NavigationEventListener {
 
   private val onBackStackChangedEvents = Turbine<OnBackStackChangedEvent>()
   private val goToEvents = Turbine<GoToEvent>()

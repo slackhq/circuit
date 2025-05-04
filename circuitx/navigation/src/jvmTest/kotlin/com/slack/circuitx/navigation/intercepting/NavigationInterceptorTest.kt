@@ -5,11 +5,11 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
-import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.SuccessConsumed
-import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.Skipped
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationInterceptor.GoToEvent
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationInterceptor.PopEvent
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationInterceptor.ResetRootEvent
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
+import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.GoToEvent
+import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.PopEvent
+import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.ResetRootEvent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -19,12 +19,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
-class CircuitNavigationInterceptorTest {
+class NavigationInterceptorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  private val fakeInterceptor1 = FakeCircuitNavigationInterceptor()
-  private val fakeInterceptor2 = FakeCircuitNavigationInterceptor()
+  private val fakeInterceptor1 = FakeNavigationInterceptor()
+  private val fakeInterceptor2 = FakeNavigationInterceptor()
   private val singleInterceptor = persistentListOf(fakeInterceptor1)
   private val interceptors = persistentListOf(fakeInterceptor1, fakeInterceptor2)
 
@@ -77,12 +77,12 @@ class CircuitNavigationInterceptorTest {
   @Test
   fun `Single interceptor goTo Rewrite`() = runTest {
     composeTestRule.run {
-      fakeInterceptor1.queueGoTo(InterceptorGoToResult.Rewrite(TestScreen.RootBeta), Skipped)
+      fakeInterceptor1.queueGoTo(InterceptedGoToResult.Rewrite(TestScreen.RootBeta), Skipped)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is not intercepted so delegate should be called and nav should succeed.
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
       assertEquals(
-        GoToEvent(TestScreen.ScreenA, InterceptorGoToResult.Rewrite(TestScreen.RootBeta)),
+        GoToEvent(TestScreen.ScreenA, InterceptedGoToResult.Rewrite(TestScreen.RootBeta)),
         fakeInterceptor1.awaitGoTo(),
       )
       assertEquals(GoToEvent(TestScreen.RootBeta, Skipped), fakeInterceptor1.awaitGoTo())
@@ -94,14 +94,14 @@ class CircuitNavigationInterceptorTest {
   fun `Single interceptor goTo Rewrite, intercept Rewrite consumed`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(
-        InterceptorGoToResult.Rewrite(TestScreen.RootBeta),
+        InterceptedGoToResult.Rewrite(TestScreen.RootBeta),
         SuccessConsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should not be called and nav should succeed.
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
       assertEquals(
-        GoToEvent(TestScreen.ScreenA, InterceptorGoToResult.Rewrite(TestScreen.RootBeta)),
+        GoToEvent(TestScreen.ScreenA, InterceptedGoToResult.Rewrite(TestScreen.RootBeta)),
         fakeInterceptor1.awaitGoTo(),
       )
       assertEquals(GoToEvent(TestScreen.RootBeta, SuccessConsumed), fakeInterceptor1.awaitGoTo())
@@ -113,14 +113,14 @@ class CircuitNavigationInterceptorTest {
   fun `Single interceptor goTo Rewrite, intercept Rewrite unconsumed`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(
-        InterceptorGoToResult.Rewrite(TestScreen.RootBeta),
+        InterceptedGoToResult.Rewrite(TestScreen.RootBeta),
         SuccessUnconsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should be called and nav should succeed.
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
       assertEquals(
-        GoToEvent(TestScreen.ScreenA, InterceptorGoToResult.Rewrite(TestScreen.RootBeta)),
+        GoToEvent(TestScreen.ScreenA, InterceptedGoToResult.Rewrite(TestScreen.RootBeta)),
         fakeInterceptor1.awaitGoTo(),
       )
       assertEquals(GoToEvent(TestScreen.RootBeta, SuccessUnconsumed), fakeInterceptor1.awaitGoTo())
@@ -417,7 +417,7 @@ class CircuitNavigationInterceptorTest {
   fun `Single interceptor resetRoot Rewrite`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueResetRoot(
-        InterceptorResetRootResult.Rewrite(
+        InterceptedResetRootResult.Rewrite(
           TestScreen.RootBeta,
           saveState = true,
           restoreState = true,
@@ -431,7 +431,7 @@ class CircuitNavigationInterceptorTest {
       assertEquals(
         ResetRootEvent(
           TestScreen.ScreenA,
-          InterceptorResetRootResult.Rewrite(
+          InterceptedResetRootResult.Rewrite(
             TestScreen.RootBeta,
             saveState = true,
             restoreState = true,
@@ -454,7 +454,7 @@ class CircuitNavigationInterceptorTest {
   fun `Single interceptor resetRoot Rewrite, intercept Rewrite consumed`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueResetRoot(
-        InterceptorResetRootResult.Rewrite(
+        InterceptedResetRootResult.Rewrite(
           TestScreen.RootBeta,
           saveState = false,
           restoreState = false,
@@ -467,7 +467,7 @@ class CircuitNavigationInterceptorTest {
       assertEquals(
         ResetRootEvent(
           TestScreen.ScreenA,
-          InterceptorResetRootResult.Rewrite(
+          InterceptedResetRootResult.Rewrite(
             TestScreen.RootBeta,
             saveState = false,
             restoreState = false,
@@ -487,7 +487,7 @@ class CircuitNavigationInterceptorTest {
   fun `Single interceptor resetRoot Rewrite, intercept Rewrite unconsumed`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueResetRoot(
-        InterceptorResetRootResult.Rewrite(
+        InterceptedResetRootResult.Rewrite(
           TestScreen.RootBeta,
           saveState = false,
           restoreState = false,
@@ -501,7 +501,7 @@ class CircuitNavigationInterceptorTest {
       assertEquals(
         ResetRootEvent(
           TestScreen.ScreenA,
-          InterceptorResetRootResult.Rewrite(
+          InterceptedResetRootResult.Rewrite(
             TestScreen.RootBeta,
             saveState = false,
             restoreState = false,

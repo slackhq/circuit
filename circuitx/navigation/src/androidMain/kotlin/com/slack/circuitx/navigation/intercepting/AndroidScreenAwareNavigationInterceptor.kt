@@ -28,7 +28,7 @@ public class AndroidScreenAwareNavigationInterceptor(private val starter: Androi
     return when (screen) {
       is AndroidScreen ->
         if (starter.start(screen)) {
-          NavigationInterceptor.ConsumedSuccess
+          NavigationInterceptor.SuccessConsumed
         } else {
           InterceptedResult.Failure(consumed = true)
         }

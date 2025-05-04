@@ -13,7 +13,7 @@ class FailureNotifierTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val failureNotifier = FakeFailureNotifier()
-  private val fakeInterceptor = FakeCircuitNavigationInterceptor()
+  private val fakeInterceptor = FakeNavigationInterceptor()
   private val singleInterceptor = persistentListOf(fakeInterceptor)
 
   @Test
@@ -85,7 +85,7 @@ class FailureNotifierTest {
   @Test
   fun `goToInterceptorFailure failure with a reason`() = runTest {
     composeTestRule.run {
-      val failure = InterceptorResult.Failure(consumed = true, reason = Throwable("Test failure"))
+      val failure = InterceptedResult.Failure(consumed = true, reason = Throwable("Test failure"))
       fakeInterceptor.queueGoTo(failure)
       val (_, interceptingNavigator) =
         setTestContent(interceptors = singleInterceptor, notifier = failureNotifier)
@@ -97,7 +97,7 @@ class FailureNotifierTest {
   @Test
   fun `popInterceptorFailure failure with a reason`() = runTest {
     composeTestRule.run {
-      val failure = InterceptorResult.Failure(consumed = true, reason = Throwable("Test failure"))
+      val failure = InterceptedResult.Failure(consumed = true, reason = Throwable("Test failure"))
       fakeInterceptor.queuePop(failure)
       val (_, interceptingNavigator) =
         setTestContent(interceptors = singleInterceptor, notifier = failureNotifier)
@@ -109,7 +109,7 @@ class FailureNotifierTest {
   @Test
   fun `rootResetInterceptorFailure failure with a reason`() = runTest {
     composeTestRule.run {
-      val failure = InterceptorResult.Failure(consumed = true, reason = Throwable("Test failure"))
+      val failure = InterceptedResult.Failure(consumed = true, reason = Throwable("Test failure"))
       fakeInterceptor.queueResetRoot(failure)
       val (_, interceptingNavigator) =
         setTestContent(interceptors = singleInterceptor, notifier = failureNotifier)
@@ -122,11 +122,11 @@ class FailureNotifierTest {
   fun `All Failure Types in One Run`() = runTest {
     composeTestRule.run {
       val failureGoTo =
-        InterceptorResult.Failure(consumed = true, reason = Throwable("Test goto failure"))
+        InterceptedResult.Failure(consumed = true, reason = Throwable("Test goto failure"))
       val failurePop =
-        InterceptorResult.Failure(consumed = true, reason = Throwable("Test pop failure"))
+        InterceptedResult.Failure(consumed = true, reason = Throwable("Test pop failure"))
       val failureReset =
-        InterceptorResult.Failure(consumed = true, reason = Throwable("Test reset failure"))
+        InterceptedResult.Failure(consumed = true, reason = Throwable("Test reset failure"))
       fakeInterceptor.queueGoTo(failureGoTo)
       fakeInterceptor.queuePop(failurePop)
       fakeInterceptor.queueResetRoot(failureReset)

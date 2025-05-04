@@ -39,8 +39,34 @@ kotlin {
         api(projects.circuitFoundation)
       }
     }
+    commonTest {
+      dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+        implementation(libs.testing.assertk)
+        implementation(libs.turbine)
+        implementation(projects.circuitTest)
+        implementation(projects.internalTestUtils)
+      }
+    }
 
     androidMain { dependencies { api(projects.circuitx.android) } }
+    val commonJvmTest =
+      maybeCreate("commonJvmTest").apply {
+        dependsOn(commonTest.get())
+        dependencies {
+          implementation(libs.junit)
+          implementation(libs.truth)
+        }
+      }
+    jvmTest {
+      dependsOn(commonJvmTest)
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(libs.compose.ui.testing.junit)
+      }
+    }
 
     // We use a common folder instead of a common source set because there is no commonizer
     // which exposes the browser APIs across these two targets.

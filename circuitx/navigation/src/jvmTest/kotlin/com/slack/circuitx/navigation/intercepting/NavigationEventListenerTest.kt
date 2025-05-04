@@ -4,11 +4,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor.Companion.SuccessConsumed
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationEventListener.GoToEvent
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationEventListener.OnBackStackChangedEvent
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationEventListener.PopEvent
-import com.slack.circuitx.navigation.intercepting.FakeCircuitNavigationEventListener.ResetRootEvent
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
+import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.GoToEvent
+import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.OnBackStackChangedEvent
+import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.PopEvent
+import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.ResetRootEvent
 import kotlin.test.assertEquals
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
@@ -19,12 +19,12 @@ private val ADDITIONAL_SCREENS = arrayOf<Screen>(TestScreen.ScreenB, TestScreen.
 private val INITIAL_ADDITIONAL_BACKSTACK =
   persistentListOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
 
-class CircuitNavigationEventListenerTest {
+class NavigationEventListenerTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private val fakeInterceptor = FakeCircuitNavigationInterceptor()
+  private val fakeInterceptor = FakeNavigationInterceptor()
   private val singleInterceptor = persistentListOf(fakeInterceptor)
-  private val fakeEventListener = FakeCircuitNavigationEventListener()
+  private val fakeEventListener = FakeNavigationEventListener()
   private val singleEventListener = persistentListOf(fakeEventListener)
 
   @Test

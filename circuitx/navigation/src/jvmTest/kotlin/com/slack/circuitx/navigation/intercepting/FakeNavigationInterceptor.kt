@@ -1,29 +1,28 @@
 package com.slack.circuitx.navigation.intercepting
 
 import app.cash.turbine.Turbine
-import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
-/** A fake implementation of CircuitNavigationInterceptor for testing. */
-class FakeCircuitNavigationInterceptor : CircuitNavigationInterceptor {
+/** A fake implementation of NavigationInterceptor for testing. */
+class FakeNavigationInterceptor : NavigationInterceptor {
 
   private val goToEvents = Turbine<GoToEvent>()
   private val popEvents = Turbine<PopEvent>()
   private val resetRootEvents = Turbine<ResetRootEvent>()
 
-  private val goToResults = mutableListOf<InterceptorGoToResult>()
-  private val popResults = mutableListOf<InterceptorPopResult>()
-  private val resetRootResults = mutableListOf<InterceptorResetRootResult>()
+  private val goToResults = mutableListOf<InterceptedGoToResult>()
+  private val popResults = mutableListOf<InterceptedPopResult>()
+  private val resetRootResults = mutableListOf<InterceptedResetRootResult>()
 
-  override fun goTo(screen: Screen): InterceptorGoToResult {
+  override fun goTo(screen: Screen): InterceptedGoToResult {
     val result = goToResults.removeFirst()
     goToEvents.add(GoToEvent(screen, result))
     return result
   }
 
-  override fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptorPopResult {
+  override fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptedPopResult {
     val interceptorPopResult = popResults.removeFirst()
     popEvents.add(PopEvent(peekBackStack, result, interceptorPopResult))
     return interceptorPopResult
@@ -33,7 +32,7 @@ class FakeCircuitNavigationInterceptor : CircuitNavigationInterceptor {
     newRoot: Screen,
     saveState: Boolean,
     restoreState: Boolean,
-  ): InterceptorResetRootResult {
+  ): InterceptedResetRootResult {
     val interceptorResetRootResult = resetRootResults.removeFirst()
     resetRootEvents.add(
       ResetRootEvent(newRoot, interceptorResetRootResult, saveState, restoreState)
@@ -41,15 +40,15 @@ class FakeCircuitNavigationInterceptor : CircuitNavigationInterceptor {
     return interceptorResetRootResult
   }
 
-  fun queueGoTo(vararg interceptorGoToResult: InterceptorGoToResult) {
+  fun queueGoTo(vararg interceptorGoToResult: InterceptedGoToResult) {
     goToResults.addAll(interceptorGoToResult)
   }
 
-  fun queuePop(vararg interceptorPopResult: InterceptorPopResult) {
+  fun queuePop(vararg interceptorPopResult: InterceptedPopResult) {
     popResults.addAll(interceptorPopResult)
   }
 
-  fun queueResetRoot(vararg interceptorResetRootResult: InterceptorResetRootResult) {
+  fun queueResetRoot(vararg interceptorResetRootResult: InterceptedResetRootResult) {
     resetRootResults.addAll(interceptorResetRootResult)
   }
 
@@ -74,20 +73,20 @@ class FakeCircuitNavigationInterceptor : CircuitNavigationInterceptor {
     resetRootEvents.ensureAllEventsConsumed()
   }
 
-  /** Represents a recorded [CircuitNavigationInterceptor.goTo] event. */
-  data class GoToEvent(val screen: Screen, val interceptorGoToResult: InterceptorGoToResult)
+  /** Represents a recorded [NavigationInterceptor.goTo] event. */
+  data class GoToEvent(val screen: Screen, val interceptorGoToResult: InterceptedGoToResult)
 
-  /** Represents a recorded [CircuitNavigationInterceptor.pop] event. */
+  /** Represents a recorded [NavigationInterceptor.pop] event. */
   data class PopEvent(
     val peekBackStack: ImmutableList<Screen>,
     val result: PopResult?,
-    val interceptorGoToResult: InterceptorPopResult,
+    val interceptorGoToResult: InterceptedPopResult,
   )
 
-  /** Represents a recorded [CircuitNavigationInterceptor.resetRoot] event. */
+  /** Represents a recorded [NavigationInterceptor.resetRoot] event. */
   data class ResetRootEvent(
     val newRoot: Screen,
-    val interceptorResetRootResult: InterceptorResetRootResult,
+    val interceptorResetRootResult: InterceptedResetRootResult,
     val saveState: Boolean = false,
     val restoreState: Boolean = false,
   )

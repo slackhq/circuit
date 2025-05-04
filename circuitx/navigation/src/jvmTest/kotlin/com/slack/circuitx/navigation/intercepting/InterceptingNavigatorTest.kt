@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
-class CircuitInterceptingNavigatorTest {
+class InterceptingNavigatorTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test

@@ -8,14 +8,14 @@ import com.slack.circuit.test.FakeNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-internal val FailConsumed = InterceptorResult.Failure(consumed = true)
-internal val FailUnconsumed = InterceptorResult.Failure(consumed = false)
-internal val SuccessUnconsumed = InterceptorResult.Success(consumed = false)
+internal val FailConsumed = InterceptedResult.Failure(consumed = true)
+internal val FailUnconsumed = InterceptedResult.Failure(consumed = false)
+internal val SuccessUnconsumed = InterceptedResult.Success(consumed = false)
 
 internal fun ComposeContentTestRule.setTestContent(
-  interceptors: ImmutableList<CircuitNavigationInterceptor> = persistentListOf(),
-  eventListeners: ImmutableList<CircuitNavigationEventListener> = persistentListOf(),
-  notifier: CircuitInterceptingNavigator.FailureNotifier? = null,
+  interceptors: ImmutableList<NavigationInterceptor> = persistentListOf(),
+  eventListeners: ImmutableList<NavigationEventListener> = persistentListOf(),
+  notifier: InterceptingNavigator.FailureNotifier? = null,
   initialScreen: Screen = TestScreen.RootAlpha,
   additionalScreens: Array<Screen> = arrayOf(),
 ): Pair<FakeNavigator, Navigator> {
@@ -23,7 +23,7 @@ internal fun ComposeContentTestRule.setTestContent(
   lateinit var interceptingNavigator: Navigator
   setContent {
     interceptingNavigator =
-      rememberCircuitInterceptingNavigator(navigator, interceptors, eventListeners, notifier)
+      rememberInterceptingNavigator(navigator, interceptors, eventListeners, notifier)
   }
   return navigator to interceptingNavigator
 }

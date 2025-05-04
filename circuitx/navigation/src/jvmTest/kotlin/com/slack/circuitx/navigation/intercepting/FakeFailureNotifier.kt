@@ -2,27 +2,27 @@ package com.slack.circuitx.navigation.intercepting
 
 import app.cash.turbine.Turbine
 
-class FakeFailureNotifier : CircuitInterceptingNavigator.FailureNotifier {
+class FakeFailureNotifier : InterceptingNavigator.FailureNotifier {
 
-  private val goToFailures = Turbine<InterceptorResult.Failure>()
-  private val popFailures = Turbine<InterceptorResult.Failure>()
-  private val resetRootFailures = Turbine<InterceptorResult.Failure>()
+  private val goToFailures = Turbine<InterceptedResult.Failure>()
+  private val popFailures = Turbine<InterceptedResult.Failure>()
+  private val resetRootFailures = Turbine<InterceptedResult.Failure>()
 
-  override fun goToInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
+  override fun goToFailure(interceptorResult: InterceptedResult.Failure) {
     goToFailures.add(interceptorResult)
   }
 
-  override fun popInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
+  override fun popFailure(interceptorResult: InterceptedResult.Failure) {
     popFailures.add(interceptorResult)
   }
 
-  override fun rootResetInterceptorFailure(interceptorResult: InterceptorResult.Failure) {
+  override fun rootResetFailure(interceptorResult: InterceptedResult.Failure) {
     resetRootFailures.add(interceptorResult)
   }
 
-  suspend fun awaitGoToFailure(): InterceptorResult.Failure = goToFailures.awaitItem()
+  suspend fun awaitGoToFailure(): InterceptedResult.Failure = goToFailures.awaitItem()
 
-  suspend fun awaitPopFailure(): InterceptorResult.Failure = popFailures.awaitItem()
+  suspend fun awaitPopFailure(): InterceptedResult.Failure = popFailures.awaitItem()
 
-  suspend fun awaitRootResetFailure(): InterceptorResult.Failure = resetRootFailures.awaitItem()
+  suspend fun awaitRootResetFailure(): InterceptedResult.Failure = resetRootFailures.awaitItem()
 }

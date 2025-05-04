@@ -20,11 +20,12 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
-import com.slack.circuitx.navigation.intercepting.CircuitNavigationInterceptor
-import com.slack.circuitx.navigation.intercepting.InterceptorGoToResult
+import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
+import com.slack.circuitx.navigation.intercepting.LogcatLogger
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
-import com.slack.circuitx.navigation.intercepting.rememberCircuitInterceptingNavigator
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
+import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import kotlinx.collections.immutable.persistentListOf
 
 class MainActivity : AppCompatActivity() {
@@ -39,8 +40,8 @@ class MainActivity : AppCompatActivity() {
     // CircuitX Navigation
     val interceptors =
       persistentListOf(AndroidScreenAwareNavigationInterceptor(this), InfoScreenRewriteInterceptor)
-    val eventListeners = persistentListOf(LoggingNavigationEventListener)
-    val notifier = LoggingNavigatorFailureNotifier
+    val eventListeners = persistentListOf(LoggingNavigationEventListener(LogcatLogger))
+    val notifier = LoggingNavigatorFailureNotifier(LogcatLogger)
 
     val tabs = TabScreen.all
     setContent {
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         val navigator = rememberCircuitNavigator(backStack)
         // Build the delegate Navigator.
         val interceptingNavigator =
-          rememberCircuitInterceptingNavigator(
+          rememberInterceptingNavigator(
             navigator = navigator,
             interceptors = interceptors,
             eventListeners = eventListeners,
@@ -72,15 +73,15 @@ class MainActivity : AppCompatActivity() {
   }
 }
 
-private object InfoScreenRewriteInterceptor : CircuitNavigationInterceptor {
-  override fun goTo(screen: Screen): InterceptorGoToResult {
+private object InfoScreenRewriteInterceptor : NavigationInterceptor {
+  override fun goTo(screen: Screen): InterceptedGoToResult {
     return when (screen) {
       is InfoScreen -> {
-        InterceptorGoToResult.Rewrite(
+        InterceptedGoToResult.Rewrite(
           IntentScreen(Intent(Intent.ACTION_VIEW, "https://slackhq.github.io/circuit/".toUri()))
         )
       }
-      else -> CircuitNavigationInterceptor.Skipped
+      else -> NavigationInterceptor.Skipped
     }
   }
 }

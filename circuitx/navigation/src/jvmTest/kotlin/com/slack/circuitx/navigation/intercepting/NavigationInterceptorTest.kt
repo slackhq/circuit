@@ -5,11 +5,11 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
-import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
-import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.PopEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.ResetRootEvent
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

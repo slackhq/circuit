@@ -1,14 +1,16 @@
+// Copyright (C) 2025 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.OnBackStackChangedEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.PopEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.ResetRootEvent
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import kotlin.test.assertEquals
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest

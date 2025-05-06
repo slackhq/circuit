@@ -30,7 +30,7 @@ Docs: https://slackhq.github.io/circuit/circuitx/navigation
 - Update Compose Android BOM to `2025.04.01`.
 - Update Compose Android to `1.8.0`.
 - Update to Compose Multiplatform to `1.8.0`.
-- Change the published jvmTarget to `11` 
+- Change the published jvmTarget to `11`
 
 0.27.1
 ------

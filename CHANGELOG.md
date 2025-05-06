@@ -27,6 +27,10 @@ Docs: https://slackhq.github.io/circuit/circuitx/navigation
 
 - Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
 - [docs] Add more alternative state designs.
+- Update Compose Android BOM to `2025.04.01`.
+- Update Compose Android to `1.8.0`.
+- Update to Compose Multiplatform to `1.8.0`.
+- Change the published jvmTarget to `11` 
 
 0.27.1
 ------

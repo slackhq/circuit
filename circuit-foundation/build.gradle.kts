@@ -67,6 +67,7 @@ kotlin {
         api(projects.circuitRetained)
         api(projects.circuitSharedElements)
         api(libs.compose.ui)
+        api(libs.compose.ui.backhandler)
       }
     }
     androidMain {

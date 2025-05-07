@@ -18,11 +18,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
@@ -126,6 +127,7 @@ private constructor(
     content = content,
   )
 
+  @OptIn(ExperimentalComposeUiApi::class)
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
     var hasShown by remember { mutableStateOf(false) }

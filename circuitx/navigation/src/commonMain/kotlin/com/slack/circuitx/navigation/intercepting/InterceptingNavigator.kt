@@ -9,7 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.slack.circuit.foundation.internal.BackHandler
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -30,6 +31,7 @@ import kotlinx.collections.immutable.persistentListOf
  * @see Navigator
  * @see InterceptingNavigator
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 public fun rememberInterceptingNavigator(
   navigator: Navigator,

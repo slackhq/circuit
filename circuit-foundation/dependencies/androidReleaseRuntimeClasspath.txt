@@ -77,6 +77,8 @@ org.jetbrains.compose.foundation:foundation-layout
 org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
+org.jetbrains.compose.ui:ui-backhandler-android
+org.jetbrains.compose.ui:ui-backhandler
 org.jetbrains.compose.ui:ui-geometry
 org.jetbrains.compose.ui:ui-graphics
 org.jetbrains.compose.ui:ui-text

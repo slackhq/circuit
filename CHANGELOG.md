@@ -26,6 +26,8 @@ Docs: https://slackhq.github.io/circuit/circuitx/navigation
 ### Misc:
 
 - Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
+- Fix `rememberCircuitNavigator()` not being able to propagate the root pop as its `BackHandler` was still active
+- Added a common `rememberCircuitNavigator()` that uses a `BackHandler` to trigger `Navigator.pop` calls
 - [docs] Add more alternative state designs.
 - Update Compose Android BOM to `2025.04.01`.
 - Update Compose Android to `1.8.0`.

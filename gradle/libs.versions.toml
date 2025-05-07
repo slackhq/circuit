@@ -162,6 +162,7 @@ compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plug
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }
+compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-jb" }
 compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose-jb" }
 compose-ui-testing-junit = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "compose-jb" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-jb" }

@@ -168,7 +168,8 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
             modifier =
               Modifier.fillMaxSize().thenIf(!dismissState.isAnimatingOnRelease) {
                 sharedElement(
-                  state = rememberSharedContentState(key = PetImageElementKey(state.url)),
+                  sharedContentState =
+                    rememberSharedContentState(key = PetImageElementKey(state.url)),
                   animatedVisibilityScope = requireAnimatedScope(Overlay),
                 )
               },

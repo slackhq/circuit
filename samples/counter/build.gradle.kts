@@ -38,6 +38,7 @@ kotlin {
       dependencies {
         api(projects.circuitFoundation)
         api(libs.compose.foundation)
+        api(libs.compose.material.icons)
         api(libs.compose.material.material3)
         implementation(libs.molecule.runtime)
       }

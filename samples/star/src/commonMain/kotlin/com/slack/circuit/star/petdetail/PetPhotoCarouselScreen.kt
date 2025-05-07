@@ -265,7 +265,7 @@ private fun PhotoPager(
         modifier =
           Modifier.fillMaxWidth().thenIfNotNull(photoUrl) {
             sharedElement(
-                state = rememberSharedContentState(key = PetImageElementKey(it)),
+                sharedContentState = rememberSharedContentState(key = PetImageElementKey(it)),
                 animatedVisibilityScope = requireAnimatedScope(Overlay),
                 zIndexInOverlay = 5f,
               )

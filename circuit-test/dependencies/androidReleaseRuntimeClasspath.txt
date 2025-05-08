@@ -56,9 +56,11 @@ androidx.lifecycle:lifecycle-viewmodel-android
 androidx.lifecycle:lifecycle-viewmodel-compose-android
 androidx.lifecycle:lifecycle-viewmodel-compose
 androidx.lifecycle:lifecycle-viewmodel-ktx
+androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.profileinstaller:profileinstaller
+androidx.savedstate:savedstate-android
 androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
@@ -103,5 +105,8 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core
 org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-test
+org.jetbrains.kotlinx:kotlinx-serialization-bom
+org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
+org.jetbrains.kotlinx:kotlinx-serialization-core
 org.jetbrains:annotations
 org.jspecify:jspecify

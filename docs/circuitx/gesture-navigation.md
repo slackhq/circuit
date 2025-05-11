@@ -7,16 +7,19 @@ dependencies {
 }
 ```
 
-To enable gesture navigation support, you can use the use the `GestureNavigationDecoration`function:
+To enable gesture navigation support, you can use the use the `GestureNavigationDecorationFactory`:
 
 ```kotlin
 NavigableCircuitContent(
   navigator = navigator,
-  backStack = backstack,
-  decoration = GestureNavigationDecoration(
-    // Pop the back stack once the user has gone 'back'
-    navigator::pop
-  )
+  backStack = backStack,
+  decoratorFactory =
+    remember(navigator) {
+      GestureNavigationDecorationFactory(
+        // Pop the back stack once the user has gone 'back'
+        onBackInvoked = navigator::pop
+      )
+    },
 )
 ```
 

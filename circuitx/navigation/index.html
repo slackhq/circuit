@@ -1,0 +1,1752 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Compose-driven architecture for Android apps">
+      
+      
+        <meta name="author" content="Slack">
+      
+      
+      
+        <link rel="prev" href="../gesture-navigation/">
+      
+      
+        <link rel="next" href="../overlays/">
+      
+      
+      <link rel="icon" href="../../images/slack_logo_small.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
+    
+    
+      
+        <title>Navigation - Circuit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#circuitx-navigation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Circuit" class="md-header__button md-logo" aria-label="Circuit" data-md-component="logo">
+      
+  <img src="../../images/slack_logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Circuit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Navigation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Circuit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Circuit" class="md-nav__button md-logo" aria-label="Circuit" data-md-component="logo">
+      
+  <img src="../../images/slack_logo.png" alt="logo">
+
+    </a>
+    Circuit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Circuit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting up Circuit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../states-and-events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    States and Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Screen
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../circuit-content/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CircuitContent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../navigation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Navigation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../presenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Presenter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ui
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../overlays/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overlays
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Shared Elements
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Shared Elements
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shared-elements/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shared-elements-tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../factories/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Factories
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-gen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interop
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CircuitX
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            CircuitX
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../android/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Android
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Effects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gesture-navigation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gesture Navigation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Navigation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Navigation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intercepting-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intercepting Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How It Works
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interceptingnavigator" class="md-nav__link">
+    <span class="md-ellipsis">
+      InterceptingNavigator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#navigationinterceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      NavigationInterceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failurenotifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      FailureNotifier
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#navigationeventlistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      NavigationEventListener
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recipes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#url-rewrite-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      URL Rewrite Interceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication Interceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-flag-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Flag Interceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytics-tracking-event-listener" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analytics tracking Event Listener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-event-listener" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debug Event Listener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytics-failure-notifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analytics Failure Notifier
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-androidscreen-with-a-navigator-or-an-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling AndroidScreen with a Navigator or an Interceptor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handling AndroidScreen with a Navigator or an Interceptor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#androidscreenawarenavigator" class="md-nav__link">
+    <span class="md-ellipsis">
+      AndroidScreenAwareNavigator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidscreenawarenavigationinterceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      AndroidScreenAwareNavigationInterceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overlays/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overlays
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deep-linking-android/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deep Linking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/0.x/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/slackhq/circuit/discussions" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Discussions ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change Log
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CoC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intercepting-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intercepting Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How It Works
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interceptingnavigator" class="md-nav__link">
+    <span class="md-ellipsis">
+      InterceptingNavigator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#navigationinterceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      NavigationInterceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failurenotifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      FailureNotifier
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#navigationeventlistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      NavigationEventListener
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recipes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#url-rewrite-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      URL Rewrite Interceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication Interceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-flag-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Flag Interceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytics-tracking-event-listener" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analytics tracking Event Listener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-event-listener" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debug Event Listener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytics-failure-notifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analytics Failure Notifier
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-androidscreen-with-a-navigator-or-an-interceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling AndroidScreen with a Navigator or an Interceptor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handling AndroidScreen with a Navigator or an Interceptor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#androidscreenawarenavigator" class="md-nav__link">
+    <span class="md-ellipsis">
+      AndroidScreenAwareNavigator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidscreenawarenavigationinterceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      AndroidScreenAwareNavigationInterceptor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="circuitx-navigation">Circuitx Navigation<a class="headerlink" href="#circuitx-navigation" title="Permanent link">&para;</a></h1>
+<p>Circuitx navigation is an optional intercepting system that lets you hook into and modify
+navigation before it happens. The <code>InterceptingNavigator</code> sits before a regular Circuit <code>Navigator</code>,
+giving you a chance to inspect or change navigation events. With the <code>NavigationInterceptor</code>
+interface, you can handle <code>goTo</code>, <code>pop</code>, and <code>resetRoot</code> calls and decide if they should proceed,
+fail, be skipped, or be rewritten to navigate somewhere else. There&rsquo;s also a<code>NavigationEventListener</code>
+if you just want to know when navigation happens without changing it.
+This system is handy for advanced routing, blocking navigation, or tracking navigation events
+for analytics.</p>
+<h2 id="intercepting-overview">Intercepting Overview<a class="headerlink" href="#intercepting-overview" title="Permanent link">&para;</a></h2>
+<p>Navigation interceptors are useful in several scenarios:</p>
+<ul>
+<li>Rewriting navigation requests (e.g., converting one screen to another)</li>
+<li>Blocking certain navigation paths</li>
+<li>Adding cross-cutting concerns to navigation (e.g., analytics, logging)</li>
+<li>Handling platform-specific navigation (e.g., Android Intents)</li>
+<li>Implementing deep linking or external URL handling</li>
+</ul>
+<h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
+<p>The interception system works through the following process:</p>
+<ol>
+<li>When a navigation event occurs (like <code>goTo()</code>, <code>pop()</code>, or <code>resetRoot()</code>), it is first passed
+   through all registered <code>NavigationInterceptor</code>s</li>
+<li>Each interceptor can choose to:<ul>
+<li>Skip the event (pass it to the next interceptor)</li>
+<li>Consume the event (preventing further processing)</li>
+<li>Rewrite the event (changing the destination)</li>
+</ul>
+</li>
+<li>If no interceptor consumes the event, it is passed to the underlying <code>Navigator</code></li>
+<li>Navigation event listeners are then notified of the navigation change</li>
+</ol>
+<h3 id="interceptingnavigator">InterceptingNavigator<a class="headerlink" href="#interceptingnavigator" title="Permanent link">&para;</a></h3>
+<p><code>InterceptingNavigator</code> is an implementation of the <code>Navigator</code> interface that applies
+interceptors, event listeners, and a intercepting failure notifier to navigation events.</p>
+<p>It is created using the <code>rememberInterceptingNavigator()</code> composable:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">Screen</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">interceptingNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberInterceptingNavigator</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">interceptors</span><span class="p">,</span><span class="w"> </span><span class="n">eventListeners</span><span class="p">,</span><span class="w"> </span><span class="n">notifier</span><span class="p">)</span>
+<span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interceptingNavigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="navigationinterceptor">NavigationInterceptor<a class="headerlink" href="#navigationinterceptor" title="Permanent link">&para;</a></h3>
+<p><code>NavigationInterceptor</code> is an interface that defines the contract for intercepting navigation
+events in Circuit&rsquo;s navigation system. It has methods that mirror those called on a <code>Navigator</code> instance.
+Each method returns a result type that indicates how navigation should proceed.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">NavigationInterceptor</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">):</span><span class="w"> </span><span class="n">InterceptedGoToResult</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">pop</span><span class="p">(</span><span class="n">peekBackStack</span><span class="p">:</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">:</span><span class="w"> </span><span class="n">PopResult?)</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedPopResult</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">resetRoot</span><span class="p">(</span><span class="n">newRoot</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">saveState</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span><span class="w"> </span><span class="n">restoreState</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">):</span><span class="w"> </span><span class="n">InterceptedResetRootResult</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Result types</strong></p>
+<ul>
+<li><code>InterceptedResult.Skipped</code> - The interceptor did not handle the navigation</li>
+<li><code>InterceptedResult.Success</code> - The interceptor handled the navigation successfully</li>
+<li><code>InterceptedResult.Failure</code> - The interceptor encountered an error while handled the navigation</li>
+<li><code>InterceptedGoToResult.Rewrite</code> - The interceptor wants to navigate to a different screen</li>
+<li><code>InterceptedResetRootResult.Rewrite</code> - The interceptor wants to reset to a different root screen</li>
+</ul>
+<p>Both <code>InterceptedResult.Success</code> and <code>InterceptedResult.Failure</code> have a <code>consumed</code> flag which
+determines whether the navigation event is fully handled by the interceptor.</p>
+<ul>
+<li>If <code>consumed = true</code> further processing by subsequent interceptors or the base navigator is prevented</li>
+<li>If <code>consumed = false</code>, the navigation event is passed to the next interceptor or the base navigator</li>
+</ul>
+<p>When an interceptor returns a <code>Rewrite</code> result, the navigation processing restarts with
+the <em>rewritten</em> screen. All interceptors will operate on this rewritten navigation event as if it
+was a new navigation event.</p>
+<h3 id="failurenotifier">FailureNotifier<a class="headerlink" href="#failurenotifier" title="Permanent link">&para;</a></h3>
+<p><code>InterceptingNavigator.FailureNotifier</code> is a simple interface that provides a mechanism to handle
+and report failures that occur during navigation interception in <code>InterceptingNavigator</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">FailureNotifier</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goToFailure</span><span class="p">(</span><span class="n">interceptorResult</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">popFailure</span><span class="p">(</span><span class="n">interceptorResult</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">rootResetFailure</span><span class="p">(</span><span class="n">interceptorResult</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="navigationeventlistener">NavigationEventListener<a class="headerlink" href="#navigationeventlistener" title="Permanent link">&para;</a></h3>
+<p><code>NavigationEventListener</code> is an interface that enables monitoring of navigation events within
+Circuit&rsquo;s navigation system.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">NavigationEventListener</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onBackStackChanged</span><span class="p">(</span><span class="n">backStack</span><span class="p">:</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">pop</span><span class="p">(</span><span class="n">backStack</span><span class="p">:</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">:</span><span class="w"> </span><span class="n">PopResult?)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">resetRoot</span><span class="p">(</span><span class="n">newRoot</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">saveState</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span><span class="w"> </span><span class="n">restoreState</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Event Timing</strong></p>
+<p>The event listeners are only notified if the navigation event was handled by the base navigator and
+was not intercepted by a <code>NavigationInterceptor</code>.</p>
+<ul>
+<li><code>onBackStackChanged</code>: Called both for the initial state and after any operation that modifies the
+  back stack</li>
+<li><code>goTo</code>, <code>pop</code>, and <code>resetRoot</code>: Called after successful navigation operations that weren&rsquo;t
+  intercepted</li>
+</ul>
+<p>The failure notifier is called when a <code>NavigationInterceptor</code> returns a <code>Failure</code> result.
+This can be useful for logging, analytics, and debugging navigation issues.</p>
+<h2 id="example-setup">Example Setup<a class="headerlink" href="#example-setup" title="Permanent link">&para;</a></h2>
+<p>An example of setting up a <code>InterceptingNavigator</code> with interceptors, event listeners, and a
+failure notifier.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">interceptors</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">persistentListOf</span><span class="p">(</span>
+<span class="w">    </span><span class="c1">// Order matters! First interceptor is first handle navigation</span>
+<span class="w">    </span><span class="n">AndroidScreenAwareNavigationInterceptor</span><span class="p">(</span><span class="n">context</span><span class="p">),</span>
+<span class="w">    </span><span class="n">AuthInterceptor</span><span class="p">(</span><span class="n">authManager</span><span class="p">),</span>
+<span class="w">    </span><span class="n">UrlRewriteInterceptor</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">eventListeners</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">persistentListOf</span><span class="p">(</span>
+<span class="w">    </span><span class="n">LoggingNavigationEventListener</span><span class="p">,</span>
+<span class="w">    </span><span class="n">AnalyticsNavigationEventListener</span><span class="p">(</span><span class="n">analytics</span><span class="p">,</span><span class="w"> </span><span class="n">crashReporter</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">notifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AnalyticsFailureNotifier</span><span class="p">(</span><span class="n">analytics</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buildCircuit</span><span class="p">()</span>
+
+<span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">baseNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c1">// Create the intercepting navigator with all our interceptors</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">rememberInterceptingNavigator</span><span class="p">(</span>
+<span class="w">      </span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">baseNavigator</span><span class="p">,</span>
+<span class="w">      </span><span class="n">interceptors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interceptors</span><span class="p">,</span>
+<span class="w">      </span><span class="n">eventListeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eventListeners</span><span class="p">,</span>
+<span class="w">      </span><span class="n">notifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notifier</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">  </span><span class="c1">// Use the navigator with your Circuit</span>
+<span class="w">  </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="recipes">Recipes<a class="headerlink" href="#recipes" title="Permanent link">&para;</a></h2>
+<h3 id="url-rewrite-interceptor">URL Rewrite Interceptor<a class="headerlink" href="#url-rewrite-interceptor" title="Permanent link">&para;</a></h3>
+<p>This interceptor rewrites a <code>Screen</code> to open an external URL:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">object</span><span class="w"> </span><span class="nc">UrlRewriteInterceptor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationInterceptor</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">):</span><span class="w"> </span><span class="n">InterceptedGoToResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">InfoScreen</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">InterceptedGoToResult</span><span class="p">.</span><span class="na">Rewrite</span><span class="p">(</span>
+<span class="w">          </span><span class="n">IntentScreen</span><span class="p">(</span><span class="n">Intent</span><span class="p">(</span><span class="n">Intent</span><span class="p">.</span><span class="na">ACTION_VIEW</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;https://example.com/info&quot;</span><span class="p">.</span><span class="na">toUri</span><span class="p">()))</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">NavigationInterceptor</span><span class="p">.</span><span class="na">Skipped</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="authentication-interceptor">Authentication Interceptor<a class="headerlink" href="#authentication-interceptor" title="Permanent link">&para;</a></h3>
+<p>This interceptor synchronously checks if the user is logged in before allowing navigation to
+protected screens:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">AuthInterceptor</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">authManager</span><span class="p">:</span><span class="w"> </span><span class="n">AuthManager</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationInterceptor</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">):</span><span class="w"> </span><span class="n">InterceptedGoToResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// For protected screens, verify authentication</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">ProtectedScreen</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">authManager</span><span class="p">.</span><span class="na">isLoggedIn</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Rewrite to login screen with original destination as a parameter</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">InterceptedGoToResult</span><span class="p">.</span><span class="na">Rewrite</span><span class="p">(</span><span class="n">LoginScreen</span><span class="p">(</span><span class="n">afterLoginDestination</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">screen</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">NavigationInterceptor</span><span class="p">.</span><span class="na">Skipped</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="feature-flag-interceptor">Feature Flag Interceptor<a class="headerlink" href="#feature-flag-interceptor" title="Permanent link">&para;</a></h3>
+<p>This interceptor checks if a feature flag is enabled before allowing navigation to screens.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">FeatureFlagInterceptor</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">featureManager</span><span class="p">:</span><span class="w"> </span><span class="n">FeatureManager</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screenToFeatureMap</span><span class="p">:</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">KClass</span><span class="o">&lt;</span><span class="k">out</span><span class="w"> </span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationInterceptor</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">):</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">requiredFlag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">screenToFeatureMap</span><span class="o">[</span><span class="n">screen</span><span class="o">::</span><span class="n">class</span><span class="o">]</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Skipped</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">featureManager</span><span class="p">.</span><span class="na">isEnabled</span><span class="p">(</span><span class="n">requiredFlag</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">(</span>
+<span class="w">        </span><span class="n">consumed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="n">throwable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FeatureNotEnabledException</span><span class="p">(</span><span class="n">requiredFlag</span><span class="p">),</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Skipped</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="analytics-tracking-event-listener">Analytics tracking Event Listener<a class="headerlink" href="#analytics-tracking-event-listener" title="Permanent link">&para;</a></h3>
+<p>This event listener combines analytics tracking and crash reporting.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">AnalyticsNavigationEventListener</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">analytics</span><span class="p">:</span><span class="w"> </span><span class="n">Analytics</span><span class="p">,</span><span class="w"> </span><span class="c1">// Your analytics system</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">crashReporter</span><span class="p">:</span><span class="w"> </span><span class="n">CrashReporter</span><span class="p">,</span><span class="w"> </span><span class="c1">// Your crash reporting system</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationEventListener</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onBackStackChanged</span><span class="p">(</span><span class="n">backStack</span><span class="p">:</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">crashReporter</span><span class="p">.</span><span class="na">tag</span><span class="p">(</span><span class="s">&quot;backstack&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="p">.</span><span class="na">joinToString</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">analyticsName</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">analytics</span><span class="p">.</span><span class="na">trackEvent</span><span class="p">(</span>
+<span class="w">      </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;go_to&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;screen_name&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">screen</span><span class="p">.</span><span class="na">analyticsName</span><span class="p">())</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">pop</span><span class="p">(</span><span class="n">backStack</span><span class="p">:</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">:</span><span class="w"> </span><span class="n">PopResult?)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">analytics</span><span class="p">.</span><span class="na">trackEvent</span><span class="p">(</span>
+<span class="w">      </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;pop&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;screen_name&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">backStack</span><span class="p">.</span><span class="na">firstOrNull</span><span class="p">()</span><span class="o">?.</span><span class="na">analyticsName</span><span class="p">()),</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="n">Screen</span><span class="p">.</span><span class="nf">analyticsName</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="o">::</span><span class="n">class</span><span class="p">.</span><span class="na">simpleName</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="debug-event-listener">Debug Event Listener<a class="headerlink" href="#debug-event-listener" title="Permanent link">&para;</a></h3>
+<p>This event listener logs navigation events to help with development and testing by maintaining
+navigation history.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">DebugNavigationEventListener</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationEventListener</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigationHistory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="o">&lt;</span><span class="n">NavigationEvent</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="w">  </span><span class="kd">sealed</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">NavigationEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">GoTo</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationEvent</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Pop</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">poppedScreen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen?)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationEvent</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">ResetRoot</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">newRoot</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NavigationEvent</span><span class="p">()</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goTo</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">navigationHistory</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">NavigationEvent</span><span class="p">.</span><span class="na">GoTo</span><span class="p">(</span><span class="n">screen</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">pop</span><span class="p">(</span><span class="n">backStack</span><span class="p">:</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">:</span><span class="w"> </span><span class="n">PopResult?)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">navigationHistory</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">NavigationEvent</span><span class="p">.</span><span class="na">Pop</span><span class="p">(</span><span class="n">backStack</span><span class="p">.</span><span class="na">firstOrNull</span><span class="p">()))</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">resetRoot</span><span class="p">(</span><span class="n">newRoot</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span><span class="w"> </span><span class="n">saveState</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span><span class="w"> </span><span class="n">restoreState</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">navigationHistory</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">NavigationEvent</span><span class="p">.</span><span class="na">ResetRoot</span><span class="p">(</span><span class="n">newRoot</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">getNavigationHistory</span><span class="p">():</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">NavigationEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigationHistory</span><span class="p">.</span><span class="na">toList</span><span class="p">()</span>
+
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">clearHistory</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">navigationHistory</span><span class="p">.</span><span class="na">clear</span><span class="p">()</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="analytics-failure-notifier">Analytics Failure Notifier<a class="headerlink" href="#analytics-failure-notifier" title="Permanent link">&para;</a></h3>
+<p>This failure notifier tracks navigation interceptor failures using analytics.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">AnalyticsFailureNotifier</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">analytics</span><span class="p">:</span><span class="w"> </span><span class="n">Analytics</span><span class="p">,</span><span class="w"> </span><span class="c1">// Your analytics system</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">InterceptingNavigator</span><span class="p">.</span><span class="na">FailureNotifier</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">goToFailure</span><span class="p">(</span><span class="n">interceptorResult</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span>
+<span class="w">      </span><span class="s">&quot;operation&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;goTo&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">interceptorResult</span><span class="p">.</span><span class="na">reason</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="n">analytics</span><span class="p">.</span><span class="na">trackError</span><span class="p">(</span><span class="s">&quot;navigation_interceptor_failure&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">metadata</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">popFailure</span><span class="p">(</span><span class="n">interceptorResult</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span>
+<span class="w">      </span><span class="s">&quot;operation&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;pop&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">interceptorResult</span><span class="p">.</span><span class="na">reason</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="n">analytics</span><span class="p">.</span><span class="na">trackError</span><span class="p">(</span><span class="s">&quot;navigation_interceptor_failure&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">metadata</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">rootResetFailure</span><span class="p">(</span><span class="n">interceptorResult</span><span class="p">:</span><span class="w"> </span><span class="n">InterceptedResult</span><span class="p">.</span><span class="na">Failure</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span>
+<span class="w">      </span><span class="s">&quot;operation&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;resetRoot&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">interceptorResult</span><span class="p">.</span><span class="na">reason</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="n">analytics</span><span class="p">.</span><span class="na">trackError</span><span class="p">(</span><span class="s">&quot;navigation_interceptor_failure&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">metadata</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="handling-androidscreen-with-a-navigator-or-an-interceptor">Handling <code>AndroidScreen</code> with a Navigator or an Interceptor<a class="headerlink" href="#handling-androidscreen-with-a-navigator-or-an-interceptor" title="Permanent link">&para;</a></h2>
+<p>As an example comparison between Navigator delegation and Navigator interceptors, consider the two
+ways to handle Android-specific navigation:</p>
+<h3 id="androidscreenawarenavigator">AndroidScreenAwareNavigator<a class="headerlink" href="#androidscreenawarenavigator" title="Permanent link">&para;</a></h3>
+<p>Using the <code>rememberAndroidScreenAwareNavigator()</code> composable:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">Screen</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">baseNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberAndroidScreenAwareNavigator</span><span class="p">(</span><span class="n">baseNavigator</span><span class="p">,</span><span class="w"> </span><span class="n">AndroidScreenStarter</span><span class="w"> </span><span class="p">{})</span>
+<span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+</code></pre></div>
+<p>This creates a new <code>Navigator</code> that delegates navigation to the underlying <code>CircuitNavigator</code>. It
+intercepts navigation events for <code>AndroidScreen</code> subtypes, such as <code>IntentScreen</code>.</p>
+<h3 id="androidscreenawarenavigationinterceptor">AndroidScreenAwareNavigationInterceptor<a class="headerlink" href="#androidscreenawarenavigationinterceptor" title="Permanent link">&para;</a></h3>
+<p>Using the interceptor pattern:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">interceptors</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">persistentListOf</span><span class="p">(</span><span class="n">AndroidScreenAwareNavigationInterceptor</span><span class="p">(</span><span class="n">AndroidScreenStarter</span><span class="w"> </span><span class="p">{}))</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">Screen</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">baseNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">rememberInterceptingNavigator</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">baseNavigator</span><span class="p">,</span><span class="w"> </span><span class="n">interceptors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interceptors</span><span class="p">)</span>
+<span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+</code></pre></div>
+<p>This creates a new <code>NavigationInterceptor</code> with a <code>AndroidScreenAwareNavigationInterceptor</code>.
+It will also intercept and consume navigation events for <code>AndroidScreen</code> subtypes, such as
+<code>IntentScreen</code>.</p>
+<h3 id="comparison">Comparison<a class="headerlink" href="#comparison" title="Permanent link">&para;</a></h3>
+<p><strong>Navigator Approach:</strong></p>
+<ul>
+<li>Simple to use for basic cases</li>
+<li>Directly integrated into the Navigator chain</li>
+<li>Combining other interception behaviors requires more delegated Navigators</li>
+</ul>
+<p><strong>Interceptor Approach:</strong></p>
+<ul>
+<li>Can be combined with multiple interceptors</li>
+<li>Provides detailed control over success/failure handling</li>
+<li>Can be used with navigation event listeners and failure notifiers</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 Slack Technologies, LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      
+    
+  </body>
+</html>

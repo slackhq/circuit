@@ -29,10 +29,11 @@ Docs: https://slackhq.github.io/circuit/circuitx/navigation
 - Fix `rememberCircuitNavigator()` not being able to propagate the root pop as its `BackHandler` was still active
 - Added a common `rememberCircuitNavigator()` that uses a `BackHandler` to trigger `Navigator.pop` calls
 - [docs] Add more alternative state designs.
-- Update Compose Android BOM to `2025.04.01`.
-- Update Compose Android to `1.8.0`.
+- Update Compose Android BOM to `2025.05.00`.
+- Update Compose Android to `1.8.1`.
 - Update to Compose Multiplatform to `1.8.0`.
 - Change the published jvmTarget to `11`
+- Update molecule to `2.1.0`
 
 0.27.1
 ------

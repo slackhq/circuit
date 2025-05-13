@@ -36,7 +36,7 @@ import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityViewModel
+import com.slack.circuit.retained.ContinuityViewModelImpl
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
@@ -48,13 +48,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 
-private const val TAG_REMEMBER = "remember"
-private const val TAG_RETAINED_1 = "retained1"
-private const val TAG_RETAINED_2 = "retained2"
-private const val TAG_RETAINED_3 = "retained3"
-private const val TAG_BUTTON_SHOW = "btn_show"
-private const val TAG_BUTTON_HIDE = "btn_hide"
-private const val TAG_BUTTON_INC = "btn_inc"
+internal const val TAG_REMEMBER = "remember"
+internal const val TAG_RETAINED_1 = "retained1"
+internal const val TAG_RETAINED_2 = "retained2"
+internal const val TAG_RETAINED_3 = "retained3"
+internal const val TAG_BUTTON_SHOW = "btn_show"
+internal const val TAG_BUTTON_HIDE = "btn_hide"
+internal const val TAG_BUTTON_INC = "btn_inc"
 
 class RetainedTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -69,11 +69,11 @@ class RetainedTest {
     get() = composeTestRule.activityRule.scenario
 
   private class RecordingContinuityVmFactory : ViewModelProvider.Factory {
-    var continuity: ContinuityViewModel? = null
+    var continuity: ContinuityViewModelImpl? = null
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
-      return ContinuityViewModel().also { continuity = it } as T
+      return ContinuityViewModelImpl().also { continuity = it } as T
     }
   }
 
@@ -687,7 +687,7 @@ class RetainedTest {
 }
 
 @Composable
-private fun KeyContent(key: String?) {
+internal fun KeyContent(key: String?) {
   var text1 by remember { mutableStateOf("") }
   // By default rememberSavable uses it's line number as its key, this doesn't seem
   // to work when testing, instead pass a key

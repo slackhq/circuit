@@ -25,6 +25,12 @@ public final class com/slack/circuit/retained/Continuity {
 	public static final field KEY Ljava/lang/String;
 }
 
+public abstract class com/slack/circuit/retained/ContinuityViewModel : androidx/lifecycle/ViewModel, com/slack/circuit/retained/RetainedStateRegistry {
+	public static final field $stable I
+	public fun <init> ()V
+	public abstract fun update (Lcom/slack/circuit/retained/CanRetainChecker;)V
+}
+
 public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {
 }
 

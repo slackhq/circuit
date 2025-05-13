@@ -18,11 +18,21 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry, CanRetainChecker {
+/**
+ * An abstract [ViewModel] instance that implements [RetainedStateRegistry] and is used in
+ * [continuityRetainedStateRegistry].
+ */
+public abstract class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
+  /** Update the [CanRetainChecker] used by the [ContinuityViewModel]. */
+  public abstract fun update(canRetainChecker: CanRetainChecker)
+}
+
+internal class ContinuityViewModelImpl :
+  ContinuityViewModel(), RetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
   private var canRetainChecker: CanRetainChecker = CanRetainChecker.Never
 
-  fun update(canRetainChecker: CanRetainChecker) {
+  override fun update(canRetainChecker: CanRetainChecker) {
     this.canRetainChecker = canRetainChecker
   }
 
@@ -67,7 +77,7 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry, CanReta
   object Factory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
-      return ContinuityViewModel() as T
+      return ContinuityViewModelImpl() as T
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
@@ -81,20 +91,20 @@ public actual fun continuityRetainedStateRegistry(
   key: String,
   canRetainChecker: CanRetainChecker,
 ): RetainedStateRegistry =
-  continuityRetainedStateRegistry(key, ContinuityViewModel.Factory, canRetainChecker)
+  continuityRetainedStateRegistry(key, ContinuityViewModelImpl.Factory, canRetainChecker)
 
 /**
  * Provides a [RetainedStateRegistry].
  *
  * @param key the key to use when creating the [Continuity] instance.
  * @param factory an optional [ViewModelProvider.Factory] to use when creating the [Continuity]
- *   instance.
+ *   instance. This factory should create a subclass of [ContinuityViewModel].
  * @param canRetainChecker an optional [CanRetainChecker] to use when determining whether to retain.
  */
 @Composable
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
-  factory: ViewModelProvider.Factory = ContinuityViewModel.Factory,
+  factory: ViewModelProvider.Factory = ContinuityViewModelImpl.Factory,
   canRetainChecker: CanRetainChecker = rememberContinuityCanRetainChecker(),
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")

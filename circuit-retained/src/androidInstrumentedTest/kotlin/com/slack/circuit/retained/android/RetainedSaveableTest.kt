@@ -21,7 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityViewModel
+import com.slack.circuit.retained.ContinuityViewModelImpl
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
@@ -45,11 +45,11 @@ class RetainedSaveableTest {
     get() = composeTestRule.activityRule.scenario
 
   private class RecordingContinuityVmFactory : ViewModelProvider.Factory {
-    var continuity: ContinuityViewModel? = null
+    var continuity: ContinuityViewModelImpl? = null
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
-      return ContinuityViewModel().also { continuity = it } as T
+      return ContinuityViewModelImpl().also { continuity = it } as T
     }
   }
 

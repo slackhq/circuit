@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+0.28.0
+------
+
+_2025-05-12_
+
 ### **New**: circuitx-navigation adding navigation interception capabilities:
 
 We've added a new navigation intercepting system to Circuit that lets you hook into and modify

@@ -8,11 +8,8 @@ import androidx.compose.runtime.Composable
 @Composable
 public expect fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
-  canRetainChecker: CanRetainChecker = rememberContinuityCanRetainChecker(),
 ): RetainedStateRegistry
 
 public object Continuity {
   public const val KEY: String = "CircuitContinuity"
 }
-
-@Composable public expect fun rememberContinuityCanRetainChecker(): CanRetainChecker

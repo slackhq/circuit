@@ -20,12 +20,12 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
+import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
 import com.slack.circuit.retained.ContinuityViewModel
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
-import com.slack.circuit.retained.rememberContinuityCanRetainChecker
 import com.slack.circuit.retained.rememberRetained
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
@@ -167,11 +167,10 @@ class RetainedSaveableTest {
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->
       activity.setContent {
-        val defaultCanRetainChecker = rememberContinuityCanRetainChecker()
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides
             continuityRetainedStateRegistry(Continuity.KEY, vmFactory) {
-              canRetainOverride ?: defaultCanRetainChecker.canRetain()
+              canRetainOverride ?: CanRetainChecker.Always.canRetain()
             }
         ) {
           content()

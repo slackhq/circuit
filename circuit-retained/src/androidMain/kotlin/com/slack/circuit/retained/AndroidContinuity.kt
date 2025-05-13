@@ -2,16 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.retained
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -77,11 +72,8 @@ internal class ContinuityViewModel : ViewModel(), RetainedStateRegistry, CanReta
 }
 
 @Composable
-public actual fun continuityRetainedStateRegistry(
-  key: String,
-  canRetainChecker: CanRetainChecker,
-): RetainedStateRegistry =
-  continuityRetainedStateRegistry(key, ContinuityViewModel.Factory, canRetainChecker)
+public actual fun continuityRetainedStateRegistry(key: String): RetainedStateRegistry =
+  continuityRetainedStateRegistry(key, ContinuityViewModel.Factory)
 
 /**
  * Provides a [RetainedStateRegistry].
@@ -89,21 +81,18 @@ public actual fun continuityRetainedStateRegistry(
  * @param key the key to use when creating the [Continuity] instance.
  * @param factory an optional [ViewModelProvider.Factory] to use when creating the [Continuity]
  *   instance.
- * @param canRetainChecker an optional [CanRetainChecker] to use when determining whether to retain.
  */
 @Composable
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
   factory: ViewModelProvider.Factory = ContinuityViewModel.Factory,
-  canRetainChecker: CanRetainChecker = rememberContinuityCanRetainChecker(),
+  canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
 ): RetainedStateRegistry {
   @Suppress("ComposeViewModelInjection")
   val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
   vm.update(canRetainChecker)
   DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
-
   LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
-
   LaunchedEffect(vm) {
     withFrameNanos {}
     // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
@@ -112,20 +101,4 @@ public fun continuityRetainedStateRegistry(
   }
 
   return vm
-}
-
-/** On Android, we retain only if the activity is changing configurations. */
-@Composable
-public actual fun rememberContinuityCanRetainChecker(): CanRetainChecker {
-  val context = LocalContext.current
-  val activity = remember(context) { context.findActivity() }
-  return remember { CanRetainChecker { activity?.isChangingConfigurations == true } }
-}
-
-private tailrec fun Context.findActivity(): Activity? {
-  return when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-  }
 }

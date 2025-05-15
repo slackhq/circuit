@@ -1,6 +1,6 @@
 public final class com/slack/circuit/retained/AndroidContinuityKt {
-	public static final fun continuityRetainedStateRegistry (Ljava/lang/String;Landroidx/lifecycle/ViewModelProvider$Factory;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
 	public static final fun continuityRetainedStateRegistry (Ljava/lang/String;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
+	public static final fun continuityRetainedStateRegistry (Ljava/lang/String;Lcom/slack/circuit/retained/ContinuityRetainedStateRegistryFactory;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
 	public static final fun rememberContinuityCanRetainChecker (Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/retained/CanRetainChecker;
 }
 
@@ -25,10 +25,13 @@ public final class com/slack/circuit/retained/Continuity {
 	public static final field KEY Ljava/lang/String;
 }
 
-public abstract class com/slack/circuit/retained/ContinuityViewModel : androidx/lifecycle/ViewModel, com/slack/circuit/retained/RetainedStateRegistry {
-	public static final field $stable I
-	public fun <init> ()V
+public abstract interface class com/slack/circuit/retained/ContinuityRetainedStateRegistry : com/slack/circuit/retained/RetainedStateRegistry {
 	public abstract fun update (Lcom/slack/circuit/retained/CanRetainChecker;)V
+}
+
+public abstract interface class com/slack/circuit/retained/ContinuityRetainedStateRegistryFactory {
+	public abstract fun create (Ljava/lang/Class;Landroidx/lifecycle/viewmodel/CreationExtras;)Landroidx/lifecycle/ViewModel;
+	public static synthetic fun create$default (Lcom/slack/circuit/retained/ContinuityRetainedStateRegistryFactory;Ljava/lang/Class;Landroidx/lifecycle/viewmodel/CreationExtras;ILjava/lang/Object;)Landroidx/lifecycle/ViewModel;
 }
 
 public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {

@@ -11,11 +11,12 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityViewModel
+import com.slack.circuit.retained.ContinuityRetainedStateRegistry
+import com.slack.circuit.retained.ContinuityRetainedStateRegistryFactory
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryImpl
@@ -72,7 +73,8 @@ class CustomRetainedViewModelTest {
   }
 }
 
-private class CustomContinuityViewModel : ContinuityViewModel(), CanRetainChecker {
+private class CustomContinuityViewModel :
+  ViewModel(), ContinuityRetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
   private var canRetainChecker = CanRetainChecker.Never
 
@@ -112,12 +114,14 @@ private class CustomContinuityViewModel : ContinuityViewModel(), CanRetainChecke
     delegate.valueProviders.clear()
   }
 
-  class Factory : ViewModelProvider.Factory {
-    var continuity: ContinuityViewModel? = null
+  class Factory : ContinuityRetainedStateRegistryFactory<CustomContinuityViewModel> {
+    var continuity: ContinuityRetainedStateRegistry? = null
 
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      @Suppress("UNCHECKED_CAST")
-      return CustomContinuityViewModel().also { continuity = it } as T
+    override fun create(
+      modelClass: Class<CustomContinuityViewModel>,
+      extras: CreationExtras?,
+    ): CustomContinuityViewModel {
+      return CustomContinuityViewModel().also { continuity = it }
     }
   }
 }

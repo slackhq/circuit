@@ -17,11 +17,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityViewModelImpl
+import com.slack.circuit.retained.ContinuityRetainedStateRegistryFactory
+import com.slack.circuit.retained.ContinuityViewModel
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.continuityRetainedStateRegistry
@@ -44,12 +44,15 @@ class RetainedSaveableTest {
   private val scenario: ActivityScenario<ComponentActivity>
     get() = composeTestRule.activityRule.scenario
 
-  private class RecordingContinuityVmFactory : ViewModelProvider.Factory {
-    var continuity: ContinuityViewModelImpl? = null
+  private class RecordingContinuityVmFactory :
+    ContinuityRetainedStateRegistryFactory<ContinuityViewModel> {
+    var continuity: ContinuityViewModel? = null
 
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      @Suppress("UNCHECKED_CAST")
-      return ContinuityViewModelImpl().also { continuity = it } as T
+    override fun create(
+      modelClass: Class<ContinuityViewModel>,
+      extras: CreationExtras?,
+    ): ContinuityViewModel {
+      return ContinuityViewModel().also { continuity = it }
     }
   }
 

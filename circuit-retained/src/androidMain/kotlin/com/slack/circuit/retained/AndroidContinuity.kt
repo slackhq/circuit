@@ -19,16 +19,25 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
- * An abstract [ViewModel] instance that implements [RetainedStateRegistry] and is used in
- * [continuityRetainedStateRegistry].
+ * A [RetainedStateRegistry] used by [continuityRetainedStateRegistry] that can update its
+ * [CanRetainChecker].
  */
-public abstract class ContinuityViewModel : ViewModel(), RetainedStateRegistry {
-  /** Update the [CanRetainChecker] used by the [ContinuityViewModel]. */
-  public abstract fun update(canRetainChecker: CanRetainChecker)
+public interface ContinuityRetainedStateRegistry : RetainedStateRegistry {
+  public fun update(canRetainChecker: CanRetainChecker)
 }
 
-internal class ContinuityViewModelImpl :
-  ContinuityViewModel(), RetainedStateRegistry, CanRetainChecker {
+/**
+ * A factory for creating a [ViewModel] that implements [ContinuityRetainedStateRegistry] for
+ * [continuityRetainedStateRegistry].
+ */
+public interface ContinuityRetainedStateRegistryFactory<T> where
+T : ViewModel,
+T : ContinuityRetainedStateRegistry {
+  public fun create(modelClass: Class<T>, extras: CreationExtras? = null): T
+}
+
+internal class ContinuityViewModel :
+  ViewModel(), ContinuityRetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
   private var canRetainChecker: CanRetainChecker = CanRetainChecker.Never
 
@@ -74,14 +83,12 @@ internal class ContinuityViewModelImpl :
   fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
     delegate.valueProviders.toMap()
 
-  object Factory : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      @Suppress("UNCHECKED_CAST")
-      return ContinuityViewModelImpl() as T
-    }
-
-    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-      return create(modelClass)
+  internal object Factory : ContinuityRetainedStateRegistryFactory<ContinuityViewModel> {
+    override fun create(
+      modelClass: Class<ContinuityViewModel>,
+      extras: CreationExtras?,
+    ): ContinuityViewModel {
+      return ContinuityViewModel()
     }
   }
 }
@@ -91,24 +98,30 @@ public actual fun continuityRetainedStateRegistry(
   key: String,
   canRetainChecker: CanRetainChecker,
 ): RetainedStateRegistry =
-  continuityRetainedStateRegistry(key, ContinuityViewModelImpl.Factory, canRetainChecker)
+  continuityRetainedStateRegistry(key, ContinuityViewModel.Factory, canRetainChecker)
 
 /**
  * Provides a [RetainedStateRegistry].
  *
  * @param key the key to use when creating the [Continuity] instance.
- * @param factory an optional [ViewModelProvider.Factory] to use when creating the [Continuity]
- *   instance. This factory should create a subclass of [ContinuityViewModel].
+ * @param retainedStateRegistryFactory an optional [ContinuityRetainedStateRegistryFactory] to use
+ *   when creating the [Continuity] instance. This factory should create a subclass of
+ *   [ContinuityViewModel].
  * @param canRetainChecker an optional [CanRetainChecker] to use when determining whether to retain.
  */
 @Composable
 public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
-  factory: ViewModelProvider.Factory = ContinuityViewModelImpl.Factory,
+  retainedStateRegistryFactory: ContinuityRetainedStateRegistryFactory<*> =
+    ContinuityViewModel.Factory,
   canRetainChecker: CanRetainChecker = rememberContinuityCanRetainChecker(),
 ): RetainedStateRegistry {
+  val factory =
+    remember(retainedStateRegistryFactory) {
+      DelegatingContinuityViewModelProviderFactory(retainedStateRegistryFactory)
+    }
   @Suppress("ComposeViewModelInjection")
-  val vm = viewModel<ContinuityViewModel>(key = key, factory = factory)
+  val vm = viewModel<ViewModel>(key = key, factory = factory) as ContinuityRetainedStateRegistry
   vm.update(canRetainChecker)
   DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
 
@@ -122,6 +135,20 @@ public fun continuityRetainedStateRegistry(
   }
 
   return vm
+}
+
+private class DelegatingContinuityViewModelProviderFactory<VM>(
+  private val delegate: ContinuityRetainedStateRegistryFactory<VM>
+) : ViewModelProvider.Factory where VM : ViewModel, VM : ContinuityRetainedStateRegistry {
+  override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    @Suppress("UNCHECKED_CAST")
+    return delegate.create(modelClass as Class<VM>) as T
+  }
+
+  override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+    @Suppress("UNCHECKED_CAST")
+    return delegate.create(modelClass as Class<VM>, extras) as T
+  }
 }
 
 /** On Android, we retain only if the activity is changing configurations. */

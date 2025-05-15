@@ -4,6 +4,8 @@ Changelog
 Unreleased
 ----------
 
+- Fix not being able to provide a custom ViewModel to `continuityRetainedStateRegistry()`
+
 0.28.0
 ------
 

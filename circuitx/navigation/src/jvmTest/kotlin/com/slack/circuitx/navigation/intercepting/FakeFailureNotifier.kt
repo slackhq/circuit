@@ -10,16 +10,16 @@ class FakeFailureNotifier : InterceptingNavigator.FailureNotifier {
   private val popFailures = Turbine<InterceptedResult.Failure>()
   private val resetRootFailures = Turbine<InterceptedResult.Failure>()
 
-  override fun goToFailure(interceptorResult: InterceptedResult.Failure) {
-    goToFailures.add(interceptorResult)
+  override fun goToFailure(interceptedResult: InterceptedResult.Failure) {
+    goToFailures.add(interceptedResult)
   }
 
-  override fun popFailure(interceptorResult: InterceptedResult.Failure) {
-    popFailures.add(interceptorResult)
+  override fun popFailure(interceptedResult: InterceptedResult.Failure) {
+    popFailures.add(interceptedResult)
   }
 
-  override fun rootResetFailure(interceptorResult: InterceptedResult.Failure) {
-    resetRootFailures.add(interceptorResult)
+  override fun rootResetFailure(interceptedResult: InterceptedResult.Failure) {
+    resetRootFailures.add(interceptedResult)
   }
 
   suspend fun awaitGoToFailure(): InterceptedResult.Failure = goToFailures.awaitItem()

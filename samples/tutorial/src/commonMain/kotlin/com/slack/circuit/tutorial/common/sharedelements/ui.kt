@@ -42,7 +42,7 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
         Icons.Default.Person,
         modifier =
           Modifier.sharedElement(
-              state =
+              sharedContentState =
                 rememberSharedContentState(
                   EmailSharedTransitionKey(
                     id = email.id,
@@ -135,7 +135,7 @@ fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) = SharedElem
         Icons.Default.Person,
         modifier =
           Modifier.sharedElement(
-              state =
+              sharedContentState =
                 rememberSharedContentState(
                   EmailSharedTransitionKey(
                     id = email.id,

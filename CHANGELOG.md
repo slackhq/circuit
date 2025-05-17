@@ -4,8 +4,43 @@ Changelog
 Unreleased
 ----------
 
-- Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
 - Update to Kotlin `2.1.20`.
+
+0.28.0
+------
+
+_2025-05-12_
+
+### **New**: circuitx-navigation adding navigation interception capabilities:
+
+We've added a new navigation intercepting system to Circuit that lets you hook into and modify
+navigation before it happens. The `InterceptingNavigator` sits before a regular Circuit `Navigator`,
+giving you a chance to inspect or change navigation events. With the `NavigationInterceptor`
+interface, you can handle `goTo`, `pop`, and `resetRoot` calls and decide if they should proceed,
+fail, be skipped, or be rewritten to navigate somewhere else. There's also a`NavigationEventListener`
+if you just want to know when navigation happens without changing it.
+This new system is handy for advanced routing, blocking navigation, or tracking navigation events
+for analytics.
+
+```kotlin
+dependencies {
+  implementation("com.slack.circuit:circuitx-navigation:<version>")
+}
+```
+
+Docs: https://slackhq.github.io/circuit/circuitx/navigation
+
+### Misc:
+
+- Fix the provided `Modifier` not being used in `NavigatorDefaults.EmptyDecoration`
+- Fix `rememberCircuitNavigator()` not being able to propagate the root pop as its `BackHandler` was still active
+- Added a common `rememberCircuitNavigator()` that uses a `BackHandler` to trigger `Navigator.pop` calls
+- [docs] Add more alternative state designs.
+- Update Compose Android BOM to `2025.05.00`.
+- Update Compose Android to `1.8.1`.
+- Update to Compose Multiplatform to `1.8.0`.
+- Change the published jvmTarget to `11`
+- Update molecule to `2.1.0`
 
 0.27.1
 ------

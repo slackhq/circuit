@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.BackStack
@@ -24,14 +23,11 @@ public fun rememberCircuitNavigator(
   backStack: BackStack<out Record>,
   enableBackHandler: Boolean = true,
 ): Navigator {
-  val navigator =
-    rememberCircuitNavigator(backStack = backStack, onRootPop = backDispatcherRootPop())
-  BackHandler(
-    enabled = enableBackHandler && backStack.size > 1,
-    onBack = onBack(backStack, navigator),
+  return rememberCircuitNavigator(
+    backStack = backStack,
+    onRootPop = backDispatcherRootPop(),
+    enableBackHandler = enableBackHandler,
   )
-
-  return navigator
 }
 
 @Composable
@@ -40,11 +36,4 @@ private fun backDispatcherRootPop(): (result: PopResult?) -> Unit {
     LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
       ?: error("No OnBackPressedDispatcherOwner found, unable to handle root navigation pops.")
   return { onBackPressedDispatcher.onBackPressed() }
-}
-
-private fun onBack(backStack: BackStack<out Record>, navigator: Navigator): () -> Unit = {
-  // Check the backStack on each call as the `BackHandler` enabled state only updates on composition
-  if (backStack.size > 1) {
-    navigator.pop()
-  }
 }

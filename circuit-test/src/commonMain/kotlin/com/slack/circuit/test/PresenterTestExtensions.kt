@@ -52,7 +52,7 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
   policy: SnapshotMutationPolicy<UiState> = structuralEqualityPolicy(),
   block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
 ) {
-  moleculeFlow(RecompositionMode.Immediate, presentFunction).test(timeout, name) {
+  moleculeFlow(RecompositionMode.Immediate, body = presentFunction).test(timeout, name) {
     asCircuitReceiveTurbine(policy).block()
   }
 }

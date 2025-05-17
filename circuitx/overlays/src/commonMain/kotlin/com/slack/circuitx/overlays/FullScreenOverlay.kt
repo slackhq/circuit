@@ -6,8 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayHost
@@ -49,6 +50,7 @@ internal class FullScreenOverlay<S : Screen>(
 
   @JvmInline internal value class Result(val result: PopResult?)
 
+  @OptIn(ExperimentalComposeUiApi::class)
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
     val callbacks = key(callbacks) { callbacks() }

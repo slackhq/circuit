@@ -69,8 +69,6 @@ org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-stdlib
-org.jetbrains.kotlinx:atomicfu-jvm
-org.jetbrains.kotlinx:atomicfu
 org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm
 org.jetbrains.kotlinx:kotlinx-collections-immutable
 org.jetbrains.kotlinx:kotlinx-coroutines-android
@@ -78,3 +76,4 @@ org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core
 org.jetbrains:annotations
+org.jspecify:jspecify

@@ -97,6 +97,7 @@ kotlin {
         implementation(projects.circuitOverlay)
         implementation(projects.circuitRetained)
         implementation(projects.circuitx.gestureNavigation)
+        implementation(projects.circuitx.navigation)
         implementation(projects.circuitx.overlays)
         implementation(projects.internalRuntime)
         implementation(libs.eithernet)

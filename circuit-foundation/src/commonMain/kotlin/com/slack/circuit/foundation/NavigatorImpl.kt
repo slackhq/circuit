@@ -3,8 +3,14 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
@@ -30,6 +36,48 @@ public fun rememberCircuitNavigator(
   onRootPop: (result: PopResult?) -> Unit,
 ): Navigator {
   return remember { Navigator(backStack, onRootPop) }
+}
+
+/**
+ * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent] while also
+ * handling back events with a [BackHandler].
+ *
+ * @param backStack The backing [BackStack] to navigate.
+ * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
+ *   button.
+ * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
+ *   back handler. Defaults to true.
+ * @see NavigableCircuitContent
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+public fun rememberCircuitNavigator(
+  backStack: BackStack<out Record>,
+  onRootPop: (result: PopResult?) -> Unit,
+  enableBackHandler: Boolean = true,
+): Navigator {
+  var trigger by remember { mutableStateOf(false) }
+  val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
+  BackHandler(
+    enabled = enableBackHandler && !trigger && backStack.size > 1,
+    onBack = {
+      // We need to unload this BackHandler from the composition before the root pop is triggered so
+      // any outer back handler will get called. So delay calling pop until after the next
+      // composition.
+      if (backStack.size > 1) {
+        navigator.pop()
+      } else {
+        trigger = true
+      }
+    },
+  )
+  if (trigger) {
+    SideEffect {
+      navigator.pop()
+      trigger = false
+    }
+  }
+  return navigator
 }
 
 /**

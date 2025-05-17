@@ -51,6 +51,6 @@ android { namespace = "com.slack.circuit.sharedelements" }
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true
-  @Suppress("DEPRECATION") from(projects.samples.star.benchmark.dependencyProject)
+  from(project(projects.samples.star.benchmark.path))
   filter { include("com.slack.circuit.sharedelements.**") }
 }

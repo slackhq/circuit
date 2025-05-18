@@ -135,4 +135,7 @@ public interface AnimatedNavState {
 
   /** The depth of the back stack at the time this state was created. */
   public val backStackDepth: Int
+
+  /** Snapshot of the back stack at the time this state was created. */
+  public val backStack: ImmutableList<Screen>
 }

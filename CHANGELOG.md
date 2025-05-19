@@ -4,7 +4,7 @@ Changelog
 Unreleased
 ----------
 
-- Update to Kotlin `2.1.20`.
+- Update to Kotlin `2.1.21`.
 
 0.28.0
 ------

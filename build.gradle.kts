@@ -172,20 +172,9 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
-  val useK2Kapt =
-    providers.gradleProperty("kapt.use.k2").map { it.toBooleanStrict() }.getOrElse(false)
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       if (this is KaptGenerateStubsTask) {
-        if (useK2Kapt) {
-          // K2 Kapt is in alpha
-          compilerOptions.allWarningsAsErrors.set(false)
-        } else {
-          compilerOptions {
-            progressiveMode.set(false)
-            languageVersion.set(KotlinVersion.KOTLIN_1_9)
-          }
-        }
         // Don't double apply to stub gen
         return@configureEach
       }

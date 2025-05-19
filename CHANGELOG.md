@@ -4,7 +4,8 @@ Changelog
 Unreleased
 ----------
 
-- Update to Kotlin `2.1.20`.
+- Update to Kotlin `2.1.21`.
+- Build against KSP `2.1.21-2.0.1`.
 
 0.28.0
 ------

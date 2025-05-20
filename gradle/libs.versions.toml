@@ -50,7 +50,7 @@ roborazzi = "1.43.1"
 skie = "0.10.2-preview.2.1.20"
 spotless = "7.0.2"
 sqldelight = "2.1.0"
-telephoto = "0.15.1"
+telephoto = "0.16.0"
 testParameterInjector = "1.18"
 turbine = "1.2.0"
 

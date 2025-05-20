@@ -35,10 +35,10 @@ import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityRetainedStateRegistryFactory
-import com.slack.circuit.retained.ContinuityViewModel
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistryViewModel
+import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
@@ -69,14 +69,14 @@ class RetainedTest {
     get() = composeTestRule.activityRule.scenario
 
   private class RecordingContinuityVmFactory :
-    ContinuityRetainedStateRegistryFactory<ContinuityViewModel> {
-    var continuity: ContinuityViewModel? = null
+    ViewModelRetainedStateRegistryFactory<RetainedStateRegistryViewModel> {
+    var continuity: RetainedStateRegistryViewModel? = null
 
     override fun create(
-      modelClass: Class<ContinuityViewModel>,
+      modelClass: Class<RetainedStateRegistryViewModel>,
       extras: CreationExtras?,
-    ): ContinuityViewModel {
-      return ContinuityViewModel().also { continuity = it }
+    ): RetainedStateRegistryViewModel {
+      return RetainedStateRegistryViewModel().also { continuity = it }
     }
   }
 

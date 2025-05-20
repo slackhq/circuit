@@ -15,12 +15,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityRetainedStateRegistry
-import com.slack.circuit.retained.ContinuityRetainedStateRegistryFactory
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryImpl
 import com.slack.circuit.retained.RetainedValueProvider
+import com.slack.circuit.retained.UpdatableRetainedStateRegistry
+import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.continuityRetainedStateRegistry
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
@@ -74,7 +74,7 @@ class CustomRetainedViewModelTest {
 }
 
 private class CustomContinuityViewModel :
-  ViewModel(), ContinuityRetainedStateRegistry, CanRetainChecker {
+  ViewModel(), UpdatableRetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
   private var canRetainChecker = CanRetainChecker.Never
 
@@ -114,8 +114,8 @@ private class CustomContinuityViewModel :
     delegate.valueProviders.clear()
   }
 
-  class Factory : ContinuityRetainedStateRegistryFactory<CustomContinuityViewModel> {
-    var continuity: ContinuityRetainedStateRegistry? = null
+  class Factory : ViewModelRetainedStateRegistryFactory<CustomContinuityViewModel> {
+    var continuity: UpdatableRetainedStateRegistry? = null
 
     override fun create(
       modelClass: Class<CustomContinuityViewModel>,

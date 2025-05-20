@@ -29,7 +29,7 @@ public final class com/slack/circuitx/overlays/BottomSheetOverlay : com/slack/ci
 public final class com/slack/circuitx/overlays/ComposableSingletons$BottomSheetOverlayKt {
 	public static final field INSTANCE Lcom/slack/circuitx/overlays/ComposableSingletons$BottomSheetOverlayKt;
 	public fun <init> ()V
-	public final fun getLambda-1$overlays_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1348418038$overlays_release ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class com/slack/circuitx/overlays/DialogResult : java/lang/Enum {

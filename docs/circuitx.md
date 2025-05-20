@@ -17,4 +17,5 @@ These packages differ from Circuit's core artifacts in a few ways:
 | `com.slack.circuitx:circuitx-android`            | [Android](circuitx/android.md)                       |
 | `com.slack.circuitx:circuitx-effects`            | [Effects](circuitx/effects.md)                       |
 | `com.slack.circuitx:circuitx-gesture-navigation` | [Gesture Navigation](circuitx/gesture-navigation.md) |
+| `com.slack.circuitx:circuitx-navigation`         | [Navigation](circuitx/navigation.md)                 |
 | `com.slack.circuitx:circuitx-overlays`           | [Overlays](circuitx/overlays.md)                     |

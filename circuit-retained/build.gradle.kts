@@ -53,6 +53,8 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
+        api(libs.androidx.lifecycle.viewModel.compose)
+        api(libs.androidx.lifecycle.runtime.compose)
         api(libs.compose.runtime)
         api(libs.compose.runtime.saveable)
         api(libs.coroutines)
@@ -62,14 +64,7 @@ kotlin {
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
 
-    androidMain {
-      dependencies {
-        api(libs.androidx.lifecycle.viewModel.compose)
-        api(libs.androidx.lifecycle.viewModel)
-        api(libs.androidx.compose.runtime)
-        implementation(libs.androidx.compose.ui.ui)
-      }
-    }
+    androidMain {}
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
 

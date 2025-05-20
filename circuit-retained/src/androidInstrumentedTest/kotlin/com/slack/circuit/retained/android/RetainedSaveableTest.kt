@@ -20,7 +20,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.Continuity
+import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryViewModel
@@ -172,7 +172,7 @@ class RetainedSaveableTest {
       activity.setContent {
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides
-            continuityRetainedStateRegistry(Continuity.KEY, vmFactory) {
+            continuityRetainedStateRegistry(PersistentRetainedStateRegistry.KEY, vmFactory) {
               canRetainOverride ?: CanRetainChecker.Always.canRetain()
             }
         ) {

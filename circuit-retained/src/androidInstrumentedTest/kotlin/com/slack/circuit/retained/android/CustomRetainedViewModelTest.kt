@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.Continuity
+import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryImpl
@@ -64,7 +64,7 @@ class CustomRetainedViewModelTest {
       activity.setContent {
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides
-            continuityRetainedStateRegistry(Continuity.KEY, vmFactory)
+            continuityRetainedStateRegistry(PersistentRetainedStateRegistry.KEY, vmFactory)
         ) {
           content()
         }

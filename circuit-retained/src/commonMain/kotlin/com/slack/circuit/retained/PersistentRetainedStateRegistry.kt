@@ -10,12 +10,70 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlin.reflect.KClass
+
+@Composable
+public fun persistentRetainedStateRegistry(key: String): RetainedStateRegistry =
+  persistentRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
+
+@Composable
+public fun persistentRetainedStateRegistry(
+  key: String = PersistentRetainedStateRegistry.KEY,
+  retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*> =
+    RetainedStateRegistryViewModel.Factory,
+  canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
+): RetainedStateRegistry {
+  val viewModelStoreOwner = LocalViewModelStoreOwner.current
+  return if (viewModelStoreOwner == null) {
+    rememberRetainedStateRegistry(key, canRetainChecker)
+  } else {
+    viewModelPersistentRetainedStateRegistry(
+      viewModelStoreOwner = viewModelStoreOwner,
+      key = key,
+      retainedStateRegistryFactory = retainedStateRegistryFactory,
+      canRetainChecker = canRetainChecker,
+    )
+  }
+}
+
+@Composable
+private fun viewModelPersistentRetainedStateRegistry(
+  viewModelStoreOwner: ViewModelStoreOwner,
+  key: String,
+  retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*>,
+  canRetainChecker: CanRetainChecker,
+): RetainedStateRegistry {
+  val factory =
+    remember(retainedStateRegistryFactory) {
+      DelegatingContinuityViewModelProviderFactory(retainedStateRegistryFactory)
+    }
+  @Suppress("ComposeViewModelInjection")
+  val vm =
+    viewModel<ViewModel>(viewModelStoreOwner = viewModelStoreOwner, key = key, factory = factory)
+      as UpdatableRetainedStateRegistry
+  vm.update(canRetainChecker)
+  DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
+  LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
+  LaunchedEffect(vm) {
+    withFrameNanos {}
+    // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
+    // point can be assumed to be no longer used
+    vm.forgetUnclaimedValues()
+  }
+  return vm
+}
+
+public object PersistentRetainedStateRegistry {
+  public const val KEY: String = "CircuitPersistentRetainedStateRegistry"
+}
 
 /**
- * A [RetainedStateRegistry] used by [continuityRetainedStateRegistry] that can update its
+ * A [RetainedStateRegistry] used by [persistentRetainedStateRegistry] that can update its
  * [CanRetainChecker].
  */
 public interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
@@ -24,12 +82,12 @@ public interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
 
 /**
  * A factory for creating a [ViewModel] that implements [UpdatableRetainedStateRegistry] for
- * [continuityRetainedStateRegistry].
+ * [persistentRetainedStateRegistry].
  */
 public interface ViewModelRetainedStateRegistryFactory<T> where
 T : ViewModel,
 T : UpdatableRetainedStateRegistry {
-  public fun create(modelClass: Class<T>, extras: CreationExtras? = null): T
+  public fun create(modelClass: KClass<T>, extras: CreationExtras? = null): T
 }
 
 internal class RetainedStateRegistryViewModel :
@@ -81,7 +139,7 @@ internal class RetainedStateRegistryViewModel :
 
   internal object Factory : ViewModelRetainedStateRegistryFactory<RetainedStateRegistryViewModel> {
     override fun create(
-      modelClass: Class<RetainedStateRegistryViewModel>,
+      modelClass: KClass<RetainedStateRegistryViewModel>,
       extras: CreationExtras?,
     ): RetainedStateRegistryViewModel {
       return RetainedStateRegistryViewModel()
@@ -89,54 +147,12 @@ internal class RetainedStateRegistryViewModel :
   }
 }
 
-@Composable
-public actual fun continuityRetainedStateRegistry(key: String): RetainedStateRegistry =
-  continuityRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
-
-/**
- * Provides a [RetainedStateRegistry].
- *
- * @param key the key to use when creating the [Continuity] instance.
- * @param retainedStateRegistryFactory an optional [ViewModelRetainedStateRegistryFactory] to use
- *   when creating the [Continuity] instance. This factory should create a subclass of
- *   [RetainedStateRegistryViewModel].
- */
-@Composable
-public fun continuityRetainedStateRegistry(
-  key: String = Continuity.KEY,
-  retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*> =
-    RetainedStateRegistryViewModel.Factory,
-  canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
-): RetainedStateRegistry {
-  val factory =
-    remember(retainedStateRegistryFactory) {
-      DelegatingContinuityViewModelProviderFactory(retainedStateRegistryFactory)
-    }
-  @Suppress("ComposeViewModelInjection")
-  val vm = viewModel<ViewModel>(key = key, factory = factory) as UpdatableRetainedStateRegistry
-  vm.update(canRetainChecker)
-  DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
-  LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
-  LaunchedEffect(vm) {
-    withFrameNanos {}
-    // This resumes after the just-composed frame completes drawing. Any unclaimed values at this
-    // point can be assumed to be no longer used
-    vm.forgetUnclaimedValues()
-  }
-
-  return vm
-}
-
 private class DelegatingContinuityViewModelProviderFactory<VM>(
   private val delegate: ViewModelRetainedStateRegistryFactory<VM>
 ) : ViewModelProvider.Factory where VM : ViewModel, VM : UpdatableRetainedStateRegistry {
-  override fun <T : ViewModel> create(modelClass: Class<T>): T {
-    @Suppress("UNCHECKED_CAST")
-    return delegate.create(modelClass as Class<VM>) as T
-  }
 
-  override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+  override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
     @Suppress("UNCHECKED_CAST")
-    return delegate.create(modelClass as Class<VM>, extras) as T
+    return delegate.create(modelClass as KClass<VM>, extras) as T
   }
 }

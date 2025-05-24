@@ -10,40 +10,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.reflect.KClass
 
 @Composable
-public fun persistentRetainedStateRegistry(key: String): RetainedStateRegistry =
-  persistentRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
-
-@Composable
-public fun persistentRetainedStateRegistry(
-  key: String = PersistentRetainedStateRegistry.KEY,
+internal fun lifecycleRetainedStateRegistry(
+  key: String,
   retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*> =
     RetainedStateRegistryViewModel.Factory,
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
 ): RetainedStateRegistry {
-  val viewModelStoreOwner = LocalViewModelStoreOwner.current
-  return if (viewModelStoreOwner == null) {
-    rememberRetainedStateRegistry(key, canRetainChecker)
-  } else {
-    viewModelPersistentRetainedStateRegistry(
-      viewModelStoreOwner = viewModelStoreOwner,
-      key = key,
-      retainedStateRegistryFactory = retainedStateRegistryFactory,
-      canRetainChecker = canRetainChecker,
-    )
-  }
+  return viewModelPersistentRetainedStateRegistry(
+    key = key,
+    retainedStateRegistryFactory = retainedStateRegistryFactory,
+    canRetainChecker = canRetainChecker,
+  )
 }
 
 @Composable
 private fun viewModelPersistentRetainedStateRegistry(
-  viewModelStoreOwner: ViewModelStoreOwner,
   key: String,
   retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*>,
   canRetainChecker: CanRetainChecker,
@@ -53,9 +40,7 @@ private fun viewModelPersistentRetainedStateRegistry(
       DelegatingContinuityViewModelProviderFactory(retainedStateRegistryFactory)
     }
   @Suppress("ComposeViewModelInjection")
-  val vm =
-    viewModel<ViewModel>(viewModelStoreOwner = viewModelStoreOwner, key = key, factory = factory)
-      as UpdatableRetainedStateRegistry
+  val vm = viewModel<ViewModel>(key = key, factory = factory) as UpdatableRetainedStateRegistry
   vm.update(canRetainChecker)
   DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
   LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
@@ -68,12 +53,8 @@ private fun viewModelPersistentRetainedStateRegistry(
   return vm
 }
 
-public object PersistentRetainedStateRegistry {
-  public const val KEY: String = "CircuitPersistentRetainedStateRegistry"
-}
-
 /**
- * A [RetainedStateRegistry] used by [persistentRetainedStateRegistry] that can update its
+ * A [RetainedStateRegistry] used by [lifecycleRetainedStateRegistry] that can update its
  * [CanRetainChecker].
  */
 public interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
@@ -82,7 +63,7 @@ public interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
 
 /**
  * A factory for creating a [ViewModel] that implements [UpdatableRetainedStateRegistry] for
- * [persistentRetainedStateRegistry].
+ * [lifecycleRetainedStateRegistry].
  */
 public interface ViewModelRetainedStateRegistryFactory<T> where
 T : ViewModel,

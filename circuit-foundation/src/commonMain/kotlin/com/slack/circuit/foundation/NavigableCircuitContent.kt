@@ -84,13 +84,13 @@ public fun <R : Record> NavigableCircuitContent(
    * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
    * RetainedStateRegistry. If we don't do this, those registries would be stored directly in the
    * current LocalRetainedStateRegistry value, which will mostly likely be the
-   * continuityRetainedStateRegistry. On Android, that continuityRetainedStateRegistry will drop
+   * lifecycleRetainedStateRegistry. On Android, that lifecycleRetainedStateRegistry will drop
    * any 'unclaimed' values when the host Activity is recreated. Since records on the back stack
    * aren't attached to composition, they can't claim their retained registries and thus we drop
    * all of the state for the record. See #1046.
    *
    * Using this 'navigation content' registry means that _it_ will be stored in the
-   * continuityRetainedStateRegistry instead, and any back stack record registries stored within
+   * lifecycleRetainedStateRegistry instead, and any back stack record registries stored within
    * the 'navigation content' registry. The difference is that NavigableCircuitContent
    * will be attached to composition for the entire lifetime that we care about, and thus will
    * be able to save/claim the 'navigation content' registry on recreations. Since any back stack

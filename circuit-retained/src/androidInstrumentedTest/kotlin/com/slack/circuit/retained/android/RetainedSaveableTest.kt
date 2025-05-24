@@ -20,13 +20,14 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.CanRetainChecker
+import com.slack.circuit.retained.LifecycleRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
-import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryViewModel
 import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
-import com.slack.circuit.retained.continuityRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.viewModelRetainedStateRegistry
+import kotlin.reflect.KClass
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
@@ -49,7 +50,7 @@ class RetainedSaveableTest {
     var continuity: RetainedStateRegistryViewModel? = null
 
     override fun create(
-      modelClass: Class<RetainedStateRegistryViewModel>,
+      modelClass: KClass<RetainedStateRegistryViewModel>,
       extras: CreationExtras?,
     ): RetainedStateRegistryViewModel {
       return RetainedStateRegistryViewModel().also { continuity = it }
@@ -172,7 +173,7 @@ class RetainedSaveableTest {
       activity.setContent {
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides
-            continuityRetainedStateRegistry(PersistentRetainedStateRegistry.KEY, vmFactory) {
+            viewModelRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY, vmFactory) {
               canRetainOverride ?: CanRetainChecker.Always.canRetain()
             }
         ) {

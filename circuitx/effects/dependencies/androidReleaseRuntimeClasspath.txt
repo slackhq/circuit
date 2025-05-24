@@ -70,7 +70,10 @@ com.google.guava:listenablefuture
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose
 org.jetbrains.androidx.lifecycle:lifecycle-runtime
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
+org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation
 org.jetbrains.compose.annotation-internal:annotation

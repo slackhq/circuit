@@ -34,8 +34,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryViewModel
 import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory

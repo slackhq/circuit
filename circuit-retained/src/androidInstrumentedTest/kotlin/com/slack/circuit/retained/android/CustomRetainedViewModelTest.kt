@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.CanRetainChecker
-import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
+import com.slack.circuit.retained.PersistentRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryImpl
 import com.slack.circuit.retained.RetainedValueProvider

@@ -12,35 +12,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.reflect.KClass
 
 @Composable
-internal fun lifecycleRetainedStateRegistry(
+internal fun viewModelRetainedStateRegistry(
   key: String,
   retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*> =
     RetainedStateRegistryViewModel.Factory,
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
 ): RetainedStateRegistry {
-  return viewModelPersistentRetainedStateRegistry(
-    key = key,
-    retainedStateRegistryFactory = retainedStateRegistryFactory,
-    canRetainChecker = canRetainChecker,
-  )
-}
-
-@Composable
-private fun viewModelPersistentRetainedStateRegistry(
-  key: String,
-  retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*>,
-  canRetainChecker: CanRetainChecker,
-): RetainedStateRegistry {
+  val viewModelStoreOwner =
+    LocalViewModelStoreOwner.current ?: return rememberRetainedStateRegistry(key = key)
   val factory =
     remember(retainedStateRegistryFactory) {
       DelegatingContinuityViewModelProviderFactory(retainedStateRegistryFactory)
     }
   @Suppress("ComposeViewModelInjection")
-  val vm = viewModel<ViewModel>(key = key, factory = factory) as UpdatableRetainedStateRegistry
+  val vm =
+    viewModel<ViewModel>(viewModelStoreOwner = viewModelStoreOwner, key = key, factory = factory)
+      as UpdatableRetainedStateRegistry
   vm.update(canRetainChecker)
   DisposableEffect(vm) { onDispose { vm.update(CanRetainChecker.Never) } }
   LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
@@ -57,18 +49,18 @@ private fun viewModelPersistentRetainedStateRegistry(
  * A [RetainedStateRegistry] used by [lifecycleRetainedStateRegistry] that can update its
  * [CanRetainChecker].
  */
-public interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
-  public fun update(canRetainChecker: CanRetainChecker)
+internal interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
+  fun update(canRetainChecker: CanRetainChecker)
 }
 
 /**
  * A factory for creating a [ViewModel] that implements [UpdatableRetainedStateRegistry] for
  * [lifecycleRetainedStateRegistry].
  */
-public interface ViewModelRetainedStateRegistryFactory<T> where
+internal interface ViewModelRetainedStateRegistryFactory<T> where
 T : ViewModel,
 T : UpdatableRetainedStateRegistry {
-  public fun create(modelClass: KClass<T>, extras: CreationExtras? = null): T
+  fun create(modelClass: KClass<T>, extras: CreationExtras? = null): T
 }
 
 internal class RetainedStateRegistryViewModel :

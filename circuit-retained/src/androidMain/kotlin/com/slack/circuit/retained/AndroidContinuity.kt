@@ -11,7 +11,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -114,7 +113,7 @@ public fun continuityRetainedStateRegistry(
   key: String = Continuity.KEY,
   retainedStateRegistryFactory: ViewModelRetainedStateRegistryFactory<*> =
     RetainedStateRegistryViewModel.Factory,
-  canRetainChecker: CanRetainChecker = rememberContinuityCanRetainChecker(),
+  canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
 ): RetainedStateRegistry {
   val factory =
     remember(retainedStateRegistryFactory) {
@@ -149,14 +148,6 @@ private class DelegatingContinuityViewModelProviderFactory<VM>(
     @Suppress("UNCHECKED_CAST")
     return delegate.create(modelClass as Class<VM>, extras) as T
   }
-}
-
-/** On Android, we retain only if the activity is changing configurations. */
-@Composable
-public actual fun rememberContinuityCanRetainChecker(): CanRetainChecker {
-  val context = LocalContext.current
-  val activity = remember(context) { context.findActivity() }
-  return remember { CanRetainChecker { activity?.isChangingConfigurations == true } }
 }
 
 private tailrec fun Context.findActivity(): Activity? {

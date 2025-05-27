@@ -13,17 +13,17 @@ public final class com/slack/circuit/retained/CollectRetainedKt {
 	public static final fun collectAsRetainedState (Lkotlinx/coroutines/flow/StateFlow;Lkotlin/coroutines/CoroutineContext;Landroidx/compose/runtime/Composer;II)Landroidx/compose/runtime/State;
 }
 
-public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {
-}
-
-public final class com/slack/circuit/retained/LifecycleRetainedStateRegistry {
+public final class com/slack/circuit/retained/Continuity {
 	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuit/retained/LifecycleRetainedStateRegistry;
+	public static final field INSTANCE Lcom/slack/circuit/retained/Continuity;
 	public static final field KEY Ljava/lang/String;
 }
 
-public final class com/slack/circuit/retained/LifecycleRetainedStateRegistry_jvmKt {
-	public static final fun lifecycleRetainedStateRegistry (Ljava/lang/String;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
+public final class com/slack/circuit/retained/Continuity_jvmKt {
+	public static final fun continuityRetainedStateRegistry (Ljava/lang/String;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
+}
+
+public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {
 }
 
 public final class com/slack/circuit/retained/NoOpRetainedStateRegistry : com/slack/circuit/retained/RetainedStateRegistry {

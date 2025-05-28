@@ -11,7 +11,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
-import com.slack.circuit.retained.continuityRetainedStateRegistry
+import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.runtime.CircuitContext
 
 /**
@@ -21,7 +21,7 @@ import com.slack.circuit.runtime.CircuitContext
 @Composable
 public fun CircuitCompositionLocals(
   circuit: Circuit,
-  retainedStateRegistry: RetainedStateRegistry = continuityRetainedStateRegistry(),
+  retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(

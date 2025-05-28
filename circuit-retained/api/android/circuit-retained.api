@@ -1,8 +1,3 @@
-public final class com/slack/circuit/retained/AndroidContinuityKt {
-	public static final fun continuityRetainedStateRegistry (Ljava/lang/String;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
-	public static final fun continuityRetainedStateRegistry (Ljava/lang/String;Lcom/slack/circuit/retained/ViewModelRetainedStateRegistryFactory;Lcom/slack/circuit/retained/CanRetainChecker;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
-}
-
 public abstract interface class com/slack/circuit/retained/CanRetainChecker {
 	public static final field Companion Lcom/slack/circuit/retained/CanRetainChecker$Companion;
 	public abstract fun canRetain ()Z
@@ -18,13 +13,17 @@ public final class com/slack/circuit/retained/CollectRetainedKt {
 	public static final fun collectAsRetainedState (Lkotlinx/coroutines/flow/StateFlow;Lkotlin/coroutines/CoroutineContext;Landroidx/compose/runtime/Composer;II)Landroidx/compose/runtime/State;
 }
 
-public final class com/slack/circuit/retained/Continuity {
+public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/circuit/retained/LifecycleRetainedStateRegistry {
 	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuit/retained/Continuity;
+	public static final field INSTANCE Lcom/slack/circuit/retained/LifecycleRetainedStateRegistry;
 	public static final field KEY Ljava/lang/String;
 }
 
-public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {
+public final class com/slack/circuit/retained/LifecycleRetainedStateRegistry_androidKt {
+	public static final fun lifecycleRetainedStateRegistry (Ljava/lang/String;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/retained/RetainedStateRegistry;
 }
 
 public final class com/slack/circuit/retained/NoOpRetainedStateRegistry : com/slack/circuit/retained/RetainedStateRegistry {
@@ -87,14 +86,5 @@ public abstract interface class com/slack/circuit/retained/RetainedValueHolder {
 
 public abstract interface class com/slack/circuit/retained/RetainedValueProvider : kotlin/jvm/functions/Function0 {
 	public abstract fun invoke ()Ljava/lang/Object;
-}
-
-public abstract interface class com/slack/circuit/retained/UpdatableRetainedStateRegistry : com/slack/circuit/retained/RetainedStateRegistry {
-	public abstract fun update (Lcom/slack/circuit/retained/CanRetainChecker;)V
-}
-
-public abstract interface class com/slack/circuit/retained/ViewModelRetainedStateRegistryFactory {
-	public abstract fun create (Ljava/lang/Class;Landroidx/lifecycle/viewmodel/CreationExtras;)Landroidx/lifecycle/ViewModel;
-	public static synthetic fun create$default (Lcom/slack/circuit/retained/ViewModelRetainedStateRegistryFactory;Ljava/lang/Class;Landroidx/lifecycle/viewmodel/CreationExtras;ILjava/lang/Object;)Landroidx/lifecycle/ViewModel;
 }
 

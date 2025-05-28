@@ -52,6 +52,7 @@ kotlin {
         api(libs.compose.ui)
       }
     }
+    androidMain { dependencies { implementation(libs.androidx.lifecycle.viewModel.compose) } }
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
   }

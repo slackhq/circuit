@@ -56,10 +56,11 @@ public fun rememberCircuitNavigator(
   onRootPop: (result: PopResult?) -> Unit,
   enableBackHandler: Boolean = true,
 ): Navigator {
-  var trigger by remember { mutableStateOf(false) }
+  var hasPendingRootPop by remember(backStack.rootRecord) { mutableStateOf(false) }
+  var enableRootBackHandler by remember(backStack.rootRecord) { mutableStateOf(true) }
   val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
   BackHandler(
-    enabled = enableBackHandler && !trigger && backStack.size > 1,
+    enabled = enableBackHandler && enableRootBackHandler && backStack.size > 1,
     onBack = {
       // We need to unload this BackHandler from the composition before the root pop is triggered so
       // any outer back handler will get called. So delay calling pop until after the next
@@ -67,14 +68,15 @@ public fun rememberCircuitNavigator(
       if (backStack.size > 1) {
         navigator.pop()
       } else {
-        trigger = true
+        hasPendingRootPop = true
+        enableRootBackHandler = false
       }
     },
   )
-  if (trigger) {
+  if (hasPendingRootPop) {
     SideEffect {
       navigator.pop()
-      trigger = false
+      hasPendingRootPop = false
     }
   }
   return navigator

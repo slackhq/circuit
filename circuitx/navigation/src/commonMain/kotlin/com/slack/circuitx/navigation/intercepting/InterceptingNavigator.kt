@@ -52,8 +52,9 @@ public fun rememberInterceptingNavigator(
     }
   // Handle the back button here to get pop events from it.
   if (enableBackHandler) {
-    var trigger by remember { mutableStateOf(false) }
-    BackHandler(!trigger) {
+    var hasPendingRootPop by remember(navigator.peek()) { mutableStateOf(false) }
+    var enableRootBackHandler by remember(navigator.peek()) { mutableStateOf(true) }
+    BackHandler(enableRootBackHandler) {
       // Root pop check to prevent an infinite loop if this is used with the Android variant of
       // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need to
       // unload this BackHandler from the composition before the root pop is triggered, so delay
@@ -61,13 +62,14 @@ public fun rememberInterceptingNavigator(
       if (navigator.peekBackStack().size > 1) {
         interceptingNavigator.pop()
       } else {
-        trigger = true
+        hasPendingRootPop = true
+        enableRootBackHandler = false
       }
     }
-    if (trigger) {
+    if (hasPendingRootPop) {
       SideEffect {
         interceptingNavigator.pop()
-        trigger = false
+        hasPendingRootPop = false
       }
     }
   }

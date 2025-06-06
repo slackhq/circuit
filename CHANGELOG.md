@@ -16,6 +16,7 @@ would only retain if the Activity was in a configuration change.
 - Update to Kotlin `2.1.21`.
 - Build against KSP `2.1.21-2.0.1`.
 - Fix not being able to provide a custom ViewModel to `continuityRetainedStateRegistry()`
+- Fix `rememberCircuitNavigator` and `rememberInterceptingNavigator` replaying a root pop at the same screen
 
 0.28.0
 ------

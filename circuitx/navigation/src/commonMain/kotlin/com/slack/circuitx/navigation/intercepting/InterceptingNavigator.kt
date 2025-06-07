@@ -61,10 +61,8 @@ public fun rememberInterceptingNavigator(
         val screen = navigator.peek()
         if (screen != null && screen != lastScreen) {
           lastScreen = screen
-          true
-        } else {
-          false
         }
+        lastScreen
       }
     }
     var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }

@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,9 +57,23 @@ public fun rememberCircuitNavigator(
   onRootPop: (result: PopResult?) -> Unit,
   enableBackHandler: Boolean = true,
 ): Navigator {
-  var hasPendingRootPop by remember(backStack.rootRecord) { mutableStateOf(false) }
-  var enableRootBackHandler by remember(backStack.rootRecord) { mutableStateOf(true) }
   val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
+  // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
+  // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
+  val hasScreenChanged = remember {
+    var lastScreen: Screen? = navigator.peek()
+    derivedStateOf {
+      val screen = navigator.peek()
+      if (screen != null && screen != lastScreen) {
+        lastScreen = screen
+        true
+      } else {
+        false
+      }
+    }
+  }
+  var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
+  var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
   BackHandler(
     enabled = enableBackHandler && enableRootBackHandler && backStack.size > 1,
     onBack = {

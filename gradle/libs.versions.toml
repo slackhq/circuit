@@ -4,6 +4,7 @@ androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.8.0"
 androidx-lifecycle = "2.9.1"
+androidx-lifecycle-jb = "2.9.0"
 agp = "8.10.1"
 anvil = "0.4.1"
 atomicfu = "0.27.0"
@@ -126,6 +127,7 @@ androidx-core = "androidx.core:core-ktx:1.16.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+androidx-lifecycle-runtime-compose-jb = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle-jb" }
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 # Force a newer version of androidx.loader because Espresso depends on an old and wrong version of it

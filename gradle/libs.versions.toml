@@ -53,7 +53,7 @@ spotless = "7.0.2"
 sqldelight = "2.1.0"
 telephoto = "0.16.0"
 testParameterInjector = "1.18"
-turbine = "1.2.0"
+turbine = "1.2.1"
 
 [plugins]
 agp-application = { id = "com.android.application", version.ref = "agp" }

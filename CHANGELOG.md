@@ -6,7 +6,8 @@ Unreleased
 
 ### Misc:
 
-- Add predictive back support to `AnimatedOverlay`  
+- Add seekable transition support to `AnimatedOverlay`
+- Add predictive back support to `FullScreenOverlay`
 
 0.28.1
 ------

@@ -2,23 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.overlays
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.backhandler.PredictiveBackHandler
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.foundation.onNavEvent
-import com.slack.circuit.overlay.Overlay
+import com.slack.circuit.overlay.AnimatedOverlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuit.overlay.OverlayPredictiveBackController
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.jvm.JvmInline
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CancellationException
 
 /**
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
@@ -33,7 +38,7 @@ public expect suspend fun OverlayHost.showFullScreenOverlay(screen: Screen): Pop
 internal class FullScreenOverlay<S : Screen>(
   private val screen: S,
   private val callbacks: @Composable () -> Callbacks = { Callbacks.NoOp },
-) : Overlay<FullScreenOverlay.Result> {
+) : AnimatedOverlay<FullScreenOverlay.Result>(fadeIn(), fadeOut()) {
   /** Simple callbacks for when a [FullScreenOverlay] is shown and finished. */
   @Stable
   internal interface Callbacks {
@@ -50,15 +55,24 @@ internal class FullScreenOverlay<S : Screen>(
 
   @JvmInline internal value class Result(val result: PopResult?)
 
-  @OptIn(ExperimentalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class) // For PredictiveBackHandler
   @Composable
-  override fun Content(navigator: OverlayNavigator<Result>) {
+  override fun AnimatedVisibilityScope.AnimatedContent(
+    navigator: OverlayNavigator<Result>,
+    predictiveBackController: OverlayPredictiveBackController,
+  ) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
       DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
     }
-
-    BackHandler(enabled = true, onBack = dispatchingNavigator::pop)
+    PredictiveBackHandler(enabled = true) { progress ->
+      try {
+        progress.collect { predictiveBackController.progress(it.progress) }
+        dispatchingNavigator.pop()
+      } catch (_: CancellationException) {
+        predictiveBackController.cancel()
+      }
+    }
     CircuitContent(screen = screen, onNavEvent = dispatchingNavigator::onNavEvent)
   }
 }

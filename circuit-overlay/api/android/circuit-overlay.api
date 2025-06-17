@@ -1,16 +1,10 @@
 public abstract class com/slack/circuit/overlay/AnimatedOverlay : com/slack/circuit/overlay/Overlay {
 	public static final field $stable I
 	public fun <init> (Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;)V
-	public abstract fun AnimatedContent (Landroidx/compose/animation/AnimatedVisibilityScope;Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun AnimatedContent (Landroidx/compose/animation/AnimatedVisibilityScope;Lcom/slack/circuit/overlay/OverlayNavigator;Lcom/slack/circuit/overlay/OverlayPredictiveBackController;Landroidx/compose/runtime/Composer;I)V
 	public final fun Content (Lcom/slack/circuit/overlay/OverlayNavigator;Landroidx/compose/runtime/Composer;I)V
 	public final fun getEnterTransition ()Landroidx/compose/animation/EnterTransition;
 	public final fun getExitTransition ()Landroidx/compose/animation/ExitTransition;
-}
-
-public final class com/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt {
-	public static final field INSTANCE Lcom/slack/circuit/overlay/ComposableSingletons$ContentWithOverlaysKt;
-	public fun <init> ()V
-	public final fun getLambda$-44710973$circuit_overlay_release ()Lkotlin/jvm/functions/Function4;
 }
 
 public final class com/slack/circuit/overlay/ContentWithOverlaysKt {
@@ -42,6 +36,16 @@ public final class com/slack/circuit/overlay/OverlayKt {
 
 public abstract interface class com/slack/circuit/overlay/OverlayNavigator {
 	public abstract fun finish (Ljava/lang/Object;)V
+}
+
+public abstract interface class com/slack/circuit/overlay/OverlayPredictiveBackController {
+	public static final field Companion Lcom/slack/circuit/overlay/OverlayPredictiveBackController$Companion;
+	public abstract fun cancel (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun progress (FLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/slack/circuit/overlay/OverlayPredictiveBackController$Companion {
+	public final fun getNoOp ()Lcom/slack/circuit/overlay/OverlayPredictiveBackController;
 }
 
 public abstract interface class com/slack/circuit/overlay/OverlayScope : com/slack/circuit/overlay/OverlayHost, kotlinx/coroutines/CoroutineScope {

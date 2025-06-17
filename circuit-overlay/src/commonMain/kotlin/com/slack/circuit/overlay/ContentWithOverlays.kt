@@ -13,14 +13,16 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.ExperimentalTransitionApi
+import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.createChildTransition
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
+import kotlin.math.abs
 
 /**
  * Renders the given [content] with the ability to show overlays on top of it. This works by
@@ -56,8 +59,11 @@ public fun ContentWithOverlays(
     LocalOverlayState provides overlayState,
   ) {
     Box(modifier) {
+      val seekableTransitionState = remember { SeekableTransitionState(overlayHostData) }
+      val predictiveBackController = remember { SeekablePredictiveBack(seekableTransitionState) }
+      LaunchedEffect(overlayHostData) { seekableTransitionState.animateTo(overlayHostData) }
       val transition =
-        updateTransition(targetState = overlayHostData, label = "OverlayHostData transition")
+        rememberTransition(seekableTransitionState, label = "OverlayHostData transition")
       ProvideAnimatedTransitionScope(Overlay, transition.animatedVisibilityScope { it == null }) {
         content()
       }
@@ -77,12 +83,25 @@ public fun ContentWithOverlays(
         ProvideAnimatedTransitionScope(Overlay, this) {
           when (val overlay = data?.overlay) {
             null -> Unit
-            is AnimatedOverlay -> with(overlay) { AnimatedContent(data::finish) }
+            is AnimatedOverlay ->
+              with(overlay) { AnimatedContent(data::finish, predictiveBackController) }
             else -> overlay.Content(data::finish)
           }
         }
       }
     }
+  }
+}
+
+private class SeekablePredictiveBack(
+  private val seekableTransitionState: SeekableTransitionState<OverlayHostData<Any>?>
+) : OverlayPredictiveBackController {
+  override suspend fun progress(progress: Float) {
+    seekableTransitionState.seekTo(abs(progress).coerceIn(0f, 1f), null)
+  }
+
+  override suspend fun cancel() {
+    seekableTransitionState.snapTo(seekableTransitionState.currentState)
   }
 }
 

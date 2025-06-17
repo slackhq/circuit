@@ -185,18 +185,50 @@ public abstract class AnimatedOverlay<Result : Any>(
   public val enterTransition: EnterTransition,
   public val exitTransition: ExitTransition,
 ) : Overlay<Result> {
+
   @Composable
   final override fun Content(navigator: OverlayNavigator<Result>) {
     AnimatedContent(
       targetState = Unit,
       transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
     ) {
-      AnimatedContent(navigator)
+      AnimatedContent(navigator, OverlayPredictiveBackController.NoOp)
     }
   }
 
   @Composable
-  public abstract fun AnimatedVisibilityScope.AnimatedContent(navigator: OverlayNavigator<Result>)
+  public abstract fun AnimatedVisibilityScope.AnimatedContent(
+    navigator: OverlayNavigator<Result>,
+    predictiveBackController: OverlayPredictiveBackController,
+  )
+}
+
+/**
+ * Interface for controlling the predictive back transition progress for an overlay.
+ *
+ * This allows an [AnimatedOverlay] to react to the progress of a predictive back gesture.
+ */
+public interface OverlayPredictiveBackController {
+  /**
+   * Called with the current progress of the predictive back gesture.
+   *
+   * @param progress A float value between 0.0 and 1.0, where 1.0 indicates the gesture is fully
+   *   progressed.
+   */
+  public suspend fun progress(progress: Float)
+
+  /** Called when the predictive back gesture is cancelled. */
+  public suspend fun cancel()
+
+  public companion object {
+    /** A no-op implementation of [OverlayPredictiveBackController]. */
+    public val NoOp: OverlayPredictiveBackController =
+      object : OverlayPredictiveBackController {
+        override suspend fun progress(progress: Float) {}
+
+        override suspend fun cancel() {}
+      }
+  }
 }
 
 /** A [ProvidableCompositionLocal] to expose the current [OverlayHost] in the composition tree. */

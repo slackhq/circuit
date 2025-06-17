@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Misc:
+
+- Add predictive back support to `AnimatedOverlay`  
+
 0.28.1
 ------
 

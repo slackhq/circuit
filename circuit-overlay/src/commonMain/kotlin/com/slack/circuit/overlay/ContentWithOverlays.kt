@@ -60,7 +60,7 @@ public fun ContentWithOverlays(
   ) {
     Box(modifier) {
       val seekableTransitionState = remember { SeekableTransitionState(overlayHostData) }
-      val predictiveBackController = remember { SeekablePredictiveBack(seekableTransitionState) }
+      val transitionController = remember { SeekableTransitionController(seekableTransitionState) }
       LaunchedEffect(overlayHostData) { seekableTransitionState.animateTo(overlayHostData) }
       val transition =
         rememberTransition(seekableTransitionState, label = "OverlayHostData transition")
@@ -84,7 +84,7 @@ public fun ContentWithOverlays(
           when (val overlay = data?.overlay) {
             null -> Unit
             is AnimatedOverlay ->
-              with(overlay) { AnimatedContent(data::finish, predictiveBackController) }
+              with(overlay) { AnimatedContent(data::finish, transitionController) }
             else -> overlay.Content(data::finish)
           }
         }
@@ -93,10 +93,10 @@ public fun ContentWithOverlays(
   }
 }
 
-private class SeekablePredictiveBack(
+private class SeekableTransitionController(
   private val seekableTransitionState: SeekableTransitionState<OverlayHostData<Any>?>
-) : OverlayPredictiveBackController {
-  override suspend fun progress(progress: Float) {
+) : OverlayTransitionController {
+  override suspend fun seek(progress: Float) {
     seekableTransitionState.seekTo(abs(progress).coerceIn(0f, 1f), null)
   }
 

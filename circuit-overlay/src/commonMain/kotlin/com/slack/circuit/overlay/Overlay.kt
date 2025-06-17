@@ -192,39 +192,39 @@ public abstract class AnimatedOverlay<Result : Any>(
       targetState = Unit,
       transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
     ) {
-      AnimatedContent(navigator, OverlayPredictiveBackController.NoOp)
+      AnimatedContent(navigator, OverlayTransitionController.NoOp)
     }
   }
 
   @Composable
   public abstract fun AnimatedVisibilityScope.AnimatedContent(
     navigator: OverlayNavigator<Result>,
-    predictiveBackController: OverlayPredictiveBackController,
+    transitionController: OverlayTransitionController,
   )
 }
 
 /**
- * Interface for controlling the predictive back transition progress for an overlay.
+ * Interface for controlling the transition progress for an overlay.
  *
  * This allows an [AnimatedOverlay] to react to the progress of a predictive back gesture.
  */
-public interface OverlayPredictiveBackController {
+public interface OverlayTransitionController {
   /**
-   * Called with the current progress of the predictive back gesture.
+   * Called with the current progress of the transition.
    *
-   * @param progress A float value between 0.0 and 1.0, where 1.0 indicates the gesture is fully
+   * @param seek A float value between 0.0 and 1.0, where 1.0 indicates the transition is fully
    *   progressed.
    */
-  public suspend fun progress(progress: Float)
+  public suspend fun seek(progress: Float)
 
-  /** Called when the predictive back gesture is cancelled. */
+  /** Called when the transition is cancelled. */
   public suspend fun cancel()
 
   public companion object {
-    /** A no-op implementation of [OverlayPredictiveBackController]. */
-    public val NoOp: OverlayPredictiveBackController =
-      object : OverlayPredictiveBackController {
-        override suspend fun progress(progress: Float) {}
+    /** A no-op implementation of [OverlayTransitionController]. */
+    public val NoOp: OverlayTransitionController =
+      object : OverlayTransitionController {
+        override suspend fun seek(progress: Float) {}
 
         override suspend fun cancel() {}
       }

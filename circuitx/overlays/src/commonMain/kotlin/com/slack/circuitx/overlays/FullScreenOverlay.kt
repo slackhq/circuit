@@ -16,7 +16,7 @@ import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.overlay.AnimatedOverlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
-import com.slack.circuit.overlay.OverlayPredictiveBackController
+import com.slack.circuit.overlay.OverlayTransitionController
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -59,7 +59,7 @@ internal class FullScreenOverlay<S : Screen>(
   @Composable
   override fun AnimatedVisibilityScope.AnimatedContent(
     navigator: OverlayNavigator<Result>,
-    predictiveBackController: OverlayPredictiveBackController,
+    transitionController: OverlayTransitionController,
   ) {
     val callbacks = key(callbacks) { callbacks() }
     val dispatchingNavigator = remember {
@@ -67,10 +67,10 @@ internal class FullScreenOverlay<S : Screen>(
     }
     PredictiveBackHandler(enabled = true) { progress ->
       try {
-        progress.collect { predictiveBackController.progress(it.progress) }
+        progress.collect { transitionController.seek(it.progress) }
         dispatchingNavigator.pop()
       } catch (_: CancellationException) {
-        predictiveBackController.cancel()
+        transitionController.cancel()
       }
     }
     CircuitContent(screen = screen, onNavEvent = dispatchingNavigator::onNavEvent)

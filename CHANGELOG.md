@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+### Misc:
+
+- Add seekable transition support to `AnimatedOverlay`
+- Add predictive back support to `FullScreenOverlay`
+
 0.28.1
 ------
 

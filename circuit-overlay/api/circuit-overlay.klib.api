@@ -46,6 +46,16 @@ abstract interface com.slack.circuit.overlay/OverlayHost { // com.slack.circuit.
 
 abstract interface com.slack.circuit.overlay/OverlayScope : com.slack.circuit.overlay/OverlayHost, kotlinx.coroutines/CoroutineScope // com.slack.circuit.overlay/OverlayScope|null[0]
 
+abstract interface com.slack.circuit.overlay/OverlayTransitionController { // com.slack.circuit.overlay/OverlayTransitionController|null[0]
+    abstract suspend fun cancel() // com.slack.circuit.overlay/OverlayTransitionController.cancel|cancel(){}[0]
+    abstract suspend fun seek(kotlin/Float) // com.slack.circuit.overlay/OverlayTransitionController.seek|seek(kotlin.Float){}[0]
+
+    final object Companion { // com.slack.circuit.overlay/OverlayTransitionController.Companion|null[0]
+        final val NoOp // com.slack.circuit.overlay/OverlayTransitionController.Companion.NoOp|{}NoOp[0]
+            final fun <get-NoOp>(): com.slack.circuit.overlay/OverlayTransitionController // com.slack.circuit.overlay/OverlayTransitionController.Companion.NoOp.<get-NoOp>|<get-NoOp>(){}[0]
+    }
+}
+
 abstract class <#A: kotlin/Any> com.slack.circuit.overlay/AnimatedOverlay : com.slack.circuit.overlay/Overlay<#A> { // com.slack.circuit.overlay/AnimatedOverlay|null[0]
     constructor <init>(androidx.compose.animation/EnterTransition, androidx.compose.animation/ExitTransition) // com.slack.circuit.overlay/AnimatedOverlay.<init>|<init>(androidx.compose.animation.EnterTransition;androidx.compose.animation.ExitTransition){}[0]
 
@@ -54,7 +64,7 @@ abstract class <#A: kotlin/Any> com.slack.circuit.overlay/AnimatedOverlay : com.
     final val exitTransition // com.slack.circuit.overlay/AnimatedOverlay.exitTransition|{}exitTransition[0]
         final fun <get-exitTransition>(): androidx.compose.animation/ExitTransition // com.slack.circuit.overlay/AnimatedOverlay.exitTransition.<get-exitTransition>|<get-exitTransition>(){}[0]
 
-    abstract fun (androidx.compose.animation/AnimatedVisibilityScope).AnimatedContent(com.slack.circuit.overlay/OverlayNavigator<#A>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.overlay/AnimatedOverlay.AnimatedContent|AnimatedContent@androidx.compose.animation.AnimatedVisibilityScope(com.slack.circuit.overlay.OverlayNavigator<1:0>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    abstract fun (androidx.compose.animation/AnimatedVisibilityScope).AnimatedContent(com.slack.circuit.overlay/OverlayNavigator<#A>, com.slack.circuit.overlay/OverlayTransitionController, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.overlay/AnimatedOverlay.AnimatedContent|AnimatedContent@androidx.compose.animation.AnimatedVisibilityScope(com.slack.circuit.overlay.OverlayNavigator<1:0>;com.slack.circuit.overlay.OverlayTransitionController;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
     final fun Content(com.slack.circuit.overlay/OverlayNavigator<#A>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.overlay/AnimatedOverlay.Content|Content(com.slack.circuit.overlay.OverlayNavigator<1:0>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 }
 

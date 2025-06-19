@@ -23,8 +23,10 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.Visibility
 import com.slack.circuit.codegen.CodegenMode.KOTLIN_INJECT_ANVIL
+import com.slack.circuit.codegen.CodegenMode.METRO
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -425,7 +427,7 @@ private class CircuitSymbolProcessor(
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {
-          if (codegenMode == KOTLIN_INJECT_ANVIL) {
+          if (codegenMode == KOTLIN_INJECT_ANVIL || codegenMode == METRO) {
             creatorOrConstructor = injectableConstructor
             targetClass = declaration
           } else {
@@ -499,31 +501,74 @@ private class CircuitSymbolProcessor(
             codegenMode.runtime.getProviderBlock(CodeBlock.of("provider"))
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
-            if (codegenMode == KOTLIN_INJECT_ANVIL) {
-              val factoryLambda =
-                LambdaTypeName.get(
-                  receiver = null,
-                  parameters =
-                    assistedKSParams.map { ksParam ->
-                      ParameterSpec.builder(
-                          ksParam.name!!.getShortName(),
-                          ksParam.type.toTypeName(),
-                        )
-                        .build()
-                    },
-                  returnType = targetClass.toClassName(),
+            when (codegenMode) {
+              KOTLIN_INJECT_ANVIL -> {
+                val factoryLambda =
+                  LambdaTypeName.get(
+                    receiver = null,
+                    parameters =
+                      assistedKSParams.map { ksParam ->
+                        ParameterSpec.builder(
+                            ksParam.name!!.getShortName(),
+                            ksParam.type.toTypeName(),
+                          )
+                          .build()
+                      },
+                    returnType = targetClass.toClassName(),
+                  )
+                constructorParams.add(ParameterSpec.builder("factory", factoryLambda).build())
+                CodeBlock.of("factory(%L)", assistedParams)
+              }
+              METRO -> {
+                val assistedFactory =
+                  declaration.declarations.filterIsInstance<KSClassDeclaration>().find { nestedClass
+                    ->
+                    nestedClass.isAnnotationPresentWithLeniency(
+                      codegenMode.runtime.assistedFactory!!
+                    )
+                  }
+                requireNotNull(assistedFactory) {
+                  "No assisted factory found for ${declaration.qualifiedName?.asString()}"
+                }
+                val constructorAssistedParameters =
+                  assistedKSParams.map { it.toAssistedParameterType("factory") }
+                val assistedFactoryCreate =
+                  assistedFactory.getAllFunctions().find { assistedFactoryFunction ->
+                    val assistedFunctionParameters =
+                      assistedFactoryFunction.parameters
+                        .filter { it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted) }
+                        .map { it.toAssistedParameterType("factory") }
+                    val assistedParamsMatch =
+                      constructorAssistedParameters == assistedFunctionParameters
+                    val numberOfFunctionParamsMatch =
+                      constructorAssistedParameters.size == assistedFactoryFunction.parameters.size
+
+                    assistedParamsMatch && numberOfFunctionParamsMatch
+                  }
+                requireNotNull(assistedFactoryCreate) {
+                  "No assisted factory create function found " +
+                    "for ${declaration.qualifiedName?.asString()}"
+                }
+
+                constructorParams.add(
+                  ParameterSpec.builder("factory", assistedFactory.toClassName()).build()
                 )
-              constructorParams.add(ParameterSpec.builder("factory", factoryLambda).build())
-              CodeBlock.of("factory(%L)", assistedParams)
-            } else {
-              constructorParams.add(
-                ParameterSpec.builder("factory", declaration.toClassName()).build()
-              )
-              CodeBlock.of(
-                "factory.%L(%L)",
-                creatorOrConstructor!!.simpleName.getShortName(),
-                assistedParams,
-              )
+                CodeBlock.of(
+                  "factory.%L(%L)",
+                  assistedFactoryCreate.simpleName.getShortName(),
+                  assistedParams,
+                )
+              }
+              else -> {
+                constructorParams.add(
+                  ParameterSpec.builder("factory", declaration.toClassName()).build()
+                )
+                CodeBlock.of(
+                  "factory.%L(%L)",
+                  creatorOrConstructor!!.simpleName.getShortName(),
+                  assistedParams,
+                )
+              }
             }
           } else {
             // Simple constructor call, no injection.
@@ -536,6 +581,9 @@ private class CircuitSymbolProcessor(
 }
 
 private data class AssistedType(val factoryName: String, val type: TypeName, val name: String)
+
+private fun KSValueParameter.toAssistedParameterType(factoryName: String) =
+  AssistedType(factoryName = factoryName, name = name!!.getShortName(), type = type.toTypeName())
 
 /**
  * Returns a [CodeBlock] representation of all named assisted parameters on this

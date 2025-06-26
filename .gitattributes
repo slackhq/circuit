@@ -1,3 +1,4 @@
 **/snapshots/**/*.png filter=lfs diff=lfs merge=lfs -text
 **/generated/baselineProfiles/** linguist-generated=true
 **/yarn.lock linguist-generated=true
+**/package-lock.lock linguist-generated=true

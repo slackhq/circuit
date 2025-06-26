@@ -4,8 +4,8 @@ package com.slack.circuit.star.data.petfinder
 
 import com.slack.circuit.star.data.AuthenticationData
 import com.slack.circuit.star.data.TokenStorage
+import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.datetime.Clock.System
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

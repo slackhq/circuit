@@ -19,6 +19,8 @@ import com.slack.eithernet.ApiResult
 import com.slack.eithernet.exceptionOrNull
 import com.slack.eithernet.retryWithExponentialBackoff
 import kotlin.LazyThreadSafetyMode.NONE
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -27,8 +29,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 interface PetRepository {
   suspend fun refreshData()

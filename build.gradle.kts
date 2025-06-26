@@ -361,7 +361,10 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 21 }
-      testOptions { targetSdk = 36 }
+      testOptions {
+        // TODO update once robolectric supports it
+        targetSdk = 35
+      }
     }
 
     // Single-variant libraries

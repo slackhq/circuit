@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>CircuitSymbolProcessorProvider</title>
+    <title>OverlayTransitionController</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -45,7 +45,7 @@
         </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-codegen/main">jvm</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-overlay/commonMain">common</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
                 <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
@@ -54,11 +54,11 @@
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
-                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
                             <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":circuit-codegen/main" data-filter=":circuit-codegen/main">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-overlay/commonMain" data-filter=":circuit-overlay/commonMain">
                                 <span class="checkbox--icon"></span>
-                                jvm
+                                common
                             </label>
                         </li>
                 </ul>
@@ -90,28 +90,28 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-codegen::com.slack.circuit.codegen/CircuitSymbolProcessorProvider///PointingToDeclaration//187236749">
-  <div class="breadcrumbs"><a href="../../index.html">circuit-codegen</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.codegen</a><span class="delimiter">/</span><span class="current">CircuitSymbolProcessorProvider</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-overlay::com.slack.circuit.overlay/OverlayTransitionController///PointingToDeclaration//-96087195">
+  <div class="breadcrumbs"><a href="../../index.html">circuit-overlay</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.overlay</a><span class="delimiter">/</span><span class="current">OverlayTransitionController</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Circuit</span><wbr><span>Symbol</span><wbr><span>Processor</span><wbr><span><span>Provider</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-codegen/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="com.google.auto.service/AutoService///PointingToDeclaration/"><span class="token annotation builtin">AutoService</span></span><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><span data-unresolved-link="com.google.devtools.ksp.processing/SymbolProcessorProvider///PointingToDeclaration/">SymbolProcessorProvider::class</span></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="index.html">CircuitSymbolProcessorProvider</a> : <span data-unresolved-link="com.google.devtools.ksp.processing/SymbolProcessorProvider///PointingToDeclaration/">SymbolProcessorProvider</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-codegen/src/main/kotlin/com/slack/circuit/codegen/CircuitSymbolProcessorProvider.kt#L52">source</a>)</span></span></div></div></div>
+    <h1 class="cover"><span>Overlay</span><wbr><span>Transition</span><wbr><span><span>Controller</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-overlay/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">OverlayTransitionController</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-overlay/src/commonMain/kotlin/com/slack/circuit/overlay/Overlay.kt#L211">source</a>)</span></span></div><p class="paragraph">Interface for controlling the transition progress for an overlay.</p><p class="paragraph">This allows an <a href="../-animated-overlay/index.html">AnimatedOverlay</a> to react to the progress of a predictive back gesture.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <div data-togglable="CONSTRUCTOR">
-        <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-230026678%2FConstructors%2F187236749" anchor-label="CircuitSymbolProcessorProvider" id="-230026678%2FConstructors%2F187236749" data-filterable-set=":circuit-codegen/main"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":circuit-codegen/main" data-filterable-set=":circuit-codegen/main">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1880640927%2FClasslikes%2F-96087195" anchor-label="Companion" id="-1880640927%2FClasslikes%2F-96087195" data-filterable-set=":circuit-overlay/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-overlay/commonMain" data-filterable-set=":circuit-overlay/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-circuit-symbol-processor-provider.html"><span>Circuit</span><wbr><span>Symbol</span><wbr><span>Processor</span><wbr><span><span>Provider</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-230026678%2FConstructors%2F187236749"></span>
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1880640927%2FClasslikes%2F-96087195"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-codegen/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-overlay/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -120,17 +120,32 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1121797220%2FFunctions%2F187236749" anchor-label="create" id="1121797220%2FFunctions%2F187236749" data-filterable-set=":circuit-codegen/main"></a>
-          <div class="table-row" data-filterable-current=":circuit-codegen/main" data-filterable-set=":circuit-codegen/main">
+        <div class="table"><a data-name="2022890054%2FFunctions%2F-96087195" anchor-label="cancel" id="2022890054%2FFunctions%2F-96087195" data-filterable-set=":circuit-overlay/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-overlay/commonMain" data-filterable-set=":circuit-overlay/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="create.html"><span><span>create</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1121797220%2FFunctions%2F187236749"></span>
+                  <div><a href="cancel.html"><span><span>cancel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2022890054%2FFunctions%2F-96087195"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-codegen/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">environment<span class="token operator">: </span><span data-unresolved-link="com.google.devtools.ksp.processing/SymbolProcessorEnvironment///PointingToDeclaration/">SymbolProcessorEnvironment</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.devtools.ksp.processing/SymbolProcessor///PointingToDeclaration/">SymbolProcessor</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-overlay/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="cancel.html"><span class="token function">cancel</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called when the transition is cancelled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-276260263%2FFunctions%2F-96087195" anchor-label="seek" id="-276260263%2FFunctions%2F-96087195" data-filterable-set=":circuit-overlay/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-overlay/commonMain" data-filterable-set=":circuit-overlay/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="seek.html"><span><span>seek</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-276260263%2FFunctions%2F-96087195"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-overlay/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="seek.html"><span class="token function">seek</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">progress<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called with the current progress of the transition.</p></div></div></div>
                 </div>
               </div>
             </div>

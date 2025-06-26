@@ -74,7 +74,7 @@ public final class com/slack/circuit/foundation/CircuitKt {
 public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 	public static final field INSTANCE Lcom/slack/circuit/foundation/ComposableSingletons$CircuitKt;
 	public fun <init> ()V
-	public final fun getLambda-1$circuit_foundation ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-1518521136$circuit_foundation ()Lkotlin/jvm/functions/Function4;
 }
 
 public final class com/slack/circuit/foundation/ContentProviderState {
@@ -211,6 +211,7 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$EmptyDecoratio
 public final class com/slack/circuit/foundation/NavigatorImplKt {
 	public static final fun Navigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/Navigator;
 	public static final fun rememberCircuitNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
+	public static final fun rememberCircuitNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/Navigator;
 }
 
 public abstract interface class com/slack/circuit/foundation/NonPausablePresenter : com/slack/circuit/runtime/presenter/Presenter {

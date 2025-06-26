@@ -4,8 +4,8 @@ package com.slack.circuit.star.data
 
 import com.google.common.truth.Truth.assertThat
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.Test
 import org.junit.runner.RunWith

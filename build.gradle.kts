@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
@@ -172,20 +171,9 @@ subprojects {
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
-  val useK2Kapt =
-    providers.gradleProperty("kapt.use.k2").map { it.toBooleanStrict() }.getOrElse(false)
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       if (this is KaptGenerateStubsTask) {
-        if (useK2Kapt) {
-          // K2 Kapt is in alpha
-          compilerOptions.allWarningsAsErrors.set(false)
-        } else {
-          compilerOptions {
-            progressiveMode.set(false)
-            languageVersion.set(KotlinVersion.KOTLIN_1_9)
-          }
-        }
         // Don't double apply to stub gen
         return@configureEach
       }
@@ -222,6 +210,8 @@ subprojects {
               // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
               "-Xtype-enhancement-improvements-strict-mode",
               "-Xjspecify-annotations=strict",
+              // https://youtrack.jetbrains.com/issue/KT-73255
+              "-Xannotation-default-target=param-property",
             )
           }
         }

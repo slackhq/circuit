@@ -50,7 +50,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  *     Box(
  *       modifier =
  *         Modifier.sharedElement(
- *           state = rememberSharedContentState(key = ImageElementKey(id)),
+ *           sharedContentState = rememberSharedContentState(key = ImageElementKey(id)),
  *           animatedVisibilityScope = requireAnimatedScope(Navigation),
  *         )
  *     )

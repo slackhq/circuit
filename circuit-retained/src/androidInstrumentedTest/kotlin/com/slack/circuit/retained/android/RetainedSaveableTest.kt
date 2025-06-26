@@ -17,15 +17,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.slack.circuit.retained.Continuity
-import com.slack.circuit.retained.ContinuityViewModel
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistryViewModel
+import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.continuityRetainedStateRegistry
-import com.slack.circuit.retained.rememberContinuityCanRetainChecker
 import com.slack.circuit.retained.rememberRetained
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
@@ -44,12 +43,15 @@ class RetainedSaveableTest {
   private val scenario: ActivityScenario<ComponentActivity>
     get() = composeTestRule.activityRule.scenario
 
-  private class RecordingContinuityVmFactory : ViewModelProvider.Factory {
-    var continuity: ContinuityViewModel? = null
+  private class RecordingContinuityVmFactory :
+    ViewModelRetainedStateRegistryFactory<RetainedStateRegistryViewModel> {
+    var continuity: RetainedStateRegistryViewModel? = null
 
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      @Suppress("UNCHECKED_CAST")
-      return ContinuityViewModel().also { continuity = it } as T
+    override fun create(
+      modelClass: Class<RetainedStateRegistryViewModel>,
+      extras: CreationExtras?,
+    ): RetainedStateRegistryViewModel {
+      return RetainedStateRegistryViewModel().also { continuity = it }
     }
   }
 
@@ -167,11 +169,10 @@ class RetainedSaveableTest {
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->
       activity.setContent {
-        val defaultCanRetainChecker = rememberContinuityCanRetainChecker()
         CompositionLocalProvider(
           LocalRetainedStateRegistry provides
             continuityRetainedStateRegistry(Continuity.KEY, vmFactory) {
-              canRetainOverride ?: defaultCanRetainChecker.canRetain()
+              canRetainOverride != false
             }
         ) {
           content()

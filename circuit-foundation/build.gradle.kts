@@ -23,12 +23,12 @@ kotlin {
   macosX64()
   macosArm64()
   js(IR) {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser {
       // Necessary for tests
       testTask {
@@ -67,6 +67,7 @@ kotlin {
         api(projects.circuitRetained)
         api(projects.circuitSharedElements)
         api(libs.compose.ui)
+        implementation(libs.compose.ui.backhandler)
       }
     }
     androidMain {
@@ -165,7 +166,6 @@ android {
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true
-  @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/379030055
-  from(projects.samples.star.benchmark.dependencyProject)
+  from(project(projects.samples.star.benchmark.path))
   filter { include("com.slack.circuit.foundation.**") }
 }

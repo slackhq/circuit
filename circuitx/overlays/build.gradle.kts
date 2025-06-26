@@ -20,12 +20,12 @@ kotlin {
   macosX64()
   macosArm64()
   js(IR) {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }
   // endregion
@@ -45,6 +45,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(libs.compose.material.material3)
+        implementation(libs.compose.ui.backhandler)
         implementation(projects.circuitFoundation)
       }
     }

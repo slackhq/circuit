@@ -65,9 +65,11 @@ androidx.lifecycle:lifecycle-viewmodel-android
 androidx.lifecycle:lifecycle-viewmodel-compose-android
 androidx.lifecycle:lifecycle-viewmodel-compose
 androidx.lifecycle:lifecycle-viewmodel-ktx
+androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.profileinstaller:profileinstaller
+androidx.savedstate:savedstate-android
 androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
@@ -85,11 +87,12 @@ org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.foundation:foundation-layout
 org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.material3:material3
-org.jetbrains.compose.material:material-icons-core
 org.jetbrains.compose.material:material-ripple
 org.jetbrains.compose.material:material
 org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
+org.jetbrains.compose.ui:ui-backhandler-android
+org.jetbrains.compose.ui:ui-backhandler
 org.jetbrains.compose.ui:ui-geometry
 org.jetbrains.compose.ui:ui-graphics
 org.jetbrains.compose.ui:ui-text
@@ -108,4 +111,8 @@ org.jetbrains.kotlinx:kotlinx-coroutines-android
 org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core
+org.jetbrains.kotlinx:kotlinx-serialization-bom
+org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
+org.jetbrains.kotlinx:kotlinx-serialization-core
 org.jetbrains:annotations
+org.jspecify:jspecify

@@ -105,7 +105,7 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
         Icons.Default.Person,
         modifier =
           Modifier.sharedElement(
-              state =
+              sharedContentState =
                 rememberSharedContentState(
                   EmailSharedTransitionKey(
                     id = email.id,
@@ -135,7 +135,7 @@ fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) = SharedElem
         Icons.Default.Person,
         modifier =
           Modifier.sharedElement(
-              state =
+              sharedContentState =
                 rememberSharedContentState(
                   EmailSharedTransitionKey(
                     id = email.id,
@@ -160,7 +160,7 @@ There is one crucial part of this we haven't covered yet, and that is accessing 
 ```kotlin title="EmailItem" hl_lines="10-11"
         modifier =
           Modifier.sharedElement(
-              state =
+              sharedContentState =
                 rememberSharedContentState(
                   EmailSharedTransitionKey(
                     id = email.id,

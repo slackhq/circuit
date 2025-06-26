@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Instant
 
 /**
  * A simple [TokenStorage] that uses `DataStore` to store `AuthenticationResponse` for reuse across

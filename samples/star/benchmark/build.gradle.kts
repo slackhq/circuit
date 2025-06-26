@@ -16,7 +16,7 @@ val isCi = providers.environmentVariable("CI").isPresent
 android {
   namespace = "com.circuit.samples.star.benchmark"
   defaultConfig {
-    targetSdk = 35
+    targetSdk = 36
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 

@@ -9,6 +9,7 @@ Unreleased
 - Support `@AssistedFactory` in code gen for Metro.
 - Add seekable transition support to `AnimatedOverlay`.
 - Add predictive back support to `FullScreenOverlay`.
+- Compile against Android SDK 36.
 
 0.28.1
 ------

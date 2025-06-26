@@ -14,7 +14,7 @@ android {
   namespace = "com.slack.circuit.sample.navigation"
   defaultConfig {
     minSdk = 21
-    targetSdk = 35
+    targetSdk = 36
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
 }

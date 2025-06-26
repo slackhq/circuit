@@ -336,7 +336,7 @@ subprojects {
 
   // Common android config
   val commonAndroidConfig: CommonExtension<*, *, *, *, *, *>.() -> Unit = {
-    compileSdk = 35
+    compileSdk = 36
 
     if (hasCompose) {
       buildFeatures { compose = true }
@@ -361,7 +361,10 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 21 }
-      testOptions { targetSdk = 35 }
+      testOptions {
+        // TODO update once robolectric supports it
+        targetSdk = 35
+      }
     }
 
     // Single-variant libraries

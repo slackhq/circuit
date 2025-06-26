@@ -4,8 +4,34 @@ Changelog
 Unreleased
 ----------
 
+### Misc:
+
+- Add seekable transition support to `AnimatedOverlay`
+- Add predictive back support to `FullScreenOverlay`
+
+0.28.1
+------
+
+_2025-06-09_
+
+### Behaviour Changes:
+
+Replacing `rememberContinuityCanRetainChecker()` with `CanRetainChecker.Always`, which changes the
+Android `rememberRetained` behaviour to retain based on the `ViewModel` lifecycle. This should fix
+`rememberRetained` not functioning as expected when used in a fragment. Previously `rememberRetained`
+would only retain if the Activity was in a configuration change.
+
+### Misc:
+
 - Update to Kotlin `2.1.21`.
 - Build against KSP `2.1.21-2.0.1`.
+- Fix not being able to provide a custom ViewModel to `continuityRetainedStateRegistry()`
+- Fix `rememberCircuitNavigator` and `rememberInterceptingNavigator` replaying a root pop at the same screen
+- Update Compose Android BOM to `2025.06.00`.
+- Update Compose Android to `1.8.2`.
+- Update to Compose Multiplatform to `1.8.1`.
+- Update androidx.lifecycle to `2.9.1`
+
 
 0.28.0
 ------

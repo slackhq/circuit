@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,10 +57,23 @@ public fun rememberCircuitNavigator(
   onRootPop: (result: PopResult?) -> Unit,
   enableBackHandler: Boolean = true,
 ): Navigator {
-  var trigger by remember { mutableStateOf(false) }
   val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
+  // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
+  // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
+  val hasScreenChanged = remember {
+    var lastScreen: Screen? = navigator.peek()
+    derivedStateOf {
+      val screen = navigator.peek()
+      if (screen != null && screen != lastScreen) {
+        lastScreen = screen
+      }
+      lastScreen
+    }
+  }
+  var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
+  var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
   BackHandler(
-    enabled = enableBackHandler && !trigger && backStack.size > 1,
+    enabled = enableBackHandler && enableRootBackHandler && backStack.size > 1,
     onBack = {
       // We need to unload this BackHandler from the composition before the root pop is triggered so
       // any outer back handler will get called. So delay calling pop until after the next
@@ -67,14 +81,15 @@ public fun rememberCircuitNavigator(
       if (backStack.size > 1) {
         navigator.pop()
       } else {
-        trigger = true
+        hasPendingRootPop = true
+        enableRootBackHandler = false
       }
     },
   )
-  if (trigger) {
+  if (hasPendingRootPop) {
     SideEffect {
       navigator.pop()
-      trigger = false
+      hasPendingRootPop = false
     }
   }
   return navigator

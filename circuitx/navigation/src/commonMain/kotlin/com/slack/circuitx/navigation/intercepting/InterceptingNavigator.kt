@@ -5,6 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,8 +53,21 @@ public fun rememberInterceptingNavigator(
     }
   // Handle the back button here to get pop events from it.
   if (enableBackHandler) {
-    var trigger by remember { mutableStateOf(false) }
-    BackHandler(!trigger) {
+    // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
+    // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
+    val hasScreenChanged = remember {
+      var lastScreen: Screen? = navigator.peek()
+      derivedStateOf {
+        val screen = navigator.peek()
+        if (screen != null && screen != lastScreen) {
+          lastScreen = screen
+        }
+        lastScreen
+      }
+    }
+    var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
+    var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
+    BackHandler(enableRootBackHandler) {
       // Root pop check to prevent an infinite loop if this is used with the Android variant of
       // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need to
       // unload this BackHandler from the composition before the root pop is triggered, so delay
@@ -61,13 +75,14 @@ public fun rememberInterceptingNavigator(
       if (navigator.peekBackStack().size > 1) {
         interceptingNavigator.pop()
       } else {
-        trigger = true
+        hasPendingRootPop = true
+        enableRootBackHandler = false
       }
     }
-    if (trigger) {
+    if (hasPendingRootPop) {
       SideEffect {
         interceptingNavigator.pop()
-        trigger = false
+        hasPendingRootPop = false
       }
     }
   }

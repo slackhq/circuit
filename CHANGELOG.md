@@ -4,8 +4,7 @@ Changelog
 Unreleased
 ----------
 
-### Misc:
-
+- Update to Kotlin `2.2.0`.
 - Add seekable transition support to `AnimatedOverlay`
 - Add predictive back support to `FullScreenOverlay`
 

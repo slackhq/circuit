@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+0.29.0
+------
+
+_2025-06-26_
+
 - Update to Kotlin `2.2.0`.
 - Update to KSP `2.2.0-2.0.2`.
 - Support `@AssistedFactory` in code gen for Metro.

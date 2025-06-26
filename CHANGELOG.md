@@ -5,8 +5,10 @@ Unreleased
 ----------
 
 - Update to Kotlin `2.2.0`.
-- Add seekable transition support to `AnimatedOverlay`
-- Add predictive back support to `FullScreenOverlay`
+- Update to KSP `2.2.0-2.0.2`.
+- Support `@AssistedFactory` in code gen for Metro.
+- Add seekable transition support to `AnimatedOverlay`.
+- Add predictive back support to `FullScreenOverlay`.
 
 0.28.1
 ------

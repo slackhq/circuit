@@ -86,7 +86,7 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
     args: ImmutableList<T>,
     backStackDepth: Int,
   ): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+    return GestureNavTransitionHolder(args, backStackDepth)
   }
 
   @Composable
@@ -170,7 +170,7 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
     targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
-    val dismissState = rememberDismissState(targetState.record)
+    val dismissState = rememberDismissState(targetState.args.first())
     var wasSwipeDismissed by remember { mutableStateOf(false) }
     val swipeEnabled = targetState.backStackDepth > 1
 
@@ -200,7 +200,7 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
         swipeEnabled = swipeEnabled,
         nestedScrollEnabled = swipeEnabled && swipeBackFromNestedScroll,
         dismissThreshold = swipeThreshold,
-        content = { innerContent(targetState.record) },
+        content = { innerContent(targetState.args.first()) },
       )
     }
   }

@@ -38,7 +38,6 @@ import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import kotlinx.collections.immutable.persistentListOf

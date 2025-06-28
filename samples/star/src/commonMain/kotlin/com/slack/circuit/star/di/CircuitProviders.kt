@@ -32,9 +32,7 @@ interface CircuitProviders {
   fun provideCircuit(
     presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
     uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-    animatedScreenTransforms:
-      @JvmSuppressWildcards
-      Map<KClass<out Screen>, AnimatedScreenTransform>,
+    animatedScreenTransforms: @JvmSuppressWildcards Map<KClass<out Screen>, AnimatedScreenTransform>,
   ): Circuit {
     return Circuit.Builder()
       .addPresenterFactories(presenterFactories)

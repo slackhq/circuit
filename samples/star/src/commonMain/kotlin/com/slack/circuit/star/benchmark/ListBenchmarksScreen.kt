@@ -36,7 +36,8 @@ data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
 }
 
 @Inject
-class ListBenchmarksPresenter(@Assisted private val screen: ListBenchmarksScreen) : Presenter<State> {
+class ListBenchmarksPresenter(@Assisted private val screen: ListBenchmarksScreen) :
+  Presenter<State> {
   @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {

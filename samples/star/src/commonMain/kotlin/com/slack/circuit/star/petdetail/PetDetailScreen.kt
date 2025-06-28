@@ -57,7 +57,6 @@ import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
-import dev.zacsweers.metro.AppScope
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
@@ -77,6 +76,7 @@ import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.ExpandableText
 import com.slack.circuit.star.ui.thenIf
 import com.slack.circuit.star.ui.thenIfNotNull
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.Inject

@@ -15,8 +15,10 @@ import okio.Path.Companion.toOkioPath
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 @Inject
-class ContextStarAppDirs(@ApplicationContext private val context: Context, override val fs: FileSystem) :
-  StarAppDirs {
+class ContextStarAppDirs(
+  @ApplicationContext private val context: Context,
+  override val fs: FileSystem,
+) : StarAppDirs {
 
   override val userConfig: Path by lazy {
     (context.filesDir.toOkioPath() / "config").also(fs::createDirectories)

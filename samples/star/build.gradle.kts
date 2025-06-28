@@ -1,6 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType

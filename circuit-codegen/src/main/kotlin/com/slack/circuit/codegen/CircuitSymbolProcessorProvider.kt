@@ -23,10 +23,8 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.Visibility
 import com.slack.circuit.codegen.CodegenMode.KOTLIN_INJECT_ANVIL
-import com.slack.circuit.codegen.CodegenMode.METRO
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec

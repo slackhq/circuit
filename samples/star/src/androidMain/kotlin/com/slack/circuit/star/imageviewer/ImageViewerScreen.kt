@@ -37,7 +37,6 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.star.common.BackPressNavIcon
-import dev.zacsweers.metro.AppScope
 import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.Dismissed
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
@@ -47,6 +46,7 @@ import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.star.ui.rememberSystemUiController
 import com.slack.circuit.star.ui.thenIf
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.Inject

@@ -37,10 +37,8 @@ interface CommonDataProviders {
     return TokenManager(authApi, tokenStorage)
   }
 
-
   /** Qualifier to denote that a provided type is authenticated. */
-  @Qualifier
-  annotation class Authenticated
+  @Qualifier annotation class Authenticated
 
   @Authenticated
   @Provides
@@ -75,13 +73,12 @@ interface CommonDataProviders {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun providePetfinderApi(@Authenticated httpClient: HttpClient): PetfinderApi = PetfinderApiImpl(httpClient)
+  fun providePetfinderApi(@Authenticated httpClient: HttpClient): PetfinderApi =
+    PetfinderApiImpl(httpClient)
 
   @Provides
   @SingleIn(AppScope::class)
   fun providePetBioApi(httpClient: HttpClient): PetBioParserApi = PetBioParserApiImpl(httpClient)
 
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
+  @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 }

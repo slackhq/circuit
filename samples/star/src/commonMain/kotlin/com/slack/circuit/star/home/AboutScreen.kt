@@ -22,9 +22,9 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.star.common.Strings
-import dev.zacsweers.metro.AppScope
 import com.slack.circuit.star.resources.Res
 import com.slack.circuit.star.resources.star_icon
+import dev.zacsweers.metro.AppScope
 import org.jetbrains.compose.resources.painterResource
 
 @Parcelize data object AboutScreen : StaticScreen

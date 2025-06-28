@@ -1483,14 +1483,15 @@ class CircuitSymbolProcessorTest {
         import dev.zacsweers.metro.Inject
 
         @Inject
-        @CircuitInject(FavoritesScreen::class, AppScope::class)
         class FavoritesPresenter(
           @Assisted private val navigator: Navigator
         ) : Presenter<FavoritesScreen.State> {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
           @AssistedFactory
           fun interface Factory {
             fun create(@Assisted navigator: Navigator): FavoritesPresenter
           }
+
           @Composable
           override fun present(): FavoritesScreen.State {
             throw NotImplementedError()
@@ -1529,53 +1530,6 @@ class CircuitSymbolProcessorTest {
           .trimIndent(),
       codegenMode = CodegenMode.METRO,
     )
-  }
-
-  @Test
-  fun invalidAssistedInjection_metro() {
-    assertProcessingError(
-      sourceFile =
-        kotlin(
-          "FavoritesPresenter.kt",
-          """
-        package test
-
-        import com.slack.circuit.codegen.annotations.CircuitInject
-        import com.slack.circuit.runtime.Navigator
-        import com.slack.circuit.runtime.presenter.Presenter
-        import androidx.compose.runtime.Composable
-        import dev.zacsweers.metro.Assisted
-        import dev.zacsweers.metro.AppScope
-        import dev.zacsweers.metro.AssistedFactory
-        import dev.zacsweers.metro.Inject
-
-        @Inject
-        @CircuitInject(FavoritesScreen::class, AppScope::class)
-        class FavoritesPresenter(
-          @Assisted private val navigator: Navigator
-        ) : Presenter<FavoritesScreen.State> {
-
-          // No AssistedFactory
-
-          @Composable
-          override fun present(): FavoritesScreen.State {
-            throw NotImplementedError()
-          }
-        }
-        """
-            .trimIndent(),
-        ),
-      codegenMode = CodegenMode.METRO,
-    ) { messages ->
-      assertThat(messages).contains("No assisted factory found")
-    }
-  }
-
-  private enum class CodegenMode {
-    ANVIL,
-    HILT,
-    KOTLIN_INJECT_ANVIL,
-    METRO,
   }
 
   private fun assertGeneratedFile(

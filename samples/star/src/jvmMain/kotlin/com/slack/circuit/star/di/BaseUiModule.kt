@@ -3,16 +3,17 @@
 package com.slack.circuit.star.di
 
 import coil3.PlatformContext
-import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.annotations.optional.SingleIn
-import dagger.Module
-import dagger.Provides
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-@Module
-object BaseUiModule {
-  @ApplicationContext
-  @SingleIn(AppScope::class)
-  @Provides
-  fun provideAppContext(): PlatformContext = PlatformContext.INSTANCE
+interface BaseUiModule {
+  companion object {
+    @ApplicationContext
+    @SingleIn(AppScope::class)
+    @Provides
+    fun provideAppContext(): PlatformContext = PlatformContext.INSTANCE
+  }
 }

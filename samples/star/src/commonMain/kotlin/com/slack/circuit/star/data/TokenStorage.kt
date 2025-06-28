@@ -8,6 +8,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.first
 
@@ -25,6 +29,9 @@ interface TokenStorage {
 
 data class AuthenticationData(val tokenType: String, val expiration: Instant, val token: String)
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class TokenStorageImpl(storage: Storage<Preferences>) : TokenStorage {
   private val datastore = PreferenceDataStoreFactory.create(storage = storage)
 

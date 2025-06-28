@@ -28,7 +28,6 @@ import com.slack.circuit.star.animation.HomeAnimatedScreenTransform
 import com.slack.circuit.star.animation.PetDetailAnimatedScreenTransform
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
-import com.slack.circuit.star.di.AppScope
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
@@ -37,15 +36,18 @@ import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
-import com.squareup.anvil.annotations.ContributesMultibinding
-import javax.inject.Inject
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @OptIn(ExperimentalCircuitApi::class)
-@ContributesMultibinding(AppScope::class, boundType = Activity::class)
+@ContributesIntoMap(AppScope::class, binding = binding<Activity>())
 @ActivityKey(MainActivity::class)
-class MainActivity @Inject constructor(private val circuit: Circuit) : AppCompatActivity() {
+@Inject
+class MainActivity(private val circuit: Circuit) : AppCompatActivity() {
 
   @OptIn(ExperimentalSharedTransitionApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {

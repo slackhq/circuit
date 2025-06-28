@@ -8,19 +8,20 @@ import android.content.Intent
 import androidx.annotation.Keep
 import androidx.core.app.AppComponentFactory
 import com.slack.circuit.star.StarApp
-import javax.inject.Provider
+import dev.zacsweers.metro.Provider
+import kotlin.reflect.KClass
 
 @Keep
 class StarAppComponentFactory : AppComponentFactory() {
 
-  private inline fun <reified T> getInstance(
+  private inline fun <reified T : Any> getInstance(
     cl: ClassLoader,
     className: String,
-    providers: Map<Class<out T>, @JvmSuppressWildcards Provider<T>>,
+    providers: Map<KClass<out T>, Provider<T>>,
   ): T? {
     val clazz = Class.forName(className, false, cl).asSubclass(T::class.java)
-    val modelProvider = providers[clazz] ?: return null
-    return modelProvider.get() as T
+    val modelProvider = providers[clazz.kotlin] ?: return null
+    return modelProvider()
   }
 
   override fun instantiateActivityCompat(
@@ -34,12 +35,12 @@ class StarAppComponentFactory : AppComponentFactory() {
 
   override fun instantiateApplicationCompat(cl: ClassLoader, className: String): Application {
     val app = super.instantiateApplicationCompat(cl, className)
-    activityProviders = (app as StarApp).appComponent().activityProviders
+    activityProviders = (app as StarApp).appGraph.activityProviders
     return app
   }
 
   // AppComponentFactory can be created multiple times
   companion object {
-    private lateinit var activityProviders: Map<Class<out Activity>, Provider<Activity>>
+    private lateinit var activityProviders: Map<KClass<out Activity>, Provider<Activity>>
   }
 }

@@ -11,7 +11,8 @@ android {
   namespace = "com.slack.circuit.sample.interop"
   defaultConfig {
     minSdk = 28
-    targetSdk = 36
+    // TODO update once robolectric supports 36
+    targetSdk = 35
     versionCode = 1
     versionName = "1"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

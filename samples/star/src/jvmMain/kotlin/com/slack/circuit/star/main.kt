@@ -27,7 +27,7 @@ import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
-import com.slack.circuit.star.di.AppComponent
+import com.slack.circuit.star.di.AppGraph
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.ui.StarTheme
@@ -37,8 +37,8 @@ import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
-  val component = AppComponent.create()
-  SingletonImageLoader.setSafe { component.imageLoader }
+  val appGraph = AppGraph.create()
+  SingletonImageLoader.setSafe { appGraph.imageLoader }
   application {
     val initialBackStack = persistentListOf<Screen>(HomeScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
@@ -94,7 +94,7 @@ fun main() {
       },
     ) {
       StarTheme(useDarkTheme = darkMode) {
-        CircuitCompositionLocals(component.circuit) {
+        CircuitCompositionLocals(appGraph.circuit) {
           SharedElementTransitionLayout {
             ContentWithOverlays {
               NavigableCircuitContent(navigator = navigator, backStack = backStack)

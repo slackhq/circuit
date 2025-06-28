@@ -7,6 +7,11 @@ import com.slack.circuit.star.data.petfinder.PetBioParserApiImpl
 import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.data.petfinder.PetfinderApiImpl
 import com.slack.circuit.star.data.petfinder.PetfinderAuthApiImpl
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.Qualifier
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.HttpRequestRetry
@@ -17,16 +22,27 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 
-object CommonDataModule {
+@ContributesTo(AppScope::class)
+interface CommonDataProviders {
+  @Provides
+  @SingleIn(AppScope::class)
   fun provideJson(): Json {
     return Json { ignoreUnknownKeys = true }
   }
 
+  @Provides
+  @SingleIn(AppScope::class)
   fun provideTokenManager(httpClient: HttpClient, tokenStorage: TokenStorage): TokenManager {
     val authApi = PetfinderAuthApiImpl(httpClient)
     return TokenManager(authApi, tokenStorage)
   }
 
+  /** Qualifier to denote that a provided type is authenticated. */
+  @Qualifier annotation class Authenticated
+
+  @Authenticated
+  @Provides
+  @SingleIn(AppScope::class)
   fun provideAuthedHttpClient(httpClient: HttpClient, tokenManager: TokenManager): HttpClient =
     httpClient.config {
       install(Auth) {
@@ -40,6 +56,8 @@ object CommonDataModule {
       }
     }
 
+  @Provides
+  @SingleIn(AppScope::class)
   fun provideHttpClient(
     httpClientEngineFactory: HttpClientEngineFactory<*>,
     json: Json,
@@ -53,9 +71,14 @@ object CommonDataModule {
       install(ContentNegotiation) { json(json) }
     }
 
-  fun providePetfinderApi(httpClient: HttpClient): PetfinderApi = PetfinderApiImpl(httpClient)
+  @Provides
+  @SingleIn(AppScope::class)
+  fun providePetfinderApi(@Authenticated httpClient: HttpClient): PetfinderApi =
+    PetfinderApiImpl(httpClient)
 
+  @Provides
+  @SingleIn(AppScope::class)
   fun providePetBioApi(httpClient: HttpClient): PetBioParserApi = PetBioParserApiImpl(httpClient)
 
-  fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
+  @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 }

@@ -200,7 +200,7 @@ android {
   namespace = "com.slack.circuit.star"
 
   defaultConfig {
-    minSdk = 28
+    minSdk = 30
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.star.apk.androidTest"
   }

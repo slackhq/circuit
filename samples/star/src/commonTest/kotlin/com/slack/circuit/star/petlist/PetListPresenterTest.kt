@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import com.google.common.truth.Truth.assertThat
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
@@ -14,15 +15,12 @@ import com.slack.circuit.star.petlist.PetListScreen.State.Success
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
+import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class PetListPresenterTest {
   private val navigator = FakeNavigator(PetListScreen)
 

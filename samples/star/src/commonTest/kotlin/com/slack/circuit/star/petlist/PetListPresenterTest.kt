@@ -4,6 +4,7 @@ package com.slack.circuit.star.petlist
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.slack.circuit.star.BasePresenterTest
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
@@ -21,7 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 
-class PetListPresenterTest {
+class PetListPresenterTest : BasePresenterTest() {
   private val navigator = FakeNavigator(PetListScreen)
 
   @Test

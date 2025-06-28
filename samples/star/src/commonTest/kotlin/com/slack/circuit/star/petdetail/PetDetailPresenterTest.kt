@@ -4,6 +4,7 @@ package com.slack.circuit.star.petdetail
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.slack.circuit.star.BasePresenterTest
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petlist.PetListPresenterTest
 import com.slack.circuit.star.petlist.TestRepository
@@ -12,7 +13,7 @@ import com.slack.circuit.test.test
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
-class PetDetailPresenterTest {
+class PetDetailPresenterTest : BasePresenterTest() {
   @Test
   fun `present - emit loading state then no animal state`() = runTest {
     val repository = TestRepository(emptyList())

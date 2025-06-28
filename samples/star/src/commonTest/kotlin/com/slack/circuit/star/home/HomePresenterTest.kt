@@ -4,12 +4,13 @@ package com.slack.circuit.star.home
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.slack.circuit.star.BasePresenterTest
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
-class HomePresenterTest {
+class HomePresenterTest : BasePresenterTest() {
   @Test
   fun changeIndices() = runTest {
     presenterTestOf({ HomePresenter(FakeNavigator(HomeScreen)) }) {

@@ -3,10 +3,11 @@
 package com.slack.circuit.star.di
 
 import android.app.Activity
-import dagger.MapKey
+import dev.zacsweers.metro.MapKey
 import kotlin.reflect.KClass
 
 /**
  * A Dagger multi-binding key used for registering a [Activity] into the top level dagger graphs.
  */
-@MapKey annotation class ActivityKey(val value: KClass<out Activity>)
+@MapKey
+annotation class ActivityKey(val value: KClass<out Activity>)

@@ -69,7 +69,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.sharedelements.requireActiveAnimatedScope
-import com.slack.circuit.star.di.AppScope
+import dev.zacsweers.metro.AppScope
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.transition.PetImageBoundsKey

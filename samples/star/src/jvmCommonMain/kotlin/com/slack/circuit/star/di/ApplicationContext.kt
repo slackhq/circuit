@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.di
 
-import javax.inject.Qualifier
+import dev.zacsweers.metro.Qualifier
 
 /** Qualifier to denote a `Context` that is specifically an Application context. */
-@Qualifier annotation class ApplicationContext
+@Qualifier
+annotation class ApplicationContext

@@ -8,24 +8,24 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
-import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.annotations.optional.SingleIn
-import dagger.Module
-import dagger.Provides
-import dagger.multibindings.Multibinds
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import kotlin.reflect.KClass
 
 @OptIn(
   ExperimentalCircuitApi::class // For AnimatedScreenTransform
 )
 @ContributesTo(AppScope::class)
-@Module
 interface CircuitModule {
   @Multibinds fun presenterFactories(): Set<Presenter.Factory>
 
   @Multibinds fun viewFactories(): Set<Ui.Factory>
 
-  @Multibinds fun animatedScreenTransforms(): Map<KClass<out Screen>, AnimatedScreenTransform>
+  @Multibinds(allowEmpty = true)
+  fun animatedScreenTransforms(): Map<KClass<out Screen>, AnimatedScreenTransform>
 
   companion object {
     @SingleIn(AppScope::class)

@@ -112,10 +112,7 @@ import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
-import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
+import dev.zacsweers.metro.AppScope
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
@@ -139,6 +136,9 @@ import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.Inject
 import io.ktor.util.Platform
 import io.ktor.util.PlatformUtils
 import io.ktor.util.platform
@@ -185,9 +185,8 @@ data object PetListScreen : Screen {
   }
 }
 
-class PetListPresenter
-@AssistedInject
-constructor(@Assisted private val navigator: Navigator, private val petRepo: PetRepository) :
+@Inject
+class PetListPresenter(@Assisted private val navigator: Navigator, private val petRepo: PetRepository) :
   Presenter<State> {
   @Composable
   override fun present(): State {

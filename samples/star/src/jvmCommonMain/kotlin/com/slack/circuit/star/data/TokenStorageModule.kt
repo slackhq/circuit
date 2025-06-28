@@ -5,24 +5,24 @@ package com.slack.circuit.star.data
 import androidx.datastore.core.Storage
 import androidx.datastore.preferences.core.Preferences
 import com.slack.circuit.star.datastore.createStorage
-import com.slack.circuit.star.di.AppScope
-import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.annotations.optional.SingleIn
-import dagger.Module
-import dagger.Provides
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-@Module
-object TokenStorageModule {
-  private const val TOKEN_STORAGE_FILE_NAME = "TokenManager"
+interface TokenStorageModule {
+  companion object {
+    private const val TOKEN_STORAGE_FILE_NAME = "TokenManager"
 
-  @SingleIn(AppScope::class)
-  @Provides
-  fun provideDatastoreStorage(appDirs: StarAppDirs): Storage<Preferences> {
-    return createStorage(appDirs.fs) {
-      val dir = appDirs.userConfig / "token_storage"
-      createDirectory(dir)
-      dir.resolve("$TOKEN_STORAGE_FILE_NAME.preferences_pb")
+    @SingleIn(AppScope::class)
+    @Provides
+    fun provideDatastoreStorage(appDirs: StarAppDirs): Storage<Preferences> {
+      return createStorage(appDirs.fs) {
+        val dir = appDirs.userConfig / "token_storage"
+        createDirectory(dir)
+        dir.resolve("$TOKEN_STORAGE_FILE_NAME.preferences_pb")
+      }
     }
   }
 }

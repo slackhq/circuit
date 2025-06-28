@@ -25,20 +25,18 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen.State
 import com.slack.circuit.star.common.Platform
-import com.slack.circuit.star.di.AppScope
-import com.slack.circuit.star.di.Assisted
-import com.slack.circuit.star.di.AssistedFactory
-import com.slack.circuit.star.di.AssistedInject
-import com.slack.circuit.star.di.Inject
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.Inject
 
 @Parcelize
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
   data class State(val useNestedContent: Boolean) : CircuitUiState
 }
 
-class ListBenchmarksPresenter
-@AssistedInject
-constructor(@Assisted private val screen: ListBenchmarksScreen) : Presenter<State> {
+@Inject
+class ListBenchmarksPresenter(@Assisted private val screen: ListBenchmarksScreen) : Presenter<State> {
   @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {
@@ -75,13 +73,13 @@ data class ListBenchmarksItemScreen(val index: Int) : Screen {
   data class State(val index: Int) : CircuitUiState
 }
 
-class IndexMultiplier @Inject constructor() {
+@Inject
+class IndexMultiplier {
   fun multiply(index: Int) = index * 1
 }
 
-class ListBenchmarksItemPresenter
-@AssistedInject
-constructor(
+@Inject
+class ListBenchmarksItemPresenter(
   @Assisted private val screen: ListBenchmarksItemScreen,
   // Simulate injecting something that accumulates instances
   private val indexMultiplier: IndexMultiplier,

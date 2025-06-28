@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
   ExperimentalCircuitApi::class // For AnimatedScreenTransform
 )
 @ContributesTo(AppScope::class)
-interface CircuitModule {
+interface CircuitProviders {
   @Multibinds fun presenterFactories(): Set<Presenter.Factory>
 
   @Multibinds fun viewFactories(): Set<Ui.Factory>
@@ -27,21 +27,19 @@ interface CircuitModule {
   @Multibinds(allowEmpty = true)
   fun animatedScreenTransforms(): Map<KClass<out Screen>, AnimatedScreenTransform>
 
-  companion object {
-    @SingleIn(AppScope::class)
-    @Provides
-    fun provideCircuit(
-      presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
-      uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-      animatedScreenTransforms:
-        @JvmSuppressWildcards
-        Map<KClass<out Screen>, AnimatedScreenTransform>,
-    ): Circuit {
-      return Circuit.Builder()
-        .addPresenterFactories(presenterFactories)
-        .addUiFactories(uiFactories)
-        .addAnimatedScreenTransforms(animatedScreenTransforms)
-        .build()
-    }
+  @SingleIn(AppScope::class)
+  @Provides
+  fun provideCircuit(
+    presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
+    uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
+    animatedScreenTransforms:
+      @JvmSuppressWildcards
+      Map<KClass<out Screen>, AnimatedScreenTransform>,
+  ): Circuit {
+    return Circuit.Builder()
+      .addPresenterFactories(presenterFactories)
+      .addUiFactories(uiFactories)
+      .addAnimatedScreenTransforms(animatedScreenTransforms)
+      .build()
   }
 }

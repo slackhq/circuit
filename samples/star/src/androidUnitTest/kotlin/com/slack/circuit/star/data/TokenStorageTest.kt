@@ -18,7 +18,7 @@ class TokenStorageTest {
   fun basicStore() = runTest {
     val tokenStorage =
       TokenStorageImpl(
-        TokenStorageModule.provideDatastoreStorage(FakeStarAppDirs(FakeFileSystem()))
+        TokenStorageProviders.provideDatastoreStorage(FakeStarAppDirs(FakeFileSystem()))
       )
     assertThat(tokenStorage.getAuthData()).isNull()
     val inputData =

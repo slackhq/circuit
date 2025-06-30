@@ -6,13 +6,12 @@ import android.app.Application
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import com.slack.circuit.star.di.AppComponent
+import com.slack.circuit.star.di.AppGraph
+import dev.zacsweers.metro.createGraphFactory
 
 class StarApp : Application(), SingletonImageLoader.Factory {
 
-  private val appComponent by lazy { AppComponent.create(this) }
+  val appGraph by lazy { createGraphFactory<AppGraph.Factory>().create(this) }
 
-  fun appComponent() = appComponent
-
-  override fun newImageLoader(context: PlatformContext): ImageLoader = appComponent.imageLoader
+  override fun newImageLoader(context: PlatformContext): ImageLoader = appGraph.imageLoader
 }

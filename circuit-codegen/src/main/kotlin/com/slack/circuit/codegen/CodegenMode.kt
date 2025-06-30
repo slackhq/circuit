@@ -22,7 +22,7 @@ internal enum class CodegenMode {
   /**
    * The Anvil Codegen mode
    *
-   * This mode annotates generated factory types with [ContributesMultibinding], allowing for Anvil
+   * This mode annotates generated factory types with `ContributesMultibinding`, allowing for Anvil
    * to automatically wire the generated class up to Dagger's multibinding system within a given
    * scope (e.g. AppScope).
    *
@@ -60,7 +60,7 @@ internal enum class CodegenMode {
    * The Hilt Codegen mode
    *
    * This mode provides an additional type, a Hilt module, which binds the generated factory, wiring
-   * up multibinding in the Hilt DI framework. The scope provided via [CircuitInject] is used to
+   * up multibinding in the Hilt DI framework. The scope provided via `CircuitInject` is used to
    * define the dagger component the factory provider is installed in.
    *
    * ```kotlin

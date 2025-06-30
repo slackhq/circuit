@@ -1,28 +1,23 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import com.google.devtools.ksp.gradle.KspAATask
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.agp.library)
-  alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.roborazzi)
-  alias(libs.plugins.anvil)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
+  alias(libs.plugins.metro)
 }
-
-anvil { kspContributingAnnotations.add("com.slack.circuit.codegen.annotations.CircuitInject") }
 
 kotlin {
   jvm()
@@ -94,17 +89,12 @@ kotlin {
     }
     maybeCreate("jvmCommonMain").apply {
       dependencies {
-        api(libs.anvil.annotations)
-        api(libs.anvil.annotations.optional)
         implementation(libs.compose.material.icons)
-        implementation(libs.dagger)
         implementation(libs.jsoup)
         implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.loggingInterceptor)
-        val kapt by configurations.getting
-        kapt.dependencies.addLater(libs.dagger.compiler)
       }
     }
     maybeCreate("jvmCommonTest").apply {
@@ -210,7 +200,7 @@ android {
   namespace = "com.slack.circuit.star"
 
   defaultConfig {
-    minSdk = 28
+    minSdk = 30
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testApplicationId = "com.slack.circuit.star.apk.androidTest"
   }
@@ -248,21 +238,7 @@ fun String.capitalizeUS() = replaceFirstChar {
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 
-// Workaround for https://youtrack.jetbrains.com/issue/KT-59220
-afterEvaluate {
-  for (target in kspTargets) {
-    if (target != "Android" && target != "Jvm") continue
-    val buildType = if (target == "Android") "Release" else ""
-    val kspTaskName = "ksp${buildType}Kotlin${target}"
-    val generatedKspKotlinFiles =
-      tasks.named<KspAATask>(kspTaskName).flatMap { it.kspConfig.kotlinOutputDir }
-    tasks.named<KotlinCompile>("kaptGenerateStubs${buildType}Kotlin${target}").configure {
-      source(generatedKspKotlinFiles)
-    }
-  }
-}
-
-ksp { arg("circuit.codegen.lenient", "true") }
+ksp { arg("circuit.codegen.mode", "metro") }
 
 dependencies {
   for (target in kspTargets) {

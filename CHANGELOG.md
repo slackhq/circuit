@@ -4,6 +4,8 @@ Changelog
 Unreleased
 ----------
 
+- Fix `@AssistedFactory` code gen for Metro to use standard nested class semantics.
+
 0.29.0
 ------
 

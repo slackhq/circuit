@@ -5,7 +5,7 @@ package com.slack.circuit.star.di
 import coil3.ImageLoader
 import com.slack.circuit.foundation.Circuit
 
-interface CommonAppComponent {
+interface CommonAppGraph {
   val circuit: Circuit
   val imageLoader: ImageLoader
 }

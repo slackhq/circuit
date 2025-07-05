@@ -12,6 +12,7 @@ benchmark = "1.3.4"
 coil = "3.2.0"
 compose-animation = "1.8.3"
 compose-foundation = "1.8.3"
+compose-hotReload = "1.0.0-beta03"
 compose-material = "1.8.3"
 compose-material-icons-core = "1.7.8"
 compose-material3 = "1.3.2"
@@ -63,6 +64,7 @@ anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
+compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotReload" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
@@ -249,6 +251,8 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
+
+slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
 
 rxjava = "io.reactivex.rxjava3:rxjava:3.1.10"
 

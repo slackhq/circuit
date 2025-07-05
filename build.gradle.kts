@@ -54,6 +54,7 @@ plugins {
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
+  alias(libs.plugins.compose.hotReload) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()

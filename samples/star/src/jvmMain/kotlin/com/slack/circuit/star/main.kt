@@ -65,8 +65,9 @@ fun main() {
       title = "STAR",
       state = windowState,
       onCloseRequest = ::exitApplication,
+      alwaysOnTop = true,
       // In lieu of a global shortcut handler, we best-effort with this
-      // https://github.com/JetBrains/compose-multiplatform/issues/914
+      // https://youtrack.jetbrains.com/issue/CMP-5337
       onKeyEvent = { event ->
         when {
           // Cmd+W

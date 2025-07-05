@@ -52,7 +52,7 @@ deleteAllBios:
 DELETE FROM animalBio;
 
 putAnimalBio:
-INSERT INTO animalBio
+INSERT OR REPLACE INTO animalBio
 VALUES ?;
 
 deleteAllAnimals:

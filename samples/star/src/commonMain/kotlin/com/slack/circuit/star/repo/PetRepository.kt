@@ -193,7 +193,7 @@ class PetRepositoryImpl(
       starDb.starQueries.lastUpdate(operation).executeAsOneOrNull()?.timestamp ?: return true
     val timestamp = currentTimestamp()
 
-    return (Instant.fromEpochSeconds(lastUpdate) - Instant.fromEpochSeconds(timestamp))
+    return (Instant.fromEpochSeconds(timestamp) - Instant.fromEpochSeconds(lastUpdate))
       .inWholeDays > 1
   }
 

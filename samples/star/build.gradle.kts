@@ -17,6 +17,7 @@ plugins {
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
+  alias(libs.plugins.compose.hotReload)
 }
 
 kotlin {
@@ -153,6 +154,7 @@ kotlin {
         implementation(compose.desktop.currentOs)
         implementation(libs.appDirs)
         implementation(libs.coroutines.swing)
+        implementation(libs.slf4jNop)
         implementation(libs.sqldelight.driver.jdbc)
       }
     }

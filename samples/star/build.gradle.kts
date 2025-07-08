@@ -162,11 +162,7 @@ kotlin {
         implementation(libs.sqldelight.driver.jdbc)
       }
     }
-    iosMain {
-      dependencies {
-        implementation(libs.sqldelight.driver.native)
-      }
-    }
+    iosMain { dependencies { implementation(libs.sqldelight.driver.native) } }
 
     configureEach {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)

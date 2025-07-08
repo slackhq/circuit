@@ -1,3 +1,5 @@
+// Copyright (C) 2025 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +14,8 @@ actual suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
   // TODO show in a native bottom sheet using Calf
   return show(
     BottomSheetOverlay(model = currentFilters, onDismiss = { currentFilters }) {
-        initialFilters,
-        overlayNavigator ->
+      initialFilters,
+      overlayNavigator ->
       Surface(Modifier.fillMaxWidth()) {
         UpdateFiltersSheet(
           initialFilters,

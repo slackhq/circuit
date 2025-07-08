@@ -254,7 +254,7 @@ roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule
 
 slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.10"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.11"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }

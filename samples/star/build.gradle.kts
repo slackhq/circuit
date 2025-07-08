@@ -28,6 +28,9 @@ kotlin {
     instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
+  iosX64()
+  iosArm64()
+  iosSimulatorArm64()
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
@@ -51,7 +54,6 @@ kotlin {
         implementation(libs.compose.material.material3)
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
-        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
         implementation(libs.kotlinx.immutable)
@@ -61,6 +63,7 @@ kotlin {
         implementation(libs.ktor.client.auth)
         implementation(libs.ktor.serialization.json)
         implementation(libs.okio)
+        implementation(libs.sqldelight.async)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
@@ -153,9 +156,15 @@ kotlin {
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation(libs.appDirs)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.swing)
         implementation(libs.slf4jNop)
         implementation(libs.sqldelight.driver.jdbc)
+      }
+    }
+    iosMain {
+      dependencies {
+        implementation(libs.sqldelight.driver.native)
       }
     }
 

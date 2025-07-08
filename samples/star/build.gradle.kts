@@ -50,6 +50,7 @@ kotlin {
         implementation(libs.coil.compose)
         implementation(libs.coil.network.ktor)
         implementation(libs.compose.foundation)
+        implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
         implementation(libs.compose.runtime)
@@ -93,7 +94,6 @@ kotlin {
     }
     maybeCreate("jvmCommonMain").apply {
       dependencies {
-        implementation(libs.compose.material.icons)
         implementation(libs.jsoup)
         implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
@@ -162,7 +162,12 @@ kotlin {
         implementation(libs.sqldelight.driver.jdbc)
       }
     }
-    iosMain { dependencies { implementation(libs.sqldelight.driver.native) } }
+    iosMain {
+      dependencies {
+        implementation(libs.sqldelight.driver.native)
+        implementation(libs.ktor.client.engine.darwin)
+      }
+    }
 
     configureEach {
       @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -236,7 +241,14 @@ compose {
   }
 }
 
-sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
+sqldelight {
+  databases {
+    create("StarDatabase") {
+      packageName.set("com.slack.circuit.star.db")
+      generateAsync.set(true)
+    }
+  }
+}
 
 // This is the worst deprecation replacement in the history of deprecation replacements
 fun String.capitalizeUS() = replaceFirstChar {

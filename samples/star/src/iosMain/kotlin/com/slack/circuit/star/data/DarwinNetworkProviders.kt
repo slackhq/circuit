@@ -17,10 +17,7 @@ import platform.Foundation.NSURLSessionConfiguration
 interface IosNetworkProviders {
   @Provides
   @SingleIn(AppScope::class)
-  fun provideHttpClientEngineFactory(
-    appDirs: StarAppDirs,
-    configBlock: DarwinClientEngineConfig.() -> Unit,
-  ): HttpClientEngineFactory<*> =
+  fun provideHttpClientEngineFactory(appDirs: StarAppDirs): HttpClientEngineFactory<*> =
     object : HttpClientEngineFactory<DarwinClientEngineConfig> {
       override fun create(block: DarwinClientEngineConfig.() -> Unit): HttpClientEngine {
         return Darwin.create {

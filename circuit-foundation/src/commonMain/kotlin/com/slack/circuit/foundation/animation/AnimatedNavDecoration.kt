@@ -126,16 +126,17 @@ public class AnimatedNavDecoration(
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
-  val diff = targetState.backStackDepth - initialState.backStackDepth
-  val sameRoot = targetState.rootScreen == initialState.rootScreen
-  val animatedNavEvent =
-    when {
-      !sameRoot -> AnimatedNavEvent.RootReset
-      diff > 0 -> AnimatedNavEvent.GoTo
-      diff < 0 -> AnimatedNavEvent.Pop
-      // Somehow the back stack has not changed?
-      else -> return@spec EnterTransition.None togetherWith ExitTransition.None
-    }
+
+  val animatedNavEvent = if (targetState.rootScreen != initialState.rootScreen) {
+    AnimatedNavEvent.RootReset
+  } else if (targetState.screen == initialState.screen) {
+    // Target screen has not changed, probably we should not show any animation even if the back stack is changed
+    return@spec EnterTransition.None togetherWith ExitTransition.None
+  } else if (initialState.backStack.contains(targetState.screen)) {
+    AnimatedNavEvent.Pop
+  } else {
+    AnimatedNavEvent.GoTo
+  }
 
   val baseTransform = transitionSpec(animatedNavEvent)
   val screenOverride = screenSpecificOverride(animatedNavEvent, animatedScreenTransforms)

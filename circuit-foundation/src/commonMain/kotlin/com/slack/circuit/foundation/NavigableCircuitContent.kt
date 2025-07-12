@@ -72,7 +72,7 @@ public fun <R : Record> NavigableCircuitContent(
   backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
+  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack, circuit.backStackLocalProviders),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   decoratorFactory: AnimatedNavDecorator.Factory? = null,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =

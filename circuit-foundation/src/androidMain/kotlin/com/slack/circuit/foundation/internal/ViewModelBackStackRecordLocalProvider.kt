@@ -45,6 +45,8 @@ private fun Context.findActivity(): Activity? {
   return null
 }
 
+// todo Use common (jb) viewmodel
+// todo Provide the hostViewModel()
 /** A [BackStackRecordLocalProvider] that provides [LocalViewModelStoreOwner] */
 internal object ViewModelBackStackRecordLocalProvider :
   BackStackRecordLocalProvider<BackStack.Record> {
@@ -60,6 +62,7 @@ internal object ViewModelBackStackRecordLocalProvider :
       )
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
     val activity = LocalContext.current.findActivity()
+    // todo Can this be rememberRetained?
     val observer =
       remember(record, viewModelStore) {
         NestedRememberObserver {

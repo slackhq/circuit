@@ -28,6 +28,9 @@ kotlin {
     instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
+  iosX64()
+  iosArm64()
+  iosSimulatorArm64()
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
@@ -47,11 +50,11 @@ kotlin {
         implementation(libs.coil.compose)
         implementation(libs.coil.network.ktor)
         implementation(libs.compose.foundation)
+        implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
-        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
         implementation(libs.kotlinx.immutable)
@@ -61,6 +64,7 @@ kotlin {
         implementation(libs.ktor.client.auth)
         implementation(libs.ktor.serialization.json)
         implementation(libs.okio)
+        implementation(libs.sqldelight.async)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
@@ -90,7 +94,6 @@ kotlin {
     }
     maybeCreate("jvmCommonMain").apply {
       dependencies {
-        implementation(libs.compose.material.icons)
         implementation(libs.jsoup)
         implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
@@ -153,9 +156,16 @@ kotlin {
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation(libs.appDirs)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.swing)
         implementation(libs.slf4jNop)
         implementation(libs.sqldelight.driver.jdbc)
+      }
+    }
+    iosMain {
+      dependencies {
+        implementation(libs.sqldelight.driver.native)
+        implementation(libs.ktor.client.engine.darwin)
       }
     }
 
@@ -231,7 +241,14 @@ compose {
   }
 }
 
-sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
+sqldelight {
+  databases {
+    create("StarDatabase") {
+      packageName.set("com.slack.circuit.star.db")
+      generateAsync.set(true)
+    }
+  }
+}
 
 // This is the worst deprecation replacement in the history of deprecation replacements
 fun String.capitalizeUS() = replaceFirstChar {

@@ -1,23 +1,19 @@
-// Copyright (C) 2022 Slack Technologies, LLC
+// Copyright (C) 2025 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import com.google.common.truth.Truth.assertThat
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import com.slack.circuit.star.BasePresenterTest
 import com.slack.circuit.star.navigation.OpenUrlScreen
-import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
-import com.slack.circuit.star.petdetail.PetDetailScreen.State
-import com.slack.circuit.star.petdetail.PetDetailScreen.State.Full
 import com.slack.circuit.star.petlist.PetListPresenterTest
 import com.slack.circuit.star.petlist.TestRepository
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class PetDetailPresenterTest {
+class PetDetailPresenterTest : BasePresenterTest() {
   @Test
   fun `present - emit loading state then no animal state`() = runTest {
     val repository = TestRepository(emptyList())
@@ -26,8 +22,8 @@ class PetDetailPresenterTest {
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
-      assertThat(awaitItem()).isEqualTo(State.Loading)
-      assertThat(awaitItem()).isEqualTo(State.UnknownAnimal)
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.UnknownAnimal)
     }
   }
 
@@ -40,10 +36,10 @@ class PetDetailPresenterTest {
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
-      assertThat(awaitItem()).isEqualTo(State.Loading)
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
 
       val success = awaitItem()
-      check(success is Full)
+      check(success is PetDetailScreen.State.Full)
 
       val expected = animal.toPetDetailState(animal.primaryPhotoUrl, eventSink = success.eventSink)
       assertThat(success).isEqualTo(expected)
@@ -59,12 +55,12 @@ class PetDetailPresenterTest {
     val presenter = PetDetailPresenter(screen, navigator, repository)
 
     presenter.test {
-      assertThat(awaitItem()).isEqualTo(State.Loading)
+      assertThat(awaitItem()).isEqualTo(PetDetailScreen.State.Loading)
 
       val successState = awaitItem()
-      check(successState is Full)
+      check(successState is PetDetailScreen.State.Full)
 
-      successState.eventSink(ViewFullBio(animal.url))
+      successState.eventSink(PetDetailScreen.Event.ViewFullBio(animal.url))
       assertThat(navigator.awaitNextScreen()).isEqualTo(OpenUrlScreen(animal.url))
     }
   }

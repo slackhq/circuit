@@ -14,6 +14,7 @@ android {
   namespace = "com.slack.circuit.sample.navigation"
   defaultConfig {
     minSdk = 21
+    // TODO update once robolectric supports 36
     targetSdk = 35
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }

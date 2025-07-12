@@ -4,6 +4,30 @@ Changelog
 Unreleased
 ----------
 
+0.29.1
+------
+
+_2025-06-30_
+
+- Fix `@AssistedFactory` code gen for Metro to use standard nested class semantics.
+
+0.29.0
+------
+
+_2025-06-26_
+
+- Update to Kotlin `2.2.0`.
+- Update to KSP `2.2.0-2.0.2`.
+- Support `@AssistedFactory` in code gen for Metro.
+- Add seekable transition support to `AnimatedOverlay`.
+- Add predictive back support to `FullScreenOverlay`.
+- Compile against Android SDK 36.
+
+0.28.1
+------
+
+_2025-06-09_
+
 ### Behaviour Changes:
 
 Replacing `rememberContinuityCanRetainChecker()` with `CanRetainChecker.Always`, which changes the
@@ -16,6 +40,12 @@ would only retain if the Activity was in a configuration change.
 - Update to Kotlin `2.1.21`.
 - Build against KSP `2.1.21-2.0.1`.
 - Fix not being able to provide a custom ViewModel to `continuityRetainedStateRegistry()`
+- Fix `rememberCircuitNavigator` and `rememberInterceptingNavigator` replaying a root pop at the same screen
+- Update Compose Android BOM to `2025.06.00`.
+- Update Compose Android to `1.8.2`.
+- Update to Compose Multiplatform to `1.8.1`.
+- Update androidx.lifecycle to `2.9.1`
+
 
 0.28.0
 ------

@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.rememberSaveableBackStack
@@ -28,7 +29,7 @@ import org.junit.runner.RunWith
 @RunWith(ComposeUiTestRunner::class)
 class NavigatorBackHandlerTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @Test
   fun androidNavigatorRootPopBackHandler() {
@@ -94,6 +95,38 @@ class NavigatorBackHandlerTest {
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       // Pop through the onRootPop into the back handler
       navigator.popRoot()
+      waitForIdle()
+      assertEquals(1, outerBackCount)
+    }
+  }
+
+  @OptIn(ExperimentalComposeUiApi::class)
+  @Test
+  fun nestedAndroidNavigatorRootDispatchedBackHandler() {
+    val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
+    var outerBackCount = 0
+    lateinit var navigator: Navigator
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        BackHandler(enabled = true) { outerBackCount++ }
+        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        navigator = rememberCircuitNavigator(backStack = backStack)
+        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      }
+    }
+    composeTestRule.run {
+      // Navigate to Screen B
+      onNodeWithTag(TAG_GO_NEXT).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      // Navigate to Screen C
+      onNodeWithTag(TAG_GO_NEXT).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("C")
+      // Back through the onRootPop into the back handler
+      composeTestRule.activity.onBackPressedDispatcher.onBackPressed()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      composeTestRule.activity.onBackPressedDispatcher.onBackPressed()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      composeTestRule.activity.onBackPressedDispatcher.onBackPressed()
       waitForIdle()
       assertEquals(1, outerBackCount)
     }

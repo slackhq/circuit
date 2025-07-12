@@ -3,7 +3,7 @@
 package com.slack.circuit.star.di
 
 import android.app.Activity
-import dagger.MapKey
+import dev.zacsweers.metro.MapKey
 import kotlin.reflect.KClass
 
 /**

@@ -50,6 +50,36 @@ class CircuitSymbolProcessorTest {
       """
         .trimIndent(),
     )
+  private val metroAnnotation =
+    kotlin(
+      "Inject.kt",
+      """
+        package dev.zacsweers.metro
+
+        annotation class Inject
+      """
+        .trimIndent(),
+    )
+  private val metroAssistedAnnotation =
+    kotlin(
+      "Assisted.kt",
+      """
+        package dev.zacsweers.metro
+
+        annotation class Assisted(val value: String = "")
+      """
+        .trimIndent(),
+    )
+  private val metroAssistedFactoryAnnotation =
+    kotlin(
+      "AssistedFactory.kt",
+      """
+        package dev.zacsweers.metro
+
+        annotation class AssistedFactory
+      """
+        .trimIndent(),
+    )
   private val screens =
     kotlin(
       "Screens.kt",
@@ -1376,10 +1406,130 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-  private enum class CodegenMode {
-    ANVIL,
-    HILT,
-    KOTLIN_INJECT_ANVIL,
+  @Test
+  fun presenterClass_simpleInjection_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "FavoritesPresenter.kt",
+          """
+        package test
+
+        import com.slack.circuit.codegen.annotations.CircuitInject
+        import com.slack.circuit.runtime.presenter.Presenter
+        import androidx.compose.runtime.Composable
+        import dev.zacsweers.metro.Inject
+
+        @Inject
+        @CircuitInject(FavoritesScreen::class, AppScope::class)
+        class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+          @Composable
+          override fun present(): FavoritesScreen.State {
+            throw NotImplementedError()
+          }
+        }
+        """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Provider
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        public class FavoritesPresenterFactory(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider()
+            else -> null
+          }
+        }
+      """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun presenterClass_assistedInjection_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "FavoritesPresenter.kt",
+          """
+        package test
+
+        import com.slack.circuit.codegen.annotations.CircuitInject
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import androidx.compose.runtime.Composable
+        import dev.zacsweers.metro.Assisted
+        import dev.zacsweers.metro.AppScope
+        import dev.zacsweers.metro.AssistedFactory
+        import dev.zacsweers.metro.Inject
+
+        @Inject
+        class FavoritesPresenter(
+          @Assisted private val navigator: Navigator
+        ) : Presenter<FavoritesScreen.State> {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @AssistedFactory
+          fun interface Factory {
+            fun create(@Assisted navigator: Navigator): FavoritesPresenter
+          }
+
+          @Composable
+          override fun present(): FavoritesScreen.State {
+            throw NotImplementedError()
+          }
+        }
+        """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        public class FavoritesPresenterFactory(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(navigator = navigator)
+            else -> null
+          }
+        }
+      """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
   }
 
   private fun assertGeneratedFile(
@@ -1422,6 +1572,13 @@ class CircuitSymbolProcessorTest {
             CodegenMode.KOTLIN_INJECT_ANVIL -> {
               listOf(appScope, kotlinInjectAnnotation)
             }
+            CodegenMode.METRO ->
+              listOf(
+                appScope,
+                metroAnnotation,
+                metroAssistedAnnotation,
+                metroAssistedFactoryAnnotation,
+              )
           }
       inheritClassPath = true
       symbolProcessorProviders += CircuitSymbolProcessorProvider()

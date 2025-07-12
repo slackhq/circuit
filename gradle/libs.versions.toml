@@ -1,25 +1,26 @@
 [versions]
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
-androidx-appcompat = "1.7.0"
+androidx-appcompat = "1.7.1"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.9.0"
-androidx-lifecycle-jb = "2.9.0"
-agp = "8.10.0"
+androidx-lifecycle = "2.9.1"
+androidx-lifecycle-jb = "2.9.1"
+agp = "8.11.1"
 anvil = "0.4.1"
-atomicfu = "0.27.0"
+atomicfu = "0.29.0"
 benchmark = "1.3.4"
 coil = "3.2.0"
-compose-animation = "1.8.2"
-compose-foundation = "1.8.2"
-compose-material = "1.8.2"
+compose-animation = "1.8.3"
+compose-foundation = "1.8.3"
+compose-hotReload = "1.0.0-beta03"
+compose-material = "1.8.3"
 compose-material-icons-core = "1.7.8"
 compose-material3 = "1.3.2"
-compose-runtime = "1.8.2"
-compose-ui = "1.8.2"
-compose-jb = "1.8.1"
+compose-runtime = "1.8.3"
+compose-ui = "1.8.3"
+compose-jb = "1.8.2"
 compose-jb-material-icons-core = "1.7.3"
-compose-bom = "2025.05.01"
+compose-bom = "2025.06.01"
 compose-integration-constraintlayout = "1.1.1"
 dagger = "2.56.2"
 datastore = "1.1.7"
@@ -29,31 +30,31 @@ eithernet = "2.0.0"
 jdk = "23"
 jvmTarget = "11"
 publishedJvmTarget = "11"
-kct = "0.7.1"
-kotlin = "2.1.21"
+kct = "0.8.0"
+kotlin = "2.2.0"
 kotlinInject = "0.8.0"
-kotlinInject-anvil = "0.1.5"
+kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.8.1"
-ksp = "2.1.21-2.0.1"
-ktfmt = "0.54"
-ktor = "3.1.3"
+kotlinx-serialization = "1.9.0"
+ksp = "2.2.0-2.0.2"
+ktfmt = "0.56"
+ktor = "3.2.1"
 leakcanary = "2.14"
 material-composeThemeAdapter = "1.2.1"
-mavenPublish = "0.32.0"
+mavenPublish = "0.33.0"
 molecule = "2.1.0"
-okhttp = "5.0.0-alpha.14"
-okio = "3.11.0"
+okhttp = "5.1.0"
+okio = "3.15.0"
 picnic = "0.7.0"
-robolectric = "4.14.1"
-roborazzi = "1.43.1"
-skie = "0.10.2-preview.2.1.20"
-spotless = "7.0.2"
+robolectric = "4.15.1"
+roborazzi = "1.46.1"
+skie = "0.10.4"
+spotless = "7.0.4"
 sqldelight = "2.1.0"
 telephoto = "0.16.0"
 testParameterInjector = "1.18"
-turbine = "1.2.0"
+turbine = "1.2.1"
 
 [plugins]
 agp-application = { id = "com.android.application", version.ref = "agp" }
@@ -61,12 +62,13 @@ agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
-binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.17.0" }
+binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
+compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotReload" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.19.1" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "0.19.2" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -77,6 +79,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+metro = { id = "dev.zacsweers.metro", version = "0.4.0" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -127,7 +130,6 @@ androidx-core = "androidx.core:core-ktx:1.16.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose-jb = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle-jb" }
@@ -194,11 +196,10 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jsoup = "org.jsoup:jsoup:1.20.1"
+jsoup = "org.jsoup:jsoup:1.21.1"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
-kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.2"
 kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
@@ -252,7 +253,9 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.10"
+slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
+
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.11"
 
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }

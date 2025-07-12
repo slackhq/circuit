@@ -499,31 +499,34 @@ private class CircuitSymbolProcessor(
             codegenMode.runtime.getProviderBlock(CodeBlock.of("provider"))
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
-            if (codegenMode == KOTLIN_INJECT_ANVIL) {
-              val factoryLambda =
-                LambdaTypeName.get(
-                  receiver = null,
-                  parameters =
-                    assistedKSParams.map { ksParam ->
-                      ParameterSpec.builder(
-                          ksParam.name!!.getShortName(),
-                          ksParam.type.toTypeName(),
-                        )
-                        .build()
-                    },
-                  returnType = targetClass.toClassName(),
+            when (codegenMode) {
+              KOTLIN_INJECT_ANVIL -> {
+                val factoryLambda =
+                  LambdaTypeName.get(
+                    receiver = null,
+                    parameters =
+                      assistedKSParams.map { ksParam ->
+                        ParameterSpec.builder(
+                            ksParam.name!!.getShortName(),
+                            ksParam.type.toTypeName(),
+                          )
+                          .build()
+                      },
+                    returnType = targetClass.toClassName(),
+                  )
+                constructorParams.add(ParameterSpec.builder("factory", factoryLambda).build())
+                CodeBlock.of("factory(%L)", assistedParams)
+              }
+              else -> {
+                constructorParams.add(
+                  ParameterSpec.builder("factory", declaration.toClassName()).build()
                 )
-              constructorParams.add(ParameterSpec.builder("factory", factoryLambda).build())
-              CodeBlock.of("factory(%L)", assistedParams)
-            } else {
-              constructorParams.add(
-                ParameterSpec.builder("factory", declaration.toClassName()).build()
-              )
-              CodeBlock.of(
-                "factory.%L(%L)",
-                creatorOrConstructor!!.simpleName.getShortName(),
-                assistedParams,
-              )
+                CodeBlock.of(
+                  "factory.%L(%L)",
+                  creatorOrConstructor!!.simpleName.getShortName(),
+                  assistedParams,
+                )
+              }
             }
           } else {
             // Simple constructor call, no injection.

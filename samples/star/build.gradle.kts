@@ -28,9 +28,9 @@ kotlin {
     instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
-  iosX64()
-  iosArm64()
-  iosSimulatorArm64()
+  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+    it.binaries.framework { baseName = "star" }
+  }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
@@ -249,6 +249,14 @@ sqldelight {
     }
   }
 }
+
+metro {
+  reportsDestination.set(layout.buildDirectory.dir("metro"))
+}
+
+// wat https://youtrack.jetbrains.com/issue/CMP-4885
+tasks.matching { it.name == "syncComposeResourcesForIos" }
+  .configureEach { enabled = false }
 
 // This is the worst deprecation replacement in the history of deprecation replacements
 fun String.capitalizeUS() = replaceFirstChar {

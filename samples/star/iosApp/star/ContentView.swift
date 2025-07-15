@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+//import StarKt
 
 struct ContentView: View {
     var body: some View {

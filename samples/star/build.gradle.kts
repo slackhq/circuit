@@ -29,7 +29,7 @@ kotlin {
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
   listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
-    it.binaries.framework { baseName = "star" }
+    it.binaries.framework { baseName = "StarKt" }
   }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)

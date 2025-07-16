@@ -6,7 +6,7 @@ Unreleased
 
 ### Behaviour Changes:
 
-Rebuilt `continuityRetainedStateRegistry` as a common `lifecycleRetainedStateRegistry` and made `ViewModel` an implementation detail of it. 
+Rebuilt `continuityRetainedStateRegistry` as a common `lifecycleRetainedStateRegistry` and made `ViewModel` an implementation detail of it.
 
 0.29.1
 ------

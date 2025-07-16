@@ -59,19 +59,28 @@ kotlin {
       }
     }
 
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
-
-    androidMain {
-      dependencies {
-        api(libs.androidx.lifecycle.viewModel.compose)
-        api(libs.androidx.lifecycle.viewModel)
-        api(libs.androidx.compose.runtime)
-        implementation(libs.androidx.compose.ui.ui)
+    val sharedMain =
+      maybeCreate("sharedMain").apply {
+        dependsOn(commonMain.get())
+        // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
+        dependencies {
+          implementation(libs.androidx.lifecycle.runtime.compose.jb)
+          implementation(libs.androidx.lifecycle.viewModel.compose.jb)
+        }
       }
+
+    jvmMain { dependsOn(sharedMain) }
+    iosMain { dependsOn(sharedMain) }
+    macosMain { dependsOn(sharedMain) }
+    androidMain { dependsOn(sharedMain) }
+
+    get("browserCommonMain").apply {
+      dependsOn(sharedMain)
+      dependsOn(commonMain.get())
     }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
+    get("browserCommonTest").dependsOn(commonTest.get())
 
     // Necessary because android instrumented tests cannot share a source set with jvm tests for
     // some reason

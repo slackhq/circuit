@@ -6,6 +6,8 @@ import androidx.compose.runtime.Immutable
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * A holder class used by the `AnimatedContent` composables. This enables us to pass through all of
@@ -13,10 +15,10 @@ import com.slack.circuit.runtime.screen.Screen
  */
 @Immutable
 internal data class GestureNavTransitionHolder<T : NavArgument>(
-  val record: T,
+  val args: ImmutableList<T>,
   override val backStackDepth: Int,
-  val rootRecord: T,
 ) : AnimatedNavState {
-  override val screen: Screen = record.screen
-  override val rootScreen: Screen = rootRecord.screen
+  override val screen: Screen = args.first().screen
+  override val rootScreen: Screen = args.last().screen
+  override val backStack: ImmutableList<Screen> = args.map { it.screen }.toImmutableList()
 }

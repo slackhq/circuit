@@ -10,6 +10,7 @@ internal class CircuitSymbols private constructor(resolver: Resolver) {
   val circuitUiState = resolver.loadKSType(CircuitNames.CIRCUIT_UI_STATE.canonicalName)
   val screen = resolver.loadKSType(CircuitNames.SCREEN.canonicalName)
   val navigator = resolver.loadKSType(CircuitNames.NAVIGATOR.canonicalName)
+  val circuitContext = resolver.loadKSType(CircuitNames.CIRCUIT_CONTEXT.canonicalName)
 
   private fun Resolver.loadKSType(name: String): KSType =
     loadOptionalKSType(name) ?: error("Could not find $name in classpath")

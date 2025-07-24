@@ -128,11 +128,14 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 @Stable
 public interface AnimatedNavState {
   /** The [Screen] associated with this state. */
-  public val screen: Screen
+  public val top: NavArgument get() = backStack.first()
 
   /** The root screen of the back stack at the time this state was created. */
-  public val rootScreen: Screen
+  public val root: NavArgument get() = backStack.last()
 
   /** The depth of the back stack at the time this state was created. */
-  public val backStackDepth: Int
+  public val backStackDepth: Int get() = backStack.size
+
+  /** Snapshot of the back stack at the time this state was created. */
+  public val backStack: ImmutableList<NavArgument>
 }

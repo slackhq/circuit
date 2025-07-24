@@ -401,9 +401,7 @@ public object NavigatorDefaults {
 
     public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
       AnimatedNavState {
-      override val screen: Screen = args.first().screen
-      override val rootScreen: Screen = args.last().screen
-      override val backStackDepth: Int = args.size
+      override val backStack: ImmutableList<NavArgument> = args
     }
 
     override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {

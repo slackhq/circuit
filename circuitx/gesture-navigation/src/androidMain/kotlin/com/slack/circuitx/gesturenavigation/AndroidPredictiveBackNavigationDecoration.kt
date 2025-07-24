@@ -85,7 +85,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     args: ImmutableList<T>,
     backStackDepth: Int,
   ): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+    return GestureNavTransitionHolder(args)
   }
 
   @Composable
@@ -188,7 +188,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         progress = { seekableTransitionState.fraction },
       )
     ) {
-      innerContent(targetState.record)
+      innerContent(targetState.args.first())
     }
   }
 

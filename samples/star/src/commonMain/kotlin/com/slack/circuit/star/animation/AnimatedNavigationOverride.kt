@@ -21,8 +21,8 @@ object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
     animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? {
     // Going to the detail screen
-    if (initialState.screen !is HomeScreen) return null
-    if (!targetState.screen.isSharedElementDetailScreen()) return null
+    if (initialState.top.screen !is HomeScreen) return null
+    if (!targetState.top.screen.isSharedElementDetailScreen()) return null
     return EnterTransition.None
   }
 
@@ -30,8 +30,8 @@ object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
     animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? {
     // Going back to the home screen
-    if (targetState.screen !is HomeScreen) return null
-    if (!initialState.screen.isSharedElementDetailScreen()) return null
+    if (targetState.top.screen !is HomeScreen) return null
+    if (!initialState.top.screen.isSharedElementDetailScreen()) return null
     return ExitTransition.None
   }
 }
@@ -44,14 +44,14 @@ object HomeAnimatedScreenTransform : AnimatedScreenTransform {
     animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? {
     // Coming from the detail screen with shared elements
-    return if (initialState.screen.isSharedElementDetailScreen()) EnterTransition.None else null
+    return if (initialState.top.screen.isSharedElementDetailScreen()) EnterTransition.None else null
   }
 
   override fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
     animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? {
     // Going to the detail screen with shared elements
-    return if (targetState.screen.isSharedElementDetailScreen()) ExitTransition.None else null
+    return if (targetState.top.screen.isSharedElementDetailScreen()) ExitTransition.None else null
   }
 }
 

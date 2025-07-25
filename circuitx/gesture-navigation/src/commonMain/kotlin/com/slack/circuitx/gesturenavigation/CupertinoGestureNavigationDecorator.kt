@@ -85,7 +85,6 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
 
   override fun targetState(
     args: ImmutableList<T>,
-    backStackDepth: Int,
   ): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
@@ -93,14 +92,13 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   @Composable
   override fun updateTransition(
     args: ImmutableList<T>,
-    backStackDepth: Int,
   ): Transition<GestureNavTransitionHolder<T>> {
 
-    val current = remember(args) { targetState(args, backStackDepth) }
+    val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
         if (args.size > 1) {
-          targetState(args.subList(1, args.size), backStackDepth - 1)
+          targetState(args.subList(1, args.size))
         } else null
       }
 

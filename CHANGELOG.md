@@ -8,6 +8,10 @@ Unreleased
 
 Rebuilt `continuityRetainedStateRegistry` as a common `lifecycleRetainedStateRegistry` and made `ViewModel` an implementation detail of it.
 
+### Misc:
+
+- Fix a crash when using `AndroidPredictiveBackNavDecorator` and having previously called `resetRoot()` with `restoreState=false`.
+
 0.29.1
 ------
 

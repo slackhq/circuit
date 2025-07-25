@@ -205,7 +205,8 @@ private fun <R : Record> buildCircuitContentProviders(
       previousContentProviders.keys.filterNot {
         it in activeRecordKeys ||
           it in recordKeys ||
-          latestBackStack.isRecordReachable(key = it, depth = 1, includeSaved = true)
+          // Depth of 2 to exclude records that are late at leaving the composition.
+          latestBackStack.isRecordReachable(key = it, depth = 2, includeSaved = true)
       }
     onDispose {
       // Only remove the keys that are no longer in the backstack or composition.

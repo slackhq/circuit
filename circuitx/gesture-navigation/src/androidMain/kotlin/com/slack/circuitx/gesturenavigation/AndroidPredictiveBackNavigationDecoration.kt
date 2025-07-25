@@ -179,8 +179,8 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   ) {
     Box(
       Modifier.predictiveBackMotion(
-        enabled = showPrevious,
-        isSeeking = isSeeking,
+        enabled = { showPrevious },
+        isSeeking = { isSeeking },
         shape = MaterialTheme.shapes.extraLarge,
         elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
         transition = transition,
@@ -206,8 +206,8 @@ private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
  * https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back
  */
 private fun Modifier.predictiveBackMotion(
-  enabled: Boolean,
-  isSeeking: Boolean,
+  enabled: () -> Boolean,
+  isSeeking: () -> Boolean,
   shape: Shape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
@@ -217,14 +217,14 @@ private fun Modifier.predictiveBackMotion(
   val p = progress()
   val o = offset()
   // If we're at progress 0f, skip setting any parameters
-  if (!enabled || p == 0f || !o.isValid()) return@graphicsLayer
+  if (!enabled() || p == 0f || !o.isValid()) return@graphicsLayer
 
   sharedElementTransition(isSeeking, shape, elevation, transition, p, o)
 }
 
 // https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#shared-element-transition
 private fun GraphicsLayerScope.sharedElementTransition(
-  isSeeking: Boolean,
+  isSeeking: () -> Boolean,
   shape: Shape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
@@ -266,7 +266,7 @@ private fun GraphicsLayerScope.sharedElementTransition(
       (maxTranslationY - marginY).coerceAtLeast(0f),
     )
 
-  if (!isSeeking) {
+  if (!isSeeking()) {
     alpha = lerp(1f, 0f, progress.absoluteValue)
   }
 }

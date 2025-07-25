@@ -80,7 +80,6 @@ import kotlinx.collections.immutable.ImmutableMap
  * ```kotlin
  * NavigableCircuitContent(
  *   navigator = navigator,
- *   backStack = backStack,
  *   decoratorFactory = remember { CustomAnimatedNavDecoratorFactory() },
  * )
  * ```
@@ -100,7 +99,6 @@ public class AnimatedNavDecoration(
   @Composable
   public override fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
-    backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
@@ -109,7 +107,7 @@ public class AnimatedNavDecoration(
       decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
     }
     with(decorator) {
-      val transition = updateTransition(args, backStackDepth)
+      val transition = updateTransition(args)
       transition.AnimatedContent(
         modifier = modifier,
         transitionSpec = transitionSpec(animatedScreenTransforms),

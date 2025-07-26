@@ -80,6 +80,7 @@ import kotlinx.collections.immutable.ImmutableMap
  * ```kotlin
  * NavigableCircuitContent(
  *   navigator = navigator,
+ *   backStack = backStack,
  *   decoratorFactory = remember { CustomAnimatedNavDecoratorFactory() },
  * )
  * ```

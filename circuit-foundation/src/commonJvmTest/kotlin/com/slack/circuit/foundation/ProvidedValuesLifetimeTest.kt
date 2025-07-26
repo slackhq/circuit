@@ -61,7 +61,7 @@ class ProvidedValuesLifetimeTest {
             providedValues =
               providedValuesForBackStack(
                 backStack = backStack,
-                stackLocalProviders = persistentListOf(TestBackStackRecordLocalProvider),
+                backStackLocalProviders = persistentListOf(TestBackStackRecordLocalProvider),
               ),
           )
         }

@@ -76,13 +76,7 @@ kotlin {
     }
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
-    androidMain {
-      dependencies {
-        implementation(libs.androidx.lifecycle.viewModel.compose)
-        api(libs.androidx.lifecycle.viewModel)
-        api(libs.androidx.compose.runtime)
-      }
-    }
+    androidMain {}
     commonTest {
       dependencies {
         implementation(libs.kotlin.test)

@@ -589,6 +589,9 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             }
           }
+          type.isInstanceOf(symbols.circuitContext) -> {
+            addOrError(AssistedType("context", type.toTypeName(), param.name!!.getShortName()))
+          }
         }
       }
     }

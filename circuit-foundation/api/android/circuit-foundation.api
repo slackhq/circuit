@@ -181,10 +181,10 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorat
 	public fun <init> ()V
 	public fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 	public synthetic fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/animation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-	public fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
-	public synthetic fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
+	public fun targetState (Lkotlinx/collections/immutable/ImmutableList;)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
+	public synthetic fun targetState (Lkotlinx/collections/immutable/ImmutableList;)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
 	public fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ContentTransform;
-	public fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
+	public fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;Landroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
 }
 
 public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState : com/slack/circuit/foundation/animation/AnimatedNavState {
@@ -195,9 +195,7 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorat
 	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;Lkotlinx/collections/immutable/ImmutableList;ILjava/lang/Object;)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getArgs ()Lkotlinx/collections/immutable/ImmutableList;
-	public fun getBackStackDepth ()I
-	public fun getRootScreen ()Lcom/slack/circuit/runtime/screen/Screen;
-	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public fun getBackStack ()Lkotlinx/collections/immutable/ImmutableList;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -211,7 +209,7 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorat
 public final class com/slack/circuit/foundation/NavigatorDefaults$EmptyDecoration : com/slack/circuit/backstack/NavDecoration {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/slack/circuit/foundation/NavigatorDefaults$EmptyDecoration;
-	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }
 
 public final class com/slack/circuit/foundation/NavigatorImplKt {
@@ -253,14 +251,14 @@ public final class com/slack/circuit/foundation/RecordLifecycleKt {
 public final class com/slack/circuit/foundation/animation/AnimatedNavDecoration : com/slack/circuit/backstack/NavDecoration {
 	public static final field $stable I
 	public fun <init> (Lkotlinx/collections/immutable/ImmutableMap;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)V
-	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public fun DecoratedContent (Lkotlinx/collections/immutable/ImmutableList;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }
 
 public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavDecorator {
 	public abstract fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/animation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-	public abstract fun targetState (Lkotlinx/collections/immutable/ImmutableList;I)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
+	public abstract fun targetState (Lkotlinx/collections/immutable/ImmutableList;)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
 	public abstract fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ContentTransform;
-	public abstract fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;ILandroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
+	public abstract fun updateTransition (Lkotlinx/collections/immutable/ImmutableList;Landroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
 }
 
 public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory {
@@ -277,9 +275,10 @@ public final class com/slack/circuit/foundation/animation/AnimatedNavEvent : jav
 }
 
 public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavState {
-	public abstract fun getBackStackDepth ()I
-	public abstract fun getRootScreen ()Lcom/slack/circuit/runtime/screen/Screen;
-	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public abstract fun getBackStack ()Lkotlinx/collections/immutable/ImmutableList;
+	public fun getBackStackDepth ()I
+	public fun getRoot ()Lcom/slack/circuit/backstack/NavArgument;
+	public fun getTop ()Lcom/slack/circuit/backstack/NavArgument;
 }
 
 public final class com/slack/circuit/foundation/animation/PartialContentTransform {

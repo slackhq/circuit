@@ -16,7 +16,7 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
-import com.slack.circuit.foundation.internal.defaultBackStackRecordLocalProviders
+import com.slack.circuit.foundation.backstack.ViewModelBackStackRecordLocalProvider
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.ExperimentalCircuitApi
@@ -195,7 +195,7 @@ public class Circuit private constructor(builder: Builder) {
 
     public val backStackLocalProviders:
       MutableList<BackStackRecordLocalProvider<BackStack.Record>> =
-      defaultBackStackRecordLocalProviders.toMutableList()
+      mutableListOf(ViewModelBackStackRecordLocalProvider)
 
     @OptIn(ExperimentalCircuitApi::class)
     internal constructor(circuit: Circuit) : this() {
@@ -310,6 +310,10 @@ public class Circuit private constructor(builder: Builder) {
     public fun addBackStackRecordLocalProviders(
       providers: Iterable<BackStackRecordLocalProvider<BackStack.Record>>
     ): Builder = apply { backStackLocalProviders.addAll(providers) }
+
+    public fun clearBackStackRecordLocalProviders(): Builder = apply {
+      backStackLocalProviders.clear()
+    }
 
     public fun setAnimatedNavDecoratorFactory(
       decoratorFactory: AnimatedNavDecorator.Factory

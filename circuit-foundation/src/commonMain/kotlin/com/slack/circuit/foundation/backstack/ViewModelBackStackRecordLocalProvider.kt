@@ -99,6 +99,13 @@ public object ViewModelBackStackRecordLocalProvider :
       )
     val backStackHostViewModelStoreOwner = LocalViewModelStoreOwner.current
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
+    // This will retain the observer in NavigableCircuitContent using its outerRegistry.
+    val observer =
+      rememberRetained(record, viewModelStore) {
+        NestedRememberObserver {
+          containerViewModel.removeViewModelStoreOwnerForKey(record.key)?.clear()
+        }
+      }
     return remember(viewModelStore) {
       val list =
         persistentListOf<ProvidedValue<*>>(
@@ -111,13 +118,6 @@ public object ViewModelBackStackRecordLocalProvider :
       object : ProvidedValues {
         @Composable
         override fun provideValues(): PersistentList<ProvidedValue<*>> {
-          // This will retain the observer in NavigableCircuitContent using its outerRegistry.
-          val observer =
-            rememberRetained(record, viewModelStore) {
-              NestedRememberObserver {
-                containerViewModel.removeViewModelStoreOwnerForKey(record.key)?.clear()
-              }
-            }
           remember { observer.UiRememberObserver() }
           return list
         }

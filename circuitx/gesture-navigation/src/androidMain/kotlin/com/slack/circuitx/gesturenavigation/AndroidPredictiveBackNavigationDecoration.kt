@@ -81,16 +81,12 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
 
-  override fun targetState(
-    args: ImmutableList<T>,
-  ): GestureNavTransitionHolder<T> {
+  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
 
   @Composable
-  override fun updateTransition(
-    args: ImmutableList<T>,
-  ): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
     val current = remember(args) { targetState(args) }
     val previous =

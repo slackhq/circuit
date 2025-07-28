@@ -410,7 +410,7 @@ public object NavigatorDefaults {
 
     @Composable
     public override fun updateTransition(
-      args: ImmutableList<T>,
+      args: ImmutableList<T>
     ): Transition<DefaultAnimatedState<T>> {
       return updateTransition(targetState(args))
     }

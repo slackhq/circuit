@@ -12,8 +12,7 @@ import kotlinx.collections.immutable.ImmutableList
  * the necessary information as an argument, which is optimal for `AnimatedContent`.
  */
 @Immutable
-internal data class GestureNavTransitionHolder<T : NavArgument>(
-  val args: ImmutableList<T>,
-) : AnimatedNavState {
+internal data class GestureNavTransitionHolder<T : NavArgument>(val args: ImmutableList<T>) :
+  AnimatedNavState {
   override val backStack: ImmutableList<NavArgument> = args
 }

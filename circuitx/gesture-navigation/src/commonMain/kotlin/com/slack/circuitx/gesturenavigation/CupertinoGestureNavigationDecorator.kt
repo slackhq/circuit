@@ -83,16 +83,12 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
 
-  override fun targetState(
-    args: ImmutableList<T>,
-  ): GestureNavTransitionHolder<T> {
+  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
 
   @Composable
-  override fun updateTransition(
-    args: ImmutableList<T>,
-  ): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
 
     val current = remember(args) { targetState(args) }
     val previous =

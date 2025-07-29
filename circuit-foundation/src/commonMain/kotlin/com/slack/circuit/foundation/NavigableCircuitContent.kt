@@ -149,7 +149,7 @@ public fun <R : Record> NavigableCircuitContent(
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
     val circuitProvidedValues =
       providedValuesForBackStack(backStack, circuit.backStackLocalProviders)
-    navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
+    navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
@@ -401,21 +401,18 @@ public object NavigatorDefaults {
 
     public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
       AnimatedNavState {
-      override val screen: Screen = args.first().screen
-      override val rootScreen: Screen = args.last().screen
-      override val backStackDepth: Int = args.size
+      override val backStack: ImmutableList<NavArgument> = args
     }
 
-    override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {
+    override fun targetState(args: ImmutableList<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }
 
     @Composable
     public override fun updateTransition(
-      args: ImmutableList<T>,
-      backStackDepth: Int,
+      args: ImmutableList<T>
     ): Transition<DefaultAnimatedState<T>> {
-      return updateTransition(targetState(args, backStackDepth))
+      return updateTransition(targetState(args))
     }
 
     @OptIn(InternalCircuitApi::class)
@@ -450,7 +447,6 @@ public object NavigatorDefaults {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
       args: ImmutableList<T>,
-      backStackDepth: Int,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {

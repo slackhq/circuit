@@ -81,24 +81,18 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
 
-  override fun targetState(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args)
   }
 
   @Composable
-  override fun updateTransition(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
-    val current = remember(args) { targetState(args, backStackDepth) }
+    val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
         if (args.size > 1) {
-          targetState(args.subList(1, args.size), backStackDepth - 1)
+          targetState(args.subList(1, args.size))
         } else null
       }
 
@@ -126,7 +120,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
       }
     }
 
-    if (backStackDepth > 1) {
+    if (args.size > 1) {
       BackHandler(
         onBackProgress = { progress, offset ->
           showPrevious = progress != 0f
@@ -188,7 +182,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         progress = { seekableTransitionState.fraction },
       )
     ) {
-      innerContent(targetState.record)
+      innerContent(targetState.args.first())
     }
   }
 

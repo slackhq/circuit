@@ -86,8 +86,8 @@ jobs:
         id: gradle-instrumentation-fork
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          # Use API 28 for star samples
-          api-level: 28
+          # Use API 30 for star samples
+          api-level: 30
           arch: x86_64
           disable-animations: true
           disk-size: 6000M

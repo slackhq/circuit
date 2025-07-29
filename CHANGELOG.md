@@ -12,7 +12,7 @@ Rebuilt `continuityRetainedStateRegistry` as a common `lifecycleRetainedStateReg
 
 `ViewModelBackStackRecordLocalProvider` has moved from the `backstack` module to the
 `circuit-foundation` module while also changing to use the multiplatform `ViewModel` implementation.
-`ViewModelBackStackRecordLocalProvider` is now provided as a default through the Circuit instance, 
+`ViewModelBackStackRecordLocalProvider` is now provided as a default through the Circuit instance,
 enabling customization of the default `BackStackRecordLocalProviders`.
 Also added `backStackHostViewModel()` to access a `ViewModel` located in the `ViewModelStoreOwner` of `NavigableCircuitContent`.
 

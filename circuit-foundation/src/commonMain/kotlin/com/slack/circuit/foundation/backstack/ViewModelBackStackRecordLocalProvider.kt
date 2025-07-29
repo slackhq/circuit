@@ -89,13 +89,16 @@ public object ViewModelBackStackRecordLocalProvider :
    */
   @Composable
   override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
+    // Gracefully fail if we don't have a View model owner.
+    val owner = LocalViewModelStoreOwner.current ?: return EMPTY_PROVIDED_VALUES
     // Implementation note: providedValuesFor stays in the composition as long as the
     // back stack entry is present, which makes it safe for us to use composition
     // forget/abandon to clear the associated ViewModelStore if the host activity
     // isn't in the process of changing configurations.
     val containerViewModel =
       viewModel<BackStackRecordLocalProviderViewModel>(
-        factory = BackStackRecordLocalProviderViewModel.Factory
+        viewModelStoreOwner = owner,
+        factory = BackStackRecordLocalProviderViewModel.Factory,
       )
     val backStackHostViewModelStoreOwner = LocalViewModelStoreOwner.current
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
@@ -125,6 +128,11 @@ public object ViewModelBackStackRecordLocalProvider :
     }
   }
 }
+
+private val EMPTY_PROVIDED_VALUES =
+  object : ProvidedValues {
+    @Composable override fun provideValues() = persistentListOf<ProvidedValue<*>>()
+  }
 
 /**
  * A [ViewModel] responsible for holding and managing [ViewModelStore] instances for each record in

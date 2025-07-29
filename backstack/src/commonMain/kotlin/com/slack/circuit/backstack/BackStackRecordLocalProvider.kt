@@ -17,6 +17,7 @@ package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -24,10 +25,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 
+@Stable
 public fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
   @Composable public fun providedValuesFor(record: R): ProvidedValues
 }
 
+@Stable
 public fun interface ProvidedValues {
   @Composable public fun provideValues(): ImmutableList<ProvidedValue<*>>
 }
@@ -41,8 +44,7 @@ internal class CompositeProvidedValues(private val list: List<ProvidedValues>) :
 @Composable
 public fun <R : BackStack.Record> providedValuesForBackStack(
   backStack: BackStack<R>,
-  stackLocalProviders: ImmutableList<BackStackRecordLocalProvider<R>> = persistentListOf(),
-  includeDefaults: Boolean = true,
+  backStackLocalProviders: ImmutableList<BackStackRecordLocalProvider<R>> = persistentListOf(),
 ): ImmutableMap<R, ProvidedValues> =
   buildMap(backStack.size) {
       backStack.forEach { record ->
@@ -50,20 +52,10 @@ public fun <R : BackStack.Record> providedValuesForBackStack(
           put(
             record,
             CompositeProvidedValues(
-              buildList(stackLocalProviders.size + 1) {
-                if (includeDefaults) {
-                  defaultBackStackRecordLocalProviders.forEach {
-                    add(key(it) { it.providedValuesFor(record) })
-                  }
-                }
-                stackLocalProviders.forEach { add(key(it) { it.providedValuesFor(record) }) }
-              }
+              backStackLocalProviders.map { key(it) { it.providedValuesFor(record) } }
             ),
           )
         }
       }
     }
     .toImmutableMap()
-
-internal expect val defaultBackStackRecordLocalProviders:
-  List<BackStackRecordLocalProvider<BackStack.Record>>

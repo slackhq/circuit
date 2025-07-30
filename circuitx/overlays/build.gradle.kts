@@ -31,12 +31,7 @@ kotlin {
   // endregion
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -49,9 +44,6 @@ kotlin {
         implementation(projects.circuitFoundation)
       }
     }
-
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
 
     androidMain { dependencies { api(libs.androidx.compose.material.material3) } }
   }

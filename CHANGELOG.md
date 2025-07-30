@@ -8,6 +8,18 @@ Unreleased
 
 Rebuilt `continuityRetainedStateRegistry` as a common `lifecycleRetainedStateRegistry` and made `ViewModel` an implementation detail of it.
 
+### Updates to `ViewModelBackStackRecordLocalProvider`
+
+`ViewModelBackStackRecordLocalProvider` has moved from the `backstack` module to the
+`circuit-foundation` module while also changing to use the multiplatform `ViewModel` implementation.
+`ViewModelBackStackRecordLocalProvider` is now provided as a default through the Circuit instance,
+enabling customization of the default `BackStackRecordLocalProviders`.
+Also added `backStackHostViewModel()` to access a `ViewModel` located in the `ViewModelStoreOwner` of `NavigableCircuitContent`.
+
+### Misc:
+
+- Fix a crash when using `AndroidPredictiveBackNavDecorator` and having previously called `resetRoot()` with `restoreState=false`.
+
 0.29.1
 ------
 

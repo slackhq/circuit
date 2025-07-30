@@ -61,6 +61,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentSet
@@ -72,7 +73,7 @@ public fun <R : Record> NavigableCircuitContent(
   backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: ImmutableMap<out Record, ProvidedValues> = providedValuesForBackStack(backStack),
+  providedValues: ImmutableMap<out Record, ProvidedValues> = persistentMapOf(),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   decoratorFactory: AnimatedNavDecorator.Factory? = null,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
@@ -146,14 +147,20 @@ public fun <R : Record> NavigableCircuitContent(
           lastUnavailableRoute = unavailableRoute
         }
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
-    navDecoration.DecoratedContent(activeContentProviders, backStack.size, modifier) { provider ->
+    val circuitProvidedValues =
+      providedValuesForBackStack(backStack, circuit.backStackLocalProviders)
+    navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
       // the record is present in the backstack, if the decoration is animated for example.
       val values = remember(record) { providedValues[record] }?.provideValues()
-      val providedLocals = remember(values) { values?.toTypedArray() ?: emptyArray() }
-
+      val circuitProvidedValues =
+        remember(record) { circuitProvidedValues[record] }?.provideValues()
+      val providedLocals =
+        remember(values, circuitProvidedValues) {
+          (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
+        }
       CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
         provider.content(record, contentProviderState)
       }
@@ -205,7 +212,8 @@ private fun <R : Record> buildCircuitContentProviders(
       previousContentProviders.keys.filterNot {
         it in activeRecordKeys ||
           it in recordKeys ||
-          latestBackStack.isRecordReachable(key = it, depth = 1, includeSaved = true)
+          // Depth of 2 to exclude records that are late at leaving the composition.
+          latestBackStack.isRecordReachable(key = it, depth = 2, includeSaved = true)
       }
     onDispose {
       // Only remove the keys that are no longer in the backstack or composition.
@@ -393,21 +401,18 @@ public object NavigatorDefaults {
 
     public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
       AnimatedNavState {
-      override val screen: Screen = args.first().screen
-      override val rootScreen: Screen = args.last().screen
-      override val backStackDepth: Int = args.size
+      override val backStack: ImmutableList<NavArgument> = args
     }
 
-    override fun targetState(args: ImmutableList<T>, backStackDepth: Int): DefaultAnimatedState<T> {
+    override fun targetState(args: ImmutableList<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }
 
     @Composable
     public override fun updateTransition(
-      args: ImmutableList<T>,
-      backStackDepth: Int,
+      args: ImmutableList<T>
     ): Transition<DefaultAnimatedState<T>> {
-      return updateTransition(targetState(args, backStackDepth))
+      return updateTransition(targetState(args))
     }
 
     @OptIn(InternalCircuitApi::class)
@@ -442,7 +447,6 @@ public object NavigatorDefaults {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
       args: ImmutableList<T>,
-      backStackDepth: Int,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {

@@ -30,14 +30,13 @@ import kotlinx.collections.immutable.ImmutableList
  *
  * **Implement `targetState`**
  * - This is called to create an `AnimatedNavState` object for the incoming navigation destination.
- * - It should use the provided `args` and `backStackDepth` to construct an instance of a custom
- *   `AnimatedNavState` that represents the target state of the navigation.
+ * - It should use the provided `args` to construct an instance of a custom `AnimatedNavState` that
+ *   represents the target state of the navigation.
  *
  * **Implement `updateTransition`**
  * - This is responsible for setting up and updating the [Transition] that drives the
  *   `AnimatedContent` that performs the navigation transition.
- * - You should create a [Transition] based on the provided `args` and `backStackDepth` to track the
- *   current state.
+ * - You should create a [Transition] based on the provided `args` to track the current state.
  * - The created `Transition` will be used by [AnimatedNavDecoration] to display the correct
  *   content.
  *
@@ -52,7 +51,6 @@ import kotlinx.collections.immutable.ImmutableList
  * ```kotlin
  * data class CustomNavState<T : NavArgument>(
  *   val args: ImmutableList<T>,
- *   override val backStackDepth: Int,
  *   override val screen: Screen = args.first().screen,
  *   override val rootScreen: Screen = args.last().screen,
  * ) : AnimatedNavState
@@ -65,17 +63,16 @@ import kotlinx.collections.immutable.ImmutableList
  *     return slideInVertically() + fadeIn() togetherWith slideOutVertically() + fadeOut()
  *   }
  *
- *   override fun targetState(args: ImmutableList<T>, backStackDepth: Int): CustomNavState<T> {
+ *   override fun targetState(args: ImmutableList<T>): CustomNavState<T> {
  *     // Logic to build your custom navigation state
- *     return CustomNavState(args, backStackDepth)
+ *     return CustomNavState(args)
  *   }
  *
  *   @Composable
  *   override fun updateTransition(
  *     args: ImmutableList<T>,
- *     backStackDepth: Int,
  *   ): Transition<CustomNavState<T>> {
- *     val targetState = targetState(args, backStackDepth)
+ *     val targetState = targetState(args)
  *     return updateTransition(targetState = targetState, label = "CustomDecoratorTransition")
  *   }
  *
@@ -97,16 +94,15 @@ import kotlinx.collections.immutable.ImmutableList
  */
 @Stable
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
-  /** For the args and backstack create the expected target [AnimatedNavState]. */
-  public fun targetState(args: ImmutableList<T>, backStackDepth: Int): S
+  /** For the args create the expected target [AnimatedNavState]. */
+  public fun targetState(args: ImmutableList<T>): S
 
   /**
    * Sets up a [Transition] for driving an [AnimatedContent] used to navigate between screens. The
-   * transition should be setup from the current [NavDecoration.DecoratedContent] arguments and
-   * backstack depth, and then updated when the arguments or backstack depth change.
+   * transition should be setup from the current [NavDecoration.DecoratedContent] arguments, and
+   * then updated when the arguments change.
    */
-  @Composable
-  public fun updateTransition(args: ImmutableList<T>, backStackDepth: Int): Transition<S>
+  @Composable public fun updateTransition(args: ImmutableList<T>): Transition<S>
 
   /** Builds the default [AnimatedContent] transition spec. */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
@@ -128,11 +124,17 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 @Stable
 public interface AnimatedNavState {
   /** The [Screen] associated with this state. */
-  public val screen: Screen
+  public val top: NavArgument
+    get() = backStack.first()
 
   /** The root screen of the back stack at the time this state was created. */
-  public val rootScreen: Screen
+  public val root: NavArgument
+    get() = backStack.last()
 
   /** The depth of the back stack at the time this state was created. */
   public val backStackDepth: Int
+    get() = backStack.size
+
+  /** Snapshot of the back stack at the time this state was created. */
+  public val backStack: ImmutableList<NavArgument>
 }

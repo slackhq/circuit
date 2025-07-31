@@ -44,10 +44,6 @@ kotlin {
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
     common {
-      group("commonJs") {
-        withJs()
-        withWasmJs()
-      }
       group("commonJvm") {
         withJvm()
         withAndroidTarget()
@@ -69,7 +65,7 @@ kotlin {
         api(libs.kotlinInject.anvil.runtime)
       }
     }
-    named("commonJsMain") {
+    webMain {
       dependencies {
         compileOnly(libs.kotlinInject.anvil.runtime)
         api(libs.kotlinInject.anvil.runtime)

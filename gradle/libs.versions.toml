@@ -139,7 +139,7 @@ androidx-loader = "androidx.loader:loader:1.1.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-androidx-test-monitor = "androidx.test:monitor:1.7.2"
+androidx-test-monitor = "androidx.test:monitor:1.8.0"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 
 anvil-annotations = { module = "dev.zacsweers.anvil:annotations", version.ref = "anvil" }

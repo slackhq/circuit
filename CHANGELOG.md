@@ -8,6 +8,8 @@ Unreleased
 
 Rebuilt `continuityRetainedStateRegistry` as a common `lifecycleRetainedStateRegistry` and made `ViewModel` an implementation detail of it.
 
+`AnimatedNavDecoration` is now using the full back stack to determine the transition animation.
+
 ### Updates to `ViewModelBackStackRecordLocalProvider`
 
 `ViewModelBackStackRecordLocalProvider` has moved from the `backstack` module to the
@@ -18,7 +20,14 @@ Also added `backStackHostViewModel()` to access a `ViewModel` located in the `Vi
 
 ### Misc:
 
-- Fix a crash when using `AndroidPredictiveBackNavDecorator` and having previously called `resetRoot()` with `restoreState=false`.
+- [gesture-navigation] Fix a crash when using `AndroidPredictiveBackNavDecorator` and having previously called `resetRoot()` with `restoreState=false`.
+- [code gen] Added support for `CircuitContext` as an assisted param in code gen
+- Update dagger to `v2.57`.
+- Update Compose Android BOM to `2025.07.00`.
+- Update androidx.lifecycle to `2.9.2`.
+
+Special thanks to [@CamiloVega](https://github.com/CamiloVega) and [@kvaster](https://github.com/kvaster) for contributing to this release!
+
 
 0.29.1
 ------

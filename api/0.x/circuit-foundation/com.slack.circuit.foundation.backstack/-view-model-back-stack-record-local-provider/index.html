@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>ViewModelRetainedStateRegistryFactory</title>
+    <title>ViewModelBackStackRecordLocalProvider</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -45,7 +45,7 @@
         </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-retained/androidMain">android</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-foundation/commonMain">common</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
                 <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
@@ -54,11 +54,11 @@
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
-                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
                             <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":circuit-retained/androidMain" data-filter=":circuit-retained/androidMain">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-foundation/commonMain" data-filter=":circuit-foundation/commonMain">
                                 <span class="checkbox--icon"></span>
-                                android
+                                common
                             </label>
                         </li>
                 </ul>
@@ -90,32 +90,28 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-retained::com.slack.circuit.retained/ViewModelRetainedStateRegistryFactory///PointingToDeclaration//2027947623">
-  <div class="breadcrumbs"><a href="../../index.html">circuit-retained</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.retained</a><span class="delimiter">/</span><span class="current">ViewModelRetainedStateRegistryFactory</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-foundation::com.slack.circuit.foundation.backstack/ViewModelBackStackRecordLocalProvider///PointingToDeclaration//2116295586">
+  <div class="breadcrumbs"><a href="../../index.html">circuit-foundation</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.foundation.backstack</a><span class="delimiter">/</span><span class="current">ViewModelBackStackRecordLocalProvider</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>View</span><wbr><span>Model</span><wbr><span>Retained</span><wbr><span>State</span><wbr><span>Registry</span><wbr><span><span>Factory</span></span></h1>
-    <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
-      <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-retained/androidMain" data-filterable-set=":circuit-retained/androidMain" data-active="" data-toggle=":circuit-retained/androidMain">android</button></div>
-<div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/androidMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ViewModelRetainedStateRegistryFactory</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a>, <a href="../-updatable-retained-state-registry/index.html">UpdatableRetainedStateRegistry</a><span class="token operator">&gt;</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-retained/src/androidMain/kotlin/com/slack/circuit/retained/AndroidContinuity.kt#L32">source</a>)</span></span></div><p class="paragraph">A factory for creating a <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a> that implements <a href="../-updatable-retained-state-registry/index.html">UpdatableRetainedStateRegistry</a> for <a href="../continuity-retained-state-registry.html">continuityRetainedStateRegistry</a>.</p></div>    </div>
+    <h1 class="cover"><span>View</span><wbr><span>Model</span><wbr><span>Back</span><wbr><span>Stack</span><wbr><span>Record</span><wbr><span>Local</span><wbr><span><span>Provider</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">ViewModelBackStackRecordLocalProvider</a> : <a href="../../../backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/index.html">BackStackRecordLocalProvider</a><span class="token operator">&lt;</span><a href="../../../backstack/com.slack.circuit.backstack/-back-stack/-record/index.html">BackStack.Record</a><span class="token operator">&gt; </span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-foundation/src/commonMain/kotlin/com/slack/circuit/foundation/backstack/ViewModelBackStackRecordLocalProvider.kt#L84">source</a>)</span></span></div><p class="paragraph">A <a href="../../../backstack/com.slack.circuit.backstack/-back-stack-record-local-provider/index.html">BackStackRecordLocalProvider</a> that provides a <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/viewmodel/compose/LocalViewModelStoreOwner.html">LocalViewModelStoreOwner</a> for each record in the back stack.</p><p class="paragraph">This allows <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a> instances to be scoped to the lifecycle of a specific <a href="../../../backstack/com.slack.circuit.backstack/-back-stack/-record/index.html">BackStack.Record</a>. It also provides <a href="../../../circuit-foundation/com.slack.circuit.foundation.backstack/index.html">LocalBackStackHostViewModelStoreOwner</a> with the <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModelStoreOwner.html">ViewModelStoreOwner</a> of the host of the back stack.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-603427061%2FFunctions%2F2027947623" anchor-label="create" id="-603427061%2FFunctions%2F2027947623" data-filterable-set=":circuit-retained/androidMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-retained/androidMain" data-filterable-set=":circuit-retained/androidMain">
+        <div class="table"><a data-name="506285848%2FFunctions%2F2116295586" anchor-label="providedValuesFor" id="506285848%2FFunctions%2F2116295586" data-filterable-set=":circuit-foundation/commonMain"></a>
+          <div class="table-row" data-filterable-current=":circuit-foundation/commonMain" data-filterable-set=":circuit-foundation/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="create.html"><span><span>create</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-603427061%2FFunctions%2F2027947623"></span>
+                  <div><a href="provided-values-for.html"><span>provided</span><wbr><span>Values</span><wbr><span><span>For</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="506285848%2FFunctions%2F2116295586"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
-                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-retained/androidMain" data-filterable-set=":circuit-retained/androidMain" data-active="" data-toggle=":circuit-retained/androidMain">android</button></div>
-<div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-retained/androidMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">modelClass<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">extras<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/viewmodel/CreationExtras.html">CreationExtras</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">T</a></div></div>                  </div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-foundation/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="provided-values-for.html"><span class="token function">providedValuesFor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">record<span class="token operator">: </span><a href="../../../backstack/com.slack.circuit.backstack/-back-stack/-record/index.html">BackStack.Record</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../backstack/com.slack.circuit.backstack/-provided-values/index.html">ProvidedValues</a></div><div class="brief "><p class="paragraph">Provides <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/viewmodel/compose/LocalViewModelStoreOwner.html">LocalViewModelStoreOwner</a> scoped to the given <a href="provided-values-for.html">record</a> and <a href="../../../circuit-foundation/com.slack.circuit.foundation.backstack/index.html">LocalBackStackHostViewModelStoreOwner</a> scoped to the host of the back stack.</p></div></div></div>
                 </div>
               </div>
             </div>

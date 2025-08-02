@@ -10,6 +10,7 @@ com.slack.circuit.codegen.annotations
 module:circuit-foundation
 com.slack.circuit.foundation
 com.slack.circuit.foundation.animation
+com.slack.circuit.foundation.backstack
 module:circuit-overlay
 com.slack.circuit.overlay
 module:circuit-retained

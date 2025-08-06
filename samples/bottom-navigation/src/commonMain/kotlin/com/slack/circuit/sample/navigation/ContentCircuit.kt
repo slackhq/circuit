@@ -7,6 +7,8 @@ import com.slack.circuit.foundation.Circuit
 fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
   return Circuit.Builder()
     .apply {
+      addPresenterFactory(ContentPresenter.Factory)
+      addUiFactory(ContentUiFactory)
       for (tab in tabs) {
         addPresenterFactory(TabPresenter.Factory(tab::class))
         addUiFactory(TabUiFactory(tab::class))

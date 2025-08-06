@@ -14,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -45,46 +44,44 @@ sealed interface DetailEvent : CircuitUiEvent {
 
 @Composable
 fun DetailUi(state: DetailState, modifier: Modifier = Modifier) {
-  Scaffold(modifier = modifier) { padding ->
-    Card(modifier = Modifier.padding(padding).padding(8.dp).fillMaxSize()) {
-      Row(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = state.label,
-          style = MaterialTheme.typography.titleMedium,
-          color = MaterialTheme.colorScheme.onSurface,
-          modifier = Modifier.padding(top = 16.dp).weight(1f),
-        )
-        Icon(
-          imageVector = Icons.Filled.Close,
-          contentDescription = "Close",
-          tint = MaterialTheme.colorScheme.onSurface,
-          modifier =
-            Modifier.padding(top = 8.dp)
-              .clickable(
-                interactionSource = null,
-                indication = ripple(bounded = false, radius = 24.dp),
-              ) {
-                state.eventSink(DetailEvent.Close)
-              }
-              .padding(8.dp),
-        )
-      }
-      Card(
-        modifier = Modifier.fillMaxSize().padding(8.dp),
-        colors = CardDefaults.outlinedCardColors(),
-      ) {
-        Text(
-          text = state.description,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier =
-            Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-              .verticalScroll(rememberScrollState()),
-        )
-      }
+  Card(modifier = modifier.padding(8.dp).fillMaxSize()) {
+    Row(
+      modifier = Modifier.padding(horizontal = 16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = state.label,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier.padding(top = 16.dp).weight(1f),
+      )
+      Icon(
+        imageVector = Icons.Filled.Close,
+        contentDescription = "Close",
+        tint = MaterialTheme.colorScheme.onSurface,
+        modifier =
+          Modifier.padding(top = 8.dp)
+            .clickable(
+              interactionSource = null,
+              indication = ripple(bounded = false, radius = 24.dp),
+            ) {
+              state.eventSink(DetailEvent.Close)
+            }
+            .padding(8.dp),
+      )
+    }
+    Card(
+      modifier = Modifier.fillMaxSize().padding(8.dp),
+      colors = CardDefaults.outlinedCardColors(),
+    ) {
+      Text(
+        text = state.description,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier =
+          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            .verticalScroll(rememberScrollState()),
+      )
     }
   }
 }

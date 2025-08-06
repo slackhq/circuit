@@ -36,12 +36,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Parcelize
-sealed interface TabScreen : Screen {
+sealed interface TabScreen : Screen, PrimaryScreen {
   val label: String
 
   @Parcelize data class Root(override val label: String = "Root") : TabScreen
 
-  @Parcelize data class Screen1(override val label: String = "Screen 1") : TabScreen, PrimaryScreen
+  @Parcelize data class Screen1(override val label: String = "Screen 1") : TabScreen
 
   @Parcelize data class Screen2(override val label: String = "Screen 2") : TabScreen
 
@@ -81,7 +81,7 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
-    return TabScreenCircuit.State(label = screen.label, hasDetails = screen is PrimaryScreen) {
+    return TabScreenCircuit.State(label = screen.label, hasDetails = screen is TabScreen.Screen1) {
       event ->
       when (event) {
         TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())

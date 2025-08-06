@@ -36,6 +36,7 @@ kotlin {
       dependencies {
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material3)
+        implementation(libs.compose.material.material3.adaptive)
         implementation(libs.compose.material.icons)
         implementation(libs.compose.ui.tooling.preview)
         implementation(projects.circuitFoundation)

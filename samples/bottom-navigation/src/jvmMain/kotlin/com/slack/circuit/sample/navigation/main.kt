@@ -12,6 +12,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
@@ -25,7 +26,7 @@ fun main() {
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {
       MaterialTheme {
-        val backStack = rememberSaveableBackStack(tabs.first())
+        val backStack = rememberSaveableBackStack(ContentScreen(tabs))
         val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
         // CircuitX Navigation
         val uriHandler = LocalUriHandler.current
@@ -34,7 +35,11 @@ fun main() {
           rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
         CircuitCompositionLocals(circuit) {
           SharedElementTransitionLayout {
-            ContentScaffold(backStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+            NavigableCircuitContent(
+              navigator = interceptingNavigator,
+              backStack = backStack,
+              modifier = Modifier.fillMaxSize(),
+            )
           }
         }
       }

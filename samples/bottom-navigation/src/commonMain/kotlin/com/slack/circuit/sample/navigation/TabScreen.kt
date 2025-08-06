@@ -5,14 +5,18 @@ package com.slack.circuit.sample.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -37,7 +41,7 @@ sealed interface TabScreen : Screen {
 
   @Parcelize data class Root(override val label: String = "Root") : TabScreen
 
-  @Parcelize data class Screen1(override val label: String = "Screen 1") : TabScreen
+  @Parcelize data class Screen1(override val label: String = "Screen 1") : TabScreen, PrimaryScreen
 
   @Parcelize data class Screen2(override val label: String = "Screen 2") : TabScreen
 
@@ -63,10 +67,13 @@ sealed interface TabScreen : Screen {
 
 object TabScreenCircuit {
 
-  data class State(val label: String, val eventSink: (Event) -> Unit) : CircuitUiState
+  data class State(val label: String, val hasDetails: Boolean, val eventSink: (Event) -> Unit) :
+    CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data object Next : Event
+
+    data object Details : Event
   }
 }
 
@@ -74,9 +81,11 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
-    return TabScreenCircuit.State(label = screen.label) { event ->
+    return TabScreenCircuit.State(label = screen.label, hasDetails = screen is PrimaryScreen) {
+      event ->
       when (event) {
         TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
+        TabScreenCircuit.Event.Details -> navigator.goTo(DetailScreen(screen))
       }
     }
   }
@@ -101,15 +110,25 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
   val backStack = LocalBackStack.current?.toImmutableList() ?: persistentListOf()
   Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-    Text(
-      text = state.label,
-      style = MaterialTheme.typography.headlineMedium,
-      modifier =
-        Modifier.testTag(ContentTags.TAG_LABEL)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .padding(top = 24.dp, bottom = 8.dp),
-    )
+    Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      verticalAlignment = Alignment.Bottom,
+    ) {
+      Text(
+        text = state.label,
+        style = MaterialTheme.typography.headlineMedium,
+        modifier =
+          Modifier.testTag(ContentTags.TAG_LABEL).weight(1f).padding(top = 24.dp, bottom = 8.dp),
+      )
+      if (state.hasDetails) {
+        Button(
+          colors = ButtonDefaults.outlinedButtonColors(),
+          onClick = { state.eventSink(TabScreenCircuit.Event.Details) },
+        ) {
+          Text(text = "View details")
+        }
+      }
+    }
     LazyColumn(
       modifier =
         Modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {

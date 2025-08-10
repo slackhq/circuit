@@ -81,24 +81,18 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
 
-  override fun targetState(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args)
   }
 
   @Composable
-  override fun updateTransition(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
-    val current = remember(args) { targetState(args, backStackDepth) }
+    val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
         if (args.size > 1) {
-          targetState(args.subList(1, args.size), backStackDepth - 1)
+          targetState(args.subList(1, args.size))
         } else null
       }
 
@@ -126,7 +120,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
       }
     }
 
-    if (backStackDepth > 1) {
+    if (args.size > 1) {
       BackHandler(
         onBackProgress = { progress, offset ->
           showPrevious = progress != 0f
@@ -179,8 +173,8 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   ) {
     Box(
       Modifier.predictiveBackMotion(
-        enabled = showPrevious,
-        isSeeking = isSeeking,
+        enabled = { showPrevious },
+        isSeeking = { isSeeking },
         shape = MaterialTheme.shapes.extraLarge,
         elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
         transition = transition,
@@ -188,7 +182,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
         progress = { seekableTransitionState.fraction },
       )
     ) {
-      innerContent(targetState.record)
+      innerContent(targetState.args.first())
     }
   }
 
@@ -206,8 +200,8 @@ private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
  * https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back
  */
 private fun Modifier.predictiveBackMotion(
-  enabled: Boolean,
-  isSeeking: Boolean,
+  enabled: () -> Boolean,
+  isSeeking: () -> Boolean,
   shape: Shape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
@@ -217,14 +211,14 @@ private fun Modifier.predictiveBackMotion(
   val p = progress()
   val o = offset()
   // If we're at progress 0f, skip setting any parameters
-  if (!enabled || p == 0f || !o.isValid()) return@graphicsLayer
+  if (!enabled() || p == 0f || !o.isValid()) return@graphicsLayer
 
   sharedElementTransition(isSeeking, shape, elevation, transition, p, o)
 }
 
 // https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#shared-element-transition
 private fun GraphicsLayerScope.sharedElementTransition(
-  isSeeking: Boolean,
+  isSeeking: () -> Boolean,
   shape: Shape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
@@ -266,7 +260,7 @@ private fun GraphicsLayerScope.sharedElementTransition(
       (maxTranslationY - marginY).coerceAtLeast(0f),
     )
 
-  if (!isSeeking) {
+  if (!isSeeking()) {
     alpha = lerp(1f, 0f, progress.absoluteValue)
   }
 }

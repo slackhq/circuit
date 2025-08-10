@@ -534,6 +534,7 @@ class CircuitSymbolProcessorTest {
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.CircuitContext
           import com.slack.circuit.runtime.ui.Ui
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.Modifier
@@ -543,11 +544,12 @@ class CircuitSymbolProcessorTest {
 
           class Favorites @AssistedInject constructor(
             @Assisted private val screen: FavoritesScreen,
+            @Assisted private val circuitContext: CircuitContext,
           ) : Ui<FavoritesScreen.State> {
             @CircuitInject(FavoritesScreen::class, AppScope::class)
             @AssistedFactory
             fun interface Factory {
-              fun create(screen: FavoritesScreen): Favorites
+              fun create(screen: FavoritesScreen, circuitContext: CircuitContext): Favorites
             }
 
             @Composable
@@ -574,7 +576,7 @@ class CircuitSymbolProcessorTest {
           private val factory: Favorites.Factory,
         ) : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> factory.create(screen = screen)
+            is FavoritesScreen -> factory.create(screen = screen, circuitContext = context)
             else -> null
           }
         }
@@ -954,6 +956,73 @@ class CircuitSymbolProcessorTest {
             context: CircuitContext,
           ): Presenter<*>? = when (screen) {
             is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
+            else -> null
+          }
+        }
+      """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterClass_assistedInjectionWithCircuitContext() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.CircuitContext
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+            @Assisted private val circuitContext: CircuitContext
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator, circuitContext: CircuitContext): FavoritesPresenter
+            }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+        """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator, circuitContext = context)
             else -> null
           }
         }

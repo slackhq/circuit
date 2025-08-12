@@ -13,9 +13,11 @@ plugins {
 android {
   namespace = "com.slack.circuit.sample.navigation"
   defaultConfig {
-    minSdk = 21
+    minSdk = 35
     // TODO update once robolectric supports 36
     targetSdk = 35
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    testApplicationId = "com.slack.circuit.sample.navigation.androidTest"
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
 }
@@ -50,6 +52,7 @@ kotlin {
         implementation(libs.androidx.appCompat)
         implementation(libs.bundles.compose.ui)
         implementation(libs.material)
+        implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
     androidUnitTest {
@@ -58,6 +61,18 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.robolectric)
         implementation(libs.androidx.test.espresso.core)
+      }
+    }
+    androidInstrumentedTest {
+      dependencies {
+        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.coroutines.android)
+        implementation(libs.coroutines.test)
+        implementation(libs.junit)
+        implementation(projects.circuitTest)
+        implementation(projects.internalTestUtils)
       }
     }
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }

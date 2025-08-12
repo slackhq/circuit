@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +24,10 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 
 object TestContentTags {
   const val TAG_ROOT = "root"
@@ -128,6 +133,24 @@ fun TestContent(state: TestState, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+private fun rememberRetainedCoroutineScope(): CoroutineScope {
+  return rememberRetained {
+      object : RememberObserver {
+        val scope = CoroutineScope(Dispatchers.Main + Job())
+
+        override fun onForgotten() {
+          scope.cancel()
+        }
+
+        override fun onAbandoned() = Unit
+
+        override fun onRemembered() = Unit
+      }
+    }
+    .scope
+}
+
 class TestCountPresenter(
   private val screen: TestScreen,
   private val navigator: Navigator,
@@ -138,6 +161,7 @@ class TestCountPresenter(
 ) : Presenter<TestState> {
   @Composable
   override fun present(): TestState {
+    val scope = rememberRetainedCoroutineScope()
     var count by
       when (rememberType) {
         RememberType.Standard -> {

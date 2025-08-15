@@ -10,6 +10,8 @@ androidx.collection:collection-jvm
 androidx.collection:collection-ktx
 androidx.collection:collection
 androidx.compose.runtime:runtime-android
+androidx.compose.runtime:runtime-annotation-android
+androidx.compose.runtime:runtime-annotation
 androidx.compose.runtime:runtime-saveable-android
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
@@ -27,6 +29,7 @@ androidx.compose.ui:ui-util
 androidx.compose.ui:ui
 androidx.concurrent:concurrent-futures
 androidx.core:core-ktx
+androidx.core:core-viewtree
 androidx.core:core
 androidx.customview:customview-poolingcontainer
 androidx.emoji2:emoji2
@@ -44,9 +47,13 @@ androidx.lifecycle:lifecycle-runtime-ktx
 androidx.lifecycle:lifecycle-runtime
 androidx.lifecycle:lifecycle-viewmodel-android
 androidx.lifecycle:lifecycle-viewmodel-ktx
+androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.profileinstaller:profileinstaller
+androidx.savedstate:savedstate-android
+androidx.savedstate:savedstate-compose-android
+androidx.savedstate:savedstate-compose
 androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
@@ -56,7 +63,10 @@ com.google.guava:listenablefuture
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose
 org.jetbrains.androidx.lifecycle:lifecycle-runtime
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
+org.jetbrains.androidx.savedstate:savedstate-compose
+org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.annotation-internal:annotation
 org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-saveable
@@ -75,5 +85,8 @@ org.jetbrains.kotlinx:kotlinx-coroutines-android
 org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core
+org.jetbrains.kotlinx:kotlinx-serialization-bom
+org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
+org.jetbrains.kotlinx:kotlinx-serialization-core
 org.jetbrains:annotations
 org.jspecify:jspecify

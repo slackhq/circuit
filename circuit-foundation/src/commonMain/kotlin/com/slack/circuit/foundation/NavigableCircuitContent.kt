@@ -28,7 +28,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.currentCompositeKeyHashCode
+import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
@@ -113,7 +113,8 @@ public fun <R : Record> NavigableCircuitContent(
    * │retainedState├─┘         (RSR = RetainedStateRegistry)
    * └─────────────┘
    */
-  val outerKey = "_navigable_registry_${currentCompositeKeyHashCode.toString(MaxSupportedRadix)}"
+  @Suppress("DEPRECATION")
+  val outerKey = "_navigable_registry_${currentCompositeKeyHash.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetainedStateRegistry(key = outerKey)
 
   val navDecoration =

@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.IntentScreen
+import com.slack.circuitx.gesturenavigation.CupertinoGestureNavigationDecorator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
@@ -29,6 +31,7 @@ import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import kotlinx.collections.immutable.persistentListOf
 
 class MainActivity : AppCompatActivity() {
+  @OptIn(ExperimentalMaterialApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     // Set edge to edge + dark status bar icons
@@ -61,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             buildCircuitForTabs(tabs)
               .newBuilder()
               .setAnimatedNavDecoratorFactory(
-                GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() })
+                CupertinoGestureNavigationDecorator.Factory(onBackInvoked = { interceptingNavigator.pop() })
               )
               .build()
           }

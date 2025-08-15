@@ -185,7 +185,7 @@ class TestCountPresenter(
   }
 }
 
-@Composable expect fun rememberViewModel(key: String?): MutableIntState
+@Composable expect fun rememberViewModel(input: String?): MutableIntState
 
 data class TestState(val count: Int, val label: String, val eventSink: (TestEvent) -> Unit) :
   CircuitUiState

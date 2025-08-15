@@ -317,9 +317,7 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
           Text("Adoptables", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
         },
         colors =
-          TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-          ),
+          TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
         scrollBehavior = scrollBehavior,
         actions = {
           if (state is Success) {

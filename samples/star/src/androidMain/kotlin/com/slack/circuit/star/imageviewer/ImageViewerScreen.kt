@@ -192,6 +192,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
                 scrolledContainerColor = Color.Transparent,
                 navigationIconContentColor = Color.Transparent,
                 titleContentColor = Color.Transparent,
+                subtitleContentColor = Color.Transparent,
                 actionIconContentColor = Color.Transparent,
               ),
           )

@@ -7,7 +7,6 @@ package com.slack.circuitx.gesturenavigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
@@ -83,6 +82,9 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
 
+  // Track popped zIndex so screens are layered correctly
+  private var zIndexDepth = 0f
+
   override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
@@ -136,29 +138,25 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
-    return when {
-      targetState.root != initialState.root -> {
-        // Root reset. Crossfade
-        fadeIn() togetherWith fadeOut()
-      }
-      targetState.top == initialState.top -> {
-        // No change in the top screen, no transition
-        EnterTransition.None togetherWith ExitTransition.None
-      }
-      // come back from back stack
-      initialState.backStack.contains(targetState.top) -> {
-        slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
-          .togetherWith(
-            if (showPrevious) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
-          )
-          .apply { targetContentZIndex = -1f }
-      }
-      // adding to back stack
-      else -> {
+
+    return when (animatedNavEvent) {
+      AnimatedNavEvent.GoTo -> {
         slideInHorizontally(initialOffsetX = End)
           .togetherWith(
             slideOutHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           )
+      }
+      AnimatedNavEvent.Pop -> {
+        slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
+          .togetherWith(
+            if (showPrevious) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
+          )
+          .apply { targetContentZIndex = --zIndexDepth }
+      }
+      AnimatedNavEvent.RootReset -> {
+        zIndexDepth = 0f
+        // Simple Crossfade on reset
+        fadeIn() togetherWith fadeOut()
       }
     }
   }

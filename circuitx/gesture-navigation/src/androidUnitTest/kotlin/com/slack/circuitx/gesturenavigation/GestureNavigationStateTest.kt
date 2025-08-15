@@ -3,7 +3,6 @@
 package com.slack.circuitx.gesturenavigation
 
 import androidx.activity.ComponentActivity
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -36,7 +35,6 @@ enum class GestureNavDecorationOption {
   Cupertino,
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Config(minSdk = 34)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class GestureNavigationStateTest(

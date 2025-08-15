@@ -1,6 +1,5 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-@file:Suppress("DEPRECATION") // TODO migrate!
 
 package com.slack.circuitx.gesturenavigation
 
@@ -8,6 +7,7 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.rememberTransition
@@ -16,26 +16,20 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.gestures.DraggableState
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissState
-import androidx.compose.material.DismissValue
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.ResistanceConfig
-import androidx.compose.material.SwipeableDefaults
-import androidx.compose.material.ThresholdConfig
-import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -43,6 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
@@ -51,10 +46,8 @@ import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.filter
 
 /**
  * Cupertino specific version of [AnimatedNavDecorator]. This is shipped as common code, to allow
@@ -63,15 +56,14 @@ import kotlinx.coroutines.flow.filter
  * @param enterOffsetFraction The fraction (from 0f to 1f) of the entering content's width which the
  *   content starts from. Defaults to 0.25f (25%).
  * @param swipeThreshold The threshold used for determining whether the swipe has 'triggered' a back
- *   event or not. Defaults a swipe of at least 40% of the width.
+ *   event or not. Defaults to 0.4f (40% of the width).
  * @param swipeBackFromNestedScroll Whether nested scroll events should be used to perform gesture
  *   navigation. This is useless when you have full width horizontally scrolling layouts. Defaults
  *   to true.
  */
-@ExperimentalMaterialApi
 public class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
-  private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
+  private val swipeThreshold: Float = 0.4f,
   private val swipeBackFromNestedScroll: Boolean = true,
   private val onBackInvoked: () -> Unit,
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
@@ -166,36 +158,29 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
     targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
-    val dismissState = rememberDismissState(targetState.args.first())
-    var wasSwipeDismissed by remember { mutableStateOf(false) }
     val swipeEnabled = targetState.backStackDepth > 1
-
-    LaunchedEffect(dismissState) {
-      snapshotFlow { dismissState.isDismissed(DismissDirection.StartToEnd) }
-        .filter { it }
-        .collect {
-          onBackInvoked()
-          wasSwipeDismissed = dismissState.offset.value != 0f
-        }
-    }
+    val dismissState =
+      rememberSwipeDismissState(
+        targetState.args.first(),
+        swipeThreshold = swipeThreshold,
+        onDismissed = onBackInvoked,
+      )
 
     if (swipeEnabled) {
       LaunchedEffect(dismissState) {
         snapshotFlow { dismissState.progress }
           .collect { progress ->
-            showPrevious =
-              progress.to == DismissValue.DismissedToEnd && progress.from == DismissValue.Default
-            swipeProgress = if (showPrevious) abs(progress.fraction) else 0f
+            showPrevious = progress > 0f
+            swipeProgress = if (showPrevious) progress else 0f
           }
       }
     }
 
-    if (!wasSwipeDismissed) {
-      SwipeableContent(
+    if (!dismissState.isDismissed) {
+      DraggableContent(
         state = dismissState,
         swipeEnabled = swipeEnabled,
         nestedScrollEnabled = swipeEnabled && swipeBackFromNestedScroll,
-        dismissThreshold = swipeThreshold,
         content = { innerContent(targetState.args.first()) },
       )
     }
@@ -203,7 +188,7 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
 
   public class Factory(
     private val enterOffsetFraction: Float = 0.25f,
-    private val swipeThreshold: ThresholdConfig = FractionalThreshold(0.4f),
+    private val swipeThreshold: Float = 0.4f,
     private val swipeBackFromNestedScroll: Boolean = true,
     private val onBackInvoked: () -> Unit,
   ) : AnimatedNavDecorator.Factory {
@@ -220,50 +205,41 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
 
 private val End: (Int) -> Int = { it }
 
-/** This is basically [androidx.compose.material.SwipeToDismiss] but simplified for our use case. */
+// todo Use seekableTransitionState
+/** Draggable content for gesture navigation. */
 @Composable
-@ExperimentalMaterialApi
-private fun SwipeableContent(
-  state: DismissState,
-  dismissThreshold: ThresholdConfig,
+private fun DraggableContent(
+  state: SwipeDismissState,
   modifier: Modifier = Modifier,
   swipeEnabled: Boolean = true,
   nestedScrollEnabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
-  BoxWithConstraints(modifier) {
-    val width = constraints.maxWidth
-
-    val nestedScrollConnection = remember(state) { SwipeDismissNestedScrollConnection(state) }
-
-    Box(
-      modifier =
-        Modifier.let { if (nestedScrollEnabled) it.nestedScroll(nestedScrollConnection) else it }
-          .swipeable(
-            state = state,
-            anchors =
-              mapOf(0f to DismissValue.Default, width.toFloat() to DismissValue.DismissedToEnd),
-            thresholds = { _, _ -> dismissThreshold },
-            orientation = Orientation.Horizontal,
-            enabled = swipeEnabled,
-            reverseDirection = LocalLayoutDirection.current == LayoutDirection.Rtl,
-            resistance =
-              ResistanceConfig(
-                basis = width.toFloat(),
-                factorAtMin = SwipeableDefaults.StiffResistanceFactor,
-                factorAtMax = SwipeableDefaults.StandardResistanceFactor,
-              ),
-          )
-    ) {
-      Box(modifier = Modifier.offset { IntOffset(x = state.offset.value.roundToInt(), y = 0) }) {
-        content()
-      }
+  val nestedScrollConnection = remember(state) { SwipeDismissNestedScrollConnection(state) }
+  Box(
+    modifier =
+      modifier
+        .let { if (nestedScrollEnabled) it.nestedScroll(nestedScrollConnection) else it }
+        .layout { measurable, constraints ->
+          val placeable = measurable.measure(constraints)
+          state.maxWidth = constraints.maxWidth.toFloat()
+          layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+        }
+        .draggable(
+          state = state.draggableState,
+          orientation = Orientation.Horizontal,
+          enabled = swipeEnabled,
+          reverseDirection = LocalLayoutDirection.current == LayoutDirection.Rtl,
+          onDragStopped = { velocity -> state.onDragStopped(velocity) },
+        )
+  ) {
+    Box(modifier = Modifier.offset { IntOffset(x = state.offset.roundToInt(), y = 0) }) {
+      content()
     }
   }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-private class SwipeDismissNestedScrollConnection(private val state: DismissState) :
+private class SwipeDismissNestedScrollConnection(private val state: SwipeDismissState) :
   NestedScrollConnection {
   override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
     when {
@@ -286,27 +262,83 @@ private class SwipeDismissNestedScrollConnection(private val state: DismissState
 
   override suspend fun onPreFling(available: Velocity): Velocity =
     when {
-      available.x > 0 && state.offset.value > 0 -> {
-        state.performFling(velocity = available.x)
+      available.x > 0 && state.offset > 0 -> {
+        state.onDragStopped(velocity = available.x)
         available
       }
       else -> Velocity.Zero
     }
 
   override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-    state.performFling(velocity = available.x)
+    state.onDragStopped(velocity = available.x)
     return available
   }
 }
 
 @Composable
-@ExperimentalMaterialApi
-private fun rememberDismissState(
+private fun rememberSwipeDismissState(
   vararg inputs: Any?,
-  initialValue: DismissValue = DismissValue.Default,
-  confirmStateChange: (DismissValue) -> Boolean = { true },
-): DismissState {
-  return rememberSaveable(*inputs, saver = DismissState.Saver(confirmStateChange)) {
-    DismissState(initialValue, confirmStateChange)
+  swipeThreshold: Float,
+  onDismissed: (() -> Unit)?,
+): SwipeDismissState {
+  return remember(keys = inputs) { SwipeDismissState() }
+    .apply {
+      this.dismissThreshold = swipeThreshold
+      this.onDismissed = onDismissed
+    }
+}
+
+@Stable
+private class SwipeDismissState {
+  var dismissThreshold by mutableFloatStateOf(0.4f)
+  var offset by mutableFloatStateOf(0f)
+  var maxWidth by mutableFloatStateOf(0f)
+  var isDismissed by mutableStateOf(false)
+  var onDismissed: (() -> Unit)? = null
+
+  val progress: Float by derivedStateOf { if (maxWidth == 0f) 0f else offset / maxWidth }
+
+  val draggableState = DraggableState { delta ->
+    val newOffset = (offset + delta).coerceIn(0f, maxWidth)
+    val resistance = calculateResistance(newOffset)
+    offset = newOffset * resistance
+  }
+
+  fun performDrag(delta: Float): Float {
+    val previousOffset = offset
+    val newOffset = (offset + delta).coerceIn(0f, maxWidth)
+    val resistance = calculateResistance(newOffset)
+    offset = newOffset * resistance
+    return offset - previousOffset
+  }
+
+  suspend fun onDragStopped(velocity: Float) {
+    val thresholdValue = dismissThreshold * maxWidth
+
+    val shouldDismiss = offset >= thresholdValue || velocity > 1000f
+    val targetOffset = if (shouldDismiss) maxWidth else 0f
+
+    draggableState.drag(MutatePriority.PreventUserInput) {
+      Animatable(offset).animateTo(targetOffset) { dragBy(value - offset) }
+    }
+    // Only trigger dismiss callback after animation completes
+    if (shouldDismiss && targetOffset == maxWidth) {
+      isDismissed = true
+      onDismissed?.invoke()
+    } else {
+      isDismissed = false
+    }
+    offset = 0f
+  }
+
+  private fun calculateResistance(offset: Float): Float {
+    return if (offset > maxWidth) {
+      val overshoot = offset - maxWidth
+      val resistanceFactor = 0.1f
+      val resistance = overshoot * resistanceFactor
+      (maxWidth + resistance) / offset
+    } else {
+      1f
+    }
   }
 }

@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+### Misc:
+
+- Update Compose BOM to `2025.08.00`.
+- Update Compose to `1.9.0`.
+
 0.30.0
 ------
 

@@ -117,7 +117,7 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
       if (!showPrevious) {
         // If the previous was shown but not dismissed make sure seekableTransitionState is reset
         // correctly.
-        seekableTransitionState.animateTo(current)
+        seekableTransitionState.snapTo(current)
       }
     }
 
@@ -205,7 +205,6 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
 
 private val End: (Int) -> Int = { it }
 
-// todo Use seekableTransitionState
 /** Draggable content for gesture navigation. */
 @Composable
 private fun DraggableContent(
@@ -277,24 +276,21 @@ private class SwipeDismissNestedScrollConnection(private val state: SwipeDismiss
 
 @Composable
 private fun rememberSwipeDismissState(
-  vararg inputs: Any?,
+  key: Any?,
   swipeThreshold: Float,
-  onDismissed: (() -> Unit)?,
+  onDismissed: () -> Unit,
 ): SwipeDismissState {
-  return remember(keys = inputs) { SwipeDismissState() }
-    .apply {
-      this.dismissThreshold = swipeThreshold
-      this.onDismissed = onDismissed
-    }
+  return remember(key, swipeThreshold) { SwipeDismissState(swipeThreshold) }
+    .apply { this.onDismissed = onDismissed }
 }
 
 @Stable
-private class SwipeDismissState {
-  var dismissThreshold by mutableFloatStateOf(0.4f)
+private class SwipeDismissState(private val swipeThreshold: Float) {
   var offset by mutableFloatStateOf(0f)
   var maxWidth by mutableFloatStateOf(0f)
+
   var isDismissed by mutableStateOf(false)
-  var onDismissed: (() -> Unit)? = null
+  var onDismissed: () -> Unit = {}
 
   val progress: Float by derivedStateOf { if (maxWidth == 0f) 0f else offset / maxWidth }
 
@@ -313,7 +309,7 @@ private class SwipeDismissState {
   }
 
   suspend fun onDragStopped(velocity: Float) {
-    val thresholdValue = dismissThreshold * maxWidth
+    val thresholdValue = swipeThreshold * maxWidth
 
     val shouldDismiss = offset >= thresholdValue || velocity > 1000f
     val targetOffset = if (shouldDismiss) maxWidth else 0f
@@ -324,7 +320,7 @@ private class SwipeDismissState {
     // Only trigger dismiss callback after animation completes
     if (shouldDismiss && targetOffset == maxWidth) {
       isDismissed = true
-      onDismissed?.invoke()
+      onDismissed()
     } else {
       isDismissed = false
     }

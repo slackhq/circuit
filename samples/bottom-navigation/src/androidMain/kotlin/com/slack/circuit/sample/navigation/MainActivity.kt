@@ -20,7 +20,6 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.gesturenavigation.CupertinoGestureNavigationDecorator
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LogcatLogger
@@ -64,7 +63,9 @@ class MainActivity : AppCompatActivity() {
             buildCircuitForTabs(tabs)
               .newBuilder()
               .setAnimatedNavDecoratorFactory(
-                CupertinoGestureNavigationDecorator.Factory(onBackInvoked = { interceptingNavigator.pop() })
+                CupertinoGestureNavigationDecorator.Factory(
+                  onBackInvoked = { interceptingNavigator.pop() }
+                )
               )
               .build()
           }

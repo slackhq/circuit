@@ -1,16 +1,14 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-
 package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -23,7 +21,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -34,11 +31,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.node.DelegatingNode
+import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
@@ -47,7 +53,9 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import kotlin.math.roundToInt
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * Cupertino specific version of [AnimatedNavDecorator]. This is shipped as common code, to allow
@@ -61,76 +69,20 @@ import kotlinx.collections.immutable.ImmutableList
  *   navigation. This is useless when you have full width horizontally scrolling layouts. Defaults
  *   to true.
  */
+// todo Assuming a lot about UIKitBackGestureDispatcher, need to verify on iOS.
+//  Readd support for nested scroll?
 public class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
-  private val swipeThreshold: Float = 0.4f,
   private val swipeBackFromNestedScroll: Boolean = true,
   private val onBackInvoked: () -> Unit,
-) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
-
-  private lateinit var seekableTransitionState:
-    SeekableTransitionState<GestureNavTransitionHolder<T>>
-
-  private var showPrevious by mutableStateOf(false)
-  private var swipeProgress by mutableFloatStateOf(0f)
+) : PredictiveBackNavigationDecorator<T>(onBackInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
 
-  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args)
-  }
-
-  @Composable
-  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
-
-    val current = remember(args) { targetState(args) }
-    val previous =
-      remember(args) {
-        if (args.size > 1) {
-          targetState(args.subList(1, args.size))
-        } else null
-      }
-
-    seekableTransitionState = remember { SeekableTransitionState(current) }
-
-    LaunchedEffect(current) {
-      // When the current state has changed (i.e. any transition has completed),
-      // clear out any transient state
-      showPrevious = false
-      swipeProgress = 0f
-      seekableTransitionState.animateTo(current)
-    }
-
-    LaunchedEffect(previous, current) {
-      if (previous != null) {
-        snapshotFlow { swipeProgress }
-          .collect { progress ->
-            if (progress != 0f) {
-              seekableTransitionState.seekTo(fraction = progress, targetState = previous)
-            }
-          }
-      }
-    }
-
-    LaunchedEffect(showPrevious) {
-      if (!showPrevious) {
-        // If the previous was shown but not dismissed make sure seekableTransitionState is reset
-        // correctly.
-        seekableTransitionState.snapTo(current)
-      }
-    }
-
-    return rememberTransition(
-      seekableTransitionState,
-      label = "CupertinoGestureNavigationDecorator",
-    )
-  }
-
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
-
     return when (animatedNavEvent) {
       AnimatedNavEvent.GoTo -> {
         slideInHorizontally(initialOffsetX = End)
@@ -158,48 +110,149 @@ public class CupertinoGestureNavigationDecorator<T : NavArgument>(
     targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
-    val swipeEnabled = targetState.backStackDepth > 1
-    val dismissState =
-      rememberSwipeDismissState(
-        targetState.args.first(),
-        swipeThreshold = swipeThreshold,
-        onDismissed = onBackInvoked,
-      )
-
-    if (swipeEnabled) {
-      LaunchedEffect(dismissState) {
-        snapshotFlow { dismissState.progress }
-          .collect { progress ->
-            showPrevious = progress > 0f
-            swipeProgress = if (showPrevious) progress else 0f
-          }
-      }
-    }
-
-    if (!dismissState.isDismissed) {
-      DraggableContent(
-        state = dismissState,
-        swipeEnabled = swipeEnabled,
-        nestedScrollEnabled = swipeEnabled && swipeBackFromNestedScroll,
-        content = { innerContent(targetState.args.first()) },
-      )
+    Box(
+      modifier =
+        Modifier.gestureTranslation(
+          targetState = targetState,
+          transition = transition,
+          isSeeking = { isSeeking },
+          showPrevious = { showPrevious },
+          swipeOffset = { swipeOffset },
+        )
+    ) {
+      innerContent(targetState.args.first())
     }
   }
 
   public class Factory(
     private val enterOffsetFraction: Float = 0.25f,
-    private val swipeThreshold: Float = 0.4f,
     private val swipeBackFromNestedScroll: Boolean = true,
     private val onBackInvoked: () -> Unit,
   ) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
       return CupertinoGestureNavigationDecorator(
         enterOffsetFraction = enterOffsetFraction,
-        swipeThreshold = swipeThreshold,
         swipeBackFromNestedScroll = swipeBackFromNestedScroll,
         onBackInvoked = onBackInvoked,
       )
     }
+  }
+}
+
+private fun Modifier.gestureTranslation(
+  targetState: GestureNavTransitionHolder<*>,
+  transition: Transition<EnterExitState>,
+  isSeeking: () -> Boolean,
+  showPrevious: () -> Boolean,
+  swipeOffset: () -> Offset,
+): Modifier =
+  this then
+    GestureTranslationElement(
+      targetState = targetState,
+      transition = transition,
+      isSeeking = isSeeking,
+      showPrevious = showPrevious,
+      swipeOffset = swipeOffset,
+    )
+
+private data class GestureTranslationElement(
+  val targetState: GestureNavTransitionHolder<*>,
+  val transition: Transition<EnterExitState>,
+  val isSeeking: () -> Boolean,
+  val showPrevious: () -> Boolean,
+  val swipeOffset: () -> Offset,
+) : ModifierNodeElement<GestureTranslationNode>() {
+
+  override fun create(): GestureTranslationNode =
+    GestureTranslationNode(
+      targetState = targetState,
+      transition = transition,
+      isSeeking = isSeeking,
+      showPrevious = showPrevious,
+      swipeOffset = swipeOffset,
+    )
+
+  override fun update(node: GestureTranslationNode) {
+    node.update(
+      targetState = targetState,
+      transition = transition,
+      isSeeking = isSeeking,
+      showPrevious = showPrevious,
+      swipeOffset = swipeOffset,
+    )
+  }
+}
+
+private class GestureTranslationNode(
+  private var targetState: GestureNavTransitionHolder<*>,
+  private var transition: Transition<EnterExitState>,
+  private var isSeeking: () -> Boolean,
+  private var showPrevious: () -> Boolean,
+  private var swipeOffset: () -> Offset,
+) : DelegatingNode(), LayoutModifierNode {
+
+  private val animatable = Animatable(0f)
+  private var maxWidth = 0f
+
+  private var layerBlock: GraphicsLayerScope.() -> Unit = {
+    if (transition.targetState == EnterExitState.PostExit) {
+      translationX = animatable.value
+    }
+  }
+
+  override val shouldAutoInvalidate: Boolean = false
+
+  override fun MeasureScope.measure(
+    measurable: Measurable,
+    constraints: Constraints,
+  ): MeasureResult {
+    val placeable = measurable.measure(constraints)
+    maxWidth = placeable.width.toFloat()
+    return layout(placeable.width, placeable.height) {
+      placeable.placeWithLayer(0, 0, layerBlock = layerBlock)
+    }
+  }
+
+  override fun onAttach() {
+    coroutineScope.launch {
+      animatable.snapTo(0f)
+      snapshotFlow {
+          val offset = swipeOffset()
+          when {
+            !offset.isValid() -> 0f
+            isSeeking() -> offset.x
+            showPrevious() -> maxWidth
+            else -> 0f
+          }
+        }
+        .collectLatest {
+          try {
+            animatable.animateTo(it)
+          } catch (e: CancellationException) {
+            animatable.snapTo(it)
+            throw e
+          }
+        }
+    }
+  }
+
+  override fun onDetach() {
+    maxWidth = 0f
+  }
+
+  fun update(
+    targetState: GestureNavTransitionHolder<*>,
+    transition: Transition<EnterExitState>,
+    isSeeking: () -> Boolean,
+    showPrevious: () -> Boolean,
+    swipeOffset: () -> Offset,
+  ) {
+    this.targetState = targetState
+    this.transition = transition
+    this.isSeeking = isSeeking
+    this.showPrevious = showPrevious
+    this.swipeOffset = swipeOffset
+    this.invalidateLayer()
   }
 }
 

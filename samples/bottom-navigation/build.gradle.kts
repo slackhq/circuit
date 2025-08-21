@@ -8,6 +8,7 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.compose.hotReload)
 }
 
 android {
@@ -35,6 +36,7 @@ kotlin {
       dependencies {
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material3)
+        implementation(libs.compose.material.material3.adaptive)
         implementation(libs.compose.material.icons)
         implementation(libs.compose.ui.tooling.preview)
         implementation(projects.circuitFoundation)

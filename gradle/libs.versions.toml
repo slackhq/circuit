@@ -2,17 +2,17 @@
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
-androidx-browser = "1.8.0"
+androidx-browser = "1.9.0"
 androidx-lifecycle = "2.9.2"
 androidx-lifecycle-jb = "2.9.1"
-agp = "8.11.1"
+agp = "8.12.1"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
-benchmark = "1.3.4"
+benchmark = "1.4.0"
 coil = "3.3.0"
 compose-animation = "1.8.3"
 compose-foundation = "1.8.3"
-compose-hotReload = "1.0.0-beta04"
+compose-hotReload = "1.0.0-beta05"
 compose-material = "1.8.3"
 compose-material-icons-core = "1.7.8"
 compose-material3 = "1.3.2"
@@ -48,8 +48,8 @@ okhttp = "5.1.0"
 okio = "3.16.0"
 picnic = "0.7.0"
 robolectric = "4.15.1"
-roborazzi = "1.46.1"
-skie = "0.10.4"
+roborazzi = "1.49.0"
+skie = "0.10.5"
 spotless = "7.0.4"
 sqldelight = "2.1.0"
 telephoto = "0.16.0"
@@ -126,7 +126,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
 
-androidx-core = "androidx.core:core-ktx:1.16.0"
+androidx-core = "androidx.core:core-ktx:1.17.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -137,9 +137,9 @@ androidx-lifecycle-viewModel-compose-jb = { module = "org.jetbrains.androidx.lif
 # Force a newer version of androidx.loader because Espresso depends on an old and wrong version of it
 androidx-loader = "androidx.loader:loader:1.1.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
-androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
-androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-androidx-test-monitor = "androidx.test:monitor:1.7.2"
+androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
+androidx-test-monitor = "androidx.test:monitor:1.8.0"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 
 anvil-annotations = { module = "dev.zacsweers.anvil:annotations", version.ref = "anvil" }

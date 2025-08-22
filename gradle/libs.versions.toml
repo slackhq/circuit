@@ -137,6 +137,7 @@ androidx-lifecycle-viewModel-compose-jb = { module = "org.jetbrains.androidx.lif
 # Force a newer version of androidx.loader because Espresso depends on an old and wrong version of it
 androidx-loader = "androidx.loader:loader:1.1.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
+androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.4.0-alpha02"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
 androidx-test-monitor = "androidx.test:monitor:1.8.0"
@@ -214,6 +215,8 @@ kotlinInject-anvil-compiler = { module = "software.amazon.lastmile.kotlin.inject
 kotlinInject-anvil-runtime = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime", version.ref = "kotlinInject-anvil" }
 kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime-optional", version.ref = "kotlinInject-anvil" }
 
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
 ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"

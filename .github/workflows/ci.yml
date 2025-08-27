@@ -105,7 +105,7 @@ jobs:
             **/build/reports/**
 
   build-ios:
-    runs-on: macos-15
+    runs-on: macos-latest
     env:
       GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
@@ -129,9 +129,6 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.4'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4

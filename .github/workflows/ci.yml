@@ -105,7 +105,7 @@ jobs:
             **/build/reports/**
 
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-15
     env:
       GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 

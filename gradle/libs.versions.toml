@@ -22,7 +22,7 @@ compose-jb = "1.8.2"
 compose-jb-material-icons-core = "1.7.3"
 compose-bom = "2025.07.00"
 compose-integration-constraintlayout = "1.1.1"
-dagger = "2.57"
+dagger = "2.57.1"
 datastore = "1.1.7"
 detekt = "1.23.8"
 dokka = "2.0.0"
@@ -49,7 +49,7 @@ okio = "3.16.0"
 picnic = "0.7.0"
 robolectric = "4.15.1"
 roborazzi = "1.49.0"
-skie = "0.10.5"
+skie = "0.10.6"
 spotless = "7.0.4"
 sqldelight = "2.1.0"
 telephoto = "0.16.0"
@@ -196,7 +196,7 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jsoup = "org.jsoup:jsoup:1.21.1"
+jsoup = "org.jsoup:jsoup:1.21.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }

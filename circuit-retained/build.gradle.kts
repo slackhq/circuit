@@ -42,13 +42,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -73,14 +67,9 @@ kotlin {
     iosMain { dependsOn(sharedMain) }
     macosMain { dependsOn(sharedMain) }
     androidMain { dependsOn(sharedMain) }
-
-    get("browserCommonMain").apply {
-      dependsOn(sharedMain)
-      dependsOn(commonMain.get())
-    }
+    webMain { dependsOn(sharedMain) }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
-    get("browserCommonTest").dependsOn(commonTest.get())
 
     // Necessary because android instrumented tests cannot share a source set with jvm tests for
     // some reason

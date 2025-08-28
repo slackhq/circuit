@@ -49,8 +49,6 @@ androidx.core:core
 androidx.customview:customview-poolingcontainer
 androidx.emoji2:emoji2
 androidx.graphics:graphics-path
-androidx.graphics:graphics-shapes-android
-androidx.graphics:graphics-shapes
 androidx.interpolator:interpolator
 androidx.lifecycle:lifecycle-common-java8
 androidx.lifecycle:lifecycle-common-jvm

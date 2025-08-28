@@ -6,7 +6,7 @@ Unreleased
 
 ### Misc:
 
-- Update Compose BOM to `2025.08.00`.
+- Update Compose BOM to `2025.08.01`.
 - Update Compose to `1.9.0`.
 
 0.30.0

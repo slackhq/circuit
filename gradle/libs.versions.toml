@@ -31,7 +31,7 @@ jdk = "23"
 jvmTarget = "11"
 publishedJvmTarget = "11"
 kct = "0.8.0"
-kotlin = "2.2.20-RC"
+kotlin = "2.2.20-RC2"
 kotlinInject = "0.8.0"
 kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
@@ -79,7 +79,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.7.0-2.2.20-RC-alpha04" }
+metro = { id = "dev.zacsweers.metro", version = "0.7.0-2.2.20-RC2-alpha06" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

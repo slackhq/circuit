@@ -37,6 +37,7 @@ kotlin {
         api(projects.circuitFoundation)
         // For CupertinoGestureNavigationDecoration
         implementation(libs.compose.material.material)
+        implementation(libs.compose.ui.backhandler)
       }
     }
 

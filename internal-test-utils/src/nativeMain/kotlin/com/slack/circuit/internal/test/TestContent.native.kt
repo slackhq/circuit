@@ -8,6 +8,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
-actual fun rememberViewModel(key: String?): MutableIntState {
-  return rememberSaveable(key = key) { mutableIntStateOf(0) }
+actual fun rememberViewModel(input: String?): MutableIntState {
+  return rememberSaveable(input) { mutableIntStateOf(0) }
 }

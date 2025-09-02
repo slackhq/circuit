@@ -25,7 +25,6 @@ org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
-org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core-desktop
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation-desktop

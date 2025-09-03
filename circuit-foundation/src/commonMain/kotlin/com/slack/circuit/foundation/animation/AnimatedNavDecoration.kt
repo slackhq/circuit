@@ -100,7 +100,6 @@ public class AnimatedNavDecoration(
   @Composable
   public override fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
-    backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
@@ -109,7 +108,7 @@ public class AnimatedNavDecoration(
       decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
     }
     with(decorator) {
-      val transition = updateTransition(args, backStackDepth)
+      val transition = updateTransition(args)
       transition.AnimatedContent(
         modifier = modifier,
         transitionSpec = transitionSpec(animatedScreenTransforms),
@@ -126,15 +125,17 @@ public class AnimatedNavDecoration(
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
-  val diff = targetState.backStackDepth - initialState.backStackDepth
-  val sameRoot = targetState.rootScreen == initialState.rootScreen
   val animatedNavEvent =
-    when {
-      !sameRoot -> AnimatedNavEvent.RootReset
-      diff > 0 -> AnimatedNavEvent.GoTo
-      diff < 0 -> AnimatedNavEvent.Pop
-      // Somehow the back stack has not changed?
-      else -> return@spec EnterTransition.None togetherWith ExitTransition.None
+    if (targetState.root != initialState.root) {
+      AnimatedNavEvent.RootReset
+    } else if (targetState.top == initialState.top) {
+      // Target screen has not changed, probably we should not show any animation even if the back
+      // stack is changed
+      return@spec EnterTransition.None togetherWith ExitTransition.None
+    } else if (initialState.backStack.contains(targetState.top)) {
+      AnimatedNavEvent.Pop
+    } else {
+      AnimatedNavEvent.GoTo
     }
 
   val baseTransform = transitionSpec(animatedNavEvent)
@@ -149,9 +150,9 @@ private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverr
 ): PartialContentTransform {
   // Read any screen specific overrides
   val targetAnimatedScreenTransform =
-    animatedScreenTransforms[targetState.screen::class] ?: NoOpAnimatedScreenTransform
+    animatedScreenTransforms[targetState.top.screen::class] ?: NoOpAnimatedScreenTransform
   val initialAnimatedScreenTransform =
-    animatedScreenTransforms[initialState.screen::class] ?: NoOpAnimatedScreenTransform
+    animatedScreenTransforms[initialState.top.screen::class] ?: NoOpAnimatedScreenTransform
 
   return PartialContentTransform(
     enter = targetAnimatedScreenTransform.run { enterTransition(animatedNavEvent) },

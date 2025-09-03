@@ -82,24 +82,21 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   private var showPrevious by mutableStateOf(false)
   private var swipeProgress by mutableFloatStateOf(0f)
 
-  override fun targetState(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args.first(), backStackDepth, args.last())
+  // Track popped zIndex so screens are layered correctly
+  private var zIndexDepth = 0f
+
+  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
+    return GestureNavTransitionHolder(args)
   }
 
   @Composable
-  override fun updateTransition(
-    args: ImmutableList<T>,
-    backStackDepth: Int,
-  ): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
 
-    val current = remember(args) { targetState(args, backStackDepth) }
+    val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
         if (args.size > 1) {
-          targetState(args.subList(1, args.size), backStackDepth - 1)
+          targetState(args.subList(1, args.size))
         } else null
       }
 
@@ -141,27 +138,26 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
-    val diff = targetState.backStackDepth - initialState.backStackDepth
-    val sameRoot = targetState.rootScreen == initialState.rootScreen
 
-    return when {
-      // adding to back stack
-      sameRoot && diff > 0 -> {
+    return when (animatedNavEvent) {
+      AnimatedNavEvent.GoTo -> {
         slideInHorizontally(initialOffsetX = End)
           .togetherWith(
             slideOutHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           )
       }
-      // come back from back stack
-      sameRoot && diff < 0 -> {
+      AnimatedNavEvent.Pop -> {
         slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           .togetherWith(
             if (showPrevious) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
           )
-          .apply { targetContentZIndex = -1f }
+          .apply { targetContentZIndex = --zIndexDepth }
       }
-      // Root reset. Crossfade
-      else -> fadeIn() togetherWith fadeOut()
+      AnimatedNavEvent.RootReset -> {
+        zIndexDepth = 0f
+        // Simple Crossfade on reset
+        fadeIn() togetherWith fadeOut()
+      }
     }
   }
 
@@ -170,7 +166,7 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
     targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
-    val dismissState = rememberDismissState(targetState.record)
+    val dismissState = rememberDismissState(targetState.args.first())
     var wasSwipeDismissed by remember { mutableStateOf(false) }
     val swipeEnabled = targetState.backStackDepth > 1
 
@@ -200,7 +196,7 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
         swipeEnabled = swipeEnabled,
         nestedScrollEnabled = swipeEnabled && swipeBackFromNestedScroll,
         dismissThreshold = swipeThreshold,
-        content = { innerContent(targetState.record) },
+        content = { innerContent(targetState.args.first()) },
       )
     }
   }

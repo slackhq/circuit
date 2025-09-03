@@ -27,7 +27,6 @@ public interface NavDecoration {
   @Composable
   public fun <T : NavArgument> DecoratedContent(
     args: ImmutableList<T>,
-    backStackDepth: Int,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   )

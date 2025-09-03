@@ -10,10 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.BackStackRecordLocalProvider
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.foundation.backstack.ViewModelBackStackRecordLocalProvider
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.ExperimentalCircuitApi
@@ -25,7 +28,9 @@ import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import kotlin.reflect.KClass
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 
 /**
@@ -104,6 +109,10 @@ public class Circuit private constructor(builder: Builder) {
    * @see pausableState
    */
   public val presentWithLifecycle: Boolean = builder.presentWithLifecycle
+
+  public val backStackLocalProviders:
+    ImmutableList<BackStackRecordLocalProvider<BackStack.Record>> =
+    builder.backStackLocalProviders.toImmutableList()
 
   @OptIn(InternalCircuitApi::class)
   public fun presenter(
@@ -184,6 +193,10 @@ public class Circuit private constructor(builder: Builder) {
     public var presentWithLifecycle: Boolean = true
       private set
 
+    public val backStackLocalProviders:
+      MutableList<BackStackRecordLocalProvider<BackStack.Record>> =
+      mutableListOf(ViewModelBackStackRecordLocalProvider)
+
     @OptIn(ExperimentalCircuitApi::class)
     internal constructor(circuit: Circuit) : this() {
       uiFactories.addAll(circuit.uiFactories)
@@ -191,6 +204,8 @@ public class Circuit private constructor(builder: Builder) {
       animatedScreenTransforms.putAll(circuit.animatedScreenTransforms)
       animatedNavDecoratorFactory = circuit.animatedNavDecoratorFactory
       eventListenerFactory = circuit.eventListenerFactory
+      backStackLocalProviders.clear()
+      backStackLocalProviders.addAll(circuit.backStackLocalProviders)
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
       if (circuit.defaultNavDecoration !is AnimatedNavDecoration) {
         defaultNavDecoration = circuit.defaultNavDecoration
@@ -278,6 +293,26 @@ public class Circuit private constructor(builder: Builder) {
 
     public fun addPresenterFactories(factories: Iterable<Presenter.Factory>): Builder = apply {
       presenterFactories.addAll(factories)
+    }
+
+    public fun addBackStackRecordLocalProvider(
+      provider: BackStackRecordLocalProvider<BackStack.Record>
+    ): Builder = apply { backStackLocalProviders.add(provider) }
+
+    public fun addBackStackRecordLocalProvider(
+      vararg providers: BackStackRecordLocalProvider<BackStack.Record>
+    ): Builder = apply {
+      for (p in providers) {
+        backStackLocalProviders.add(p)
+      }
+    }
+
+    public fun addBackStackRecordLocalProviders(
+      providers: Iterable<BackStackRecordLocalProvider<BackStack.Record>>
+    ): Builder = apply { backStackLocalProviders.addAll(providers) }
+
+    public fun clearBackStackRecordLocalProviders(): Builder = apply {
+      backStackLocalProviders.clear()
     }
 
     public fun setAnimatedNavDecoratorFactory(

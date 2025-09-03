@@ -30,9 +30,9 @@ interface CircuitProviders {
   @SingleIn(AppScope::class)
   @Provides
   fun provideCircuit(
-    presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
-    uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-    animatedScreenTransforms: @JvmSuppressWildcards Map<KClass<out Screen>, AnimatedScreenTransform>,
+    presenterFactories: Set<Presenter.Factory>,
+    uiFactories: Set<Ui.Factory>,
+    animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
   ): Circuit {
     return Circuit.Builder()
       .addPresenterFactories(presenterFactories)

@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.star.db.Gender.FEMALE
 import com.slack.circuit.star.ui.StarTheme
-import kotlinx.collections.immutable.persistentSetOf
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -20,7 +19,7 @@ private fun PreviewUpdateFiltersSheet() {
   StarTheme {
     Surface {
       UpdateFiltersSheet(
-        initialFilters = Filters(persistentSetOf(FEMALE)),
+        initialFilters = Filters(setOf(FEMALE)),
         modifier = Modifier.padding(16.dp),
       )
     }

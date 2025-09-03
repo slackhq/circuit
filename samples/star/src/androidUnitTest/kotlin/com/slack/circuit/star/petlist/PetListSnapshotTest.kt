@@ -22,7 +22,6 @@ import com.slack.circuit.star.petlist.PetListScreen.State.Loading
 import com.slack.circuit.star.petlist.PetListScreen.State.NoAnimals
 import com.slack.circuit.star.petlist.PetListScreen.State.Success
 import com.slack.circuit.star.ui.StarTheme
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -110,7 +109,7 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
   @Test
   fun petList_show_list_for_success_state() = snapshot { modifier ->
     PreviewSharedElementTransitionLayout {
-      val animals = persistentListOf(ANIMAL)
+      val animals = listOf(ANIMAL)
       PetList(Success(animals, isRefreshing = false), modifier)
     }
   }

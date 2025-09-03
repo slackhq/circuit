@@ -4,6 +4,8 @@ Changelog
 Unreleased
 ----------
 
+- **Breaking change**: Remove `kotlinx-immutable` dependency. With Compose's strong skipping option, we no longer feel this is necessary.
+
 0.30.0
 ------
 

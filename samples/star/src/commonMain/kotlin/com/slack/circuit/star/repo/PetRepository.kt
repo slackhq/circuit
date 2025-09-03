@@ -10,7 +10,7 @@ import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
-import com.slack.circuit.star.db.ImmutableListAdapter
+import com.slack.circuit.star.db.ListColumnAdapter
 import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
@@ -21,7 +21,6 @@ import com.slack.eithernet.retryWithExponentialBackoff
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.SupervisorJob
@@ -52,8 +51,8 @@ class PetRepositoryImpl(
     StarDatabase(
       driver,
       Animal.Adapter(
-        ImmutableListAdapter(","),
-        ImmutableListAdapter(":"),
+        ListColumnAdapter(","),
+        ListColumnAdapter(":"),
         EnumColumnAdapter(),
         EnumColumnAdapter(),
       ),

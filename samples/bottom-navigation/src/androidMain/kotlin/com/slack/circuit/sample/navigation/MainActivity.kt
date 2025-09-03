@@ -26,7 +26,6 @@ import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
-import kotlinx.collections.immutable.persistentListOf
 
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +38,8 @@ class MainActivity : AppCompatActivity() {
 
     // CircuitX Navigation
     val interceptors =
-      persistentListOf(AndroidScreenAwareNavigationInterceptor(this), InfoScreenRewriteInterceptor)
-    val eventListeners = persistentListOf(LoggingNavigationEventListener(LogcatLogger))
+      listOf(AndroidScreenAwareNavigationInterceptor(this), InfoScreenRewriteInterceptor)
+    val eventListeners = listOf(LoggingNavigationEventListener(LogcatLogger))
     val notifier = LoggingNavigatorFailureNotifier(LogcatLogger)
 
     val tabs = TabScreen.all

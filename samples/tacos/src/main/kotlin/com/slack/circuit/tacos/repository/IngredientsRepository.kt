@@ -4,21 +4,19 @@ package com.slack.circuit.tacos.repository
 
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 interface IngredientsRepository {
-  suspend fun getFillings(): ImmutableList<Ingredient>
+  suspend fun getFillings(): List<Ingredient>
 
-  suspend fun getToppings(): ImmutableList<Ingredient>
+  suspend fun getToppings(): List<Ingredient>
 }
 
 object IngredientsRepositoryImpl : IngredientsRepository {
-  override suspend fun getFillings(): ImmutableList<Ingredient> {
+  override suspend fun getFillings(): List<Ingredient> {
     return fillings
   }
 
-  override suspend fun getToppings(): ImmutableList<Ingredient> {
+  override suspend fun getToppings(): List<Ingredient> {
     return toppings
   }
 }

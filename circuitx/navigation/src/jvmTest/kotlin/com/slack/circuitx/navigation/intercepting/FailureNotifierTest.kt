@@ -5,7 +5,6 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestScreen
 import kotlin.test.assertEquals
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +15,7 @@ class FailureNotifierTest {
 
   private val failureNotifier = FakeFailureNotifier()
   private val fakeInterceptor = FakeNavigationInterceptor()
-  private val singleInterceptor = persistentListOf(fakeInterceptor)
+  private val singleInterceptor = listOf(fakeInterceptor)
 
   @Test
   fun `goToInterceptorFailure consumed failure`() = runTest {

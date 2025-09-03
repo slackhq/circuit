@@ -1,6 +1,6 @@
 import com.slack.circuit.star.db.Gender;
 import com.slack.circuit.star.db.Size;
-import kotlinx.collections.immutable.ImmutableList;
+import kotlin.collections.List;
 import kotlin.String;
 
 -- Journal of operations performed on the database.
@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS animal (
   sort INTEGER NOT NULL,
   name TEXT NOT NULL,
   url TEXT NOT NULL,
-  photoUrls TEXT AS ImmutableList<String> NOT NULL,
+  photoUrls TEXT AS List<String> NOT NULL,
   primaryPhotoUrl TEXT,
-  tags TEXT AS ImmutableList<String> NOT NULL,
+  tags TEXT AS List<String> NOT NULL,
   description TEXT NOT NULL,
   primaryBreed TEXT,
   gender TEXT AS Gender NOT NULL,

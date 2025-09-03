@@ -45,7 +45,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.bundles.compose.ui)
   implementation(libs.dagger)
-  implementation(libs.kotlinx.immutable)
   implementation(projects.circuitFoundation)
   implementation(projects.circuitCodegenAnnotations)
 

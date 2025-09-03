@@ -28,10 +28,6 @@ import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import kotlin.reflect.KClass
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
 
 /**
  * [Circuit] adapts [presenter factories][Presenter.Factory] to their corresponding
@@ -84,8 +80,8 @@ public class Circuit private constructor(builder: Builder) {
   public val onUnavailableContent: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     builder.onUnavailableContent
   @ExperimentalCircuitApi
-  public val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform> =
-    builder.animatedScreenTransforms.toImmutableMap()
+  public val animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform> =
+    builder.animatedScreenTransforms.toMap()
   public val animatedNavDecoratorFactory: AnimatedNavDecorator.Factory =
     builder.animatedNavDecoratorFactory
 
@@ -110,9 +106,8 @@ public class Circuit private constructor(builder: Builder) {
    */
   public val presentWithLifecycle: Boolean = builder.presentWithLifecycle
 
-  public val backStackLocalProviders:
-    ImmutableList<BackStackRecordLocalProvider<BackStack.Record>> =
-    builder.backStackLocalProviders.toImmutableList()
+  public val backStackLocalProviders: List<BackStackRecordLocalProvider<BackStack.Record>> =
+    builder.backStackLocalProviders.toList()
 
   @OptIn(InternalCircuitApi::class)
   public fun presenter(

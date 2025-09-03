@@ -1,14 +1,14 @@
 //
-//  starApp.swift
-//  star
+//  starIOSApp.swift
+//  starIOS
 //
-//  Created by Zac Sweers on 7/8/25.
+//  Created by Zac on 09-02.
 //
 
 import SwiftUI
 
 @main
-struct starApp: App {
+struct starIOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

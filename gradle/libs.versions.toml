@@ -235,7 +235,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
-material = "com.google.android.material:material:1.12.0"
+material = "com.google.android.material:material:1.13.0"
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 

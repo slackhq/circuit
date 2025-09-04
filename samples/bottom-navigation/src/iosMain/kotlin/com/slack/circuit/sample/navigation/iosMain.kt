@@ -21,7 +21,6 @@ import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import com.slack.circuitx.navigation.intercepting.NavigationLogger
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
-import kotlinx.collections.immutable.persistentListOf
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
@@ -30,8 +29,8 @@ import platform.UIKit.UIViewController
 @Suppress("Unused") // Called from Swift
 fun MainViewController(): UIViewController {
   // CircuitX Navigation
-  val interceptors = persistentListOf(InfoScreenRewriteInterceptor)
-  val eventListeners = persistentListOf(LoggingNavigationEventListener(Logger))
+  val interceptors = listOf(InfoScreenRewriteInterceptor)
+  val eventListeners = listOf(LoggingNavigationEventListener(Logger))
   val notifier = LoggingNavigatorFailureNotifier(Logger)
 
   val tabs = TabScreen.all

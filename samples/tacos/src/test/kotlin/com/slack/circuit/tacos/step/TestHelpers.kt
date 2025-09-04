@@ -9,7 +9,6 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import kotlinx.collections.immutable.persistentListOf
 
 internal inline fun <reified T : Any> OrderStep.State.asInstanceOf(): T =
   (this as? T) ?: error("unable to cast $this to ${T::class.simpleName}")
@@ -44,14 +43,14 @@ internal class FakeOrderStepParent(
 }
 
 internal val testFillings =
-  persistentListOf(
+  listOf(
     Ingredient("apple", calories = 10, charge = 199, diet = Diet.VEGAN),
     Ingredient("orange", diet = Diet.VEGETARIAN),
     Ingredient("pear", diet = Diet.NONE),
   )
 
 internal val testToppings =
-  persistentListOf(
+  listOf(
     Ingredient("carrot", calories = 15, charge = 75, diet = Diet.VEGAN),
     Ingredient("onion", diet = Diet.VEGETARIAN),
     Ingredient("potato", diet = Diet.NONE),

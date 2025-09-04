@@ -34,13 +34,12 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.Navigator
-import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun ContentScaffold(
   backStack: SaveableBackStack,
   navigator: Navigator,
-  tabs: ImmutableList<TabScreen>,
+  tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
@@ -57,7 +56,7 @@ fun ContentScaffold(
 
 @Composable
 private fun BottomTabRow(
-  tabs: ImmutableList<TabScreen>,
+  tabs: List<TabScreen>,
   backStack: SaveableBackStack,
   navigator: Navigator,
   modifier: Modifier = Modifier,

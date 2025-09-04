@@ -19,14 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /** Presentation logic for currently visible routes of a navigable UI. */
 @Stable
 public interface NavDecoration {
   @Composable
   public fun <T : NavArgument> DecoratedContent(
-    args: ImmutableList<T>,
+    args: List<T>,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   )

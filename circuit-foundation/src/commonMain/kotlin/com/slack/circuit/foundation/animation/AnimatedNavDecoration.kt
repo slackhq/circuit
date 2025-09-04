@@ -22,8 +22,6 @@ import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlin.reflect.KClass
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
 
 /**
  * `AnimatedNavDecoration` is an implementation of [NavDecoration] that provides the `Navigation`
@@ -93,13 +91,13 @@ import kotlinx.collections.immutable.ImmutableMap
  */
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitApi::class)
 public class AnimatedNavDecoration(
-  private val animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>,
+  private val animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
   private val decoratorFactory: AnimatedNavDecorator.Factory,
 ) : NavDecoration {
 
   @Composable
   public override fun <T : NavArgument> DecoratedContent(
-    args: ImmutableList<T>,
+    args: List<T>,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
@@ -123,7 +121,7 @@ public class AnimatedNavDecoration(
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
-  animatedScreenTransforms: ImmutableMap<KClass<out Screen>, AnimatedScreenTransform>
+  animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
   val animatedNavEvent =
     if (targetState.root != initialState.root) {

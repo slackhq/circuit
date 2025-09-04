@@ -80,9 +80,6 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.Inject
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.mutate
-import kotlinx.collections.immutable.persistentListOf
 
 @Parcelize
 data class PetDetailScreen(
@@ -108,28 +105,28 @@ data class PetDetailScreen(
 
     sealed interface AnimalState : State {
       val id: Long
-      val photoUrls: ImmutableList<String>
+      val photoUrls: List<String>
       val photoUrlMemoryCacheKey: String?
       val name: String
-      val tags: ImmutableList<String>
+      val tags: List<String>
     }
 
     data class Partial(
       override val id: Long,
-      override val photoUrls: ImmutableList<String>,
+      override val photoUrls: List<String>,
       override val photoUrlMemoryCacheKey: String,
       override val name: String,
-      override val tags: ImmutableList<String>,
+      override val tags: List<String>,
     ) : AnimalState
 
     data class Full(
       override val id: Long,
       val url: String,
-      override val photoUrls: ImmutableList<String>,
+      override val photoUrls: List<String>,
       override val photoUrlMemoryCacheKey: String?,
       override val name: String,
       val description: String,
-      override val tags: ImmutableList<String>,
+      override val tags: List<String>,
       val eventSink: (Event) -> Unit,
     ) : AnimalState
   }
@@ -160,15 +157,14 @@ internal fun PetDetailScreen.toPetDetailState(): State {
   return if (animal != null && photoUrlMemoryCacheKey != null) {
     Partial(
       id = animal.id,
-      photoUrls =
-        persistentListOf<String>().mutate { list -> animal.imageUrl?.let { list.add(it) } },
+      photoUrls = buildList { animal.imageUrl?.let { add(it) } },
       photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
       name = animal.name,
       tags =
-        persistentListOf<String>().mutate { list ->
-          animal.breed?.let { list.add(it) }
-          list.add(animal.gender.displayName)
-          list.add(animal.size.name.lowercase())
+        buildList {
+          animal.breed?.let { add(it) }
+          add(animal.gender.displayName)
+          add(animal.size.name.lowercase())
         },
     )
   } else Loading
@@ -353,7 +349,7 @@ private fun ShowAnimalPortrait(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
-  // Tags are ImmutableList and therefore cannot be a key since it's not Parcelable
+  // Tags are List and therefore cannot be a key since it's not Parcelable
   item(state.tags.hashCode()) {
     SharedElementTransitionScope {
       FlowRow(

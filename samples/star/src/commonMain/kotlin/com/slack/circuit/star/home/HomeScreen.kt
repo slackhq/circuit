@@ -47,15 +47,12 @@ import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.ui.StarTheme
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Parcelize
 data object HomeScreen : Screen {
 
   data class State(
-    val navItems: ImmutableList<BottomNavItem> =
-      persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About),
+    val navItems: List<BottomNavItem> = listOf(BottomNavItem.Adoptables, BottomNavItem.About),
     val selectedIndex: Int = 0,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
@@ -146,7 +143,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
   }
 
 // These are the buttons on the NavBar, they dictate where we navigate too
-val NAV_ITEMS = persistentListOf(BottomNavItem.Adoptables, BottomNavItem.About)
+val NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
 
 @Composable
 private fun BottomNavigationBar(

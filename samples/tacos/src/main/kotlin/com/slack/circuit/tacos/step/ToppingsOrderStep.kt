@@ -21,9 +21,6 @@ import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.toImmutableSet
 
 data object ToppingsOrderStep : OrderStep {
   override val index = 1
@@ -33,8 +30,8 @@ data object ToppingsOrderStep : OrderStep {
     data object Loading : State
 
     data class AvailableToppings(
-      val selected: ImmutableSet<Ingredient>,
-      val list: ImmutableList<Ingredient>,
+      val selected: Set<Ingredient>,
+      val list: List<Ingredient>,
       val eventSink: (Event) -> Unit,
     ) : State
   }
@@ -62,15 +59,13 @@ internal class ToppingsProducerImpl(private val repository: IngredientsRepositor
   ): ToppingsOrderStep.State {
     // False positive - https://issuetracker.google.com/issues/349411310
     @Suppress("ProduceStateDoesNotAssignValue")
-    val ingredients by
-      produceState<ImmutableList<Ingredient>?>(null) { value = repository.getToppings() }
+    val ingredients by produceState<List<Ingredient>?>(null) { value = repository.getToppings() }
 
     validateToppings(orderDetails.toppings.size, minimumToppings, eventSink)
     return when (val list = ingredients) {
       null -> ToppingsOrderStep.State.Loading
       else ->
-        ToppingsOrderStep.State.AvailableToppings(orderDetails.toppings.toImmutableSet(), list) {
-          event ->
+        ToppingsOrderStep.State.AvailableToppings(orderDetails.toppings, list) { event ->
           updateToppings(
             event = event,
             plusTopping = { orderDetails.toppings.plus(it) },

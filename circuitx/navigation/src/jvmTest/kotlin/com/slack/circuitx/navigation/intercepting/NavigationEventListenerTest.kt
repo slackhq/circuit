@@ -12,22 +12,21 @@ import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.Po
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.ResetRootEvent
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import kotlin.test.assertEquals
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
 private val ADDITIONAL_SCREENS = arrayOf<Screen>(TestScreen.ScreenB, TestScreen.ScreenA)
 private val INITIAL_ADDITIONAL_BACKSTACK =
-  persistentListOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
+  listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
 
 class NavigationEventListenerTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   private val fakeInterceptor = FakeNavigationInterceptor()
-  private val singleInterceptor = persistentListOf(fakeInterceptor)
+  private val singleInterceptor = listOf(fakeInterceptor)
   private val fakeEventListener = FakeNavigationEventListener()
-  private val singleEventListener = persistentListOf(fakeEventListener)
+  private val singleEventListener = listOf(fakeEventListener)
 
   @Test
   fun `onBackStackChanged initial state`() = runTest {
@@ -35,7 +34,7 @@ class NavigationEventListenerTest {
       val (_, _) =
         setTestContent(eventListeners = singleEventListener, initialScreen = TestScreen.RootBeta)
       assertEquals(
-        OnBackStackChangedEvent(persistentListOf(TestScreen.RootBeta)),
+        OnBackStackChangedEvent(listOf(TestScreen.RootBeta)),
         fakeEventListener.awaitOnBackStackChanged(),
       )
     }
@@ -49,7 +48,7 @@ class NavigationEventListenerTest {
       interceptingNavigator.goTo(TestScreen.ScreenA)
       awaitIdle()
       assertEquals(
-        OnBackStackChangedEvent(persistentListOf(TestScreen.ScreenA, TestScreen.RootAlpha)),
+        OnBackStackChangedEvent(listOf(TestScreen.ScreenA, TestScreen.RootAlpha)),
         fakeEventListener.awaitOnBackStackChanged(),
       )
     }

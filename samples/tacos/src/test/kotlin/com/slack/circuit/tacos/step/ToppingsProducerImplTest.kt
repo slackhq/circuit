@@ -6,7 +6,6 @@ import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -66,7 +65,7 @@ class ToppingsProducerImplTest {
 
         // New AvailableToppings containing toppings[0]
         awaitItem().asInstanceOf<ToppingsOrderStep.State.AvailableToppings>().run {
-          assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
+          assertThat(selected).isEqualTo(setOf(testToppings[0]))
         }
         parent.assertValidation(OrderStep.Validation.Valid).assertNoUnconsumedValidation()
       }
@@ -75,7 +74,7 @@ class ToppingsProducerImplTest {
   @Test
   fun `invoke - emit Invalid validation event after removing topping and falling below minimum`() =
     runTest {
-      val parent = FakeOrderStepParent(toppings = persistentSetOf(testToppings[0]))
+      val parent = FakeOrderStepParent(toppings = setOf(testToppings[0]))
       val repo = TestIngredientsRepository(testToppings)
       val producer = ToppingsProducerImpl(repo)
 
@@ -96,7 +95,7 @@ class ToppingsProducerImplTest {
             .asInstanceOf<ToppingsOrderStep.State.AvailableToppings>()
             .also { parent.assertValidation(OrderStep.Validation.Valid) }
             .run {
-              assertThat(selected).isEqualTo(persistentSetOf(testToppings[0]))
+              assertThat(selected).isEqualTo(setOf(testToppings[0]))
 
               eventSink(ToppingsOrderStep.Event.RemoveTopping(testToppings[0]))
             }

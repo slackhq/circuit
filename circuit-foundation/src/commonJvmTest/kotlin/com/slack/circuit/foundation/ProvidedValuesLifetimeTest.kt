@@ -149,7 +149,7 @@ class ProvidedValuesLifetimeTest {
     @Composable
     override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
       return ProvidedValues {
-        persistentListOf(
+        listOf(
           LocalWithDefault provides remember { "Local ${(record.screen as TestScreen).label}" }
         )
       }

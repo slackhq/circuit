@@ -127,19 +127,18 @@ class PetRepositoryImpl(
                 if (it.isLowerCase()) it.titlecase() else it.toString()
               },
             url = animal.url,
-            photoUrls = animal.photos.map { it.full }.toImmutableList(),
+            photoUrls = animal.photos.map { it.full },
             primaryPhotoUrl = animal.photos.firstOrNull()?.medium,
             tags =
               listOfNotNull(
-                  animal.colors.primary,
-                  animal.colors.secondary,
-                  animal.breeds.primary,
-                  animal.breeds.secondary,
-                  animal.gender,
-                  animal.size,
-                  animal.status,
-                )
-                .toImmutableList(),
+                animal.colors.primary,
+                animal.colors.secondary,
+                animal.breeds.primary,
+                animal.breeds.secondary,
+                animal.gender,
+                animal.size,
+                animal.status,
+              ),
             description = animal.description.orEmpty(),
             primaryBreed = animal.breeds.primary,
             gender = Gender.valueOf(animal.gender.uppercase()),

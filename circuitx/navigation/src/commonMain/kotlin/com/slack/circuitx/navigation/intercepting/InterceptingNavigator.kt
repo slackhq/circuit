@@ -16,8 +16,6 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Creates and remembers a [NavigationInterceptor] from a [Navigator].
@@ -36,8 +34,8 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 public fun rememberInterceptingNavigator(
   navigator: Navigator,
-  interceptors: ImmutableList<NavigationInterceptor> = persistentListOf(),
-  eventListeners: ImmutableList<NavigationEventListener> = persistentListOf(),
+  interceptors: List<NavigationInterceptor> = emptyList(),
+  eventListeners: List<NavigationEventListener> = emptyList(),
   notifier: InterceptingNavigator.FailureNotifier? = null,
   enableBackHandler: Boolean = true,
 ): Navigator {
@@ -106,8 +104,8 @@ public fun rememberInterceptingNavigator(
  */
 public class InterceptingNavigator(
   private val delegate: Navigator,
-  private val interceptors: ImmutableList<NavigationInterceptor>,
-  private val eventListeners: ImmutableList<NavigationEventListener> = persistentListOf(),
+  private val interceptors: List<NavigationInterceptor>,
+  private val eventListeners: List<NavigationEventListener> = emptyList(),
   private val notifier: FailureNotifier? = null,
 ) : Navigator by delegate {
 
@@ -150,20 +148,16 @@ public class InterceptingNavigator(
     return delegate.pop(result)
   }
 
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): ImmutableList<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     for (interceptor in interceptors) {
       when (val interceptedResult = interceptor.resetRoot(newRoot, saveState, restoreState)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
-          if (interceptedResult.consumed) return persistentListOf()
+          if (interceptedResult.consumed) return emptyList()
         }
         is InterceptedResult.Failure -> {
           notifier?.rootResetFailure(interceptedResult)
-          if (interceptedResult.consumed) return persistentListOf()
+          if (interceptedResult.consumed) return emptyList()
         }
         is InterceptedResetRootResult.Rewrite -> {
           // Recurse in case another interceptor wants to intercept the new screen.
@@ -207,7 +201,7 @@ public class InterceptingNavigator(
 @Composable
 private fun BackStackChangedEffect(
   navigator: Navigator,
-  eventListeners: ImmutableList<NavigationEventListener>,
+  eventListeners: List<NavigationEventListener>,
 ) {
   // Key using the screen as it'll be the same through rotation, as the record key will change.
   val screens = navigator.peekBackStack()

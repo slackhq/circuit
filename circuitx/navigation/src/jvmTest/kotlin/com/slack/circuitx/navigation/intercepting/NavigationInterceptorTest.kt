@@ -15,7 +15,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
@@ -25,8 +24,8 @@ class NavigationInterceptorTest {
 
   private val fakeInterceptor1 = FakeNavigationInterceptor()
   private val fakeInterceptor2 = FakeNavigationInterceptor()
-  private val singleInterceptor = persistentListOf(fakeInterceptor1)
-  private val interceptors = persistentListOf(fakeInterceptor1, fakeInterceptor2)
+  private val singleInterceptor = listOf(fakeInterceptor1)
+  private val interceptors = listOf(fakeInterceptor1, fakeInterceptor2)
 
   @Test
   fun `Single interceptor goTo success`() = runTest {

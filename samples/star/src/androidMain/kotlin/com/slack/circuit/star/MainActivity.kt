@@ -40,7 +40,6 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
-import kotlinx.collections.immutable.persistentListOf
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @OptIn(ExperimentalCircuitApi::class)
@@ -60,18 +59,18 @@ class MainActivity(private val circuit: Circuit) : AppCompatActivity() {
         when (scenario) {
           "list" -> {
             val useNestedContent = intent.getBooleanExtra("useNestedContent", false)
-            persistentListOf(ListBenchmarksScreen(useNestedContent))
+            listOf(ListBenchmarksScreen(useNestedContent))
           }
           else -> error("Unknown scenario: $scenario")
         }
       } else if (intent.data == null) {
-        persistentListOf(HomeScreen)
+        listOf(HomeScreen)
       } else {
         val httpUrl = intent.data.toString().toHttpUrl()
         val animalId = httpUrl.pathSegments[1].substringAfterLast("-").toLong()
         val petDetailScreen =
           PetDetailScreen(petId = animalId, photoUrlMemoryCacheKey = null, animal = null)
-        persistentListOf(HomeScreen, petDetailScreen)
+        listOf(HomeScreen, petDetailScreen)
       }
 
     val localCircuit =

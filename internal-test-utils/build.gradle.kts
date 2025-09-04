@@ -44,7 +44,6 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(libs.compose.foundation)
-        api(libs.kotlinx.immutable)
         api(libs.coroutines)
         api(projects.backstack)
         api(projects.circuitFoundation)

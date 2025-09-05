@@ -5,7 +5,6 @@ package com.slack.circuitx.navigation.intercepting
 import app.cash.turbine.Turbine
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 class FakeNavigationEventListener : NavigationEventListener {
 
@@ -14,7 +13,7 @@ class FakeNavigationEventListener : NavigationEventListener {
   private val popEvents = Turbine<PopEvent>()
   private val resetRootEvents = Turbine<ResetRootEvent>()
 
-  override fun onBackStackChanged(backStack: ImmutableList<Screen>) {
+  override fun onBackStackChanged(backStack: List<Screen>) {
     onBackStackChangedEvents.add(OnBackStackChangedEvent(backStack))
   }
 
@@ -22,7 +21,7 @@ class FakeNavigationEventListener : NavigationEventListener {
     goToEvents.add(GoToEvent(screen))
   }
 
-  override fun pop(backStack: ImmutableList<Screen>, result: PopResult?) {
+  override fun pop(backStack: List<Screen>, result: PopResult?) {
     popEvents.add(PopEvent(backStack, result))
   }
 
@@ -59,11 +58,11 @@ class FakeNavigationEventListener : NavigationEventListener {
     onBackStackChangedEvents.skipItems(skip)
   }
 
-  data class OnBackStackChangedEvent(val backStack: ImmutableList<Screen>)
+  data class OnBackStackChangedEvent(val backStack: List<Screen>)
 
   data class GoToEvent(val screen: Screen)
 
-  data class PopEvent(val backStack: ImmutableList<Screen>, val result: PopResult? = null)
+  data class PopEvent(val backStack: List<Screen>, val result: PopResult? = null)
 
   data class ResetRootEvent(
     val newRoot: Screen,

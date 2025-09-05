@@ -28,8 +28,6 @@ import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.model.toCurrencyString
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 data object ConfirmationOrderStep : OrderStep {
   override val index = 2
@@ -41,20 +39,20 @@ data object ConfirmationOrderStep : OrderStep {
     val ingredientsCost: String,
     val diet: Diet,
     val filling: String,
-    val toppings: ImmutableList<String>,
+    val toppings: List<String>,
   ) : OrderStep.State
 }
 
 @Composable
 internal fun confirmationProducer(orderDetails: OrderDetails): ConfirmationOrderStep.OrderState {
-  val toppings = orderDetails.toppings.sortedBy { it.name }.toImmutableList()
+  val toppings = orderDetails.toppings.sortedBy { it.name }
   return ConfirmationOrderStep.OrderState(
     calories = calculateCalories(orderDetails.filling, orderDetails.toppings),
     baseCost = orderDetails.baseCost.toCurrencyString(),
     ingredientsCost = orderDetails.ingredientsCost.toCurrencyString(),
     diet = determineDiet(orderDetails.filling, orderDetails.toppings),
     filling = orderDetails.filling.name,
-    toppings = toppings.map { it.name }.toImmutableList(),
+    toppings = toppings.map { it.name },
   )
 }
 

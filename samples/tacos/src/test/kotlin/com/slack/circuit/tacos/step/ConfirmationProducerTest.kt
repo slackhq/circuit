@@ -9,7 +9,6 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 class ConfirmationProducerTest {
   @Test
   fun `confirmationProducer - emitted state contains sorted toppings`() = runTest {
-    val details = OrderDetails(toppings = testToppings.reversed().toImmutableSet())
+    val details = OrderDetails(toppings = testToppings.reversed().toSet())
     val expectedToppings = testToppings.map { it.name }
 
     moleculeFlow(RecompositionMode.Immediate) { confirmationProducer(details) }

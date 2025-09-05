@@ -142,9 +142,6 @@ import dev.zacsweers.metro.Inject
 import io.ktor.util.Platform
 import io.ktor.util.PlatformUtils
 import io.ktor.util.platform
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.map
 
 @Parcelize
@@ -160,7 +157,7 @@ data object PetListScreen : Screen {
     data class NoAnimals(override val isRefreshing: Boolean) : State
 
     data class Success(
-      val animals: ImmutableList<PetListAnimal>,
+      val animals: List<PetListAnimal>,
       override val isRefreshing: Boolean,
       val filters: Filters = Filters(),
       val isUpdateFiltersModalShowing: Boolean = false,
@@ -210,7 +207,7 @@ class PetListPresenter(
     var filters by rememberSaveable { mutableStateOf(Filters()) }
     val filteredAnimals by
       rememberRetained(animalState, filters) {
-        derivedStateOf { animalState?.filter { shouldKeep(filters, it) }?.toImmutableList() }
+        derivedStateOf { animalState?.filter { shouldKeep(filters, it) }?.toList() }
       }
 
     val filtersScreenNavigator =
@@ -364,7 +361,7 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
-  animals: ImmutableList<PetListAnimal>,
+  animals: List<PetListAnimal>,
   isRefreshing: Boolean,
   modifier: Modifier = Modifier,
   eventSink: (Event) -> Unit,
@@ -580,8 +577,8 @@ internal fun UpdateFiltersSheet(
         onClick = {
           val newFilters =
             Filters(
-              genders = genderOptions.filterValues { it }.keys.toImmutableSet(),
-              sizes = sizeOptions.filterValues { it }.keys.toImmutableSet(),
+              genders = genderOptions.filterValues { it }.keys,
+              sizes = sizeOptions.filterValues { it }.keys,
             )
           onDismiss(newFilters)
         },

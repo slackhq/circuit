@@ -33,7 +33,6 @@ import com.slack.circuit.star.petlist.PetListTestConstants.IMAGE_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.NO_ANIMALS_TAG
 import com.slack.circuit.star.petlist.PetListTestConstants.PROGRESS_TAG
 import com.slack.circuit.test.TestEventSink
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -71,7 +70,7 @@ class PetListUiTest {
 
   @Test
   fun petList_show_list_for_success_state() {
-    val animals = persistentListOf(ANIMAL)
+    val animals = listOf(ANIMAL)
 
     composeTestRule.run {
       setTestContent { PetList(Success(animals, isRefreshing = false) {}) }
@@ -89,7 +88,7 @@ class PetListUiTest {
   @Test
   fun petList_emits_event_when_tapping_on_animal() = runTest {
     val testSink = TestEventSink<Event>()
-    val animals = persistentListOf(ANIMAL)
+    val animals = listOf(ANIMAL)
 
     composeTestRule.run {
       setTestContent { PetList(Success(animals, isRefreshing = false, eventSink = testSink)) }

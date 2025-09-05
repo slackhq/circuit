@@ -10,8 +10,6 @@ org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-stdlib
-org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm
-org.jetbrains.kotlinx:kotlinx-collections-immutable
 org.jetbrains.kotlinx:kotlinx-coroutines-android
 org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm

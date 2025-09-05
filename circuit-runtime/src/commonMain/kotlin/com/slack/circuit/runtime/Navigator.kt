@@ -6,8 +6,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 /** A Navigator that only supports [goTo]. */
 @Stable
@@ -31,7 +29,7 @@ public interface Navigator : GoToNavigator {
   public fun peek(): Screen?
 
   /** Returns the current back stack. */
-  public fun peekBackStack(): ImmutableList<Screen>
+  public fun peekBackStack(): List<Screen>
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -85,7 +83,7 @@ public interface Navigator : GoToNavigator {
     newRoot: Screen,
     saveState: Boolean = false,
     restoreState: Boolean = false,
-  ): ImmutableList<Screen>
+  ): List<Screen>
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen): Boolean = true
@@ -94,13 +92,13 @@ public interface Navigator : GoToNavigator {
 
     override fun peek(): Screen? = null
 
-    override fun peekBackStack(): ImmutableList<Screen> = persistentListOf()
+    override fun peekBackStack(): List<Screen> = emptyList()
 
     override fun resetRoot(
       newRoot: Screen,
       saveState: Boolean,
       restoreState: Boolean,
-    ): ImmutableList<Screen> = persistentListOf()
+    ): List<Screen> = emptyList()
   }
 }
 

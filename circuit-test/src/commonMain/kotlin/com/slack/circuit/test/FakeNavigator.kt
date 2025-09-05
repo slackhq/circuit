@@ -10,7 +10,6 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /**
  * A fake [Navigator] that can be used in tests to record and assert navigation events.
@@ -65,11 +64,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     return popped
   }
 
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): ImmutableList<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     val oldScreens = delegate.resetRoot(newRoot, saveState, restoreState)
     resetRootEvents.add(ResetRootEvent(newRoot, oldScreens, saveState, restoreState))
     return oldScreens
@@ -145,7 +140,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   /** Represents a recorded [Navigator.resetRoot] event. */
   public data class ResetRootEvent(
     val newRoot: Screen,
-    val oldScreens: ImmutableList<Screen>,
+    val oldScreens: List<Screen>,
     val saveState: Boolean = false,
     val restoreState: Boolean = false,
   )

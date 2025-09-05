@@ -5,7 +5,7 @@ androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-lifecycle = "2.9.2"
 androidx-lifecycle-jb = "2.9.1"
-agp = "8.12.2"
+agp = "8.13.0"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.0"
@@ -200,7 +200,6 @@ jsoup = "org.jsoup:jsoup:1.21.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
-kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
@@ -235,7 +234,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
-material = "com.google.android.material:material:1.12.0"
+material = "com.google.android.material:material:1.13.0"
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 

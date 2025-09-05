@@ -28,6 +28,10 @@ kotlin {
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
 
+  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+    it.binaries.framework { baseName = "BottomNavigationSample" }
+  }
+
   applyDefaultHierarchyTemplate()
 
   sourceSets {
@@ -36,7 +40,6 @@ kotlin {
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material3)
         implementation(libs.compose.material.icons)
-        implementation(libs.compose.ui.tooling.preview)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navigation)
@@ -49,6 +52,7 @@ kotlin {
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
         implementation(libs.bundles.compose.ui)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.material)
       }
     }
@@ -60,7 +64,13 @@ kotlin {
         implementation(libs.androidx.test.espresso.core)
       }
     }
-    jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
+    jvmMain {
+      dependencies {
+        implementation(libs.compose.ui.tooling.preview)
+        implementation(compose.desktop.currentOs)
+      }
+    }
+    iosMain {}
 
     configureEach {
       compilerOptions {

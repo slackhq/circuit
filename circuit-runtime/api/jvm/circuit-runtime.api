@@ -30,11 +30,11 @@ public abstract interface annotation class com/slack/circuit/runtime/InternalCir
 public abstract interface class com/slack/circuit/runtime/Navigator : com/slack/circuit/runtime/GoToNavigator {
 	public abstract fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public abstract fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
-	public abstract fun peekBackStack ()Lkotlinx/collections/immutable/ImmutableList;
+	public abstract fun peekBackStack ()Ljava/util/List;
 	public abstract fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public static synthetic fun pop$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/Screen;
-	public abstract fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lkotlinx/collections/immutable/ImmutableList;
-	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Lkotlinx/collections/immutable/ImmutableList;
+	public abstract fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Ljava/util/List;
+	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Ljava/util/List;
 }
 
 public final class com/slack/circuit/runtime/Navigator$NoOp : com/slack/circuit/runtime/Navigator {
@@ -42,9 +42,9 @@ public final class com/slack/circuit/runtime/Navigator$NoOp : com/slack/circuit/
 	public static final field INSTANCE Lcom/slack/circuit/runtime/Navigator$NoOp;
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
-	public fun peekBackStack ()Lkotlinx/collections/immutable/ImmutableList;
+	public fun peekBackStack ()Ljava/util/List;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lkotlinx/collections/immutable/ImmutableList;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Ljava/util/List;
 }
 
 public final class com/slack/circuit/runtime/NavigatorKt {

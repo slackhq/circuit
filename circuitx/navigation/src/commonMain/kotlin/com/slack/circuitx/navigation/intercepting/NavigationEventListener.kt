@@ -4,7 +4,6 @@ package com.slack.circuitx.navigation.intercepting
 
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /** Listener that will be notified of Circuit navigation changes. */
 public interface NavigationEventListener {
@@ -13,7 +12,7 @@ public interface NavigationEventListener {
    * Called when a back stack has changed. Will be called with the initial state and any other
    * following operation that mutates the back stack.
    */
-  public fun onBackStackChanged(backStack: ImmutableList<Screen>) {}
+  public fun onBackStackChanged(backStack: List<Screen>) {}
 
   /**
    * Called when the [InterceptingNavigator] goes to the [Screen].
@@ -31,7 +30,7 @@ public interface NavigationEventListener {
    *
    * @see InterceptingNavigator.pop
    */
-  public fun pop(backStack: ImmutableList<Screen>, result: PopResult?) {}
+  public fun pop(backStack: List<Screen>, result: PopResult?) {}
 
   /**
    * Called when the [InterceptingNavigator] resets the back stack to [newRoot].

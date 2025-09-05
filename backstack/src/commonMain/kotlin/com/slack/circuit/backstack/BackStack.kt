@@ -19,9 +19,6 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.mutate
-import kotlinx.collections.immutable.persistentListOf
 
 /**
  * A caller-supplied stack of [Record]s for presentation with a `Navigator`. Iteration order is
@@ -71,11 +68,11 @@ public interface BackStack<R : Record> : Iterable<R> {
   /**
    * Pop records off the top of the backstack until one is found that matches the given predicate.
    */
-  public fun popUntil(predicate: (R) -> Boolean): ImmutableList<R> {
-    return persistentListOf<R>().mutate {
+  public fun popUntil(predicate: (R) -> Boolean): List<R> {
+    return buildList {
       while (topRecord?.let(predicate) == false) {
         val popped = pop() ?: break
-        it.add(popped)
+        add(popped)
       }
     }
   }

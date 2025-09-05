@@ -35,7 +35,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(libs.windowSizeClass)
   implementation(libs.bundles.androidx.activity)
-  implementation(libs.kotlinx.immutable)
   implementation(libs.rxjava)
   implementation(libs.coroutines.rxjava)
   implementation(libs.molecule.runtime)

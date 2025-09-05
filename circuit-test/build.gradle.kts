@@ -39,13 +39,7 @@ kotlin {
     }
   }
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -57,9 +51,6 @@ kotlin {
         api(libs.molecule.runtime)
       }
     }
-
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
 
     commonTest { dependencies { implementation(libs.coroutines.test) } }
 

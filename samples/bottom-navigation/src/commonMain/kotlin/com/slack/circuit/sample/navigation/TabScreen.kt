@@ -32,8 +32,6 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import kotlin.reflect.KClass
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Parcelize
 sealed interface TabScreen : Screen, PrimaryScreen {
@@ -61,7 +59,7 @@ sealed interface TabScreen : Screen, PrimaryScreen {
     val screen1 = Screen1()
     val screen2 = Screen2()
     val screen3 = Screen3()
-    val all = persistentListOf(root, screen1, screen2, screen3)
+    val all = listOf(root, screen1, screen2, screen3)
   }
 }
 
@@ -108,7 +106,7 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 @OptIn(DelicateCircuitFoundationApi::class)
 @Composable
 fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
-  val backStack = LocalBackStack.current?.toImmutableList() ?: persistentListOf()
+  val backStack = LocalBackStack.current?.toList().orEmpty()
   Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
     Row(
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

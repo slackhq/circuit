@@ -5,7 +5,6 @@ package com.slack.circuitx.navigation.intercepting
 import app.cash.turbine.Turbine
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /** A fake implementation of NavigationInterceptor for testing. */
 class FakeNavigationInterceptor : NavigationInterceptor {
@@ -24,7 +23,7 @@ class FakeNavigationInterceptor : NavigationInterceptor {
     return result
   }
 
-  override fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptedPopResult {
+  override fun pop(peekBackStack: List<Screen>, result: PopResult?): InterceptedPopResult {
     val interceptorPopResult = popResults.removeFirst()
     popEvents.add(PopEvent(peekBackStack, result, interceptorPopResult))
     return interceptorPopResult
@@ -80,7 +79,7 @@ class FakeNavigationInterceptor : NavigationInterceptor {
 
   /** Represents a recorded [NavigationInterceptor.pop] event. */
   data class PopEvent(
-    val peekBackStack: ImmutableList<Screen>,
+    val peekBackStack: List<Screen>,
     val result: PopResult?,
     val interceptorGoToResult: InterceptedPopResult,
   )

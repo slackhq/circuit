@@ -28,7 +28,6 @@ import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,7 +60,7 @@ class ProvidedValuesLifetimeTest {
             providedValues =
               providedValuesForBackStack(
                 backStack = backStack,
-                backStackLocalProviders = persistentListOf(TestBackStackRecordLocalProvider),
+                backStackLocalProviders = listOf(TestBackStackRecordLocalProvider),
               ),
           )
         }
@@ -150,7 +149,7 @@ class ProvidedValuesLifetimeTest {
     @Composable
     override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
       return ProvidedValues {
-        persistentListOf(
+        listOf(
           LocalWithDefault provides remember { "Local ${(record.screen as TestScreen).label}" }
         )
       }

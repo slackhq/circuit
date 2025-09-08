@@ -5,14 +5,14 @@ androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-lifecycle = "2.9.2"
 androidx-lifecycle-jb = "2.9.1"
-agp = "8.11.1"
+agp = "8.13.0"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.0"
 coil = "3.3.0"
 compose-animation = "1.8.3"
 compose-foundation = "1.8.3"
-compose-hotReload = "1.0.0-beta04"
+compose-hotReload = "1.0.0-beta06"
 compose-material = "1.8.3"
 compose-material-icons-core = "1.7.8"
 compose-material3 = "1.3.2"
@@ -21,9 +21,9 @@ compose-ui = "1.8.3"
 compose-jb = "1.8.2"
 compose-jb-adaptive = "1.1.2"
 compose-jb-material-icons-core = "1.7.3"
-compose-bom = "2025.07.00"
+compose-bom = "2025.08.01"
 compose-integration-constraintlayout = "1.1.1"
-dagger = "2.57"
+dagger = "2.57.1"
 datastore = "1.1.7"
 detekt = "1.23.8"
 dokka = "2.0.0"
@@ -32,13 +32,13 @@ jdk = "23"
 jvmTarget = "11"
 publishedJvmTarget = "11"
 kct = "0.8.0"
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 kotlinInject = "0.8.0"
 kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.2.0-2.0.2"
+ksp = "2.2.10-2.0.2"
 ktfmt = "0.56"
 ktor = "3.2.3"
 leakcanary = "2.14"
@@ -48,9 +48,9 @@ molecule = "2.1.0"
 okhttp = "5.1.0"
 okio = "3.16.0"
 picnic = "0.7.0"
-robolectric = "4.15.1"
-roborazzi = "1.46.1"
-skie = "0.10.4"
+robolectric = "4.16"
+roborazzi = "1.50.0"
+skie = "0.10.6"
 spotless = "7.0.4"
 sqldelight = "2.1.0"
 telephoto = "0.16.0"
@@ -80,7 +80,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.5.3" }
+metro = { id = "dev.zacsweers.metro", version = "0.6.4" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -127,7 +127,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 # Embed XML via view binding into Composables
 androidx-compose-ui-viewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
 
-androidx-core = "androidx.core:core-ktx:1.16.0"
+androidx-core = "androidx.core:core-ktx:1.17.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -198,11 +198,10 @@ desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
 hilt = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
-jsoup = "org.jsoup:jsoup:1.21.1"
+jsoup = "org.jsoup:jsoup:1.21.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
-kotlinx-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
@@ -237,11 +236,11 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
-material = "com.google.android.material:material:1.12.0"
+material = "com.google.android.material:material:1.13.0"
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
-mosaic = "com.jakewharton.mosaic:mosaic-runtime:0.17.0"
+mosaic = "com.jakewharton.mosaic:mosaic-runtime:0.18.0"
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }

@@ -78,14 +78,13 @@ import com.slack.circuit.star.ui.thenIfNotNull
 import com.slack.circuitx.overlays.showFullScreenOverlay
 import dev.zacsweers.metro.AppScope
 import kotlin.math.absoluteValue
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
 @Parcelize
 data class PetPhotoCarouselScreen(
   val id: Long,
   val name: String,
-  val photoUrls: ImmutableList<String>,
+  val photoUrls: List<String>,
   val photoUrlMemoryCacheKey: String?,
 ) : StaticScreen
 
@@ -186,7 +185,7 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
 private fun PhotoPager(
   id: Long,
   pagerState: PagerState,
-  photoUrls: ImmutableList<String>,
+  photoUrls: List<String>,
   name: String,
   modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,

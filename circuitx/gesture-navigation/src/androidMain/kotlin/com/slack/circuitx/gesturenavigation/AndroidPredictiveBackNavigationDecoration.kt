@@ -3,11 +3,6 @@
 package com.slack.circuitx.gesturenavigation
 
 import android.os.Build
-import android.window.BackEvent
-import androidx.activity.BackEventCompat
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
@@ -15,24 +10,15 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
@@ -47,12 +33,8 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
-import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
-import kotlin.math.abs
 import kotlin.math.absoluteValue
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.launch
 
 public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory,
@@ -64,80 +46,11 @@ public actual fun GestureNavigationDecorationFactory(
   }
 }
 
-@Suppress("SlotReused") // This is an advanced use case
-@RequiresApi(34)
-internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
-  private val onBackInvoked: () -> Unit
-) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
-
-  private lateinit var seekableTransitionState:
-    SeekableTransitionState<GestureNavTransitionHolder<T>>
-
-  private var showPrevious by mutableStateOf(false)
-  private var isSeeking by mutableStateOf(false)
-  private var swipeProgress by mutableFloatStateOf(0f)
-  private var swipeOffset by mutableStateOf(Offset.Zero)
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked: () -> Unit) :
+  PredictiveBackNavigationDecorator<T>(onBackInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
-
-  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
-    return GestureNavTransitionHolder(args)
-  }
-
-  @Composable
-  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
-    val scope = rememberStableCoroutineScope()
-    val current = remember(args) { targetState(args) }
-    val previous =
-      remember(args) {
-        if (args.size > 1) {
-          targetState(args.subList(1, args.size))
-        } else null
-      }
-
-    seekableTransitionState = remember { SeekableTransitionState(current) }
-
-    LaunchedEffect(current) {
-      swipeProgress = 0f
-      isSeeking = false
-      seekableTransitionState.animateTo(current)
-      // After the current state has changed (i.e. any transition has completed),
-      // clear out any transient state
-      showPrevious = false
-      swipeOffset = Offset.Zero
-    }
-
-    LaunchedEffect(previous, current) {
-      if (previous != null) {
-        snapshotFlow { swipeProgress }
-          .collect { progress ->
-            if (progress != 0f) {
-              isSeeking = true
-              seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
-            }
-          }
-      }
-    }
-
-    if (args.size > 1) {
-      BackHandler(
-        onBackProgress = { progress, offset ->
-          showPrevious = progress != 0f
-          swipeProgress = progress
-          swipeOffset = offset
-        },
-        onBackCancelled = {
-          scope.launch {
-            isSeeking = false
-            seekableTransitionState.snapTo(current)
-          }
-        },
-        onBackInvoked = { onBackInvoked() },
-      )
-    }
-    return rememberTransition(seekableTransitionState, label = "AndroidPredictiveBackNavDecorator")
-  }
 
   @OptIn(InternalCircuitApi::class)
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
@@ -262,65 +175,5 @@ private fun GraphicsLayerScope.sharedElementTransition(
 
   if (!isSeeking()) {
     alpha = lerp(1f, 0f, progress.absoluteValue)
-  }
-}
-
-@RequiresApi(34)
-@Composable
-private fun BackHandler(
-  onBackProgress: (Float, Offset) -> Unit,
-  onBackCancelled: () -> Unit,
-  animatedEnabled: Boolean = true,
-  onBackInvoked: () -> Unit,
-) {
-  val onBackDispatcher =
-    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-      ?: error("OnBackPressedDispatcher is not available")
-  val lastAnimatedEnabled by rememberUpdatedState(animatedEnabled)
-  val lastOnBackProgress by rememberUpdatedState(onBackProgress)
-  val lastOnBackCancelled by rememberUpdatedState(onBackCancelled)
-  val lastOnBackInvoked by rememberUpdatedState(onBackInvoked)
-
-  DisposableEffect(onBackDispatcher) {
-    val callback =
-      object : OnBackPressedCallback(true) {
-
-        var initialTouch = Offset.Zero
-
-        override fun handleOnBackStarted(backEvent: BackEventCompat) {
-          if (lastAnimatedEnabled) {
-            initialTouch = Offset(backEvent.touchX, backEvent.touchY)
-            lastOnBackProgress(0f, Offset.Zero)
-          }
-        }
-
-        override fun handleOnBackProgressed(backEvent: BackEventCompat) {
-          if (lastAnimatedEnabled) {
-            lastOnBackProgress(
-              when (backEvent.swipeEdge) {
-                BackEvent.EDGE_LEFT -> backEvent.progress
-                else -> -backEvent.progress
-              },
-              Offset(backEvent.touchX, backEvent.touchY) - initialTouch,
-            )
-          }
-        }
-
-        override fun handleOnBackCancelled() {
-          initialTouch = Offset.Zero
-          if (lastAnimatedEnabled) {
-            lastOnBackCancelled()
-          }
-        }
-
-        override fun handleOnBackPressed() {
-          lastOnBackInvoked()
-          initialTouch = Offset.Zero
-        }
-      }
-
-    onBackDispatcher.addCallback(callback)
-
-    onDispose { callback.remove() }
   }
 }

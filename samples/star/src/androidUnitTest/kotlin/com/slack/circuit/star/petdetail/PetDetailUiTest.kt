@@ -32,7 +32,6 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.test.TestEventSink
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -90,11 +89,11 @@ class PetDetailUiTest {
       Full(
         id = 1,
         url = "url",
-        photoUrls = persistentListOf("http://some.url"),
+        photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
-        tags = persistentListOf("dog", "terrier", "male"),
+        tags = listOf("dog", "terrier", "male"),
         eventSink = {},
       )
 
@@ -131,11 +130,11 @@ class PetDetailUiTest {
       Full(
         id = 1,
         url = "url",
-        photoUrls = persistentListOf("http://some.url"),
+        photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
-        tags = persistentListOf("dog", "terrier", "male"),
+        tags = listOf("dog", "terrier", "male"),
         eventSink = testSink,
       )
 

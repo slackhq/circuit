@@ -30,7 +30,6 @@ import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_T
 import com.slack.circuit.star.resources.Res
 import com.slack.circuit.star.resources.dog2
 import com.slack.circuit.test.TestEventSink
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import leakcanary.DetectLeaksAfterTestSuccess
 import org.junit.Rule
@@ -74,11 +73,11 @@ class PetDetailTest {
       State.Full(
         id = 1L,
         url = "url",
-        photoUrls = persistentListOf("http://some.url"),
+        photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
-        tags = persistentListOf("dog", "terrier", "male"),
+        tags = listOf("dog", "terrier", "male"),
         eventSink = {},
       )
 
@@ -126,11 +125,11 @@ class PetDetailTest {
       State.Full(
         id = 1L,
         url = "url",
-        photoUrls = persistentListOf("http://some.url"),
+        photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
-        tags = persistentListOf("dog", "terrier", "male"),
+        tags = listOf("dog", "terrier", "male"),
         eventSink = testSink,
       )
 

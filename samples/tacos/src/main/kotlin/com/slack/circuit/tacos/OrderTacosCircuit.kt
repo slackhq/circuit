@@ -56,9 +56,6 @@ import com.slack.circuit.tacos.step.SummaryUi
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsUi
 import com.slack.circuit.tacos.ui.theme.TacoTheme
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -96,7 +93,7 @@ private const val TACO_BASE_PRICE = 999
 @Immutable
 data class OrderDetails(
   val filling: Ingredient = Ingredient(""),
-  val toppings: Set<Ingredient> = persistentSetOf(),
+  val toppings: Set<Ingredient> = emptySet(),
   val ingredientsCost: Cents = 0,
 ) {
   val baseCost: Cents = TACO_BASE_PRICE
@@ -104,7 +101,7 @@ data class OrderDetails(
 
 /** List of wizard steps (in order!) */
 private val orderSteps =
-  persistentListOf(FillingsOrderStep, ToppingsOrderStep, ConfirmationOrderStep, SummaryOrderStep)
+  listOf(FillingsOrderStep, ToppingsOrderStep, ConfirmationOrderStep, SummaryOrderStep)
 
 internal class OrderTacosPresenter(
   private val fillingsProducer: OrderStep.StateProducer<FillingsOrderStep.State>,
@@ -188,7 +185,7 @@ private fun updateOrder(event: OrderStep.UpdateOrder, currentOrder: OrderDetails
   return OrderDetails(
     ingredientsCost = newIngredientsCost,
     filling = newFilling,
-    toppings = newToppings.toImmutableSet(),
+    toppings = newToppings,
   )
 }
 
@@ -325,14 +322,14 @@ private fun OrderTotal(
 @Composable
 internal fun PreviewOrderTacosUi() {
   val toppings =
-    persistentListOf(
+    listOf(
       Ingredient("apple", calories = 10, diet = Diet.VEGAN),
       Ingredient("orange", calories = 15, diet = Diet.VEGETARIAN, charge = 199),
       Ingredient("pear", diet = Diet.NONE),
     )
   val stepState =
     ToppingsOrderStep.State.AvailableToppings(
-      selected = persistentSetOf(toppings.first()),
+      selected = setOf(toppings.first()),
       list = toppings,
       eventSink = {},
     )

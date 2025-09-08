@@ -60,8 +60,6 @@ org.jetbrains.kotlin:kotlin-stdlib-jdk8
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains.kotlinx:atomicfu-jvm
 org.jetbrains.kotlinx:atomicfu
-org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm
-org.jetbrains.kotlinx:kotlinx-collections-immutable
 org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core

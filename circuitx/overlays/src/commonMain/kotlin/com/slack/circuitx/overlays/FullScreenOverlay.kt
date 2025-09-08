@@ -21,8 +21,6 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.jvm.JvmInline
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CancellationException
 
 /**
@@ -98,13 +96,9 @@ internal class DispatchingOverlayNavigator(
 
   override fun peek(): Screen = currentScreen
 
-  override fun peekBackStack(): ImmutableList<Screen> = persistentListOf(currentScreen)
+  override fun peekBackStack(): List<Screen> = listOf(currentScreen)
 
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): ImmutableList<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     error("resetRoot() is not supported in full screen overlays!")
   }
 }

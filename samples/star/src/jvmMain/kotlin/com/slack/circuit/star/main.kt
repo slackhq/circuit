@@ -33,14 +33,13 @@ import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.ui.StarTheme
 import java.awt.Desktop
 import java.net.URI
-import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
   val appGraph = AppGraph.create()
   SingletonImageLoader.setSafe { appGraph.imageLoader }
   application {
-    val initialBackStack = persistentListOf<Screen>(HomeScreen)
+    val initialBackStack = listOf<Screen>(HomeScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
     val circuitNavigator = rememberCircuitNavigator(backStack) { exitApplication() }
     val navigator =

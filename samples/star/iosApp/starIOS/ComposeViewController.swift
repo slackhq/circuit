@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
-import Star
+import StarKt
 
 struct MainViewController: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        return IosMainKt.MainViewController()
+        return StarUiViewControllerKt.makeUiViewController(graph: AppGraphCompanion.shared.create())
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {

@@ -14,7 +14,6 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
-import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -33,13 +32,11 @@ fun main() {
         val interceptingNavigator =
           rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
         CircuitCompositionLocals(circuit) {
-          SharedElementTransitionLayout {
-            NavigableCircuitContent(
-              navigator = interceptingNavigator,
-              backStack = backStack,
-              modifier = Modifier.fillMaxSize(),
-            )
-          }
+          NavigableCircuitContent(
+            navigator = interceptingNavigator,
+            backStack = backStack,
+            modifier = Modifier.fillMaxSize(),
+          )
         }
       }
     }

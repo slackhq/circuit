@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,8 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 
 @Parcelize data class DetailScreen(val primary: TabScreen) : SecondaryScreen
 
@@ -42,49 +45,61 @@ sealed interface DetailEvent : CircuitUiEvent {
   data object Close : DetailEvent
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun DetailUi(state: DetailState, modifier: Modifier = Modifier) {
-  Card(modifier = modifier.padding(8.dp).fillMaxSize()) {
-    Row(
-      modifier = Modifier.padding(horizontal = 16.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Text(
-        text = state.label,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(top = 16.dp).weight(1f),
-      )
-      Icon(
-        imageVector = Icons.Filled.Close,
-        contentDescription = "Close",
-        tint = MaterialTheme.colorScheme.onSurface,
-        modifier =
-          Modifier.padding(top = 8.dp)
-            .clickable(
-              interactionSource = null,
-              indication = ripple(bounded = false, radius = 24.dp),
-            ) {
-              state.eventSink(DetailEvent.Close)
-            }
-            .padding(8.dp),
-      )
-    }
+fun DetailUi(state: DetailState, screen: DetailScreen, modifier: Modifier = Modifier) =
+  SharedElementTransitionScope {
     Card(
-      modifier = Modifier.fillMaxSize().padding(8.dp),
-      colors = CardDefaults.outlinedCardColors(),
+      modifier =
+        modifier
+          .padding(8.dp)
+          .fillMaxSize()
+      // todo Only do this when content is not side by si
+//          .sharedBounds(
+//            sharedContentState = rememberSharedContentState(key = "${screen.primary}-details"),
+//            animatedVisibilityScope = requireAnimatedScope(Navigation),
+//          )
     ) {
-      Text(
-        text = state.description,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier =
-          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            .verticalScroll(rememberScrollState()),
-      )
+      Row(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = state.label,
+          style = MaterialTheme.typography.titleMedium,
+          color = MaterialTheme.colorScheme.onSurface,
+          modifier = Modifier.padding(top = 16.dp).weight(1f),
+        )
+        Icon(
+          imageVector = Icons.Filled.Close,
+          contentDescription = "Close",
+          tint = MaterialTheme.colorScheme.onSurface,
+          modifier =
+            Modifier.padding(top = 8.dp)
+              .clickable(
+                interactionSource = null,
+                indication = ripple(bounded = false, radius = 24.dp),
+              ) {
+                state.eventSink(DetailEvent.Close)
+              }
+              .padding(8.dp),
+        )
+      }
+      Card(
+        modifier = Modifier.fillMaxSize().padding(8.dp),
+        colors = CardDefaults.outlinedCardColors(),
+      ) {
+        Text(
+          text = state.description,
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier =
+            Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+              .verticalScroll(rememberScrollState()),
+        )
+      }
     }
   }
-}
 
 class DetailPresenter(private val screen: DetailScreen, private val navigator: Navigator) :
   Presenter<DetailState> {
@@ -116,7 +131,7 @@ class DetailPresenter(private val screen: DetailScreen, private val navigator: N
 object DetailUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return if (screen is DetailScreen) {
-      ui<DetailState> { state, modifier -> DetailUi(state, modifier) }
+      ui<DetailState> { state, modifier -> DetailUi(state, screen, modifier) }
     } else {
       null
     }

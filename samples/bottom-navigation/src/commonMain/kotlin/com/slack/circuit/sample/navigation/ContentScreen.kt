@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -50,12 +51,13 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import kotlinx.collections.immutable.ImmutableList
+import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 
-@Parcelize data class ContentScreen(val tabs: ImmutableList<TabScreen>) : Screen
+@Parcelize data class ContentScreen(val tabs: List<TabScreen>) : Screen
 
 data class ContentState(
-  val tabs: ImmutableList<TabScreen>,
+  val tabs: List<TabScreen>,
   val rootScreen: Screen,
   val eventSink: (ContentEvent) -> Unit,
 ) : CircuitUiState
@@ -100,9 +102,9 @@ object ContentUiFactory : Ui.Factory {
   }
 }
 
-@OptIn(ExperimentalCircuitApi::class)
+@OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun ContentUi(state: ContentState, modifier: Modifier = Modifier) {
+fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElementTransitionLayout {
   val eventSink by rememberUpdatedState(state.eventSink)
   val backStack = rememberSaveableBackStack(state.rootScreen)
   val contentNavigator =
@@ -115,7 +117,7 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) {
           newRoot: Screen,
           saveState: Boolean,
           restoreState: Boolean,
-        ): ImmutableList<Screen> {
+        ): List<Screen> {
           return when (newRoot) {
             is PrimaryScreen,
             is SecondaryScreen -> {
@@ -154,16 +156,20 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) {
       )
     },
   ) { innerPadding ->
-    val transforms =
-      requireNotNull(LocalCircuit.current) { "Need a circuit in a circuit" }
-        .animatedScreenTransforms
+    val circuit = requireNotNull(LocalCircuit.current) { "Need a circuit in a circuit" }
     NavigableCircuitContent(
       navigator = interceptingNavigator,
       backStack = backStack,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
       decoration =
-        remember(transforms, interceptingNavigator) {
-          AdaptiveNavDecoration(transforms, interceptingNavigator::pop)
+        remember(circuit.animatedScreenTransforms, interceptingNavigator) {
+          AdaptiveNavDecoration(
+            screenTransforms = circuit.animatedScreenTransforms,
+            decoratorFactory =
+              GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() }),
+            backgroundColor = { MaterialTheme.colorScheme.background },
+            onPop = { interceptingNavigator.pop() },
+          )
         },
     )
   }
@@ -171,7 +177,7 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) {
 
 @Composable
 private fun BottomTabRow(
-  tabs: ImmutableList<TabScreen>,
+  tabs: List<TabScreen>,
   rootScreen: Screen?,
   onNavEvent: (NavEvent) -> Unit,
   modifier: Modifier = Modifier,

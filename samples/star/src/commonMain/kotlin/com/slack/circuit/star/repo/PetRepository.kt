@@ -19,6 +19,10 @@ import com.slack.circuit.star.db.StarDatabase
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.exceptionOrNull
 import com.slack.eithernet.retryWithExponentialBackoff
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.collections.immutable.toImmutableList
@@ -43,6 +47,9 @@ interface PetRepository {
   suspend fun getAnimalBio(id: Long): String?
 }
 
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
+@Inject
 class PetRepositoryImpl(
   sqliteDriverFactory: SqlDriverFactory,
   private val petFinderApi: PetfinderApi,

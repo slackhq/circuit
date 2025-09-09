@@ -11,7 +11,7 @@ import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
-import com.slack.circuit.star.db.ImmutableListAdapter
+import com.slack.circuit.star.db.ListColumnAdapter
 import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
@@ -25,7 +25,6 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -62,8 +61,8 @@ class PetRepositoryImpl(
     StarDatabase(
       driver,
       Animal.Adapter(
-        ImmutableListAdapter(","),
-        ImmutableListAdapter(":"),
+        ListColumnAdapter(","),
+        ListColumnAdapter(":"),
         EnumColumnAdapter(),
         EnumColumnAdapter(),
       ),
@@ -146,7 +145,7 @@ class PetRepositoryImpl(
                   if (it.isLowerCase()) it.titlecase() else it.toString()
                 },
               url = animal.url,
-              photoUrls = animal.photos.map { it.full }.toImmutableList(),
+              photoUrls = animal.photos.map { it.full },
               primaryPhotoUrl = animal.photos.firstOrNull()?.medium,
               tags =
                 listOfNotNull(
@@ -158,7 +157,7 @@ class PetRepositoryImpl(
                     animal.size,
                     animal.status,
                   )
-                  .toImmutableList(),
+                  ,
               description = animal.description.orEmpty(),
               primaryBreed = animal.breeds.primary,
               gender = Gender.valueOf(animal.gender.uppercase()),

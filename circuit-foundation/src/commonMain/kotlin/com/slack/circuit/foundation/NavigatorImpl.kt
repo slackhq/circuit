@@ -16,12 +16,10 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
+import com.slack.circuit.foundation.internal.mapToImmutableList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.mutate
-import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
@@ -132,13 +130,9 @@ internal class NavigatorImpl(
 
   override fun peek(): Screen? = backStack.firstOrNull()?.screen
 
-  override fun peekBackStack(): ImmutableList<Screen> = backStack.mapToImmutableList { it.screen }
+  override fun peekBackStack(): List<Screen> = backStack.mapToImmutableList { it.screen }
 
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): ImmutableList<Screen> {
+  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
     val currentStack =
       Snapshot.withMutableSnapshot {
@@ -177,13 +171,5 @@ internal class NavigatorImpl(
 
   override fun toString(): String {
     return "NavigatorImpl(backStack=$backStack, onRootPop=$onRootPop)"
-  }
-}
-
-private inline fun <T, R> Iterable<T>.mapToImmutableList(transform: (T) -> R): ImmutableList<R> {
-  return persistentListOf<R>().mutate {
-    for (element in this@mapToImmutableList) {
-      it.add(transform(element))
-    }
   }
 }

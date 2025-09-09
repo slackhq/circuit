@@ -43,7 +43,6 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.samples.counter)
-        api(libs.kotlinx.immutable)
         api(projects.circuitFoundation)
       }
     }

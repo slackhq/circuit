@@ -11,7 +11,6 @@ import com.slack.circuit.tacos.step.SummaryOrderStep
 import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.test.presenterTestOf
 import com.slack.circuit.test.test
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -149,7 +148,7 @@ class OrderTacosPresenterTest {
       awaitItem()
       assertThat(details).isEqualTo(OrderDetails())
 
-      val toppings = persistentSetOf(Ingredient("apple"))
+      val toppings = setOf(Ingredient("apple"))
       sink(OrderStep.UpdateOrder.SetToppings(toppings))
 
       awaitUnchanged()

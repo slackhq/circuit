@@ -21,7 +21,6 @@ import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlin.math.abs
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -45,13 +44,13 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)
     private set
 
-  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
+  override fun targetState(args: List<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
 
   @OptIn(ExperimentalComposeUiApi::class)
   @Composable
-  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: List<T>): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
     val current = remember(args) { targetState(args) }
     val previous =

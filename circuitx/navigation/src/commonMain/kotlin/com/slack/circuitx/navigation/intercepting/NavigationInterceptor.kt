@@ -4,7 +4,6 @@ package com.slack.circuitx.navigation.intercepting
 
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /**
  * A custom navigation processor for use with [InterceptingNavigator].
@@ -26,8 +25,7 @@ public interface NavigationInterceptor {
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptedPopResult =
-    Skipped
+  public fun pop(peekBackStack: List<Screen>, result: PopResult?): InterceptedPopResult = Skipped
 
   /**
    * Resets the back stack to the [newRoot], returning a [InterceptedResetRootResult] for the

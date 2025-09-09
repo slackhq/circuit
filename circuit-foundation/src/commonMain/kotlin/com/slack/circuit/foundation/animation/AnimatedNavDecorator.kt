@@ -12,7 +12,6 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /**
  * [AnimatedNavDecorator] is used by [AnimatedNavDecoration] as a way to provide hooks into its
@@ -95,14 +94,14 @@ import kotlinx.collections.immutable.ImmutableList
 @Stable
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
   /** For the args create the expected target [AnimatedNavState]. */
-  public fun targetState(args: ImmutableList<T>): S
+  public fun targetState(args: List<T>): S
 
   /**
    * Sets up a [Transition] for driving an [AnimatedContent] used to navigate between screens. The
    * transition should be setup from the current [NavDecoration.DecoratedContent] arguments, and
    * then updated when the arguments change.
    */
-  @Composable public fun updateTransition(args: ImmutableList<T>): Transition<S>
+  @Composable public fun updateTransition(args: List<T>): Transition<S>
 
   /** Builds the default [AnimatedContent] transition spec. */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
@@ -136,5 +135,5 @@ public interface AnimatedNavState {
     get() = backStack.size
 
   /** Snapshot of the back stack at the time this state was created. */
-  public val backStack: ImmutableList<NavArgument>
+  public val backStack: List<NavArgument>
 }

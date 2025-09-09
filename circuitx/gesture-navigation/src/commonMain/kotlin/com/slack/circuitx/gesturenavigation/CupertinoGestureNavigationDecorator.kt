@@ -53,7 +53,6 @@ import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import kotlin.math.abs
 import kotlin.math.roundToInt
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 
 /**
@@ -85,12 +84,12 @@ internal class CupertinoGestureNavigationDecorator<T : NavArgument>(
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
 
-  override fun targetState(args: ImmutableList<T>): GestureNavTransitionHolder<T> {
+  override fun targetState(args: List<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
 
   @Composable
-  override fun updateTransition(args: ImmutableList<T>): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: List<T>): Transition<GestureNavTransitionHolder<T>> {
 
     val current = remember(args) { targetState(args) }
     val previous =

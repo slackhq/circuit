@@ -57,7 +57,6 @@ kotlin {
         implementation(libs.compose.ui)
         implementation(libs.compose.uiUtil)
         implementation(libs.coroutines)
-        implementation(libs.kotlinx.immutable)
         implementation(libs.ksoup)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)

@@ -59,12 +59,6 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toPersistentSet
 
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
@@ -73,7 +67,7 @@ public fun <R : Record> NavigableCircuitContent(
   backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  providedValues: ImmutableMap<out Record, ProvidedValues> = persistentMapOf(),
+  providedValues: Map<out Record, ProvidedValues> = emptyMap(),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   decoratorFactory: AnimatedNavDecorator.Factory? = null,
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
@@ -196,12 +190,12 @@ public class RecordContentProvider<R : Record>(
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
   backStack: BackStack<R>
-): ImmutableList<RecordContentProvider<R>> {
+): List<RecordContentProvider<R>> {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
   val recordKeys by
-    remember { mutableStateOf(persistentSetOf<String>()) }
-      .apply { value = backStack.map { it.key }.toPersistentSet() }
+    remember { mutableStateOf(emptySet<String>()) }
+      .apply { value = backStack.mapTo(mutableSetOf()) { it.key } }
   val latestBackStack by rememberUpdatedState(backStack)
   DisposableEffect(recordKeys) {
     // Delay cleanup until the next backstack change.
@@ -225,22 +219,20 @@ private fun <R : Record> buildCircuitContentProviders(
         .forEach { previousContentProviders.remove(it) }
     }
   }
-  return backStack
-    .map { record ->
-      // Query the previous content providers map, so that we use the same
-      // RecordContentProvider instances across calls.
-      previousContentProviders.getOrPut(record.key) {
-        RecordContentProvider(
-          record = record,
-          content =
-            createRecordContent(
-              onActive = { activeRecordKeys.add(record.key) },
-              onDispose = { activeRecordKeys.remove(record.key) },
-            ),
-        )
-      }
+  return backStack.map { record ->
+    // Query the previous content providers map, so that we use the same
+    // RecordContentProvider instances across calls.
+    previousContentProviders.getOrPut(record.key) {
+      RecordContentProvider(
+        record = record,
+        content =
+          createRecordContent(
+            onActive = { activeRecordKeys.add(record.key) },
+            onDispose = { activeRecordKeys.remove(record.key) },
+          ),
+      )
     }
-    .toImmutableList()
+  }
 }
 
 @Stable
@@ -399,19 +391,16 @@ public object NavigatorDefaults {
   public class DefaultDecorator<T : NavArgument> :
     AnimatedNavDecorator<T, DefaultAnimatedState<T>> {
 
-    public data class DefaultAnimatedState<T : NavArgument>(val args: ImmutableList<T>) :
-      AnimatedNavState {
-      override val backStack: ImmutableList<NavArgument> = args
+    public data class DefaultAnimatedState<T : NavArgument>(val args: List<T>) : AnimatedNavState {
+      override val backStack: List<NavArgument> = args
     }
 
-    override fun targetState(args: ImmutableList<T>): DefaultAnimatedState<T> {
+    override fun targetState(args: List<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }
 
     @Composable
-    public override fun updateTransition(
-      args: ImmutableList<T>
-    ): Transition<DefaultAnimatedState<T>> {
+    public override fun updateTransition(args: List<T>): Transition<DefaultAnimatedState<T>> {
       return updateTransition(targetState(args))
     }
 
@@ -446,7 +435,7 @@ public object NavigatorDefaults {
   public object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
-      args: ImmutableList<T>,
+      args: List<T>,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {

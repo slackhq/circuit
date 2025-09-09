@@ -21,7 +21,6 @@ import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
-import kotlinx.collections.immutable.persistentListOf
 import platform.UIKit.UIViewController
 
 @OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
@@ -37,7 +36,7 @@ fun makeUiViewController(graph: AppGraph): UIViewController = ComposeUIViewContr
 
   StarTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      val backStack = rememberSaveableBackStack(persistentListOf(HomeScreen))
+      val backStack = rememberSaveableBackStack(listOf(HomeScreen))
       val circuitNavigator = rememberCircuitNavigator(backStack, onRootPop = {})
       CircuitCompositionLocals(circuit) {
         SharedElementTransitionLayout {

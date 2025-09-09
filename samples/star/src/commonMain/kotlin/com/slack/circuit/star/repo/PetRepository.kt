@@ -149,15 +149,14 @@ class PetRepositoryImpl(
               primaryPhotoUrl = animal.photos.firstOrNull()?.medium,
               tags =
                 listOfNotNull(
-                    animal.colors.primary,
-                    animal.colors.secondary,
-                    animal.breeds.primary,
-                    animal.breeds.secondary,
-                    animal.gender,
-                    animal.size,
-                    animal.status,
-                  )
-                  ,
+                  animal.colors.primary,
+                  animal.colors.secondary,
+                  animal.breeds.primary,
+                  animal.breeds.secondary,
+                  animal.gender,
+                  animal.size,
+                  animal.status,
+                ),
               description = animal.description.orEmpty(),
               primaryBreed = animal.breeds.primary,
               gender = Gender.valueOf(animal.gender.uppercase()),

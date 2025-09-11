@@ -29,10 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -181,16 +179,14 @@ class PetDetailPresenter(
 
   @Composable
   override fun present(): State {
-    var title by remember { mutableStateOf<String?>(null) }
     val state by
-      produceState<State>(initialState) {
+      produceState(initialState) {
         val animal = petRepository.getAnimal(screen.petId)
         val bioText = petRepository.getAnimalBio(screen.petId)
         value =
           when (animal) {
             null -> UnknownAnimal
             else -> {
-              title = animal.name
               animal.toPetDetailState(
                 screen.photoUrlMemoryCacheKey,
                 bioText ?: animal.description,

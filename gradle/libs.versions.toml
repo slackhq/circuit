@@ -265,7 +265,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
-truth = "com.google.truth:truth:1.4.4"
+truth = "com.google.truth:truth:1.4.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 windowSizeClass = "dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0"

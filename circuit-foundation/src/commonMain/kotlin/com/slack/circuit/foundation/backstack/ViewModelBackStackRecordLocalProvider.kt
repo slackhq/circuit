@@ -21,8 +21,6 @@ import com.slack.circuit.backstack.BackStackRecordLocalProvider
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.retained.rememberRetained
 import kotlin.reflect.KClass
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Returns a [ViewModel] using a [ViewModelStoreOwner] resolved from the back stack host context.
@@ -110,7 +108,7 @@ public object ViewModelBackStackRecordLocalProvider :
       }
     return remember(viewModelStore) {
       val list =
-        persistentListOf<ProvidedValue<*>>(
+        listOf<ProvidedValue<*>>(
           LocalBackStackHostViewModelStoreOwner provides backStackHostViewModelStoreOwner,
           LocalViewModelStoreOwner provides
             object : ViewModelStoreOwner {
@@ -119,7 +117,7 @@ public object ViewModelBackStackRecordLocalProvider :
         )
       object : ProvidedValues {
         @Composable
-        override fun provideValues(): PersistentList<ProvidedValue<*>> {
+        override fun provideValues(): List<ProvidedValue<*>> {
           remember { observer.UiRememberObserver() }
           return list
         }
@@ -130,7 +128,7 @@ public object ViewModelBackStackRecordLocalProvider :
 
 private val EMPTY_PROVIDED_VALUES =
   object : ProvidedValues {
-    @Composable override fun provideValues() = persistentListOf<ProvidedValue<*>>()
+    @Composable override fun provideValues() = emptyList<ProvidedValue<*>>()
   }
 
 /**

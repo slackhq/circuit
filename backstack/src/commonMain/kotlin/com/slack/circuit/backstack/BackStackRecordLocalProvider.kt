@@ -19,11 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
 
 @Stable
 public fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
@@ -32,30 +27,30 @@ public fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
 
 @Stable
 public fun interface ProvidedValues {
-  @Composable public fun provideValues(): ImmutableList<ProvidedValue<*>>
+  @Composable public fun provideValues(): List<ProvidedValue<*>>
 }
 
 internal class CompositeProvidedValues(private val list: List<ProvidedValues>) : ProvidedValues {
   @Composable
-  override fun provideValues(): ImmutableList<ProvidedValue<*>> =
-    buildList { list.forEach { addAll(key(it) { it.provideValues() }) } }.toImmutableList()
+  override fun provideValues(): List<ProvidedValue<*>> = buildList {
+    list.forEach { addAll(key(it) { it.provideValues() }) }
+  }
 }
 
 @Composable
 public fun <R : BackStack.Record> providedValuesForBackStack(
   backStack: BackStack<R>,
-  backStackLocalProviders: ImmutableList<BackStackRecordLocalProvider<R>> = persistentListOf(),
-): ImmutableMap<R, ProvidedValues> =
+  backStackLocalProviders: List<BackStackRecordLocalProvider<R>> = emptyList(),
+): Map<R, ProvidedValues> =
   buildMap(backStack.size) {
-      backStack.forEach { record ->
-        key(record) {
-          put(
-            record,
-            CompositeProvidedValues(
-              backStackLocalProviders.map { key(it) { it.providedValuesFor(record) } }
-            ),
-          )
-        }
+    backStack.forEach { record ->
+      key(record) {
+        put(
+          record,
+          CompositeProvidedValues(
+            backStackLocalProviders.map { key(it) { it.providedValuesFor(record) } }
+          ),
+        )
       }
     }
-    .toImmutableMap()
+  }

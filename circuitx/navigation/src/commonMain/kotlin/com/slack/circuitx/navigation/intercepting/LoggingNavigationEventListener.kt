@@ -4,13 +4,12 @@ package com.slack.circuitx.navigation.intercepting
 
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 
 /** A [NavigationEventListener] that adds logging to Circuit navigation. */
 public class LoggingNavigationEventListener(private val logger: NavigationLogger) :
   NavigationEventListener {
 
-  override fun onBackStackChanged(backStack: ImmutableList<Screen>) {
+  override fun onBackStackChanged(backStack: List<Screen>) {
     logger.log("Backstack changed ${backStack.joinToString { it.loggingName() ?: "" }}")
   }
 
@@ -18,7 +17,7 @@ public class LoggingNavigationEventListener(private val logger: NavigationLogger
     logger.log("goTo ${screen.loggingName()}")
   }
 
-  override fun pop(backStack: ImmutableList<Screen>, result: PopResult?) {
+  override fun pop(backStack: List<Screen>, result: PopResult?) {
     logger.log("pop ${backStack.firstOrNull()?.loggingName()}")
   }
 }

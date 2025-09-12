@@ -21,7 +21,6 @@ import com.slack.circuit.tacos.OrderDetails
 import com.slack.circuit.tacos.R
 import com.slack.circuit.tacos.model.Ingredient
 import com.slack.circuit.tacos.repository.IngredientsRepository
-import kotlinx.collections.immutable.ImmutableList
 
 data object FillingsOrderStep : OrderStep {
   override val index = 0
@@ -32,7 +31,7 @@ data object FillingsOrderStep : OrderStep {
 
     data class AvailableFillings(
       val selected: Ingredient? = null,
-      val list: ImmutableList<Ingredient>,
+      val list: List<Ingredient>,
       val eventSink: (Event) -> Unit,
     ) : State
   }
@@ -51,8 +50,7 @@ internal class FillingsProducerImpl(private val repository: IngredientsRepositor
   ): FillingsOrderStep.State {
     // False positive - https://issuetracker.google.com/issues/349411310
     @Suppress("ProduceStateDoesNotAssignValue")
-    val ingredients by
-      produceState<ImmutableList<Ingredient>?>(null) { value = repository.getFillings() }
+    val ingredients by produceState<List<Ingredient>?>(null) { value = repository.getFillings() }
 
     validateFilling(orderDetails.filling, eventSink)
     return when (val list = ingredients) {

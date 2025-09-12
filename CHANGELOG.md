@@ -4,6 +4,13 @@ Changelog
 Unreleased
 ----------
 
+- **Breaking change**: Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
+
+### Behaviour Changes:
+
+On iOS `GestureNavigationDecorationFactory` now uses `IOSPredictiveBackNavDecorator` instead of  `CupertinoGestureNavigationDecorator`.
+This new decorator uses the Compose multiplatform `PredictiveBackHandler` to drive the back animation, instead of a swipeable gesture or nested scroll.
+
 ### Misc:
 
 - Update Compose BOM to `2025.08.01`.

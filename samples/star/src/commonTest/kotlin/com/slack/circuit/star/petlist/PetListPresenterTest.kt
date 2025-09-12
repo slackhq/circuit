@@ -17,7 +17,6 @@ import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
 import kotlin.test.Test
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -86,9 +85,9 @@ class PetListPresenterTest : BasePresenterTest() {
         gender = Gender.MALE,
         size = Size.SMALL,
         description = "description",
-        photoUrls = persistentListOf("https://example.com/photo.png"),
+        photoUrls = listOf("https://example.com/photo.png"),
         sort = 0,
-        tags = persistentListOf("tag"),
+        tags = listOf("tag"),
         url = "https://example.com",
         age = "Adult",
       )

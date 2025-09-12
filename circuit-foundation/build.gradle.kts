@@ -25,7 +25,6 @@ kotlin {
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
-    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {

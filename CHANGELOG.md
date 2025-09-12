@@ -13,8 +13,8 @@ This new decorator uses the Compose multiplatform `PredictiveBackHandler` to dri
 
 ### Misc:
 
-- Update Compose BOM to `2025.08.01`.
-- Update Compose to `1.9.0`.
+- Update Compose BOM to `2025.09.00`.
+- Update Compose to `1.9.1`.
 
 0.30.0
 ------

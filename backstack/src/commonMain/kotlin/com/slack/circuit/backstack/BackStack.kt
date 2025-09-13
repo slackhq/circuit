@@ -117,6 +117,8 @@ public interface BackStack<R : Record> : Iterable<R> {
    */
   public fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean
 
+  public fun stashTogether(primary: R, secondary: R)
+
   @Stable
   public interface Record {
     /**

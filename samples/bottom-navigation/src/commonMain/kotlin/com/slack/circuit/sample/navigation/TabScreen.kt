@@ -2,17 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -27,10 +32,12 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlin.reflect.KClass
 
 @Parcelize
-sealed interface TabScreen : Screen {
+sealed interface TabScreen : Screen, PrimaryScreen {
   val label: String
 
   @Parcelize data class Root(override val label: String = "Root") : TabScreen
@@ -61,10 +68,13 @@ sealed interface TabScreen : Screen {
 
 object TabScreenCircuit {
 
-  data class State(val label: String, val eventSink: (Event) -> Unit) : CircuitUiState
+  data class State(val label: String, val hasDetails: Boolean, val eventSink: (Event) -> Unit) :
+    CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data object Next : Event
+
+    data class Details(val screen: TabScreen) : Event
   }
 }
 
@@ -72,9 +82,13 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
-    return TabScreenCircuit.State(label = screen.label) { event ->
+    return TabScreenCircuit.State(
+      label = screen.label,
+      hasDetails = screen !is TabScreen.Screen2,
+    ) { event ->
       when (event) {
         TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
+        is TabScreenCircuit.Event.Details -> navigator.goTo(DetailScreen(event.screen))
       }
     }
   }
@@ -94,41 +108,57 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   }
 }
 
-@OptIn(DelicateCircuitFoundationApi::class)
+@OptIn(DelicateCircuitFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
-  val backStack = LocalBackStack.current?.toList().orEmpty()
-  Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-    Text(
-      text = state.label,
-      style = MaterialTheme.typography.headlineMedium,
-      modifier =
-        Modifier.testTag(ContentTags.TAG_LABEL)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .padding(top = 24.dp, bottom = 8.dp),
-    )
-    LazyColumn(
-      modifier =
-        Modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {
-          state.eventSink(TabScreenCircuit.Event.Next)
-        }
-    ) {
-      itemsIndexed(backStack) { i, item ->
+fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier = Modifier) =
+  SharedElementTransitionScope {
+    val backStack = LocalBackStack.current?.toList().orEmpty()
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.Bottom,
+      ) {
         Text(
-          text = "$i: ${item.screen}",
-          style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+          text = state.label,
+          style = MaterialTheme.typography.headlineMedium,
+          modifier =
+            Modifier.testTag(ContentTags.TAG_LABEL).weight(1f).padding(top = 24.dp, bottom = 8.dp),
         )
+        if (state.hasDetails) {
+          Button(
+            colors = ButtonDefaults.outlinedButtonColors(),
+            onClick = { state.eventSink(TabScreenCircuit.Event.Details(screen)) },
+            modifier =
+              Modifier.sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "${screen}-details"),
+                animatedVisibilityScope = requireAnimatedScope(Navigation),
+              ),
+          ) {
+            Text(text = "View details")
+          }
+        }
+      }
+      LazyColumn(
+        modifier =
+          Modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {
+            state.eventSink(TabScreenCircuit.Event.Next)
+          }
+      ) {
+        itemsIndexed(backStack) { i, item ->
+          Text(
+            text = "$i: ${item.screen}",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+          )
+        }
       }
     }
   }
-}
 
 class TabUiFactory(private val tabClass: KClass<out TabScreen>) : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return if (tabClass.isInstance(screen)) {
-      ui<TabScreenCircuit.State> { state, modifier -> TabUI(state, modifier) }
+      ui<TabScreenCircuit.State> { state, modifier -> TabUI(state, screen as TabScreen, modifier) }
     } else {
       null
     }

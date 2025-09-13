@@ -80,6 +80,7 @@ internal constructor(
   // Both visible for testing
   internal val entryList = mutableStateListOf<Record>()
   internal val stateStore = mutableMapOf<Screen, List<Record>>()
+  internal val stashed = mutableMapOf<Record, Record>()
 
   init {
     nullableRootRecord?.let(::push)
@@ -101,7 +102,10 @@ internal constructor(
   }
 
   public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?): Boolean {
-    return push(Record(screen, args), resultKey)
+    // Consume any stashed record.
+    val stashedRecord = stashed.remove(topRecord)
+    val record = stashedRecord?.copy(args = args) ?: Record(screen, args)
+    return push(record, resultKey)
   }
 
   public override fun push(record: Record, resultKey: String?): Boolean {
@@ -155,6 +159,9 @@ internal constructor(
         if (record in stored) return true
       }
     }
+    if (includeSaved && stashed.isNotEmpty()) {
+      if (record in stashed.values) return true
+    }
     return false
   }
 
@@ -167,13 +174,23 @@ internal constructor(
     // If includeSaved, check saved backstack states too
     if (includeSaved && stateStore.isNotEmpty()) {
       val storedValues = stateStore.values
-      for ((i, stored) in storedValues.withIndex()) {
-        if (i >= depth) break
-        // stored can mutate, so safely get the record.
-        if (stored.getOrNull(i)?.key == key) return true
+      for (storedRecords in storedValues) {
+        for (i in 0 until min(depth, storedRecords.size)) {
+          // stored can mutate, so safely get the record.
+          if (storedRecords.getOrNull(i)?.key == key) return true
+        }
+      }
+    }
+    if (includeSaved && stashed.isNotEmpty()) {
+      for (stored in stashed.values) {
+        if (stored.key == key) return true
       }
     }
     return false
+  }
+
+  override fun stashTogether(primary: Record, secondary: Record) {
+    stashed[primary] = secondary
   }
 
   public data class Record(

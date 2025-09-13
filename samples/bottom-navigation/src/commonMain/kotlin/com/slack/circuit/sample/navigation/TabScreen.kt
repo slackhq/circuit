@@ -82,8 +82,10 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
-    return TabScreenCircuit.State(label = screen.label, hasDetails = screen is TabScreen.Screen1) {
-      event ->
+    return TabScreenCircuit.State(
+      label = screen.label,
+      hasDetails = screen !is TabScreen.Screen2,
+    ) { event ->
       when (event) {
         TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
         is TabScreenCircuit.Event.Details -> navigator.goTo(DetailScreen(event.screen))

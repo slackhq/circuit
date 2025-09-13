@@ -168,6 +168,7 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
             decoratorFactory =
               GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() }),
             backgroundColor = { MaterialTheme.colorScheme.background },
+            onGoTo = { screen -> interceptingNavigator.goTo(screen) },
             onPop = { interceptingNavigator.pop() },
           )
         },

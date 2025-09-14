@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.data
 
-import com.slack.circuit.star.data.petfinder.PetBioParserApi
-import com.slack.circuit.star.data.petfinder.PetBioParserApiImpl
 import com.slack.circuit.star.data.petfinder.PetfinderApi
 import com.slack.circuit.star.data.petfinder.PetfinderApiImpl
 import com.slack.circuit.star.data.petfinder.PetfinderAuthApiImpl
@@ -75,10 +73,6 @@ interface CommonDataProviders {
   @SingleIn(AppScope::class)
   fun providePetfinderApi(@Authenticated httpClient: HttpClient): PetfinderApi =
     PetfinderApiImpl(httpClient)
-
-  @Provides
-  @SingleIn(AppScope::class)
-  fun providePetBioApi(httpClient: HttpClient): PetBioParserApi = PetBioParserApiImpl(httpClient)
 
   @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 

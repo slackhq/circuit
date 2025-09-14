@@ -4,6 +4,10 @@ package com.slack.circuit.star.data.petfinder
 
 import com.slack.circuit.star.petdetail.PetBioParser
 import com.slack.eithernet.ApiResult
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -15,6 +19,9 @@ interface PetBioParserApi {
   suspend fun parseBio(url: String): ApiResult<String, Unit>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class PetBioParserApiImpl(private val httpClient: HttpClient) : PetBioParserApi {
   override suspend fun parseBio(url: String) =
     try {

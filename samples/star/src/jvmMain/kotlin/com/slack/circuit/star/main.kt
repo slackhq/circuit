@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,21 +19,15 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
-import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.star.di.AppGraph
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.navigation.OpenUrlScreen
-import com.slack.circuit.star.ui.StarTheme
 import java.awt.Desktop
 import java.net.URI
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
   val appGraph = AppGraph.create()
   SingletonImageLoader.setSafe { appGraph.imageLoader }
@@ -93,15 +86,12 @@ fun main() {
         }
       },
     ) {
-      StarTheme(useDarkTheme = darkMode) {
-        CircuitCompositionLocals(appGraph.circuit) {
-          SharedElementTransitionLayout {
-            ContentWithOverlays {
-              NavigableCircuitContent(navigator = navigator, backStack = backStack)
-            }
-          }
-        }
-      }
+      StarCircuitApp(
+        appGraph.circuit,
+        useDarkTheme = darkMode,
+        backStack = backStack,
+        navigator = navigator,
+      )
     }
   }
 }

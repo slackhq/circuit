@@ -10,11 +10,15 @@ import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.star.di.ScreenTransformKey
 import com.slack.circuit.star.home.HomeScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 
-// todo @CircuitInject(PetDetailScreen::class, AppScope::class)
 @ExperimentalCircuitApi
+@ContributesIntoMap(AppScope::class)
+@ScreenTransformKey(PetDetailScreen::class)
 object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
 
   override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
@@ -36,8 +40,9 @@ object PetDetailAnimatedScreenTransform : AnimatedScreenTransform {
   }
 }
 
-// todo @CircuitInject(HomeScreen::class, AppScope::class)
 @ExperimentalCircuitApi
+@ContributesIntoMap(AppScope::class)
+@ScreenTransformKey(HomeScreen::class)
 object HomeAnimatedScreenTransform : AnimatedScreenTransform {
 
   override fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(

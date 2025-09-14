@@ -46,17 +46,7 @@ interface CircuitProviders {
       .addAnimatedScreenTransforms(animatedScreenTransforms)
       .build()
   }
-
-  @MapKey
-  annotation class ScreenTransformKey(val screen: KClass<out Screen>)
-
-  @Provides
-  @IntoMap
-  @ScreenTransformKey(HomeScreen::class)
-  fun provideHomeTransform(): AnimatedScreenTransform = HomeAnimatedScreenTransform
-
-  @Provides
-  @IntoMap
-  @ScreenTransformKey(PetDetailScreen::class)
-  fun providePetDetailTransform(): AnimatedScreenTransform = PetDetailAnimatedScreenTransform
 }
+
+@MapKey
+annotation class ScreenTransformKey(val screen: KClass<out Screen>)

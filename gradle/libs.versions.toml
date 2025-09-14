@@ -1,5 +1,5 @@
 [versions]
-androidx-activity = "1.10.1"
+androidx-activity = "1.11.0"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
@@ -8,19 +8,19 @@ androidx-lifecycle-jb = "2.9.1"
 agp = "8.13.0"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
-benchmark = "1.4.0"
+benchmark = "1.4.1"
 coil = "3.3.0"
 compose-animation = "1.8.3"
 compose-foundation = "1.8.3"
 compose-hotReload = "1.0.0-beta06"
-compose-material = "1.8.3"
+compose-material = "1.9.1"
 compose-material-icons-core = "1.7.8"
 compose-material3 = "1.3.2"
 compose-runtime = "1.8.3"
 compose-ui = "1.8.3"
 compose-jb = "1.8.2"
 compose-jb-material-icons-core = "1.7.3"
-compose-bom = "2025.08.01"
+compose-bom = "2025.09.00"
 compose-integration-constraintlayout = "1.1.1"
 dagger = "2.57.1"
 datastore = "1.1.7"
@@ -265,7 +265,7 @@ telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil
 
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
-truth = "com.google.truth:truth:1.4.4"
+truth = "com.google.truth:truth:1.4.5"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 windowSizeClass = "dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0"

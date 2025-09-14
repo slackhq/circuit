@@ -53,7 +53,7 @@ skie = "0.10.6"
 spotless = "7.0.4"
 sqldelight = "2.1.0"
 telephoto = "0.16.0"
-testParameterInjector = "1.18"
+testParameterInjector = "1.19"
 turbine = "1.2.1"
 
 [plugins]

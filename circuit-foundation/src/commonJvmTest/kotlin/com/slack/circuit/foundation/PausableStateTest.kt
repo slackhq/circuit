@@ -36,8 +36,6 @@ class PausableStateTest {
   fun presentWithLifecycle_dataClass() = runTest {
     val presenter = DataClassPresenter()
     with(composeTestRule) {
-      // https://github.com/androidx/androidx/pull/800
-      @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
       setContent {
         val state = presenter.presentWithLifecycle()
         BasicText(
@@ -60,8 +58,6 @@ class PausableStateTest {
   fun presentWithLifecycle_class() = runTest {
     val presenter = ClassPresenter()
     with(composeTestRule) {
-      // https://github.com/androidx/androidx/pull/800
-      @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
       setContent {
         val state = presenter.presentWithLifecycle()
         BasicText(

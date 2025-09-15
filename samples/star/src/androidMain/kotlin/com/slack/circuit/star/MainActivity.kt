@@ -12,6 +12,10 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK
 import androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.core.net.toUri
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
@@ -20,7 +24,6 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen
 import com.slack.circuit.star.di.ActivityKey
 import com.slack.circuit.star.home.HomeScreen
-import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.IntentScreen
@@ -63,28 +66,32 @@ class MainActivity(private val circuit: Circuit) : AppCompatActivity() {
       }
 
     setContent {
-      val backStack = rememberSaveableBackStack(initialBackstack)
-      val circuitNavigator = rememberCircuitNavigator(backStack)
-      val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
-      StarCircuitApp(circuit, backStack = backStack, navigator = navigator)
+      val uriHandler = remember { CustomTabsUriHandler() }
+      CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+        val backStack = rememberSaveableBackStack(initialBackstack)
+        val circuitNavigator = rememberCircuitNavigator(backStack)
+        val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
+        val state = rememberStarAppState(backStack = backStack, navigator = navigator)
+        StarCircuitApp(circuit, state = state)
+      }
     }
   }
 
   private fun goTo(screen: AndroidScreen) =
     when (screen) {
-      is OpenUrlScreen -> goTo(screen)
       is IntentScreen -> screen.startWith(this)
       else -> error("Unknown AndroidScreen: $screen")
     }
 
-  private fun goTo(screen: OpenUrlScreen): Boolean {
-    val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
-    CustomTabsIntent.Builder()
-      .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)
-      .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
-      .setShowTitle(true)
-      .build()
-      .launchUrl(this, screen.url.toUri())
-    return true
+  inner class CustomTabsUriHandler : UriHandler {
+    override fun openUri(uri: String) {
+      val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
+      CustomTabsIntent.Builder()
+        .setColorSchemeParams(COLOR_SCHEME_LIGHT, scheme)
+        .setColorSchemeParams(COLOR_SCHEME_DARK, scheme)
+        .setShowTitle(true)
+        .build()
+        .launchUrl(this@MainActivity, uri.toUri())
+    }
   }
 }

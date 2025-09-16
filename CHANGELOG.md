@@ -15,6 +15,7 @@ This new decorator uses the Compose multiplatform `PredictiveBackHandler` to dri
 
 - Update Compose BOM to `2025.09.00`.
 - Update Compose to `1.9.1`.
+- Update Compose JB to `1.9.0`.
 
 0.30.0
 ------

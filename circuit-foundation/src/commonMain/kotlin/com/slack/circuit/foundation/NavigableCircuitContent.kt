@@ -143,22 +143,20 @@ public fun <R : Record> NavigableCircuitContent(
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
     val circuitProvidedValues =
       providedValuesForBackStack(backStack, circuit.backStackLocalProviders)
-    CompositionLocalProvider(LocalBackStack provides backStack) {
-      navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
-        val record = provider.record
+    navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
+      val record = provider.record
 
-        // Remember the `providedValues` lookup because this composition can live longer than
-        // the record is present in the backstack, if the decoration is animated for example.
-        val values = remember(record) { providedValues[record] }?.provideValues()
-        val circuitProvidedValues =
-          remember(record) { circuitProvidedValues[record] }?.provideValues()
-        val providedLocals =
-          remember(values, circuitProvidedValues) {
-            (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
-          }
-        CompositionLocalProvider(*providedLocals) {
-          provider.content(record, contentProviderState)
+      // Remember the `providedValues` lookup because this composition can live longer than
+      // the record is present in the backstack, if the decoration is animated for example.
+      val values = remember(record) { providedValues[record] }?.provideValues()
+      val circuitProvidedValues =
+        remember(record) { circuitProvidedValues[record] }?.provideValues()
+      val providedLocals =
+        remember(values, circuitProvidedValues) {
+          (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
+      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+        provider.content(record, contentProviderState)
       }
     }
   }

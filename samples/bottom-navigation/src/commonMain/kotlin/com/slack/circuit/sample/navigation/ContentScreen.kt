@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -52,7 +53,12 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
+import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
+import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
+import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 
 @Parcelize data class ContentScreen(val tabs: List<TabScreen>) : Screen
 
@@ -102,50 +108,57 @@ object ContentUiFactory : Ui.Factory {
   }
 }
 
+private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> Unit>) :
+  NavigationInterceptor {
+  override fun resetRoot(
+    newRoot: Screen,
+    saveState: Boolean,
+    restoreState: Boolean,
+  ): InterceptedResetRootResult {
+    return when (newRoot) {
+      is PrimaryScreen,
+      is SecondaryScreen -> {
+        Skipped
+      }
+      else -> {
+        eventSink.value(
+          ContentEvent.OnNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
+        )
+        SuccessConsumed
+      }
+    }
+  }
+
+  override fun goTo(screen: Screen): InterceptedGoToResult {
+    return when (screen) {
+      is PrimaryScreen,
+      is SecondaryScreen -> {
+        Skipped
+      }
+      else -> {
+        eventSink.value(ContentEvent.OnNavEvent(NavEvent.GoTo(screen)))
+        SuccessConsumed
+      }
+    }
+  }
+}
+
 @OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElementTransitionLayout {
-  val eventSink by rememberUpdatedState(state.eventSink)
+  val eventSink = rememberUpdatedState(state.eventSink)
   val backStack = rememberSaveableBackStack(state.rootScreen)
+  val adaptiveNavState = rememberAdaptiveNavState()
+  val contentInterceptor = remember { ContentInterceptor(eventSink) }
   val contentNavigator =
     rememberCircuitNavigator(backStack, onRootPop = {}, enableBackHandler = true)
-  val interceptingNavigator =
-    remember(contentNavigator) {
-      object : Navigator by contentNavigator {
-        // todo Does root pop need to hand the result up?
-        override fun resetRoot(
-          newRoot: Screen,
-          saveState: Boolean,
-          restoreState: Boolean,
-        ): List<Screen> {
-          return when (newRoot) {
-            is PrimaryScreen,
-            is SecondaryScreen -> {
-              contentNavigator.resetRoot(newRoot, saveState, restoreState)
-            }
-            else -> {
-              eventSink(
-                ContentEvent.OnNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
-              )
-              peekBackStack()
-            }
-          }
-        }
 
-        override fun goTo(screen: Screen): Boolean {
-          return when (screen) {
-            is PrimaryScreen,
-            is SecondaryScreen -> {
-              contentNavigator.goTo(screen)
-            }
-            else -> {
-              eventSink(ContentEvent.OnNavEvent(NavEvent.GoTo(screen)))
-              true
-            }
-          }
-        }
-      }
-    }
+  val interceptingNavigator =
+    rememberInterceptingNavigator(
+      navigator = contentNavigator,
+      interceptors = listOf(adaptiveNavState, contentInterceptor),
+    )
+
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
     bottomBar = {
@@ -165,10 +178,8 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
         remember(circuit.animatedScreenTransforms, interceptingNavigator) {
           AdaptiveNavDecoration(
             screenTransforms = circuit.animatedScreenTransforms,
-            decoratorFactory =
-              GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() }),
+            adaptiveNavState = adaptiveNavState,
             backgroundColor = { MaterialTheme.colorScheme.background },
-            onGoTo = { screen -> interceptingNavigator.goTo(screen) },
             onPop = { interceptingNavigator.pop() },
           )
         },

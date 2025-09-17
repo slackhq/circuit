@@ -125,8 +125,7 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
     columnModifier
       .testTag(CAROUSEL_TAG)
       // Some images are different sizes. We probably want to constrain them to the same
-      // common
-      // size though
+      // common size though
       .animateContentSize()
       .focusRequester(requester)
       .focusable()

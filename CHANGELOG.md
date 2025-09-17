@@ -11,6 +11,12 @@ Unreleased
 On iOS `GestureNavigationDecorationFactory` now uses `IOSPredictiveBackNavDecorator` instead of  `CupertinoGestureNavigationDecorator`.
 This new decorator uses the Compose multiplatform `PredictiveBackHandler` to drive the back animation, instead of a swipeable gesture or nested scroll.
 
+### Misc:
+
+- Update Compose BOM to `2025.09.00`.
+- Update Compose to `1.9.1`.
+- Update Compose JB to `1.9.0`.
+
 0.30.0
 ------
 

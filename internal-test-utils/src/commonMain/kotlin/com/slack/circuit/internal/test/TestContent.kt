@@ -144,13 +144,13 @@ class TestCountPresenter(
           remember { mutableIntStateOf(0) }
         }
         RememberType.Retained -> {
-          rememberRetained(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
+          rememberRetained("count".takeIf { useKeys }) { mutableIntStateOf(0) }
         }
         RememberType.Saveable -> {
-          rememberSaveable(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
+          rememberSaveable("count".takeIf { useKeys }) { mutableIntStateOf(0) }
         }
         RememberType.ViewModel -> {
-          rememberViewModel(key = "count".takeIf { useKeys })
+          rememberViewModel("count".takeIf { useKeys })
         }
       }
 
@@ -185,7 +185,7 @@ class TestCountPresenter(
   }
 }
 
-@Composable expect fun rememberViewModel(key: String?): MutableIntState
+@Composable expect fun rememberViewModel(input: String?): MutableIntState
 
 data class TestState(val count: Int, val label: String, val eventSink: (TestEvent) -> Unit) :
   CircuitUiState

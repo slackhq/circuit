@@ -136,7 +136,7 @@ class CircuitSymbolProcessorTest {
           @ContributesMultibinding(AppScope::class)
           public class HomeFactory @Inject constructor() : Ui.Factory {
             override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier) }
+              is HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier) }
               else -> null
             }
           }
@@ -237,6 +237,52 @@ class CircuitSymbolProcessorTest {
     )
   }
 
+    @Test
+    fun simpleUiFunction_withInjectedObjectScreen_noState() {
+        assertGeneratedFile(
+            sourceFile =
+                kotlin(
+                    "TestUi.kt",
+                    """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun Home(screen: HomeScreen, modifier: Modifier = Modifier) {
+
+          }
+        """
+                        .trimIndent(),
+                ),
+            generatedFilePath = "test/HomeFactory.kt",
+            expectedContent =
+                """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomeFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier, screen = screen) }
+            else -> null
+          }
+        }
+        """
+                    .trimIndent(),
+        )
+    }
+
   @Test
   fun simpleUiFunction_withObjectScreen_withState() {
     assertGeneratedFile(
@@ -273,7 +319,7 @@ class CircuitSymbolProcessorTest {
           @ContributesMultibinding(AppScope::class)
           public class HomeFactory @Inject constructor() : Ui.Factory {
             override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier) }
+              is HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier) }
               else -> null
             }
           }
@@ -371,6 +417,51 @@ class CircuitSymbolProcessorTest {
           .trimIndent(),
     )
   }
+
+    @Test
+    fun simpleUiFunction_withInjectedObjectScreen_withState() {
+        assertGeneratedFile(
+            sourceFile =
+                kotlin(
+                    "TestUi.kt",
+                    """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun Home(state: HomeScreen.State, screen: HomeScreen, modifier: Modifier = Modifier) {
+
+          }
+        """
+                        .trimIndent(),
+                ),
+            generatedFilePath = "test/HomeFactory.kt",
+            expectedContent =
+                """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomeFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier, screen = screen) }
+            else -> null
+          }
+        }
+        """
+                    .trimIndent(),
+        )
+    }
 
   @Test
   fun uiClass_noInjection() {
@@ -625,7 +716,7 @@ class CircuitSymbolProcessorTest {
               navigator: Navigator,
               context: CircuitContext,
             ): Presenter<*>? = when (screen) {
-              HomeScreen -> presenterOf { HomePresenter() }
+              is HomeScreen -> presenterOf { HomePresenter() }
               else -> null
             }
           }
@@ -732,6 +823,56 @@ class CircuitSymbolProcessorTest {
           .trimIndent(),
     )
   }
+
+    @Test
+    fun simplePresenterFunction_withInjectedObjectScreen() {
+        assertGeneratedFile(
+            sourceFile =
+                kotlin(
+                    "TestPresenter.kt",
+                    """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(screen: HomeScreen, navigator: Navigator): HomeScreen.State {
+
+          }
+        """
+                        .trimIndent(),
+                ),
+            generatedFilePath = "test/HomePresenterFactory.kt",
+            expectedContent =
+                """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is HomeScreen -> presenterOf { HomePresenter(screen = screen, navigator = navigator) }
+            else -> null
+          }
+        }
+      """
+                    .trimIndent(),
+        )
+    }
 
   @Test
   fun presenterClass_noInjection() {
@@ -1466,7 +1607,7 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class StaticUiFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen) }
+            is Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen) }
             else -> null
           }
         }

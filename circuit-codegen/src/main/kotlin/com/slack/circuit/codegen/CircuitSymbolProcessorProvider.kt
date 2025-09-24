@@ -126,8 +126,6 @@ private class CircuitSymbolProcessor(
     }
 
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
-    val screenIsObject =
-      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 

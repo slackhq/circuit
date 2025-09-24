@@ -173,12 +173,7 @@ private class CircuitSymbolProcessor(
 
           codegenMode.annotateFactory(builder = this, scope = scope)
         }
-    val screenBranch =
-      if (screenIsObject) {
-        CodeBlock.of("%T", screenType)
-      } else {
-        CodeBlock.of("is·%T", screenType)
-      }
+    val screenBranch = CodeBlock.of("is·%T", screenType)
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->

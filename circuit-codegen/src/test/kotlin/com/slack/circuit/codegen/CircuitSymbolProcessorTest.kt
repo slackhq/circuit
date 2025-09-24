@@ -237,13 +237,13 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-    @Test
-    fun simpleUiFunction_withInjectedObjectScreen_noState() {
-        assertGeneratedFile(
-            sourceFile =
-                kotlin(
-                    "TestUi.kt",
-                    """
+  @Test
+  fun simpleUiFunction_withInjectedObjectScreen_noState() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -256,11 +256,11 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-                        .trimIndent(),
-                ),
-            generatedFilePath = "test/HomeFactory.kt",
-            expectedContent =
-                """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomeFactory.kt",
+      expectedContent =
+        """
         package test
 
         import com.slack.circuit.runtime.CircuitContext
@@ -279,9 +279,9 @@ class CircuitSymbolProcessorTest {
           }
         }
         """
-                    .trimIndent(),
-        )
-    }
+          .trimIndent(),
+    )
+  }
 
   @Test
   fun simpleUiFunction_withObjectScreen_withState() {
@@ -418,13 +418,13 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-    @Test
-    fun simpleUiFunction_withInjectedObjectScreen_withState() {
-        assertGeneratedFile(
-            sourceFile =
-                kotlin(
-                    "TestUi.kt",
-                    """
+  @Test
+  fun simpleUiFunction_withInjectedObjectScreen_withState() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -437,11 +437,11 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-                        .trimIndent(),
-                ),
-            generatedFilePath = "test/HomeFactory.kt",
-            expectedContent =
-                """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomeFactory.kt",
+      expectedContent =
+        """
         package test
 
         import com.slack.circuit.runtime.CircuitContext
@@ -459,9 +459,9 @@ class CircuitSymbolProcessorTest {
           }
         }
         """
-                    .trimIndent(),
-        )
-    }
+          .trimIndent(),
+    )
+  }
 
   @Test
   fun uiClass_noInjection() {
@@ -824,13 +824,13 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-    @Test
-    fun simplePresenterFunction_withInjectedObjectScreen() {
-        assertGeneratedFile(
-            sourceFile =
-                kotlin(
-                    "TestPresenter.kt",
-                    """
+  @Test
+  fun simplePresenterFunction_withInjectedObjectScreen() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
           package test
 
           import com.slack.circuit.codegen.annotations.CircuitInject
@@ -843,11 +843,11 @@ class CircuitSymbolProcessorTest {
 
           }
         """
-                        .trimIndent(),
-                ),
-            generatedFilePath = "test/HomePresenterFactory.kt",
-            expectedContent =
-                """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
         package test
 
         import com.slack.circuit.runtime.CircuitContext
@@ -870,9 +870,9 @@ class CircuitSymbolProcessorTest {
           }
         }
       """
-                    .trimIndent(),
-        )
-    }
+          .trimIndent(),
+    )
+  }
 
   @Test
   fun presenterClass_noInjection() {

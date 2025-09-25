@@ -126,7 +126,8 @@ private class CircuitSymbolProcessor(
     }
 
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
-    val screenIsObject = screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
+    val screenIsObject =
+      screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
@@ -537,14 +538,19 @@ private class CircuitSymbolProcessor(
   }
 }
 
-private data class AssistedType(val factoryName: String, val type: TypeName, val name: String, val includeExplicitCast: Boolean = false)
+private data class AssistedType(
+  val factoryName: String,
+  val type: TypeName,
+  val name: String,
+  val includeExplicitCast: Boolean = false,
+)
 
 /**
  * Returns a [CodeBlock] representation of all named assisted parameters on this
  * [KSFunctionDeclaration] to be used in generated invocation code.
  *
- * If [screenType] is an object, then the CodeBlock will include an explicit cast to the type
- * since objects are checked by equality and don't benefit from smart casts.
+ * If [screenType] is an object, then the CodeBlock will include an explicit cast to the type since
+ * objects are checked by equality and don't benefit from smart casts.
  *
  * Example: this function
  *
@@ -575,13 +581,18 @@ private fun KSFunctionDeclaration.assistedParameters(
         when {
           type.isInstanceOf(symbols.screen) -> {
             if (screenType.isSameDeclarationAs(type)) {
-              val screenIsObject = screenType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
-              addOrError(AssistedType(
+              val screenIsObject =
+                screenType.declaration.let {
+                  it is KSClassDeclaration && it.classKind == ClassKind.OBJECT
+                }
+              addOrError(
+                AssistedType(
                   factoryName = "screen",
                   type = type.toTypeName(),
                   name = param.name!!.getShortName(),
                   includeExplicitCast = screenIsObject,
-              ))
+                )
+              )
             } else {
               logger.error("Screen type mismatch. Expected $screenType but found $type", param)
             }
@@ -593,7 +604,7 @@ private fun KSFunctionDeclaration.assistedParameters(
                 AssistedType(
                   factoryName = "navigator",
                   type = type.toTypeName(),
-                  name = param.name!!.getShortName()
+                  name = param.name!!.getShortName(),
                 )
               )
             } else {
@@ -608,7 +619,7 @@ private fun KSFunctionDeclaration.assistedParameters(
               AssistedType(
                 factoryName = "context",
                 type = type.toTypeName(),
-                name = param.name!!.getShortName()
+                name = param.name!!.getShortName(),
               )
             )
           }

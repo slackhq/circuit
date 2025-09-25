@@ -136,7 +136,7 @@ class CircuitSymbolProcessorTest {
           @ContributesMultibinding(AppScope::class)
           public class HomeFactory @Inject constructor() : Ui.Factory {
             override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier) }
+              HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier) }
               else -> null
             }
           }
@@ -274,7 +274,7 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier, screen = screen) }
+            HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier, screen = screen as HomeScreen) }
             else -> null
           }
         }
@@ -319,7 +319,7 @@ class CircuitSymbolProcessorTest {
           @ContributesMultibinding(AppScope::class)
           public class HomeFactory @Inject constructor() : Ui.Factory {
             override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier) }
+              HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier) }
               else -> null
             }
           }
@@ -454,7 +454,7 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier, screen = screen) }
+            HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier, screen = screen as HomeScreen) }
             else -> null
           }
         }
@@ -716,7 +716,7 @@ class CircuitSymbolProcessorTest {
               navigator: Navigator,
               context: CircuitContext,
             ): Presenter<*>? = when (screen) {
-              is HomeScreen -> presenterOf { HomePresenter() }
+              HomeScreen -> presenterOf { HomePresenter() }
               else -> null
             }
           }
@@ -865,7 +865,7 @@ class CircuitSymbolProcessorTest {
             navigator: Navigator,
             context: CircuitContext,
           ): Presenter<*>? = when (screen) {
-            is HomeScreen -> presenterOf { HomePresenter(screen = screen, navigator = navigator) }
+            HomeScreen -> presenterOf { HomePresenter(screen = screen as HomeScreen, navigator = navigator) }
             else -> null
           }
         }
@@ -1607,7 +1607,7 @@ class CircuitSymbolProcessorTest {
         @ContributesMultibinding(AppScope::class)
         public class StaticUiFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen) }
+            Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen as Static) }
             else -> null
           }
         }

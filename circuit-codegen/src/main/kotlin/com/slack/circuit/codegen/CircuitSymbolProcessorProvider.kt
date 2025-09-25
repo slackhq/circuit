@@ -126,6 +126,7 @@ private class CircuitSymbolProcessor(
     }
 
     val screenKSType = circuitInjectAnnotation.arguments[0].value as KSType
+    val screenIsObject = screenKSType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
     val screenType = screenKSType.toTypeName()
     val scope = (circuitInjectAnnotation.arguments[1].value as KSType).toTypeName()
 
@@ -171,7 +172,12 @@ private class CircuitSymbolProcessor(
 
           codegenMode.annotateFactory(builder = this, scope = scope)
         }
-    val screenBranch = CodeBlock.of("is·%T", screenType)
+    val screenBranch =
+      if (screenIsObject) {
+        CodeBlock.of("%T", screenType)
+      } else {
+        CodeBlock.of("is %T", screenType)
+      }
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
@@ -531,11 +537,14 @@ private class CircuitSymbolProcessor(
   }
 }
 
-private data class AssistedType(val factoryName: String, val type: TypeName, val name: String)
+private data class AssistedType(val factoryName: String, val type: TypeName, val name: String, val includeExplicitCast: Boolean = false)
 
 /**
  * Returns a [CodeBlock] representation of all named assisted parameters on this
  * [KSFunctionDeclaration] to be used in generated invocation code.
+ *
+ * If [screenType] is an object, then the CodeBlock will include an explicit cast to the type
+ * since objects are checked by equality and don't benefit from smart casts.
  *
  * Example: this function
  *
@@ -566,7 +575,13 @@ private fun KSFunctionDeclaration.assistedParameters(
         when {
           type.isInstanceOf(symbols.screen) -> {
             if (screenType.isSameDeclarationAs(type)) {
-              addOrError(AssistedType("screen", type.toTypeName(), param.name!!.getShortName()))
+              val screenIsObject = screenType.declaration.let { it is KSClassDeclaration && it.classKind == ClassKind.OBJECT }
+              addOrError(AssistedType(
+                  factoryName = "screen",
+                  type = type.toTypeName(),
+                  name = param.name!!.getShortName(),
+                  includeExplicitCast = screenIsObject,
+              ))
             } else {
               logger.error("Screen type mismatch. Expected $screenType but found $type", param)
             }
@@ -574,7 +589,13 @@ private fun KSFunctionDeclaration.assistedParameters(
 
           type.isInstanceOf(symbols.navigator) -> {
             if (allowNavigator) {
-              addOrError(AssistedType("navigator", type.toTypeName(), param.name!!.getShortName()))
+              addOrError(
+                AssistedType(
+                  factoryName = "navigator",
+                  type = type.toTypeName(),
+                  name = param.name!!.getShortName()
+                )
+              )
             } else {
               logger.error(
                 "Navigator type mismatch. Navigators are not injectable on this type.",
@@ -583,7 +604,13 @@ private fun KSFunctionDeclaration.assistedParameters(
             }
           }
           type.isInstanceOf(symbols.circuitContext) -> {
-            addOrError(AssistedType("context", type.toTypeName(), param.name!!.getShortName()))
+            addOrError(
+              AssistedType(
+                factoryName = "context",
+                type = type.toTypeName(),
+                name = param.name!!.getShortName()
+              )
+            )
           }
         }
       }
@@ -596,7 +623,11 @@ private fun KSFunctionDeclaration.assistedParameters(
         } else {
           ""
         }
-      CodeBlock.of("$prefix${it.factoryName}")
+      if (it.includeExplicitCast) {
+        CodeBlock.of("$prefix${it.factoryName} as %T", it.type)
+      } else {
+        CodeBlock.of("$prefix${it.factoryName}")
+      }
     }
     .joinToCode(",·")
 }

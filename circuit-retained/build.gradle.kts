@@ -64,8 +64,8 @@ kotlin {
         dependsOn(commonMain.get())
         // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
         dependencies {
-          implementation(libs.androidx.lifecycle.runtime.compose.jb)
-          implementation(libs.androidx.lifecycle.viewModel.compose.jb)
+          implementation(libs.lifecycle.runtime.compose)
+          implementation(libs.lifecycle.viewModel.compose)
         }
       }
 

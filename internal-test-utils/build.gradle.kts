@@ -49,7 +49,7 @@ kotlin {
         api(projects.circuitFoundation)
         api(projects.internalRuntime)
         api(libs.compose.ui)
-        implementation(libs.androidx.lifecycle.viewModel.compose.jb)
+        implementation(libs.lifecycle.viewModel.compose)
       }
     }
     get("browserCommonMain").dependsOn(commonMain.get())

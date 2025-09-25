@@ -4,7 +4,6 @@ androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-lifecycle = "2.9.4"
-androidx-lifecycle-jb = "2.9.4"
 agp = "8.13.0"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
@@ -42,6 +41,7 @@ ksp = "2.2.10-2.0.2"
 ktfmt = "0.56"
 ktor = "3.3.0"
 leakcanary = "2.14"
+lifecycle-jb = "2.9.4"
 material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.34.0"
 molecule = "2.1.0"
@@ -131,10 +131,6 @@ androidx-core = "androidx.core:core-ktx:1.17.0"
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
-androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose-jb = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle-jb" }
-androidx-lifecycle-viewModel-compose-jb = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle-jb" }
 # Force a newer version of androidx.loader because Espresso depends on an old and wrong version of it
 androidx-loader = "androidx.loader:loader:1.1.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
@@ -180,6 +176,10 @@ compose-material-icons = { module = "org.jetbrains.compose.material:material-ico
 compose-material-iconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-jb" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb-material3" }
+
+# Lifecycle Mutliplatform
+lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-jb" }
+lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-jb" }
 
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }

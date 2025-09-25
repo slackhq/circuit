@@ -42,7 +42,7 @@ kotlin {
     }
     commonTest {
       dependencies {
-        implementation(libs.androidx.lifecycle.runtime.compose.jb)
+        implementation(libs.lifecycle.runtime.compose)
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)

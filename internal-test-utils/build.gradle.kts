@@ -49,9 +49,9 @@ kotlin {
         api(projects.circuitFoundation)
         api(projects.internalRuntime)
         api(libs.compose.ui)
+        implementation(libs.androidx.lifecycle.viewModel.compose.jb)
       }
     }
-    androidMain { dependencies { implementation(libs.androidx.lifecycle.viewModel.compose) } }
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
   }

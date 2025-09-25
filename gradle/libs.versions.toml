@@ -18,7 +18,6 @@ compose-ui = "1.9.1"
 compose-jb = "1.9.0"
 compose-jb-material3 = "1.8.2"
 compose-jb-material-icons-core = "1.7.3"
-compose-bom = "2025.09.00"
 compose-integration-constraintlayout = "1.1.1"
 dagger = "2.57.1"
 datastore = "1.1.7"
@@ -94,7 +93,6 @@ androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 ####### Compose
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
 androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }

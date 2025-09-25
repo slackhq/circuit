@@ -123,28 +123,6 @@ allprojects {
   }
 }
 
-val knownBomConfigurations =
-  setOf(
-    "implementation",
-    "testImplementation",
-    "androidTestImplementation",
-    "compileOnly",
-    "testCompileOnly",
-    "kapt",
-    "ksp",
-  )
-
-fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
-  dependencyHandler.apply {
-    val composeBom = platform(libs.androidx.compose.bom)
-    configurations
-      .matching { configuration ->
-        knownBomConfigurations.any { configuration.name.contains(it, ignoreCase = true) }
-      }
-      .configureEach { add(name, composeBom) }
-  }
-}
-
 val jvmTargetVersion = libs.versions.jvmTarget
 val publishedJvmTargetVersion = libs.versions.publishedJvmTarget
 
@@ -166,9 +144,6 @@ subprojects {
         jvmTargetProject.map(JavaVersion::toVersion).map { it.majorVersion.toInt() }
       )
     }
-
-    // This is the default base plugin applied on all projects, so safe to add this hook here
-    configureComposeBom(dependencies)
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")

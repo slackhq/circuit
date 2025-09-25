@@ -177,7 +177,7 @@ private class CircuitSymbolProcessor(
       if (screenIsObject) {
         CodeBlock.of("%T", screenType)
       } else {
-        CodeBlock.of("is %T", screenType)
+        CodeBlock.of("is·%T", screenType)
       }
     val typeSpec =
       when (factoryData.factoryType) {
@@ -635,7 +635,7 @@ private fun KSFunctionDeclaration.assistedParameters(
           ""
         }
       if (it.includeExplicitCast) {
-        CodeBlock.of("$prefix${it.factoryName} as %T", it.type)
+        CodeBlock.of("$prefix${it.factoryName}·as·%T", it.type)
       } else {
         CodeBlock.of("$prefix${it.factoryName}")
       }

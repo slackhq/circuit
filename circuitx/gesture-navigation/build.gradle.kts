@@ -63,7 +63,6 @@ kotlin {
         implementation(projects.internalTestUtils)
 
         implementation(libs.robolectric)
-        implementation(libs.androidx.compose.foundation)
         implementation(libs.androidx.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }

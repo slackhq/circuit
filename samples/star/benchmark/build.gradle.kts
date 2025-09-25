@@ -65,7 +65,6 @@ baselineProfile {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.test.ext.junit)
   implementation(libs.androidx.test.espresso.core)
   implementation(libs.androidx.test.uiautomator)

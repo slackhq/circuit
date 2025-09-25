@@ -52,9 +52,8 @@ kotlin {
       dependencies {
         implementation(libs.androidx.appCompat)
         implementation(libs.androidx.activity.compose)
-        implementation(libs.bundles.compose.ui)
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
-        implementation(libs.androidx.compose.material.icons)
+        implementation(libs.compose.material.icons)
         implementation(libs.androidx.compose.ui.tooling)
       }
     }

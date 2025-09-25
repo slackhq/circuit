@@ -99,7 +99,6 @@ kotlin {
       dependencies {
         commonJvmTest()
         implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.compose.foundation)
         implementation(libs.androidx.compose.material.material)
         implementation(libs.androidx.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.ui)

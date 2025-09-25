@@ -9,8 +9,6 @@ anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
-compose-animation = "1.9.1"
-compose-foundation = "1.9.1"
 compose-hotReload = "1.0.0-beta08"
 compose-material = "1.9.1"
 compose-material-icons-core = "1.7.8"
@@ -96,12 +94,9 @@ androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 ####### Compose
-androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose-ui" }
-androidx-compose-integration-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "compose-integration-constraintlayout" }
 androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }
 # Material design icons
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "compose-material-icons-core" }

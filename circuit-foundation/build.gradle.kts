@@ -72,8 +72,6 @@ kotlin {
     }
     androidMain {
       dependencies {
-        api(libs.androidx.compose.runtime)
-        api(libs.androidx.compose.animation)
         implementation(libs.androidx.activity.compose)
       }
     }
@@ -110,7 +108,6 @@ kotlin {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(libs.robolectric)
-        implementation(libs.androidx.compose.foundation)
         implementation(libs.androidx.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }

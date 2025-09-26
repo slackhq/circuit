@@ -86,7 +86,7 @@ class RememberImpressionNavigatorTest {
   }
 
   @Test
-  fun navGoToRememberImpressionNavigator() {
+  fun navGoToRememberImpressionNavigator() = runTest {
     composeTestRule.run {
       var count = 0
       // Compose the content
@@ -98,7 +98,7 @@ class RememberImpressionNavigatorTest {
       // Fake navigation forward
       onNodeWithTag(TAG_GOTO).performClick()
       advanceTimeByAndRun(1)
-      assertEquals(TestGoToScreen, fakeNavigator.takeNextScreen())
+      assertEquals(TestGoToScreen, fakeNavigator.awaitNextScreen())
       // Compose the content again
       recreate()
       // Advance over the delay and execute

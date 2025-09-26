@@ -36,8 +36,6 @@ baselineProfile {
 
 dependencies {
   api(projects.samples.star)
-  // Necessary for themes.xml parents, which are all still in the standard MDC artifact
-  implementation(libs.material)
   implementation(libs.androidx.profileinstaller)
   baselineProfile(projects.samples.star.benchmark)
   debugImplementation(libs.leakcanary.android)

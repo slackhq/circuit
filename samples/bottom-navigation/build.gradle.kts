@@ -38,8 +38,8 @@ kotlin {
     commonMain {
       dependencies {
         implementation(libs.compose.foundation)
-        implementation(libs.compose.material.material3)
         implementation(libs.compose.material.icons)
+        implementation(libs.compose.material.material3)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navigation)
@@ -51,14 +51,12 @@ kotlin {
         implementation(libs.androidx.activity.ktx)
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
-        implementation(libs.bundles.compose.ui)
         implementation(libs.compose.ui.tooling.preview)
-        implementation(libs.material)
       }
     }
     androidUnitTest {
       dependencies {
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.robolectric)
         implementation(libs.androidx.test.espresso.core)

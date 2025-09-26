@@ -44,8 +44,6 @@ kotlin {
         implementation(libs.androidx.activity.ktx)
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
-        implementation(libs.bundles.compose.ui)
-        implementation(libs.material)
       }
     }
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }

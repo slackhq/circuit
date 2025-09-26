@@ -20,7 +20,7 @@
 
     <application
         android:label="Circuit Counter"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         android:enableOnBackInvokedCallback="true"
         tools:ignore="MissingApplicationIcon">
         <activity

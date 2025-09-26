@@ -203,7 +203,7 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-rxjava = "io.reactivex.rxjava3:rxjava:3.1.11"
+rxjava = "io.reactivex.rxjava3:rxjava:3.1.12"
 
 slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
 

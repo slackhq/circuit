@@ -188,8 +188,6 @@ lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifec
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
-material = "com.google.android.material:material:1.13.0"
-
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
 mosaic = "com.jakewharton.mosaic:mosaic-runtime:0.18.0"

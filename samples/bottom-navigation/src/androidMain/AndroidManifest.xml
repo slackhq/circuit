@@ -5,7 +5,7 @@
     <application
         android:enableOnBackInvokedCallback="true"
         android:label="Circuit Navigation Sample"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:ignore="MissingApplicationIcon">
         <activity
             android:name=".MainActivity"

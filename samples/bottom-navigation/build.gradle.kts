@@ -52,7 +52,6 @@ kotlin {
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
         implementation(libs.compose.ui.tooling.preview)
-        implementation(libs.material)
       }
     }
     androidUnitTest {

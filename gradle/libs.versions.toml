@@ -33,7 +33,6 @@ ktfmt = "0.56"
 ktor = "3.3.0"
 leakcanary = "2.14"
 lifecycle-jb = "2.9.4"
-material-composeThemeAdapter = "1.2.1"
 mavenPublish = "0.34.0"
 molecule = "2.1.0"
 okhttp = "5.1.0"
@@ -89,7 +88,6 @@ androidx-browser = { module = "androidx.browser:browser", version.ref = "android
 ####### Androidx Compose
 # Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
 androidx-compose-googleFonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "androidx-compose" }
-androidx-compose-integration-materialThemeAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "material-composeThemeAdapter" }
 # Runtime artifact, must be manually applied.
 androidx-compose-runtime-rxjava3 = { module = "androidx.compose.runtime:runtime-rxjava3", version.ref = "androidx-compose" }
 # Compose testing library that should be added as a debugImplementation dependency to add properties to the debug manifest necessary for testing an application

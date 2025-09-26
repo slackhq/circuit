@@ -38,8 +38,8 @@ kotlin {
     commonMain {
       dependencies {
         implementation(libs.compose.foundation)
-        implementation(libs.compose.material.material3)
         implementation(libs.compose.material.icons)
+        implementation(libs.compose.material.material3)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navigation)

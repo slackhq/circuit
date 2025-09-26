@@ -30,7 +30,6 @@ dependencies {
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)
-  implementation(libs.androidx.compose.integration.materialThemeAdapter)
   implementation(libs.androidx.compose.runtime.rxjava3)
   implementation(libs.compose.material.icons)
   implementation(libs.compose.material.material3)

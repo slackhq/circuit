@@ -11,6 +11,8 @@ ksp {
   arg("circuit.codegen.mode", "kotlin_inject_anvil")
 }
 
+compose.desktop { application { mainClass = "com.slack.circuit.sample.kotlininject.MainKt" } }
+
 dependencies {
   ksp(projects.circuitCodegen)
   ksp(libs.kotlinInject.compiler)

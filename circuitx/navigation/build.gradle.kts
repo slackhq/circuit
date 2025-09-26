@@ -69,11 +69,6 @@ kotlin {
         implementation(libs.compose.ui.testing.junit)
       }
     }
-
-    // We use a common folder instead of a common source set because there is no commonizer
-    // which exposes the browser APIs across these two targets.
-    jsMain { kotlin.srcDir("src/browserMain/kotlin") }
-    wasmJsMain { kotlin.srcDir("src/browserMain/kotlin") }
   }
 }
 

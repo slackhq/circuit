@@ -52,7 +52,7 @@ kotlin {
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
         implementation(libs.compose.ui.tooling.preview)
-        implementation(libs.compose.uiUtil)
+        implementation(libs.compose.ui.util)
         implementation(libs.coroutines)
         implementation(libs.ksoup)
         implementation(libs.ktor.client)
@@ -109,7 +109,7 @@ kotlin {
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.browser)
         implementation(libs.androidx.compose.googleFonts)
-        implementation(libs.androidx.compose.ui.tooling)
+        implementation(libs.compose.ui.tooling)
         implementation(libs.coroutines.android)
         implementation(libs.sqldelight.driver.android)
         implementation(libs.telephoto.zoomableImageCoil)
@@ -118,7 +118,7 @@ kotlin {
     }
     val androidUnitTest by getting {
       dependencies {
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.androidx.loader)
         implementation(libs.leakcanary.android.instrumentation)
@@ -136,7 +136,7 @@ kotlin {
       // Annoyingly cannot depend on commonJvmTest
       dependencies {
         implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.coroutines.android)

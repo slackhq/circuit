@@ -99,9 +99,8 @@ kotlin {
       dependencies {
         commonJvmTest()
         implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.compose.material.material)
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.androidx.compose.ui.ui)
+        implementation(libs.compose.material.material)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
         implementation(libs.leakcanary.android.instrumentation)

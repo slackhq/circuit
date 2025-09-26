@@ -54,7 +54,7 @@ kotlin {
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.compose.integration.materialThemeAdapter)
         implementation(libs.compose.material.icons)
-        implementation(libs.androidx.compose.ui.tooling)
+        implementation(libs.compose.ui.tooling)
       }
     }
     wasmJsMain {

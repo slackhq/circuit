@@ -57,7 +57,7 @@ kotlin {
     }
     androidUnitTest {
       dependencies {
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.robolectric)
         implementation(libs.androidx.test.espresso.core)

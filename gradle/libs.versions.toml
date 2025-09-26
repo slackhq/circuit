@@ -78,8 +78,8 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 [libraries]
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-benchmark-macro-junit = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -133,16 +133,16 @@ compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "
 
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 coroutines-rxjava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx3", version.ref = "kotlinx-coroutines" }
+coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
+
 # Referenced in the root build.gradle
 detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
-
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }
@@ -151,18 +151,19 @@ jsoup = "org.jsoup:jsoup:1.21.2"
 junit = "junit:junit:4.13.2"
 kct = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
 kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
-kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
+
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
-kotlinInject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
-kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
 kotlinInject-anvil-compiler = { module = "software.amazon.lastmile.kotlin.inject.anvil:compiler", version.ref = "kotlinInject-anvil" }
 kotlinInject-anvil-runtime = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime", version.ref = "kotlinInject-anvil" }
 kotlinInject-anvil-runtime-optional = { module = "software.amazon.lastmile.kotlin.inject.anvil:runtime-optional", version.ref = "kotlinInject-anvil" }
+kotlinInject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
+kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
+kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
 
 ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"
 
@@ -172,10 +173,10 @@ ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.re
 ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
 
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-client-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-engine-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
@@ -204,13 +205,13 @@ roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = 
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-rules = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
-
 rxjava = "io.reactivex.rxjava3:rxjava:3.1.11"
 
+slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
+
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqldelight" }
 sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 
 telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }

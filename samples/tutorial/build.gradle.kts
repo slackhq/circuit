@@ -12,7 +12,7 @@ plugins {
 android {
   namespace = "com.slack.circuit.tutorial"
   defaultConfig {
-    minSdk = 21
+    minSdk = 23
     targetSdk = 36
   }
 }

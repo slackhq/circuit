@@ -15,10 +15,7 @@ val isCi = providers.environmentVariable("CI").isPresent
 
 android {
   namespace = "com.circuit.samples.star.benchmark"
-  defaultConfig {
-    targetSdk = 36
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-  }
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
   testOptions.managedDevices.allDevices {
     create<ManagedVirtualDevice>(mvdName) {

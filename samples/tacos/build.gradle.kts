@@ -14,9 +14,6 @@ plugins {
 
 android {
   namespace = "com.slack.circuit.tacos"
-
-  defaultConfig { minSdk = 28 }
-
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 

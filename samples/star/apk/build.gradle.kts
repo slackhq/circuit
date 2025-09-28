@@ -10,7 +10,6 @@ android {
   namespace = "com.slack.circuit.sample.star.apk"
   defaultConfig {
     minSdk = 30
-    targetSdk = 36
     versionCode = 1
     versionName = "1"
   }
@@ -36,8 +35,6 @@ baselineProfile {
 
 dependencies {
   api(projects.samples.star)
-  // Necessary for themes.xml parents, which are all still in the standard MDC artifact
-  implementation(libs.material)
   implementation(libs.androidx.profileinstaller)
   baselineProfile(projects.samples.star.benchmark)
   debugImplementation(libs.leakcanary.android)

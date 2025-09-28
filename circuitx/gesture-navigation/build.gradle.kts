@@ -44,7 +44,7 @@ kotlin {
     androidMain {
       dependencies {
         api(libs.compose.material.material3)
-        implementation(libs.compose.uiUtil)
+        implementation(libs.compose.ui.util)
         implementation(libs.androidx.activity.compose)
       }
     }
@@ -54,8 +54,7 @@ kotlin {
         implementation(projects.internalTestUtils)
 
         implementation(libs.robolectric)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }

@@ -336,7 +336,7 @@ subprojects {
   pluginManager.withPlugin("com.android.library") {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
-      defaultConfig { minSdk = 21 }
+      defaultConfig { minSdk = 23 }
       testOptions {
         // TODO update once robolectric supports it
         targetSdk = 35
@@ -364,6 +364,10 @@ subprojects {
   pluginManager.withPlugin("com.android.application") {
     with(extensions.getByType<ApplicationExtension>()) {
       commonAndroidConfig()
+      defaultConfig {
+        minSdk = 23
+        targetSdk = 36
+      }
       buildTypes {
         maybeCreate("debug").apply { matchingFallbacks += listOf("release") }
         maybeCreate("release").apply {

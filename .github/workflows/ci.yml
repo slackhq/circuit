@@ -12,7 +12,6 @@ on:
     branches:
       - main
       - 'releases*'
-      - 'compose-1.7.x'
   merge_group:
 
 concurrency:

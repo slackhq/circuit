@@ -72,7 +72,11 @@ jobs:
 #        env:
 #          EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
 #        run: ./gradlew testReleaseWithEmulatorWtf --quiet
-      - run: df -h
+
+      - name: Cleanup for local emulator (from forks only)
+        run: |
+            sudo du -h -a / | sort -h -r | head -n 100
+
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

@@ -14,9 +14,9 @@ on:
       - 'releases*'
   merge_group:
 
-# concurrency:
-#   group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
-#   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+concurrency:
+  group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:

@@ -9,6 +9,7 @@ Unreleased
 - Android minimum SDK is now `minSdk` 23
 - Update to Kotlin `2.2.20`.
 - Update to Molecule `2.2.0`.
+- Build against KSP `2.2.20-2.0.3`.
 
 ### Behaviour Changes:
 

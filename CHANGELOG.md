@@ -4,7 +4,9 @@ Changelog
 Unreleased
 ----------
 
-- **Breaking change**: Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
+### Breaking Changes:
+
+Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
 
 ### Behaviour Changes:
 

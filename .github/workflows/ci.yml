@@ -65,13 +65,13 @@ jobs:
               detektTest \
               assembleAndroidTest
 
-#      # Defer these until after the above run, no need to waste resources running them if there are other failures first
-#      - name: Run instrumentation tests via emulator.wtf (main repo only)
-#        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-#        id: gradle-instrumentation
-#        env:
-#          EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
-#        run: ./gradlew testReleaseWithEmulatorWtf --quiet
+     # Defer these until after the above run, no need to waste resources running them if there are other failures first
+     - name: Run instrumentation tests via emulator.wtf (main repo only)
+       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+       id: gradle-instrumentation
+       env:
+         EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
+       run: ./gradlew testReleaseWithEmulatorWtf --quiet
 
 
       - name: Enable KVM group perms
@@ -81,9 +81,8 @@ jobs:
           sudo udevadm trigger --name-match=kvm        
 
       - name: Setup for local emulator (from forks only)
-        if: github.event_name == 'pull_request' # && github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
-          df -h
           # Remove Haskell stuff to free up space for the emulator
           sudo rm -rf /usr/local/.ghcup
           # Remove dotnet stuff as well
@@ -93,7 +92,7 @@ jobs:
       # Forks cannot run emulator.wtf tests due to not being able to use repo secrets, so for them
       # we run the tests via the android-emulator-runner action instead
       - name: Run instrumentation tests via local emulator (from forks only)
-        if: github.event_name == 'pull_request' # && github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         id: gradle-instrumentation-fork
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -114,142 +113,142 @@ jobs:
           path: |
             **/build/reports/**
 
-#  build-ios:
-#    runs-on: macos-latest
-#    env:
-#      GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v5
-#        with:
-#          lfs: 'true'
-#
-#      - name: Install JDK
-#        uses: actions/setup-java@v5
-#        with:
-#          distribution: 'zulu'
-#          java-version: '23'
-#
-#      - uses: ruby/setup-ruby@v1
-#        with:
-#          bundler-cache: true
-#          ruby-version: '3.2.2'
-#
-#      - uses: maxim-lobanov/setup-xcode@v1
-#        with:
-#          xcode-version: '16.4'
-#
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#        with:
-#          # Only save Gradle User Home state for builds on the 'main' branch.
-#          # Builds on other branches will only read existing entries from the cache.
-#          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-#
-#          # Don't reuse cache entries from any other Job.
-#          gradle-home-cache-strict-match: true
-#
-#          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-#
-#          # Limit the size of the cache entry.
-#          # These directories contain instrumented/transformed dependency jars which can be reconstructed relatively quickly.
-#          gradle-home-cache-excludes: |
-#            caches/jars-9
-#            caches/transforms-3
-#
-#      - run: brew install swiftlint
-#
-## TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/22191
-##      - name: Run lint on iOS samples
-##        run: bundle exec fastlane ios lint
-#
-#      - name: Run iOS Simulator tests
-#        id: gradle-ios-tests
-#        run: |
-#          ./gradlew --quiet --continue --no-configuration-cache \
-#              iosSimulatorArm64Test
-#
-#      - name: Build iOS samples
-#        run: bundle exec fastlane ios build
-#
-#  snapshots:
-#    runs-on: ubuntu-latest
-#    env:
-#      GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v5
-#        with:
-#          lfs: 'true'
-#
-#      - name: Check LFS files
-#        uses: actionsdesk/lfs-warning@v3.3
-#
-#      - name: Install JDK
-#        uses: actions/setup-java@v5
-#        with:
-#          distribution: 'zulu'
-#          java-version: '23'
-#
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#        with:
-#          # Only save Gradle User Home state for builds on the 'main' branch.
-#          # Builds on other branches will only read existing entries from the cache.
-#          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-#
-#          # Don't reuse cache entries from any other Job.
-#          gradle-home-cache-strict-match: true
-#
-#          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-#
-#          # Limit the size of the cache entry.
-#          # These directories contain instrumented/transformed dependency jars which can be reconstructed relatively quickly.
-#          gradle-home-cache-excludes: |
-#            caches/jars-9
-#            caches/transforms-3
-#
-#      - name: Verify Snapshots
-#        id: gradle-snapshots
-#        run: ./gradlew verifyRoborazzi --quiet
-#
-#      - name: (Fail-only) Upload reports
-#        if: failure()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: reports-snapshots
-#          path: |
-#            **/build/reports/**
-#            **/src/test/snapshots/**/*_compare.png
-#
-#  publish:
-#    runs-on: ubuntu-latest
-#    needs: [build, build-ios, snapshots]
-#    if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v5
-#
-#      - name: Install JDK
-#        uses: actions/setup-java@v5
-#        with:
-#          distribution: 'zulu'
-#          java-version: '23'
-#
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#
-#      - name: Publish snapshot (main branch only)
-#        run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache --quiet
+ build-ios:
+   runs-on: macos-latest
+   env:
+     GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v5
+       with:
+         lfs: 'true'
+
+     - name: Install JDK
+       uses: actions/setup-java@v5
+       with:
+         distribution: 'zulu'
+         java-version: '23'
+
+     - uses: ruby/setup-ruby@v1
+       with:
+         bundler-cache: true
+         ruby-version: '3.2.2'
+
+     - uses: maxim-lobanov/setup-xcode@v1
+       with:
+         xcode-version: '16.4'
+
+     - name: Setup Gradle
+       uses: gradle/actions/setup-gradle@v4
+
+     - name: Setup Gradle
+       uses: gradle/actions/setup-gradle@v4
+       with:
+         # Only save Gradle User Home state for builds on the 'main' branch.
+         # Builds on other branches will only read existing entries from the cache.
+         cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+         # Don't reuse cache entries from any other Job.
+         gradle-home-cache-strict-match: true
+
+         cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+         # Limit the size of the cache entry.
+         # These directories contain instrumented/transformed dependency jars which can be reconstructed relatively quickly.
+         gradle-home-cache-excludes: |
+           caches/jars-9
+           caches/transforms-3
+
+     - run: brew install swiftlint
+
+# TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/22191
+#      - name: Run lint on iOS samples
+#        run: bundle exec fastlane ios lint
+
+     - name: Run iOS Simulator tests
+       id: gradle-ios-tests
+       run: |
+         ./gradlew --quiet --continue --no-configuration-cache \
+             iosSimulatorArm64Test
+
+     - name: Build iOS samples
+       run: bundle exec fastlane ios build
+
+ snapshots:
+   runs-on: ubuntu-latest
+   env:
+     GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v5
+       with:
+         lfs: 'true'
+
+     - name: Check LFS files
+       uses: actionsdesk/lfs-warning@v3.3
+
+     - name: Install JDK
+       uses: actions/setup-java@v5
+       with:
+         distribution: 'zulu'
+         java-version: '23'
+
+     - name: Setup Gradle
+       uses: gradle/actions/setup-gradle@v4
+
+     - name: Setup Gradle
+       uses: gradle/actions/setup-gradle@v4
+       with:
+         # Only save Gradle User Home state for builds on the 'main' branch.
+         # Builds on other branches will only read existing entries from the cache.
+         cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+         # Don't reuse cache entries from any other Job.
+         gradle-home-cache-strict-match: true
+
+         cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+         # Limit the size of the cache entry.
+         # These directories contain instrumented/transformed dependency jars which can be reconstructed relatively quickly.
+         gradle-home-cache-excludes: |
+           caches/jars-9
+           caches/transforms-3
+
+     - name: Verify Snapshots
+       id: gradle-snapshots
+       run: ./gradlew verifyRoborazzi --quiet
+
+     - name: (Fail-only) Upload reports
+       if: failure()
+       uses: actions/upload-artifact@v4
+       with:
+         name: reports-snapshots
+         path: |
+           **/build/reports/**
+           **/src/test/snapshots/**/*_compare.png
+
+ publish:
+   runs-on: ubuntu-latest
+   needs: [build, build-ios, snapshots]
+   if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v5
+
+     - name: Install JDK
+       uses: actions/setup-java@v5
+       with:
+         distribution: 'zulu'
+         java-version: '23'
+
+     - name: Setup Gradle
+       uses: gradle/actions/setup-gradle@v4
+
+     - name: Setup Gradle
+       uses: gradle/actions/setup-gradle@v4
+
+     - name: Publish snapshot (main branch only)
+       run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache --quiet

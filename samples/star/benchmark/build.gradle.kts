@@ -15,10 +15,7 @@ val isCi = providers.environmentVariable("CI").isPresent
 
 android {
   namespace = "com.circuit.samples.star.benchmark"
-  defaultConfig {
-    targetSdk = 36
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-  }
+  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
   testOptions.managedDevices.allDevices {
     create<ManagedVirtualDevice>(mvdName) {
@@ -65,10 +62,10 @@ baselineProfile {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.test.ext.junit)
-  implementation(libs.androidx.test.espresso.core)
-  implementation(libs.androidx.test.uiautomator)
   implementation(libs.androidx.benchmark.macro.junit)
   implementation(libs.androidx.profileinstaller)
+  implementation(libs.androidx.test.espresso.core)
+  implementation(libs.androidx.test.ext.junit)
+  implementation(libs.androidx.test.uiautomator)
+  implementation(libs.compose.runtime)
 }

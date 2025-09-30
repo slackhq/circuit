@@ -56,27 +56,21 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(libs.androidx.lifecycle.viewModel.compose.jb)
-        api(libs.compose.runtime)
+        api(libs.lifecycle.viewModel.compose)
         api(libs.compose.foundation)
+        api(libs.compose.runtime)
+        api(libs.compose.ui)
         api(libs.coroutines)
         api(projects.backstack)
+        api(projects.circuitRetained)
         api(projects.circuitRuntime)
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
-        api(projects.circuitRetained)
         api(projects.circuitSharedElements)
-        api(libs.compose.ui)
         implementation(libs.compose.ui.backhandler)
       }
     }
-    androidMain {
-      dependencies {
-        api(libs.androidx.compose.runtime)
-        api(libs.androidx.compose.animation)
-        implementation(libs.androidx.activity.compose)
-      }
-    }
+    androidMain { dependencies { implementation(libs.androidx.activity.compose) } }
     commonTest {
       dependencies {
         implementation(libs.kotlin.test)
@@ -110,8 +104,7 @@ kotlin {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(libs.robolectric)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }

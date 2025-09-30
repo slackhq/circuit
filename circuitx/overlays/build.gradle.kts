@@ -53,7 +53,7 @@ kotlin {
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
 
-    androidMain { dependencies { api(libs.androidx.compose.material.material3) } }
+    androidMain { dependencies { api(libs.compose.material.material3) } }
   }
 }
 

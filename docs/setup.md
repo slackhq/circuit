@@ -46,7 +46,7 @@ Circuit is split into a few different artifacts to allow for more granular contr
 | `circuit-runtime`           | Common runtime components like `Screen`, `Navigator`, etc.                                       |
 | `circuit-runtime-presenter` | The `Presenter` API, depends on `circuit-runtime`.                                               |
 | `circuit-runtime-ui`        | The `Ui` API, depends on `circuit-runtime`.                                                      |
-| `circuit-foundation`        | The Circuit foundational APIs like `Circuit`, `CircuitContent`, etc. Depends on the first three. |
+| `circuit-foundation`        | The Circuit foundational APIs like `Circuit`, `CircuitContent`, etc. Depends on the first four. |
 | `circuit-test`              | First-party test APIs for testing navigation, state emissions, and event sinks.                  |
 | `circuit-overlay`           | Optional `Overlay` APIs.                                                                         |
 | `circuit-retained`          | Optional `rememberRetained()` APIs.                                                              |

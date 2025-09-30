@@ -14,6 +14,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.retained.rememberRetained
@@ -23,6 +27,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
+import kotlin.reflect.KClass
 
 object TestContentTags {
   const val TAG_ROOT = "root"
@@ -144,13 +149,13 @@ class TestCountPresenter(
           remember { mutableIntStateOf(0) }
         }
         RememberType.Retained -> {
-          rememberRetained(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
+          rememberRetained("count".takeIf { useKeys }) { mutableIntStateOf(0) }
         }
         RememberType.Saveable -> {
-          rememberSaveable(key = "count".takeIf { useKeys }) { mutableIntStateOf(0) }
+          rememberSaveable("count".takeIf { useKeys }) { mutableIntStateOf(0) }
         }
         RememberType.ViewModel -> {
-          rememberViewModel(key = "count".takeIf { useKeys })
+          rememberViewModel("count".takeIf { useKeys })
         }
       }
 
@@ -185,7 +190,22 @@ class TestCountPresenter(
   }
 }
 
-@Composable expect fun rememberViewModel(key: String?): MutableIntState
+@Composable
+fun rememberViewModel(input: String?): MutableIntState {
+  return viewModel<TestStateViewModel>(key = input, factory = TestStateViewModel.Factory)
+    .counterState
+}
+
+private class TestStateViewModel : ViewModel() {
+  val counterState = mutableIntStateOf(0)
+
+  object Factory : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
+      @Suppress("UNCHECKED_CAST")
+      return TestStateViewModel() as T
+    }
+  }
+}
 
 data class TestState(val count: Int, val label: String, val eventSink: (TestEvent) -> Unit) :
   CircuitUiState

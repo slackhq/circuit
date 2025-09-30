@@ -3,6 +3,10 @@ androidx.annotation:annotation
 androidx.arch.core:core-common
 androidx.collection:collection-jvm
 androidx.collection:collection
+androidx.compose.runtime:runtime-annotation-jvm
+androidx.compose.runtime:runtime-annotation
+androidx.compose.runtime:runtime-desktop
+androidx.compose.runtime:runtime
 androidx.lifecycle:lifecycle-common-jvm
 androidx.lifecycle:lifecycle-common
 androidx.lifecycle:lifecycle-runtime-desktop
@@ -25,6 +29,8 @@ org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
+org.jetbrains.androidx.savedstate:savedstate-compose-desktop
+org.jetbrains.androidx.savedstate:savedstate-compose
 org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core-desktop
 org.jetbrains.compose.animation:animation-core
@@ -68,6 +74,7 @@ org.jetbrains.kotlinx:kotlinx-coroutines-test
 org.jetbrains.kotlinx:kotlinx-serialization-bom
 org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
 org.jetbrains.kotlinx:kotlinx-serialization-core
+org.jetbrains.runtime:jbr-api
 org.jetbrains.skiko:skiko-awt
 org.jetbrains.skiko:skiko
 org.jetbrains:annotations

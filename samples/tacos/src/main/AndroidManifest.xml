@@ -3,7 +3,7 @@
 
     <application
         android:supportsRtl="true"
-        android:theme="@style/TacoTheme">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"

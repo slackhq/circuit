@@ -328,6 +328,7 @@ subprojects {
       disable += "Instantiatable"
       checkTestSources = true
       lintConfig = rootProject.file("config/lint/lint.xml")
+      checkDependencies = false
     }
     dependencies { add("lintChecks", libs.lints.compose) }
   }

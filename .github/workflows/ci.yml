@@ -25,15 +25,6 @@ jobs:
     env:
       GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
     steps:
-      - name: Setup
-        run: |
-          # Remove Haskell stuff to free up space for the emulator
-          sudo rm -rf /usr/local/.ghcup
-          # Remove dotnet stuff as well
-          sudo rm -rf /usr/share/dotnet
-          df -h
-          free -h
-
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -63,10 +54,20 @@ jobs:
             caches/jars-9
             caches/transforms-3
 
+      - name: Setup
+        run: |
+          df -h
+          # Remove Haskell stuff to free up space
+          sudo rm -rf /usr/local/.ghcup
+          # Remove dotnet stuff as well
+          sudo rm -rf /usr/share/dotnet
+          df -h
+          free -h
+
       - name: Build and run checks
         id: gradle-build
         run: |
-          ./gradlew --quiet --continue --no-configuration-cache \
+          ./gradlew --continue --no-configuration-cache \
               check \
               :samples:star:apk:assembleDebug \
               :samples:star:jvmJar \

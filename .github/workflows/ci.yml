@@ -57,7 +57,25 @@ jobs:
       - name: Build and run checks
         id: gradle-build
         run: |
-          ./gradlew --continue --no-configuration-cache \
+          ./gradlew --quiet --continue --no-configuration-cache \
+              :backstack:check \
+              :circuit-codegen:check \
+              :circuit-codegen-annotations:check \
+              :circuit-foundation:check \
+              :circuit-overlay:check \
+              :circuit-retained:check \
+              :circuit-runtime:check \
+              :circuit-runtime-presenter:check \
+              :circuit-runtime-screen:check \
+              :circuit-runtime-ui:check \
+              :circuit-shared-elements:check \
+              :circuit-test:check \
+              :circuitx:check \
+              :circuitx:android:check \
+              :circuitx:effects:check \
+              :circuitx:gesture-navigation:check \
+              :circuitx:navigation:check \
+              :circuitx:overlays:check \
               :samples:star:apk:assembleDebug \
               :samples:star:jvmJar
 

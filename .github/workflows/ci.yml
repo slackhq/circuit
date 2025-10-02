@@ -57,7 +57,7 @@ jobs:
       - name: Build and run checks
         id: gradle-build
         run: |
-          ./gradlew --continue --no-configuration-cache \          
+          ./gradlew --continue --no-configuration-cache \
               :samples:star:apk:assembleDebug \
               :samples:star:jvmJar
 

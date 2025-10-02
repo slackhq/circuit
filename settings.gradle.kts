@@ -208,6 +208,8 @@ develocity {
 
 rootProject.name = "circuit-root"
 
+includeBuild("build-logic")
+
 // Please keep these in alphabetical order!
 include(
   ":backstack",
@@ -242,6 +244,10 @@ include(
   ":internal-runtime",
   ":internal-test-utils",
 )
+
+gradle.lifecycle.beforeProject {
+  apply(plugin = "circuit.base")
+}
 
 // https://docs.gradle.org/5.6/userguide/groovy_plugin.html#sec:groovy_compilation_avoidance
 enableFeaturePreview("GROOVY_COMPILATION_AVOIDANCE")

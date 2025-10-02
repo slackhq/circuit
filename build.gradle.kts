@@ -431,11 +431,9 @@ subprojects {
     tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
   }
 
-  subprojects {
-    pluginManager.withPlugin("dev.zacsweers.anvil") {
-      configure<AnvilExtension> {
-        useKsp(contributesAndFactoryGeneration = true, componentMerging = true)
-      }
+  pluginManager.withPlugin("dev.zacsweers.anvil") {
+    configure<AnvilExtension> {
+      useKsp(contributesAndFactoryGeneration = true, componentMerging = true)
     }
   }
 }

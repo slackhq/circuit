@@ -12,7 +12,6 @@ on:
     branches:
       - main
       - 'releases*'
-      - 'compose-1.7.x'
   merge_group:
 
 concurrency:
@@ -22,6 +21,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
     steps:
@@ -137,9 +137,6 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.4'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4

@@ -5,8 +5,9 @@
 //  Created by Zac Sweers on 1/4/24.
 //
 
-import counter
+import CounterKt
 import SwiftUI
+import KMPNativeCoroutinesAsync
 
 struct ContentView: View {
   @ObservedObject var presenter = SwiftPresenter<CounterScreenState>(delegate: SwiftSupportKt.doNewCounterPresenter())
@@ -61,9 +62,14 @@ class SwiftPresenter<T: AnyObject>: ObservableObject {
 
   @MainActor
   func activate() async {
-    for await state in delegate.state {
-      self.state = state
-    }
+    let sequence = asyncSequence(for: delegate.stateFlow)
+      do {
+          for try await state in sequence {
+            self.state = state
+          }
+      } catch {
+          print("Failed with error: \(error)")
+      }
   }
 }
 

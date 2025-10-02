@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import app.cash.sqldelight.gradle.SqlDelightTask
+import com.google.devtools.ksp.gradle.KspAATask
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -246,4 +248,21 @@ dependencies {
     val targetConfigSuffix = if (target == "Metadata") "CommonMainMetadata" else target
     add("ksp${targetConfigSuffix}", projects.circuitCodegen)
   }
+}
+
+// Wiring of source-generating tasks into KSP for Gradle reasons
+
+val generateAccessorsTasks =
+  tasks.named {
+    it.startsWith("generateResourceAccessors") ||
+      it.startsWith("generateActualResourceCollectors") ||
+      it.startsWith("generateExpectResourceCollectors") ||
+      it.startsWith("generateComposeResClass")
+  }
+
+val sqldelightTasks = tasks.withType<SqlDelightTask>()
+
+tasks.withType<KspAATask>().configureEach {
+  mustRunAfter(generateAccessorsTasks)
+  mustRunAfter(sqldelightTasks)
 }

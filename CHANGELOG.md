@@ -4,9 +4,9 @@ Changelog
 Unreleased
 ----------
 
-- **Breaking change**: Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
-- Switched Compose uses to depend on Compose Multiplatform over Jetpack Compose
-- Android minimum SDK is now `minSdk` 23
+### Breaking Changes:
+
+Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
 
 ### Behaviour Changes:
 
@@ -15,7 +15,12 @@ This new decorator uses the Compose multiplatform `PredictiveBackHandler` to dri
 
 ### Misc:
 
+- Switched Compose uses to depend on Compose Multiplatform over Jetpack Compose
+- Android minimum SDK is now `minSdk` 23
 - Update Compose Multiplatform to `1.9.0`.
+- Update to Kotlin `2.2.20`.
+- Update to Molecule `2.2.0`.
+- Build against KSP `2.2.20-2.0.3`.
 
 0.30.0
 ------

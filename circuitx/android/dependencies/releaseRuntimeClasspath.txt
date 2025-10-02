@@ -8,7 +8,6 @@ androidx.compose.runtime:runtime-annotation-android
 androidx.compose.runtime:runtime-annotation
 androidx.compose.runtime:runtime
 org.jetbrains.compose.runtime:runtime
-org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib

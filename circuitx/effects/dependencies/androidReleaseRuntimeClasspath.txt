@@ -95,7 +95,6 @@ org.jetbrains.compose.ui:ui-text
 org.jetbrains.compose.ui:ui-unit
 org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
-org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib

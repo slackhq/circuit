@@ -5,7 +5,6 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
-import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.spotless.LineEnding
@@ -329,9 +328,6 @@ subprojects {
       disable += "Instantiatable"
       checkTestSources = true
       lintConfig = rootProject.file("config/lint/lint.xml")
-      checkDependencies = false
-      checkReleaseBuilds = false
-      abortOnError = false
     }
     dependencies { add("lintChecks", libs.lints.compose) }
   }
@@ -355,10 +351,6 @@ subprojects {
         }
       }
     }
-  }
-
-  pluginManager.withPlugin("com.android.base") {
-    tasks.withType<AndroidLintTask>().configureEach { enabled = false }
   }
 
   pluginManager.withPlugin("com.android.test") {

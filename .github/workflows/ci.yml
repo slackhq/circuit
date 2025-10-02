@@ -58,28 +58,14 @@ jobs:
         id: gradle-build
         run: |
           ./gradlew --quiet --continue --no-configuration-cache \
-              :backstack:check \
-              :circuit-codegen:check \
-              :circuit-codegen-annotations:check \
-              :circuit-foundation:check \
-              :circuit-overlay:check \
-              :circuit-retained:check \
-              :circuit-runtime:check \
-              :circuit-runtime-presenter:check \
-              :circuit-runtime-screen:check \
-              :circuit-runtime-ui:check \
-              :circuit-shared-elements:check \
-              :circuit-test:check \
-              :circuitx:check \
-              :circuitx:android:check \
-              :circuitx:effects:check \
-              :circuitx:gesture-navigation:check \
-              :circuitx:navigation:check \
-              :circuitx:overlays:check \
+              check \
               :samples:star:apk:assembleDebug \
-              :samples:star:jvmJar
+              :samples:star:jvmJar \
+              detektMain \
+              detektTest \
+              assembleAndroidTest
 
-      - name: Disk spcae
+      - name: Disk space
         run: |
           df -h
 

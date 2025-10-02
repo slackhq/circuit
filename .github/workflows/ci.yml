@@ -65,10 +65,6 @@ jobs:
               detektTest \
               assembleAndroidTest
 
-      - name: Disk space
-        run: |
-          df -h
-
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository

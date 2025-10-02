@@ -91,14 +91,17 @@ allprojects {
       trimTrailingWhitespace()
       endWithNewline()
       licenseHeaderFile(
-        rootProject.file("spotless/spotless.kt"),
+        rootProject.isolated.projectDirectory.file("spotless/spotless.kt"),
         "(import|plugins|buildscript|dependencies|pluginManagement|dependencyResolutionManagement)",
       )
     }
     // Apply license formatting separately for kotlin files so we can prevent it from overwriting
     // copied files
     format("license") {
-      licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
+      licenseHeaderFile(
+        rootProject.isolated.projectDirectory.file("spotless/spotless.kt"),
+        "(package|@file:)",
+      )
       target("src/**/*.kt")
       targetExclude(
         "**/circuit/backstack/**/*.kt",
@@ -205,7 +208,7 @@ subprojects {
     configure<DetektExtension> {
       toolVersion = detektVersion
       allRules = true
-      config.from(rootProject.file("config/detekt/detekt.yml"))
+      config.from(rootProject.isolated.projectDirectory.file("config/detekt/detekt.yml"))
       buildUponDefaultConfig = true
     }
 
@@ -260,7 +263,8 @@ subprojects {
         // Add source links
         sourceLink {
           localDirectory.set(layout.projectDirectory.dir("src"))
-          val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
+          val relPath =
+            rootProject.isolated.projectDirectory.asFile.toPath().relativize(projectDir.toPath())
           remoteUrl(
             providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
               "$scmUrl/tree/main/$relPath/src"
@@ -327,7 +331,7 @@ subprojects {
       // https://issuetracker.google.com/issues/243267012
       disable += "Instantiatable"
       checkTestSources = true
-      lintConfig = rootProject.file("config/lint/lint.xml")
+      lintConfig = rootProject.isolated.projectDirectory.file("config/lint/lint.xml").asFile
     }
     dependencies { add("lintChecks", libs.lints.compose) }
   }

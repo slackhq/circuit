@@ -123,28 +123,6 @@ allprojects {
   }
 }
 
-val knownBomConfigurations =
-  setOf(
-    "implementation",
-    "testImplementation",
-    "androidTestImplementation",
-    "compileOnly",
-    "testCompileOnly",
-    "kapt",
-    "ksp",
-  )
-
-fun Project.configureComposeBom(dependencyHandler: DependencyHandler) {
-  dependencyHandler.apply {
-    val composeBom = platform(libs.androidx.compose.bom)
-    configurations
-      .matching { configuration ->
-        knownBomConfigurations.any { configuration.name.contains(it, ignoreCase = true) }
-      }
-      .configureEach { add(name, composeBom) }
-  }
-}
-
 val jvmTargetVersion = libs.versions.jvmTarget
 val publishedJvmTargetVersion = libs.versions.publishedJvmTarget
 
@@ -166,9 +144,6 @@ subprojects {
         jvmTargetProject.map(JavaVersion::toVersion).map { it.majorVersion.toInt() }
       )
     }
-
-    // This is the default base plugin applied on all projects, so safe to add this hook here
-    configureComposeBom(dependencies)
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")
@@ -361,7 +336,7 @@ subprojects {
   pluginManager.withPlugin("com.android.library") {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
-      defaultConfig { minSdk = 21 }
+      defaultConfig { minSdk = 23 }
       testOptions {
         // TODO update once robolectric supports it
         targetSdk = 35
@@ -389,6 +364,10 @@ subprojects {
   pluginManager.withPlugin("com.android.application") {
     with(extensions.getByType<ApplicationExtension>()) {
       commonAndroidConfig()
+      defaultConfig {
+        minSdk = 23
+        targetSdk = 36
+      }
       buildTypes {
         maybeCreate("debug").apply { matchingFallbacks += listOf("release") }
         maybeCreate("release").apply {
@@ -500,6 +479,22 @@ apiValidation {
       "tacos",
       "tutorial",
     )
+}
+
+develocity {
+  buildScan {
+    // Has to be configured here because settings gradle objects (i.e. if this were in
+    // settings.gradle.kts) can't be captured in buildScanPublished {}
+    val isQuiet = gradle.startParameter.logLevel == LogLevel.QUIET
+    buildScanPublished {
+      if (isQuiet) {
+        // Normally GE prints this for us already, but when running with --quiet on CI
+        // Gradle actually annoyingly doesn't print this, so we replicate it.
+        // https://github.com/gradle/gradle/issues/5043#issuecomment-655505445
+        println("Publishing build scan...\n$buildScanUri")
+      }
+    }
+  }
 }
 
 // Dokka aggregating deps

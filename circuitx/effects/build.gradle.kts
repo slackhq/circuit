@@ -44,13 +44,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -70,13 +64,10 @@ kotlin {
         implementation(projects.circuitTest)
       }
     }
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
     androidUnitTest {
       dependencies {
         implementation(libs.robolectric)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }

@@ -42,13 +42,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -64,8 +58,8 @@ kotlin {
         dependsOn(commonMain.get())
         // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
         dependencies {
-          implementation(libs.androidx.lifecycle.runtime.compose.jb)
-          implementation(libs.androidx.lifecycle.viewModel.compose.jb)
+          implementation(libs.lifecycle.runtime.compose)
+          implementation(libs.lifecycle.viewModel.compose)
         }
       }
 
@@ -73,14 +67,9 @@ kotlin {
     iosMain { dependsOn(sharedMain) }
     macosMain { dependsOn(sharedMain) }
     androidMain { dependsOn(sharedMain) }
-
-    get("browserCommonMain").apply {
-      dependsOn(sharedMain)
-      dependsOn(commonMain.get())
-    }
+    webMain { dependsOn(sharedMain) }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
-    get("browserCommonTest").dependsOn(commonTest.get())
 
     // Necessary because android instrumented tests cannot share a source set with jvm tests for
     // some reason
@@ -99,10 +88,8 @@ kotlin {
       dependencies {
         commonJvmTest()
         implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.material.material)
-        implementation(libs.androidx.compose.ui.testing.junit)
-        implementation(libs.androidx.compose.ui.ui)
+        implementation(libs.compose.material.material)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.coroutines)
         implementation(libs.coroutines.android)
         implementation(libs.leakcanary.android.instrumentation)

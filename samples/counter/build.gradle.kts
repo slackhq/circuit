@@ -8,7 +8,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.library)
-  alias(libs.plugins.skie)
+  alias(libs.plugins.nativecoroutines)
 }
 
 version = "1.0.0-SNAPSHOT"
@@ -27,7 +27,7 @@ kotlin {
     browser()
   }
   listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
-    it.binaries.framework { baseName = "counter" }
+    it.binaries.framework { baseName = "CounterKt" }
   }
   // endregion
 

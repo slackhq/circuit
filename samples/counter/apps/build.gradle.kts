@@ -12,8 +12,7 @@ plugins {
 android {
   namespace = "com.slack.circuit.sample.counter.android"
   defaultConfig {
-    minSdk = 31 // For the dynamic m3 theme
-    targetSdk = 36
+    minSdk = 31 // For the dynamic m3 color schemes
   }
 }
 
@@ -52,10 +51,8 @@ kotlin {
       dependencies {
         implementation(libs.androidx.appCompat)
         implementation(libs.androidx.activity.compose)
-        implementation(libs.bundles.compose.ui)
-        implementation(libs.androidx.compose.integration.materialThemeAdapter)
-        implementation(libs.androidx.compose.material.icons)
-        implementation(libs.androidx.compose.ui.tooling)
+        implementation(libs.compose.material.icons)
+        implementation(libs.compose.ui.tooling)
       }
     }
     wasmJsMain {

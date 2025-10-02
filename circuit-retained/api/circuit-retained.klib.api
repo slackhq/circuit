@@ -1,8 +1,6 @@
 // Klib ABI Dump
 // Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
 // Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
-// Alias: ios => [iosArm64, iosSimulatorArm64, iosX64]
-// Alias: macos => [macosArm64, macosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -64,7 +62,6 @@ final val com.slack.circuit.retained/LocalRetainedStateRegistry // com.slack.cir
 final val com.slack.circuit.retained/com_slack_circuit_retained_LifecycleRetainedStateRegistry$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_LifecycleRetainedStateRegistry$stableprop|#static{}com_slack_circuit_retained_LifecycleRetainedStateRegistry$stableprop[0]
 final val com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop|#static{}com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop[0]
 final val com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop|#static{}com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop[0]
-final val com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop|#static{}com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop[0]
 
 final fun <#A: #B, #B: kotlin/Any?> (kotlinx.coroutines.flow/Flow<#A>).com.slack.circuit.retained/collectAsRetainedState(#B, kotlin.coroutines/CoroutineContext?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.runtime/State<#B> // com.slack.circuit.retained/collectAsRetainedState|collectAsRetainedState@kotlinx.coroutines.flow.Flow<0:0>(0:1;kotlin.coroutines.CoroutineContext?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<0:1>;1§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any> com.slack.circuit.retained/rememberRetained(kotlin/Array<out kotlin/Any?>..., androidx.compose.runtime.saveable/Saver<#A, out kotlin/Any>, kotlin/String?, kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.slack.circuit.retained/rememberRetained|rememberRetained(kotlin.Array<out|kotlin.Any?>...;androidx.compose.runtime.saveable.Saver<0:0,out|kotlin.Any>;kotlin.String?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any>}[0]
@@ -82,7 +79,6 @@ final fun com.slack.circuit.retained/RetainedStateRegistry(com.slack.circuit.ret
 final fun com.slack.circuit.retained/com_slack_circuit_retained_LifecycleRetainedStateRegistry$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_LifecycleRetainedStateRegistry$stableprop_getter|com_slack_circuit_retained_LifecycleRetainedStateRegistry$stableprop_getter(){}[0]
 final fun com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop_getter|com_slack_circuit_retained_NoOpRetainedStateRegistry$stableprop_getter(){}[0]
 final fun com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop_getter|com_slack_circuit_retained_RetainableSaveableHolder_Value$stableprop_getter(){}[0]
-final fun com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop_getter|com_slack_circuit_retained_RetainedStateRegistryImpl$stableprop_getter(){}[0]
 final fun com.slack.circuit.retained/lifecycleRetainedStateRegistry(kotlin/String?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.retained/RetainedStateRegistry // com.slack.circuit.retained/lifecycleRetainedStateRegistry|lifecycleRetainedStateRegistry(kotlin.String?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.slack.circuit.retained/rememberRetainedStateHolder(com.slack.circuit.retained/CanRetainChecker?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.retained/RetainedStateHolder // com.slack.circuit.retained/rememberRetainedStateHolder|rememberRetainedStateHolder(com.slack.circuit.retained.CanRetainChecker?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.slack.circuit.retained/rememberRetainedStateRegistry(kotlin/Array<out kotlin/Any?>..., kotlin/String?, com.slack.circuit.retained/CanRetainChecker?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.retained/RetainedStateRegistry // com.slack.circuit.retained/rememberRetainedStateRegistry|rememberRetainedStateRegistry(kotlin.Array<out|kotlin.Any?>...;kotlin.String?;com.slack.circuit.retained.CanRetainChecker?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -91,18 +87,6 @@ final fun com.slack.circuit.retained/rememberRetainedStateRegistry(kotlin/Array<
 abstract fun interface com.slack.circuit.retained/RetainedValueProvider : kotlin/Function0<kotlin/Any?> { // com.slack.circuit.retained/RetainedValueProvider|null[0]
     abstract fun invoke(): kotlin/Any? // com.slack.circuit.retained/RetainedValueProvider.invoke|invoke(){}[0]
 }
-
-// Targets: [ios, js, macos, wasmJs]
-final val com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel$stableprop|#static{}com_slack_circuit_retained_RetainedStateRegistryViewModel$stableprop[0]
-
-// Targets: [ios, js, macos, wasmJs]
-final val com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel_Factory$stableprop // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel_Factory$stableprop|#static{}com_slack_circuit_retained_RetainedStateRegistryViewModel_Factory$stableprop[0]
-
-// Targets: [ios, js, macos, wasmJs]
-final fun com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel$stableprop_getter|com_slack_circuit_retained_RetainedStateRegistryViewModel$stableprop_getter(){}[0]
-
-// Targets: [ios, js, macos, wasmJs]
-final fun com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel_Factory$stableprop_getter(): kotlin/Int // com.slack.circuit.retained/com_slack_circuit_retained_RetainedStateRegistryViewModel_Factory$stableprop_getter|com_slack_circuit_retained_RetainedStateRegistryViewModel_Factory$stableprop_getter(){}[0]
 
 // Targets: [js, wasmJs]
 abstract fun interface com.slack.circuit.retained/RetainedValueProvider { // com.slack.circuit.retained/RetainedValueProvider|null[0]

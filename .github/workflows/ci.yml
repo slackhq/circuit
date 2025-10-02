@@ -25,6 +25,15 @@ jobs:
     env:
       GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
     steps:
+      - name: Setup
+        run: |
+          # Remove Haskell stuff to free up space for the emulator
+          sudo rm -rf /usr/local/.ghcup
+          # Remove dotnet stuff as well
+          sudo rm -rf /usr/share/dotnet
+          df -h
+          free -h
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -78,15 +87,6 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm        
-
-      - name: Setup for local emulator (from forks only)
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        run: |
-          # Remove Haskell stuff to free up space for the emulator
-          sudo rm -rf /usr/local/.ghcup
-          # Remove dotnet stuff as well
-          sudo rm -rf /usr/share/dotnet
-          df -h
 
       # Forks cannot run emulator.wtf tests due to not being able to use repo secrets, so for them
       # we run the tests via the android-emulator-runner action instead

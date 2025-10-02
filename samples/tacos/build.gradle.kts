@@ -1,12 +1,10 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.ksp)
   alias(libs.plugins.kotlin.plugin.compose)
@@ -21,7 +19,6 @@ androidComponents { beforeVariants { it.enable = it.name.contains("debug", ignor
 
 tasks
   .withType<KotlinCompile>()
-  .matching { it !is KaptGenerateStubsTask }
   .configureEach {
     compilerOptions {
       freeCompilerArgs.addAll(

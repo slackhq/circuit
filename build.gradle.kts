@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
@@ -36,7 +35,6 @@ plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.kotlin.android) apply false
-  alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization) apply false
   alias(libs.plugins.agp.application) apply false
@@ -152,10 +150,6 @@ subprojects {
   val hasCompose = !project.hasProperty("circuit.noCompose")
   plugins.withType<KotlinBasePlugin> {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
-      if (this is KaptGenerateStubsTask) {
-        // Don't double apply to stub gen
-        return@configureEach
-      }
       val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
         if (isWasmTask && this is KotlinJsCompilerOptions) {
@@ -174,25 +168,22 @@ subprojects {
               .map { it.toString() }
               .map(JvmTarget::fromTarget)
           )
-          // Stub gen copies args from the parent compilation
-          if (this@configureEach !is KaptGenerateStubsTask) {
-            freeCompilerArgs.addAll(
-              "-Xjsr305=strict",
-              // Match JVM assertion behavior:
-              // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
-              "-Xassertions=jvm",
-              // Potentially useful for static analysis tools or annotation processors.
-              "-Xemit-jvm-type-annotations",
-              // Enable new jvm-default behavior
-              // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-              "-Xjvm-default=all",
-              // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-              "-Xtype-enhancement-improvements-strict-mode",
-              "-Xjspecify-annotations=strict",
-              // https://youtrack.jetbrains.com/issue/KT-73255
-              "-Xannotation-default-target=param-property",
-            )
-          }
+          freeCompilerArgs.addAll(
+            "-Xjsr305=strict",
+            // Match JVM assertion behavior:
+            // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
+            "-Xassertions=jvm",
+            // Potentially useful for static analysis tools or annotation processors.
+            "-Xemit-jvm-type-annotations",
+            // Enable new jvm-default behavior
+            // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+            "-Xjvm-default=all",
+            // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
+            "-Xtype-enhancement-improvements-strict-mode",
+            "-Xjspecify-annotations=strict",
+            // https://youtrack.jetbrains.com/issue/KT-73255
+            "-Xannotation-default-target=param-property",
+          )
         }
 
         progressiveMode.set(true)

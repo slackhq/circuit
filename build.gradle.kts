@@ -489,6 +489,22 @@ apiValidation {
     )
 }
 
+develocity {
+  buildScan {
+    // Has to be configured here because settings gradle objects (i.e. if this were in
+    // settings.gradle.kts) can't be captured in buildScanPublished {}
+    val isQuiet = gradle.startParameter.logLevel == LogLevel.QUIET
+    buildScanPublished {
+      if (isQuiet) {
+        // Normally GE prints this for us already, but when running with --quiet on CI
+        // Gradle actually annoyingly doesn't print this, so we replicate it.
+        // https://github.com/gradle/gradle/issues/5043#issuecomment-655505445
+        println("Publishing build scan...\n$buildScanUri")
+      }
+    }
+  }
+}
+
 // Dokka aggregating deps
 dependencies {
   dokka(projects.backstack)

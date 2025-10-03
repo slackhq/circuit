@@ -73,10 +73,11 @@ kotlin {
     androidMain { dependencies { implementation(libs.androidx.activity.compose) } }
     commonTest {
       dependencies {
+        implementation(libs.compose.ui.test)
+        implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
-        implementation(libs.coroutines.test)
 
         implementation(projects.internalTestUtils)
       }

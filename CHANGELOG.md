@@ -18,6 +18,7 @@ This new decorator uses the Compose multiplatform `PredictiveBackHandler` to dri
 - Switched Compose uses to depend on Compose Multiplatform over Jetpack Compose
 - Android minimum SDK is now `minSdk` 23
 - Fixed `Navigator.onNavEvent()` not passing all arguments to `resetRoot()`
+- Fixes to `rememberCircuitNavigator()` capturing `onRootPop` and not recreating if a new backstack was provided
 - Update Compose Multiplatform to `1.9.0`.
 - Update to Kotlin `2.2.20`.
 - Update to Molecule `2.2.0`.

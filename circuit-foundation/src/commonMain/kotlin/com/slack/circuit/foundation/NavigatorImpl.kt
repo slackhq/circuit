@@ -8,6 +8,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -23,6 +24,7 @@ import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
+ * A new [Navigator] will be created if the [backStack] instance changes.
  *
  * @param backStack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
@@ -34,7 +36,8 @@ public fun rememberCircuitNavigator(
   backStack: BackStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
 ): Navigator {
-  return remember { Navigator(backStack, onRootPop) }
+  val latestOnRootPop by rememberUpdatedState(onRootPop)
+  return remember(backStack) { Navigator(backStack) { popResult -> latestOnRootPop(popResult) } }
 }
 
 /**

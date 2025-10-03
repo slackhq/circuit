@@ -16,7 +16,12 @@ public fun Navigator.onNavEvent(event: NavEvent) {
   when (event) {
     is NavEvent.Pop -> pop(event.result)
     is NavEvent.GoTo -> goTo(event.screen)
-    is NavEvent.ResetRoot -> resetRoot(event.newRoot)
+    is NavEvent.ResetRoot ->
+      resetRoot(
+        newRoot = event.newRoot,
+        saveState = event.saveState,
+        restoreState = event.restoreState,
+      )
   }
 }
 

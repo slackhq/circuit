@@ -10,13 +10,13 @@ abstract interface com.slack.circuitx.navigation.intercepting/NavigationEventLis
     open fun goTo(com.slack.circuit.runtime.screen/Screen) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
     open fun onBackStackChanged(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.onBackStackChanged|onBackStackChanged(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>){}[0]
     open fun pop(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.runtime.screen/PopResult?) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.pop|pop(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuit.runtime.screen.PopResult?){}[0]
-    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
 }
 
 abstract interface com.slack.circuitx.navigation.intercepting/NavigationInterceptor { // com.slack.circuitx.navigation.intercepting/NavigationInterceptor|null[0]
     open fun goTo(com.slack.circuit.runtime.screen/Screen): com.slack.circuitx.navigation.intercepting/InterceptedGoToResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
     open fun pop(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.runtime.screen/PopResult?): com.slack.circuitx.navigation.intercepting/InterceptedPopResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.pop|pop(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuit.runtime.screen.PopResult?){}[0]
-    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
 
     final object Companion { // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion|null[0]
         final val Skipped // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.Skipped|{}Skipped[0]
@@ -49,19 +49,16 @@ sealed interface com.slack.circuitx.navigation.intercepting/InterceptedPopResult
 
 sealed interface com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult { // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult|null[0]
     final class Rewrite : com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult { // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean) // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions) // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.<init>|<init>(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
 
-        final val restoreState // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.restoreState|{}restoreState[0]
-            final fun <get-restoreState>(): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.restoreState.<get-restoreState>|<get-restoreState>(){}[0]
-        final val saveState // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.saveState|{}saveState[0]
-            final fun <get-saveState>(): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.saveState.<get-saveState>|<get-saveState>(){}[0]
         final val screen // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.screen|{}screen[0]
             final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.screen.<get-screen>|<get-screen>(){}[0]
+        final val stateOptions // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.stateOptions|{}stateOptions[0]
+            final fun <get-stateOptions>(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.stateOptions.<get-stateOptions>|<get-stateOptions>(){}[0]
 
         final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.component1|component1(){}[0]
-        final fun component2(): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.component2|component2(){}[0]
-        final fun component3(): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.component3|component3(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun component2(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., com.slack.circuit.runtime/Navigator.StateOptions = ...): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.copy|copy(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.toString|toString(){}[0]
@@ -112,6 +109,7 @@ final class com.slack.circuitx.navigation.intercepting/InterceptingNavigator : c
     final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.peek|peek(){}[0]
     final fun peekBackStack(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.peekBackStack|peekBackStack(){}[0]
     final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.runtime.screen/Screen? // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
+    final fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
     final fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
 
     abstract interface FailureNotifier { // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier|null[0]

@@ -142,7 +142,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   public data class ResetRootEvent(
     val newRoot: Screen,
     val oldScreens: List<Screen>,
-    val options: StateOptions,
+    val options: StateOptions = StateOptions.Default,
   )
 
   private fun GoToEvent.assertSuccessfulScreen(): Screen {

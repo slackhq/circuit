@@ -66,6 +66,7 @@ public final class com/slack/circuit/test/FakeNavigator$PopEvent {
 public final class com/slack/circuit/test/FakeNavigator$ResetRootEvent {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/List;Lcom/slack/circuit/runtime/Navigator$StateOptions;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/List;Lcom/slack/circuit/runtime/Navigator$StateOptions;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Lcom/slack/circuit/runtime/Navigator$StateOptions;

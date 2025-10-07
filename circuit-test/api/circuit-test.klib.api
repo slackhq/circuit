@@ -91,7 +91,7 @@ final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Nav
     }
 
     final class ResetRootEvent { // com.slack.circuit.test/FakeNavigator.ResetRootEvent|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.runtime/Navigator.StateOptions) // com.slack.circuit.test/FakeNavigator.ResetRootEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.runtime/Navigator.StateOptions = ...) // com.slack.circuit.test/FakeNavigator.ResetRootEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
 
         final val newRoot // com.slack.circuit.test/FakeNavigator.ResetRootEvent.newRoot|{}newRoot[0]
             final fun <get-newRoot>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.ResetRootEvent.newRoot.<get-newRoot>|<get-newRoot>(){}[0]

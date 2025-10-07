@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -33,11 +34,7 @@ public interface NavigationInterceptor {
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): InterceptedResetRootResult = Skipped
+  public fun resetRoot(newRoot: Screen, options: StateOptions): InterceptedResetRootResult = Skipped
 
   public companion object {
     /**
@@ -62,7 +59,7 @@ public sealed interface InterceptedGoToResult {
 /** The result of [NavigationInterceptor.resetRoot] being intercepted. */
 public sealed interface InterceptedResetRootResult {
   /** The [NavigationInterceptor] intercepted and rewrote the new root screen. */
-  public data class Rewrite(val screen: Screen, val saveState: Boolean, val restoreState: Boolean) :
+  public data class Rewrite(val screen: Screen, val stateOptions: StateOptions) :
     InterceptedResetRootResult
 }
 

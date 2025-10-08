@@ -69,7 +69,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.6.7" }
+metro = { id = "dev.zacsweers.metro", version = "0.6.9" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

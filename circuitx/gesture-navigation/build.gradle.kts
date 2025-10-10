@@ -58,6 +58,15 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+
+    iosTest {
+      dependencies {
+        implementation(libs.compose.ui.test)
+        implementation(libs.kotlin.test)
+        implementation(projects.circuitTest)
+        implementation(projects.internalTestUtils)
+      }
+    }
   }
 }
 

@@ -7,10 +7,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeRight
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -32,8 +29,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 
 enum class GestureNavDecorationOption {
-  AndroidPredictiveBack,
-  Cupertino,
+  AndroidPredictiveBack
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -52,10 +48,7 @@ class GestureNavigationStateTest(
     )
     fun params() =
       parameterizedParams()
-        .combineWithParameters(
-          GestureNavDecorationOption.Cupertino,
-          GestureNavDecorationOption.AndroidPredictiveBack,
-        )
+        .combineWithParameters(GestureNavDecorationOption.AndroidPredictiveBack)
         .combineWithParameters(true, false) // useKeys
         .combineWithParameters(true, false) // useSwipe
         .combineWithParameters(RememberType.Retained, RememberType.Saveable)
@@ -68,11 +61,6 @@ class GestureNavigationStateTest(
       when (decorationOption) {
         GestureNavDecorationOption.AndroidPredictiveBack -> {
           composeTestRule.activityRule.scenario.performGestureNavigationBackSwipe()
-        }
-        GestureNavDecorationOption.Cupertino -> {
-          composeTestRule.onRoot().performTouchInput {
-            swipeRight(startX = width * 0.2f, endX = width * 0.8f)
-          }
         }
       }
     } else {
@@ -101,9 +89,6 @@ class GestureNavigationStateTest(
                 when (decorationOption) {
                   GestureNavDecorationOption.AndroidPredictiveBack -> {
                     AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
-                  }
-                  GestureNavDecorationOption.Cupertino -> {
-                    CupertinoGestureNavigationDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                 }
               },
@@ -197,9 +182,6 @@ class GestureNavigationStateTest(
                 when (decorationOption) {
                   GestureNavDecorationOption.AndroidPredictiveBack -> {
                     AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
-                  }
-                  GestureNavDecorationOption.Cupertino -> {
-                    CupertinoGestureNavigationDecorator.Factory(onBackInvoked = navigator::pop)
                   }
                 }
               },

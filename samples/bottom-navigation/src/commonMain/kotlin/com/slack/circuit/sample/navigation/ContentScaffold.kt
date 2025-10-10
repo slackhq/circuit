@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 
 @Composable
 fun ContentScaffold(
@@ -80,7 +81,7 @@ private fun BottomTabRow(
             .semantics { this.selected = selected }
             .weight(1f)
             .height(IntrinsicSize.Max)
-            .clickable { navigator.resetRoot(tab, saveState = true, restoreState = true) }
+            .clickable { navigator.resetRoot(tab, StateOptions.SaveAndRestore) }
             .background(if (selected) MaterialTheme.colorScheme.secondary else Color.Unspecified)
             .padding(horizontal = 8.dp, vertical = 20.dp),
       )

@@ -28,6 +28,7 @@ import com.slack.circuit.internal.test.TestEvent
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
@@ -179,9 +180,19 @@ class TestCountBackPresenter(
           }
         }
         TestEvent.ResetRootAlpha ->
-          navigator.resetRoot(TestScreen.RootAlpha, true, restoreStateOnRootChange)
+          navigator.resetRoot(
+            TestScreen.RootAlpha,
+            StateOptions(save = true, restore = restoreStateOnRootChange, clear = false),
+          )
         TestEvent.ResetRootBeta ->
-          navigator.resetRoot(TestScreen.RootBeta, saveStateOnRootChange, restoreStateOnRootChange)
+          navigator.resetRoot(
+            TestScreen.RootBeta,
+            StateOptions(
+              save = saveStateOnRootChange,
+              restore = restoreStateOnRootChange,
+              clear = false,
+            ),
+          )
       }
     }
   }

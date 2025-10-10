@@ -110,6 +110,10 @@ private class FakeBackStack : BackStack<BackStack.Record> {
 
   override fun restoreState(screen: Screen): Boolean = false
 
+  override fun peekState(): List<Screen> = emptyList()
+
+  override fun removeState(screen: Screen): Boolean = false
+
   override fun containsRecord(record: BackStack.Record, includeSaved: Boolean): Boolean =
     record in stack
 

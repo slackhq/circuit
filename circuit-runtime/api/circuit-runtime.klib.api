@@ -27,14 +27,41 @@ abstract interface com.slack.circuit.runtime/Navigator : com.slack.circuit.runti
     abstract fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.peek|peek(){}[0]
     abstract fun peekBackStack(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.peekBackStack|peekBackStack(){}[0]
     abstract fun pop(com.slack.circuit.runtime.screen/PopResult? = ...): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
-    abstract fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ...): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+    abstract fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions = ...): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
+    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ...): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final class StateOptions { // com.slack.circuit.runtime/Navigator.StateOptions|null[0]
+        constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // com.slack.circuit.runtime/Navigator.StateOptions.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+
+        final val clear // com.slack.circuit.runtime/Navigator.StateOptions.clear|{}clear[0]
+            final fun <get-clear>(): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.clear.<get-clear>|<get-clear>(){}[0]
+        final val restore // com.slack.circuit.runtime/Navigator.StateOptions.restore|{}restore[0]
+            final fun <get-restore>(): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.restore.<get-restore>|<get-restore>(){}[0]
+        final val save // com.slack.circuit.runtime/Navigator.StateOptions.save|{}save[0]
+            final fun <get-save>(): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.save.<get-save>|<get-save>(){}[0]
+
+        final fun component1(): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.component1|component1(){}[0]
+        final fun component2(): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.component2|component2(){}[0]
+        final fun component3(): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.component3|component3(){}[0]
+        final fun copy(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuit.runtime/Navigator.StateOptions.copy|copy(kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.runtime/Navigator.StateOptions.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.runtime/Navigator.StateOptions.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.runtime/Navigator.StateOptions.toString|toString(){}[0]
+
+        final object Companion { // com.slack.circuit.runtime/Navigator.StateOptions.Companion|null[0]
+            final val Default // com.slack.circuit.runtime/Navigator.StateOptions.Companion.Default|{}Default[0]
+                final fun <get-Default>(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuit.runtime/Navigator.StateOptions.Companion.Default.<get-Default>|<get-Default>(){}[0]
+            final val SaveAndRestore // com.slack.circuit.runtime/Navigator.StateOptions.Companion.SaveAndRestore|{}SaveAndRestore[0]
+                final fun <get-SaveAndRestore>(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuit.runtime/Navigator.StateOptions.Companion.SaveAndRestore.<get-SaveAndRestore>|<get-SaveAndRestore>(){}[0]
+        }
+    }
 
     final object NoOp : com.slack.circuit.runtime/Navigator { // com.slack.circuit.runtime/Navigator.NoOp|null[0]
         final fun goTo(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.runtime/Navigator.NoOp.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
         final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.NoOp.peek|peek(){}[0]
         final fun peekBackStack(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.NoOp.peekBackStack|peekBackStack(){}[0]
         final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.runtime/Navigator.NoOp.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
-        final fun resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.NoOp.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/Navigator.NoOp.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
     }
 }
 
@@ -56,9 +83,11 @@ final class com.slack.circuit.runtime/CircuitContext { // com.slack.circuit.runt
 
 final val com.slack.circuit.runtime/com_slack_circuit_runtime_CircuitContext$stableprop // com.slack.circuit.runtime/com_slack_circuit_runtime_CircuitContext$stableprop|#static{}com_slack_circuit_runtime_CircuitContext$stableprop[0]
 final val com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_NoOp$stableprop // com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_NoOp$stableprop|#static{}com_slack_circuit_runtime_Navigator_NoOp$stableprop[0]
+final val com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_StateOptions$stableprop // com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_StateOptions$stableprop|#static{}com_slack_circuit_runtime_Navigator_StateOptions$stableprop[0]
 
 final fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.runtime/popRoot(com.slack.circuit.runtime.screen/PopResult? = ...) // com.slack.circuit.runtime/popRoot|popRoot@com.slack.circuit.runtime.Navigator(com.slack.circuit.runtime.screen.PopResult?){}[0]
 final fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.runtime/popUntil(kotlin/Function1<com.slack.circuit.runtime.screen/Screen, kotlin/Boolean>) // com.slack.circuit.runtime/popUntil|popUntil@com.slack.circuit.runtime.Navigator(kotlin.Function1<com.slack.circuit.runtime.screen.Screen,kotlin.Boolean>){}[0]
 final fun com.slack.circuit.runtime/com_slack_circuit_runtime_CircuitContext$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime/com_slack_circuit_runtime_CircuitContext$stableprop_getter|com_slack_circuit_runtime_CircuitContext$stableprop_getter(){}[0]
 final fun com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_NoOp$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_NoOp$stableprop_getter|com_slack_circuit_runtime_Navigator_NoOp$stableprop_getter(){}[0]
-final inline fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.runtime/resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Function1<com.slack.circuit.runtime.screen/Screen?, kotlin/Boolean> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen?, kotlin/Boolean> = ...): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/resetRoot|resetRoot@com.slack.circuit.runtime.Navigator(com.slack.circuit.runtime.screen.Screen;kotlin.Function1<com.slack.circuit.runtime.screen.Screen?,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen?,kotlin.Boolean>){}[0]
+final fun com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_StateOptions$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime/com_slack_circuit_runtime_Navigator_StateOptions$stableprop_getter|com_slack_circuit_runtime_Navigator_StateOptions$stableprop_getter(){}[0]
+final inline fun (com.slack.circuit.runtime/Navigator).com.slack.circuit.runtime/resetRoot(com.slack.circuit.runtime.screen/Screen, kotlin/Function1<com.slack.circuit.runtime.screen/Screen?, kotlin/Boolean> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen?, kotlin/Boolean> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen?, kotlin/Boolean> = ...): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.runtime/resetRoot|resetRoot@com.slack.circuit.runtime.Navigator(com.slack.circuit.runtime.screen.Screen;kotlin.Function1<com.slack.circuit.runtime.screen.Screen?,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen?,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen?,kotlin.Boolean>){}[0]

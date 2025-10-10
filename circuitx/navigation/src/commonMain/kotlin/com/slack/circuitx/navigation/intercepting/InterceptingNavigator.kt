@@ -14,6 +14,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -148,9 +149,9 @@ public class InterceptingNavigator(
     return delegate.pop(result)
   }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.resetRoot(newRoot, saveState, restoreState)) {
+      when (val interceptedResult = interceptor.resetRoot(newRoot, options)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return emptyList()
@@ -161,16 +162,12 @@ public class InterceptingNavigator(
         }
         is InterceptedResetRootResult.Rewrite -> {
           // Recurse in case another interceptor wants to intercept the new screen.
-          return resetRoot(
-            interceptedResult.screen,
-            interceptedResult.saveState,
-            interceptedResult.restoreState,
-          )
+          return resetRoot(interceptedResult.screen, interceptedResult.stateOptions)
         }
       }
     }
-    eventListeners.forEach { it.resetRoot(newRoot, saveState, restoreState) }
-    return delegate.resetRoot(newRoot, saveState, restoreState)
+    eventListeners.forEach { it.resetRoot(newRoot, options) }
+    return delegate.resetRoot(newRoot, options)
   }
 
   /** Notifies of [NavigationInterceptor] failures. Useful for logging or analytics. */

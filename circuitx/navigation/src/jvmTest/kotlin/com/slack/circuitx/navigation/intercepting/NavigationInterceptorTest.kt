@@ -5,6 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.PopEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.ResetRootEvent
@@ -415,12 +416,9 @@ class NavigationInterceptorTest {
   @Test
   fun `Single interceptor resetRoot Rewrite`() = runTest {
     composeTestRule.run {
+      val stateOptions = StateOptions.SaveAndRestore
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(
-          TestScreen.RootBeta,
-          saveState = true,
-          restoreState = true,
-        ),
+        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         Skipped,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -430,34 +428,28 @@ class NavigationInterceptorTest {
       assertEquals(
         ResetRootEvent(
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(
-            TestScreen.RootBeta,
-            saveState = true,
-            restoreState = true,
-          ),
+          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+          options = StateOptions.Default,
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, Skipped, saveState = true, restoreState = true),
+        ResetRootEvent(TestScreen.RootBeta, Skipped, options = stateOptions),
         fakeInterceptor1.awaitResetRoot(),
       )
       val event = fakeNavigator.awaitResetRoot()
       assertEquals(TestScreen.RootBeta, event.newRoot)
-      assertTrue(event.saveState)
-      assertTrue(event.restoreState)
+      assertTrue(event.options.save)
+      assertTrue(event.options.restore)
     }
   }
 
   @Test
   fun `Single interceptor resetRoot Rewrite, intercept Rewrite consumed`() = runTest {
     composeTestRule.run {
+      val stateOptions = StateOptions.Default
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(
-          TestScreen.RootBeta,
-          saveState = false,
-          restoreState = false,
-        ),
+        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         SuccessConsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -466,16 +458,13 @@ class NavigationInterceptorTest {
       assertEquals(
         ResetRootEvent(
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(
-            TestScreen.RootBeta,
-            saveState = false,
-            restoreState = false,
-          ),
+          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+          options = StateOptions.Default,
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
+        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed, options = stateOptions),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeNavigator.assertGoToIsEmpty()
@@ -485,12 +474,9 @@ class NavigationInterceptorTest {
   @Test
   fun `Single interceptor resetRoot Rewrite, intercept Rewrite unconsumed`() = runTest {
     composeTestRule.run {
+      val stateOptions = StateOptions.Default
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(
-          TestScreen.RootBeta,
-          saveState = false,
-          restoreState = false,
-        ),
+        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         SuccessUnconsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -500,16 +486,13 @@ class NavigationInterceptorTest {
       assertEquals(
         ResetRootEvent(
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(
-            TestScreen.RootBeta,
-            saveState = false,
-            restoreState = false,
-          ),
+          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+          options = StateOptions.Default,
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, SuccessUnconsumed),
+        ResetRootEvent(TestScreen.RootBeta, SuccessUnconsumed, options = stateOptions),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitResetRoot().newRoot)

@@ -56,7 +56,7 @@ Each method returns a result type that indicates how navigation should proceed.
 public interface NavigationInterceptor {
   fun goTo(screen: Screen): InterceptedGoToResult
   fun pop(peekBackStack: ImmutableList<Screen>, result: PopResult?): InterceptedPopResult
-  fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): InterceptedResetRootResult
+  fun resetRoot(newRoot: Screen, options: Navigator.StateOptions): InterceptedResetRootResult
 }
 ```
 
@@ -101,7 +101,7 @@ interface NavigationEventListener {
   fun onBackStackChanged(backStack: ImmutableList<Screen>) {}
   fun goTo(screen: Screen) {}
   fun pop(backStack: ImmutableList<Screen>, result: PopResult?) {}
-  fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean) {}
+  fun resetRoot(newRoot: Screen, options: Navigator.StateOptions) {}
 }
 ```
 
@@ -283,8 +283,8 @@ class DebugNavigationEventListener : NavigationEventListener {
     navigationHistory.add(NavigationEvent.Pop(backStack.firstOrNull()))
   }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean) {
-    navigationHistory.add(NavigationEvent.ResetRoot(newRoot))
+  override fun resetRoot(newRoot: Screen, options: Navigator.StateOptions) {
+    navigationHistory.add(NavigationEvent.ResetRoot(newRoot, options))
   }
 
   fun getNavigationHistory(): List<NavigationEvent> = navigationHistory.toList()

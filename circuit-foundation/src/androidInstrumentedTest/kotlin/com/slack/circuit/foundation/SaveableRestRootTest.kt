@@ -20,6 +20,7 @@ import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -48,21 +49,21 @@ class SaveableRestRootTest {
       setTestContent { TestContent { navigator = it } }
       onNodeWithTag(TAG_LABEL).assertTextEquals(TestScreen.RootAlpha.label)
       mainClock.autoAdvance = false
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+      navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
       mainClock.advanceTimeByFrame()
       repeat(10) {
-        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenC, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenC, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
       }
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+      navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
       mainClock.autoAdvance = true
       onNodeWithTag(TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)
     }

@@ -3,6 +3,7 @@
 package com.slack.circuitx.navigation.intercepting
 
 import app.cash.turbine.Turbine
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -25,8 +26,8 @@ class FakeNavigationEventListener : NavigationEventListener {
     popEvents.add(PopEvent(backStack, result))
   }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean) {
-    resetRootEvents.add(ResetRootEvent(newRoot, saveState, restoreState))
+  override fun resetRoot(newRoot: Screen, options: StateOptions) {
+    resetRootEvents.add(ResetRootEvent(newRoot, options))
   }
 
   /** Awaits the next [goTo] or throws if no goTo are performed. */
@@ -64,9 +65,5 @@ class FakeNavigationEventListener : NavigationEventListener {
 
   data class PopEvent(val backStack: List<Screen>, val result: PopResult? = null)
 
-  data class ResetRootEvent(
-    val newRoot: Screen,
-    val saveState: Boolean = false,
-    val restoreState: Boolean = false,
-  )
+  data class ResetRootEvent(val newRoot: Screen, val options: StateOptions = StateOptions.Default)
 }

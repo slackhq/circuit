@@ -3,6 +3,7 @@
 package com.slack.circuitx.navigation.intercepting
 
 import app.cash.turbine.Turbine
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -29,15 +30,9 @@ class FakeNavigationInterceptor : NavigationInterceptor {
     return interceptorPopResult
   }
 
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): InterceptedResetRootResult {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): InterceptedResetRootResult {
     val interceptorResetRootResult = resetRootResults.removeFirst()
-    resetRootEvents.add(
-      ResetRootEvent(newRoot, interceptorResetRootResult, saveState, restoreState)
-    )
+    resetRootEvents.add(ResetRootEvent(newRoot, interceptorResetRootResult, options))
     return interceptorResetRootResult
   }
 
@@ -88,7 +83,6 @@ class FakeNavigationInterceptor : NavigationInterceptor {
   data class ResetRootEvent(
     val newRoot: Screen,
     val interceptorResetRootResult: InterceptedResetRootResult,
-    val saveState: Boolean = false,
-    val restoreState: Boolean = false,
+    val options: StateOptions = StateOptions.Default,
   )
 }

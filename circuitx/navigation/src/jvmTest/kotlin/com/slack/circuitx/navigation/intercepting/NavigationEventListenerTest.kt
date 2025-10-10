@@ -5,6 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.OnBackStackChangedEvent
@@ -191,9 +192,9 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, saveState = true)
+      interceptingNavigator.resetRoot(TestScreen.RootBeta, StateOptions(save = true, clear = false))
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, saveState = true),
+        ResetRootEvent(TestScreen.RootBeta, StateOptions(save = true, clear = false)),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -204,9 +205,12 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, restoreState = true)
+      interceptingNavigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(restore = true, clear = false),
+      )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, restoreState = true),
+        ResetRootEvent(TestScreen.RootBeta, StateOptions(restore = true, clear = false)),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -217,9 +221,12 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, saveState = false)
+      interceptingNavigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(save = false, clear = false),
+      )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, saveState = false),
+        ResetRootEvent(TestScreen.RootBeta, StateOptions(save = false, clear = false)),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -230,9 +237,12 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, restoreState = false)
+      interceptingNavigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(restore = false, clear = false),
+      )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, restoreState = false),
+        ResetRootEvent(TestScreen.RootBeta, StateOptions(restore = false, clear = false)),
         fakeEventListener.awaitResetRoot(),
       )
     }

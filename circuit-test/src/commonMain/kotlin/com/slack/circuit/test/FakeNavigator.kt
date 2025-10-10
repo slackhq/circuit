@@ -7,6 +7,7 @@ import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.Navigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -64,9 +65,9 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     return popped
   }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
-    val oldScreens = delegate.resetRoot(newRoot, saveState, restoreState)
-    resetRootEvents.add(ResetRootEvent(newRoot, oldScreens, saveState, restoreState))
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
+    val oldScreens = delegate.resetRoot(newRoot, options)
+    resetRootEvents.add(ResetRootEvent(newRoot, oldScreens, options))
     return oldScreens
   }
 
@@ -141,8 +142,7 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   public data class ResetRootEvent(
     val newRoot: Screen,
     val oldScreens: List<Screen>,
-    val saveState: Boolean = false,
-    val restoreState: Boolean = false,
+    val options: StateOptions = StateOptions.Default,
   )
 
   private fun GoToEvent.assertSuccessfulScreen(): Screen {

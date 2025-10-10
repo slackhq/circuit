@@ -4,6 +4,7 @@ public abstract interface class com/slack/circuit/backstack/BackStack : java/lan
 	public abstract fun getSize ()I
 	public abstract fun getTopRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public abstract fun isRecordReachable (Ljava/lang/String;IZ)Z
+	public abstract fun peekState ()Ljava/util/List;
 	public abstract fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public static synthetic fun pop$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun popUntil (Lkotlin/jvm/functions/Function1;)Ljava/util/List;
@@ -11,6 +12,7 @@ public abstract interface class com/slack/circuit/backstack/BackStack : java/lan
 	public abstract fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;)Z
 	public static synthetic fun push$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/backstack/BackStack$Record;Ljava/lang/String;ILjava/lang/Object;)Z
 	public static synthetic fun push$default (Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;ILjava/lang/Object;)Z
+	public abstract fun removeState (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public abstract fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public abstract fun saveState ()V
 }
@@ -22,6 +24,7 @@ public abstract interface class com/slack/circuit/backstack/BackStack$Record {
 }
 
 public final class com/slack/circuit/backstack/BackStackKt {
+	public static final fun clearState (Lcom/slack/circuit/backstack/BackStack;)V
 	public static final fun isAtRoot (Lcom/slack/circuit/backstack/BackStack;)Z
 	public static final fun isEmpty (Lcom/slack/circuit/backstack/BackStack;)Z
 }
@@ -59,12 +62,14 @@ public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/cir
 	public fun getTopRecord ()Lcom/slack/circuit/backstack/SaveableBackStack$Record;
 	public fun isRecordReachable (Ljava/lang/String;IZ)Z
 	public fun iterator ()Ljava/util/Iterator;
+	public fun peekState ()Ljava/util/List;
 	public synthetic fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/backstack/SaveableBackStack$Record;
 	public synthetic fun push (Lcom/slack/circuit/backstack/BackStack$Record;Ljava/lang/String;)Z
 	public fun push (Lcom/slack/circuit/backstack/SaveableBackStack$Record;Ljava/lang/String;)Z
 	public fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;)Z
 	public final fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;Ljava/lang/String;)Z
+	public fun removeState (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun saveState ()V
 }

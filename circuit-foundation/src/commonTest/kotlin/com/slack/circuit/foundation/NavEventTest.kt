@@ -3,10 +3,12 @@
 package com.slack.circuit.foundation
 
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class NavEventTest {
@@ -28,12 +30,22 @@ class NavEventTest {
   @Test
   fun onNavEvent_resetRoot_callsNavigatorResetRoot() {
     val navigator = FakeNavigator()
-    navigator.onNavEvent(
-      NavEvent.ResetRoot(newRoot = TestScreen, saveState = true, restoreState = false)
-    )
+    val options = StateOptions(save = true, restore = false, clear = true)
+    navigator.onNavEvent(NavEvent.ResetRoot(newRoot = TestScreen, options = options))
     assertEquals(TestScreen, navigator.lastResetRootScreen)
-    assertTrue(navigator.lastResetRootSaveState)
-    assertTrue(!navigator.lastResetRootRestoreState)
+    assertEquals(options, navigator.lastResetRootOptions)
+  }
+
+  @Test
+  @Suppress("DEPRECATION")
+  fun onNavEvent_deprecatedResetRoot_callsNavigatorResetRoot() {
+    val navigator = FakeNavigator()
+    navigator.onNavEvent(NavEvent.ResetRoot(newRoot = TestScreen, save = true, restore = true))
+    assertEquals(TestScreen, navigator.lastResetRootScreen)
+    val options = navigator.lastResetRootOptions!!
+    assertTrue(options.save)
+    assertTrue(options.restore)
+    assertFalse(options.clear) // default value
   }
 }
 
@@ -41,8 +53,7 @@ private class FakeNavigator : Navigator {
   var lastGoToScreen: Screen? = null
   var lastPopResult: PopResult? = null
   var lastResetRootScreen: Screen? = null
-  var lastResetRootSaveState: Boolean = false
-  var lastResetRootRestoreState: Boolean = false
+  var lastResetRootOptions: StateOptions? = null
 
   override fun goTo(screen: Screen): Boolean {
     lastGoToScreen = screen
@@ -54,10 +65,9 @@ private class FakeNavigator : Navigator {
     return null
   }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     lastResetRootScreen = newRoot
-    lastResetRootSaveState = saveState
-    lastResetRootRestoreState = restoreState
+    lastResetRootOptions = options
     return emptyList()
   }
 

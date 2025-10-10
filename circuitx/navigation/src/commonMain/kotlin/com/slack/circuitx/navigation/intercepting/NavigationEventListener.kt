@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -39,5 +40,5 @@ public interface NavigationEventListener {
    *
    * @see InterceptingNavigator.resetRoot
    */
-  public fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean) {}
+  public fun resetRoot(newRoot: Screen, options: StateOptions) {}
 }

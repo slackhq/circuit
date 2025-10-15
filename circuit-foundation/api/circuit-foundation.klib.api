@@ -103,19 +103,17 @@ sealed interface com.slack.circuit.foundation/NavEvent : com.slack.circuit.runti
     }
 
     final class ResetRoot : com.slack.circuit.foundation/NavEvent { // com.slack.circuit.foundation/NavEvent.ResetRoot|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
         final val newRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.newRoot|{}newRoot[0]
             final fun <get-newRoot>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.ResetRoot.newRoot.<get-newRoot>|<get-newRoot>(){}[0]
-        final val restoreState // com.slack.circuit.foundation/NavEvent.ResetRoot.restoreState|{}restoreState[0]
-            final fun <get-restoreState>(): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.restoreState.<get-restoreState>|<get-restoreState>(){}[0]
-        final val saveState // com.slack.circuit.foundation/NavEvent.ResetRoot.saveState|{}saveState[0]
-            final fun <get-saveState>(): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.saveState.<get-saveState>|<get-saveState>(){}[0]
+        final val options // com.slack.circuit.foundation/NavEvent.ResetRoot.options|{}options[0]
+            final fun <get-options>(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuit.foundation/NavEvent.ResetRoot.options.<get-options>|<get-options>(){}[0]
 
         final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.ResetRoot.component1|component1(){}[0]
-        final fun component2(): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.component2|component2(){}[0]
-        final fun component3(): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.component3|component3(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): com.slack.circuit.foundation/NavEvent.ResetRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun component2(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuit.foundation/NavEvent.ResetRoot.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., com.slack.circuit.runtime/Navigator.StateOptions = ...): com.slack.circuit.foundation/NavEvent.ResetRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.copy|copy(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation/NavEvent.ResetRoot.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.foundation/NavEvent.ResetRoot.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.foundation/NavEvent.ResetRoot.toString|toString(){}[0]

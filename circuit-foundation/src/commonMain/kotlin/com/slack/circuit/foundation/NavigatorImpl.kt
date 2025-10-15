@@ -19,6 +19,7 @@ import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.foundation.internal.mapToImmutableList
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -135,19 +136,22 @@ internal class NavigatorImpl(
 
   override fun peekBackStack(): List<Screen> = backStack.mapToImmutableList { it.screen }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
     val currentStack =
       Snapshot.withMutableSnapshot {
-        if (saveState) backStack.saveState()
+        if (options.save) backStack.saveState()
         // Pop everything off the back stack
         val popped = backStack.popUntil { false }.mapToImmutableList { it.screen }
 
         // If we're not restoring state, or the restore didn't work, we need to push the new root
         // onto the stack
-        if (!restoreState || !backStack.restoreState(newRoot)) {
+        if (!options.restore || !backStack.restoreState(newRoot)) {
           backStack.push(newRoot)
         }
+
+        // Clear the state if requested, do this last to allow restoring the state once.
+        if (options.clear) backStack.removeState(newRoot)
         popped
       }
 

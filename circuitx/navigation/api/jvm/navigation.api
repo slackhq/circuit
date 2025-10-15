@@ -21,16 +21,14 @@ public abstract interface class com/slack/circuitx/navigation/intercepting/Inter
 
 public final class com/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite : com/slack/circuitx/navigation/intercepting/InterceptedResetRootResult {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;ZZ)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)V
 	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
-	public final fun component2 ()Z
-	public final fun component3 ()Z
-	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;
-	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;
+	public final fun component2 ()Lcom/slack/circuit/runtime/Navigator$StateOptions;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;ILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult$Rewrite;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getRestoreState ()Z
-	public final fun getSaveState ()Z
 	public final fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun getStateOptions ()Lcom/slack/circuit/runtime/Navigator$StateOptions;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -81,7 +79,7 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptingNaviga
 	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun peekBackStack ()Ljava/util/List;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Ljava/util/List;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
 }
 
 public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier {
@@ -114,14 +112,14 @@ public abstract interface class com/slack/circuitx/navigation/intercepting/Navig
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)V
 	public fun onBackStackChanged (Ljava/util/List;)V
 	public fun pop (Ljava/util/List;Lcom/slack/circuit/runtime/screen/PopResult;)V
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)V
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)V
 }
 
 public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationInterceptor {
 	public static final field Companion Lcom/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion;
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult;
 	public fun pop (Ljava/util/List;Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuitx/navigation/intercepting/InterceptedPopResult;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult;
+	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult;
 }
 
 public final class com/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion {

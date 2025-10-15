@@ -2,18 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.gesturenavigation
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.runComposeUiTest
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -26,48 +28,19 @@ import com.slack.circuit.internal.test.TestEvent
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner
-import org.robolectric.annotation.Config
+import kotlin.test.Test
 
-@Config(minSdk = 34)
-@RunWith(ParameterizedRobolectricTestRunner::class)
-class BackNavigationTest(private val androidNavigator: Boolean) {
-
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalTestApi::class)
+class BackNavigationTest {
 
   @Test
   fun testBackHandlerRoot() {
-    composeTestRule.run {
-      val circuit = createTestBackCircuit()
-      setContent {
-        CircuitCompositionLocals(circuit) {
-          val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
-          val navigator: Navigator
-          if (androidNavigator) {
-            navigator = rememberCircuitNavigator(backStack = backStack, enableBackHandler = true)
-          } else {
-            navigator =
-              rememberCircuitNavigator(
-                backStack = backStack,
-                onRootPop = {}, // no-op for tests
-              )
-            BackHandler { navigator.pop() }
-          }
-          NavigableCircuitContent(
-            navigator = navigator,
-            backStack = backStack,
-            decoratorFactory =
-              remember { AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
-          )
-        }
-      }
+    runComposeUiTest {
+      setCircuitContent(useIntegratedBackHandler = false)
 
       // Current: Root Alpha. Navigate to Screen A
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
@@ -80,20 +53,52 @@ class BackNavigationTest(private val androidNavigator: Boolean) {
       onTopNavigationRecordNodeWithTag(TAG_GO_NEXT).performClick()
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("B")
       println("Screen B")
-
-      // tap back
-      println("Going to Root Alpha via back button")
-      this.activity.onBackPressedDispatcher.onBackPressed()
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
     }
   }
 
-  companion object {
+  @Test
+  fun testIntegratedBackHandlerRoot() {
+    runComposeUiTest {
+      setCircuitContent(useIntegratedBackHandler = true)
 
-    @JvmStatic
-    @ParameterizedRobolectricTestRunner.Parameters(name = "androidNavigator={0}")
-    fun params(): List<Any> {
-      return listOf(true, false)
+      // Current: Root Alpha. Navigate to Screen A
+      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
+      println("Going to A")
+      onTopNavigationRecordNodeWithTag(TAG_GO_NEXT).performClick()
+      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      println("Screen A")
+
+      println("Going to B")
+      onTopNavigationRecordNodeWithTag(TAG_GO_NEXT).performClick()
+      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      println("Screen B")
+    }
+  }
+
+  private fun ComposeUiTest.setCircuitContent(useIntegratedBackHandler: Boolean) {
+    val circuit = createTestBackCircuit()
+    setContent {
+      CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
+        val navigator: Navigator
+        if (useIntegratedBackHandler) {
+          navigator =
+            rememberCircuitNavigator(
+              backStack = backStack,
+              onRootPop = {},
+              enableBackHandler = true,
+            )
+        } else {
+          navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+          BackHandler { navigator.pop() }
+        }
+        NavigableCircuitContent(
+          navigator = navigator,
+          backStack = backStack,
+          decoratorFactory =
+            remember { IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+        )
+      }
     }
   }
 }
@@ -108,13 +113,12 @@ fun createTestBackCircuit(
     .addUiFactory { _, _ -> ui<TestState> { state, modifier -> TestBackContent(state, modifier) } }
     .build()
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TestBackContent(state: TestState, modifier: Modifier = Modifier) {
   TestContent(state, modifier)
   if (state.label.contains("root", true)) {
-    BackHandler {
-      // no-op for now
-    }
+    BackHandler {}
   }
 }
 
@@ -127,7 +131,6 @@ class TestCountBackPresenter(
   @Composable
   override fun present(): TestState {
     var count by rememberSaveable { mutableIntStateOf(0) }
-
     return TestState(count, screen.label) { event ->
       when (event) {
         TestEvent.IncreaseCount -> count++
@@ -150,19 +153,9 @@ class TestCountBackPresenter(
           }
         }
         TestEvent.ResetRootAlpha ->
-          navigator.resetRoot(
-            TestScreen.RootAlpha,
-            StateOptions(save = true, restore = restoreStateOnRootChange, clear = false),
-          )
+          navigator.resetRoot(TestScreen.RootAlpha, true, restoreStateOnRootChange)
         TestEvent.ResetRootBeta ->
-          navigator.resetRoot(
-            TestScreen.RootBeta,
-            StateOptions(
-              save = saveStateOnRootChange,
-              restore = restoreStateOnRootChange,
-              clear = false,
-            ),
-          )
+          navigator.resetRoot(TestScreen.RootBeta, saveStateOnRootChange, restoreStateOnRootChange)
       }
     }
   }

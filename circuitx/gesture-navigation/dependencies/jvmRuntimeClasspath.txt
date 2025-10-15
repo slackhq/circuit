@@ -41,10 +41,6 @@ org.jetbrains.compose.foundation:foundation-desktop
 org.jetbrains.compose.foundation:foundation-layout-desktop
 org.jetbrains.compose.foundation:foundation-layout
 org.jetbrains.compose.foundation:foundation
-org.jetbrains.compose.material:material-desktop
-org.jetbrains.compose.material:material-ripple-desktop
-org.jetbrains.compose.material:material-ripple
-org.jetbrains.compose.material:material
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime-saveable-desktop
 org.jetbrains.compose.runtime:runtime-saveable

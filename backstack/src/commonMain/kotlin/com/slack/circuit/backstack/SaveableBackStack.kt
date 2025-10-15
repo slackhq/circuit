@@ -145,6 +145,14 @@ internal constructor(
     return false
   }
 
+  override fun peekState(): List<Screen> {
+    return stateStore.keys.toList()
+  }
+
+  override fun removeState(screen: Screen): Boolean {
+    return stateStore.remove(screen) != null
+  }
+
   override fun containsRecord(record: Record, includeSaved: Boolean): Boolean {
     // If it's in the main entry list, return true
     if (record in entryList) return true

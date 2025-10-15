@@ -5,6 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.Navigator.StateOptions
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,11 +33,11 @@ class InterceptingNavigatorTest {
       assertEquals(TestPopResult.PopResultA, popEvent.result)
 
       // Verify resetRoot is delegated.
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, saveState = true, restoreState = true)
+      interceptingNavigator.resetRoot(TestScreen.RootBeta, StateOptions.SaveAndRestore)
       val resetRootEvent = fakeNavigator.awaitResetRoot()
       assertEquals(TestScreen.RootBeta, resetRootEvent.newRoot)
-      assertTrue(resetRootEvent.saveState)
-      assertTrue(resetRootEvent.restoreState)
+      assertTrue(resetRootEvent.options.save)
+      assertTrue(resetRootEvent.options.restore)
 
       // Navigate around a bit to ensure the back stack matches.
       interceptingNavigator.goTo(TestScreen.ScreenA)

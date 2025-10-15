@@ -26,6 +26,7 @@ import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import kotlinx.coroutines.test.runTest
@@ -55,21 +56,21 @@ class GestureSaveableRestRootTest {
       setTestContent { TestContent { navigator = it } }
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.RootAlpha.label)
       mainClock.autoAdvance = false
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+      navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
       mainClock.advanceTimeByFrame()
       repeat(10) {
-        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenC, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenC, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
-        navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = true, restoreState = true)
+        navigator.resetRoot(newRoot = TestScreen.ScreenB, options = StateOptions.SaveAndRestore)
         mainClock.advanceTimeByFrame()
       }
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = true, restoreState = true)
+      navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.SaveAndRestore)
       mainClock.autoAdvance = true
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)
       Snapshot.withMutableSnapshot {
@@ -77,9 +78,9 @@ class GestureSaveableRestRootTest {
         navigator.goTo(TestScreen.RootAlpha)
       }
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.RootAlpha.label)
-      navigator.resetRoot(newRoot = TestScreen.ScreenB, saveState = false, restoreState = false)
+      navigator.resetRoot(newRoot = TestScreen.ScreenB, options = StateOptions.Default)
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.ScreenB.label)
-      navigator.resetRoot(newRoot = TestScreen.ScreenA, saveState = false, restoreState = false)
+      navigator.resetRoot(newRoot = TestScreen.ScreenA, options = StateOptions.Default)
       onNodeWithTag(TestContentTags.TAG_LABEL).assertTextEquals(TestScreen.ScreenA.label)
     }
   }

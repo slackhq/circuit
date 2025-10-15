@@ -31,18 +31,12 @@ public sealed interface NavEvent : CircuitUiEvent {
 
   /** Corresponds to [Navigator.resetRoot]. */
   public data class ResetRoot(val newRoot: Screen, val options: StateOptions) : NavEvent {
-    @Deprecated(
-      message = "Use the StateOptions variant",
-      replaceWith =
-        ReplaceWith(
-          "ResetRoot(newRoot, StateOptions(save = save, restore = restore, clear = clear))",
-          "com.slack.circuit.runtime.Navigator.StateOptions",
-        ),
-    )
+    /** Alternate parameter based constructor. */
     public constructor(
       newRoot: Screen,
-      save: Boolean,
-      restore: Boolean,
-    ) : this(newRoot, StateOptions(save = save, restore = restore, clear = false))
+      save: Boolean = false,
+      restore: Boolean = false,
+      clear: Boolean = false,
+    ) : this(newRoot, StateOptions(save = save, restore = restore, clear = clear))
   }
 }

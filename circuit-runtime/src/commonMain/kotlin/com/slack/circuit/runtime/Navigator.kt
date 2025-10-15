@@ -79,25 +79,6 @@ public interface Navigator : GoToNavigator {
   public fun resetRoot(newRoot: Screen, options: StateOptions = StateOptions.Default): List<Screen>
 
   /**
-   * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
-   *
-   * @deprecated Use the [resetRoot] function that takes [StateOptions] instead.
-   */
-  @Deprecated(
-    "Use the StateOptions variant",
-    ReplaceWith(
-      "resetRoot(newRoot, StateOptions(save = saveState, restore = restoreState, clear = false))",
-      "com.slack.circuit.runtime.Navigator.StateOptions",
-    ),
-  )
-  public fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean = false,
-    restoreState: Boolean = false,
-  ): List<Screen> =
-    resetRoot(newRoot, StateOptions(save = saveState, restore = restoreState, clear = false))
-
-  /**
    * A holder for the state management configuration for a [Navigator.resetRoot] call.
    *
    * @property save Whether to save the current entry list. It can be restored by passing the
@@ -139,6 +120,18 @@ public interface Navigator : GoToNavigator {
     override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> = emptyList()
   }
 }
+
+/** Parameter based alternate for [Navigator.resetRoot]. */
+public fun Navigator.resetRoot(
+  newRoot: Screen,
+  saveState: Boolean = false,
+  restoreState: Boolean = false,
+  clear: Boolean = false,
+): List<Screen> =
+  resetRoot(
+    newRoot = newRoot,
+    options = Navigator.StateOptions(save = saveState, restore = restoreState, clear = clear),
+  )
 
 /**
  * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].

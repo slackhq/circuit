@@ -30,7 +30,6 @@ public final class com/slack/circuit/test/FakeNavigator : com/slack/circuit/runt
 	public fun peekBackStack ()Ljava/util/List;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Ljava/util/List;
 	public final fun takeNextScreen ()Lcom/slack/circuit/runtime/screen/Screen;
 }
 

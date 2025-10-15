@@ -80,7 +80,6 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptingNaviga
 	public fun peekBackStack ()Ljava/util/List;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Ljava/util/List;
 }
 
 public abstract interface class com/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier {

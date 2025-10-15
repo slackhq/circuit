@@ -104,7 +104,7 @@ sealed interface com.slack.circuit.foundation/NavEvent : com.slack.circuit.runti
 
     final class ResetRoot : com.slack.circuit.foundation/NavEvent { // com.slack.circuit.foundation/NavEvent.ResetRoot|null[0]
         constructor <init>(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean, kotlin/Boolean) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // com.slack.circuit.foundation/NavEvent.ResetRoot.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
         final val newRoot // com.slack.circuit.foundation/NavEvent.ResetRoot.newRoot|{}newRoot[0]
             final fun <get-newRoot>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/NavEvent.ResetRoot.newRoot.<get-newRoot>|<get-newRoot>(){}[0]

@@ -34,9 +34,7 @@ public abstract interface class com/slack/circuit/runtime/Navigator : com/slack/
 	public abstract fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public static synthetic fun pop$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/Screen;
 	public abstract fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;ZZ)Ljava/util/List;
 	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;ILjava/lang/Object;)Ljava/util/List;
-	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZILjava/lang/Object;)Ljava/util/List;
 }
 
 public final class com/slack/circuit/runtime/Navigator$NoOp : com/slack/circuit/runtime/Navigator {
@@ -78,6 +76,8 @@ public final class com/slack/circuit/runtime/NavigatorKt {
 	public static synthetic fun popRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)V
 	public static final fun popUntil (Lcom/slack/circuit/runtime/Navigator;Lkotlin/jvm/functions/Function1;)V
 	public static final fun resetRoot (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public static final fun resetRoot (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZZ)Ljava/util/List;
 	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/util/List;
+	public static synthetic fun resetRoot$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/Screen;ZZZILjava/lang/Object;)Ljava/util/List;
 }
 

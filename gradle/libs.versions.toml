@@ -3,14 +3,14 @@ androidx-activity = "1.11.0"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
-androidx-compose = "1.9.2"
+androidx-compose = "1.9.3"
 agp = "8.13.0"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
-compose-hotReload = "1.0.0-beta09"
-compose-jb = "1.9.0"
+compose-hotReload = "1.0.0-rc02"
+compose-jb = "1.9.1"
 compose-jb-material3 = "1.8.2"
 compose-jb-material-icons-core = "1.7.3"
 dagger = "2.57.2"
@@ -28,15 +28,15 @@ kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.2.20-2.0.3"
+ksp = "2.2.20-2.0.4"
 ktfmt = "0.58"
-ktor = "3.3.0"
+ktor = "3.3.1"
 leakcanary = "2.14"
-lifecycle-jb = "2.9.4"
+lifecycle-jb = "2.9.5"
 mavenPublish = "0.34.0"
 molecule = "2.2.0"
-okhttp = "5.1.0"
-okio = "3.16.0"
+okhttp = "5.2.1"
+okio = "3.16.2"
 picnic = "0.7.0"
 robolectric = "4.16"
 roborazzi = "1.50.0"
@@ -69,7 +69,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.6.7" }
+metro = { id = "dev.zacsweers.metro", version = "0.6.10" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -102,7 +102,7 @@ anvil-annotations-optional = { module = "dev.zacsweers.anvil:annotations-optiona
 
 # Utilities for local storage dirs on Desktop
 # https://github.com/harawata/appdirs
-appDirs = "net.harawata:appdirs:1.4.0"
+appDirs = "net.harawata:appdirs:1.5.0"
 
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 

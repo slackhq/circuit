@@ -5,7 +5,6 @@ package com.slack.circuitx.gesturenavigation
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,7 +32,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@OptIn(ExperimentalMaterialApi::class)
 @Config(minSdk = 34)
 @RunWith(RobolectricTestRunner::class)
 class GestureNavigationCrashTest {

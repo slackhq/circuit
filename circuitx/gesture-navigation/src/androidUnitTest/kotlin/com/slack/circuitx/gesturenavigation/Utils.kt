@@ -4,20 +4,7 @@ package com.slack.circuitx.gesturenavigation
 
 import androidx.activity.BackEventCompat
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
-import androidx.compose.ui.test.hasParent
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.onFirst
 import androidx.test.core.app.ActivityScenario
-import com.slack.circuit.internal.test.TestContentTags
-
-internal fun SemanticsNodeInteractionsProvider.onTopNavigationRecordNodeWithTag(
-  testTag: String
-): SemanticsNodeInteraction =
-  onAllNodes(hasTestTag(testTag) and hasParent(hasTestTag(TestContentTags.TAG_ROOT)), false)
-    // first is always on top
-    .onFirst()
 
 internal fun BackEventCompat.copy(
   touchX: Float = this.touchX,

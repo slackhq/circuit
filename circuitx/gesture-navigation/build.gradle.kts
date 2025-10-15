@@ -35,9 +35,16 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
-        // For CupertinoGestureNavigationDecoration
-        implementation(libs.compose.material.material)
         implementation(libs.compose.ui.backhandler)
+      }
+    }
+
+    commonTest {
+      dependencies {
+        implementation(libs.compose.ui.test)
+        implementation(libs.kotlin.test)
+        implementation(projects.circuitTest)
+        implementation(projects.internalTestUtils)
       }
     }
 
@@ -58,6 +65,8 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+
+    iosTest {}
   }
 }
 

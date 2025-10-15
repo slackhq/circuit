@@ -99,7 +99,8 @@ public interface BackStack<R : Record> : Iterable<R> {
   /**
    * Peek at the [Screen] in the internal state store that have been saved using [saveState].
    *
-   * @return The list of [Screen]s currently in the internal state store.
+   * @return The list of [Screen]s currently in the internal state store, will be empty if there is
+   *   no saved state.
    */
   public fun peekState(): List<Screen>
 

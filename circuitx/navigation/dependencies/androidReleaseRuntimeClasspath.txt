@@ -77,8 +77,6 @@ org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
-org.jetbrains.androidx.savedstate:savedstate-compose
-org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation
 org.jetbrains.compose.annotation-internal:annotation
@@ -95,7 +93,6 @@ org.jetbrains.compose.ui:ui-text
 org.jetbrains.compose.ui:ui-unit
 org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
-org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib

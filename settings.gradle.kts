@@ -161,8 +161,8 @@ pluginManagement {
           "com.github.ben-manes.versions",
           "com.github.ben-manes.versions.gradle.plugin",
         )
-        includeModule("com.gradle", "gradle-enterprise-gradle-plugin")
-        includeModule("com.gradle.enterprise", "com.gradle.enterprise.gradle.plugin")
+        includeModule("com.gradle", "develocity-gradle-plugin")
+        includeModule("com.gradle.develocity", "com.gradle.develocity.gradle.plugin")
         includeModule("com.diffplug.spotless", "com.diffplug.spotless.gradle.plugin")
         includeModule("io.gitlab.arturbosch.detekt", "io.gitlab.arturbosch.detekt.gradle.plugin")
         includeModule("org.gradle.kotlin.kotlin-dsl", "org.gradle.kotlin.kotlin-dsl.gradle.plugin")
@@ -170,21 +170,33 @@ pluginManagement {
       }
     }
   }
-  plugins { id("com.gradle.enterprise") version "3.15.1" }
+  plugins {
+    // Release notes at https://docs.gradle.com/enterprise/gradle-plugin/#release_history
+    id("com.gradle.develocity") version "4.1.1"
+  }
 }
 
-plugins { id("com.gradle.enterprise") }
+plugins { id("com.gradle.develocity") }
 
 val VERSION_NAME: String by extra.properties
 
-gradleEnterprise {
+develocity {
   buildScan {
-    publishAlways()
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
+    capture { fileFingerprints.set(true) }
+
+    termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
+    termsOfUseAgree.set("yes")
 
     tag(if (System.getenv("CI").isNullOrBlank()) "Local" else "CI")
     tag(VERSION_NAME)
+
+    buildFinished {
+      if (failures.isNotEmpty()) {
+        for ((i, failure) in failures.withIndex()) {
+          value("Failure ${i + 1}", failure.message)
+        }
+      }
+    }
 
     obfuscation {
       username { "Redacted" }

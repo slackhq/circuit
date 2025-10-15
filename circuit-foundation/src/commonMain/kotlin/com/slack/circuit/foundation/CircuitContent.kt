@@ -13,6 +13,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -48,12 +49,8 @@ public fun CircuitContent(
           return true
         }
 
-        override fun resetRoot(
-          newRoot: Screen,
-          saveState: Boolean,
-          restoreState: Boolean,
-        ): List<Screen> {
-          onNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
+        override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
+          onNavEvent(NavEvent.ResetRoot(newRoot, options))
           return emptyList()
         }
 

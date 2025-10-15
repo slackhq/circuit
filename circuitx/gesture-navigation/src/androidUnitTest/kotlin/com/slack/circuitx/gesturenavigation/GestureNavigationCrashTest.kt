@@ -5,7 +5,6 @@ package com.slack.circuitx.gesturenavigation
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,6 +21,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.ui
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +32,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@OptIn(ExperimentalMaterialApi::class)
 @Config(minSdk = 34)
 @RunWith(RobolectricTestRunner::class)
 class GestureNavigationCrashTest {
@@ -70,11 +69,11 @@ class GestureNavigationCrashTest {
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
 
       // reset to beta with saveState=true restoreState=true
-      navigator.resetRoot(TestScreen.RootBeta, saveState = true, restoreState = true)
+      navigator.resetRoot(TestScreen.RootBeta, StateOptions.SaveAndRestore)
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Beta")
 
       // reset back to alpha with saveState=true restoreState=true
-      navigator.resetRoot(TestScreen.RootAlpha, saveState = true, restoreState = true)
+      navigator.resetRoot(TestScreen.RootAlpha, StateOptions.SaveAndRestore)
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
 
       // go to A
@@ -83,11 +82,14 @@ class GestureNavigationCrashTest {
 
       // reset to beta with saveState=true restoreState=false - !!! important to be false not true
       // !!!
-      navigator.resetRoot(TestScreen.RootBeta, saveState = true, restoreState = false)
+      navigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(save = true, restore = false, clear = false),
+      )
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Beta")
 
       // reset back to alpha with saveState=true restoreState=true
-      navigator.resetRoot(TestScreen.RootAlpha, saveState = true, restoreState = true)
+      navigator.resetRoot(TestScreen.RootAlpha, StateOptions.SaveAndRestore)
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("A")
 
       // pop Screen A - should go to alpha root
@@ -96,7 +98,7 @@ class GestureNavigationCrashTest {
 
       // reset back to beta with saveState=true restoreState=true - will crash if previous pop was
       // done with gesture navigation
-      navigator.resetRoot(TestScreen.RootBeta, saveState = true, restoreState = true)
+      navigator.resetRoot(TestScreen.RootBeta, StateOptions.SaveAndRestore)
       onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Beta")
     }
   }
@@ -121,9 +123,15 @@ private class TestCrashPresenter(private val screen: TestScreen, private val nav
           }
         }
         is TestCrashEvent.ResetRootAlpha ->
-          navigator.resetRoot(TestScreen.RootAlpha, true, event.restoreState)
+          navigator.resetRoot(
+            TestScreen.RootAlpha,
+            StateOptions(save = true, restore = event.restoreState, clear = false),
+          )
         is TestCrashEvent.ResetRootBeta ->
-          navigator.resetRoot(TestScreen.RootBeta, true, event.restoreState)
+          navigator.resetRoot(
+            TestScreen.RootBeta,
+            StateOptions(save = true, restore = event.restoreState, clear = false),
+          )
       }
     }
   }

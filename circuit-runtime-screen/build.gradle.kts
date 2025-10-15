@@ -41,19 +41,9 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
-  sourceSets {
-    commonMain { dependencies { api(libs.compose.runtime) } }
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
-  }
+  sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
 
   targets.configureEach {
     compilations.configureEach {

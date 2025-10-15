@@ -28,27 +28,25 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
-        // For CupertinoGestureNavigationDecoration
-        implementation(libs.compose.material.material)
         implementation(libs.compose.ui.backhandler)
       }
     }
 
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
+    commonTest {
+      dependencies {
+        implementation(libs.compose.ui.test)
+        implementation(libs.kotlin.test)
+        implementation(projects.circuitTest)
+        implementation(projects.internalTestUtils)
+      }
+    }
 
     androidMain {
       dependencies {
@@ -67,6 +65,8 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
+
+    iosTest {}
   }
 }
 

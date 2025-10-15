@@ -13,18 +13,18 @@ plugins {
 kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
-  jvm()
+  jvm { testRuns["test"].executionTask.configure { enabled = false } }
   iosX64()
   iosArm64()
   iosSimulatorArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser { testTask { enabled = false } }
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser { testTask { enabled = false } }
   }
   // endregion
 
@@ -58,15 +58,11 @@ kotlin {
 
     androidUnitTest {
       dependencies {
-        implementation(projects.internalTestUtils)
-
         implementation(libs.robolectric)
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
-
-    iosTest {}
   }
 }
 

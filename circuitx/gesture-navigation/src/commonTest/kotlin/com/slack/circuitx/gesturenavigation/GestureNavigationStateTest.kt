@@ -1,16 +1,16 @@
-// Copyright (C) 2023 Slack Technologies, LLC
+// Copyright (C) 2025 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.gesturenavigation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.test.ComposeUiTest
-import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
@@ -22,59 +22,26 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
-import kotlin.test.Test
+import com.slack.circuit.runtime.Navigator
 
-@OptIn(ExperimentalTestApi::class)
-class GestureNavigationStateTest {
+internal interface GestureNavigationStateTest {
 
-  @Test
-  fun `stateScopedToBackstack_useKeys-true_useSwipe-false_rememberType-Retained`() {
-    runComposeUiTest {
-      testStateScopedToBackstack(
-        useKeys = true,
-        useSwipe = false,
-        rememberType = RememberType.Retained,
-      )
+  fun SemanticsNodeInteractionsProvider.swipeRight()
+
+  private fun SemanticsNodeInteractionsProvider.pop(useSwipe: Boolean) {
+    if (useSwipe) {
+      swipeRight()
+    } else {
+      onTopNavigationRecordNodeWithTag(TAG_POP).performClick()
     }
   }
 
-  @Test
-  fun `stateScopedToBackstack_useKeys-true_useSwipe-false_rememberType-Saveable`() {
-    runComposeUiTest {
-      testStateScopedToBackstack(
-        useKeys = true,
-        useSwipe = false,
-        rememberType = RememberType.Saveable,
-      )
-    }
-  }
-
-  @Test
-  fun `stateScopedToBackstack_useKeys-false_useSwipe-false_rememberType-Retained`() {
-    runComposeUiTest {
-      testStateScopedToBackstack(
-        useKeys = false,
-        useSwipe = false,
-        rememberType = RememberType.Retained,
-      )
-    }
-  }
-
-  @Test
-  fun `stateScopedToBackstack_useKeys-false_useSwipe-false_rememberType-Saveable`() {
-    runComposeUiTest {
-      testStateScopedToBackstack(
-        useKeys = false,
-        useSwipe = false,
-        rememberType = RememberType.Saveable,
-      )
-    }
-  }
-
-  fun ComposeUiTest.testStateScopedToBackstack(
+  fun SemanticsNodeInteractionsProvider.testStateScopedToBackstack(
     useKeys: Boolean,
     useSwipe: Boolean,
     rememberType: RememberType,
+    decoratorFactory: (Navigator) -> AnimatedNavDecorator.Factory,
+    setContent: (@Composable () -> Unit) -> Unit,
   ) {
     val circuit = createTestCircuit(useKeys = useKeys, rememberType = rememberType)
     setContent {
@@ -88,8 +55,7 @@ class GestureNavigationStateTest {
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,
-          decoratorFactory =
-            remember { IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+          decoratorFactory = remember(navigator) { decoratorFactory(navigator) },
         )
       }
     }
@@ -152,54 +118,12 @@ class GestureNavigationStateTest {
     onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("0")
   }
 
-  @Test
-  fun `stateScopedToBackstack_resetRoots_useKeys-true_useSwipe-false_rememberType-Retained`() {
-    runComposeUiTest {
-      testStateScopedToBackstack_resetRoots(
-        useKeys = true,
-        useSwipe = false,
-        rememberType = RememberType.Retained,
-      )
-    }
-  }
-
-  @Test
-  fun `stateScopedToBackstack_resetRoots_useKeys-true_useSwipe-false_rememberType-Saveable`() {
-    runComposeUiTest {
-      testStateScopedToBackstack_resetRoots(
-        useKeys = true,
-        useSwipe = false,
-        rememberType = RememberType.Saveable,
-      )
-    }
-  }
-
-  @Test
-  fun `stateScopedToBackstack_resetRoots_useKeys-false_useSwipe-false_rememberType-Retained`() {
-    runComposeUiTest {
-      testStateScopedToBackstack_resetRoots(
-        useKeys = false,
-        useSwipe = false,
-        rememberType = RememberType.Retained,
-      )
-    }
-  }
-
-  @Test
-  fun `stateScopedToBackstack_resetRoots_useKeys-false_useSwipe-false_rememberType-Saveable`() {
-    runComposeUiTest {
-      testStateScopedToBackstack_resetRoots(
-        useKeys = false,
-        useSwipe = false,
-        rememberType = RememberType.Saveable,
-      )
-    }
-  }
-
-  fun ComposeUiTest.testStateScopedToBackstack_resetRoots(
+  fun SemanticsNodeInteractionsProvider.testStateScopedToBackstack_resetRoots(
     useKeys: Boolean,
     useSwipe: Boolean,
     rememberType: RememberType,
+    decoratorFactory: (Navigator) -> AnimatedNavDecorator.Factory,
+    setContent: (@Composable () -> Unit) -> Unit,
   ) {
     val circuit =
       createTestCircuit(
@@ -220,8 +144,7 @@ class GestureNavigationStateTest {
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,
-          decoratorFactory =
-            remember { IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+          decoratorFactory = remember(navigator) { decoratorFactory(navigator) },
         )
       }
     }
@@ -312,11 +235,5 @@ class GestureNavigationStateTest {
     // Root Beta should now be active. The top record for Root Beta  is Screen A: (count: 2)
     onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("A")
     onTopNavigationRecordNodeWithTag(TAG_COUNT).assertTextEquals("2")
-  }
-
-  // todo Need an instrument test to have the LocalBackGestureDispatcher setup.
-  //  Revisit testing with swipeRight() after the upstream navigation event changes.
-  private fun ComposeUiTest.pop(@Suppress("unused") useSwipe: Boolean) {
-    onTopNavigationRecordNodeWithTag(TAG_POP).performClick()
   }
 }

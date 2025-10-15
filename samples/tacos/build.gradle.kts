@@ -34,14 +34,16 @@ tasks
 dependencies {
   ksp(projects.circuitCodegen)
 
-  implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.appCompat)
+  implementation(libs.compose.material.icons)
   implementation(libs.compose.material.material3)
-  debugImplementation(libs.compose.ui.tooling)
   implementation(libs.dagger)
-  implementation(projects.circuitFoundation)
   implementation(projects.circuitCodegenAnnotations)
+  implementation(projects.circuitFoundation)
+
+  debugImplementation(libs.compose.ui.tooling)
 
   testImplementation(libs.compose.ui.testing.junit)
   testImplementation(libs.coroutines.test)
@@ -52,6 +54,6 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.circuitTest)
 
-  androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.androidx.test.espresso.core)
+  androidTestImplementation(libs.androidx.test.ext.junit)
 }

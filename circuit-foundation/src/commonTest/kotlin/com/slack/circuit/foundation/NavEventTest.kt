@@ -40,7 +40,9 @@ class NavEventTest {
   @Suppress("DEPRECATION")
   fun onNavEvent_deprecatedResetRoot_callsNavigatorResetRoot() {
     val navigator = FakeNavigator()
-    navigator.onNavEvent(NavEvent.ResetRoot(newRoot = TestScreen, save = true, restore = true))
+    navigator.onNavEvent(
+      NavEvent.ResetRoot(newRoot = TestScreen, saveState = true, restoreState = true)
+    )
     assertEquals(TestScreen, navigator.lastResetRootScreen)
     val options = navigator.lastResetRootOptions!!
     assertTrue(options.save)

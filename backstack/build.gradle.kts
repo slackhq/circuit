@@ -34,10 +34,9 @@ kotlin {
         useKarma {
           useChromeHeadless()
           useConfigDirectory(
-            rootProject.projectDir
-              .resolve("internal-test-utils")
-              .resolve("karma.config.d")
-              .resolve("wasm")
+            rootProject.isolated.projectDirectory
+              .dir("internal-test-utils/karma.config.d/wasm")
+              .asFile
           )
         }
       }

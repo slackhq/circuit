@@ -7,6 +7,7 @@ androidx-compose = "1.9.3"
 agp = "8.13.0"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
+bcv = "0.18.1"
 benchmark = "1.4.1"
 coil = "3.3.0"
 compose-hotReload = "1.0.0-rc02"
@@ -16,8 +17,10 @@ compose-jb-material-icons-core = "1.7.3"
 dagger = "2.57.2"
 datastore = "1.1.7"
 detekt = "1.23.8"
+dg = "0.5.0"
 dokka = "2.0.0"
 eithernet = "2.0.0"
+ewtf = "0.19.3"
 jdk = "23"
 jvmTarget = "11"
 publishedJvmTarget = "11"
@@ -52,21 +55,21 @@ agp-library = { id = "com.android.library", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
-binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
+binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
 compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotReload" }
-dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
+dependencyGuard = { id = "com.dropbox.dependency-guard", version.ref = "dg" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.19.3" }
+emulatorWtf = { id = "wtf.emulator.gradle", version.ref = "ewtf" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-plugin-sam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 metro = { id = "dev.zacsweers.metro", version = "0.6.10" }
@@ -76,7 +79,18 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 [libraries]
-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+gradlePlugins-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+gradlePlugins-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+gradlePlugins-dependencyGuard = { module = "com.dropbox.dependency-guard:dependency-guard", version.ref = "dg" }
+gradlePlugins-anvil = { module = "dev.zacsweers.anvil:gradle-plugin", version.ref = "anvil" }
+gradlePlugins-mavenPublish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "mavenPublish" }
+gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+gradlePlugins-binaryCompatibilityValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bcv" }
+gradlePlugins-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+gradlePlugins-composeCompiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+gradlePlugins-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradlePlugins-emulatorWtf = { module = "wtf.emulator:gradle-plugin", version.ref = "ewtf" }
+
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }

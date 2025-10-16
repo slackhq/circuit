@@ -25,7 +25,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.jakewharton.picnic.TextAlignment
 import com.jakewharton.picnic.table
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.AnsweringBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_POP
@@ -109,17 +109,17 @@ class NavResultTest {
 
   @Test
   fun onlyTheCallerGetsTheResult() {
-    lateinit var backStackRef: SaveableBackStack
+    lateinit var backStackRef: AnsweringBackStack<*>
     composeTestRule.run {
       setContent {
         CircuitCompositionLocals(circuit) {
-          val backStack = rememberSaveableBackStack(WrapperScreen) { backStackRef = this }
+          backStackRef = rememberSaveableBackStack(WrapperScreen)
           val navigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              backStack = backStackRef,
               onRootPop = {}, // no-op for tests
             )
-          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+          NavigableCircuitContent(navigator = navigator, backStack = backStackRef)
         }
       }
 
@@ -131,20 +131,17 @@ class NavResultTest {
     }
   }
 
-  private fun ComposeContentTestRule.setUpTestContent(): SaveableBackStack {
-    lateinit var returnedStack: SaveableBackStack
+  private fun ComposeContentTestRule.setUpTestContent(): AnsweringBackStack<*> {
+    lateinit var returnedStack: AnsweringBackStack<*>
     setContent {
       CircuitCompositionLocals(circuit) {
-        val backStack =
-          rememberSaveableBackStack(TestResultScreen("root", answer = false)) {
-            returnedStack = this
-          }
+        returnedStack = rememberSaveableBackStack(TestResultScreen("root", answer = false))
         val navigator =
           rememberCircuitNavigator(
-            backStack = backStack,
+            backStack = returnedStack,
             onRootPop = {}, // no-op for tests
           )
-        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        NavigableCircuitContent(navigator = navigator, backStack = returnedStack)
       }
     }
     return returnedStack
@@ -204,7 +201,7 @@ class NavResultTest {
     }
   }
 
-  private fun ComposeContentTestRule.dumpState(backStack: SaveableBackStack) {
+  private fun ComposeContentTestRule.dumpState(backStack: AnsweringBackStack<*>) {
     val state = buildString {
       appendLine("BackStack:")
       appendLine("  size: ${backStack.size}")
@@ -237,7 +234,7 @@ class NavResultTest {
                   """
                     ${record.screen::class.simpleName}
                     input=${(record.screen as? TestResultScreen)?.input}
-                    ⬅ expectingResult=${record.expectingResult()}
+                    ⬅ expectingResult=${backStack.expectingResult(record.key)}
                     value=${if (i == 0) getCurrentText() else "undefined"}
                   """
                     .trimIndent()
@@ -319,10 +316,12 @@ class TestResultPresenter(private val navigator: Navigator, private val screen: 
  */
 @Composable
 fun UnscrupulousResultListenerEffect() {
-  val record = LocalBackStack.current!!.topRecord!!
+  val backStack = LocalBackStack.current!!
   LaunchedEffect(Unit) {
-    record.awaitResult("a key that definitely doesn't match")?.let {
-      error("This should never be called")
+    if (backStack is AnsweringBackStack<*>) {
+      backStack
+        .awaitResult(backStack.topRecord?.key!!, "a key that definitely doesn't match")
+        ?.let { error("This should never be called") }
     }
   }
 }

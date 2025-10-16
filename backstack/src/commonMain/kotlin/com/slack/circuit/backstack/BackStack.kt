@@ -146,15 +146,6 @@ public interface BackStack<R : Record> : Iterable<R> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
-
-    /**
-     * Awaits a [PopResult] produced by the record that previously sat on top of the stack above
-     * this one. Returns null if no result was produced.
-     *
-     * @param key The key that was used to tag the result. This ensures that only the caller that
-     *   requested a result when pushing the previous record can receive it.
-     */
-    public suspend fun awaitResult(key: String): PopResult?
   }
 }
 

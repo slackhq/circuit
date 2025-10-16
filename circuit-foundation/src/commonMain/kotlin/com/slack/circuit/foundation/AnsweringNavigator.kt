@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.slack.circuit.backstack.AnsweringBackStack
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
@@ -116,7 +117,9 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   // Collect the result if we've launched and now returned to the initial record
   if (launched && currentTopRecordKey == initialRecordKey) {
     LaunchedEffect(key) {
-      val result = currentBackStack.topRecord!!.awaitResult(key) ?: return@LaunchedEffect
+      val topRecord = currentBackStack.topRecord ?: return@LaunchedEffect
+      val answeringBackStack = (currentBackStack as? AnsweringBackStack) ?: return@LaunchedEffect
+      val result = answeringBackStack.awaitResult(topRecord.key, key) ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)

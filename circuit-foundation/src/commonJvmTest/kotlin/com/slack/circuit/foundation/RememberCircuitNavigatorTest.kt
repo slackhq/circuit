@@ -126,8 +126,5 @@ private class FakeBackStack : BackStack<BackStack.Record> {
   }
 
   class FakeBackStackRecord(override val key: String, override val screen: Screen) :
-    BackStack.Record {
-
-    override suspend fun awaitResult(key: String): PopResult? = null
-  }
+    BackStack.Record
 }

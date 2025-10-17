@@ -39,6 +39,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
@@ -145,7 +146,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         val currentScreen = state.navItems[currentTabIndex].screen
         val topScreen = backStack.topRecord?.screen
         if (topScreen != currentScreen) {
-          navigator.resetRoot(currentScreen, saveState = true, restoreState = true)
+          navigator.resetRoot(currentScreen, StateOptions.SaveAndRestore)
         }
       }
 

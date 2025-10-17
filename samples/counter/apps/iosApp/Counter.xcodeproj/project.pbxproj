@@ -12,17 +12,12 @@
 		EA5CD5D82B473FB200CA7518 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA5CD5D72B473FB200CA7518 /* Assets.xcassets */; };
 		EA5CD5DC2B473FB200CA7518 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA5CD5DB2B473FB200CA7518 /* Preview Assets.xcassets */; };
 		EA5CD5E62B473FB200CA7518 /* CounterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5CD5E52B473FB200CA7518 /* CounterTests.swift */; };
+		EAE08B672E8A00B000BD5063 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = EAE08B662E8A00B000BD5063 /* KMPNativeCoroutinesAsync */; };
+		EAE08B692E8A00B000BD5063 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = EAE08B682E8A00B000BD5063 /* KMPNativeCoroutinesCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		EA5CD5E22B473FB200CA7518 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EA5CD5C82B473FB100CA7518 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EA5CD5CF2B473FB100CA7518;
-			remoteInfo = Counter;
-		};
-		EA5CD5EC2B473FB200CA7518 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA5CD5C82B473FB100CA7518 /* Project object */;
 			proxyType = 1;
@@ -47,17 +42,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAE08B692E8A00B000BD5063 /* KMPNativeCoroutinesCore in Frameworks */,
+				EAE08B672E8A00B000BD5063 /* KMPNativeCoroutinesAsync in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EA5CD5DE2B473FB200CA7518 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EA5CD5E82B473FB200CA7518 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -169,10 +159,6 @@
 						CreatedOnToolsVersion = 15.1;
 						TestTargetID = EA5CD5CF2B473FB100CA7518;
 					};
-					EA5CD5EA2B473FB200CA7518 = {
-						CreatedOnToolsVersion = 15.1;
-						TestTargetID = EA5CD5CF2B473FB100CA7518;
-					};
 				};
 			};
 			buildConfigurationList = EA5CD5CB2B473FB100CA7518 /* Build configuration list for PBXProject "Counter" */;
@@ -184,6 +170,9 @@
 				Base,
 			);
 			mainGroup = EA5CD5C72B473FB100CA7518;
+			packageReferences = (
+				EAE08B652E8A00B000BD5063 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+			);
 			productRefGroup = EA5CD5D12B473FB100CA7518 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -205,13 +194,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EA5CD5DF2B473FB200CA7518 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EA5CD5E92B473FB200CA7518 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -265,11 +247,6 @@
 			isa = PBXTargetDependency;
 			target = EA5CD5CF2B473FB100CA7518 /* Counter */;
 			targetProxy = EA5CD5E22B473FB200CA7518 /* PBXContainerItemProxy */;
-		};
-		EA5CD5ED2B473FB200CA7518 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EA5CD5CF2B473FB100CA7518 /* Counter */;
-			targetProxy = EA5CD5EC2B473FB200CA7518 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -541,6 +518,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EAE08B652E8A00B000BD5063 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EAE08B662E8A00B000BD5063 /* KMPNativeCoroutinesAsync */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAE08B652E8A00B000BD5063 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
+		};
+		EAE08B682E8A00B000BD5063 /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAE08B652E8A00B000BD5063 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EA5CD5C82B473FB100CA7518 /* Project object */;
 }

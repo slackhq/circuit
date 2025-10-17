@@ -57,9 +57,8 @@ internal interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
  * A factory for creating a [ViewModel] that implements [UpdatableRetainedStateRegistry] for
  * [lifecycleRetainedStateRegistry].
  */
-internal interface ViewModelRetainedStateRegistryFactory<T> where
-T : ViewModel,
-T : UpdatableRetainedStateRegistry {
+internal interface ViewModelRetainedStateRegistryFactory<T>
+  where T : ViewModel, T : UpdatableRetainedStateRegistry {
   fun create(modelClass: KClass<T>, extras: CreationExtras? = null): T
 }
 

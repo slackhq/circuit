@@ -12,7 +12,7 @@ plugins {
 android {
   namespace = "com.slack.circuit.tutorial"
   defaultConfig {
-    minSdk = 21
+    minSdk = 23
     targetSdk = 36
   }
 }
@@ -44,8 +44,6 @@ kotlin {
         implementation(libs.androidx.activity.ktx)
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
-        implementation(libs.bundles.compose.ui)
-        implementation(libs.material)
       }
     }
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }

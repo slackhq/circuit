@@ -19,6 +19,8 @@ androidx.compose.foundation:foundation-layout-android
 androidx.compose.foundation:foundation-layout
 androidx.compose.foundation:foundation
 androidx.compose.runtime:runtime-android
+androidx.compose.runtime:runtime-annotation-android
+androidx.compose.runtime:runtime-annotation
 androidx.compose.runtime:runtime-saveable-android
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
@@ -61,6 +63,8 @@ androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.profileinstaller:profileinstaller
 androidx.savedstate:savedstate-android
+androidx.savedstate:savedstate-compose-android
+androidx.savedstate:savedstate-compose
 androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
@@ -77,7 +81,6 @@ org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
-org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation
 org.jetbrains.compose.annotation-internal:annotation
@@ -94,7 +97,6 @@ org.jetbrains.compose.ui:ui-text
 org.jetbrains.compose.ui:ui-unit
 org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
-org.jetbrains.kotlin:kotlin-android-extensions-runtime
 org.jetbrains.kotlin:kotlin-bom
 org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib

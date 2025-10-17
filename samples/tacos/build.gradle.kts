@@ -14,9 +14,6 @@ plugins {
 
 android {
   namespace = "com.slack.circuit.tacos"
-
-  defaultConfig { minSdk = 28 }
-
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
@@ -37,18 +34,18 @@ tasks
 dependencies {
   ksp(projects.circuitCodegen)
 
-  implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.appCompat)
-  implementation(libs.androidx.compose.integration.materialThemeAdapter)
-  implementation(libs.androidx.compose.material.material3)
-  debugImplementation(libs.androidx.compose.ui.tooling)
-  implementation(libs.bundles.compose.ui)
+  implementation(libs.compose.material.icons)
+  implementation(libs.compose.material.material3)
   implementation(libs.dagger)
-  implementation(projects.circuitFoundation)
   implementation(projects.circuitCodegenAnnotations)
+  implementation(projects.circuitFoundation)
 
-  testImplementation(libs.androidx.compose.ui.testing.junit)
+  debugImplementation(libs.compose.ui.tooling)
+
+  testImplementation(libs.compose.ui.testing.junit)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.molecule.runtime)
@@ -57,6 +54,6 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.circuitTest)
 
-  androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.androidx.test.espresso.core)
+  androidTestImplementation(libs.androidx.test.ext.junit)
 }

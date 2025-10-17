@@ -5,6 +5,7 @@ GEM
       base64
       nkf
       rexml
+    abbrev (0.1.2)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     artifactory (3.0.17)
@@ -40,6 +41,7 @@ GEM
     domain_name (0.6.20240107)
     dotenv (2.8.1)
     emoji_regex (3.2.3)
+    erb (5.1.1)
     excon (0.112.0)
     faraday (1.10.4)
       faraday-em_http (~> 1.0)
@@ -172,6 +174,7 @@ GEM
     nkf (0.2.0)
     optparse (0.6.0)
     os (1.1.4)
+    ostruct (0.6.3)
     plist (3.7.2)
     public_suffix (5.1.1)
     rake (13.3.0)
@@ -224,8 +227,13 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  abbrev
+  erb
   fastlane
   fastlane-plugin-swiftformat
+  logger
+  mutex_m
+  ostruct
 
 BUNDLED WITH
    2.5.3

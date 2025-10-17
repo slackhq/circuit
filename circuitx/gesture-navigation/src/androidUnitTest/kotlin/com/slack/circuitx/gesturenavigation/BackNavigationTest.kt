@@ -4,7 +4,6 @@ package com.slack.circuitx.gesturenavigation
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -19,7 +18,6 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.internal.test.TestContent
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
@@ -28,6 +26,7 @@ import com.slack.circuit.internal.test.TestEvent
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
@@ -39,10 +38,7 @@ import org.robolectric.annotation.Config
 
 @Config(minSdk = 34)
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class BackNavigationTest(
-  private val decoration: (() -> Unit) -> AnimatedNavDecorator.Factory,
-  private val androidNavigator: Boolean,
-) {
+class BackNavigationTest(private val androidNavigator: Boolean) {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
@@ -67,7 +63,8 @@ class BackNavigationTest(
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoratorFactory = remember { decoration(navigator::pop) },
+            decoratorFactory =
+              remember { AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
           )
         }
       }
@@ -91,38 +88,12 @@ class BackNavigationTest(
     }
   }
 
-  @OptIn(ExperimentalMaterialApi::class)
   companion object {
 
-    class Provider(
-      private val name: String,
-      private val decoratorFactory: (() -> Unit) -> AnimatedNavDecorator.Factory,
-    ) : (() -> Unit) -> AnimatedNavDecorator.Factory {
-      override fun invoke(onBackInvoked: () -> Unit): AnimatedNavDecorator.Factory {
-        return decoratorFactory(onBackInvoked)
-      }
-
-      override fun toString(): String = name
-    }
-
     @JvmStatic
-    @ParameterizedRobolectricTestRunner.Parameters(name = "decoration={0}, androidNavigator={1}")
-    fun params(): List<Array<Any>> {
-      val cupertino =
-        Provider("Cupertino") { onBackInvoked: () -> Unit ->
-          CupertinoGestureNavigationDecorator.Factory(onBackInvoked = onBackInvoked)
-        }
-      val android =
-        Provider("Android") { onBackInvoked: () -> Unit ->
-          AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = onBackInvoked)
-        }
-
-      return listOf(
-        arrayOf(cupertino, true),
-        arrayOf(cupertino, false),
-        arrayOf(android, true),
-        arrayOf(android, false),
-      )
+    @ParameterizedRobolectricTestRunner.Parameters(name = "androidNavigator={0}")
+    fun params(): List<Any> {
+      return listOf(true, false)
     }
   }
 }
@@ -179,9 +150,19 @@ class TestCountBackPresenter(
           }
         }
         TestEvent.ResetRootAlpha ->
-          navigator.resetRoot(TestScreen.RootAlpha, true, restoreStateOnRootChange)
+          navigator.resetRoot(
+            TestScreen.RootAlpha,
+            StateOptions(save = true, restore = restoreStateOnRootChange, clear = false),
+          )
         TestEvent.ResetRootBeta ->
-          navigator.resetRoot(TestScreen.RootBeta, saveStateOnRootChange, restoreStateOnRootChange)
+          navigator.resetRoot(
+            TestScreen.RootBeta,
+            StateOptions(
+              save = saveStateOnRootChange,
+              restore = restoreStateOnRootChange,
+              clear = false,
+            ),
+          )
       }
     }
   }

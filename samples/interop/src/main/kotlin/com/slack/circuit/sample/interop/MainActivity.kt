@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -157,7 +157,7 @@ private fun SourceMenu(
       trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
       colors = ExposedDropdownMenuDefaults.textFieldColors(),
       modifier =
-        Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
+        Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
           .testTag(TestTags.currentSourceFor(label)),
     )
     ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

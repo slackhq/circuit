@@ -10,6 +10,8 @@ androidx.collection:collection-jvm
 androidx.collection:collection-ktx
 androidx.collection:collection
 androidx.compose.runtime:runtime-android
+androidx.compose.runtime:runtime-annotation-android
+androidx.compose.runtime:runtime-annotation
 androidx.compose.runtime:runtime-saveable-android
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
@@ -52,6 +54,8 @@ androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.profileinstaller:profileinstaller
 androidx.savedstate:savedstate-android
+androidx.savedstate:savedstate-compose-android
+androidx.savedstate:savedstate-compose
 androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
@@ -64,7 +68,6 @@ org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
-org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.annotation-internal:annotation
 org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-saveable

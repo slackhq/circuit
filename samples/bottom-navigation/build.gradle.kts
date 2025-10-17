@@ -13,11 +13,6 @@ plugins {
 
 android {
   namespace = "com.slack.circuit.sample.navigation"
-  defaultConfig {
-    minSdk = 21
-    // TODO update once robolectric supports 36
-    targetSdk = 35
-  }
   testOptions { unitTests { isIncludeAndroidResources = true } }
 }
 
@@ -39,10 +34,10 @@ kotlin {
     commonMain {
       dependencies {
         implementation(libs.compose.foundation)
+        implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material3)
         implementation(libs.compose.material.material3.adaptive)
         implementation(libs.compose.material.material3.adaptive.layout)
-        implementation(libs.compose.material.icons)
         implementation(libs.compose.ui.backhandler)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitx.gestureNavigation)
@@ -55,14 +50,12 @@ kotlin {
         implementation(libs.androidx.activity.ktx)
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
-        implementation(libs.bundles.compose.ui)
         implementation(libs.compose.ui.tooling.preview)
-        implementation(libs.material)
       }
     }
     androidUnitTest {
       dependencies {
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
         implementation(libs.robolectric)
         implementation(libs.androidx.test.espresso.core)

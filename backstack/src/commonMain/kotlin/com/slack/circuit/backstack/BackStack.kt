@@ -16,6 +16,7 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -96,6 +97,21 @@ public interface BackStack<R : Record> : Iterable<R> {
   public fun restoreState(screen: Screen): Boolean
 
   /**
+   * Peek at the [Screen] in the internal state store that have been saved using [saveState].
+   *
+   * @return The list of [Screen]s currently in the internal state store, will be empty if there is
+   *   no saved state.
+   */
+  public fun peekState(): List<Screen>
+
+  /**
+   * Removes the state associated with the given [screen] from the internal state store.
+   *
+   * @return true if the state was removed, false if no state was found for the given screen.
+   */
+  public fun removeState(screen: Screen): Boolean
+
+  /**
    * Whether the back stack contains the given [record].
    *
    * @param includeSaved Whether to also check if the record is contained by any saved back stack
@@ -149,3 +165,12 @@ public val BackStack<out Record>.isEmpty: Boolean
 /** `true` if the [BackStack] contains exactly one record. */
 public val BackStack<out Record>.isAtRoot: Boolean
   get() = size == 1
+
+/** Clear any saved state from the [BackStack]. */
+public fun BackStack<out Record>.clearState() {
+  Snapshot.withMutableSnapshot {
+    for (screen in peekState()) {
+      removeState(screen)
+    }
+  }
+}

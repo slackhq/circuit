@@ -13,58 +13,53 @@ plugins {
 kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
-  jvm()
+  jvm { testRuns["test"].executionTask.configure { enabled = false } }
   iosX64()
   iosArm64()
   iosSimulatorArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser { testTask { enabled = false } }
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser { testTask { enabled = false } }
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
-        // For CupertinoGestureNavigationDecoration
-        implementation(libs.compose.material.material)
         implementation(libs.compose.ui.backhandler)
       }
     }
 
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
+    commonTest {
+      dependencies {
+        implementation(libs.compose.ui.test)
+        implementation(libs.kotlin.test)
+        implementation(projects.circuitTest)
+        implementation(projects.internalTestUtils)
+      }
+    }
 
     androidMain {
       dependencies {
         api(libs.compose.material.material3)
-        implementation(libs.compose.uiUtil)
+        implementation(libs.compose.ui.util)
         implementation(libs.androidx.activity.compose)
       }
     }
 
     androidUnitTest {
       dependencies {
-        implementation(projects.internalTestUtils)
-
         implementation(libs.robolectric)
-        implementation(libs.androidx.compose.foundation)
-        implementation(libs.androidx.compose.ui.testing.junit)
+        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }

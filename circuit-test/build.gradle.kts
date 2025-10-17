@@ -39,13 +39,7 @@ kotlin {
     }
   }
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -58,9 +52,6 @@ kotlin {
       }
     }
 
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
-
     commonTest { dependencies { implementation(libs.coroutines.test) } }
 
     val commonJvmTest =
@@ -70,7 +61,7 @@ kotlin {
           implementation(libs.junit)
           implementation(libs.truth)
           implementation(libs.testing.testParameterInjector)
-          implementation(project(":internal-test-utils"))
+          implementation(projects.internalTestUtils)
         }
       }
     jvmTest { dependsOn(commonJvmTest) }

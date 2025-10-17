@@ -112,8 +112,7 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
   NavigationInterceptor {
   override fun resetRoot(
     newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
+    options: Navigator.StateOptions
   ): InterceptedResetRootResult {
     return when (newRoot) {
       is PrimaryScreen,
@@ -122,7 +121,7 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
       }
       else -> {
         eventSink.value(
-          ContentEvent.OnNavEvent(NavEvent.ResetRoot(newRoot, saveState, restoreState))
+          ContentEvent.OnNavEvent(NavEvent.ResetRoot(newRoot, options))
         )
         SuccessConsumed
       }

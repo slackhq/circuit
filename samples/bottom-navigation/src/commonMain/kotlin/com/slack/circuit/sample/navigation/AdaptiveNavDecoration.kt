@@ -37,6 +37,7 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.retained.rememberRetainedSaveable
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
@@ -86,11 +87,7 @@ class AdaptiveNavState : NavigationInterceptor {
     isOpen = false
   }
 
-  override fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean,
-    restoreState: Boolean,
-  ): InterceptedResetRootResult {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): InterceptedResetRootResult {
     isOpen = false
     return Skipped
   }

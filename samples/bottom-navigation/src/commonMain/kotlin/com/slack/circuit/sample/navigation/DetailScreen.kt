@@ -31,7 +31,6 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
-import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 
 @Parcelize data class DetailScreen(val primary: TabScreen) : SecondaryScreen
 
@@ -50,15 +49,13 @@ sealed interface DetailEvent : CircuitUiEvent {
 fun DetailUi(state: DetailState, screen: DetailScreen, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
     Card(
-      modifier =
-        modifier
-          .padding(8.dp)
-          .fillMaxSize()
+      modifier = modifier.padding(8.dp).fillMaxSize()
       // todo Only do this when content is not side by si
-//          .sharedBounds(
-//            sharedContentState = rememberSharedContentState(key = "${screen.primary}-details"),
-//            animatedVisibilityScope = requireAnimatedScope(Navigation),
-//          )
+      //          .sharedBounds(
+      //            sharedContentState = rememberSharedContentState(key =
+      // "${screen.primary}-details"),
+      //            animatedVisibilityScope = requireAnimatedScope(Navigation),
+      //          )
     ) {
       Row(
         modifier = Modifier.padding(horizontal = 16.dp),

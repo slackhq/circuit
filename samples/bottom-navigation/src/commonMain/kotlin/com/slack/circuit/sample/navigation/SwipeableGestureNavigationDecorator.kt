@@ -1,3 +1,5 @@
+// Copyright (C) 2025 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
 import androidx.compose.animation.AnimatedContentScope
@@ -124,11 +126,12 @@ class SwipeableGestureNavigationDecorator<T : NavArgument>(
       state = dismissState,
       swipeEnabled = swipeEnabled,
       content = { innerContent(targetState.args.first()) },
-      modifier = Modifier.run {
-        if (isOpenedScreen) {
-          pointerInput(Unit) {}
-        } else this
-      }
+      modifier =
+        Modifier.run {
+          if (isOpenedScreen) {
+            pointerInput(Unit) {}
+          } else this
+        },
     )
   }
 

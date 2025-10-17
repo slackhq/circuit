@@ -12,6 +12,7 @@ coil = "3.3.0"
 compose-hotReload = "1.0.0-rc02"
 compose-jb = "1.9.1"
 compose-jb-material3 = "1.9.0"
+compose-jb-adaptive = "1.1.2"
 compose-jb-material-icons-core = "1.7.3"
 dagger = "2.57.2"
 datastore = "1.1.7"
@@ -120,6 +121,8 @@ compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", v
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-jb-material-icons-core" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb-material3" }
+compose-material-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "compose-jb-adaptive" }
+compose-material-material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "compose-jb-adaptive" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }

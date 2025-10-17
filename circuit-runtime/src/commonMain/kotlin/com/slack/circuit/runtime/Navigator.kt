@@ -126,11 +126,11 @@ public fun Navigator.resetRoot(
   newRoot: Screen,
   saveState: Boolean = false,
   restoreState: Boolean = false,
-  clear: Boolean = false,
+  clearState: Boolean = false,
 ): List<Screen> =
   resetRoot(
     newRoot = newRoot,
-    options = Navigator.StateOptions(save = saveState, restore = restoreState, clear = clear),
+    options = Navigator.StateOptions(save = saveState, restore = restoreState, clear = clearState),
   )
 
 /**

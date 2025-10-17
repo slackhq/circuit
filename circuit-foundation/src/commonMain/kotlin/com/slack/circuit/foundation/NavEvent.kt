@@ -34,9 +34,9 @@ public sealed interface NavEvent : CircuitUiEvent {
     /** Alternate parameter based constructor. */
     public constructor(
       newRoot: Screen,
-      save: Boolean = false,
-      restore: Boolean = false,
-      clear: Boolean = false,
-    ) : this(newRoot, StateOptions(save = save, restore = restore, clear = clear))
+      saveState: Boolean = false,
+      restoreState: Boolean = false,
+      clearState: Boolean = false,
+    ) : this(newRoot, StateOptions(save = saveState, restore = restoreState, clear = clearState))
   }
 }

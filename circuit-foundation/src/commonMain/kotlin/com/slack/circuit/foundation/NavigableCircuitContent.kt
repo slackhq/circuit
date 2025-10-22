@@ -70,7 +70,33 @@ public fun <R : Record> NavigableCircuitContent(
   backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
-  answeringResultHandler: AnsweringResultHandler = rememberAnsweringResultHandler(),
+  providedValues: Map<out Record, ProvidedValues> = emptyMap(),
+  decoration: NavDecoration = circuit.defaultNavDecoration,
+  decoratorFactory: AnimatedNavDecorator.Factory? = null,
+  unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuit.onUnavailableContent,
+) {
+  NavigableCircuitContent(
+    navigator = navigator,
+    backStack = backStack,
+    modifier = modifier,
+    circuit = circuit,
+    answeringResultHandler = rememberAnsweringResultHandler(),
+    providedValues = providedValues,
+    decoration = decoration,
+    decoratorFactory = decoratorFactory,
+    unavailableRoute = unavailableRoute,
+  )
+}
+
+@ExperimentalCircuitApi // For AnsweringResultHandler
+@Composable
+public fun <R : Record> NavigableCircuitContent(
+  navigator: Navigator,
+  backStack: BackStack<R>,
+  answeringResultHandler: AnsweringResultHandler,
+  modifier: Modifier = Modifier,
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: Map<out Record, ProvidedValues> = emptyMap(),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   decoratorFactory: AnimatedNavDecorator.Factory? = null,
@@ -177,6 +203,7 @@ public fun <R : Record> NavigableCircuitContent(
 }
 
 /** [Navigator] that sends pending results to the [answeringResultHandler] when popped. */
+@ExperimentalCircuitApi
 private class AnsweringResultNavigator<R : Record>(
   private val navigator: Navigator,
   private val backStack: BackStack<R>,
@@ -502,6 +529,7 @@ public val LocalBackStack: ProvidableCompositionLocal<BackStack<out Record>?> = 
  * testing of [rememberAnsweringNavigator] APIs. As such, it's public but annotated as
  * [DelicateCircuitFoundationApi].
  */
+@OptIn(ExperimentalCircuitApi::class)
 @DelicateCircuitFoundationApi
 public val LocalAnsweringResultHandler: ProvidableCompositionLocal<AnsweringResultHandler?> =
   compositionLocalOf {

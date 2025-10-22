@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -26,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
  * Returns whether or not answering navigation is available. This is essentially a proxy for whether
  * or not this composition is running within a [NavigableCircuitContent].
  */
+@OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun answeringNavigationAvailable(): Boolean =
   LocalBackStack.current != null && LocalAnsweringResultHandler.current != null
@@ -44,6 +46,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
  * Returns a [GoToNavigator] that answers with the given [resultType] or defaults to
  * [fallbackNavigator] if no back stack is available to pass results through.
  */
+@OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
@@ -59,6 +62,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
  * more information.
  */
+@ExperimentalCircuitApi
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
@@ -94,6 +98,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
  * navigator.pop(PickPhotoScreen.Result(...))
  * ```
  */
+@ExperimentalCircuitApi
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,

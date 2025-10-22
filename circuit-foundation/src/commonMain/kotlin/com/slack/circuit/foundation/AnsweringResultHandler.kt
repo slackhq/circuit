@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.PopResult
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -20,6 +21,7 @@ import kotlinx.coroutines.channels.Channel
  * This manages the state needed for records to send and receive [PopResult]s when navigating
  * between screens with [rememberAnsweringNavigator].
  */
+@ExperimentalCircuitApi
 @Composable
 public fun rememberAnsweringResultHandler(): AnsweringResultHandler =
   rememberSaveable(saver = AnsweringResultHandler.Saver) { AnsweringResultHandler() }
@@ -31,6 +33,7 @@ public fun rememberAnsweringResultHandler(): AnsweringResultHandler =
  * between screens. It maintains channels for each record key and tracks which results each record
  * is expecting.
  */
+@ExperimentalCircuitApi()
 public class AnsweringResultHandler {
   private val recordStates = mutableMapOf<String, RecordResultState>()
 

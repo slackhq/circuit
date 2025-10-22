@@ -17,7 +17,6 @@ package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
@@ -25,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.backstack.SaveableBackStack.Record
-import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
@@ -42,14 +40,8 @@ import kotlin.uuid.Uuid
 public fun rememberSaveableBackStack(
   root: Screen,
   init: SaveableBackStack.() -> Unit = {},
-): AnsweringBackStack<Record> {
-  val backStack =
-    rememberSaveable(root, saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
-  val resultHandler = rememberSaveable(saver = ResultHandler.Saver) { ResultHandler() }
-  return remember(backStack, resultHandler) {
-    DelegatingAnsweringBackStack(backStack, resultHandler)
-  }
-}
+): SaveableBackStack =
+  rememberSaveable(root, saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
 
 /**
  * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
@@ -57,19 +49,14 @@ public fun rememberSaveableBackStack(
  * [initialScreens] must not be empty. If [initialScreens] changes, a new backstack will be created.
  */
 @Composable
-public fun rememberSaveableBackStack(initialScreens: List<Screen>): AnsweringBackStack<Record> {
+public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
-  val backStack =
-    rememberSaveable(initialScreens, saver = SaveableBackStack.Saver) {
-      SaveableBackStack().apply {
-        for (screen in initialScreens) {
-          push(screen)
-        }
+  return rememberSaveable(initialScreens, saver = SaveableBackStack.Saver) {
+    SaveableBackStack().apply {
+      for (screen in initialScreens) {
+        push(screen)
       }
     }
-  val resultHandler = rememberSaveable(saver = ResultHandler.Saver) { ResultHandler() }
-  return remember(backStack, resultHandler) {
-    DelegatingAnsweringBackStack(backStack, resultHandler)
   }
 }
 
@@ -101,15 +88,15 @@ internal constructor(
   override val rootRecord: Record?
     get() = entryList.lastOrNull()
 
-  public override fun push(screen: Screen, resultKey: String?): Boolean {
-    return push(screen, emptyMap(), resultKey)
+  public override fun push(screen: Screen): Boolean {
+    return push(screen, emptyMap())
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>, resultKey: String?): Boolean {
-    return push(Record(screen, args), resultKey)
+  public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
+    return push(Record(screen, args))
   }
 
-  public override fun push(record: Record, resultKey: String?): Boolean {
+  public override fun push(record: Record): Boolean {
     val topRecord = Snapshot.withoutReadObservation { topRecord }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
@@ -119,7 +106,7 @@ internal constructor(
     } else false
   }
 
-  override fun pop(result: PopResult?): Record? {
+  override fun pop(): Record? {
     return Snapshot.withoutReadObservation { entryList.removeFirstOrNull() }
   }
 

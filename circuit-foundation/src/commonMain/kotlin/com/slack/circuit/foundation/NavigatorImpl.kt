@@ -128,8 +128,7 @@ internal class NavigatorImpl(
       onRootPop(result)
       return null
     }
-
-    return backStack.pop(result)?.screen
+    return backStack.pop()?.screen
   }
 
   override fun peek(): Screen? = backStack.firstOrNull()?.screen

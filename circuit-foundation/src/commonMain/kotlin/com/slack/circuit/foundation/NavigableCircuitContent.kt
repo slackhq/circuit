@@ -48,6 +48,7 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
@@ -55,6 +56,7 @@ import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateHolder
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateRegistry
 import com.slack.circuit.runtime.ExperimentalCircuitApi
@@ -63,6 +65,56 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
+/**
+ * A composable that provides the core navigation and state management for Circuit-based navigation
+ * systems. It manages the rendering of screens from a backstack, handles navigation transitions,
+ * and coordinates result passing between screens when navigating backward. This is the primary
+ * entry point for creating navigable content surfaces in Circuit.
+ *
+ * ## Features
+ * - **State Management**: Manages saveable and retained state for each screen in the backstack with
+ *   automatic preservation across configuration changes
+ * - **Navigation Transitions**: Handles animated transitions between screens using [NavDecoration]
+ *   or custom [AnimatedNavDecorator]
+ * - **Result Handling**: Automatically manages screen results when using
+ *   [rememberAnsweringNavigator] to pass data back from child screens
+ *
+ * ## Usage
+ *
+ * ```kotlin
+ * setContent {
+ *   val backStack = rememberSaveableBackStack(root = HomeScreen)
+ *   val navigator = rememberCircuitNavigator(backStack)
+ *   NavigableCircuitContent(navigator, backStack)
+ * }
+ * ```
+ *
+ * ## State Management
+ * This creates an isolated retained state registry for the navigation graph to ensure proper state
+ * preservation across configuration changes when using [rememberRetained]. This prevents state loss
+ * for off-screen backstack records, even when they're not actively composed. See the implementation
+ * comments for technical details.
+ *
+ * @param navigator The [Navigator] used to handle navigation events. Typically created via
+ *   [rememberCircuitNavigator].
+ * @param backStack The [BackStack] containing the stack of [Record]s to display. Must have at least
+ *   one record. Typically created via [rememberSaveableBackStack].
+ * @param modifier The [Modifier] to apply to the content.
+ * @param circuit The [Circuit] instance providing UI factories and configuration. Defaults to
+ *   [LocalCircuit].
+ * @param providedValues Optional map of [ProvidedValues] to make available to specific records in
+ *   the backstack. These values will be provided via composition locals when the corresponding
+ *   record is displayed.
+ * @param decoration The [NavDecoration] used to decorate navigation transitions. Defaults to the
+ *   circuit's default decoration.
+ * @param decoratorFactory Optional [AnimatedNavDecorator.Factory] to create custom animated
+ *   transitions. If provided, takes precedence over [decoration].
+ * @param unavailableRoute A composable function invoked when a screen cannot be rendered (e.g., no
+ *   UI factory available). Defaults to the circuit's [Circuit.onUnavailableContent].
+ * @see rememberAnsweringNavigator for requesting results from child screens
+ * @see rememberSaveableBackStack for creating a backstack
+ * @see rememberCircuitNavigator for creating a navigator
+ */
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun <R : Record> NavigableCircuitContent(
@@ -89,6 +141,21 @@ public fun <R : Record> NavigableCircuitContent(
   )
 }
 
+/**
+ * An experimental variant of [NavigableCircuitContent] that exposes [answeringResultHandler] for a
+ * a [AnsweringResultHandler] to be provided.
+ *
+ * ## Usage
+ *
+ * ```kotlin
+ * setContent {
+ *   val backStack = rememberSaveableBackStack(root = HomeScreen)
+ *   val navigator = rememberCircuitNavigator(backStack)
+ *   val answeringResultHandler = rememberAnsweringResultHandler()
+ *   NavigableCircuitContent(navigator, backStack, answeringResultHandler)
+ * }
+ * ```
+ */
 @ExperimentalCircuitApi // For AnsweringResultHandler
 @Composable
 public fun <R : Record> NavigableCircuitContent(

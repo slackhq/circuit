@@ -13,7 +13,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.ResultHandler
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -29,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
  */
 @Composable
 public fun answeringNavigationAvailable(): Boolean =
-  LocalBackStack.current != null && LocalResultHandler.current != null
+  LocalBackStack.current != null && LocalAnsweringResultHandler.current != null
 
 /**
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
@@ -52,7 +51,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
   val backStack = LocalBackStack.current ?: return fallbackNavigator
-  val resultHandler = LocalResultHandler.current ?: return fallbackNavigator
+  val resultHandler = LocalAnsweringResultHandler.current ?: return fallbackNavigator
   return rememberAnsweringNavigator(backStack, resultHandler, resultType, block)
 }
 
@@ -63,10 +62,10 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
-  resultHandler: ResultHandler,
+  answeringResultHandler: AnsweringResultHandler,
   noinline block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
-  return rememberAnsweringNavigator(backStack, resultHandler, T::class, block)
+  return rememberAnsweringNavigator(backStack, answeringResultHandler, T::class, block)
 }
 
 /**
@@ -98,7 +97,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
-  resultHandler: ResultHandler,
+  answeringResultHandler: AnsweringResultHandler,
   resultType: KClass<T>,
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
@@ -124,7 +123,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val currentTopRecord = currentTopRecordState
   if (launched && currentTopRecord != null && currentTopRecord.key == initialRecordKey) {
     LaunchedEffect(key) {
-      val result = resultHandler.awaitResult(currentTopRecord.key, key) ?: return@LaunchedEffect
+      val result = answeringResultHandler.awaitResult(currentTopRecord.key, key) ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
@@ -139,7 +138,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
         if (success) {
           // Clear the cached pending result from the previous top record
           if (previousTopRecord != null) {
-            resultHandler.prepareForResult(previousTopRecord.key, key)
+            answeringResultHandler.prepareForResult(previousTopRecord.key, key)
           }
           launched = true
         }

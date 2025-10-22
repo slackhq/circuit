@@ -37,19 +37,17 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
-import com.slack.circuit.backstack.DelegatingAnsweringBackStack
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
-import com.slack.circuit.backstack.ResultHandler
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
-import com.slack.circuit.backstack.rememberResultHandler
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
@@ -62,6 +60,7 @@ import com.slack.circuit.retained.rememberRetainedStateRegistry
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 @OptIn(ExperimentalCircuitApi::class)
@@ -71,6 +70,7 @@ public fun <R : Record> NavigableCircuitContent(
   backStack: BackStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
+  answeringResultHandler: AnsweringResultHandler = rememberAnsweringResultHandler(),
   providedValues: Map<out Record, ProvidedValues> = emptyMap(),
   decoration: NavDecoration = circuit.defaultNavDecoration,
   decoratorFactory: AnimatedNavDecorator.Factory? = null,
@@ -124,9 +124,11 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
-  val resultHandler = rememberResultHandler()
-  // todo DelegatingAnsweringBackStack could be a delegated navigator too
-  val backStack = remember(backStack) { DelegatingAnsweringBackStack(backStack, resultHandler) }
+  // Delegates pop results to the answering result handler.
+  val resultNavigator =
+    remember(navigator, backStack, answeringResultHandler) {
+      AnsweringResultNavigator(navigator, backStack, answeringResultHandler)
+    }
 
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -137,14 +139,14 @@ public fun <R : Record> NavigableCircuitContent(
             saveableStateHolder = saveableStateHolder,
             retainedStateHolder = retainedStateHolder,
             backStack = backStack,
-            navigator = navigator,
+            navigator = resultNavigator,
             circuit = circuit,
             unavailableRoute = unavailableRoute,
           )
         }
         .apply {
           lastBackStack = backStack
-          lastNavigator = navigator
+          lastNavigator = resultNavigator
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
         }
@@ -165,11 +167,34 @@ public fun <R : Record> NavigableCircuitContent(
         }
       CompositionLocalProvider(
         LocalBackStack provides backStack,
-        LocalResultHandler provides resultHandler,
+        LocalAnsweringResultHandler provides answeringResultHandler,
         *providedLocals,
       ) {
         provider.content(record, contentProviderState)
       }
+    }
+  }
+}
+
+/** [Navigator] that sends pending results to the [answeringResultHandler] when popped. */
+private class AnsweringResultNavigator<R : Record>(
+  private val navigator: Navigator,
+  private val backStack: BackStack<R>,
+  private val answeringResultHandler: AnsweringResultHandler,
+) : Navigator by navigator {
+  override fun pop(result: PopResult?): Screen? {
+    // Run in a snapshot to ensure the sendResult doesn't get missed.
+    return Snapshot.withMutableSnapshot {
+      val popped = navigator.pop(result)
+      if (result != null) {
+        // Send the pending result to our new top record, but only if it's expecting one
+        backStack.topRecord?.apply {
+          if (answeringResultHandler.expectingResult(key)) {
+            answeringResultHandler.sendResult(key, result)
+          }
+        }
+      }
+      popped
     }
   }
 }
@@ -470,7 +495,7 @@ public val LocalBackStack: ProvidableCompositionLocal<BackStack<out Record>?> = 
 }
 
 /**
- * Delicate API to access the [ResultHandler] from within a [CircuitContent] or
+ * Delicate API to access the [AnsweringResultHandler] from within a [NavigableCircuitContent] or
  * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
  *
  * This is generally considered an internal API to Circuit, but can be useful for interop cases and
@@ -478,6 +503,7 @@ public val LocalBackStack: ProvidableCompositionLocal<BackStack<out Record>?> = 
  * [DelicateCircuitFoundationApi].
  */
 @DelicateCircuitFoundationApi
-public val LocalResultHandler: ProvidableCompositionLocal<ResultHandler?> = compositionLocalOf {
-  null
-}
+public val LocalAnsweringResultHandler: ProvidableCompositionLocal<AnsweringResultHandler?> =
+  compositionLocalOf {
+    null
+  }

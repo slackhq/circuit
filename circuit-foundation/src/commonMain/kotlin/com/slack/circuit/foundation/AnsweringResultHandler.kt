@@ -1,4 +1,4 @@
-package com.slack.circuit.backstack
+package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.Saver
@@ -11,18 +11,25 @@ import kotlin.collections.iterator
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
+/**
+ * Returns a [AnsweringResultHandler] for handling result passing between records in a
+ * [NavigableCircuitContent].
+ *
+ * This manages the state needed for records to send and receive [PopResult]s when navigating
+ * between screens with [rememberAnsweringNavigator].
+ */
 @Composable
-public fun rememberResultHandler(): ResultHandler =
-  rememberSaveable(saver = ResultHandler.Saver) { ResultHandler() }
+public fun rememberAnsweringResultHandler(): AnsweringResultHandler =
+  rememberSaveable(saver = AnsweringResultHandler.Saver) { AnsweringResultHandler() }
 
 /**
- * Handles result passing between records in a back stack.
+ * Handles result passing between records in a [NavigableCircuitContent].
  *
  * This class manages the state needed for records to send and receive [PopResult]s when navigating
  * between screens. It maintains channels for each record key and tracks which results each record
  * is expecting.
  */
-public class ResultHandler {
+public class AnsweringResultHandler {
   private val recordStates = mutableMapOf<String, RecordResultState>()
 
   /**
@@ -97,7 +104,7 @@ public class ResultHandler {
 
   public companion object {
     @Suppress("UNCHECKED_CAST")
-    public val Saver: Saver<ResultHandler, Any> =
+    public val Saver: Saver<AnsweringResultHandler, Any> =
       mapSaver(
         save = { handler ->
           buildMap {
@@ -107,7 +114,7 @@ public class ResultHandler {
           }
         },
         restore = { map ->
-          ResultHandler().apply {
+          AnsweringResultHandler().apply {
             for ((recordKey, value) in map) {
               val (resultKey, pendingResult) = value as Pair<String?, PopResult?>
               // NOTE order matters here, prepareForResult() clears the buffer

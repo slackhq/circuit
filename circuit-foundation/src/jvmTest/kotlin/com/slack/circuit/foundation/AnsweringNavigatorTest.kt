@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import app.cash.turbine.Turbine
-import com.slack.circuit.backstack.AnsweringBackStack
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -62,8 +62,8 @@ class AnsweringNavigatorTest {
   }
 }
 
-private fun ComposeContentTestRule.setCircuitContent(circuit: Circuit): AnsweringBackStack<*> {
-  lateinit var backStack: AnsweringBackStack<*>
+private fun ComposeContentTestRule.setCircuitContent(circuit: Circuit): SaveableBackStack {
+  lateinit var backStack: SaveableBackStack
   setContent {
     CircuitCompositionLocals(circuit) {
       backStack = rememberSaveableBackStack(TestScreen)

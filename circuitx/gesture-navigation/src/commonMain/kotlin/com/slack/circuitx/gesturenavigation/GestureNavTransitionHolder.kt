@@ -3,7 +3,7 @@
 package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.runtime.Immutable
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavState
 
 /**

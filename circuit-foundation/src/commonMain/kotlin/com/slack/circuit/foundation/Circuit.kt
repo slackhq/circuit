@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStackRecordLocalProvider
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.backstack
+package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 
 /** Presentation logic for currently visible routes of a navigable UI. */
@@ -26,6 +27,7 @@ public interface NavDecoration {
   @Composable
   public fun <T : NavArgument> DecoratedContent(
     args: List<T>,
+    navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   )

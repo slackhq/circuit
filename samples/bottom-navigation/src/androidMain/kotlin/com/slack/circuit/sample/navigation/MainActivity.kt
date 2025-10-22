@@ -60,9 +60,7 @@ class MainActivity : AppCompatActivity() {
           remember(navigator) {
             buildCircuitForTabs(tabs)
               .newBuilder()
-              .setAnimatedNavDecoratorFactory(
-                GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() })
-              )
+              .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
               .build()
           }
         CircuitCompositionLocals(circuit) {

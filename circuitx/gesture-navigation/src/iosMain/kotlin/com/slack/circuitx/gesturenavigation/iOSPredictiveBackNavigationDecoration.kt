@@ -28,10 +28,11 @@ import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateLayer
 import androidx.compose.ui.unit.Constraints
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.Navigator
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.collectLatest
@@ -44,14 +45,12 @@ private val End: (Int) -> Int = { it }
  * A factory that creates an [IOSPredictiveBackNavDecorator] for iOS predictive back navigation.
  *
  * @param fallback The [AnimatedNavDecorator.Factory] to use when predictive back is not supported.
- * @param onBackInvoked A callback to be invoked when a back gesture is performed.
  * @return An [AnimatedNavDecorator.Factory] that provides iOS predictive back navigation.
  */
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
-  return IOSPredictiveBackNavDecorator.Factory(onBackInvoked = onBackInvoked)
+  return IOSPredictiveBackNavDecorator.Factory()
 }
 
 /**
@@ -115,14 +114,12 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
     }
   }
 
-  internal class Factory(
-    private val enterOffsetFraction: Float = 0.25f,
-    private val onBackInvoked: () -> Unit,
-  ) : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
+  internal class Factory(private val enterOffsetFraction: Float = 0.25f) :
+    AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
       return IOSPredictiveBackNavDecorator(
         enterOffsetFraction = enterOffsetFraction,
-        onBackInvoked = onBackInvoked,
+        onBackInvoked = { navigator.pop() },
       )
     }
   }

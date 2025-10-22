@@ -42,8 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
-import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
@@ -144,22 +142,27 @@ public fun <R : Record> NavigableCircuitContent(
     val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
     val circuitProvidedValues =
       providedValuesForBackStack(backStack, circuit.backStackLocalProviders)
-    navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
-      val record = provider.record
+    navDecoration.DecoratedContent(
+      args = activeContentProviders,
+      navigator = navigator,
+      modifier = modifier,
+      { provider ->
+        val record = provider.record
 
-      // Remember the `providedValues` lookup because this composition can live longer than
-      // the record is present in the backstack, if the decoration is animated for example.
-      val values = remember(record) { providedValues[record] }?.provideValues()
-      val circuitProvidedValues =
-        remember(record) { circuitProvidedValues[record] }?.provideValues()
-      val providedLocals =
-        remember(values, circuitProvidedValues) {
-          (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
+        // Remember the `providedValues` lookup because this composition can live longer than
+        // the record is present in the backstack, if the decoration is animated for example.
+        val values = remember(record) { providedValues[record] }?.provideValues()
+        val circuitProvidedValues =
+          remember(record) { circuitProvidedValues[record] }?.provideValues()
+        val providedLocals =
+          remember(values, circuitProvidedValues) {
+            (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
+          }
+        CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+          provider.content(record, contentProviderState)
         }
-      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-        provider.content(record, contentProviderState)
-      }
-    }
+      },
+    )
   }
 }
 
@@ -321,7 +324,8 @@ public object NavigatorDefaults {
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
   public object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> =
+      DefaultDecorator()
   }
 
   /**
@@ -437,6 +441,7 @@ public object NavigatorDefaults {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
       args: List<T>,
+      navigator: Navigator,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {

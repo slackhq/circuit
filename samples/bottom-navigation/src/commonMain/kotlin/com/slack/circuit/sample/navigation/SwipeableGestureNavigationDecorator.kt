@@ -33,10 +33,11 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuitx.gesturenavigation.GestureNavTransitionHolder
 import com.slack.circuitx.gesturenavigation.PredictiveBackNavigationDecorator
 import kotlin.math.roundToInt
@@ -45,6 +46,7 @@ class SwipeableGestureNavigationDecorator<T : NavArgument>(
   private val adaptiveNavState: AdaptiveNavState,
   private val enterOffsetFraction: Float = 0.25f,
   private val swipeThreshold: Float = 0.4f,
+  private val isDetailPane: (NavArgument) -> Boolean,
   private val onBackInvoked: () -> Unit,
 ) : PredictiveBackNavigationDecorator<T>(onBackInvoked) {
 
@@ -85,9 +87,7 @@ class SwipeableGestureNavigationDecorator<T : NavArgument>(
   ) {
 
     val isOpenedScreen =
-      targetState.backStackDepth == 2 &&
-        targetState.top.screen is SecondaryScreen &&
-        adaptiveNavState.isOpen
+      targetState.backStackDepth == 2 && isDetailPane(targetState.top) && adaptiveNavState.isOpen
 
     val canRestoreOpenScreen = targetState.backStackDepth == 1 && adaptiveNavState.isOpen
     val swipeEnabled = targetState.backStackDepth > 1 || canRestoreOpenScreen
@@ -139,14 +139,14 @@ class SwipeableGestureNavigationDecorator<T : NavArgument>(
     private val adaptiveNavState: AdaptiveNavState,
     private val enterOffsetFraction: Float = 0.25f,
     private val swipeThreshold: Float = 0.4f,
-    private val onBackInvoked: () -> Unit,
   ) : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
       return SwipeableGestureNavigationDecorator(
         adaptiveNavState = adaptiveNavState,
         enterOffsetFraction = enterOffsetFraction,
         swipeThreshold = swipeThreshold,
-        onBackInvoked = onBackInvoked,
+        onBackInvoked = { navigator.pop() },
+        isDetailPane = { it.screen is DetailScreen },
       )
     }
   }

@@ -37,7 +37,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 import kotlin.reflect.KClass
 
 @Parcelize
-sealed interface TabScreen : Screen, PrimaryScreen {
+sealed interface TabScreen : Screen {
   val label: String
 
   @Parcelize data class Root(override val label: String = "Root") : TabScreen

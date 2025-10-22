@@ -32,7 +32,7 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 
-@Parcelize data class DetailScreen(val primary: TabScreen) : SecondaryScreen
+@Parcelize data class DetailScreen(val primary: TabScreen) : Screen
 
 data class DetailState(
   val label: String,

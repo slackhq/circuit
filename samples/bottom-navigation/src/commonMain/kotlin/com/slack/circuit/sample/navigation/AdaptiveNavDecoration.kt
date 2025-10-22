@@ -4,8 +4,10 @@ package com.slack.circuit.sample.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -13,45 +15,30 @@ import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.MutableThreePaneScaffoldState
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
+import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldValue
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.defaultDragHandleSemantics
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.SaverScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.PredictiveBackHandler
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
-import com.slack.circuit.foundation.NavigatorDefaults
+import com.slack.circuit.foundation.NavArgument
+import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
-import com.slack.circuit.retained.rememberRetainedSaveable
 import com.slack.circuit.runtime.ExperimentalCircuitApi
-import com.slack.circuit.runtime.Navigator.StateOptions
-import com.slack.circuit.runtime.screen.PopResult
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
-import com.slack.circuitx.navigation.intercepting.InterceptedPopResult
-import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
-import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
-import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
-import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CancellationException
-
-interface PrimaryScreen : Screen
-
-interface SecondaryScreen : Screen
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 private val PrimarySecondary =
@@ -73,75 +60,32 @@ private val Primary =
     tertiary = PaneAdaptedValue.Hidden,
   )
 
-@Composable
-fun rememberAdaptiveNavState(): AdaptiveNavState {
-  return rememberRetainedSaveable(saver = AdaptiveNavState.Saver) { AdaptiveNavState() }
-}
-
-class AdaptiveNavState : NavigationInterceptor {
-
-  var isOpen by mutableStateOf(false)
-    private set
-
-  fun close() {
-    isOpen = false
-  }
-
-  override fun resetRoot(newRoot: Screen, options: StateOptions): InterceptedResetRootResult {
-    isOpen = false
-    return Skipped
-  }
-
-  override fun goTo(screen: Screen): InterceptedGoToResult {
-    isOpen = false
-    return Skipped
-  }
-
-  override fun pop(peekBackStack: List<Screen>, result: PopResult?): InterceptedPopResult {
-    return if (!isOpen && peekBackStack.size == 2 && peekBackStack.first() is SecondaryScreen) {
-      isOpen = true
-      SuccessConsumed
-    } else Skipped
-  }
-
-  object Saver : androidx.compose.runtime.saveable.Saver<AdaptiveNavState, Boolean> {
-    override fun SaverScope.save(value: AdaptiveNavState): Boolean {
-      return value.isOpen
-    }
-
-    override fun restore(value: Boolean): AdaptiveNavState {
-      return AdaptiveNavState().apply { isOpen = value }
-    }
-  }
-}
-
-// todo Generalize this
-//  - Allow for styling etc
 @OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
 class AdaptiveNavDecoration(
   screenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
-  private val adaptiveNavState: AdaptiveNavState,
-  private val backgroundColor: @Composable () -> Color = { Color.Unspecified },
-  private val onPop: () -> Unit = {},
+  normalDecoratorFactory: AnimatedNavDecorator.Factory,
+  detailPaneDecoratorFactory: AnimatedNavDecorator.Factory,
+  private val isDetailPane: (NavArgument) -> Boolean,
+  private val shouldUsePaneLayout: (WindowAdaptiveInfo) -> Boolean = ::layoutSideBySide,
 ) : NavDecoration {
 
   private val delegate =
     AnimatedNavDecoration(
       animatedScreenTransforms = screenTransforms,
-      decoratorFactory =
-        SwipeableGestureNavigationDecorator.Factory(adaptiveNavState, onBackInvoked = { onPop() }),
+      decoratorFactory = normalDecoratorFactory,
     )
 
-  private val sideBySideDelegate =
+  private val detailPaneDelegate =
     AnimatedNavDecoration(
       animatedScreenTransforms = emptyMap(),
-      decoratorFactory = NavigatorDefaults.DefaultDecoratorFactory,
+      decoratorFactory = detailPaneDecoratorFactory,
     )
 
   @OptIn(DelicateCircuitFoundationApi::class)
   @Composable
   override fun <T : NavArgument> DecoratedContent(
     args: List<T>,
+    navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
@@ -149,17 +93,21 @@ class AdaptiveNavDecoration(
     // - Wide enough show as two pane
     // - Otherwise stack normally
     val windowInfo = currentWindowAdaptiveInfo()
-    val layoutSideBySide =
-      when (windowInfo.windowSizeClass.windowWidthSizeClass) {
-        WindowWidthSizeClass.COMPACT -> false
-        WindowWidthSizeClass.MEDIUM -> true
-        WindowWidthSizeClass.EXPANDED -> true
-        else -> false
-      }
-    if (layoutSideBySide) {
-      SideBySideContent(args, windowInfo, modifier, content)
+    if (shouldUsePaneLayout(windowInfo)) {
+      PaneContent(
+        args = args,
+        windowInfo = windowInfo,
+        navigator = navigator,
+        modifier = modifier,
+        content = content,
+      )
     } else {
-      delegate.DecoratedContent(args, modifier, content)
+      delegate.DecoratedContent(
+        args = args,
+        navigator = navigator,
+        modifier = modifier,
+        content = content,
+      )
     }
   }
 
@@ -169,15 +117,17 @@ class AdaptiveNavDecoration(
     ExperimentalComposeUiApi::class,
   )
   @Composable
-  private fun <T : NavArgument> SideBySideContent(
+  private fun <T : NavArgument> PaneContent(
     args: List<T>,
     windowInfo: WindowAdaptiveInfo,
+    navigator: Navigator,
     modifier: Modifier = Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val (primaryArgs, secondaryLookup) = rememberSideBySideNavArguments(args)
+    val directive = remember(windowInfo) { calculatePaneScaffoldDirective(windowInfo) }
+    val (primaryArgs, secondaryLookup) = rememberListDetailNavArguments(args, isDetailPane)
     val secondaryLookupTransition = updateTransition(secondaryLookup)
-    sideBySideDelegate.DecoratedContent(primaryArgs, modifier) { primary ->
+    delegate.DecoratedContent(primaryArgs, navigator, modifier) { primary ->
       val secondaryArgs =
         with(secondaryLookupTransition) { currentState[primary] ?: targetState[primary] }
 
@@ -185,42 +135,57 @@ class AdaptiveNavDecoration(
       val singleSecondary = hasSecondary && secondaryArgs.size == 1
       val scaffoldValue = if (hasSecondary) PrimarySecondary else Primary
       val scaffoldState = remember { MutableThreePaneScaffoldState(scaffoldValue) }
-      val directive = remember(windowInfo) { calculatePaneScaffoldDirective(windowInfo) }
 
-      val paneExpansionState = rememberPaneExpansionState(key = scaffoldValue.paneExpansionStateKey)
+      // todo Anchors vs Resizeable with minimums
+      val minPaneSize = 240.dp
+      val paneExpansionState =
+        rememberPaneExpansionState(
+          key = scaffoldValue.paneExpansionStateKey,
+          anchors =
+            listOf(
+              PaneExpansionAnchor.Offset.fromStart(minPaneSize),
+              PaneExpansionAnchor.Offset.fromStart(directive.defaultPanePreferredWidth),
+              PaneExpansionAnchor.Offset.fromEnd(directive.defaultPanePreferredWidth),
+              PaneExpansionAnchor.Offset.fromEnd(minPaneSize),
+            ),
+        )
       LaunchedEffect(scaffoldValue) { scaffoldState.animateTo(scaffoldValue) }
       ListDetailPaneScaffold(
-        modifier = Modifier.fillMaxSize().background(backgroundColor()),
+        modifier = Modifier.fillMaxSize(),
         directive = directive,
         scaffoldState = scaffoldState,
         paneExpansionState = paneExpansionState,
-        paneExpansionDragHandle = {
-          //          VerticalDragHandle()
+        paneExpansionDragHandle = { state ->
+          val interactionSource = remember { MutableInteractionSource() }
+          VerticalDragHandle(
+            modifier =
+              Modifier.paneExpansionDraggable(
+                state = state,
+                minTouchTargetSize = LocalMinimumInteractiveComponentSize.current,
+                interactionSource = interactionSource,
+                semanticsProperties = state.defaultDragHandleSemantics(),
+              ),
+            interactionSource = interactionSource,
+          )
         },
         listPane = { AnimatedPane(modifier = Modifier) { content(primary) } },
         detailPane = {
           AnimatedPane {
-            when {
-              singleSecondary -> {
-                // ScaffoldState animates the single case
-                content(secondaryArgs.single())
-              }
-              hasSecondary -> {
-                // Stack multiple with the normal decoration
-                delegate.DecoratedContent(secondaryArgs, Modifier, content)
-              }
+            if (hasSecondary) {
+              // Stack multiple with a normal decoration
+              detailPaneDelegate.DecoratedContent(secondaryArgs, navigator, Modifier, content)
             }
           }
         },
       )
 
-      // Prevent the decorator from handling the back press
+      // Prevent the detailPaneDelegate from handling the back press
       PredictiveBackHandler(enabled = singleSecondary) { progress ->
         try {
           progress.collect { backEvent ->
             scaffoldState.seekTo(backEvent.progress, Primary, isPredictiveBackInProgress = true)
           }
-          onPop()
+          navigator.pop()
         } catch (_: CancellationException) {
           scaffoldState.snapTo(PrimarySecondary)
         }
@@ -229,18 +194,26 @@ class AdaptiveNavDecoration(
   }
 }
 
+private fun layoutSideBySide(adaptiveInfo: WindowAdaptiveInfo): Boolean =
+  when (adaptiveInfo.windowSizeClass.windowWidthSizeClass) {
+    WindowWidthSizeClass.COMPACT -> false
+    WindowWidthSizeClass.MEDIUM -> true
+    WindowWidthSizeClass.EXPANDED -> true
+    else -> false
+  }
+
 @Composable
-private fun <T : NavArgument> rememberSideBySideNavArguments(
-  args: List<T>
+private fun <T : NavArgument> rememberListDetailNavArguments(
+  args: List<T>,
+  isDetailPane: (T) -> Boolean,
 ): Pair<List<T>, Map<T, List<T>>> =
   remember(args) {
     val primary = mutableListOf<T>()
     val secondaryLookup = mutableMapOf<T, List<T>>()
     val secondary = mutableListOf<T>()
     for (arg in args) {
-      val screen = arg.screen
       when {
-        screen is SecondaryScreen -> {
+        isDetailPane(arg) -> {
           secondary += arg
         }
         else -> {

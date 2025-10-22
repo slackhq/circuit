@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -53,6 +52,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
@@ -112,17 +112,15 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
   NavigationInterceptor {
   override fun resetRoot(
     newRoot: Screen,
-    options: Navigator.StateOptions
+    options: Navigator.StateOptions,
   ): InterceptedResetRootResult {
     return when (newRoot) {
-      is PrimaryScreen,
-      is SecondaryScreen -> {
+      is TabScreen,
+      is DetailScreen -> {
         Skipped
       }
       else -> {
-        eventSink.value(
-          ContentEvent.OnNavEvent(NavEvent.ResetRoot(newRoot, options))
-        )
+        eventSink.value(ContentEvent.OnNavEvent(NavEvent.ResetRoot(newRoot, options)))
         SuccessConsumed
       }
     }
@@ -130,8 +128,8 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
 
   override fun goTo(screen: Screen): InterceptedGoToResult {
     return when (screen) {
-      is PrimaryScreen,
-      is SecondaryScreen -> {
+      is TabScreen,
+      is DetailScreen -> {
         Skipped
       }
       else -> {
@@ -155,7 +153,7 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
   val interceptingNavigator =
     rememberInterceptingNavigator(
       navigator = contentNavigator,
-      interceptors = listOf(adaptiveNavState, contentInterceptor),
+      interceptors = listOf(contentInterceptor),
     )
 
   Scaffold(
@@ -174,12 +172,12 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
       backStack = backStack,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
       decoration =
-        remember(circuit.animatedScreenTransforms, interceptingNavigator) {
+        remember(circuit.animatedScreenTransforms, circuit.animatedNavDecoratorFactory) {
           AdaptiveNavDecoration(
             screenTransforms = circuit.animatedScreenTransforms,
-            adaptiveNavState = adaptiveNavState,
-            backgroundColor = { MaterialTheme.colorScheme.background },
-            onPop = { interceptingNavigator.pop() },
+            normalDecoratorFactory = circuit.animatedNavDecoratorFactory,
+            detailPaneDecoratorFactory = GestureNavigationDecorationFactory(),
+            isDetailPane = { it.screen is DetailScreen },
           )
         },
     )

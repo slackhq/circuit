@@ -42,11 +42,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.backstack.DelegatingAnsweringBackStack
 import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
+import com.slack.circuit.backstack.ResultHandler
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.backstack.rememberResultHandler
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
@@ -121,6 +124,10 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
+  val resultHandler = rememberResultHandler()
+  // todo DelegatingAnsweringBackStack could be a delegated navigator too
+  val backStack = remember(backStack) { DelegatingAnsweringBackStack(backStack, resultHandler) }
+
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
@@ -156,7 +163,11 @@ public fun <R : Record> NavigableCircuitContent(
         remember(values, circuitProvidedValues) {
           (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
-      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+      CompositionLocalProvider(
+        LocalBackStack provides backStack,
+        LocalResultHandler provides resultHandler,
+        *providedLocals,
+      ) {
         provider.content(record, contentProviderState)
       }
     }
@@ -455,5 +466,18 @@ public object NavigatorDefaults {
  */
 @DelicateCircuitFoundationApi
 public val LocalBackStack: ProvidableCompositionLocal<BackStack<out Record>?> = compositionLocalOf {
+  null
+}
+
+/**
+ * Delicate API to access the [ResultHandler] from within a [CircuitContent] or
+ * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
+ *
+ * This is generally considered an internal API to Circuit, but can be useful for interop cases and
+ * testing of [rememberAnsweringNavigator] APIs. As such, it's public but annotated as
+ * [DelicateCircuitFoundationApi].
+ */
+@DelicateCircuitFoundationApi
+public val LocalResultHandler: ProvidableCompositionLocal<ResultHandler?> = compositionLocalOf {
   null
 }

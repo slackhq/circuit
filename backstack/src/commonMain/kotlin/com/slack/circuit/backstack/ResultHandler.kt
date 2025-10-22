@@ -1,13 +1,19 @@
 package com.slack.circuit.backstack
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.slack.circuit.runtime.screen.PopResult
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+
+@Composable
+public fun rememberResultHandler(): ResultHandler =
+  rememberSaveable(saver = ResultHandler.Saver) { ResultHandler() }
 
 /**
  * Handles result passing between records in a back stack.

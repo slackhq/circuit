@@ -11,8 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.slack.circuit.backstack.AnsweringBackStack
+import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.ResultHandler
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -26,7 +27,9 @@ import kotlinx.coroutines.CoroutineScope
  * Returns whether or not answering navigation is available. This is essentially a proxy for whether
  * or not this composition is running within a [NavigableCircuitContent].
  */
-@Composable public fun answeringNavigationAvailable(): Boolean = LocalBackStack.current != null
+@Composable
+public fun answeringNavigationAvailable(): Boolean =
+  LocalBackStack.current != null && LocalResultHandler.current != null
 
 /**
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
@@ -49,7 +52,8 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
   val backStack = LocalBackStack.current ?: return fallbackNavigator
-  return rememberAnsweringNavigator(backStack, resultType, block)
+  val resultHandler = LocalResultHandler.current ?: return fallbackNavigator
+  return rememberAnsweringNavigator(backStack, resultHandler, resultType, block)
 }
 
 /**
@@ -59,9 +63,10 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
+  resultHandler: ResultHandler,
   noinline block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
-  return rememberAnsweringNavigator(backStack, T::class, block)
+  return rememberAnsweringNavigator(backStack, resultHandler, T::class, block)
 }
 
 /**
@@ -93,6 +98,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
+  resultHandler: ResultHandler,
   resultType: KClass<T>,
   block: suspend CoroutineScope.(result: T) -> Unit,
 ): GoToNavigator {
@@ -109,17 +115,16 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val key = rememberSaveable { @OptIn(ExperimentalUuidApi::class) Uuid.random().toString() }
 
   // Current top record of the navigator
-  val currentTopRecordKey by remember { derivedStateOf { currentBackStack.topRecord!!.key } }
+  val currentTopRecordState by remember { derivedStateOf { currentBackStack.topRecord } }
 
   // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
 
   // Collect the result if we've launched and now returned to the initial record
-  if (launched && currentTopRecordKey == initialRecordKey) {
+  val currentTopRecord = currentTopRecordState
+  if (launched && currentTopRecord != null && currentTopRecord.key == initialRecordKey) {
     LaunchedEffect(key) {
-      val topRecord = currentBackStack.topRecord ?: return@LaunchedEffect
-      val answeringBackStack = (currentBackStack as? AnsweringBackStack) ?: return@LaunchedEffect
-      val result = answeringBackStack.awaitResult(topRecord.key, key) ?: return@LaunchedEffect
+      val result = resultHandler.awaitResult(currentTopRecord.key, key) ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
@@ -129,9 +134,16 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val answeringNavigator = remember {
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
-        currentBackStack.push(screen, key)
-        launched = true
-        return true
+        val previousTopRecord = Snapshot.withoutReadObservation { currentBackStack.topRecord }
+        val success = currentBackStack.push(screen)
+        if (success) {
+          // Clear the cached pending result from the previous top record
+          if (previousTopRecord != null) {
+            resultHandler.prepareForResult(previousTopRecord.key, key)
+          }
+          launched = true
+        }
+        return success
       }
     }
   }

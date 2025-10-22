@@ -26,6 +26,7 @@ import androidx.compose.ui.test.performTextInput
 import com.jakewharton.picnic.TextAlignment
 import com.jakewharton.picnic.table
 import com.slack.circuit.backstack.AnsweringBackStack
+import com.slack.circuit.backstack.ResultHandler
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_POP
@@ -201,7 +202,8 @@ class NavResultTest {
     }
   }
 
-  private fun ComposeContentTestRule.dumpState(backStack: AnsweringBackStack<*>) {
+  // todo Pass ResultHandler
+  private fun ComposeContentTestRule.dumpState(backStack: AnsweringBackStack<*>, resultHandler: ResultHandler) {
     val state = buildString {
       appendLine("BackStack:")
       appendLine("  size: ${backStack.size}")

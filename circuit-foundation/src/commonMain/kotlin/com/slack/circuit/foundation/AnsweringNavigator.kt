@@ -123,7 +123,8 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val currentTopRecord = currentTopRecordState
   if (launched && currentTopRecord != null && currentTopRecord.key == initialRecordKey) {
     LaunchedEffect(key) {
-      val result = answeringResultHandler.awaitResult(currentTopRecord.key, key) ?: return@LaunchedEffect
+      val result =
+        answeringResultHandler.awaitResult(currentTopRecord.key, key) ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)

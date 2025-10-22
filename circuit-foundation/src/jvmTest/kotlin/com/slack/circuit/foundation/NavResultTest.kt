@@ -245,7 +245,6 @@ class NavResultTest {
             }
             row {
               for ((i, record) in backStack.iterator().withIndex()) {
-                @Suppress("invisible_member", "invisible_reference")
                 val stateString =
                   """
                     ${record.screen::class.simpleName}

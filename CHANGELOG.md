@@ -8,6 +8,10 @@ Unreleased
 
 Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
 
+Result delivery is now handled by `NavigableCircuitContent` via an internal `AnsweringResultNavigator` wrapper, and result
+handling APIs have been removed from `BackStack` and `SaveableBackStack` as this is now purely a navigation concern. This
+separates result handling concerns from the backstack implementation and provides better encapsulation.
+
 ### Behaviour Changes:
 
 On iOS `GestureNavigationDecorationFactory` now uses `IOSPredictiveBackNavDecorator` instead of  `CupertinoGestureNavigationDecorator`.

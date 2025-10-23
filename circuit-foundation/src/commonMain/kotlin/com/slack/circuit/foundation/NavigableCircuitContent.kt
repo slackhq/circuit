@@ -146,23 +146,21 @@ public fun <R : Record> NavigableCircuitContent(
       args = activeContentProviders,
       navigator = navigator,
       modifier = modifier,
-      { provider ->
-        val record = provider.record
-
-        // Remember the `providedValues` lookup because this composition can live longer than
-        // the record is present in the backstack, if the decoration is animated for example.
-        val values = remember(record) { providedValues[record] }?.provideValues()
-        val circuitProvidedValues =
-          remember(record) { circuitProvidedValues[record] }?.provideValues()
-        val providedLocals =
-          remember(values, circuitProvidedValues) {
-            (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
-          }
-        CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
-          provider.content(record, contentProviderState)
+    ) { provider ->
+      val record = provider.record
+      // Remember the `providedValues` lookup because this composition can live longer than
+      // the record is present in the backstack, if the decoration is animated for example.
+      val values = remember(record) { providedValues[record] }?.provideValues()
+      val circuitProvidedValues =
+        remember(record) { circuitProvidedValues[record] }?.provideValues()
+      val providedLocals =
+        remember(values, circuitProvidedValues) {
+          (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
-      },
-    )
+      CompositionLocalProvider(LocalBackStack provides backStack, *providedLocals) {
+        provider.content(record, contentProviderState)
+      }
+    }
   }
 }
 
@@ -172,6 +170,9 @@ public class RecordContentProvider<R : Record>(
   public val record: R,
   internal val content: @Composable (R, ContentProviderState<R>) -> Unit,
 ) : NavArgument {
+
+  override val key: String
+    get() = record.key
 
   override val screen: Screen
     get() = record.screen
@@ -309,7 +310,7 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
   }
 
 /** The maximum radix available for conversion to and from strings. */
-private const val MaxSupportedRadix = 36
+public const val MaxSupportedRadix: Int = 36
 
 private val Record.registryKey: String
   get() = "_registry_${key}"

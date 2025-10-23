@@ -21,8 +21,12 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.defaultDragHandleSemantics
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.PredictiveBackHandler
@@ -34,6 +38,8 @@ import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
@@ -89,25 +95,28 @@ class AdaptiveNavDecoration(
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    // Decorate the content layout based on the window size.
-    // - Wide enough show as two pane
-    // - Otherwise stack normally
-    val windowInfo = currentWindowAdaptiveInfo()
-    if (shouldUsePaneLayout(windowInfo)) {
-      PaneContent(
-        args = args,
-        windowInfo = windowInfo,
-        navigator = navigator,
-        modifier = modifier,
-        content = content,
-      )
-    } else {
-      delegate.DecoratedContent(
-        args = args,
-        navigator = navigator,
-        modifier = modifier,
-        content = content,
-      )
+    val retainedStateHolder = rememberRetainedStateHolder()
+    retainedStateHolder.RetainedStateProvider("adaptive-pane-${args.first().key}") { // per record?
+      // Decorate the content layout based on the window size.
+      // - Wide enough show as two pane
+      // - Otherwise stack normally
+      val windowInfo = currentWindowAdaptiveInfo()
+      if (shouldUsePaneLayout(windowInfo)) {
+        PaneContent(
+          args = args,
+          windowInfo = windowInfo,
+          navigator = navigator,
+          modifier = modifier,
+          content = content,
+        )
+      } else {
+        delegate.DecoratedContent(
+          args = args,
+          navigator = navigator,
+          modifier = modifier,
+          content = content,
+        )
+      }
     }
   }
 
@@ -124,10 +133,18 @@ class AdaptiveNavDecoration(
     modifier: Modifier = Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val directive = remember(windowInfo) { calculatePaneScaffoldDirective(windowInfo) }
     val (primaryArgs, secondaryLookup) = rememberListDetailNavArguments(args, isDetailPane)
     val secondaryLookupTransition = updateTransition(secondaryLookup)
     delegate.DecoratedContent(primaryArgs, navigator, modifier) { primary ->
+      val directive = rememberRetained(windowInfo) { calculatePaneScaffoldDirective(windowInfo) }
+      val minPaneSize = 240.dp
+      val anchors =
+        listOf(
+          PaneExpansionAnchor.Offset.fromStart(minPaneSize),
+          PaneExpansionAnchor.Offset.fromStart(directive.defaultPanePreferredWidth),
+          PaneExpansionAnchor.Offset.fromEnd(minPaneSize),
+        )
+
       val secondaryArgs =
         with(secondaryLookupTransition) { currentState[primary] ?: targetState[primary] }
 
@@ -137,18 +154,22 @@ class AdaptiveNavDecoration(
       val scaffoldState = remember { MutableThreePaneScaffoldState(scaffoldValue) }
 
       // todo Anchors vs Resizeable with minimums
-      val minPaneSize = 240.dp
+      var initialAnchorIndex by rememberRetained { mutableIntStateOf(-1) }
       val paneExpansionState =
         rememberPaneExpansionState(
           key = scaffoldValue.paneExpansionStateKey,
-          anchors =
-            listOf(
-              PaneExpansionAnchor.Offset.fromStart(minPaneSize),
-              PaneExpansionAnchor.Offset.fromStart(directive.defaultPanePreferredWidth),
-              PaneExpansionAnchor.Offset.fromEnd(directive.defaultPanePreferredWidth),
-              PaneExpansionAnchor.Offset.fromEnd(minPaneSize),
-            ),
+          anchors = anchors,
+          initialAnchoredIndex = initialAnchorIndex,
         )
+      DisposableEffect(paneExpansionState.currentAnchor) {
+        initialAnchorIndex = anchors.indexOf(paneExpansionState.currentAnchor)
+        onDispose {}
+      }
+      LaunchedEffect(Unit) {
+        if (initialAnchorIndex != -1) {
+          paneExpansionState.animateTo(anchors[initialAnchorIndex])
+        }
+      }
       LaunchedEffect(scaffoldValue) { scaffoldState.animateTo(scaffoldValue) }
       ListDetailPaneScaffold(
         modifier = Modifier.fillMaxSize(),

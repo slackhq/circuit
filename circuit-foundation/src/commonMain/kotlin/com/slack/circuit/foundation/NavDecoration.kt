@@ -36,4 +36,5 @@ public interface NavDecoration {
 /** Argument provided to [NavDecoration] that exposes the underlying [Screen]. */
 public interface NavArgument {
   public val screen: Screen
+  public val key: String
 }

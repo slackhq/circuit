@@ -9,8 +9,9 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.NavArgument
+import com.slack.circuit.foundation.NavDecoration
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -115,7 +116,7 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
   @Stable
   public interface Factory {
 
-    public fun <T : NavArgument> create(): AnimatedNavDecorator<T, *>
+    public fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *>
   }
 }
 

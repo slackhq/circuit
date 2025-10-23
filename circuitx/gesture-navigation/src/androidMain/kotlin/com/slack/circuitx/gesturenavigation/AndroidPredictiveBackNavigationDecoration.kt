@@ -17,8 +17,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
@@ -27,21 +25,21 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
 
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
   return when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory
     else -> fallback
   }
 }
@@ -99,9 +97,9 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
     }
   }
 
-  class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
-      return AndroidPredictiveBackNavDecorator(onBackInvoked = onBackInvoked)
+  object Factory : AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
+      return AndroidPredictiveBackNavDecorator(onBackInvoked = { navigator.pop() })
     }
   }
 }

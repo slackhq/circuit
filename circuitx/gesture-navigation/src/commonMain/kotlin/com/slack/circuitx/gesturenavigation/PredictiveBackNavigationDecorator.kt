@@ -17,14 +17,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.geometry.Offset
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
-internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
+public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   private val onBackInvoked: () -> Unit
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
@@ -33,12 +33,9 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
     private set
 
   protected var showPrevious: Boolean by mutableStateOf(false)
-    private set
+  protected var swipeProgress: Float by mutableFloatStateOf(0f)
 
   protected var isSeeking: Boolean by mutableStateOf(false)
-    private set
-
-  protected var swipeProgress: Float by mutableFloatStateOf(0f)
     private set
 
   protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)

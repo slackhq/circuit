@@ -3,7 +3,7 @@
 package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.runtime.Immutable
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavState
 
 /**
@@ -11,7 +11,7 @@ import com.slack.circuit.foundation.animation.AnimatedNavState
  * the necessary information as an argument, which is optimal for `AnimatedContent`.
  */
 @Immutable
-internal data class GestureNavTransitionHolder<T : NavArgument>(val args: List<T>) :
+public data class GestureNavTransitionHolder<T : NavArgument>(val args: List<T>) :
   AnimatedNavState {
   override val backStack: List<NavArgument> = args
 }

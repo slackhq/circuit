@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 private object InfoScreenRewriteInterceptor : NavigationInterceptor {
-  override fun goTo(screen: Screen): InterceptedGoToResult {
+  override fun goTo(peekBackStack: List<Screen>, screen: Screen): InterceptedGoToResult {
     return when (screen) {
       is InfoScreen -> {
         InterceptedGoToResult.Rewrite(

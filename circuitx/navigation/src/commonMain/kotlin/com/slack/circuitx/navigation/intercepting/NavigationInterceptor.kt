@@ -18,7 +18,7 @@ public interface NavigationInterceptor {
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun goTo(screen: Screen): InterceptedGoToResult = Skipped
+  public fun goTo(peekBackStack: List<Screen>, screen: Screen): InterceptedGoToResult = Skipped
 
   /**
    * Navigates back looking at the [peekBackStack], returning a [InterceptedPopResult] for the
@@ -34,7 +34,11 @@ public interface NavigationInterceptor {
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun resetRoot(newRoot: Screen, options: StateOptions): InterceptedResetRootResult = Skipped
+  public fun resetRoot(
+    peekBackStack: List<Screen>,
+    newRoot: Screen,
+    options: StateOptions,
+  ): InterceptedResetRootResult = Skipped
 
   public companion object {
     /**

@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
@@ -139,7 +138,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val answeringNavigator = remember {
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
-        val previousTopRecord = Snapshot.withoutReadObservation { currentBackStack.topRecord }
+        val previousTopRecord = currentBackStack.topRecord
         val success = currentBackStack.push(screen)
         if (success) {
           // Clear the cached pending result from the previous top record

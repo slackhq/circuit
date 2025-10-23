@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,7 +34,8 @@ public fun rememberAnsweringResultHandler(): AnsweringResultHandler =
  * between screens. It maintains channels for each record key and tracks which results each record
  * is expecting.
  */
-@ExperimentalCircuitApi()
+@ExperimentalCircuitApi
+@Stable
 public class AnsweringResultHandler {
   private val recordStates = mutableMapOf<String, RecordResultState>()
 

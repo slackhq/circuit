@@ -13,12 +13,12 @@ public class LoggingNavigationEventListener(private val logger: NavigationLogger
     logger.log("Backstack changed ${backStack.joinToString { it.loggingName() ?: "" }}")
   }
 
-  override fun goTo(screen: Screen) {
+  override fun goTo(peekBackStack: List<Screen>, screen: Screen) {
     logger.log("goTo ${screen.loggingName()}")
   }
 
-  override fun pop(backStack: List<Screen>, result: PopResult?) {
-    logger.log("pop ${backStack.firstOrNull()?.loggingName()}")
+  override fun pop(peekBackStack: List<Screen>, result: PopResult?) {
+    logger.log("pop ${peekBackStack.firstOrNull()?.loggingName()}")
   }
 }
 

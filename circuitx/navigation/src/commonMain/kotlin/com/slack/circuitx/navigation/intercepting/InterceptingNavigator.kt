@@ -111,8 +111,9 @@ public class InterceptingNavigator(
 ) : Navigator by delegate {
 
   override fun goTo(screen: Screen): Boolean {
+    val peekBackStack = peekBackStack()
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.goTo(screen)) {
+      when (val interceptedResult = interceptor.goTo(peekBackStack, screen)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return true
@@ -127,14 +128,14 @@ public class InterceptingNavigator(
         }
       }
     }
-    eventListeners.forEach { it.goTo(screen) }
+    eventListeners.forEach { it.goTo(peekBackStack, screen) }
     return delegate.goTo(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
-    val backStack = peekBackStack()
+    val peekBackStack = peekBackStack()
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.pop(backStack, result)) {
+      when (val interceptedResult = interceptor.pop(peekBackStack, result)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return null
@@ -145,13 +146,14 @@ public class InterceptingNavigator(
         }
       }
     }
-    eventListeners.forEach { it.pop(backStack, result) }
+    eventListeners.forEach { it.pop(peekBackStack, result) }
     return delegate.pop(result)
   }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
+    val peekBackStack = peekBackStack()
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.resetRoot(newRoot, options)) {
+      when (val interceptedResult = interceptor.resetRoot(peekBackStack, newRoot, options)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return emptyList()
@@ -166,7 +168,7 @@ public class InterceptingNavigator(
         }
       }
     }
-    eventListeners.forEach { it.resetRoot(newRoot, options) }
+    eventListeners.forEach { it.resetRoot(peekBackStack, newRoot, options) }
     return delegate.resetRoot(newRoot, options)
   }
 

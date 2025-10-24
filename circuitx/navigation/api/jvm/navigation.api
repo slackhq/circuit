@@ -95,7 +95,7 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptingNaviga
 public final class com/slack/circuitx/navigation/intercepting/LoggingNavigationEventListener : com/slack/circuitx/navigation/intercepting/NavigationEventListener {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuitx/navigation/intercepting/NavigationLogger;)V
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)V
+	public fun goTo (Ljava/util/List;Lcom/slack/circuit/runtime/screen/Screen;)V
 	public fun onBackStackChanged (Ljava/util/List;)V
 	public fun pop (Ljava/util/List;Lcom/slack/circuit/runtime/screen/PopResult;)V
 }
@@ -109,17 +109,17 @@ public final class com/slack/circuitx/navigation/intercepting/LoggingNavigatorFa
 }
 
 public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationEventListener {
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)V
+	public fun goTo (Ljava/util/List;Lcom/slack/circuit/runtime/screen/Screen;)V
 	public fun onBackStackChanged (Ljava/util/List;)V
 	public fun pop (Ljava/util/List;Lcom/slack/circuit/runtime/screen/PopResult;)V
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)V
+	public fun resetRoot (Ljava/util/List;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)V
 }
 
 public abstract interface class com/slack/circuitx/navigation/intercepting/NavigationInterceptor {
 	public static final field Companion Lcom/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion;
-	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult;
+	public fun goTo (Ljava/util/List;Lcom/slack/circuit/runtime/screen/Screen;)Lcom/slack/circuitx/navigation/intercepting/InterceptedGoToResult;
 	public fun pop (Ljava/util/List;Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuitx/navigation/intercepting/InterceptedPopResult;
-	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult;
+	public fun resetRoot (Ljava/util/List;Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResetRootResult;
 }
 
 public final class com/slack/circuitx/navigation/intercepting/NavigationInterceptor$Companion {

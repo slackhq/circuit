@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -140,7 +141,11 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
   }
 }
 
-@OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+  ExperimentalCircuitApi::class,
+  ExperimentalSharedTransitionApi::class,
+  ExperimentalMaterial3AdaptiveApi::class,
+)
 @Composable
 fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElementTransitionLayout {
   val eventSink = rememberUpdatedState(state.eventSink)
@@ -173,11 +178,11 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
       decoration =
         remember(circuit.animatedScreenTransforms, circuit.animatedNavDecoratorFactory) {
-          AdaptiveNavDecoration(
+          ListDetailNavDecoration(
             screenTransforms = circuit.animatedScreenTransforms,
             normalDecoratorFactory = circuit.animatedNavDecoratorFactory,
             detailPaneDecoratorFactory = GestureNavigationDecorationFactory(),
-            isDetailPane = { it.screen is DetailScreen },
+            showInDetailPane = { it.screen is DetailScreen },
           )
         },
     )

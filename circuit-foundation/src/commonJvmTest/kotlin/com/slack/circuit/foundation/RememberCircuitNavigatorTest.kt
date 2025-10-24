@@ -94,15 +94,15 @@ private class FakeBackStack : BackStack<BackStack.Record> {
   override val rootRecord: BackStack.Record?
     get() = stack.lastOrNull()
 
-  override fun push(record: BackStack.Record, resultKey: String?): Boolean {
+  override fun push(record: BackStack.Record): Boolean {
     return stack.add(record)
   }
 
-  override fun push(screen: Screen, resultKey: String?): Boolean {
+  override fun push(screen: Screen): Boolean {
     return stack.add(FakeBackStackRecord(screen.toString(), screen))
   }
 
-  override fun pop(result: PopResult?): BackStack.Record? {
+  override fun pop(): BackStack.Record? {
     return stack.removeFirstOrNull()
   }
 
@@ -126,8 +126,5 @@ private class FakeBackStack : BackStack<BackStack.Record> {
   }
 
   class FakeBackStackRecord(override val key: String, override val screen: Screen) :
-    BackStack.Record {
-
-    override suspend fun awaitResult(key: String): PopResult? = null
-  }
+    BackStack.Record
 }

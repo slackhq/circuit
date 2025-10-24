@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import app.cash.turbine.Turbine
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.CircuitUiState
@@ -65,15 +66,15 @@ private fun ComposeContentTestRule.setCircuitContent(circuit: Circuit): Saveable
   lateinit var backStack: SaveableBackStack
   setContent {
     CircuitCompositionLocals(circuit) {
-      val saveableBackStack = rememberSaveableBackStack(TestScreen) { backStack = this }
+      backStack = rememberSaveableBackStack(TestScreen)
       val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
-      NavigableCircuitContent(navigator = navigator, backStack = saveableBackStack)
+      NavigableCircuitContent(navigator = navigator, backStack = backStack)
     }
   }
   return backStack
 }
 
-private val SaveableBackStack.screens
+private val BackStack<*>.screens
   get() = map { it.screen }
 
 private data class State(val resultCount: TestPopResult? = null, val eventSink: () -> Unit) :

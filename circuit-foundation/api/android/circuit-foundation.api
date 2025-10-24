@@ -1,7 +1,10 @@
 public final class com/slack/circuit/foundation/AnsweringNavigatorKt {
 	public static final fun answeringNavigationAvailable (Landroidx/compose/runtime/Composer;I)Z
-	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
 	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
+}
+
+public final class com/slack/circuit/foundation/AnsweringResultHandler$Companion {
+	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/foundation/Circuit {
@@ -168,6 +171,7 @@ public final class com/slack/circuit/foundation/NavEventKt {
 
 public final class com/slack/circuit/foundation/NavigableCircuitContentKt {
 	public static final fun NavigableCircuitContent (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/backstack/BackStack;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/foundation/Circuit;Ljava/util/Map;Lcom/slack/circuit/backstack/NavDecoration;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getLocalAnsweringResultHandler ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 	public static final fun getLocalBackStack ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

@@ -51,7 +51,7 @@ For more details on handling deep links and manipulating the back stack, refer t
 
 ## Results
 
-In some cases, it makes sense for a screen to return a result to the previous screen. This is done by using the an _answering Navigator_ pattern in Circuit.
+In some cases, it makes sense for a screen to return a result to the previous screen. This is done by using the _answering Navigator_ pattern in Circuit.
 
 The primary entry point for requesting a result is the `rememberAnsweringNavigator` API, which takes a `Navigator` or `BackStack` and `PopResult` type and returns a navigator that can go to a screen and await a result.
 

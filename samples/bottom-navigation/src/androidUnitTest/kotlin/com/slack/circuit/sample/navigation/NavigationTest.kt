@@ -16,7 +16,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -39,7 +39,7 @@ class NavigationTest {
   fun `Test savable, fast multi-root reset`() {
     with(composeTestRule) {
       val tabs = TabScreen.all
-      lateinit var backStack: SaveableBackStack
+      lateinit var backStack: BackStack<*>
       lateinit var navigator: Navigator
       setTestContent(tabs) {
         backStack = rememberSaveableBackStack(tabs.first())

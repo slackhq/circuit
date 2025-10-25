@@ -12,6 +12,8 @@ Result delivery is now handled by `NavigableCircuitContent` via an internal `Ans
 handling APIs have been removed from `BackStack` and `SaveableBackStack` as this is now purely a navigation concern. This
 separates result handling concerns from the backstack implementation and provides better encapsulation.
 
+The callback block in `rememberAnsweringNavigator` is no longer suspendable as it was never intended for any long running operations.
+
 ### Behaviour Changes:
 
 On iOS `GestureNavigationDecorationFactory` now uses `IOSPredictiveBackNavDecorator` instead of  `CupertinoGestureNavigationDecorator`.

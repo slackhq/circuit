@@ -54,6 +54,8 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sample.navigation.ListDetailScaffoldStyle.Companion.defaultListDetailScaffoldStyle
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CancellationException
 
@@ -77,6 +79,8 @@ private val Primary =
     tertiary = PaneAdaptedValue.Hidden,
   )
 
+object AdaptiveListDetailAnimatedScope : AnimatedScope
+
 /**
  * A [NavDecoration] that displays navigation content in a list-detail layout using Material 3's
  * adaptive pane scaffold.
@@ -86,7 +90,7 @@ private val Primary =
  */
 @ExperimentalMaterial3AdaptiveApi
 @OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
-class ListDetailNavDecoration(
+class AdaptiveListDetailNavDecoration(
   screenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
   normalDecoratorFactory: AnimatedNavDecorator.Factory,
   detailPaneDecoratorFactory: AnimatedNavDecorator.Factory,
@@ -121,24 +125,26 @@ class ListDetailNavDecoration(
     // - Wide enough show as list detail panes
     // - Otherwise stack normally
     AnimatedContent(paneScaffoldStyle.shouldUsePaneLayout) { shouldUsePaneLayout ->
-      if (shouldUsePaneLayout) {
-        // todo I had expected the `PaneContent` retains to work with just the navigable_registry
-        rememberRetainedStateHolder().RetainedStateProvider("list-detail-${args.first().key}") {
-          ListDetailContent(
+      ProvideAnimatedTransitionScope(AdaptiveListDetailAnimatedScope, this) {
+        if (shouldUsePaneLayout) {
+          // todo I had expected the `PaneContent` retains to work with just the navigable_registry
+          rememberRetainedStateHolder().RetainedStateProvider("list-detail-${args.first().key}") {
+            ListDetailContent(
+              args = args,
+              navigator = navigator,
+              listDetailScaffoldStyle = paneScaffoldStyle,
+              modifier = modifier,
+              content = content,
+            )
+          }
+        } else {
+          delegate.DecoratedContent(
             args = args,
             navigator = navigator,
-            listDetailScaffoldStyle = paneScaffoldStyle,
             modifier = modifier,
             content = content,
           )
         }
-      } else {
-        delegate.DecoratedContent(
-          args = args,
-          navigator = navigator,
-          modifier = modifier,
-          content = content,
-        )
       }
     }
   }
@@ -326,7 +332,7 @@ private fun Density.paneExpansionAnchors(
  * [showInDetailPane] predicate.
  */
 @Composable
-private fun <T : NavArgument> rememberListDetailNavArguments(
+internal fun <T : NavArgument> rememberListDetailNavArguments(
   args: List<T>,
   showInDetailPane: (T) -> Boolean,
 ): Pair<List<T>, Map<T, List<T>>> =

@@ -20,7 +20,6 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import kotlinx.coroutines.CoroutineScope
 
 /**
  * Returns whether or not answering navigation is available. This is essentially a proxy for whether
@@ -38,7 +37,7 @@ public fun answeringNavigationAvailable(): Boolean =
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
-  noinline block: suspend CoroutineScope.(result: T) -> Unit,
+  noinline block: (result: T) -> Unit,
 ): GoToNavigator = rememberAnsweringNavigator(fallbackNavigator, T::class, block)
 
 /**
@@ -50,7 +49,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 public fun <T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
   resultType: KClass<T>,
-  block: suspend CoroutineScope.(result: T) -> Unit,
+  block: (result: T) -> Unit,
 ): GoToNavigator {
   val backStack = LocalBackStack.current ?: return fallbackNavigator
   val resultHandler = LocalAnsweringResultHandler.current ?: return fallbackNavigator
@@ -66,7 +65,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
   answeringResultHandler: AnsweringResultHandler,
-  noinline block: suspend CoroutineScope.(result: T) -> Unit,
+  noinline block: (result: T) -> Unit,
 ): GoToNavigator {
   return rememberAnsweringNavigator(backStack, answeringResultHandler, T::class, block)
 }
@@ -103,7 +102,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   backStack: BackStack<out BackStack.Record>,
   answeringResultHandler: AnsweringResultHandler,
   resultType: KClass<T>,
-  block: suspend CoroutineScope.(result: T) -> Unit,
+  block: (result: T) -> Unit,
 ): GoToNavigator {
   val currentBackStack by rememberUpdatedState(backStack)
   val currentResultType by rememberUpdatedState(resultType)

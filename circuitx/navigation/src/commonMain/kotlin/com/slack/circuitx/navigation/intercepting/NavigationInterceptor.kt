@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -18,15 +19,20 @@ public interface NavigationInterceptor {
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun goTo(peekBackStack: List<Screen>, screen: Screen): InterceptedGoToResult = Skipped
+  public fun goTo(
+    screen: Screen,
+    navigationContext: NavigationContext = NoOpNavigationContext,
+  ): InterceptedGoToResult = Skipped
 
   /**
-   * Navigates back looking at the [peekBackStack], returning a [InterceptedPopResult] for the
-   * navigation.
+   * Navigates back in the back stack, returning a [InterceptedPopResult] for the navigation.
    *
    * By default this will skip intercepting the navigation and return [Skipped].
    */
-  public fun pop(peekBackStack: List<Screen>, result: PopResult?): InterceptedPopResult = Skipped
+  public fun pop(
+    result: PopResult?,
+    navigationContext: NavigationContext = NoOpNavigationContext,
+  ): InterceptedPopResult = Skipped
 
   /**
    * Resets the back stack to the [newRoot], returning a [InterceptedResetRootResult] for the
@@ -35,9 +41,9 @@ public interface NavigationInterceptor {
    * By default this will skip intercepting the navigation and return [Skipped].
    */
   public fun resetRoot(
-    peekBackStack: List<Screen>,
     newRoot: Screen,
     options: StateOptions,
+    navigationContext: NavigationContext = NoOpNavigationContext,
   ): InterceptedResetRootResult = Skipped
 
   public companion object {
@@ -70,7 +76,7 @@ public sealed interface InterceptedResetRootResult {
 /** The result of [NavigationInterceptor.pop] being intercepted. */
 public sealed interface InterceptedPopResult
 
-/** The result of the [NavigationInterceptor] intercepting [goTo] or [pop]. */
+/** The result of the [NavigationInterceptor] intercepting [Navigator.goTo] or [Navigator.pop]. */
 public sealed interface InterceptedResult :
   InterceptedGoToResult, InterceptedPopResult, InterceptedResetRootResult {
 

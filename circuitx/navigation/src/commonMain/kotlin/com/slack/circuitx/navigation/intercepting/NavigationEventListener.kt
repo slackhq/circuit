@@ -16,18 +16,20 @@ public interface NavigationEventListener {
    *
    * @param backStack The state of the back stack after the change.
    */
-  public fun onBackStackChanged(backStack: List<Screen>) {}
+  public fun onBackStackChanged(
+    backStack: List<Screen>,
+    navigationContext: NavigationContext = NoOpNavigationContext,
+  ) {}
 
   /**
    * Called when the [InterceptingNavigator] goes to the [screen].
    *
    * This is not called if navigation was intercepted.
    *
-   * @param peekBackStack The state of the back stack before navigation.
    * @param screen The screen that was navigated to.
    * @see InterceptingNavigator.goTo
    */
-  public fun goTo(peekBackStack: List<Screen>, screen: Screen) {}
+  public fun goTo(screen: Screen, navigationContext: NavigationContext = NoOpNavigationContext) {}
 
   /**
    * Called when the [InterceptingNavigator] pops the back stack.
@@ -38,7 +40,10 @@ public interface NavigationEventListener {
    * @param result The optional pop result passed to [Navigator.pop].
    * @see InterceptingNavigator.pop
    */
-  public fun pop(peekBackStack: List<Screen>, result: PopResult?) {}
+  public fun pop(
+    result: PopResult?,
+    navigationContext: NavigationContext = NoOpNavigationContext,
+  ) {}
 
   /**
    * Called when the [InterceptingNavigator] resets the back stack to [newRoot].
@@ -50,5 +55,9 @@ public interface NavigationEventListener {
    * @param options State options to apply when resetting the root.
    * @see InterceptingNavigator.resetRoot
    */
-  public fun resetRoot(peekBackStack: List<Screen>, newRoot: Screen, options: StateOptions) {}
+  public fun resetRoot(
+    newRoot: Screen,
+    options: StateOptions,
+    navigationContext: NavigationContext = NoOpNavigationContext,
+  ) {}
 }

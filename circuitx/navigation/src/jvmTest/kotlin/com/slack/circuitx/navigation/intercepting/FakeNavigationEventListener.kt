@@ -26,8 +26,14 @@ class FakeNavigationEventListener : NavigationEventListener {
     popEvents.add(PopEvent(navigationContext.peekBackStack().orEmpty(), result))
   }
 
-  override fun resetRoot(newRoot: Screen, options: StateOptions, navigationContext: NavigationContext) {
-    resetRootEvents.add(ResetRootEvent(navigationContext.peekBackStack().orEmpty(), newRoot, options))
+  override fun resetRoot(
+    newRoot: Screen,
+    options: StateOptions,
+    navigationContext: NavigationContext,
+  ) {
+    resetRootEvents.add(
+      ResetRootEvent(navigationContext.peekBackStack().orEmpty(), newRoot, options)
+    )
   }
 
   /** Awaits the next [goTo] or throws if no goTo are performed. */

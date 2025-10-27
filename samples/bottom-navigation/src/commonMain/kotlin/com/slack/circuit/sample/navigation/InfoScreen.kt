@@ -7,6 +7,7 @@ import com.slack.circuit.internal.runtime.IgnoreOnParcel
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
+import com.slack.circuitx.navigation.intercepting.NavigationContext
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 
 @Parcelize

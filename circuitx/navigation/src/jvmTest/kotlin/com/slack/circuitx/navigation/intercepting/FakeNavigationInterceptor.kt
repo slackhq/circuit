@@ -26,7 +26,9 @@ class FakeNavigationInterceptor : NavigationInterceptor {
 
   override fun pop(result: PopResult?, navigationContext: NavigationContext): InterceptedPopResult {
     val interceptorPopResult = popResults.removeFirst()
-    popEvents.add(PopEvent(navigationContext.peekBackStack().orEmpty(), result, interceptorPopResult))
+    popEvents.add(
+      PopEvent(navigationContext.peekBackStack().orEmpty(), result, interceptorPopResult)
+    )
     return interceptorPopResult
   }
 
@@ -37,7 +39,12 @@ class FakeNavigationInterceptor : NavigationInterceptor {
   ): InterceptedResetRootResult {
     val interceptorResetRootResult = resetRootResults.removeFirst()
     resetRootEvents.add(
-      ResetRootEvent(navigationContext.peekBackStack().orEmpty(), newRoot, interceptorResetRootResult, options)
+      ResetRootEvent(
+        navigationContext.peekBackStack().orEmpty(),
+        newRoot,
+        interceptorResetRootResult,
+        options,
+      )
     )
     return interceptorResetRootResult
   }

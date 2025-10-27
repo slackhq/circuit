@@ -15,7 +15,7 @@ object InfoScreen : Screen {
 }
 
 class InfoScreenInterceptor(private val uriHandler: UriHandler) : NavigationInterceptor {
-  override fun goTo(peekBackStack: List<Screen>, screen: Screen): InterceptedGoToResult {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedGoToResult {
     return when (screen) {
       is InfoScreen -> {
         uriHandler.openUri(screen.url)

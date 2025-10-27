@@ -18,25 +18,27 @@ class FakeNavigationInterceptor : NavigationInterceptor {
   private val popResults = mutableListOf<InterceptedPopResult>()
   private val resetRootResults = mutableListOf<InterceptedResetRootResult>()
 
-  override fun goTo(peekBackStack: List<Screen>, screen: Screen): InterceptedGoToResult {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedGoToResult {
     val result = goToResults.removeFirst()
-    goToEvents.add(GoToEvent(peekBackStack, screen, result))
+    goToEvents.add(GoToEvent(navigationContext.peekBackStack().orEmpty(), screen, result))
     return result
   }
 
-  override fun pop(peekBackStack: List<Screen>, result: PopResult?): InterceptedPopResult {
+  override fun pop(result: PopResult?, navigationContext: NavigationContext): InterceptedPopResult {
     val interceptorPopResult = popResults.removeFirst()
-    popEvents.add(PopEvent(peekBackStack, result, interceptorPopResult))
+    popEvents.add(PopEvent(navigationContext.peekBackStack().orEmpty(), result, interceptorPopResult))
     return interceptorPopResult
   }
 
   override fun resetRoot(
-    peekBackStack: List<Screen>,
     newRoot: Screen,
     options: StateOptions,
+    navigationContext: NavigationContext,
   ): InterceptedResetRootResult {
     val interceptorResetRootResult = resetRootResults.removeFirst()
-    resetRootEvents.add(ResetRootEvent(peekBackStack, newRoot, interceptorResetRootResult, options))
+    resetRootEvents.add(
+      ResetRootEvent(navigationContext.peekBackStack().orEmpty(), newRoot, interceptorResetRootResult, options)
+    )
     return interceptorResetRootResult
   }
 

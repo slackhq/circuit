@@ -9,16 +9,17 @@ import com.slack.circuit.runtime.screen.Screen
 public class LoggingNavigationEventListener(private val logger: NavigationLogger) :
   NavigationEventListener {
 
-  override fun onBackStackChanged(backStack: List<Screen>) {
+  override fun onBackStackChanged(backStack: List<Screen>, navigationContext: NavigationContext) {
     logger.log("Backstack changed ${backStack.joinToString { it.loggingName() ?: "" }}")
   }
 
-  override fun goTo(peekBackStack: List<Screen>, screen: Screen) {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext) {
     logger.log("goTo ${screen.loggingName()}")
   }
 
-  override fun pop(peekBackStack: List<Screen>, result: PopResult?) {
-    logger.log("pop ${peekBackStack.firstOrNull()?.loggingName()}")
+  override fun pop(result: PopResult?, navigationContext: NavigationContext) {
+    // Logs the screen that was popped.
+    logger.log("pop ${navigationContext.peekBackStack()?.firstOrNull()?.loggingName() ?: ""}")
   }
 }
 

@@ -11,8 +11,9 @@ benchmark = "1.4.1"
 coil = "3.3.0"
 compose-hotReload = "1.0.0-rc02"
 compose-jb = "1.10.0-alpha03"
-compose-jb-material3 = "1.10.0-alpha03"
 compose-jb-material-icons-core = "1.7.3"
+compose-jb-material3 = "1.10.0-alpha03"
+compose-navigationevent-jb = "1.0.0-alpha02"
 dagger = "2.57.2"
 datastore = "1.1.7"
 detekt = "1.23.8"
@@ -120,6 +121,7 @@ compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", v
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-jb-material-icons-core" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb-material3" }
+compose-navigationevent = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "compose-navigationevent-jb" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }

@@ -6,6 +6,8 @@ androidx.collection:collection
 androidx.compose.runtime:runtime-annotation-jvm
 androidx.compose.runtime:runtime-annotation
 androidx.compose.runtime:runtime-desktop
+androidx.compose.runtime:runtime-retain-desktop
+androidx.compose.runtime:runtime-retain
 androidx.compose.runtime:runtime-saveable-desktop
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
@@ -19,6 +21,8 @@ androidx.lifecycle:lifecycle-viewmodel-desktop
 androidx.lifecycle:lifecycle-viewmodel-savedstate-desktop
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
+androidx.navigationevent:navigationevent-desktop
+androidx.navigationevent:navigationevent
 androidx.savedstate:savedstate-compose-desktop
 androidx.savedstate:savedstate-compose
 androidx.savedstate:savedstate-desktop
@@ -29,6 +33,9 @@ org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose
 org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
+org.jetbrains.androidx.savedstate:savedstate-compose-desktop
+org.jetbrains.androidx.savedstate:savedstate-compose
+org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.annotation-internal:annotation
 org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-desktop

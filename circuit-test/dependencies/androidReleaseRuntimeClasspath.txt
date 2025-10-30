@@ -21,6 +21,8 @@ androidx.compose.foundation:foundation
 androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime-annotation-android
 androidx.compose.runtime:runtime-annotation
+androidx.compose.runtime:runtime-retain-android
+androidx.compose.runtime:runtime-retain
 androidx.compose.runtime:runtime-saveable-android
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
@@ -41,12 +43,17 @@ androidx.core:core-ktx
 androidx.core:core-viewtree
 androidx.core:core
 androidx.customview:customview-poolingcontainer
+androidx.documentfile:documentfile
+androidx.dynamicanimation:dynamicanimation
 androidx.emoji2:emoji2
 androidx.graphics:graphics-path
 androidx.interpolator:interpolator
+androidx.legacy:legacy-support-core-utils
 androidx.lifecycle:lifecycle-common-jvm
 androidx.lifecycle:lifecycle-common
+androidx.lifecycle:lifecycle-livedata-core-ktx
 androidx.lifecycle:lifecycle-livedata-core
+androidx.lifecycle:lifecycle-livedata
 androidx.lifecycle:lifecycle-process
 androidx.lifecycle:lifecycle-runtime-android
 androidx.lifecycle:lifecycle-runtime-compose-android
@@ -61,6 +68,9 @@ androidx.lifecycle:lifecycle-viewmodel-ktx
 androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
+androidx.loader:loader
+androidx.localbroadcastmanager:localbroadcastmanager
+androidx.print:print
 androidx.profileinstaller:profileinstaller
 androidx.savedstate:savedstate-android
 androidx.savedstate:savedstate-compose-android
@@ -69,7 +79,11 @@ androidx.savedstate:savedstate-ktx
 androidx.savedstate:savedstate
 androidx.startup:startup-runtime
 androidx.tracing:tracing
+androidx.transition:transition
 androidx.versionedparcelable:versionedparcelable
+androidx.window:window-core-android
+androidx.window:window-core
+androidx.window:window
 app.cash.molecule:molecule-runtime-android
 app.cash.molecule:molecule-runtime
 app.cash.turbine:turbine-jvm
@@ -81,6 +95,8 @@ org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
+org.jetbrains.androidx.savedstate:savedstate-compose
+org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation
 org.jetbrains.compose.annotation-internal:annotation

@@ -4,7 +4,7 @@ package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
@@ -228,7 +228,7 @@ private fun PhotoPager(
             Modifier.sharedBounds(
               sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(id, page)),
               animatedVisibilityScope = animatedVisibilityScope,
-              placeHolderSize = animatedSize,
+              placeholderSize = AnimatedSize,
               resizeMode = RemeasureToBounds,
               enter = fadeIn(animationSpec = tween(durationMillis = 20, easing = EaseInExpo)),
               exit = fadeOut(animationSpec = tween(durationMillis = 20, easing = EaseOutExpo)),

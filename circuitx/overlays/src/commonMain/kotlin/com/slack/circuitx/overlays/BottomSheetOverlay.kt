@@ -147,6 +147,7 @@ private constructor(
     ModalBottomSheet(
       content = {
         val coroutineScope = rememberStableCoroutineScope()
+        @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
         BackHandler(enabled = sheetState.isVisible) {
           coroutineScope
             .launch { sheetState.hide() }

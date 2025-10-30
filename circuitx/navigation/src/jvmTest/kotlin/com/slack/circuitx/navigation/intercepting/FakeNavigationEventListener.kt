@@ -14,20 +14,26 @@ class FakeNavigationEventListener : NavigationEventListener {
   private val popEvents = Turbine<PopEvent>()
   private val resetRootEvents = Turbine<ResetRootEvent>()
 
-  override fun onBackStackChanged(backStack: List<Screen>) {
+  override fun onBackStackChanged(backStack: List<Screen>, navigationContext: NavigationContext) {
     onBackStackChangedEvents.add(OnBackStackChangedEvent(backStack))
   }
 
-  override fun goTo(screen: Screen) {
-    goToEvents.add(GoToEvent(screen))
+  override fun goTo(screen: Screen, navigationContext: NavigationContext) {
+    goToEvents.add(GoToEvent(navigationContext.peekBackStack().orEmpty(), screen))
   }
 
-  override fun pop(backStack: List<Screen>, result: PopResult?) {
-    popEvents.add(PopEvent(backStack, result))
+  override fun pop(result: PopResult?, navigationContext: NavigationContext) {
+    popEvents.add(PopEvent(navigationContext.peekBackStack().orEmpty(), result))
   }
 
-  override fun resetRoot(newRoot: Screen, options: StateOptions) {
-    resetRootEvents.add(ResetRootEvent(newRoot, options))
+  override fun resetRoot(
+    newRoot: Screen,
+    options: StateOptions,
+    navigationContext: NavigationContext,
+  ) {
+    resetRootEvents.add(
+      ResetRootEvent(navigationContext.peekBackStack().orEmpty(), newRoot, options)
+    )
   }
 
   /** Awaits the next [goTo] or throws if no goTo are performed. */
@@ -61,9 +67,13 @@ class FakeNavigationEventListener : NavigationEventListener {
 
   data class OnBackStackChangedEvent(val backStack: List<Screen>)
 
-  data class GoToEvent(val screen: Screen)
+  data class GoToEvent(val backStack: List<Screen>, val screen: Screen)
 
   data class PopEvent(val backStack: List<Screen>, val result: PopResult? = null)
 
-  data class ResetRootEvent(val newRoot: Screen, val options: StateOptions = StateOptions.Default)
+  data class ResetRootEvent(
+    val backStack: List<Screen>,
+    val newRoot: Screen,
+    val options: StateOptions = StateOptions.Default,
+  )
 }

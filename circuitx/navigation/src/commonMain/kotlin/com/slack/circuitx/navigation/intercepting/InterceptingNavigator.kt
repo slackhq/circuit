@@ -111,8 +111,9 @@ public class InterceptingNavigator(
 ) : Navigator by delegate {
 
   override fun goTo(screen: Screen): Boolean {
+    val navigationContext = InterceptingNavigationContext(this)
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.goTo(screen)) {
+      when (val interceptedResult = interceptor.goTo(screen, navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return true
@@ -127,14 +128,14 @@ public class InterceptingNavigator(
         }
       }
     }
-    eventListeners.forEach { it.goTo(screen) }
+    eventListeners.forEach { it.goTo(screen, navigationContext) }
     return delegate.goTo(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
-    val backStack = peekBackStack()
+    val navigationContext = InterceptingNavigationContext(this)
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.pop(backStack, result)) {
+      when (val interceptedResult = interceptor.pop(result, navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return null
@@ -145,13 +146,14 @@ public class InterceptingNavigator(
         }
       }
     }
-    eventListeners.forEach { it.pop(backStack, result) }
+    eventListeners.forEach { it.pop(result, navigationContext) }
     return delegate.pop(result)
   }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
+    val navigationContext = InterceptingNavigationContext(this)
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.resetRoot(newRoot, options)) {
+      when (val interceptedResult = interceptor.resetRoot(newRoot, options, navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return emptyList()
@@ -166,7 +168,7 @@ public class InterceptingNavigator(
         }
       }
     }
-    eventListeners.forEach { it.resetRoot(newRoot, options) }
+    eventListeners.forEach { it.resetRoot(newRoot, options, navigationContext) }
     return delegate.resetRoot(newRoot, options)
   }
 
@@ -194,13 +196,25 @@ public class InterceptingNavigator(
   }
 }
 
+private class InterceptingNavigationContext(
+  private val interceptingNavigator: InterceptingNavigator
+) : NavigationContext {
+
+  override fun peek(): Screen? = interceptingNavigator.peek()
+
+  override fun peekBackStack(): List<Screen> = interceptingNavigator.peekBackStack()
+}
+
 /** A SideEffect that notifies the [NavigationEventListener] when the backstack changes. */
 @Composable
 private fun BackStackChangedEffect(
-  navigator: Navigator,
+  navigator: InterceptingNavigator,
   eventListeners: List<NavigationEventListener>,
 ) {
-  // Key using the screen as it'll be the same through rotation, as the record key will change.
+  // Key using the screens as it'll be the same through rotation, as the record key will change.
   val screens = navigator.peekBackStack()
-  rememberRetained(screens) { eventListeners.forEach { it.onBackStackChanged(screens) } }
+  rememberRetained(screens) {
+    val navigationContext = InterceptingNavigationContext(navigator)
+    eventListeners.forEach { it.onBackStackChanged(screens, navigationContext) }
+  }
 }

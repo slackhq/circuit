@@ -3,7 +3,7 @@
 package com.slack.circuit.star.petlist
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.animation.core.EaseInCubic
@@ -460,7 +460,7 @@ private fun PetListGridItem(
         Modifier.sharedBounds(
             sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id, 0)),
             animatedVisibilityScope = animatedScope,
-            placeHolderSize = animatedSize,
+            placeholderSize = AnimatedSize,
             resizeMode = RemeasureToBounds,
             enter = fadeIn(animationSpec = tween(durationMillis = 80, easing = EaseInExpo)),
             exit = fadeOut(animationSpec = tween(durationMillis = 80, easing = EaseOutExpo)),

@@ -74,6 +74,7 @@ public fun rememberCircuitNavigator(
   }
   var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
   var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
+  @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
   BackHandler(
     enabled = enableBackHandler && enableRootBackHandler && backStack.size > 1,
     onBack = {

@@ -90,6 +90,7 @@ class BackNavigationTest {
             )
         } else {
           navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+          @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
           BackHandler { navigator.pop() }
         }
         NavigableCircuitContent(
@@ -118,6 +119,7 @@ fun createTestBackCircuit(
 fun TestBackContent(state: TestState, modifier: Modifier = Modifier) {
   TestContent(state, modifier)
   if (state.label.contains("root", true)) {
+    @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
     BackHandler {}
   }
 }

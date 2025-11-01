@@ -66,6 +66,7 @@ public fun rememberInterceptingNavigator(
     }
     var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
     var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
+    @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
     BackHandler(enableRootBackHandler) {
       // Root pop check to prevent an infinite loop if this is used with the Android variant of
       // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need to

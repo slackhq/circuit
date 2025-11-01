@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.test.assertTextEquals
@@ -76,10 +79,11 @@ class NavigatorBackHandlerTest {
   @Test
   fun nestedAndroidNavigatorRootPopBackHandler() {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
-    var outerBackCount = 0
+    var outerBackCount by mutableStateOf(0)
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
+        @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
         BackHandler(enabled = true) { outerBackCount++ }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)
@@ -104,10 +108,11 @@ class NavigatorBackHandlerTest {
   @Test
   fun nestedAndroidNavigatorRootDispatchedBackHandler() {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
-    var outerBackCount = 0
+    var outerBackCount by mutableStateOf(0)
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
+        @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
         BackHandler(enabled = true) { outerBackCount++ }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)

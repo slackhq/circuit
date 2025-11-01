@@ -42,9 +42,10 @@ kotlin {
     }
     commonTest {
       dependencies {
-        implementation(libs.lifecycle.runtime.compose)
+        implementation(libs.compose.navigationevent)
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
+        implementation(libs.lifecycle.runtime.compose)
         implementation(libs.molecule.runtime)
         implementation(libs.testing.assertk)
         implementation(libs.turbine)

@@ -63,6 +63,7 @@ internal class FullScreenOverlay<S : Screen>(
     val dispatchingNavigator = remember {
       DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
     }
+    @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
     PredictiveBackHandler(enabled = true) { progress ->
       try {
         progress.collect { transitionController.seek(it.progress) }

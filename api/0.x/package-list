@@ -1,6 +1,6 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
-
+$dokka.location:com.slack.circuit.retained//produceRetainedState/#TypeParam(bounds=[kotlin.Any?])#kotlin.Any?#kotlin.coroutines.SuspendFunction1[androidx.compose.runtime.ProduceStateScope[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/circuit-retained/com.slack.circuit.retained/[common]produce-retained-state.html
 module:backstack
 com.slack.circuit.backstack
 module:circuit-codegen

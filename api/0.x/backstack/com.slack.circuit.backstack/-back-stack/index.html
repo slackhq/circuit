@@ -1,22 +1,22 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>BackStack</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
-    <script>document.documentElement.classList.replace("no-js","js");</script>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
-    if (storage == null) {
+      if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    } else {
+      } else {
         const savedDarkMode = JSON.parse(storage)
-        if(savedDarkMode === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    }
+      }
     </script>
 <script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
@@ -24,19 +24,17 @@
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
-<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
-<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
-<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
 <body>
-    <div class="root">
-    <nav class="navigation theme-dark" id="navigation-wrapper">
-<a class="library-name--link" href="../../../index.html">
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
                     circuit-root
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
@@ -44,13 +42,13 @@
         <div class="library-version" id="library-version">
         </div>
         <div class="navigation-controls">
-        <div class="filter-section filter-section_loading" id="filter-section">
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":backstack/commonMain">common</button>
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":backstack/commonMain">common</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
-                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
-                    <div class="dropdown--header"><span>Platform filter</span>
-                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
@@ -64,45 +62,47 @@
                 </ul>
                 <div class="dropdown--overlay"></div>
             </div>
-        </div>
+        </ul>
             <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
             </button>
             <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
                 API
             </div>
         </div>
-    </nav>
-        <div id="container">
-            <div class="sidebar" id="leftColumn">
-                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
-                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
-                        <div class="dropdown--header">
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
                             <span>
                                     circuit-root
                             </span>
-                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
-                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
-                            </button>
-                        </div>
-                        <div class="sidebar--inner" id="sideMenu"></div>
-                    </ul>
-                    <div class="dropdown--overlay"></div>
-                </div>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
-            <div id="main">
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
 <div class="main-content" data-page-type="classlike" id="content" pageids="backstack::com.slack.circuit.backstack/BackStack///PointingToDeclaration//-880635718">
   <div class="breadcrumbs"><a href="../../index.html">backstack</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.backstack</a><span class="delimiter">/</span><span class="current">BackStack</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Back</span><wbr><span><span>Stack</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="index.html">BackStack</a><span class="token operator">&lt;</span><a href="index.html">R</a><span class="token operator"> : </span><a href="-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterable/index.html">Iterable</a><span class="token operator">&lt;</span><a href="index.html">R</a><span class="token operator">&gt; </span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/backstack/src/commonMain/kotlin/com/slack/circuit/backstack/BackStack.kt#L31">source</a>)</span></span></div><p class="paragraph">A caller-supplied stack of <a href="-record/index.html">Record</a>s for presentation with a <code class="lang-kotlin">Navigator</code>. Iteration order is top-first (first element is the top of the stack).</p><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-saveable-back-stack/index.html">SaveableBackStack</a></div></span></div><div></div></div></div></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="index.html">BackStack</a><span class="token operator">&lt;</span><a href="index.html">R</a><span class="token operator"> : </span><a href="-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterable/index.html">Iterable</a><span class="token operator">&lt;</span><a href="index.html">R</a><span class="token operator">&gt; </span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/backstack/src/commonMain/kotlin/com/slack/circuit/backstack/BackStack.kt#L28">source</a>)</span></span></div><p class="paragraph">A caller-supplied stack of <a href="-record/index.html">Record</a>s for presentation with a <code class="lang-kotlin">Navigator</code>. Iteration order is top-first (first element is the top of the stack).</p><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-saveable-back-stack/index.html">SaveableBackStack</a></div></span></div><div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
-        <h2 class="">Types</h2>
+        <h2 class="tableheader">Types</h2>
         <div class="table"><a data-name="-2046656491%2FClasslikes%2F-880635718" anchor-label="Record" id="-2046656491%2FClasslikes%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-record/index.html"><span><span>Record</span></span></a></div>
@@ -119,9 +119,9 @@
         </div>
       </div>
       <div data-togglable="PROPERTY">
-        <h2 class="">Properties</h2>
+        <h2 class="tableheader">Properties</h2>
         <div class="table"><a data-name="-152437062%2FProperties%2F-880635718" anchor-label="isAtRoot" id="-152437062%2FProperties%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../is-at-root.html"><span>is</span><wbr><span>At</span><wbr><span><span>Root</span></span></a></div>
@@ -136,7 +136,7 @@
             </div>
           </div>
 <a data-name="958001468%2FProperties%2F-880635718" anchor-label="isEmpty" id="958001468%2FProperties%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../is-empty.html"><span>is</span><wbr><span><span>Empty</span></span></a></div>
@@ -145,13 +145,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../is-empty.html">isEmpty</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">true</code> if the <a href="index.html">BackStack</a> contains no records. <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/index.html">BackStack.firstOrNull</a> will return <code class="lang-kotlin">null</code>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../is-empty.html">isEmpty</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph"><code class="lang-kotlin">true</code> if the <a href="index.html">BackStack</a> contains no records. <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/index.html">Iterable.firstOrNull</a> will return <code class="lang-kotlin">null</code>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-2130950562%2FProperties%2F-880635718" anchor-label="rootRecord" id="-2130950562%2FProperties%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="root-record.html"><span>root</span><wbr><span><span>Record</span></span></a></div>
@@ -166,7 +166,7 @@
             </div>
           </div>
 <a data-name="-706519824%2FProperties%2F-880635718" anchor-label="size" id="-706519824%2FProperties%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="size.html"><span><span>size</span></span></a></div>
@@ -181,7 +181,7 @@
             </div>
           </div>
 <a data-name="-51857693%2FProperties%2F-880635718" anchor-label="topRecord" id="-51857693%2FProperties%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="top-record.html"><span>top</span><wbr><span><span>Record</span></span></a></div>
@@ -198,9 +198,24 @@
         </div>
       </div>
       <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-506610094%2FFunctions%2F-880635718" anchor-label="containsRecord" id="-506610094%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1993172927%2FFunctions%2F-880635718" anchor-label="clearState" id="1993172927%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../clear-state.html"><span>clear</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1993172927%2FFunctions%2F-880635718"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../clear-state.html"><span class="token function">clearState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Clear any saved state from the <a href="index.html">BackStack</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-506610094%2FFunctions%2F-880635718" anchor-label="containsRecord" id="-506610094%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="contains-record.html"><span>contains</span><wbr><span><span>Record</span></span></a></div>
@@ -215,7 +230,7 @@
             </div>
           </div>
 <a data-name="-1532995660%2FFunctions%2F-880635718" anchor-label="isRecordReachable" id="-1532995660%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="is-record-reachable.html"><span>is</span><wbr><span>Record</span><wbr><span><span>Reachable</span></span></a></div>
@@ -230,7 +245,7 @@
             </div>
           </div>
 <a data-name="-858216167%2FFunctions%2F-880635718" anchor-label="iterator" id="-858216167%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="index.html#-858216167%2FFunctions%2F-880635718"><span><span>iterator</span></span></a></div>
@@ -244,23 +259,38 @@
               </div>
             </div>
           </div>
-<a data-name="-418268483%2FFunctions%2F-880635718" anchor-label="pop" id="-418268483%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+<a data-name="1239172851%2FFunctions%2F-880635718" anchor-label="peekState" id="1239172851%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="pop.html"><span><span>pop</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-418268483%2FFunctions%2F-880635718"></span>
+                  <div><a href="peek-state.html"><span>peek</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1239172851%2FFunctions%2F-880635718"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">result<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-pop-result/index.html">PopResult</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">R</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Attempt to pop the top item off of the back stack, returning the popped <a href="-record/index.html">Record</a> if popping was successful or <code class="lang-kotlin">null</code> if no entry was popped.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="peek-state.html"><span class="token function">peekState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Peek at the <a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a> in the internal state store that have been saved using <a href="save-state.html">saveState</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-208787976%2FFunctions%2F-880635718" anchor-label="pop" id="-208787976%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pop.html"><span><span>pop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-208787976%2FFunctions%2F-880635718"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">R</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Attempt to pop the top item off of the back stack, returning the popped <a href="-record/index.html">Record</a> if popping was successful or <code class="lang-kotlin">null</code> if no entry was popped.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-2029010390%2FFunctions%2F-880635718" anchor-label="popUntil" id="-2029010390%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="pop-until.html"><span>pop</span><wbr><span><span>Until</span></span></a></div>
@@ -269,28 +299,43 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="pop-until.html"><span class="token function">popUntil</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><a href="index.html">R</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.collections.immutable/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><a href="index.html">R</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Pop records off the top of the backstack until one is found that matches the given predicate.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="pop-until.html"><span class="token function">popUntil</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><a href="index.html">R</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="index.html">R</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Pop records off the top of the backstack until one is found that matches the given predicate.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1451486609%2FFunctions%2F-880635718" anchor-label="push" id="1451486609%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+<a data-name="2067755935%2FFunctions%2F-880635718" anchor-label="push" id="2067755935%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="push.html"><span><span>push</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1451486609%2FFunctions%2F-880635718"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2067755935%2FFunctions%2F-880635718"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">record<span class="token operator">: </span><a href="index.html">R</a><span class="token punctuation">, </span></span><span class="parameter ">resultKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Push a new <a href="-record/index.html">Record</a> onto the back stack. The new record will become the top of the stack.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter ">resultKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Push a new <a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a> onto the back stack. This will be enveloped in a <a href="-record/index.html">Record</a> and the new record will become the top of the stack.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">record<span class="token operator">: </span><a href="index.html">R</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Push a new <a href="-record/index.html">Record</a> onto the back stack. The new record will become the top of the stack.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push.html"><span class="token function">push</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Push a new <a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a> onto the back stack. This will be enveloped in a <a href="-record/index.html">Record</a> and the new record will become the top of the stack.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="783592126%2FFunctions%2F-880635718" anchor-label="removeState" id="783592126%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-state.html"><span>remove</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="783592126%2FFunctions%2F-880635718"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":backstack/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="remove-state.html"><span class="token function">removeState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screen<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Removes the state associated with the given <a href="remove-state.html">screen</a> from the internal state store.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-813714612%2FFunctions%2F-880635718" anchor-label="restoreState" id="-813714612%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="restore-state.html"><span>restore</span><wbr><span><span>State</span></span></a></div>
@@ -305,7 +350,7 @@
             </div>
           </div>
 <a data-name="-1751371883%2FFunctions%2F-880635718" anchor-label="saveState" id="-1751371883%2FFunctions%2F-880635718" data-filterable-set=":backstack/commonMain"></a>
-          <div class="table-row" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
+          <div class="table-row table-row_content" data-filterable-current=":backstack/commonMain" data-filterable-set=":backstack/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="save-state.html"><span>save</span><wbr><span><span>State</span></span></a></div>
@@ -325,17 +370,21 @@
   </div>
 </div>
     <div class="footer">
-        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
-        <span>© 2025 Copyright</span>
-        <span class="pull-right">
-            <span>Generated by </span>
-            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
-                <span>dokka</span>
-            </a>
-        </span>
-    </div>
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2025 Copyright</div>
+                </div>
             </div>
         </div>
     </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

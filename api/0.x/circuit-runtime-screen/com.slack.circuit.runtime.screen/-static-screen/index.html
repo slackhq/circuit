@@ -1,22 +1,22 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>StaticScreen</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
-    <script>document.documentElement.classList.replace("no-js","js");</script>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
-    if (storage == null) {
+      if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    } else {
+      } else {
         const savedDarkMode = JSON.parse(storage)
-        if(savedDarkMode === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    }
+      }
     </script>
 <script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
@@ -24,19 +24,17 @@
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
-<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
-<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
-<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
 <body>
-    <div class="root">
-    <nav class="navigation theme-dark" id="navigation-wrapper">
-<a class="library-name--link" href="../../../index.html">
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
                     circuit-root
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
@@ -44,17 +42,17 @@
         <div class="library-version" id="library-version">
         </div>
         <div class="navigation-controls">
-        <div class="filter-section filter-section_loading" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-runtime-screen/androidMain">android</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-screen/browserCommonMain">browserCommon</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-screen/commonMain">common</button>
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":circuit-runtime-screen/jvmMain">jvm</button>
-                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":circuit-runtime-screen/nativeMain">native</button>
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":circuit-runtime-screen/androidMain">android</button>
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":circuit-runtime-screen/commonMain">common</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":circuit-runtime-screen/jvmMain">jvm</button>
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":circuit-runtime-screen/nativeMain">native</button>
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":circuit-runtime-screen/webMain">web</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
-                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
-                    <div class="dropdown--header"><span>Platform filter</span>
-                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
@@ -63,13 +61,6 @@
                                 <input type="checkbox" class="checkbox--input" id=":circuit-runtime-screen/androidMain" data-filter=":circuit-runtime-screen/androidMain">
                                 <span class="checkbox--icon"></span>
                                 android
-                            </label>
-                        </li>
-                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
-                            <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":circuit-runtime-screen/browserCommonMain" data-filter=":circuit-runtime-screen/browserCommonMain">
-                                <span class="checkbox--icon"></span>
-                                browserCommon
                             </label>
                         </li>
                         <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
@@ -93,50 +84,59 @@
                                 native
                             </label>
                         </li>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-runtime-screen/webMain" data-filter=":circuit-runtime-screen/webMain">
+                                <span class="checkbox--icon"></span>
+                                web
+                            </label>
+                        </li>
                 </ul>
                 <div class="dropdown--overlay"></div>
             </div>
-        </div>
+        </ul>
             <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
             </button>
             <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
                 API
             </div>
         </div>
-    </nav>
-        <div id="container">
-            <div class="sidebar" id="leftColumn">
-                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
-                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
-                        <div class="dropdown--header">
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
                             <span>
                                     circuit-root
                             </span>
-                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
-                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
-                            </button>
-                        </div>
-                        <div class="sidebar--inner" id="sideMenu"></div>
-                    </ul>
-                    <div class="dropdown--overlay"></div>
-                </div>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
-            <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-runtime-screen::com.slack.circuit.runtime.screen/StaticScreen///PointingToDeclaration//-1241956272">
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuit-runtime-screen::com.slack.circuit.runtime.screen/StaticScreen///PointingToDeclaration//-2073418174">
   <div class="breadcrumbs"><a href="../../index.html">circuit-runtime-screen</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.runtime.screen</a><span class="delimiter">/</span><span class="current">StaticScreen</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Static</span><wbr><span><span>Screen</span></span></h1>
     <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
-      <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/androidMain" data-filterable-set=":circuit-runtime-screen/androidMain" data-active="" data-toggle=":circuit-runtime-screen/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/browserCommonMain" data-filterable-set=":circuit-runtime-screen/browserCommonMain" data-toggle=":circuit-runtime-screen/browserCommonMain">browserCommon</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/commonMain" data-filterable-set=":circuit-runtime-screen/commonMain" data-toggle=":circuit-runtime-screen/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/jvmMain" data-filterable-set=":circuit-runtime-screen/jvmMain" data-toggle=":circuit-runtime-screen/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/nativeMain" data-filterable-set=":circuit-runtime-screen/nativeMain" data-toggle=":circuit-runtime-screen/nativeMain">native</button></div>
-<div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/androidMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/androidMain/kotlin/com/slack/circuit/runtime/screen/Screen.android.kt#L10">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/browserCommonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/browserCommonMain/kotlin/com/slack/circuit/runtime/screen/Screen.js.kt#L9">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-screen/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/commonMain/kotlin/com/slack/circuit/runtime/screen/Screen.kt#L101">source</a>)</span></span></div><p class="paragraph">A marker interface that indicates that this <a href="../-screen/index.html">Screen</a> only ever has static content and does not require a presenter to compute or manage its state. This is useful for UIs that either have no state or can derive their state solely from static inputs or the <a href="../-screen/index.html">Screen</a> key itself.</p><p class="paragraph"><strong>Stateless UI</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data object ProfileScreen : StaticScreen<br><br>@Composable<br>fun Profile(modifier: Modifier = Modifier) {<br>  Text("Jane", modifier = modifier)<br>}<br><br>val circuit = Circuit.Builder()<br>  .addUi&lt;ProfileScreen&gt; { _, modifier -&gt; Profile(modifier) }<br>  .build()</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><strong>Static UI</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data object ProfileScreen : StaticScreen<br><br>@Composable<br>fun Profile(name: String, modifier: Modifier = Modifier) {<br>  Text(name, modifier = modifier)<br>}<br><br>val circuit = Circuit.Builder()<br>  .addUi&lt;ProfileScreen&gt; { _, modifier -&gt;<br>    // The UI's input is handled in the factory in this case<br>    Profile("Jane", modifier)<br>  }<br>  .build()</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><strong>Static UI w/ Screen data</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data class ProfileScreen(val name: String) : StaticScreen<br><br>@Composable<br>fun Profile(name: String, modifier: Modifier = Modifier) {<br>  Text(name, modifier = modifier)<br>}<br><br>val circuit = Circuit.Builder()<br>  .addUi&lt;ProfileScreen&gt; { screen, modifier -&gt;<br>    Profile(screen.name, modifier)<br>  }<br>  .build()</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><strong>Static UI w/ Screen input + code gen</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data class ProfileScreen(val name: String) : StaticScreen<br><br>@CircuitInject(ProfileScreen::class, AppScope::class)<br>@Composable<br>fun Profile(screen: ProfileScreen, modifier: Modifier = Modifier) {<br>  Text(screen.name, modifier = modifier)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/jvmMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/jvmMain/kotlin/com/slack/circuit/runtime/screen/Screen.jvm.kt#L9">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/nativeMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/nativeMain/kotlin/com/slack/circuit/runtime/screen/Screen.native.kt#L9">source</a>)</span></span></div></div>    </div>
+      <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/androidMain" data-filterable-set=":circuit-runtime-screen/androidMain" data-active="" data-toggle=":circuit-runtime-screen/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/commonMain" data-filterable-set=":circuit-runtime-screen/commonMain" data-toggle=":circuit-runtime-screen/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/jvmMain" data-filterable-set=":circuit-runtime-screen/jvmMain" data-toggle=":circuit-runtime-screen/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/nativeMain" data-filterable-set=":circuit-runtime-screen/nativeMain" data-toggle=":circuit-runtime-screen/nativeMain">native</button><button class="platform-bookmark" data-filterable-current=":circuit-runtime-screen/webMain" data-filterable-set=":circuit-runtime-screen/webMain" data-toggle=":circuit-runtime-screen/webMain">web</button></div>
+<div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/androidMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/androidMain/kotlin/com/slack/circuit/runtime/screen/Screen.android.kt#L10">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime-screen/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/commonMain/kotlin/com/slack/circuit/runtime/screen/Screen.kt#L101">source</a>)</span></span></div><p class="paragraph">A marker interface that indicates that this <a href="../-screen/index.html">Screen</a> only ever has static content and does not require a presenter to compute or manage its state. This is useful for UIs that either have no state or can derive their state solely from static inputs or the <a href="../-screen/index.html">Screen</a> key itself.</p><p class="paragraph"><strong>Stateless UI</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data object ProfileScreen : StaticScreen<br><br>@Composable<br>fun Profile(modifier: Modifier = Modifier) {<br>  Text("Jane", modifier = modifier)<br>}<br><br>val circuit = Circuit.Builder()<br>  .addUi&lt;ProfileScreen&gt; { _, modifier -&gt; Profile(modifier) }<br>  .build()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><strong>Static UI</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data object ProfileScreen : StaticScreen<br><br>@Composable<br>fun Profile(name: String, modifier: Modifier = Modifier) {<br>  Text(name, modifier = modifier)<br>}<br><br>val circuit = Circuit.Builder()<br>  .addUi&lt;ProfileScreen&gt; { _, modifier -&gt;<br>    // The UI's input is handled in the factory in this case<br>    Profile("Jane", modifier)<br>  }<br>  .build()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><strong>Static UI w/ Screen data</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data class ProfileScreen(val name: String) : StaticScreen<br><br>@Composable<br>fun Profile(name: String, modifier: Modifier = Modifier) {<br>  Text(name, modifier = modifier)<br>}<br><br>val circuit = Circuit.Builder()<br>  .addUi&lt;ProfileScreen&gt; { screen, modifier -&gt;<br>    Profile(screen.name, modifier)<br>  }<br>  .build()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><strong>Static UI w/ Screen input + code gen</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data class ProfileScreen(val name: String) : StaticScreen<br><br>@CircuitInject(ProfileScreen::class, AppScope::class)<br>@Composable<br>fun Profile(screen: ProfileScreen, modifier: Modifier = Modifier) {<br>  Text(screen.name, modifier = modifier)<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/jvmMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/jvmMain/kotlin/com/slack/circuit/runtime/screen/Screen.jvm.kt#L9">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/nativeMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/nativeMain/kotlin/com/slack/circuit/runtime/screen/Screen.native.kt#L9">source</a>)</span></span></div></div><div class="content sourceset-dependent-content" data-togglable=":circuit-runtime-screen/webMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">actual </span><span class="token keyword">interface </span><a href="index.html">StaticScreen</a> : <a href="../-screen/index.html">Screen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime-screen/src/webMain/kotlin/com/slack/circuit/runtime/screen/Screen.web.kt#L9">source</a>)</span></span></div></div>    </div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
+        <h2 class="tableheader">Functions</h2>
         <div class="table"><a data-name="-1578325224%2FFunctions%2F-1678268310" anchor-label="describeContents" id="-1578325224%2FFunctions%2F-1678268310" data-filterable-set=":circuit-runtime-screen/androidMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime-screen/androidMain" data-filterable-set=":circuit-runtime-screen/androidMain">
+          <div class="table-row table-row_content" data-filterable-current=":circuit-runtime-screen/androidMain" data-filterable-set=":circuit-runtime-screen/androidMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="index.html#-1578325224%2FFunctions%2F-1678268310"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
@@ -153,7 +153,7 @@
             </div>
           </div>
 <a data-name="-1754457655%2FFunctions%2F-1678268310" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F-1678268310" data-filterable-set=":circuit-runtime-screen/androidMain"></a>
-          <div class="table-row" data-filterable-current=":circuit-runtime-screen/androidMain" data-filterable-set=":circuit-runtime-screen/androidMain">
+          <div class="table-row table-row_content" data-filterable-current=":circuit-runtime-screen/androidMain" data-filterable-set=":circuit-runtime-screen/androidMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="index.html#-1754457655%2FFunctions%2F-1678268310"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
@@ -175,17 +175,21 @@
   </div>
 </div>
     <div class="footer">
-        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
-        <span>© 2025 Copyright</span>
-        <span class="pull-right">
-            <span>Generated by </span>
-            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
-                <span>dokka</span>
-            </a>
-        </span>
-    </div>
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2025 Copyright</div>
+                </div>
             </div>
         </div>
     </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

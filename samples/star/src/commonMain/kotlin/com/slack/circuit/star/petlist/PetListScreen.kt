@@ -138,7 +138,7 @@ import com.slack.circuit.star.ui.Pets
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.AssistedInject
 import io.ktor.util.Platform
 import io.ktor.util.PlatformUtils
 import io.ktor.util.platform
@@ -182,7 +182,7 @@ data object PetListScreen : Screen {
   }
 }
 
-@Inject
+@AssistedInject
 class PetListPresenter(
   @Assisted private val navigator: Navigator,
   private val petRepo: PetRepository,

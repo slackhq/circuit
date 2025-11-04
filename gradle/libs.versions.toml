@@ -116,6 +116,7 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 coil-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil" }
 
 # Compose Mutliplatform
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jb-compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jb-compose" }
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jb-compose-material-icons-core" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "jb-compose" }

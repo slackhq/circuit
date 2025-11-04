@@ -28,6 +28,7 @@ import com.slack.circuit.star.common.Platform
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.Inject
 
 @Parcelize
@@ -35,7 +36,7 @@ data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
   data class State(val useNestedContent: Boolean) : CircuitUiState
 }
 
-@Inject
+@AssistedInject
 class ListBenchmarksPresenter(@Assisted private val screen: ListBenchmarksScreen) :
   Presenter<State> {
   @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
@@ -79,12 +80,13 @@ class IndexMultiplier {
   fun multiply(index: Int) = index * 1
 }
 
-@Inject
+@AssistedInject
 class ListBenchmarksItemPresenter(
   @Assisted private val screen: ListBenchmarksItemScreen,
   // Simulate injecting something that accumulates instances
   private val indexMultiplier: IndexMultiplier,
 ) : Presenter<ListBenchmarksItemScreen.State> {
+
   @CircuitInject(ListBenchmarksItemScreen::class, AppScope::class)
   @AssistedFactory
   fun interface Factory {

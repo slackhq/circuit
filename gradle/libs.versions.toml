@@ -30,16 +30,16 @@ kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 ksp = "2.2.20-2.0.4"
-ktfmt = "0.58"
+ktfmt = "0.59"
 ktor = "3.3.1"
 leakcanary = "2.14"
 mavenPublish = "0.34.0"
 molecule = "2.2.0"
-okhttp = "5.2.1"
+okhttp = "5.3.0"
 okio = "3.16.2"
 picnic = "0.7.0"
 robolectric = "4.16"
-roborazzi = "1.50.0"
+roborazzi = "1.51.0"
 spotless = "8.0.0"
 sqldelight = "2.1.0"
 telephoto = "0.18.0"
@@ -69,7 +69,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.6.10" }
+metro = { id = "dev.zacsweers.metro", version = "0.7.4" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

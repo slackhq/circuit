@@ -23,7 +23,7 @@ import com.slack.circuit.star.common.BackPressNavIcon
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.AssistedInject
 
 @Parcelize
 data class FiltersScreen(val initialFilters: Filters) : Screen {
@@ -36,7 +36,7 @@ data class FiltersScreen(val initialFilters: Filters) : Screen {
   @Parcelize data class Result(val filters: Filters) : PopResult
 }
 
-@Inject
+@AssistedInject
 class FiltersPresenter(
   @Assisted private val navigator: Navigator,
   @Assisted private val screen: FiltersScreen,

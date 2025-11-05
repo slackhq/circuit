@@ -9,7 +9,6 @@ anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
-compose-hotReload = "1.0.0-rc02"
 dagger = "2.57.2"
 datastore = "1.1.7"
 detekt = "1.23.8"
@@ -54,7 +53,7 @@ anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
 compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
-compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotReload" }
+compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

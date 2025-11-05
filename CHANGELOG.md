@@ -39,6 +39,8 @@ clearing of back stack state. The previous `resetRoot` function with `saveState`
 - Update to Molecule `2.2.0`.
 - Build against KSP `2.2.20-2.0.4`.
 
+Special thanks to [@simon-duchastel](https://github.com/simon-duchastel) and [@eboudrant](https://github.com/eboudrant) for contributing to this release!
+
 0.30.0
 ------
 

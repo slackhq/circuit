@@ -10,6 +10,7 @@ atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
 compose-hotReload = "1.0.0-rc02"
+compose-runtime = "1.9.4" # Keep in sync with the androidx version used by compose-jb until 1.10
 compose-jb = "1.9.2"
 compose-jb-material3 = "1.9.0"
 compose-jb-material-icons-core = "1.7.3"
@@ -120,7 +121,7 @@ compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", v
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-jb-material-icons-core" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb-material3" }
-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-runtime" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }
 compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-jb" }

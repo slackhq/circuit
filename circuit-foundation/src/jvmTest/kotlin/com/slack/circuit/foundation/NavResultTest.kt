@@ -110,54 +110,50 @@ class NavResultTest {
   @Test
   fun onlyTheCallerGetsTheResult() {
     lateinit var backStack: SaveableBackStack
-    lateinit var resultHandler: AnsweringResultHandler
+    lateinit var answeringResultHandler: AnsweringResultHandler
     composeTestRule.run {
       setContent {
         CircuitCompositionLocals(circuit) {
           backStack = rememberSaveableBackStack(WrapperScreen)
-          resultHandler = rememberAnsweringResultHandler()
+          answeringResultHandler = rememberAnsweringResultHandler()
           val navigator =
             rememberCircuitNavigator(
               backStack = backStack,
               onRootPop = {}, // no-op for tests
             )
-          NavigableCircuitContent(
-            navigator = navigator,
-            backStack = backStack,
-            answeringResultHandler = resultHandler,
-          )
+          val answeringResultNavigator =
+            rememberAnsweringResultNavigator(navigator, backStack, answeringResultHandler)
+          NavigableCircuitContent(navigator = answeringResultNavigator)
         }
       }
 
-      dumpState(backStack, resultHandler)
+      dumpState(backStack, answeringResultHandler)
       goToNext(answer = true, 0)
-      dumpState(backStack, resultHandler)
+      dumpState(backStack, answeringResultHandler)
       popBack(expectAnswer = true, 1)
-      dumpState(backStack, resultHandler)
+      dumpState(backStack, answeringResultHandler)
     }
   }
 
   private fun ComposeContentTestRule.setUpTestContent():
     Pair<SaveableBackStack, AnsweringResultHandler> {
     lateinit var backStack: SaveableBackStack
-    lateinit var resultHandler: AnsweringResultHandler
+    lateinit var answeringResultHandler: AnsweringResultHandler
     setContent {
       CircuitCompositionLocals(circuit) {
         backStack = rememberSaveableBackStack(TestResultScreen("root", answer = false))
-        resultHandler = rememberAnsweringResultHandler()
+        answeringResultHandler = rememberAnsweringResultHandler()
         val navigator =
           rememberCircuitNavigator(
             backStack = backStack,
             onRootPop = {}, // no-op for tests
           )
-        NavigableCircuitContent(
-          navigator = navigator,
-          backStack = backStack,
-          answeringResultHandler = resultHandler,
-        )
+        val answeringResultNavigator =
+          rememberAnsweringResultNavigator(navigator, backStack, answeringResultHandler)
+        NavigableCircuitContent(navigator = answeringResultNavigator)
       }
     }
-    return backStack to resultHandler
+    return backStack to answeringResultHandler
   }
 
   private fun ComposeContentTestRule.goToNext(answer: Boolean, nextCount: Int) {

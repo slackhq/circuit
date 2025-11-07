@@ -77,6 +77,10 @@ androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
 androidx.loader:loader
 androidx.localbroadcastmanager:localbroadcastmanager
+androidx.navigationevent:navigationevent-android
+androidx.navigationevent:navigationevent-compose-android
+androidx.navigationevent:navigationevent-compose
+androidx.navigationevent:navigationevent
 androidx.print:print
 androidx.profileinstaller:profileinstaller
 androidx.savedstate:savedstate-android
@@ -98,6 +102,7 @@ org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
+org.jetbrains.androidx.navigationevent:navigationevent-compose
 org.jetbrains.androidx.savedstate:savedstate-compose
 org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core

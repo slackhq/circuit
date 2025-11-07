@@ -19,7 +19,6 @@ plugins {
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
-  alias(libs.plugins.compose.hotReload)
 }
 
 kotlin {

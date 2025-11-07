@@ -54,7 +54,6 @@ plugins {
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.emulatorWtf) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
-  alias(libs.plugins.compose.hotReload) apply false
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
@@ -126,6 +125,7 @@ allprojects {
 val jvmTargetVersion = libs.versions.jvmTarget
 
 subprojects {
+  val isPublished = project.hasProperty("POM_ARTIFACT_ID")
   val jvmTargetProject = jvmTargetVersion
 
   pluginManager.withPlugin("java") {

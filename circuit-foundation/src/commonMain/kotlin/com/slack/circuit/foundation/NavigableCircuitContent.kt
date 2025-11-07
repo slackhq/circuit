@@ -243,19 +243,16 @@ public fun <R : Record> NavigableCircuitContent(
           ContentProviderState(
             saveableStateHolder = saveableStateHolder,
             retainedStateHolder = retainedStateHolder,
-            backStack = navigator.backStack,
             navigator = navigator,
             circuit = circuit,
             unavailableRoute = unavailableRoute,
           )
         }
         .apply {
-          lastBackStack = navigator.backStack
           lastNavigator = navigator
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
         }
-    val answeringResultHandler by rememberUpdatedState(navigator.answeringResultHandler)
     val activeContentProviders = buildCircuitContentProviders(backStack = navigator.backStack)
     val circuitProvidedValues =
       providedValuesForBackStack(navigator.backStack, circuit.backStackLocalProviders)
@@ -271,9 +268,11 @@ public fun <R : Record> NavigableCircuitContent(
         remember(values, circuitProvidedValues) {
           (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
+      val localBackstack = contentProviderState.lastNavigator.backStack
+      val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
       CompositionLocalProvider(
-        LocalBackStack provides contentProviderState.lastBackStack,
-        LocalAnsweringResultHandler provides answeringResultHandler,
+        LocalBackStack provides localBackstack,
+        LocalAnsweringResultHandler provides localResultHandler,
         *providedLocals,
       ) {
         provider.content(record, contentProviderState)
@@ -337,6 +336,7 @@ public class AnsweringResultNavigator<R : Record>(
 }
 
 /** A simple holder class for a [record] and its associated [content]. */
+@ExperimentalCircuitApi
 @Immutable
 public class RecordContentProvider<R : Record>(
   public val record: R,
@@ -361,6 +361,7 @@ public class RecordContentProvider<R : Record>(
   override fun toString(): String = "RecordContentProvider(record=$record)"
 }
 
+@ExperimentalCircuitApi
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
   backStack: BackStack<R>
@@ -409,17 +410,16 @@ private fun <R : Record> buildCircuitContentProviders(
   }
 }
 
+@ExperimentalCircuitApi
 @Stable
 public class ContentProviderState<R : Record>(
   internal val saveableStateHolder: SaveableStateHolder,
   internal val retainedStateHolder: RetainedStateHolder,
-  backStack: BackStack<R>,
-  navigator: Navigator,
+  navigator: AnsweringResultNavigator<R>,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
 ) {
 
-  internal var lastBackStack by mutableStateOf(backStack)
   internal var lastNavigator by mutableStateOf(navigator)
   internal var lastCircuit by mutableStateOf(circuit)
   internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
@@ -441,11 +441,13 @@ public class ContentProviderState<R : Record>(
   }
 }
 
+@OptIn(ExperimentalCircuitApi::class)
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
       val lifecycle =
-        remember { MutableRecordLifecycle() }.apply { isActive = lastBackStack.topRecord == record }
+        remember { MutableRecordLifecycle() }
+          .apply { isActive = lastNavigator.backStack.topRecord == record }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
@@ -464,7 +466,7 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
       // Remove saved states for records that are no longer in the back stack
       DisposableEffect(record.registryKey) {
         onDispose {
-          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+          if (!lastNavigator.backStack.containsRecord(record, includeSaved = true)) {
             retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)
           }

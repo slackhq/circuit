@@ -423,7 +423,7 @@ subprojects {
     if (isPublished && hasCompose) {
       project.dependencies {
         constraints {
-          add("commonMainApi", "org.jetbrains.compose.runtime:runtime:1.9.3") {
+          add("commonMainApi", "org.jetbrains.compose.runtime:runtime:1.9.0") {
             because(
               "AndroidX publishes multiplatform runtime. The JetBrains artifact is now empty."
             )

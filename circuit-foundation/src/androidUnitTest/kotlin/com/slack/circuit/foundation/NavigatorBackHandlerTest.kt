@@ -10,11 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
@@ -83,7 +85,9 @@ class NavigatorBackHandlerTest {
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        BackHandler(enabled = true) { outerBackCount++ }
+        NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
+          outerBackCount++
+        }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -111,7 +115,9 @@ class NavigatorBackHandlerTest {
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        BackHandler(enabled = true) { outerBackCount++ }
+        NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
+          outerBackCount++
+        }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)

@@ -7,9 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.InternalComposeUiApi
+import androidx.compose.ui.backhandler.BackGestureDispatcher
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
+import androidx.compose.ui.backhandler.LocalBackGestureDispatcher
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -18,11 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigationevent.DirectNavigationEventInput
-import androidx.navigationevent.NavigationEvent
-import androidx.navigationevent.NavigationEvent.Companion.EDGE_LEFT
-import androidx.navigationevent.NavigationEventDispatcher
-import androidx.navigationevent.NavigationEventDispatcherOwner
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -42,25 +37,25 @@ class NavigatorBackHandlerTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @OptIn(ExperimentalComposeUiApi::class, InternalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class)
   @Test
   fun nestedNavigatorRootPopBackHandler() {
-    val dispatcher = BackDispatcher()
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
     var outerBackCount by mutableStateOf(0)
     lateinit var navigator: Navigator
     composeTestRule.setContent {
+      @Suppress("DEPRECATION")
       CompositionLocalProvider(
-        LocalCompatNavigationEventDispatcherOwner provides dispatcher,
+        LocalBackGestureDispatcher provides BackDispatcher,
         LocalLifecycleOwner provides StartedLifecycleOwner,
       ) {
         CircuitCompositionLocals(circuit) {
-          @Suppress("DEPRECATION") BackHandler(enabled = true) { outerBackCount++ }
+          BackHandler(enabled = true) { outerBackCount++ }
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val circuitNavigator =
             rememberCircuitNavigator(
               backStack = backStack,
-              onRootPop = { dispatcher.onBack() },
+              onRootPop = { BackDispatcher.onBack() },
               enableBackHandler = true,
             )
           navigator = rememberInterceptingNavigator(circuitNavigator)
@@ -82,26 +77,24 @@ class NavigatorBackHandlerTest {
     }
   }
 
-  @OptIn(ExperimentalComposeUiApi::class, InternalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class)
   @Test
   fun nestedNavigatorRootDispatchedBackHandler() {
-    val dispatcher = BackDispatcher()
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
     var outerBackCount by mutableStateOf(0)
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CompositionLocalProvider(
-        LocalCompatNavigationEventDispatcherOwner provides dispatcher,
+        LocalBackGestureDispatcher provides BackDispatcher,
         LocalLifecycleOwner provides StartedLifecycleOwner,
       ) {
         CircuitCompositionLocals(circuit) {
-          @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
           BackHandler(enabled = true) { outerBackCount++ }
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val circuitNavigator =
             rememberCircuitNavigator(
               backStack = backStack,
-              onRootPop = { dispatcher.onBack() },
+              onRootPop = { BackDispatcher.onBack() },
               enableBackHandler = true,
             )
           navigator = rememberInterceptingNavigator(circuitNavigator)
@@ -117,32 +110,26 @@ class NavigatorBackHandlerTest {
       onNodeWithTag(TAG_GO_NEXT).performClick()
       onNodeWithTag(TAG_LABEL).assertTextEquals("C")
       // Back through the onRootPop into the back handler
-      dispatcher.onBack()
+      BackDispatcher.onBack()
       onNodeWithTag(TAG_LABEL).assertTextEquals("B")
-      dispatcher.onBack()
+      BackDispatcher.onBack()
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
-      dispatcher.onBack()
+      BackDispatcher.onBack()
       waitForIdle()
       assertEquals(1, outerBackCount)
     }
   }
 }
 
-private class BackDispatcher : NavigationEventDispatcherOwner {
+@OptIn(ExperimentalComposeUiApi::class)
+private val BackDispatcher =
+  object : BackGestureDispatcher() {
 
-  private val input = DirectNavigationEventInput()
-  override val navigationEventDispatcher: NavigationEventDispatcher = NavigationEventDispatcher()
-
-  init {
-    navigationEventDispatcher.addInput(input)
+    fun onBack() {
+      activeListener?.onStarted()
+      activeListener?.onCompleted()
+    }
   }
-
-  fun onBack() {
-    input.backStarted(NavigationEvent(swipeEdge = EDGE_LEFT))
-    input.backProgressed(NavigationEvent(swipeEdge = EDGE_LEFT, progress = 0.5f))
-    input.backCompleted()
-  }
-}
 
 private val StartedLifecycleOwner =
   object : Lifecycle(), LifecycleOwner {

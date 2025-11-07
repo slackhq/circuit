@@ -83,7 +83,6 @@ class NavigatorBackHandlerTest {
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
         BackHandler(enabled = true) { outerBackCount++ }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)
@@ -112,7 +111,6 @@ class NavigatorBackHandlerTest {
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
         BackHandler(enabled = true) { outerBackCount++ }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(backStack = backStack)

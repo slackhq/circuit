@@ -114,7 +114,7 @@ private fun BackHandler(
   val lastOnBackProgress by rememberUpdatedState(onBackProgress)
   val lastOnBackCancelled by rememberUpdatedState(onBackCancelled)
   val lastOnBackInvoked by rememberUpdatedState(onBackInvoked)
-  @Suppress("DEPRECATION") // Migrate to NavigationEventHandler
+
   PredictiveBackHandler(
     enabled = true,
     onBack = { progress ->

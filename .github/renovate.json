@@ -39,9 +39,7 @@
       "enabled": false
     },
     {
-      "matchDepNames": [
-        "org.jetbrains.compose.runtime"
-      ],
+      "matchPackageNames": ["org.jetbrains.compose.runtime:runtime"],
       "description": "Ignore the empty Jetbrains Compose runtime",
       "enabled": false
     }

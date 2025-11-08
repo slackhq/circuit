@@ -314,9 +314,9 @@ public fun <R : Record> rememberAnsweringResultNavigator(
 /** [Navigator] that sends pending results to the [answeringResultHandler] when popped. */
 @ExperimentalCircuitApi
 public class AnsweringResultNavigator<R : Record>(
-  public val originalNavigator: Navigator,
-  public val backStack: BackStack<R>,
-  public val answeringResultHandler: AnsweringResultHandler,
+  internal val originalNavigator: Navigator,
+  internal val backStack: BackStack<R>,
+  internal val answeringResultHandler: AnsweringResultHandler,
 ) : Navigator by originalNavigator {
   override fun pop(result: PopResult?): Screen? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.

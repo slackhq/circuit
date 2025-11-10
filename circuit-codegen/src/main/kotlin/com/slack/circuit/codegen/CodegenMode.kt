@@ -236,7 +236,7 @@ internal enum class CodegenMode {
     }
   };
 
-  open val runtime: InjectionRuntime = InjectionRuntime.Javax
+  open val runtime: InjectionRuntime = InjectionRuntime.Jakarta
   open val originAnnotation: ClassName? = null
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
@@ -272,7 +272,7 @@ internal enum class CodegenMode {
 
     fun getProviderBlock(provider: CodeBlock): CodeBlock
 
-    data object Javax : InjectionRuntime {
+    data object Jakarta : InjectionRuntime {
       override val inject: ClassName = CircuitNames.INJECT
       override val assisted: ClassName = CircuitNames.ASSISTED
       override val assistedInject: ClassName = CircuitNames.ASSISTED_INJECT

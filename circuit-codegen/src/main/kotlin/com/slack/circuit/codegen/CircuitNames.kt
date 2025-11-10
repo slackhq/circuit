@@ -9,8 +9,8 @@ internal object CircuitNames {
   val ASSISTED = ClassName("dagger.assisted", "Assisted")
   val ASSISTED_FACTORY = ClassName("dagger.assisted", "AssistedFactory")
   val ASSISTED_INJECT = ClassName("dagger.assisted", "AssistedInject")
-  val INJECT = ClassName("javax.inject", "Inject")
-  val PROVIDER = ClassName("javax.inject", "Provider")
+  val INJECT = ClassName("jakarta.inject", "Inject")
+  val PROVIDER = ClassName("jakarta.inject", "Provider")
   const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
   const val DAGGER_PACKAGE = "dagger"
   const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"

@@ -210,7 +210,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -256,7 +256,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -302,7 +302,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -348,7 +348,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -393,7 +393,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -438,7 +438,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -483,7 +483,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -528,7 +528,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -575,7 +575,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -602,7 +602,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.ui.Ui
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.Modifier
-          import javax.inject.Inject
+          import jakarta.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
@@ -623,8 +623,8 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
-        import javax.inject.Provider
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
@@ -653,7 +653,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.ui.Ui
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.Modifier
-          import javax.inject.Inject
+          import jakarta.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           class Favorites(val value: String) : Ui<FavoritesScreen.State> {
@@ -677,8 +677,8 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
-        import javax.inject.Provider
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
@@ -739,7 +739,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
@@ -786,7 +786,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
@@ -835,7 +835,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
@@ -885,7 +885,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
@@ -935,7 +935,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
@@ -986,7 +986,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
@@ -1016,7 +1016,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.codegen.annotations.CircuitInject
           import com.slack.circuit.runtime.presenter.Presenter
           import androidx.compose.runtime.Composable
-          import javax.inject.Inject
+          import jakarta.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
@@ -1038,8 +1038,8 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
-        import javax.inject.Provider
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1166,7 +1166,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1233,7 +1233,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1300,7 +1300,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import dagger.hilt.codegen.OriginatingElement
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @OriginatingElement(FavoritesPresenter::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1690,7 +1690,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class StaticUiFactory @Inject constructor() : Ui.Factory {

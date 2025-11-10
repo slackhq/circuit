@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - [code gen] Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
+- [code gen] Switch to `jakarta.inject` types for Dagger/Anvil code gen.
 - [code gen] Add check for unsupported runtime-assisted parameter types.
 - [code gen] Add check for unsupported runtime-assisted parameter types.
 - [code gen] Drop KSP1 support.

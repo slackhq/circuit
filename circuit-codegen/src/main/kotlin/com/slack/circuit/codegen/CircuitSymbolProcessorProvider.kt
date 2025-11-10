@@ -634,6 +634,15 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             )
           }
+          type == symbols.modifier -> {
+            // Supported but do nothing else here
+          }
+          else -> {
+            logger.error(
+              "Unsupported @CircuitInject function parameter type '$type'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
+              param,
+            )
+          }
         }
       }
     }

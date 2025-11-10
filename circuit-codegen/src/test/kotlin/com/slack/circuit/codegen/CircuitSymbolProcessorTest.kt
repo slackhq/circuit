@@ -14,7 +14,6 @@ import com.tschuchort.compiletesting.kspSourcesDir
 import java.io.File
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.junit.Ignore
 import org.junit.Test
 
 @Suppress("LargeClass", "RedundantVisibilityModifier")
@@ -1417,7 +1416,6 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-  @Ignore("Toe hold for when we implement this validation")
   @Test
   fun invalidInjections() {
     assertProcessingError(
@@ -1481,7 +1479,14 @@ class CircuitSymbolProcessorTest {
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages).contains("TODO")
+      assertThat(messages.lines().map { it.substringAfter("InvalidInjections.kt:") })
+        .containsAtLeast(
+          "14: Unsupported @CircuitInject function parameter type 'State'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
+          "14: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
+          "35: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
+          "24: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
+          "45: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
+        )
     }
   }
 

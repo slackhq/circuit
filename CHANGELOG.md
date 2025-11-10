@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - [code gen] Add check that presenter function return types return a `UiState` type.
+- [code gen] Add check for unsupported runtime-assisted parameter types.
 - [code gen] Drop KSP1 support.
 
 0.31.0

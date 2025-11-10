@@ -8,9 +8,9 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
+import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspProcessorOptions
 import com.tschuchort.compiletesting.kspSourcesDir
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -30,53 +30,123 @@ class CircuitSymbolProcessorTest {
       """
         .trimIndent(),
     )
-  private val singletonComponent =
+  private val anvilAnnotations =
     kotlin(
-      "SingletonComponent.kt",
+      "AnvilAnnotations.kt",
       """
-      package dagger.hilt.components
+      package com.squareup.anvil.annotations
+      import kotlin.reflect.KClass
 
-      annotation class SingletonComponent
+      annotation class ContributesBinding(val scope: KClass<*>)
+      annotation class ContributesMultibinding(val scope: KClass<*>)
       """
         .trimIndent(),
     )
-  private val kotlinInjectAnnotation =
-    kotlin(
-      "Inject.kt",
-      """
-      package me.tatarka.inject.annotations
+  private val circuitSymbols =
+    listOf(
+      kotlin(
+        "Presenter.kt",
+        """
+        package com.slack.circuit.runtime.presenter
+        import com.slack.circuit.runtime.CircuitUiState
+        import androidx.compose.runtime.Composable
 
-      annotation class Inject
-      """
-        .trimIndent(),
+        public inline fun <UiState : CircuitUiState> presenterOf(
+          crossinline body: @Composable () -> UiState
+        ): Presenter<UiState> {
+          throw NotImplementedError()
+        }
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "Ui.kt",
+        """
+        package com.slack.circuit.runtime.ui
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.ui.Ui
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.Modifier
+
+        public inline fun <UiState : CircuitUiState> ui(
+          crossinline body: @Composable (state: UiState, modifier: Modifier) -> Unit
+        ): Ui<UiState> {
+          throw NotImplementedError()
+        }
+        """
+          .trimIndent(),
+      ),
     )
-  private val metroAnnotation =
+  private val hiltSymbols =
+    listOf(
+      kotlin(
+        "SingletonComponent.kt",
+        """
+        package dagger.hilt.components
+
+        annotation class SingletonComponent
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "HiltAnnotations.kt",
+        """
+        package dagger.hilt
+        import kotlin.reflect.KClass
+
+        annotation class InstallIn(val value: KClass<*>)
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "Origins.kt",
+        """
+        package dagger.hilt.codegen
+        import kotlin.reflect.KClass
+
+        annotation class OriginatingElement(val topLevelClass: KClass<*>)
+        """
+          .trimIndent(),
+      ),
+    )
+  private val kotlinInjectSymbols =
+    listOf(
+      kotlin(
+        "KIAnnotations.kt",
+        """
+        package me.tatarka.inject.annotations
+
+        annotation class Inject
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "AmazonAnnotations.kt",
+        """
+        package software.amazon.lastmile.kotlin.inject.anvil
+        import kotlin.reflect.KClass
+
+        annotation class ContributesBinding(val scope: KClass<*>, val multibinding: Boolean = false)
+        """
+          .trimIndent(),
+      ),
+    )
+  private val metroSymbols =
     kotlin(
       "Inject.kt",
       """
       package dev.zacsweers.metro
+      import kotlin.reflect.KClass
 
+      abstract class AppScope
       annotation class Inject
-      """
-        .trimIndent(),
-    )
-  private val metroAssistedAnnotation =
-    kotlin(
-      "Assisted.kt",
-      """
-      package dev.zacsweers.metro
-
       annotation class Assisted(val value: String = "")
-      """
-        .trimIndent(),
-    )
-  private val metroAssistedFactoryAnnotation =
-    kotlin(
-      "AssistedFactory.kt",
-      """
-      package dev.zacsweers.metro
-
       annotation class AssistedFactory
+      annotation class Origin(val value: KClass<*>)
+      annotation class ContributesIntoSet(val scope: KClass<*>)
+      interface Provider<T> {
+        operator fun invoke(): T
+      }
       """
         .trimIndent(),
     )
@@ -253,7 +323,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(HomeScreen::class, AppScope::class)
           @Composable
           fun Home(screen: HomeScreen, modifier: Modifier = Modifier) {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -691,7 +761,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(HomeScreen::class, AppScope::class)
           @Composable
           fun HomePresenter(): HomeScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -740,7 +810,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           @Composable
           fun FavoritesPresenter(): FavoritesScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -790,7 +860,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           @Composable
           fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -840,7 +910,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(HomeScreen::class, AppScope::class)
           @Composable
           fun HomePresenter(screen: HomeScreen, navigator: Navigator): HomeScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -1719,6 +1789,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.AppScope
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
 
@@ -1773,28 +1844,25 @@ class CircuitSymbolProcessorTest {
     codegenMode: CodegenMode,
   ): KotlinCompilation =
     KotlinCompilation().apply {
+      jvmTarget = "11"
       sources =
         sourceFiles.toList() +
           screens +
+          circuitSymbols +
           when (codegenMode) {
-            CodegenMode.ANVIL -> listOf(appScope)
-            CodegenMode.HILT -> listOf(singletonComponent)
+            CodegenMode.ANVIL -> listOf(appScope, anvilAnnotations)
+            CodegenMode.HILT -> hiltSymbols
             CodegenMode.KOTLIN_INJECT_ANVIL -> {
-              listOf(appScope, kotlinInjectAnnotation)
+              kotlinInjectSymbols + appScope
             }
-            CodegenMode.METRO ->
-              listOf(
-                appScope,
-                metroAnnotation,
-                metroAssistedAnnotation,
-                metroAssistedFactoryAnnotation,
-              )
+            CodegenMode.METRO -> listOf(appScope, metroSymbols)
           }
       inheritClassPath = true
-      symbolProcessorProviders += CircuitSymbolProcessorProvider()
-      kspProcessorOptions += "circuit.codegen.mode" to codegenMode.name
-      // Necessary for KSP
-      languageVersion = "1.9"
+      kotlincArguments += "-Xannotation-default-target=param-property"
+      configureKsp {
+        kspProcessorOptions += "circuit.codegen.mode" to codegenMode.name
+        symbolProcessorProviders += CircuitSymbolProcessorProvider()
+      }
     }
 
   private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {

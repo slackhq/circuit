@@ -4,6 +4,8 @@ Changelog
 Unreleased
 ----------
 
+- [code gen] Drop KSP1 support.
+
 0.31.0
 ------
 

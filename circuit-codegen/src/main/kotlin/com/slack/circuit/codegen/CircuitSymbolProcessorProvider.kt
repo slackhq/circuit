@@ -316,6 +316,17 @@ private class CircuitSymbolProcessor(
             factoryType == FactoryType.PRESENTER,
             includeParameterNames = codegenMode != KOTLIN_INJECT_ANVIL,
           )
+
+        // Check we have a return type
+        if (factoryType == FactoryType.PRESENTER) {
+          val returnType = fd.returnType?.resolve()
+          val isInvalid = returnType == null || !returnType.isInstanceOf(symbols.circuitUiState)
+          if (isInvalid) {
+            logger.error("Presenter functions must return a UiState.", fd.returnType ?: fd)
+          }
+          return null
+        }
+
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->

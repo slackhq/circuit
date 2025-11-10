@@ -1514,7 +1514,6 @@ class CircuitSymbolProcessorTest {
     }
   }
 
-  @Ignore("Toe hold for when we implement this validation")
   @Test
   fun presenterFunctionMissingReturn() {
     assertProcessingError(
@@ -1536,7 +1535,8 @@ class CircuitSymbolProcessorTest {
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages).contains("TODO")
+      assertThat(messages)
+        .contains("MissingPresenterReturn.kt:8: Presenter functions must return a UiState.")
     }
   }
 

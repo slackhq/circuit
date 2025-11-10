@@ -1829,6 +1829,9 @@ class CircuitSymbolProcessorTest {
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedAdapter = File(generatedSourcesDir, "kotlin/$generatedFilePath")
+    if (!generatedAdapter.exists()) {
+      throw AssertionError("No adapter found at path $generatedFilePath\n${result.messages}")
+    }
     assertThat(generatedAdapter.exists()).isTrue()
     assertThat(generatedAdapter.readText().trim()).isEqualTo(expectedContent.trimIndent())
   }

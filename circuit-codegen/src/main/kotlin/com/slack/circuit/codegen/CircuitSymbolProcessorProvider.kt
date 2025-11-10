@@ -323,8 +323,8 @@ private class CircuitSymbolProcessor(
           val isInvalid = returnType == null || !returnType.isInstanceOf(symbols.circuitUiState)
           if (isInvalid) {
             logger.error("Presenter functions must return a UiState.", fd.returnType ?: fd)
+            return null
           }
-          return null
         }
 
         codeBlock =

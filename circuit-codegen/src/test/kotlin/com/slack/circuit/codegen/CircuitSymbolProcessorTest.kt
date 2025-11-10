@@ -3,7 +3,6 @@
 package com.slack.circuit.codegen
 
 import com.google.common.truth.Truth.assertThat
-import com.tschuchort.compiletesting.CompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
@@ -625,6 +624,58 @@ class CircuitSymbolProcessorTest {
         import com.squareup.anvil.annotations.ContributesMultibinding
         import jakarta.inject.Inject
         import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val provider: Provider<Favorites>,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun specifying_javax_uses_javax() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import javax.inject.Inject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      kspOptions = mapOf(CircuitOptions.USE_JAVAX to "true"),
+      generatedFilePath = "test/FavoritesFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        import javax.inject.Provider
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
@@ -1840,8 +1891,10 @@ class CircuitSymbolProcessorTest {
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
+    kspOptions: Map<String, String> = emptyMap(),
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation =
+      prepareCompilation(sourceFile, codegenMode = codegenMode, kspOptions = kspOptions)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
@@ -1856,9 +1909,11 @@ class CircuitSymbolProcessorTest {
   private fun assertProcessingError(
     sourceFile: SourceFile,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
+    kspOptions: Map<String, String> = emptyMap(),
     body: (messages: String) -> Unit,
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation =
+      prepareCompilation(sourceFile, codegenMode = codegenMode, kspOptions = kspOptions)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     body(result.messages)
@@ -1867,6 +1922,7 @@ class CircuitSymbolProcessorTest {
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
     codegenMode: CodegenMode,
+    kspOptions: Map<String, String>,
   ): KotlinCompilation =
     KotlinCompilation().apply {
       jvmTarget = "11"
@@ -1875,6 +1931,7 @@ class CircuitSymbolProcessorTest {
           screens +
           circuitSymbols +
           when (codegenMode) {
+            CodegenMode.UNKNOWN -> error("Not possible in tests")
             CodegenMode.ANVIL -> listOf(appScope, anvilAnnotations)
             CodegenMode.HILT -> hiltSymbols
             CodegenMode.KOTLIN_INJECT_ANVIL -> {
@@ -1885,12 +1942,9 @@ class CircuitSymbolProcessorTest {
       inheritClassPath = true
       kotlincArguments += "-Xannotation-default-target=param-property"
       configureKsp {
-        kspProcessorOptions += "circuit.codegen.mode" to codegenMode.name
+        kspProcessorOptions += CircuitOptions.MODE to codegenMode.name
+        kspProcessorOptions += kspOptions
         symbolProcessorProviders += CircuitSymbolProcessorProvider()
       }
     }
-
-  private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {
-    return prepareCompilation(*sourceFiles, codegenMode = codegenMode).compile()
-  }
 }

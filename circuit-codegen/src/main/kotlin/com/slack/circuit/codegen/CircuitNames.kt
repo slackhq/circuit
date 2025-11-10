@@ -3,14 +3,15 @@
 package com.slack.circuit.codegen
 
 import com.squareup.kotlinpoet.ClassName
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RUNTIME_PACKAGE
 
 internal object CircuitNames {
   val ASSISTED = ClassName("dagger.assisted", "Assisted")
   val ASSISTED_FACTORY = ClassName("dagger.assisted", "AssistedFactory")
   val ASSISTED_INJECT = ClassName("dagger.assisted", "AssistedInject")
   val INJECT = ClassName("jakarta.inject", "Inject")
+  val INJECT_JAVAX = ClassName("javax.inject", "Inject")
   val PROVIDER = ClassName("jakarta.inject", "Provider")
+  val PROVIDER_JAVAX = ClassName("javax.inject", "Provider")
   const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
   const val DAGGER_PACKAGE = "dagger"
   const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"
@@ -37,7 +38,6 @@ internal object CircuitNames {
   val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
   const val MODULE = "Module"
   const val FACTORY = "Factory"
-  const val CIRCUIT_CODEGEN_MODE = "circuit.codegen.mode"
 
   object KotlinInject {
     private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"

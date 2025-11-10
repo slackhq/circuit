@@ -129,6 +129,16 @@ class CircuitSymbolProcessorTest {
         """
           .trimIndent(),
       ),
+      kotlin(
+        "AmazonAnnotationsInternal.kt",
+        """
+        package software.amazon.lastmile.kotlin.inject.anvil.internal
+        import kotlin.reflect.KClass
+
+        annotation class Origin(val value: KClass<*>)
+        """
+          .trimIndent(),
+      ),
     )
   private val metroSymbols =
     kotlin(
@@ -1085,12 +1095,14 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import me.tatarka.inject.annotations.Inject
         import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+        import software.amazon.lastmile.kotlin.inject.anvil.`internal`.Origin
 
         @Inject
         @ContributesBinding(
           AppScope::class,
           multibinding = true,
         )
+        @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
           private val provider: () -> FavoritesPresenter,
         ) : Presenter.Factory {
@@ -1287,8 +1299,10 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
+        import dagger.hilt.codegen.OriginatingElement
         import javax.inject.Inject
 
+        @OriginatingElement(FavoritesPresenter::class)
         public class FavoritesPresenterFactory @Inject constructor(
           private val factory: FavoritesPresenter.Factory,
         ) : Presenter.Factory {
@@ -1481,7 +1495,6 @@ class CircuitSymbolProcessorTest {
     ) { messages ->
       assertThat(messages.lines().map { it.substringAfter("InvalidInjections.kt:") })
         .containsAtLeast(
-          "14: Unsupported @CircuitInject function parameter type 'State'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
           "14: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
           "35: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
           "24: Unsupported @CircuitInject function parameter type 'String'. Only Circuit Screen, Navigator, or CircuitContext types are supported.",
@@ -1727,10 +1740,12 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Origin
         import dev.zacsweers.metro.Provider
 
         @Inject
         @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
           private val provider: Provider<FavoritesPresenter>,
         ) : Presenter.Factory {
@@ -1797,9 +1812,11 @@ class CircuitSymbolProcessorTest {
         import dev.zacsweers.metro.AppScope
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Origin
 
         @Inject
         @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
           private val factory: FavoritesPresenter.Factory,
         ) : Presenter.Factory {

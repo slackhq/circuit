@@ -4,7 +4,8 @@ Changelog
 Unreleased
 ----------
 
-- [code gen] Add check that presenter function return types return a `UiState` type.
+- [code gen] Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
+- [code gen] Add check for unsupported runtime-assisted parameter types.
 - [code gen] Add check for unsupported runtime-assisted parameter types.
 - [code gen] Drop KSP1 support.
 

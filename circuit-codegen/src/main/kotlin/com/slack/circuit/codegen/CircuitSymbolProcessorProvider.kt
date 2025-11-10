@@ -25,6 +25,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
 import com.slack.circuit.codegen.CodegenMode.KOTLIN_INJECT_ANVIL
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -146,39 +147,49 @@ private class CircuitSymbolProcessor(
         char.takeIf { char.isLowerCase() }?.run { uppercase(Locale.US) } ?: char.toString()
       }
 
-    val builder =
-      TypeSpec.classBuilder(className + CircuitNames.FACTORY)
-        .apply {
-          val constructorBuilder =
-            FunSpec.constructorBuilder().addParameters(factoryData.constructorParams)
-          // Add the `@Inject` annotation to the appropriate place
-          codegenMode.addInjectAnnotation(this, constructorBuilder)
-          if (
-            constructorBuilder.annotations.isNotEmpty() ||
-              constructorBuilder.parameters.isNotEmpty()
-          ) {
-            primaryConstructor(constructorBuilder.build())
-          }
-        }
-        .apply {
-          if (factoryData.constructorParams.isNotEmpty()) {
-            for (param in factoryData.constructorParams) {
-              addProperty(
-                PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
-                  .initializer(param.name)
-                  .build()
-              )
-            }
-          }
+    // Note: We can't directly reference the top-level class declaration for top-level functions in
+    // kotlin. For annotatedElements which as top-level functions, topLevelClass will be null.
+    val topLevelDeclaration = (annotatedElement as KSDeclaration).topLevelDeclaration()
+    val topLevelClass = (topLevelDeclaration as? KSClassDeclaration)?.toClassName()
 
-          codegenMode.annotateFactory(builder = this, scope = scope)
+    val builder =
+      TypeSpec.classBuilder(className + CircuitNames.FACTORY).apply {
+        // Add the `@Inject` annotation to the appropriate place
+        val constructorBuilder =
+          FunSpec.constructorBuilder().addParameters(factoryData.constructorParams)
+        codegenMode.addInjectAnnotation(this, constructorBuilder)
+        if (
+          constructorBuilder.annotations.isNotEmpty() || constructorBuilder.parameters.isNotEmpty()
+        ) {
+          primaryConstructor(constructorBuilder.build())
         }
+
+        if (factoryData.constructorParams.isNotEmpty()) {
+          for (param in factoryData.constructorParams) {
+            addProperty(
+              PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
+                .initializer(param.name)
+                .build()
+            )
+          }
+        }
+
+        codegenMode.annotateFactory(builder = this, scope = scope)
+        if (topLevelClass != null && codegenMode.originAnnotation != null) {
+          addAnnotation(
+            AnnotationSpec.builder(codegenMode.originAnnotation)
+              .addMember("%T::class", topLevelClass)
+              .build()
+          )
+        }
+      }
     val screenBranch =
       if (screenIsObject) {
         CodeBlock.of("%T", screenType)
       } else {
         CodeBlock.of("is·%T", screenType)
       }
+
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
@@ -187,11 +198,6 @@ private class CircuitSymbolProcessor(
         FactoryType.UI ->
           builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
       }
-
-    // Note: We can't directly reference the top-level class declaration for top-level functions in
-    // kotlin. For annotatedElements which as top-level functions, topLevelClass will be null.
-    val topLevelDeclaration = (annotatedElement as KSDeclaration).topLevelDeclaration()
-    val topLevelClass = (topLevelDeclaration as? KSClassDeclaration)?.toClassName()
 
     val originatingFile = listOfNotNull(annotatedElement.containingFile)
 
@@ -634,7 +640,7 @@ private fun KSFunctionDeclaration.assistedParameters(
               )
             )
           }
-          type == symbols.modifier -> {
+          type == symbols.modifier || type.isInstanceOf(symbols.circuitUiState) -> {
             // Supported but do nothing else here
           }
           else -> {

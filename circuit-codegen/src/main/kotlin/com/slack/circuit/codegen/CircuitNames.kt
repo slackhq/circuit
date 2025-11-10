@@ -3,6 +3,7 @@
 package com.slack.circuit.codegen
 
 import com.squareup.kotlinpoet.ClassName
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RUNTIME_PACKAGE
 
 internal object CircuitNames {
   val ASSISTED = ClassName("dagger.assisted", "Assisted")
@@ -45,7 +46,10 @@ internal object CircuitNames {
 
     object Anvil {
       private const val RUNTIME_PACKAGE = "software.amazon.lastmile.kotlin.inject.anvil"
+      private const val RUNTIME_INTERNAL_PACKAGE =
+        "software.amazon.lastmile.kotlin.inject.anvil.internal"
       internal val CONTRIBUTES_BINDING = ClassName(RUNTIME_PACKAGE, "ContributesBinding")
+      val ORIGIN = ClassName(RUNTIME_INTERNAL_PACKAGE, "Origin")
     }
   }
 
@@ -55,6 +59,7 @@ internal object CircuitNames {
     val ASSISTED = ClassName(RUNTIME_PACKAGE, "Assisted")
     val ASSISTED_FACTORY = ClassName(RUNTIME_PACKAGE, "AssistedFactory")
     val PROVIDER = ClassName(RUNTIME_PACKAGE, "Provider")
+    val ORIGIN = ClassName(RUNTIME_PACKAGE, "Origin")
     internal val CONTRIBUTES_INTO_SET = ClassName(RUNTIME_PACKAGE, "ContributesIntoSet")
   }
 }

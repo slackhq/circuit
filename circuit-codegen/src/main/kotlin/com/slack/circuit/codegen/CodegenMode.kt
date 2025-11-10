@@ -77,6 +77,8 @@ internal enum class CodegenMode {
    * ```
    */
   HILT {
+    override val originAnnotation: ClassName = CircuitNames.DAGGER_ORIGINATING_ELEMENT
+
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Hilt only supports JVM & Android
       return platforms.all { it is JvmPlatformInfo }
@@ -94,6 +96,8 @@ internal enum class CodegenMode {
           AnnotationSpec.builder(CircuitNames.DAGGER_INSTALL_IN)
             .addMember("%T::class", scope)
             .build(),
+          // Required to generate this here too since this is a separate class from the generated
+          // factory
           topLevelClass?.let {
             AnnotationSpec.builder(CircuitNames.DAGGER_ORIGINATING_ELEMENT)
               .addMember("%L = %T::class", "topLevelClass", topLevelClass)
@@ -156,6 +160,7 @@ internal enum class CodegenMode {
    */
   KOTLIN_INJECT_ANVIL {
     override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
+    override val originAnnotation: ClassName = CircuitNames.KotlinInject.Anvil.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
@@ -202,6 +207,7 @@ internal enum class CodegenMode {
    */
   METRO {
     override val runtime: InjectionRuntime = InjectionRuntime.Metro
+    override val originAnnotation: ClassName = CircuitNames.Metro.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Metro supports all
@@ -230,6 +236,9 @@ internal enum class CodegenMode {
     }
   };
 
+  open val runtime: InjectionRuntime = InjectionRuntime.Javax
+  open val originAnnotation: ClassName? = null
+
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 
   open fun produceAdditionalTypeSpec(
@@ -252,8 +261,6 @@ internal enum class CodegenMode {
   open fun filterValidInjectionSites(
     candidates: Collection<KSDeclaration>
   ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
-
-  open val runtime: InjectionRuntime = InjectionRuntime.Javax
 
   sealed interface InjectionRuntime {
     val inject: ClassName

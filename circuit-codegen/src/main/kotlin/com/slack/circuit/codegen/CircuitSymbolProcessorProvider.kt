@@ -25,6 +25,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
 import com.slack.circuit.codegen.CodegenMode.KOTLIN_INJECT_ANVIL
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -61,29 +62,19 @@ public class CircuitSymbolProcessorProvider : SymbolProcessorProvider {
 private class CircuitSymbolProcessor(
   private val logger: KSPLogger,
   private val codeGenerator: CodeGenerator,
-  private val options: Map<String, String>,
+  options: Map<String, String>,
   private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
 
-  private val lenient = options["circuit.codegen.lenient"]?.toBoolean() ?: false
+  private val options = CircuitOptions.load(options, logger)
+  private val mode = this.options.mode
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
+    if (options === CircuitOptions.UNKNOWN) return emptyList()
     val symbols = CircuitSymbols.create(resolver) ?: return emptyList()
-    val codegenMode =
-      options[CircuitNames.CIRCUIT_CODEGEN_MODE].let { mode ->
-        if (mode == null) {
-          CodegenMode.ANVIL
-        } else {
-          CodegenMode.entries.find { it.name.equals(mode, ignoreCase = true) }
-            ?: run {
-              logger.error("Unrecognised option for codegen mode \"$mode\".")
-              return emptyList()
-            }
-        }
-      }
 
-    if (!codegenMode.supportsPlatforms(platforms)) {
-      logger.error("Unsupported platforms for codegen mode ${codegenMode.name}. $platforms")
+    if (!options.mode.supportsPlatforms(platforms)) {
+      logger.error("Unsupported platforms for codegen mode ${mode.name}. $platforms")
       return emptyList()
     }
 
@@ -92,10 +83,10 @@ private class CircuitSymbolProcessor(
       .forEach { annotatedElement ->
         when (annotatedElement) {
           is KSClassDeclaration ->
-            generateFactory(annotatedElement, InstantiationType.CLASS, symbols, codegenMode)
+            generateFactory(annotatedElement, InstantiationType.CLASS, symbols)
 
           is KSFunctionDeclaration ->
-            generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols, codegenMode)
+            generateFactory(annotatedElement, InstantiationType.FUNCTION, symbols)
 
           else ->
             logger.error(
@@ -112,7 +103,6 @@ private class CircuitSymbolProcessor(
     annotatedElement: KSAnnotated,
     instantiationType: InstantiationType,
     symbols: CircuitSymbols,
-    codegenMode: CodegenMode,
   ) {
     val circuitInjectAnnotation =
       annotatedElement.getKSAnnotationsWithLeniency(CircuitNames.CIRCUIT_INJECT_ANNOTATION).single()
@@ -120,7 +110,7 @@ private class CircuitSymbolProcessor(
     // If we annotated a class, check that the class isn't using assisted inject. If so, error and
     // return
     if (instantiationType == InstantiationType.CLASS) {
-      (annotatedElement as KSClassDeclaration).checkForAssistedInjection(codegenMode) {
+      (annotatedElement as KSClassDeclaration).checkForAssistedInjection(mode) {
         return
       }
     }
@@ -138,7 +128,7 @@ private class CircuitSymbolProcessor(
         screenKSType,
         instantiationType,
         logger,
-        codegenMode = codegenMode,
+        mode = mode,
       ) ?: return
 
     val className =
@@ -146,39 +136,49 @@ private class CircuitSymbolProcessor(
         char.takeIf { char.isLowerCase() }?.run { uppercase(Locale.US) } ?: char.toString()
       }
 
-    val builder =
-      TypeSpec.classBuilder(className + CircuitNames.FACTORY)
-        .apply {
-          val constructorBuilder =
-            FunSpec.constructorBuilder().addParameters(factoryData.constructorParams)
-          // Add the `@Inject` annotation to the appropriate place
-          codegenMode.addInjectAnnotation(this, constructorBuilder)
-          if (
-            constructorBuilder.annotations.isNotEmpty() ||
-              constructorBuilder.parameters.isNotEmpty()
-          ) {
-            primaryConstructor(constructorBuilder.build())
-          }
-        }
-        .apply {
-          if (factoryData.constructorParams.isNotEmpty()) {
-            for (param in factoryData.constructorParams) {
-              addProperty(
-                PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
-                  .initializer(param.name)
-                  .build()
-              )
-            }
-          }
+    // Note: We can't directly reference the top-level class declaration for top-level functions in
+    // kotlin. For annotatedElements which as top-level functions, topLevelClass will be null.
+    val topLevelDeclaration = (annotatedElement as KSDeclaration).topLevelDeclaration()
+    val topLevelClass = (topLevelDeclaration as? KSClassDeclaration)?.toClassName()
 
-          codegenMode.annotateFactory(builder = this, scope = scope)
+    val builder =
+      TypeSpec.classBuilder(className + CircuitNames.FACTORY).apply {
+        // Add the `@Inject` annotation to the appropriate place
+        val constructorBuilder =
+          FunSpec.constructorBuilder().addParameters(factoryData.constructorParams)
+        mode.addInjectAnnotation(this, constructorBuilder, options)
+        if (
+          constructorBuilder.annotations.isNotEmpty() || constructorBuilder.parameters.isNotEmpty()
+        ) {
+          primaryConstructor(constructorBuilder.build())
         }
+
+        if (factoryData.constructorParams.isNotEmpty()) {
+          for (param in factoryData.constructorParams) {
+            addProperty(
+              PropertySpec.builder(param.name, param.type, KModifier.PRIVATE)
+                .initializer(param.name)
+                .build()
+            )
+          }
+        }
+
+        mode.annotateFactory(builder = this, scope = scope)
+        if (topLevelClass != null && mode.originAnnotation != null) {
+          addAnnotation(
+            AnnotationSpec.builder(mode.originAnnotation)
+              .addMember("%T::class", topLevelClass)
+              .build()
+          )
+        }
+      }
     val screenBranch =
       if (screenIsObject) {
         CodeBlock.of("%T", screenType)
       } else {
         CodeBlock.of("is·%T", screenType)
       }
+
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
@@ -187,11 +187,6 @@ private class CircuitSymbolProcessor(
         FactoryType.UI ->
           builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
       }
-
-    // Note: We can't directly reference the top-level class declaration for top-level functions in
-    // kotlin. For annotatedElements which as top-level functions, topLevelClass will be null.
-    val topLevelDeclaration = (annotatedElement as KSDeclaration).topLevelDeclaration()
-    val topLevelClass = (topLevelDeclaration as? KSClassDeclaration)?.toClassName()
 
     val originatingFile = listOfNotNull(annotatedElement.containingFile)
 
@@ -203,7 +198,7 @@ private class CircuitSymbolProcessor(
       )
 
     val additionalType =
-      codegenMode.produceAdditionalTypeSpec(
+      mode.produceAdditionalTypeSpec(
         factoryType = factoryData.factoryType,
         factory = ClassName(factoryData.packageName, className + CircuitNames.FACTORY),
         scope = scope,
@@ -227,17 +222,16 @@ private class CircuitSymbolProcessor(
   }
 
   private inline fun KSClassDeclaration.checkForAssistedInjection(
-    codegenMode: CodegenMode,
+    mode: CodegenMode,
     exit: () -> Nothing,
   ) {
-    val assistedInjectClassName = codegenMode.runtime.assistedInject ?: return
+    val assistedInjectClassName = mode.runtime.assistedInject ?: return
     // Check for an AssistedInject constructor
     if (findConstructorAnnotatedWith(assistedInjectClassName) != null) {
       val assistedFactory =
         declarations.filterIsInstance<KSClassDeclaration>().find { nestedClass ->
-          codegenMode.runtime.assistedFactory?.let {
-            nestedClass.isAnnotationPresentWithLeniency(it)
-          } == true
+          mode.runtime.assistedFactory?.let { nestedClass.isAnnotationPresentWithLeniency(it) } ==
+            true
         }
       val suffix =
         if (assistedFactory != null) " (${assistedFactory.qualifiedName?.asString()})" else ""
@@ -257,7 +251,7 @@ private class CircuitSymbolProcessor(
     annotation: ClassName
   ): Sequence<KSAnnotation> {
     val simpleName = annotation.simpleName
-    return if (lenient) {
+    return if (options.lenient) {
       annotations.filter { it.shortName.asString() == simpleName }
     } else {
       val qualifiedName = annotation.canonicalName
@@ -285,7 +279,7 @@ private class CircuitSymbolProcessor(
     screenKSType: KSType,
     instantiationType: InstantiationType,
     logger: KSPLogger,
-    codegenMode: CodegenMode,
+    mode: CodegenMode,
   ): FactoryData? {
     val className: String
     val packageName: String
@@ -314,8 +308,19 @@ private class CircuitSymbolProcessor(
             logger,
             screenKSType,
             factoryType == FactoryType.PRESENTER,
-            includeParameterNames = codegenMode != KOTLIN_INJECT_ANVIL,
+            includeParameterNames = mode != KOTLIN_INJECT_ANVIL,
           )
+
+        // Check we have a return type
+        if (factoryType == FactoryType.PRESENTER) {
+          val returnType = fd.returnType?.resolve()
+          val isInvalid = returnType == null || !returnType.isInstanceOf(symbols.circuitUiState)
+          if (isInvalid) {
+            logger.error("Presenter functions must return a UiState.", fd.returnType ?: fd)
+            return null
+          }
+        }
+
         codeBlock =
           when (factoryType) {
             FactoryType.PRESENTER ->
@@ -405,27 +410,26 @@ private class CircuitSymbolProcessor(
         }
         val injectableConstructor by
           lazy(NONE) {
-            declaration.findConstructorAnnotatedWith(codegenMode.runtime.inject)
+            declaration.findConstructorAnnotatedWith(mode.runtime.inject(options))
               ?: declaration.primaryConstructor
           }
         val assistedKSParams by
           lazy(NONE) {
             injectableConstructor
               ?.parameters
-              ?.filter { it.isAnnotationPresentWithLeniency(codegenMode.runtime.assisted) }
+              ?.filter { it.isAnnotationPresentWithLeniency(mode.runtime.assisted) }
               .orEmpty()
           }
 
         val isAssisted =
           assistedKSParams.isNotEmpty() ||
-            codegenMode.runtime.assistedFactory?.let {
-              declaration.isAnnotationPresentWithLeniency(it)
-            } == true
+            mode.runtime.assistedFactory?.let { declaration.isAnnotationPresentWithLeniency(it) } ==
+              true
 
         val creatorOrConstructor: KSFunctionDeclaration?
         val targetClass: KSClassDeclaration
         if (isAssisted) {
-          if (codegenMode == KOTLIN_INJECT_ANVIL) {
+          if (mode == KOTLIN_INJECT_ANVIL) {
             creatorOrConstructor = injectableConstructor
             targetClass = declaration
           } else {
@@ -442,9 +446,9 @@ private class CircuitSymbolProcessor(
         }
         val useProvider =
           !isAssisted &&
-            codegenMode
-              .filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration))
-              .any { it.isAnnotationPresentWithLeniency(codegenMode.runtime.inject) }
+            mode.filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration)).any {
+              it.isAnnotationPresentWithLeniency(mode.runtime.inject(options))
+            }
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =
@@ -483,7 +487,7 @@ private class CircuitSymbolProcessor(
               logger,
               screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
-              includeParameterNames = codegenMode != KOTLIN_INJECT_ANVIL,
+              includeParameterNames = mode != KOTLIN_INJECT_ANVIL,
             )
           }
         codeBlock =
@@ -492,14 +496,14 @@ private class CircuitSymbolProcessor(
             constructorParams.add(
               ParameterSpec.builder(
                   "provider",
-                  codegenMode.runtime.asProvider(targetClass.toClassName()),
+                  mode.runtime.asProvider(targetClass.toClassName(), options),
                 )
                 .build()
             )
-            codegenMode.runtime.getProviderBlock(CodeBlock.of("provider"))
+            mode.runtime.getProviderBlock(CodeBlock.of("provider"))
           } else if (isAssisted) {
             // Inject the target class's assisted factory that we'll call its create() on.
-            when (codegenMode) {
+            when (mode) {
               KOTLIN_INJECT_ANVIL -> {
                 val factoryLambda =
                   LambdaTypeName.get(

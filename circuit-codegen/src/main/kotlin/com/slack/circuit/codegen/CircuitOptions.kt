@@ -31,7 +31,7 @@ internal data class CircuitOptions(
         }
 
       if (mode == CodegenMode.UNKNOWN) {
-        logger.error("Specifying \"$mode\" as a Circuit code gen mode is not prohibited.")
+        logger.error("Specifying \"$mode\" as a Circuit code gen mode is prohibited.")
         return UNKNOWN
       }
 

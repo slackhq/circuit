@@ -198,10 +198,9 @@ class PetListPresenter(
     }
 
     val animalState by
-      rememberRetained(petRepo) {
-          petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
-        }
-        .collectAsRetainedState(null)
+      collectAsRetainedState(petRepo, initial = null) {
+        petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
+      }
 
     var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }

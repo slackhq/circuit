@@ -3,18 +3,16 @@
 package com.slack.circuit.codegen
 
 import com.google.common.truth.Truth.assertThat
-import com.tschuchort.compiletesting.CompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
+import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspProcessorOptions
 import com.tschuchort.compiletesting.kspSourcesDir
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.junit.Ignore
 import org.junit.Test
 
 @Suppress("LargeClass", "RedundantVisibilityModifier")
@@ -30,53 +28,133 @@ class CircuitSymbolProcessorTest {
       """
         .trimIndent(),
     )
-  private val singletonComponent =
+  private val anvilAnnotations =
     kotlin(
-      "SingletonComponent.kt",
+      "AnvilAnnotations.kt",
       """
-      package dagger.hilt.components
+      package com.squareup.anvil.annotations
+      import kotlin.reflect.KClass
 
-      annotation class SingletonComponent
+      annotation class ContributesBinding(val scope: KClass<*>)
+      annotation class ContributesMultibinding(val scope: KClass<*>)
       """
         .trimIndent(),
     )
-  private val kotlinInjectAnnotation =
-    kotlin(
-      "Inject.kt",
-      """
-      package me.tatarka.inject.annotations
+  private val circuitSymbols =
+    listOf(
+      kotlin(
+        "Presenter.kt",
+        """
+        package com.slack.circuit.runtime.presenter
+        import com.slack.circuit.runtime.CircuitUiState
+        import androidx.compose.runtime.Composable
 
-      annotation class Inject
-      """
-        .trimIndent(),
+        public inline fun <UiState : CircuitUiState> presenterOf(
+          crossinline body: @Composable () -> UiState
+        ): Presenter<UiState> {
+          throw NotImplementedError()
+        }
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "Ui.kt",
+        """
+        package com.slack.circuit.runtime.ui
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.ui.Ui
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.Modifier
+
+        public inline fun <UiState : CircuitUiState> ui(
+          crossinline body: @Composable (state: UiState, modifier: Modifier) -> Unit
+        ): Ui<UiState> {
+          throw NotImplementedError()
+        }
+        """
+          .trimIndent(),
+      ),
     )
-  private val metroAnnotation =
+  private val hiltSymbols =
+    listOf(
+      kotlin(
+        "SingletonComponent.kt",
+        """
+        package dagger.hilt.components
+
+        annotation class SingletonComponent
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "HiltAnnotations.kt",
+        """
+        package dagger.hilt
+        import kotlin.reflect.KClass
+
+        annotation class InstallIn(val value: KClass<*>)
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "Origins.kt",
+        """
+        package dagger.hilt.codegen
+        import kotlin.reflect.KClass
+
+        annotation class OriginatingElement(val topLevelClass: KClass<*>)
+        """
+          .trimIndent(),
+      ),
+    )
+  private val kotlinInjectSymbols =
+    listOf(
+      kotlin(
+        "KIAnnotations.kt",
+        """
+        package me.tatarka.inject.annotations
+
+        annotation class Inject
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "AmazonAnnotations.kt",
+        """
+        package software.amazon.lastmile.kotlin.inject.anvil
+        import kotlin.reflect.KClass
+
+        annotation class ContributesBinding(val scope: KClass<*>, val multibinding: Boolean = false)
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "AmazonAnnotationsInternal.kt",
+        """
+        package software.amazon.lastmile.kotlin.inject.anvil.internal
+        import kotlin.reflect.KClass
+
+        annotation class Origin(val value: KClass<*>)
+        """
+          .trimIndent(),
+      ),
+    )
+  private val metroSymbols =
     kotlin(
       "Inject.kt",
       """
       package dev.zacsweers.metro
+      import kotlin.reflect.KClass
 
+      abstract class AppScope
       annotation class Inject
-      """
-        .trimIndent(),
-    )
-  private val metroAssistedAnnotation =
-    kotlin(
-      "Assisted.kt",
-      """
-      package dev.zacsweers.metro
-
       annotation class Assisted(val value: String = "")
-      """
-        .trimIndent(),
-    )
-  private val metroAssistedFactoryAnnotation =
-    kotlin(
-      "AssistedFactory.kt",
-      """
-      package dev.zacsweers.metro
-
       annotation class AssistedFactory
+      annotation class Origin(val value: KClass<*>)
+      annotation class ContributesIntoSet(val scope: KClass<*>)
+      interface Provider<T> {
+        operator fun invoke(): T
+      }
       """
         .trimIndent(),
     )
@@ -131,7 +209,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -177,7 +255,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -223,7 +301,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -253,7 +331,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(HomeScreen::class, AppScope::class)
           @Composable
           fun Home(screen: HomeScreen, modifier: Modifier = Modifier) {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -269,7 +347,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -314,7 +392,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -359,7 +437,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -404,7 +482,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -449,7 +527,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -496,7 +574,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -523,6 +601,57 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.ui.Ui
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.Modifier
+          import jakarta.inject.Inject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val provider: Provider<Favorites>,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun specifying_javax_uses_javax() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
           import javax.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
@@ -535,6 +664,7 @@ class CircuitSymbolProcessorTest {
           """
             .trimIndent(),
         ),
+      kspOptions = mapOf(CircuitOptions.USE_JAVAX to "true"),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
         """
@@ -574,7 +704,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.runtime.ui.Ui
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.Modifier
-          import javax.inject.Inject
+          import jakarta.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           class Favorites(val value: String) : Ui<FavoritesScreen.State> {
@@ -598,8 +728,8 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
-        import javax.inject.Provider
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
@@ -660,7 +790,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import com.slack.circuit.runtime.ui.Ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor(
@@ -691,7 +821,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(HomeScreen::class, AppScope::class)
           @Composable
           fun HomePresenter(): HomeScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -707,7 +837,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
@@ -740,7 +870,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           @Composable
           fun FavoritesPresenter(): FavoritesScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -756,7 +886,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
@@ -790,7 +920,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           @Composable
           fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -806,7 +936,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
@@ -840,7 +970,7 @@ class CircuitSymbolProcessorTest {
           @CircuitInject(HomeScreen::class, AppScope::class)
           @Composable
           fun HomePresenter(screen: HomeScreen, navigator: Navigator): HomeScreen.State {
-
+            throw NotImplementedError()
           }
           """
             .trimIndent(),
@@ -856,7 +986,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.presenterOf
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
@@ -907,7 +1037,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
@@ -937,7 +1067,7 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.codegen.annotations.CircuitInject
           import com.slack.circuit.runtime.presenter.Presenter
           import androidx.compose.runtime.Composable
-          import javax.inject.Inject
+          import jakarta.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
           class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
@@ -959,8 +1089,8 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
-        import javax.inject.Provider
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1016,12 +1146,14 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import me.tatarka.inject.annotations.Inject
         import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+        import software.amazon.lastmile.kotlin.inject.anvil.`internal`.Origin
 
         @Inject
         @ContributesBinding(
           AppScope::class,
           multibinding = true,
         )
+        @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
           private val provider: () -> FavoritesPresenter,
         ) : Presenter.Factory {
@@ -1085,7 +1217,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1152,7 +1284,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesPresenterFactory @Inject constructor(
@@ -1218,8 +1350,10 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
-        import javax.inject.Inject
+        import dagger.hilt.codegen.OriginatingElement
+        import jakarta.inject.Inject
 
+        @OriginatingElement(FavoritesPresenter::class)
         public class FavoritesPresenterFactory @Inject constructor(
           private val factory: FavoritesPresenter.Factory,
         ) : Presenter.Factory {
@@ -1347,74 +1481,6 @@ class CircuitSymbolProcessorTest {
     )
   }
 
-  @Ignore("Toe hold for when we implement this validation")
-  @Test
-  fun invalidInjections() {
-    assertProcessingError(
-      sourceFile =
-        kotlin(
-          "InvalidInjections.kt",
-          """
-          package test
-
-          import com.slack.circuit.codegen.annotations.CircuitInject
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.ui.Ui
-          import androidx.compose.runtime.Composable
-          import androidx.compose.ui.Modifier
-          import dagger.assisted.Assisted
-          import dagger.assisted.AssistedFactory
-          import dagger.assisted.AssistedInject
-
-          @CircuitInject(FavoritesScreen::class, AppScope::class)
-          @Composable
-          fun FavoritesFunction(state: FavoritesScreen.State, someString: String, modifier: Modifier = Modifier) {
-
-          }
-
-          class Favorites @AssistedInject constructor(
-            @Assisted private val someString: String,
-          ) : Ui<FavoritesScreen.State> {
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @AssistedFactory
-            fun interface Factory {
-              fun create(someString: String): Favorites
-            }
-
-            @Composable
-            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
-
-            }
-          }
-
-          @CircuitInject(FavoritesScreen::class, AppScope::class)
-          @Composable
-          fun FavoritesFunctionPresenter(someString: String): FavoritesScreen.State {
-
-          }
-
-          class FavoritesPresenter @AssistedInject constructor(
-            @Assisted private val someString: String,
-          ) : Presenter<FavoritesScreen.State> {
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @AssistedFactory
-            fun interface Factory {
-              fun create(someString: String): FavoritesPresenter
-            }
-
-            @Composable
-            override fun present(): FavoritesScreen.State {
-              throw NotImplementedError()
-            }
-          }
-          """
-            .trimIndent(),
-        )
-    ) { messages ->
-      assertThat(messages).contains("TODO")
-    }
-  }
-
   @Test
   fun invalidSupertypes() {
     assertProcessingError(
@@ -1444,7 +1510,6 @@ class CircuitSymbolProcessorTest {
     }
   }
 
-  @Ignore("Toe hold for when we implement this validation")
   @Test
   fun presenterFunctionMissingReturn() {
     assertProcessingError(
@@ -1466,7 +1531,8 @@ class CircuitSymbolProcessorTest {
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages).contains("TODO")
+      assertThat(messages)
+        .contains("MissingPresenterReturn.kt:8: Presenter functions must return a UiState.")
     }
   }
 
@@ -1602,7 +1668,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class StaticUiFactory @Inject constructor() : Ui.Factory {
@@ -1652,10 +1718,12 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.screen.Screen
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Origin
         import dev.zacsweers.metro.Provider
 
         @Inject
         @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
           private val provider: Provider<FavoritesPresenter>,
         ) : Presenter.Factory {
@@ -1719,11 +1787,14 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.Navigator
         import com.slack.circuit.runtime.presenter.Presenter
         import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.AppScope
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Origin
 
         @Inject
         @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
           private val factory: FavoritesPresenter.Factory,
         ) : Presenter.Factory {
@@ -1747,12 +1818,17 @@ class CircuitSymbolProcessorTest {
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
+    kspOptions: Map<String, String> = emptyMap(),
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation =
+      prepareCompilation(sourceFile, codegenMode = codegenMode, kspOptions = kspOptions)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedAdapter = File(generatedSourcesDir, "kotlin/$generatedFilePath")
+    if (!generatedAdapter.exists()) {
+      throw AssertionError("No adapter found at path $generatedFilePath\n${result.messages}")
+    }
     assertThat(generatedAdapter.exists()).isTrue()
     assertThat(generatedAdapter.readText().trim()).isEqualTo(expectedContent.trimIndent())
   }
@@ -1760,9 +1836,11 @@ class CircuitSymbolProcessorTest {
   private fun assertProcessingError(
     sourceFile: SourceFile,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
+    kspOptions: Map<String, String> = emptyMap(),
     body: (messages: String) -> Unit,
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation =
+      prepareCompilation(sourceFile, codegenMode = codegenMode, kspOptions = kspOptions)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     body(result.messages)
@@ -1771,33 +1849,29 @@ class CircuitSymbolProcessorTest {
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
     codegenMode: CodegenMode,
+    kspOptions: Map<String, String>,
   ): KotlinCompilation =
     KotlinCompilation().apply {
+      jvmTarget = "11"
       sources =
         sourceFiles.toList() +
           screens +
+          circuitSymbols +
           when (codegenMode) {
-            CodegenMode.ANVIL -> listOf(appScope)
-            CodegenMode.HILT -> listOf(singletonComponent)
+            CodegenMode.UNKNOWN -> error("Not possible in tests")
+            CodegenMode.ANVIL -> listOf(appScope, anvilAnnotations)
+            CodegenMode.HILT -> hiltSymbols
             CodegenMode.KOTLIN_INJECT_ANVIL -> {
-              listOf(appScope, kotlinInjectAnnotation)
+              kotlinInjectSymbols + appScope
             }
-            CodegenMode.METRO ->
-              listOf(
-                appScope,
-                metroAnnotation,
-                metroAssistedAnnotation,
-                metroAssistedFactoryAnnotation,
-              )
+            CodegenMode.METRO -> listOf(appScope, metroSymbols)
           }
       inheritClassPath = true
-      symbolProcessorProviders += CircuitSymbolProcessorProvider()
-      kspProcessorOptions += "circuit.codegen.mode" to codegenMode.name
-      // Necessary for KSP
-      languageVersion = "1.9"
+      kotlincArguments += "-Xannotation-default-target=param-property"
+      configureKsp {
+        kspProcessorOptions += CircuitOptions.MODE to codegenMode.name
+        kspProcessorOptions += kspOptions
+        symbolProcessorProviders += CircuitSymbolProcessorProvider()
+      }
     }
-
-  private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {
-    return prepareCompilation(*sourceFiles, codegenMode = codegenMode).compile()
-  }
 }

@@ -72,6 +72,10 @@ import com.slack.circuit.runtime.screen.Screen
  * and coordinates result passing between screens when navigating backward. This is the primary
  * entry point for creating navigable content surfaces in Circuit.
  *
+ * This function automatically wraps your navigator with result handling capabilities via
+ * [rememberAnsweringResultNavigator], enabling screens to pass results back when using
+ * [rememberAnsweringNavigator].
+ *
  * ## Features
  * - **State Management**: Manages saveable and retained state for each screen in the backstack with
  *   automatic preservation across configuration changes
@@ -113,6 +117,7 @@ import com.slack.circuit.runtime.screen.Screen
  * @param unavailableRoute A composable function invoked when a screen cannot be rendered (e.g., no
  *   UI factory available). Defaults to the circuit's [Circuit.onUnavailableContent].
  * @see rememberAnsweringNavigator for requesting results from child screens
+ * @see rememberAnsweringResultNavigator for the underlying result navigator creation
  * @see rememberSaveableBackStack for creating a backstack
  * @see rememberCircuitNavigator for creating a navigator
  */
@@ -130,11 +135,9 @@ public fun <R : Record> NavigableCircuitContent(
     circuit.onUnavailableContent,
 ) {
   NavigableCircuitContent(
-    navigator = navigator,
-    backStack = backStack,
+    navigator = rememberAnsweringResultNavigator(navigator, backStack),
     modifier = modifier,
     circuit = circuit,
-    answeringResultHandler = rememberAnsweringResultHandler(),
     providedValues = providedValues,
     decoration = decoration,
     decoratorFactory = decoratorFactory,
@@ -143,26 +146,42 @@ public fun <R : Record> NavigableCircuitContent(
 }
 
 /**
- * An experimental variant of [NavigableCircuitContent] that exposes [answeringResultHandler] for a
- * a [AnsweringResultHandler] to be provided.
+ * An experimental variant of [NavigableCircuitContent] that takes an [AnsweringResultNavigator]
+ * directly, which combines navigation and result handling into a single object.
+ *
+ * This variant is useful when you need direct access to the [AnsweringResultNavigator] instance,
+ * such as when passing the navigator to nested components, managing multiple navigation graphs with
+ * shared result handling, or when you need custom control over the result handler lifecycle.
+ *
+ * For most use cases, prefer the standard [NavigableCircuitContent] overload that takes a
+ * [Navigator] and [BackStack], as it automatically creates and manages the result navigator.
  *
  * ## Usage
  *
  * ```kotlin
  * setContent {
  *   val backStack = rememberSaveableBackStack(root = HomeScreen)
- *   val navigator = rememberCircuitNavigator(backStack)
- *   val answeringResultHandler = rememberAnsweringResultHandler()
- *   NavigableCircuitContent(navigator, backStack, answeringResultHandler)
+ *   val baseNavigator = rememberCircuitNavigator(backStack)
+ *   val navigator = rememberAnsweringResultNavigator(baseNavigator, backStack)
+ *   NavigableCircuitContent(navigator)
  * }
  * ```
+ *
+ * @param navigator The [AnsweringResultNavigator] that handles both navigation and results.
+ * @param modifier The [Modifier] to apply to the content.
+ * @param circuit The [Circuit] instance providing UI factories and configuration.
+ * @param providedValues Optional map of [ProvidedValues] to make available to specific records.
+ * @param decoration The [NavDecoration] used to decorate navigation transitions.
+ * @param decoratorFactory Optional [AnimatedNavDecorator.Factory] to create custom animated
+ *   transitions.
+ * @param unavailableRoute A composable function invoked when a screen cannot be rendered.
+ * @see AnsweringResultNavigator for the navigator that combines navigation and result handling
+ * @see rememberAnsweringResultNavigator for creating an answering result navigator
  */
-@ExperimentalCircuitApi // For AnsweringResultHandler
+@ExperimentalCircuitApi // For AnsweringResultNavigator
 @Composable
 public fun <R : Record> NavigableCircuitContent(
-  navigator: Navigator,
-  backStack: BackStack<R>,
-  answeringResultHandler: AnsweringResultHandler,
+  navigator: AnsweringResultNavigator<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: Map<out Record, ProvidedValues> = emptyMap(),
@@ -171,8 +190,7 @@ public fun <R : Record> NavigableCircuitContent(
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  if (backStack.isEmpty) return
-
+  if (navigator.backStack.isEmpty) return
   /*
    * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
    * RetainedStateRegistry. If we don't do this, those registries would be stored directly in the
@@ -218,12 +236,6 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
-  // Delegates pop results to the answering result handler.
-  val resultNavigator =
-    remember(navigator, backStack, answeringResultHandler) {
-      AnsweringResultNavigator(navigator, backStack, answeringResultHandler)
-    }
-
   CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
@@ -232,21 +244,19 @@ public fun <R : Record> NavigableCircuitContent(
           ContentProviderState(
             saveableStateHolder = saveableStateHolder,
             retainedStateHolder = retainedStateHolder,
-            backStack = backStack,
-            navigator = resultNavigator,
+            navigator = navigator,
             circuit = circuit,
             unavailableRoute = unavailableRoute,
           )
         }
         .apply {
-          lastBackStack = backStack
-          lastNavigator = resultNavigator
+          lastNavigator = navigator
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
         }
-    val activeContentProviders = buildCircuitContentProviders(backStack = backStack)
+    val activeContentProviders = buildCircuitContentProviders(backStack = navigator.backStack)
     val circuitProvidedValues =
-      providedValuesForBackStack(backStack, circuit.backStackLocalProviders)
+      providedValuesForBackStack(navigator.backStack, circuit.backStackLocalProviders)
     navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
       val record = provider.record
 
@@ -259,9 +269,11 @@ public fun <R : Record> NavigableCircuitContent(
         remember(values, circuitProvidedValues) {
           (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
+      val localBackstack = contentProviderState.lastNavigator.backStack
+      val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
       CompositionLocalProvider(
-        LocalBackStack provides backStack,
-        LocalAnsweringResultHandler provides answeringResultHandler,
+        LocalBackStack provides localBackstack,
+        LocalAnsweringResultHandler provides localResultHandler,
         *providedLocals,
       ) {
         provider.content(record, contentProviderState)
@@ -270,17 +282,47 @@ public fun <R : Record> NavigableCircuitContent(
   }
 }
 
+/**
+ * Creates and remembers an [AnsweringResultNavigator] that wraps a base [Navigator] with result
+ * handling capabilities.
+ *
+ * This is a convenience function that combines a regular navigator, backstack, and result handler
+ * into a single [AnsweringResultNavigator] instance that automatically manages result passing when
+ * screens are popped.
+ *
+ * @param navigator The base [Navigator] to wrap with result handling.
+ * @param backStack The [BackStack] used for tracking navigation state.
+ * @param answeringResultHandler The [AnsweringResultHandler] for managing screen results. Defaults
+ *   to a new instance created via [rememberAnsweringResultHandler]. Only provide a custom handler
+ *   if you need to share result handling across multiple navigation graphs or require custom result
+ *   handling logic.
+ * @return An [AnsweringResultNavigator] that combines all three components.
+ * @see AnsweringResultNavigator for the wrapped navigator type
+ * @see rememberAnsweringResultHandler for creating a result handler
+ */
+@ExperimentalCircuitApi
+@Composable
+public fun <R : Record> rememberAnsweringResultNavigator(
+  navigator: Navigator,
+  backStack: BackStack<R>,
+  answeringResultHandler: AnsweringResultHandler = rememberAnsweringResultHandler(),
+): AnsweringResultNavigator<R> {
+  return remember(navigator, backStack, answeringResultHandler) {
+    AnsweringResultNavigator(navigator, backStack, answeringResultHandler)
+  }
+}
+
 /** [Navigator] that sends pending results to the [answeringResultHandler] when popped. */
 @ExperimentalCircuitApi
-private class AnsweringResultNavigator<R : Record>(
-  private val navigator: Navigator,
-  private val backStack: BackStack<R>,
-  private val answeringResultHandler: AnsweringResultHandler,
-) : Navigator by navigator {
+public class AnsweringResultNavigator<R : Record>(
+  internal val originalNavigator: Navigator,
+  internal val backStack: BackStack<R>,
+  internal val answeringResultHandler: AnsweringResultHandler,
+) : Navigator by originalNavigator {
   override fun pop(result: PopResult?): Screen? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.
     return Snapshot.withMutableSnapshot {
-      val popped = navigator.pop(result)
+      val popped = originalNavigator.pop(result)
       if (result != null) {
         // Send the pending result to our new top record, but only if it's expecting one
         backStack.topRecord?.apply {
@@ -295,6 +337,7 @@ private class AnsweringResultNavigator<R : Record>(
 }
 
 /** A simple holder class for a [record] and its associated [content]. */
+@ExperimentalCircuitApi
 @Immutable
 public class RecordContentProvider<R : Record>(
   public val record: R,
@@ -319,6 +362,7 @@ public class RecordContentProvider<R : Record>(
   override fun toString(): String = "RecordContentProvider(record=$record)"
 }
 
+@ExperimentalCircuitApi
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
   backStack: BackStack<R>
@@ -367,17 +411,16 @@ private fun <R : Record> buildCircuitContentProviders(
   }
 }
 
+@ExperimentalCircuitApi
 @Stable
 public class ContentProviderState<R : Record>(
   internal val saveableStateHolder: SaveableStateHolder,
   internal val retainedStateHolder: RetainedStateHolder,
-  backStack: BackStack<R>,
-  navigator: Navigator,
+  navigator: AnsweringResultNavigator<R>,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
 ) {
 
-  internal var lastBackStack by mutableStateOf(backStack)
   internal var lastNavigator by mutableStateOf(navigator)
   internal var lastCircuit by mutableStateOf(circuit)
   internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
@@ -399,11 +442,12 @@ public class ContentProviderState<R : Record>(
   }
 }
 
+@OptIn(ExperimentalCircuitApi::class)
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
       val lifecycle = remember { MutableRecordLifecycle() }
-      SideEffect { lifecycle.isActive = lastBackStack.topRecord == record }
+      SideEffect { lifecycle.isActive = lastNavigator.backStack.topRecord == record }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
@@ -422,7 +466,7 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
       // Remove saved states for records that are no longer in the back stack
       DisposableEffect(record.registryKey) {
         onDispose {
-          if (!lastBackStack.containsRecord(record, includeSaved = true)) {
+          if (!lastNavigator.backStack.containsRecord(record, includeSaved = true)) {
             retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)
           }

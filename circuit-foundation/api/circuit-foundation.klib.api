@@ -120,26 +120,6 @@ sealed interface com.slack.circuit.foundation/NavEvent : com.slack.circuit.runti
     }
 }
 
-final class <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.foundation/ContentProviderState { // com.slack.circuit.foundation/ContentProviderState|null[0]
-    constructor <init>(androidx.compose.runtime.saveable/SaveableStateHolder, com.slack.circuit.retained/RetainedStateHolder, com.slack.circuit.backstack/BackStack<#A>, com.slack.circuit.runtime/Navigator, com.slack.circuit.foundation/Circuit, kotlin/Function4<com.slack.circuit.runtime.screen/Screen, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuit.foundation/ContentProviderState.<init>|<init>(androidx.compose.runtime.saveable.SaveableStateHolder;com.slack.circuit.retained.RetainedStateHolder;com.slack.circuit.backstack.BackStack<1:0>;com.slack.circuit.runtime.Navigator;com.slack.circuit.foundation.Circuit;kotlin.Function4<com.slack.circuit.runtime.screen.Screen,androidx.compose.ui.Modifier,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
-
-    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation/ContentProviderState.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // com.slack.circuit.foundation/ContentProviderState.hashCode|hashCode(){}[0]
-}
-
-final class <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.foundation/RecordContentProvider : com.slack.circuit.backstack/NavArgument { // com.slack.circuit.foundation/RecordContentProvider|null[0]
-    constructor <init>(#A, kotlin/Function4<#A, com.slack.circuit.foundation/ContentProviderState<#A>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.slack.circuit.foundation/RecordContentProvider.<init>|<init>(1:0;kotlin.Function4<1:0,com.slack.circuit.foundation.ContentProviderState<1:0>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
-
-    final val record // com.slack.circuit.foundation/RecordContentProvider.record|{}record[0]
-        final fun <get-record>(): #A // com.slack.circuit.foundation/RecordContentProvider.record.<get-record>|<get-record>(){}[0]
-    final val screen // com.slack.circuit.foundation/RecordContentProvider.screen|{}screen[0]
-        final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation/RecordContentProvider.screen.<get-screen>|<get-screen>(){}[0]
-
-    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation/RecordContentProvider.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // com.slack.circuit.foundation/RecordContentProvider.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // com.slack.circuit.foundation/RecordContentProvider.toString|toString(){}[0]
-}
-
 final class com.slack.circuit.foundation.animation/AnimatedNavDecoration : com.slack.circuit.backstack/NavDecoration { // com.slack.circuit.foundation.animation/AnimatedNavDecoration|null[0]
     constructor <init>(kotlin.collections/Map<kotlin.reflect/KClass<out com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.foundation.animation/AnimatedScreenTransform>, com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory) // com.slack.circuit.foundation.animation/AnimatedNavDecoration.<init>|<init>(kotlin.collections.Map<kotlin.reflect.KClass<out|com.slack.circuit.runtime.screen.Screen>,com.slack.circuit.foundation.animation.AnimatedScreenTransform>;com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory){}[0]
 
@@ -307,6 +287,7 @@ final val com.slack.circuit.foundation/LocalCircuit // com.slack.circuit.foundat
 final val com.slack.circuit.foundation/LocalRecordLifecycle // com.slack.circuit.foundation/LocalRecordLifecycle|{}LocalRecordLifecycle[0]
     final fun <get-LocalRecordLifecycle>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.foundation/RecordLifecycle> // com.slack.circuit.foundation/LocalRecordLifecycle.<get-LocalRecordLifecycle>|<get-LocalRecordLifecycle>(){}[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultHandler$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultHandler$stableprop|#static{}com_slack_circuit_foundation_AnsweringResultHandler$stableprop[0]
+final val com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultNavigator$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultNavigator$stableprop|#static{}com_slack_circuit_foundation_AnsweringResultNavigator$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit$stableprop|#static{}com_slack_circuit_foundation_Circuit$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit_Builder$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit_Builder$stableprop|#static{}com_slack_circuit_foundation_Circuit_Builder$stableprop[0]
 final val com.slack.circuit.foundation/com_slack_circuit_foundation_ContentProviderState$stableprop // com.slack.circuit.foundation/com_slack_circuit_foundation_ContentProviderState$stableprop|#static{}com_slack_circuit_foundation_ContentProviderState$stableprop[0]
@@ -348,6 +329,7 @@ final fun com.slack.circuit.foundation/CircuitPreview(kotlin/Function2<androidx.
 final fun com.slack.circuit.foundation/Navigator(com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>, kotlin/Function1<com.slack.circuit.runtime.screen/PopResult?, kotlin/Unit>): com.slack.circuit.runtime/Navigator // com.slack.circuit.foundation/Navigator|Navigator(com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>;kotlin.Function1<com.slack.circuit.runtime.screen.PopResult?,kotlin.Unit>){}[0]
 final fun com.slack.circuit.foundation/answeringNavigationAvailable(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.slack.circuit.foundation/answeringNavigationAvailable|answeringNavigationAvailable(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultHandler$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultHandler$stableprop_getter|com_slack_circuit_foundation_AnsweringResultHandler$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultNavigator$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_AnsweringResultNavigator$stableprop_getter|com_slack_circuit_foundation_AnsweringResultNavigator$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit$stableprop_getter|com_slack_circuit_foundation_Circuit$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit_Builder$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_Circuit_Builder$stableprop_getter|com_slack_circuit_foundation_Circuit_Builder$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation/com_slack_circuit_foundation_ContentProviderState$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation/com_slack_circuit_foundation_ContentProviderState$stableprop_getter|com_slack_circuit_foundation_ContentProviderState$stableprop_getter(){}[0]

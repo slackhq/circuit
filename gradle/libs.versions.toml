@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.0"
+agp = "8.13.1"
 androidx-activity = "1.12.0-rc01"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
@@ -9,7 +9,7 @@ anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
-compose-runtime = "1.9.4" # Keep in sync with the androidx version used by compose-jb
+compose-runtime = "1.10.0-beta01" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.57.2"
 datastore = "1.1.7"
 detekt = "1.23.8"
@@ -22,18 +22,18 @@ jb-compose-navigationevent = "1.0.0-beta01"
 jb-lifecycle = "2.10.0-alpha04"
 jdk = "23"
 jvmTarget = "11"
-kct = "0.9.0"
+kct = "0.11.0"
 kotlin = "2.2.21"
 kotlinInject = "0.8.0"
 kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.2.20-2.0.4"
+ksp = "2.3.2"
 ktfmt = "0.59"
 ktor = "3.3.2"
 leakcanary = "2.14"
-mavenPublish = "0.34.0"
+mavenPublish = "0.35.0"
 molecule = "2.2.0"
 okhttp = "5.3.0"
 okio = "3.16.2"
@@ -68,7 +68,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.7.4" }
+metro = { id = "dev.zacsweers.metro", version = "0.7.5" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

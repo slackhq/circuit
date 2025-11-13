@@ -19,6 +19,19 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 
 internal enum class CodegenMode {
+  UNKNOWN {
+    override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
+      return false
+    }
+
+    override fun addInjectAnnotation(
+      classBuilder: TypeSpec.Builder,
+      constructorBuilder: FunSpec.Builder,
+      options: CircuitOptions,
+    ) {
+      error("Unknown codegen mode, should not be called")
+    }
+  },
   /**
    * The Anvil Codegen mode
    *
@@ -51,8 +64,9 @@ internal enum class CodegenMode {
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
       constructorBuilder: FunSpec.Builder,
+      options: CircuitOptions,
     ) {
-      constructorBuilder.addAnnotation(runtime.inject)
+      constructorBuilder.addAnnotation(runtime.inject(options))
     }
   },
 
@@ -77,6 +91,8 @@ internal enum class CodegenMode {
    * ```
    */
   HILT {
+    override val originAnnotation: ClassName = CircuitNames.DAGGER_ORIGINATING_ELEMENT
+
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Hilt only supports JVM & Android
       return platforms.all { it is JvmPlatformInfo }
@@ -94,6 +110,8 @@ internal enum class CodegenMode {
           AnnotationSpec.builder(CircuitNames.DAGGER_INSTALL_IN)
             .addMember("%T::class", scope)
             .build(),
+          // Required to generate this here too since this is a separate class from the generated
+          // factory
           topLevelClass?.let {
             AnnotationSpec.builder(CircuitNames.DAGGER_ORIGINATING_ELEMENT)
               .addMember("%L = %T::class", "topLevelClass", topLevelClass)
@@ -134,8 +152,9 @@ internal enum class CodegenMode {
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
       constructorBuilder: FunSpec.Builder,
+      options: CircuitOptions,
     ) {
-      constructorBuilder.addAnnotation(runtime.inject)
+      constructorBuilder.addAnnotation(runtime.inject(options))
     }
   },
 
@@ -156,6 +175,7 @@ internal enum class CodegenMode {
    */
   KOTLIN_INJECT_ANVIL {
     override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
+    override val originAnnotation: ClassName = CircuitNames.KotlinInject.Anvil.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
@@ -174,8 +194,9 @@ internal enum class CodegenMode {
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
       constructorBuilder: FunSpec.Builder,
+      options: CircuitOptions,
     ) {
-      classBuilder.addAnnotation(runtime.inject)
+      classBuilder.addAnnotation(runtime.inject(options))
     }
 
     override fun filterValidInjectionSites(
@@ -202,6 +223,7 @@ internal enum class CodegenMode {
    */
   METRO {
     override val runtime: InjectionRuntime = InjectionRuntime.Metro
+    override val originAnnotation: ClassName = CircuitNames.Metro.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Metro supports all
@@ -219,8 +241,9 @@ internal enum class CodegenMode {
     override fun addInjectAnnotation(
       classBuilder: TypeSpec.Builder,
       constructorBuilder: FunSpec.Builder,
+      options: CircuitOptions,
     ) {
-      classBuilder.addAnnotation(runtime.inject)
+      classBuilder.addAnnotation(runtime.inject(options))
     }
 
     override fun filterValidInjectionSites(
@@ -229,6 +252,9 @@ internal enum class CodegenMode {
       return candidates.filter { it is KSFunctionDeclaration || it is KSClassDeclaration }
     }
   };
+
+  open val runtime: InjectionRuntime = InjectionRuntime.Jakarta
+  open val originAnnotation: ClassName? = null
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 
@@ -246,6 +272,7 @@ internal enum class CodegenMode {
   abstract fun addInjectAnnotation(
     classBuilder: TypeSpec.Builder,
     constructorBuilder: FunSpec.Builder,
+    options: CircuitOptions,
   )
 
   /** Filters the candidates for @Inject annotation placement. */
@@ -253,26 +280,28 @@ internal enum class CodegenMode {
     candidates: Collection<KSDeclaration>
   ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
 
-  open val runtime: InjectionRuntime = InjectionRuntime.Javax
-
   sealed interface InjectionRuntime {
-    val inject: ClassName
+    fun inject(options: CircuitOptions): ClassName
+
     val assisted: ClassName
     val assistedInject: ClassName?
     val assistedFactory: ClassName?
 
-    fun asProvider(providedType: TypeName): TypeName
+    fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName
 
     fun getProviderBlock(provider: CodeBlock): CodeBlock
 
-    data object Javax : InjectionRuntime {
-      override val inject: ClassName = CircuitNames.INJECT
+    data object Jakarta : InjectionRuntime {
+      override fun inject(options: CircuitOptions): ClassName =
+        if (options.useJavax) CircuitNames.INJECT_JAVAX else CircuitNames.INJECT
+
       override val assisted: ClassName = CircuitNames.ASSISTED
       override val assistedInject: ClassName = CircuitNames.ASSISTED_INJECT
       override val assistedFactory: ClassName = CircuitNames.ASSISTED_FACTORY
 
-      override fun asProvider(providedType: TypeName): TypeName {
-        return CircuitNames.PROVIDER.parameterizedBy(providedType)
+      override fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName {
+        val className = if (options.useJavax) CircuitNames.PROVIDER_JAVAX else CircuitNames.PROVIDER
+        return className.parameterizedBy(providedType)
       }
 
       override fun getProviderBlock(provider: CodeBlock): CodeBlock {
@@ -281,12 +310,13 @@ internal enum class CodegenMode {
     }
 
     data object KotlinInject : InjectionRuntime {
-      override val inject: ClassName = CircuitNames.KotlinInject.INJECT
+      override fun inject(options: CircuitOptions) = CircuitNames.KotlinInject.INJECT
+
       override val assisted: ClassName = CircuitNames.KotlinInject.ASSISTED
       override val assistedInject: ClassName? = null
       override val assistedFactory: ClassName? = null // It has no annotation
 
-      override fun asProvider(providedType: TypeName): TypeName {
+      override fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName {
         return LambdaTypeName.get(returnType = providedType)
       }
 
@@ -296,12 +326,13 @@ internal enum class CodegenMode {
     }
 
     data object Metro : InjectionRuntime {
-      override val inject: ClassName = CircuitNames.Metro.INJECT
+      override fun inject(options: CircuitOptions) = CircuitNames.Metro.INJECT
+
       override val assisted: ClassName = CircuitNames.Metro.ASSISTED
       override val assistedInject: ClassName? = null
       override val assistedFactory: ClassName = CircuitNames.Metro.ASSISTED_FACTORY
 
-      override fun asProvider(providedType: TypeName): TypeName {
+      override fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName {
         return CircuitNames.Metro.PROVIDER.parameterizedBy(providedType)
       }
 

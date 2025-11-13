@@ -8,8 +8,10 @@ internal object CircuitNames {
   val ASSISTED = ClassName("dagger.assisted", "Assisted")
   val ASSISTED_FACTORY = ClassName("dagger.assisted", "AssistedFactory")
   val ASSISTED_INJECT = ClassName("dagger.assisted", "AssistedInject")
-  val INJECT = ClassName("javax.inject", "Inject")
-  val PROVIDER = ClassName("javax.inject", "Provider")
+  val INJECT = ClassName("jakarta.inject", "Inject")
+  val INJECT_JAVAX = ClassName("javax.inject", "Inject")
+  val PROVIDER = ClassName("jakarta.inject", "Provider")
+  val PROVIDER_JAVAX = ClassName("javax.inject", "Provider")
   const val CIRCUIT_RUNTIME_BASE_PACKAGE = "com.slack.circuit.runtime"
   const val DAGGER_PACKAGE = "dagger"
   const val DAGGER_HILT_PACKAGE = "$DAGGER_PACKAGE.hilt"
@@ -36,7 +38,6 @@ internal object CircuitNames {
   val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
   const val MODULE = "Module"
   const val FACTORY = "Factory"
-  const val CIRCUIT_CODEGEN_MODE = "circuit.codegen.mode"
 
   object KotlinInject {
     private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"
@@ -45,7 +46,10 @@ internal object CircuitNames {
 
     object Anvil {
       private const val RUNTIME_PACKAGE = "software.amazon.lastmile.kotlin.inject.anvil"
+      private const val RUNTIME_INTERNAL_PACKAGE =
+        "software.amazon.lastmile.kotlin.inject.anvil.internal"
       internal val CONTRIBUTES_BINDING = ClassName(RUNTIME_PACKAGE, "ContributesBinding")
+      val ORIGIN = ClassName(RUNTIME_INTERNAL_PACKAGE, "Origin")
     }
   }
 
@@ -55,6 +59,7 @@ internal object CircuitNames {
     val ASSISTED = ClassName(RUNTIME_PACKAGE, "Assisted")
     val ASSISTED_FACTORY = ClassName(RUNTIME_PACKAGE, "AssistedFactory")
     val PROVIDER = ClassName(RUNTIME_PACKAGE, "Provider")
+    val ORIGIN = ClassName(RUNTIME_PACKAGE, "Origin")
     internal val CONTRIBUTES_INTO_SET = ClassName(RUNTIME_PACKAGE, "ContributesIntoSet")
   }
 }

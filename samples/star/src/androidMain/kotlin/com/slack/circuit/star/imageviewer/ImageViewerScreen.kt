@@ -49,13 +49,13 @@ import com.slack.circuit.star.ui.thenIf
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.AssistedInject
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 
-@Inject
+@AssistedInject
 class ImageViewerPresenter(
   @Assisted private val screen: ImageViewerScreen,
   @Assisted private val navigator: Navigator,
@@ -193,6 +193,7 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
                 navigationIconContentColor = Color.Transparent,
                 titleContentColor = Color.Transparent,
                 actionIconContentColor = Color.Transparent,
+                subtitleContentColor = Color.Transparent,
               ),
           )
         }

@@ -61,7 +61,7 @@ kotlin {
           implementation(libs.junit)
           implementation(libs.truth)
           implementation(libs.testing.testParameterInjector)
-          implementation(project(":internal-test-utils"))
+          implementation(projects.internalTestUtils)
         }
       }
     jvmTest { dependsOn(commonJvmTest) }

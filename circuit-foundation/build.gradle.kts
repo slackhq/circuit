@@ -73,10 +73,11 @@ kotlin {
     androidMain { dependencies { implementation(libs.androidx.activity.compose) } }
     commonTest {
       dependencies {
+        implementation(libs.compose.ui.test)
+        implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
-        implementation(libs.coroutines.test)
 
         implementation(projects.internalTestUtils)
       }
@@ -126,7 +127,10 @@ tasks
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
     compilerOptions {
-      freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+      freeCompilerArgs.addAll(
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-opt-in=com.slack.circuit.runtime.ExperimentalCircuitApi",
+      )
 
       if (
         name == "compileReleaseUnitTestKotlinAndroid" ||

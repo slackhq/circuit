@@ -20,8 +20,6 @@ androidx.compose.foundation:foundation-layout
 androidx.compose.foundation:foundation
 androidx.compose.material3:material3-android
 androidx.compose.material3:material3
-androidx.compose.material:material-icons-core-android
-androidx.compose.material:material-icons-core
 androidx.compose.material:material-ripple-android
 androidx.compose.material:material-ripple
 androidx.compose.runtime:runtime-android

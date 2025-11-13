@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -85,8 +86,8 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
 
   override fun peekBackStack(): List<Screen> = delegate.peekBackStack()
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     onNavEvent()
-    return delegate.resetRoot(newRoot, saveState, restoreState)
+    return delegate.resetRoot(newRoot, options)
   }
 }

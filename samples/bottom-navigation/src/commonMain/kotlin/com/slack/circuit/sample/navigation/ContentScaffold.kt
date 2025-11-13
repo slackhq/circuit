@@ -31,13 +31,15 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.SaveableBackStack.Record
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 
 @Composable
 fun ContentScaffold(
-  backStack: SaveableBackStack,
+  backStack: BackStack<Record>,
   navigator: Navigator,
   tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
@@ -57,7 +59,7 @@ fun ContentScaffold(
 @Composable
 private fun BottomTabRow(
   tabs: List<TabScreen>,
-  backStack: SaveableBackStack,
+  backStack: BackStack<Record>,
   navigator: Navigator,
   modifier: Modifier = Modifier,
 ) {
@@ -80,7 +82,7 @@ private fun BottomTabRow(
             .semantics { this.selected = selected }
             .weight(1f)
             .height(IntrinsicSize.Max)
-            .clickable { navigator.resetRoot(tab, saveState = true, restoreState = true) }
+            .clickable { navigator.resetRoot(tab, StateOptions.SaveAndRestore) }
             .background(if (selected) MaterialTheme.colorScheme.secondary else Color.Unspecified)
             .padding(horizontal = 8.dp, vertical = 20.dp),
       )

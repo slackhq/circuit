@@ -8,6 +8,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -18,11 +19,13 @@ import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.foundation.internal.mapToImmutableList
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
+ * A new [Navigator] will be created if the [backStack] instance changes.
  *
  * @param backStack The backing [BackStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
@@ -34,7 +37,8 @@ public fun rememberCircuitNavigator(
   backStack: BackStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
 ): Navigator {
-  return remember { Navigator(backStack, onRootPop) }
+  val latestOnRootPop by rememberUpdatedState(onRootPop)
+  return remember(backStack) { Navigator(backStack) { popResult -> latestOnRootPop(popResult) } }
 }
 
 /**
@@ -124,27 +128,29 @@ internal class NavigatorImpl(
       onRootPop(result)
       return null
     }
-
-    return backStack.pop(result)?.screen
+    return backStack.pop()?.screen
   }
 
   override fun peek(): Screen? = backStack.firstOrNull()?.screen
 
   override fun peekBackStack(): List<Screen> = backStack.mapToImmutableList { it.screen }
 
-  override fun resetRoot(newRoot: Screen, saveState: Boolean, restoreState: Boolean): List<Screen> {
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
     val currentStack =
       Snapshot.withMutableSnapshot {
-        if (saveState) backStack.saveState()
+        if (options.save) backStack.saveState()
         // Pop everything off the back stack
         val popped = backStack.popUntil { false }.mapToImmutableList { it.screen }
 
         // If we're not restoring state, or the restore didn't work, we need to push the new root
         // onto the stack
-        if (!restoreState || !backStack.restoreState(newRoot)) {
+        if (!options.restore || !backStack.restoreState(newRoot)) {
           backStack.push(newRoot)
         }
+
+        // Clear the state if requested, do this last to allow restoring the state once.
+        if (options.clear) backStack.removeState(newRoot)
         popped
       }
 

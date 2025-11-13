@@ -4,23 +4,46 @@ Changelog
 Unreleased
 ----------
 
+- [code gen] Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
+- [code gen] Switch to `jakarta.inject` types for Dagger/Anvil code gen. This should have no source-breaking changes to users since this only affected generated code, but note that the square/anvil implementation may not support this in factory generation ([the KSP fork does](https://github.com/zacsweers/anvil)). If you need to keep javax annotations, use the `circuit.codegen.useJavax=true` KSP option.
+- [code gen] Drop KSP1 support.
+
+0.31.0
+------
+
+_2025-11-04_
+
 ### Breaking Changes:
 
 Remove `kotlinx-immutable` dependency. With Compose's [strong skipping mode](https://developer.android.com/develop/ui/compose/performance/stability/strongskipping), we no longer feel this is necessary.
+
+Result delivery is now handled by `NavigableCircuitContent` via an internal `AnsweringResultNavigator` wrapper, and result
+handling APIs have been removed from `BackStack` and `SaveableBackStack` as this is now purely a navigation concern. This
+separates result handling concerns from the backstack implementation and provides better encapsulation.
+
+The callback block in `rememberAnsweringNavigator` is no longer suspendable as it was never intended for any long running operations.
 
 ### Behaviour Changes:
 
 On iOS `GestureNavigationDecorationFactory` now uses `IOSPredictiveBackNavDecorator` instead of  `CupertinoGestureNavigationDecorator`.
 This new decorator uses the Compose multiplatform `PredictiveBackHandler` to drive the back animation, instead of a swipeable gesture or nested scroll.
 
+The `Navigator.resetRoot` API is now using a `StateOptions` class to allow saving, restoring, and
+clearing of back stack state. The previous `resetRoot` function with `saveState` and `restoreState` booleans is available as an extension function.
+
 ### Misc:
 
 - Switched Compose uses to depend on Compose Multiplatform over Jetpack Compose
 - Android minimum SDK is now `minSdk` 23
-- Update Compose Multiplatform to `1.9.0`.
-- Update to Kotlin `2.2.20`.
+- Added saved state peek/remove to `Backstack`
+- Fixed `Navigator.onNavEvent()` not passing all arguments to `resetRoot()`
+- Fixes to `rememberCircuitNavigator()` capturing `onRootPop` and not recreating if a new backstack was provided
+- Update Compose Multiplatform to `1.9.2`.
+- Update to Kotlin `2.2.21`.
 - Update to Molecule `2.2.0`.
-- Build against KSP `2.2.20-2.0.3`.
+- Build against KSP `2.2.20-2.0.4`.
+
+Special thanks to [@simon-duchastel](https://github.com/simon-duchastel) and [@eboudrant](https://github.com/eboudrant) for contributing to this release!
 
 0.30.0
 ------

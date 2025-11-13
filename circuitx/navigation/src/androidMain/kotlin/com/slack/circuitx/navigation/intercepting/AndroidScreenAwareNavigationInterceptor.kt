@@ -24,7 +24,7 @@ public class AndroidScreenAwareNavigationInterceptor(private val starter: Androi
     }
   )
 
-  override fun goTo(screen: Screen): InterceptedGoToResult {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedGoToResult {
     return when (screen) {
       is AndroidScreen ->
         if (starter.start(screen)) {

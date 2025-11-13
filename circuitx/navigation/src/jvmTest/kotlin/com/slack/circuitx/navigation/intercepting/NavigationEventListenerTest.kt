@@ -5,6 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationEventListener.OnBackStackChangedEvent
@@ -79,7 +80,8 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) = setTestContent(eventListeners = singleEventListener)
       interceptingNavigator.goTo(TestScreen.ScreenA)
-      assertEquals(GoToEvent(TestScreen.ScreenA), fakeEventListener.awaitGoTo())
+      val expectedBackStack = listOf(TestScreen.RootAlpha)
+      assertEquals(GoToEvent(expectedBackStack, TestScreen.ScreenA), fakeEventListener.awaitGoTo())
     }
   }
 
@@ -88,11 +90,23 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) = setTestContent(eventListeners = singleEventListener)
       interceptingNavigator.goTo(TestScreen.ScreenA)
-      assertEquals(GoToEvent(TestScreen.ScreenA), fakeEventListener.awaitGoTo())
+      assertEquals(
+        GoToEvent(listOf(TestScreen.RootAlpha), TestScreen.ScreenA),
+        fakeEventListener.awaitGoTo(),
+      )
       interceptingNavigator.goTo(TestScreen.ScreenB)
-      assertEquals(GoToEvent(TestScreen.ScreenB), fakeEventListener.awaitGoTo())
+      assertEquals(
+        GoToEvent(listOf(TestScreen.ScreenA, TestScreen.RootAlpha), TestScreen.ScreenB),
+        fakeEventListener.awaitGoTo(),
+      )
       interceptingNavigator.goTo(TestScreen.ScreenC)
-      assertEquals(GoToEvent(TestScreen.ScreenC), fakeEventListener.awaitGoTo())
+      assertEquals(
+        GoToEvent(
+          listOf(TestScreen.ScreenB, TestScreen.ScreenA, TestScreen.RootAlpha),
+          TestScreen.ScreenC,
+        ),
+        fakeEventListener.awaitGoTo(),
+      )
     }
   }
 
@@ -171,7 +185,11 @@ class NavigationEventListenerTest {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
       interceptingNavigator.resetRoot(TestScreen.RootBeta)
-      assertEquals(ResetRootEvent(TestScreen.RootBeta), fakeEventListener.awaitResetRoot())
+      val expectedBackStack = listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
+      assertEquals(
+        ResetRootEvent(expectedBackStack, TestScreen.RootBeta),
+        fakeEventListener.awaitResetRoot(),
+      )
     }
   }
 
@@ -191,9 +209,14 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, saveState = true)
+      interceptingNavigator.resetRoot(TestScreen.RootBeta, StateOptions(save = true, clear = false))
+      val expectedBackStack = listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, saveState = true),
+        ResetRootEvent(
+          expectedBackStack,
+          TestScreen.RootBeta,
+          StateOptions(save = true, clear = false),
+        ),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -204,9 +227,17 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, restoreState = true)
+      interceptingNavigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(restore = true, clear = false),
+      )
+      val expectedBackStack = listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, restoreState = true),
+        ResetRootEvent(
+          expectedBackStack,
+          TestScreen.RootBeta,
+          StateOptions(restore = true, clear = false),
+        ),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -217,9 +248,17 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, saveState = false)
+      interceptingNavigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(save = false, clear = false),
+      )
+      val expectedBackStack = listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, saveState = false),
+        ResetRootEvent(
+          expectedBackStack,
+          TestScreen.RootBeta,
+          StateOptions(save = false, clear = false),
+        ),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -230,9 +269,17 @@ class NavigationEventListenerTest {
     composeTestRule.run {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
-      interceptingNavigator.resetRoot(TestScreen.RootBeta, restoreState = false)
+      interceptingNavigator.resetRoot(
+        TestScreen.RootBeta,
+        StateOptions(restore = false, clear = false),
+      )
+      val expectedBackStack = listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, restoreState = false),
+        ResetRootEvent(
+          expectedBackStack,
+          TestScreen.RootBeta,
+          StateOptions(restore = false, clear = false),
+        ),
         fakeEventListener.awaitResetRoot(),
       )
     }
@@ -244,11 +291,21 @@ class NavigationEventListenerTest {
       val (_, interceptingNavigator) =
         setTestContent(eventListeners = singleEventListener, additionalScreens = ADDITIONAL_SCREENS)
       interceptingNavigator.resetRoot(TestScreen.RootBeta)
-      assertEquals(ResetRootEvent(TestScreen.RootBeta), fakeEventListener.awaitResetRoot())
+      val expectedBackStack = listOf(TestScreen.ScreenA, TestScreen.ScreenB, TestScreen.RootAlpha)
+      assertEquals(
+        ResetRootEvent(expectedBackStack, TestScreen.RootBeta),
+        fakeEventListener.awaitResetRoot(),
+      )
       interceptingNavigator.resetRoot(TestScreen.ScreenC)
-      assertEquals(ResetRootEvent(TestScreen.ScreenC), fakeEventListener.awaitResetRoot())
+      assertEquals(
+        ResetRootEvent(listOf(TestScreen.RootBeta), TestScreen.ScreenC),
+        fakeEventListener.awaitResetRoot(),
+      )
       interceptingNavigator.resetRoot(TestScreen.ScreenA)
-      assertEquals(ResetRootEvent(TestScreen.ScreenA), fakeEventListener.awaitResetRoot())
+      assertEquals(
+        ResetRootEvent(listOf(TestScreen.ScreenC), TestScreen.ScreenA),
+        fakeEventListener.awaitResetRoot(),
+      )
     }
   }
 }

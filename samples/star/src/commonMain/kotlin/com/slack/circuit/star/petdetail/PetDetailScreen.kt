@@ -77,7 +77,7 @@ import com.slack.circuit.star.ui.thenIfNotNull
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.AssistedInject
 
 @Parcelize
 data class PetDetailScreen(
@@ -168,7 +168,7 @@ internal fun PetDetailScreen.toPetDetailState(): State {
   } else Loading
 }
 
-@Inject
+@AssistedInject
 class PetDetailPresenter(
   @Assisted private val screen: PetDetailScreen,
   @Assisted private val navigator: Navigator,

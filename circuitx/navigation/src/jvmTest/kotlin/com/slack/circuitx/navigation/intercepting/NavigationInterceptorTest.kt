@@ -5,6 +5,7 @@ package com.slack.circuitx.navigation.intercepting
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.PopEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.ResetRootEvent
@@ -32,8 +33,12 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, SuccessConsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, SuccessConsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       fakeNavigator.assertGoToIsEmpty()
     }
   }
@@ -43,8 +48,12 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(Skipped)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, Skipped), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, Skipped),
+        fakeInterceptor1.awaitGoTo(),
+      )
       assertEquals(TestScreen.ScreenA, fakeNavigator.awaitNextScreen())
     }
   }
@@ -55,8 +64,12 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueGoTo(FailConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Consumed so the delegate should not be called and nav should fail.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertFalse(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, FailConsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, FailConsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       fakeNavigator.assertGoToIsEmpty()
     }
   }
@@ -67,8 +80,12 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueGoTo(FailUnconsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Not consumed so the delegate should be called and nav should succeed.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, FailUnconsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, FailUnconsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       assertEquals(TestScreen.ScreenA, fakeNavigator.awaitNextScreen())
     }
   }
@@ -78,13 +95,21 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(InterceptedGoToResult.Rewrite(TestScreen.RootBeta), Skipped)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       // Rewrite is not intercepted so delegate should be called and nav should succeed.
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
       assertEquals(
-        GoToEvent(TestScreen.ScreenA, InterceptedGoToResult.Rewrite(TestScreen.RootBeta)),
+        GoToEvent(
+          peekBackStack,
+          TestScreen.ScreenA,
+          InterceptedGoToResult.Rewrite(TestScreen.RootBeta),
+        ),
         fakeInterceptor1.awaitGoTo(),
       )
-      assertEquals(GoToEvent(TestScreen.RootBeta, Skipped), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.RootBeta, Skipped),
+        fakeInterceptor1.awaitGoTo(),
+      )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitNextScreen())
     }
   }
@@ -98,12 +123,20 @@ class NavigationInterceptorTest {
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should not be called and nav should succeed.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
       assertEquals(
-        GoToEvent(TestScreen.ScreenA, InterceptedGoToResult.Rewrite(TestScreen.RootBeta)),
+        GoToEvent(
+          peekBackStack,
+          TestScreen.ScreenA,
+          InterceptedGoToResult.Rewrite(TestScreen.RootBeta),
+        ),
         fakeInterceptor1.awaitGoTo(),
       )
-      assertEquals(GoToEvent(TestScreen.RootBeta, SuccessConsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.RootBeta, SuccessConsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       fakeNavigator.assertGoToIsEmpty()
     }
   }
@@ -117,12 +150,20 @@ class NavigationInterceptorTest {
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should be called and nav should succeed.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
       assertEquals(
-        GoToEvent(TestScreen.ScreenA, InterceptedGoToResult.Rewrite(TestScreen.RootBeta)),
+        GoToEvent(
+          peekBackStack,
+          TestScreen.ScreenA,
+          InterceptedGoToResult.Rewrite(TestScreen.RootBeta),
+        ),
         fakeInterceptor1.awaitGoTo(),
       )
-      assertEquals(GoToEvent(TestScreen.RootBeta, SuccessUnconsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.RootBeta, SuccessUnconsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitNextScreen())
     }
   }
@@ -133,8 +174,12 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueGoTo(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Intercepted by the first so the second one and the navigator should not be called.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, SuccessConsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, SuccessConsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       fakeInterceptor2.assertGoToIsEmpty()
       fakeNavigator.assertGoToIsEmpty()
     }
@@ -147,9 +192,16 @@ class NavigationInterceptorTest {
       fakeInterceptor2.queueGoTo(Skipped)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Skipped by the first and the second one, so only the navigator should be called.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, Skipped), fakeInterceptor1.awaitGoTo())
-      assertEquals(GoToEvent(TestScreen.ScreenA, Skipped), fakeInterceptor2.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, Skipped),
+        fakeInterceptor1.awaitGoTo(),
+      )
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, Skipped),
+        fakeInterceptor2.awaitGoTo(),
+      )
       assertEquals(TestScreen.ScreenA, fakeNavigator.awaitNextScreen())
     }
   }
@@ -160,8 +212,12 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueGoTo(FailConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Consumed by the first so the second one and the navigator should not be called.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertFalse(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, FailConsumed), fakeInterceptor1.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, FailConsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
       fakeInterceptor2.assertGoToIsEmpty()
       fakeNavigator.assertGoToIsEmpty()
     }
@@ -174,9 +230,16 @@ class NavigationInterceptorTest {
       fakeInterceptor2.queueGoTo(Skipped)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Unconsumed by the first so the second one and the navigator should be called.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
-      assertEquals(GoToEvent(TestScreen.ScreenA, FailUnconsumed), fakeInterceptor1.awaitGoTo())
-      assertEquals(GoToEvent(TestScreen.ScreenA, Skipped), fakeInterceptor2.awaitGoTo())
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, FailUnconsumed),
+        fakeInterceptor1.awaitGoTo(),
+      )
+      assertEquals(
+        GoToEvent(peekBackStack, TestScreen.ScreenA, Skipped),
+        fakeInterceptor2.awaitGoTo(),
+      )
       assertEquals(TestScreen.ScreenA, fakeNavigator.awaitNextScreen())
     }
   }
@@ -358,9 +421,10 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       fakeInterceptor1.queueResetRoot(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.resetRoot(TestScreen.RootBeta).isEmpty())
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, SuccessConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeNavigator.assertResetRootIsEmpty()
@@ -374,7 +438,10 @@ class NavigationInterceptorTest {
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       val peekBackStack = fakeNavigator.peekBackStack()
       assertEquals(peekBackStack, interceptingNavigator.resetRoot(TestScreen.RootBeta))
-      assertEquals(ResetRootEvent(TestScreen.RootBeta, Skipped), fakeInterceptor1.awaitResetRoot())
+      assertEquals(
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, Skipped),
+        fakeInterceptor1.awaitResetRoot(),
+      )
       val event = fakeNavigator.awaitResetRoot()
       assertEquals(TestScreen.RootBeta, event.newRoot)
     }
@@ -386,9 +453,10 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueResetRoot(FailConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Consumed so the delegate should not be called and nav should fail.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertFalse(interceptingNavigator.resetRoot(TestScreen.RootBeta).isNotEmpty())
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, FailConsumed),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, FailConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeNavigator.assertResetRootIsEmpty()
@@ -404,7 +472,7 @@ class NavigationInterceptorTest {
       val peekBackStack = fakeNavigator.peekBackStack()
       assertEquals(peekBackStack, interceptingNavigator.resetRoot(TestScreen.RootBeta))
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, FailUnconsumed),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, FailUnconsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       val event = fakeNavigator.awaitResetRoot()
@@ -415,12 +483,9 @@ class NavigationInterceptorTest {
   @Test
   fun `Single interceptor resetRoot Rewrite`() = runTest {
     composeTestRule.run {
+      val stateOptions = StateOptions.SaveAndRestore
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(
-          TestScreen.RootBeta,
-          saveState = true,
-          restoreState = true,
-        ),
+        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         Skipped,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -429,53 +494,45 @@ class NavigationInterceptorTest {
       assertEquals(peekBackStack, interceptingNavigator.resetRoot(TestScreen.ScreenA))
       assertEquals(
         ResetRootEvent(
+          peekBackStack,
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(
-            TestScreen.RootBeta,
-            saveState = true,
-            restoreState = true,
-          ),
+          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, Skipped, saveState = true, restoreState = true),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, Skipped, options = stateOptions),
         fakeInterceptor1.awaitResetRoot(),
       )
       val event = fakeNavigator.awaitResetRoot()
       assertEquals(TestScreen.RootBeta, event.newRoot)
-      assertTrue(event.saveState)
-      assertTrue(event.restoreState)
+      assertTrue(event.options.save)
+      assertTrue(event.options.restore)
     }
   }
 
   @Test
   fun `Single interceptor resetRoot Rewrite, intercept Rewrite consumed`() = runTest {
     composeTestRule.run {
+      val stateOptions = StateOptions.Default
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(
-          TestScreen.RootBeta,
-          saveState = false,
-          restoreState = false,
-        ),
+        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         SuccessConsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
       // Rewrite is intercepted so delegate should not be called and nav should succeed.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.resetRoot(TestScreen.ScreenA).isEmpty())
       assertEquals(
         ResetRootEvent(
+          peekBackStack,
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(
-            TestScreen.RootBeta,
-            saveState = false,
-            restoreState = false,
-          ),
+          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, SuccessConsumed, options = stateOptions),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeNavigator.assertGoToIsEmpty()
@@ -485,12 +542,9 @@ class NavigationInterceptorTest {
   @Test
   fun `Single interceptor resetRoot Rewrite, intercept Rewrite unconsumed`() = runTest {
     composeTestRule.run {
+      val stateOptions = StateOptions.Default
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(
-          TestScreen.RootBeta,
-          saveState = false,
-          restoreState = false,
-        ),
+        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         SuccessUnconsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -499,17 +553,19 @@ class NavigationInterceptorTest {
       assertEquals(peekBackStack, interceptingNavigator.resetRoot(TestScreen.ScreenA))
       assertEquals(
         ResetRootEvent(
+          peekBackStack,
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(
-            TestScreen.RootBeta,
-            saveState = false,
-            restoreState = false,
-          ),
+          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, SuccessUnconsumed),
+        ResetRootEvent(
+          peekBackStack,
+          TestScreen.RootBeta,
+          SuccessUnconsumed,
+          options = stateOptions,
+        ),
         fakeInterceptor1.awaitResetRoot(),
       )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitResetRoot().newRoot)
@@ -522,9 +578,10 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueResetRoot(SuccessConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Intercepted by the first so the second one and the navigator should not be called.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.resetRoot(TestScreen.RootBeta).isEmpty())
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, SuccessConsumed),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, SuccessConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeInterceptor2.assertResetRootIsEmpty()
@@ -541,8 +598,14 @@ class NavigationInterceptorTest {
       // Skipped by the first and the second one, so only the navigator should be called.
       val peekBackStack = fakeNavigator.peekBackStack()
       assertEquals(peekBackStack, interceptingNavigator.resetRoot(TestScreen.RootBeta))
-      assertEquals(ResetRootEvent(TestScreen.RootBeta, Skipped), fakeInterceptor1.awaitResetRoot())
-      assertEquals(ResetRootEvent(TestScreen.RootBeta, Skipped), fakeInterceptor2.awaitResetRoot())
+      assertEquals(
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, Skipped),
+        fakeInterceptor1.awaitResetRoot(),
+      )
+      assertEquals(
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, Skipped),
+        fakeInterceptor2.awaitResetRoot(),
+      )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitResetRoot().newRoot)
     }
   }
@@ -553,9 +616,10 @@ class NavigationInterceptorTest {
       fakeInterceptor1.queueResetRoot(FailConsumed)
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = interceptors)
       // Consumed by the first so the second one and the navigator should not be called.
+      val peekBackStack = listOf(TestScreen.RootAlpha)
       assertTrue(interceptingNavigator.resetRoot(TestScreen.ScreenA).isEmpty())
       assertEquals(
-        ResetRootEvent(TestScreen.ScreenA, FailConsumed),
+        ResetRootEvent(peekBackStack, TestScreen.ScreenA, FailConsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
       fakeInterceptor2.assertResetRootIsEmpty()
@@ -573,10 +637,13 @@ class NavigationInterceptorTest {
       // Unconsumed by the first so the second one and the navigator should be called.
       assertEquals(peekBackStack, interceptingNavigator.resetRoot(TestScreen.RootBeta))
       assertEquals(
-        ResetRootEvent(TestScreen.RootBeta, FailUnconsumed),
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, FailUnconsumed),
         fakeInterceptor1.awaitResetRoot(),
       )
-      assertEquals(ResetRootEvent(TestScreen.RootBeta, Skipped), fakeInterceptor2.awaitResetRoot())
+      assertEquals(
+        ResetRootEvent(peekBackStack, TestScreen.RootBeta, Skipped),
+        fakeInterceptor2.awaitResetRoot(),
+      )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitResetRoot().newRoot)
     }
   }

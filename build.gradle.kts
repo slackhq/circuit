@@ -419,6 +419,18 @@ subprojects {
     tasks.withType(KotlinJsTest::class.java).configureEach {
       mustRunAfter(executableCompileSyncTasks)
     }
+
+    if (isPublished && hasCompose) {
+      project.dependencies {
+        constraints {
+          add("commonMainApi", "org.jetbrains.compose.runtime:runtime:1.9.0") {
+            because(
+              "AndroidX publishes multiplatform runtime. The JetBrains artifact is now empty."
+            )
+          }
+        }
+      }
+    }
   }
 
   pluginManager.withPlugin("wtf.emulator.gradle") {

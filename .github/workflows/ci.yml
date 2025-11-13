@@ -37,7 +37,7 @@ jobs:
           java-version: '23'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           # Only save Gradle User Home state for builds on the 'main' branch.
           # Builds on other branches will only read existing entries from the cache.
@@ -106,7 +106,7 @@ jobs:
 
       - name: (Fail-only) Upload reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: reports-build
           path: |
@@ -139,7 +139,7 @@ jobs:
           xcode-version: '16.4'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           # Only save Gradle User Home state for builds on the 'main' branch.
           # Builds on other branches will only read existing entries from the cache.
@@ -192,10 +192,10 @@ jobs:
           java-version: '23'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           # Only save Gradle User Home state for builds on the 'main' branch.
           # Builds on other branches will only read existing entries from the cache.
@@ -218,7 +218,7 @@ jobs:
 
       - name: (Fail-only) Upload reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: reports-snapshots
           path: |
@@ -241,10 +241,10 @@ jobs:
           java-version: '23'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Publish snapshot (main branch only)
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }} --no-configuration-cache --quiet

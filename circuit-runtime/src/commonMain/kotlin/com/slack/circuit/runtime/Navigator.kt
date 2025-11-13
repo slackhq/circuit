@@ -50,19 +50,20 @@ public interface Navigator : GoToNavigator {
    *
    * ## Multiple back stacks
    *
-   * The [saveState] and [restoreState] parameters enable functionality what is commonly called
-   * 'multiple back stacks'. By optionally saving, and later restoring the back stack, you can
-   * enable different root screens to have their own back stacks. A common use case is with the
-   * bottom navigation bar UX pattern.
+   * The [StateOptions] parameter enable functionality what is commonly called 'multiple back
+   * stacks'. By optionally saving, and later restoring the back stack, you can enable different
+   * root screens to have their own back stacks. A common use case is with the bottom navigation bar
+   * UX pattern.
    *
    * ```kotlin
-   * navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
+   * val options = StateOptions.SaveAndRestore
+   * navigator.resetRoot(HomeNavTab1, options)
    * // User navigates to a details screen
    * navigator.push(EntityDetails(id = foo))
    * // Later, user clicks on a bottom navigation item
-   * navigator.resetRoot(HomeNavTab2, saveState = true, restoreState = true)
+   * navigator.resetRoot(HomeNavTab2, options)
    * // Later, user switches back to the first navigation item
-   * navigator.resetRoot(HomeNavTab1, saveState = true, restoreState = true)
+   * navigator.resetRoot(HomeNavTab1, options)
    * // The existing back stack is restored, and EntityDetails(id = foo) will be top of
    * // the back stack
    * ```
@@ -72,18 +73,40 @@ public interface Navigator : GoToNavigator {
    * launching screens which define a UX flow which has a defined completion, such as onboarding.
    *
    * @param newRoot The new root [Screen]
-   * @param saveState Whether to save the current entry list. It can be restored by passing the
-   *   current root [Screen] to [resetRoot] with `restoreState = true`
-   * @param restoreState Whether any previously saved state for the given [newRoot] should be
-   *   restored. If this is `false` or there is no previous state, the back stack will only contain
-   *   [newRoot].
+   * @param options The [StateOptions] to use.
    * @return The backstack before it was reset.
    */
-  public fun resetRoot(
-    newRoot: Screen,
-    saveState: Boolean = false,
-    restoreState: Boolean = false,
-  ): List<Screen>
+  public fun resetRoot(newRoot: Screen, options: StateOptions = StateOptions.Default): List<Screen>
+
+  /**
+   * A holder for the state management configuration for a [Navigator.resetRoot] call.
+   *
+   * @property save Whether to save the current entry list. It can be restored by passing the
+   *   current root [Screen] to [Navigator.resetRoot] with `restoreState = true`
+   * @property restore Whether any previously saved state for the new root [Screen] should be
+   *   restored. If this is `false` or there is no previous state, the back stack will only contain
+   *   the new root [Screen].
+   * @property clear Whether any previously saved state for the new root [Screen] should be cleared.
+   *   Will be cleared after any restore regardless of [restore].
+   */
+  public data class StateOptions(
+    val save: Boolean = false,
+    val restore: Boolean = false,
+    val clear: Boolean = false,
+  ) {
+    public companion object {
+      /**
+       * Default options for the "single back stack" pattern. Saves nothing and restores nothing.
+       */
+      public val Default: StateOptions = StateOptions()
+
+      /**
+       * Standard options for the "multiple back stacks" pattern. Saves the current backstack and
+       * then if possible restores state for the new root screen.
+       */
+      public val SaveAndRestore: StateOptions = StateOptions(save = true, restore = true)
+    }
+  }
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen): Boolean = true
@@ -94,13 +117,21 @@ public interface Navigator : GoToNavigator {
 
     override fun peekBackStack(): List<Screen> = emptyList()
 
-    override fun resetRoot(
-      newRoot: Screen,
-      saveState: Boolean,
-      restoreState: Boolean,
-    ): List<Screen> = emptyList()
+    override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> = emptyList()
   }
 }
+
+/** Parameter based alternate for [Navigator.resetRoot]. */
+public fun Navigator.resetRoot(
+  newRoot: Screen,
+  saveState: Boolean = false,
+  restoreState: Boolean = false,
+  clearState: Boolean = false,
+): List<Screen> =
+  resetRoot(
+    newRoot = newRoot,
+    options = Navigator.StateOptions(save = saveState, restore = restoreState, clear = clearState),
+  )
 
 /**
  * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -108,19 +139,24 @@ public interface Navigator : GoToNavigator {
  * This is useful in preventing the user from returning to a completed workflow, such as a tutorial,
  * wizard, or authentication flow.
  *
- * This version of the function provides easy to lambdas for [saveState] and [restoreState] allowing
- * computation of the values based on the current root screen.
+ * This version of the function provides easy to lambdas for [saveState], [restoreState], and
+ * [clearState] allowing computation of the values based on the current root screen.
  */
 public inline fun Navigator.resetRoot(
   newRoot: Screen,
   saveState: (currentRoot: Screen?) -> Boolean = { false },
   restoreState: (currentRoot: Screen?) -> Boolean = { false },
+  clearState: (currentRoot: Screen?) -> Boolean = { false },
 ): List<Screen> {
   val root = peekBackStack().lastOrNull()
   return resetRoot(
     newRoot = newRoot,
-    saveState = saveState(root),
-    restoreState = restoreState(root),
+    options =
+      Navigator.StateOptions(
+        save = saveState(root),
+        restore = restoreState(root),
+        clear = clearState(root),
+      ),
   )
 }
 

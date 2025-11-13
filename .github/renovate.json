@@ -36,7 +36,12 @@
       "matchManagers": ["maven"],
       "description": "Disable snapshot versions",
       "matchCurrentVersion": "/.*-SNAPSHOT/",
-      "enabled": "false"
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["org.jetbrains.compose.runtime:runtime"],
+      "description": "Ignore the empty Jetbrains Compose runtime",
+      "enabled": false
     }
   ]
 }

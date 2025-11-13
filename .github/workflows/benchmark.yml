@@ -77,7 +77,7 @@ jobs:
           script: ./gradlew :samples:star:benchmark:connectedBenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.slack.circuit.sample.star.benchmark.NestedContentListBenchmark
 
       - name: Upload build reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: reports-benchmark
           path: |

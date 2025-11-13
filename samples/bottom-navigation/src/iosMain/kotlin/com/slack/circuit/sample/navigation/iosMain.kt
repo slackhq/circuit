@@ -17,6 +17,7 @@ import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
+import com.slack.circuitx.navigation.intercepting.NavigationContext
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 import com.slack.circuitx.navigation.intercepting.NavigationLogger
@@ -63,7 +64,7 @@ fun MainViewController(): UIViewController {
 }
 
 private object InfoScreenRewriteInterceptor : NavigationInterceptor {
-  override fun goTo(screen: Screen): InterceptedGoToResult {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedGoToResult {
     return when (screen) {
       is InfoScreen -> {
         openInfoPage()

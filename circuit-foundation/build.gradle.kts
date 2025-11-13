@@ -127,7 +127,10 @@ tasks
   .matching { it.name.contains("test", ignoreCase = true) }
   .configureEach {
     compilerOptions {
-      freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+      freeCompilerArgs.addAll(
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-opt-in=com.slack.circuit.runtime.ExperimentalCircuitApi",
+      )
 
       if (
         name == "compileReleaseUnitTestKotlinAndroid" ||

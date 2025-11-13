@@ -3,44 +3,45 @@ androidx-activity = "1.11.0"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
-androidx-compose = "1.9.3"
-agp = "8.13.0"
+androidx-compose = "1.9.4"
+agp = "8.13.1"
 anvil = "0.4.1"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
-compose-hotReload = "1.0.0-rc02"
-compose-jb = "1.9.1"
+compose-hotReload = "1.0.0-rc03"
+compose-runtime = "1.9.4" # Keep in sync with the androidx version used by compose-jb until 1.10
+compose-jb = "1.9.3"
 compose-jb-material3 = "1.9.0"
 compose-jb-adaptive = "1.1.2"
 compose-jb-material-icons-core = "1.7.3"
 dagger = "2.57.2"
 datastore = "1.1.7"
 detekt = "1.23.8"
-dokka = "2.0.0"
+dokka = "2.1.0"
 eithernet = "2.0.0"
 jdk = "23"
 jvmTarget = "11"
 publishedJvmTarget = "11"
-kct = "0.9.0"
-kotlin = "2.2.20"
+kct = "0.11.0"
+kotlin = "2.2.21"
 kotlinInject = "0.8.0"
 kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.2.20-2.0.4"
-ktfmt = "0.58"
-ktor = "3.3.1"
+ksp = "2.3.2"
+ktfmt = "0.59"
+ktor = "3.3.2"
 leakcanary = "2.14"
-lifecycle-jb = "2.9.5"
-mavenPublish = "0.34.0"
+lifecycle-jb = "2.9.6"
+mavenPublish = "0.35.0"
 molecule = "2.2.0"
-okhttp = "5.2.1"
+okhttp = "5.3.0"
 okio = "3.16.2"
 picnic = "0.7.0"
 robolectric = "4.16"
-roborazzi = "1.50.0"
+roborazzi = "1.51.0"
 spotless = "8.0.0"
 sqldelight = "2.1.0"
 telephoto = "0.18.0"
@@ -59,7 +60,7 @@ compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "co
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.19.3" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "0.19.4" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -70,7 +71,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.6.10" }
+metro = { id = "dev.zacsweers.metro", version = "0.7.5" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -123,7 +124,7 @@ compose-material-material = { module = "org.jetbrains.compose.material:material"
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb-material3" }
 compose-material-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "compose-jb-adaptive" }
 compose-material-material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "compose-jb-adaptive" }
-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-jb" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-runtime" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }
 compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-jb" }

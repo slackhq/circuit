@@ -3,18 +3,16 @@
 package com.slack.circuit.codegen
 
 import com.google.common.truth.Truth.assertThat
-import com.tschuchort.compiletesting.CompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
+import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspProcessorOptions
 import com.tschuchort.compiletesting.kspSourcesDir
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.junit.Ignore
 import org.junit.Test
 
 @Suppress("LargeClass", "RedundantVisibilityModifier")
@@ -24,59 +22,139 @@ class CircuitSymbolProcessorTest {
     kotlin(
       "AppScope.kt",
       """
-        package test
+      package test
 
-        annotation class AppScope
+      annotation class AppScope
       """
         .trimIndent(),
     )
-  private val singletonComponent =
+  private val anvilAnnotations =
     kotlin(
-      "SingletonComponent.kt",
+      "AnvilAnnotations.kt",
       """
+      package com.squareup.anvil.annotations
+      import kotlin.reflect.KClass
+
+      annotation class ContributesBinding(val scope: KClass<*>)
+      annotation class ContributesMultibinding(val scope: KClass<*>)
+      """
+        .trimIndent(),
+    )
+  private val circuitSymbols =
+    listOf(
+      kotlin(
+        "Presenter.kt",
+        """
+        package com.slack.circuit.runtime.presenter
+        import com.slack.circuit.runtime.CircuitUiState
+        import androidx.compose.runtime.Composable
+
+        public inline fun <UiState : CircuitUiState> presenterOf(
+          crossinline body: @Composable () -> UiState
+        ): Presenter<UiState> {
+          throw NotImplementedError()
+        }
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "Ui.kt",
+        """
+        package com.slack.circuit.runtime.ui
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.ui.Ui
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.Modifier
+
+        public inline fun <UiState : CircuitUiState> ui(
+          crossinline body: @Composable (state: UiState, modifier: Modifier) -> Unit
+        ): Ui<UiState> {
+          throw NotImplementedError()
+        }
+        """
+          .trimIndent(),
+      ),
+    )
+  private val hiltSymbols =
+    listOf(
+      kotlin(
+        "SingletonComponent.kt",
+        """
         package dagger.hilt.components
 
         annotation class SingletonComponent
-      """
-        .trimIndent(),
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "HiltAnnotations.kt",
+        """
+        package dagger.hilt
+        import kotlin.reflect.KClass
+
+        annotation class InstallIn(val value: KClass<*>)
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "Origins.kt",
+        """
+        package dagger.hilt.codegen
+        import kotlin.reflect.KClass
+
+        annotation class OriginatingElement(val topLevelClass: KClass<*>)
+        """
+          .trimIndent(),
+      ),
     )
-  private val kotlinInjectAnnotation =
-    kotlin(
-      "Inject.kt",
-      """
+  private val kotlinInjectSymbols =
+    listOf(
+      kotlin(
+        "KIAnnotations.kt",
+        """
         package me.tatarka.inject.annotations
 
         annotation class Inject
-      """
-        .trimIndent(),
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "AmazonAnnotations.kt",
+        """
+        package software.amazon.lastmile.kotlin.inject.anvil
+        import kotlin.reflect.KClass
+
+        annotation class ContributesBinding(val scope: KClass<*>, val multibinding: Boolean = false)
+        """
+          .trimIndent(),
+      ),
+      kotlin(
+        "AmazonAnnotationsInternal.kt",
+        """
+        package software.amazon.lastmile.kotlin.inject.anvil.internal
+        import kotlin.reflect.KClass
+
+        annotation class Origin(val value: KClass<*>)
+        """
+          .trimIndent(),
+      ),
     )
-  private val metroAnnotation =
+  private val metroSymbols =
     kotlin(
       "Inject.kt",
       """
-        package dev.zacsweers.metro
+      package dev.zacsweers.metro
+      import kotlin.reflect.KClass
 
-        annotation class Inject
-      """
-        .trimIndent(),
-    )
-  private val metroAssistedAnnotation =
-    kotlin(
-      "Assisted.kt",
-      """
-        package dev.zacsweers.metro
-
-        annotation class Assisted(val value: String = "")
-      """
-        .trimIndent(),
-    )
-  private val metroAssistedFactoryAnnotation =
-    kotlin(
-      "AssistedFactory.kt",
-      """
-        package dev.zacsweers.metro
-
-        annotation class AssistedFactory
+      abstract class AppScope
+      annotation class Inject
+      annotation class Assisted(val value: String = "")
+      annotation class AssistedFactory
+      annotation class Origin(val value: KClass<*>)
+      annotation class ContributesIntoSet(val scope: KClass<*>)
+      interface Provider<T> {
+        operator fun invoke(): T
+      }
       """
         .trimIndent(),
     )
@@ -84,17 +162,17 @@ class CircuitSymbolProcessorTest {
     kotlin(
       "Screens.kt",
       """
-        package test
+      package test
 
-        import com.slack.circuit.runtime.CircuitUiState
-        import com.slack.circuit.runtime.screen.Screen
+      import com.slack.circuit.runtime.CircuitUiState
+      import com.slack.circuit.runtime.screen.Screen
 
-        object HomeScreen : Screen {
-          data class State(val message: String) : CircuitUiState
-        }
-        data class FavoritesScreen(val userId: String) : Screen {
-          data class State(val count: Int) : CircuitUiState
-        }
+      object HomeScreen : Screen {
+        data class State(val message: String) : CircuitUiState
+      }
+      data class FavoritesScreen(val userId: String) : Screen {
+        data class State(val count: Int) : CircuitUiState
+      }
       """
         .trimIndent(),
     )
@@ -106,40 +184,40 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            @CircuitInject(HomeScreen::class, AppScope::class)
-            @Composable
-            fun Home(modifier: Modifier = Modifier) {
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun Home(modifier: Modifier = Modifier) {
 
-            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/HomeFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.CircuitUiState
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.slack.circuit.runtime.ui.ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class HomeFactory @Inject constructor() : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier) }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class HomeFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            HomeScreen -> ui<CircuitUiState> { _, modifier -> Home(modifier = modifier) }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -152,63 +230,17 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
-
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun Favorites(modifier: Modifier = Modifier) {
-
-            }
-          """
-            .trimIndent(),
-        ),
-      generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent =
-        """
           package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.CircuitUiState
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.slack.circuit.runtime.ui.ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesFactory @Inject constructor() : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier) }
-              else -> null
-            }
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun Favorites(modifier: Modifier = Modifier) {
+
           }
-        """
-          .trimIndent(),
-    )
-  }
-
-  @Test
-  fun simpleUiFunction_withInjectedClassScreen_noState() {
-    assertGeneratedFile(
-      sourceFile =
-        kotlin(
-          "TestUi.kt",
-          """
-            package test
-
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun Favorites(screen: FavoritesScreen, modifier: Modifier = Modifier) {
-
-            }
           """
             .trimIndent(),
         ),
@@ -223,7 +255,53 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> ui<CircuitUiState> { _, modifier -> Favorites(modifier = modifier) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun simpleUiFunction_withInjectedClassScreen_noState() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun Favorites(screen: FavoritesScreen, modifier: Modifier = Modifier) {
+
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -244,17 +322,17 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            @CircuitInject(HomeScreen::class, AppScope::class)
-            @Composable
-            fun Home(screen: HomeScreen, modifier: Modifier = Modifier) {
-
-            }
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun Home(screen: HomeScreen, modifier: Modifier = Modifier) {
+            throw NotImplementedError()
+          }
           """
             .trimIndent(),
         ),
@@ -269,7 +347,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -290,39 +368,39 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            @CircuitInject(HomeScreen::class, AppScope::class)
-            @Composable
-            fun Home(state: HomeScreen.State, modifier: Modifier = Modifier) {
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun Home(state: HomeScreen.State, modifier: Modifier = Modifier) {
 
-            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/HomeFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.slack.circuit.runtime.ui.ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class HomeFactory @Inject constructor() : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier) }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class HomeFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            HomeScreen -> ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier) }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -335,62 +413,17 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
-
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun Favorites(state: FavoritesScreen.State, modifier: Modifier = Modifier) {
-
-            }
-          """
-            .trimIndent(),
-        ),
-      generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent =
-        """
           package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.slack.circuit.runtime.ui.ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesFactory @Inject constructor() : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier) }
-              else -> null
-            }
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun Favorites(state: FavoritesScreen.State, modifier: Modifier = Modifier) {
+
           }
-        """
-          .trimIndent(),
-    )
-  }
-
-  @Test
-  fun simpleUiFunction_withInjectedClassScreen_withState() {
-    assertGeneratedFile(
-      sourceFile =
-        kotlin(
-          "TestUi.kt",
-          """
-            package test
-
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun Favorites(state: FavoritesScreen.State, screen: FavoritesScreen, modifier: Modifier = Modifier) {
-
-            }
           """
             .trimIndent(),
         ),
@@ -404,7 +437,52 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> ui<FavoritesScreen.State> { state, modifier -> Favorites(state = state, modifier = modifier) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun simpleUiFunction_withInjectedClassScreen_withState() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun Favorites(state: FavoritesScreen.State, screen: FavoritesScreen, modifier: Modifier = Modifier) {
+
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class FavoritesFactory @Inject constructor() : Ui.Factory {
@@ -425,17 +503,17 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            @CircuitInject(HomeScreen::class, AppScope::class)
-            @Composable
-            fun Home(state: HomeScreen.State, screen: HomeScreen, modifier: Modifier = Modifier) {
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun Home(state: HomeScreen.State, screen: HomeScreen, modifier: Modifier = Modifier) {
 
-            }
+          }
           """
             .trimIndent(),
         ),
@@ -449,7 +527,7 @@ class CircuitSymbolProcessorTest {
         import com.slack.circuit.runtime.ui.Ui
         import com.slack.circuit.runtime.ui.ui
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class HomeFactory @Inject constructor() : Ui.Factory {
@@ -470,41 +548,41 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.ui.Ui
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class Favorites : Ui<FavoritesScreen.State> {
-              @Composable
-              override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites : Ui<FavoritesScreen.State> {
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
-              }
             }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesFactory @Inject constructor() : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is FavoritesScreen -> Favorites()
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> Favorites()
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -517,45 +595,97 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.ui.Ui
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import javax.inject.Inject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import jakarta.inject.Inject
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
-              @Composable
-              override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
-              }
             }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
         """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val provider: Provider<Favorites>,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun specifying_javax_uses_javax() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUi.kt",
+          """
           package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.screen.Screen
+          import com.slack.circuit.codegen.annotations.CircuitInject
           import com.slack.circuit.runtime.ui.Ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
           import javax.inject.Inject
-          import javax.inject.Provider
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesFactory @Inject constructor(
-            private val provider: Provider<Favorites>,
-          ) : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is FavoritesScreen -> provider.get()
-              else -> null
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @Inject constructor() : Ui<FavoritesScreen.State> {
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
             }
           }
+          """
+            .trimIndent(),
+        ),
+      kspOptions = mapOf(CircuitOptions.USE_JAVAX to "true"),
+      generatedFilePath = "test/FavoritesFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import javax.inject.Inject
+        import javax.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val provider: Provider<Favorites>,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
         """
           .trimIndent(),
     )
@@ -568,48 +698,48 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.ui.Ui
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import javax.inject.Inject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import jakarta.inject.Inject
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class Favorites(val value: String) : Ui<FavoritesScreen.State> {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites(val value: String) : Ui<FavoritesScreen.State> {
 
-              @Inject constructor() : this("injected")
+            @Inject constructor() : this("injected")
 
-              @Composable
-              override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
-              }
             }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
-          import javax.inject.Provider
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesFactory @Inject constructor(
-            private val provider: Provider<Favorites>,
-          ) : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is FavoritesScreen -> provider.get()
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val provider: Provider<Favorites>,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -622,55 +752,55 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestUi.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.CircuitContext
-            import com.slack.circuit.runtime.ui.Ui
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedFactory
-            import dagger.assisted.AssistedInject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.CircuitContext
+          import com.slack.circuit.runtime.ui.Ui
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
 
-            class Favorites @AssistedInject constructor(
-              @Assisted private val screen: FavoritesScreen,
-              @Assisted private val circuitContext: CircuitContext,
-            ) : Ui<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, AppScope::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(screen: FavoritesScreen, circuitContext: CircuitContext): Favorites
-              }
-
-              @Composable
-              override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
-
-              }
+          class Favorites @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val circuitContext: CircuitContext,
+          ) : Ui<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, circuitContext: CircuitContext): Favorites
             }
+
+            @Composable
+            override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+
+            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesFactory @Inject constructor(
-            private val factory: Favorites.Factory,
-          ) : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              is FavoritesScreen -> factory.create(screen = screen, circuitContext = context)
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesFactory @Inject constructor(
+          private val factory: Favorites.Factory,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, circuitContext = context)
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -683,43 +813,43 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(HomeScreen::class, AppScope::class)
-            @Composable
-            fun HomePresenter(): HomeScreen.State {
-
-            }
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(): HomeScreen.State {
+            throw NotImplementedError()
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/HomePresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.presenter.presenterOf
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              HomeScreen -> presenterOf { HomePresenter() }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> presenterOf { HomePresenter() }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -732,43 +862,43 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun FavoritesPresenter(): FavoritesScreen.State {
-
-            }
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter(): FavoritesScreen.State {
+            throw NotImplementedError()
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.presenter.presenterOf
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> presenterOf { FavoritesPresenter() }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> presenterOf { FavoritesPresenter() }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -781,44 +911,44 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.Navigator
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
-
-            }
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
+            throw NotImplementedError()
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.presenter.presenterOf
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> presenterOf { FavoritesPresenter(screen = screen, navigator = navigator) }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> presenterOf { FavoritesPresenter(screen = screen, navigator = navigator) }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -831,44 +961,44 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.Navigator
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(HomeScreen::class, AppScope::class)
-            @Composable
-            fun HomePresenter(screen: HomeScreen, navigator: Navigator): HomeScreen.State {
-
-            }
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(screen: HomeScreen, navigator: Navigator): HomeScreen.State {
+            throw NotImplementedError()
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/HomePresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.presenter.presenterOf
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              HomeScreen -> presenterOf { HomePresenter(screen = screen as HomeScreen, navigator = navigator) }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> presenterOf { HomePresenter(screen = screen as HomeScreen, navigator = navigator) }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -881,45 +1011,45 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.presenter.Presenter
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class FavoritesPresenter : Presenter<FavoritesScreen.State> {
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
             }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> FavoritesPresenter()
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> FavoritesPresenter()
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -932,49 +1062,49 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.presenter.Presenter
-            import androidx.compose.runtime.Composable
-            import javax.inject.Inject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
             }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
-          import javax.inject.Provider
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesPresenterFactory @Inject constructor(
-            private val provider: Provider<FavoritesPresenter>,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> provider.get()
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -1008,32 +1138,34 @@ class CircuitSymbolProcessorTest {
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import me.tatarka.inject.annotations.Inject
-          import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+        import software.amazon.lastmile.kotlin.inject.anvil.`internal`.Origin
 
-          @Inject
-          @ContributesBinding(
-            AppScope::class,
-            multibinding = true,
-          )
-          public class FavoritesPresenterFactory(
-            private val provider: () -> FavoritesPresenter,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> provider()
-              else -> null
-            }
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        @Origin(FavoritesPresenter::class)
+        public class FavoritesPresenterFactory(
+          private val provider: () -> FavoritesPresenter,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider()
+            else -> null
           }
+        }
         """
           .trimIndent(),
       codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
@@ -1047,59 +1179,59 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.Navigator
-            import com.slack.circuit.runtime.presenter.Presenter
-            import androidx.compose.runtime.Composable
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedFactory
-            import dagger.assisted.AssistedInject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
 
-            class FavoritesPresenter @AssistedInject constructor(
-              @Assisted private val screen: FavoritesScreen,
-              @Assisted private val navigator: Navigator,
-            ) : Presenter<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, AppScope::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
-              }
-
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
             }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesPresenterFactory @Inject constructor(
-            private val factory: FavoritesPresenter.Factory,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -1112,61 +1244,61 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenter.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.CircuitContext
-            import com.slack.circuit.runtime.Navigator
-            import com.slack.circuit.runtime.presenter.Presenter
-            import androidx.compose.runtime.Composable
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedFactory
-            import dagger.assisted.AssistedInject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.CircuitContext
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
 
-            class FavoritesPresenter @AssistedInject constructor(
-              @Assisted private val screen: FavoritesScreen,
-              @Assisted private val navigator: Navigator,
-              @Assisted private val circuitContext: CircuitContext
-            ) : Presenter<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, AppScope::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(screen: FavoritesScreen, navigator: Navigator, circuitContext: CircuitContext): FavoritesPresenter
-              }
-
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+            @Assisted private val circuitContext: CircuitContext
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, AppScope::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator, circuitContext: CircuitContext): FavoritesPresenter
             }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class FavoritesPresenterFactory @Inject constructor(
-            private val factory: FavoritesPresenter.Factory,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> factory.create(screen = screen, navigator = navigator, circuitContext = context)
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator, circuitContext = context)
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -1180,58 +1312,60 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenterWithoutAnvil.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.Navigator
-            import com.slack.circuit.runtime.presenter.Presenter
-            import androidx.compose.runtime.Composable
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedFactory
-            import dagger.assisted.AssistedInject
-            import dagger.hilt.components.SingletonComponent
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+          import dagger.hilt.components.SingletonComponent
 
-            class FavoritesPresenter @AssistedInject constructor(
-              @Assisted private val screen: FavoritesScreen,
-              @Assisted private val navigator: Navigator,
-            ) : Presenter<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
-              }
-
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
             }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dagger.hilt.codegen.OriginatingElement
+        import jakarta.inject.Inject
 
-          public class FavoritesPresenterFactory @Inject constructor(
-            private val factory: FavoritesPresenter.Factory,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
-              else -> null
-            }
+        @OriginatingElement(FavoritesPresenter::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(screen = screen, navigator = navigator)
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -1245,32 +1379,32 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "TestPresenterWithoutAnvil.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.Navigator
-            import com.slack.circuit.runtime.presenter.Presenter
-            import androidx.compose.runtime.Composable
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedFactory
-            import dagger.assisted.AssistedInject
-            import dagger.hilt.components.SingletonComponent
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedFactory
+          import dagger.assisted.AssistedInject
+          import dagger.hilt.components.SingletonComponent
 
-            class FavoritesPresenter @AssistedInject constructor(
-              @Assisted private val screen: FavoritesScreen,
-              @Assisted private val navigator: Navigator,
-            ) : Presenter<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
-              }
-
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
+          class FavoritesPresenter @AssistedInject constructor(
+            @Assisted private val screen: FavoritesScreen,
+            @Assisted private val navigator: Navigator,
+          ) : Presenter<FavoritesScreen.State> {
+            @CircuitInject(FavoritesScreen::class, SingletonComponent::class)
+            @AssistedFactory
+            fun interface Factory {
+              fun create(screen: FavoritesScreen, navigator: Navigator): FavoritesPresenter
             }
+
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
           """
             .trimIndent(),
         ),
@@ -1308,111 +1442,43 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "Home.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import dagger.hilt.components.SingletonComponent
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dagger.hilt.components.SingletonComponent
 
-            @CircuitInject(HomeScreen::class, SingletonComponent::class)
-            @Composable
-            fun Home(modifier: Modifier = Modifier) {
+          @CircuitInject(HomeScreen::class, SingletonComponent::class)
+          @Composable
+          fun Home(modifier: Modifier = Modifier) {
 
-            }
+          }
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/HomeFactoryModule.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.ui.Ui
-          import dagger.Binds
-          import dagger.Module
-          import dagger.hilt.InstallIn
-          import dagger.hilt.components.SingletonComponent
-          import dagger.multibindings.IntoSet
+        import com.slack.circuit.runtime.ui.Ui
+        import dagger.Binds
+        import dagger.Module
+        import dagger.hilt.InstallIn
+        import dagger.hilt.components.SingletonComponent
+        import dagger.multibindings.IntoSet
 
-          @Module
-          @InstallIn(SingletonComponent::class)
-          public abstract class HomeFactoryModule {
-            @Binds
-            @IntoSet
-            public abstract fun bindHomeFactory(homeFactory: HomeFactory): Ui.Factory
-          }
+        @Module
+        @InstallIn(SingletonComponent::class)
+        public abstract class HomeFactoryModule {
+          @Binds
+          @IntoSet
+          public abstract fun bindHomeFactory(homeFactory: HomeFactory): Ui.Factory
+        }
         """
           .trimIndent(),
     )
-  }
-
-  @Ignore("Toe hold for when we implement this validation")
-  @Test
-  fun invalidInjections() {
-    assertProcessingError(
-      sourceFile =
-        kotlin(
-          "InvalidInjections.kt",
-          """
-            package test
-
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.presenter.Presenter
-            import com.slack.circuit.runtime.ui.Ui
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedFactory
-            import dagger.assisted.AssistedInject
-
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun FavoritesFunction(state: FavoritesScreen.State, someString: String, modifier: Modifier = Modifier) {
-
-            }
-
-            class Favorites @AssistedInject constructor(
-              @Assisted private val someString: String,
-            ) : Ui<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, AppScope::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(someString: String): Favorites
-              }
-
-              @Composable
-              override fun Content(state: FavoritesScreen.State, modifier: Modifier) {
-
-              }
-            }
-
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun FavoritesFunctionPresenter(someString: String): FavoritesScreen.State {
-
-            }
-
-            class FavoritesPresenter @AssistedInject constructor(
-              @Assisted private val someString: String,
-            ) : Presenter<FavoritesScreen.State> {
-              @CircuitInject(FavoritesScreen::class, AppScope::class)
-              @AssistedFactory
-              fun interface Factory {
-                fun create(someString: String): FavoritesPresenter
-              }
-
-              @Composable
-              override fun present(): FavoritesScreen.State {
-                throw NotImplementedError()
-              }
-            }
-          """
-            .trimIndent(),
-        )
-    ) { messages ->
-      assertThat(messages).contains("TODO")
-    }
   }
 
   @Test
@@ -1422,19 +1488,19 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "InvalidSupertypes.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class Favorites {
-              @Composable
-              fun Content(state: FavoritesScreen.State, modifier: Modifier) {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites {
+            @Composable
+            fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
-              }
             }
+          }
           """
             .trimIndent(),
         )
@@ -1444,7 +1510,6 @@ class CircuitSymbolProcessorTest {
     }
   }
 
-  @Ignore("Toe hold for when we implement this validation")
   @Test
   fun presenterFunctionMissingReturn() {
     assertProcessingError(
@@ -1452,21 +1517,22 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "MissingPresenterReturn.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun FavoritesPresenter() {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter() {
 
-            }
+          }
           """
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages).contains("TODO")
+      assertThat(messages)
+        .contains("MissingPresenterReturn.kt:8: Presenter functions must return a UiState.")
     }
   }
 
@@ -1477,16 +1543,16 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "MissingModifierParam.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            @Composable
-            fun Favorites() {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun Favorites() {
 
-            }
+          }
           """
             .trimIndent(),
         )
@@ -1502,26 +1568,26 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "InvalidAssistedInjection.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedInject
-            import dagger.assisted.AssistedFactory
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedInject
+          import dagger.assisted.AssistedFactory
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class Favorites @AssistedInject constructor(@Assisted input: String) : Presenter<FavoritesScreen.State> {
-              @Composable
-              override fun present(): FavoritesScreen.State {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @AssistedInject constructor(@Assisted input: String) : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
 
-              }
-
-              @AssistedFactory
-              fun interface Factory {
-                fun create(input: String): Favorites
-              }
             }
+
+            @AssistedFactory
+            fun interface Factory {
+              fun create(input: String): Favorites
+            }
+          }
           """
             .trimIndent(),
         )
@@ -1542,20 +1608,20 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "InvalidAssistedInjection.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import androidx.compose.runtime.Composable
-            import dagger.assisted.Assisted
-            import dagger.assisted.AssistedInject
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.Assisted
+          import dagger.assisted.AssistedInject
 
-            @CircuitInject(FavoritesScreen::class, AppScope::class)
-            class Favorites @AssistedInject constructor(@Assisted input: String) : Presenter<FavoritesScreen.State> {
-              @Composable
-              override fun present(): FavoritesScreen.State {
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class Favorites @AssistedInject constructor(@Assisted input: String) : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
 
-              }
             }
+          }
           """
             .trimIndent(),
         )
@@ -1576,41 +1642,41 @@ class CircuitSymbolProcessorTest {
         kotlin(
           "ParameterOrdering.kt",
           """
-            package test
+          package test
 
-            import com.slack.circuit.codegen.annotations.CircuitInject
-            import com.slack.circuit.runtime.screen.StaticScreen
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.screen.StaticScreen
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
 
-            data object Static : StaticScreen
+          data object Static : StaticScreen
 
-            @CircuitInject(Static::class, AppScope::class)
-            @Composable
-            fun StaticUi(screen: Static, modifier: Modifier) {}
+          @CircuitInject(Static::class, AppScope::class)
+          @Composable
+          fun StaticUi(screen: Static, modifier: Modifier) {}
           """
             .trimIndent(),
         ),
       generatedFilePath = "test/StaticUiFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.CircuitUiState
-          import com.slack.circuit.runtime.screen.Screen
-          import com.slack.circuit.runtime.ui.Ui
-          import com.slack.circuit.runtime.ui.ui
-          import com.squareup.anvil.annotations.ContributesMultibinding
-          import javax.inject.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
 
-          @ContributesMultibinding(AppScope::class)
-          public class StaticUiFactory @Inject constructor() : Ui.Factory {
-            override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-              Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen as Static) }
-              else -> null
-            }
+        @ContributesMultibinding(AppScope::class)
+        public class StaticUiFactory @Inject constructor() : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen as Static) }
+            else -> null
           }
+        }
         """
           .trimIndent(),
     )
@@ -1644,30 +1710,32 @@ class CircuitSymbolProcessorTest {
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import dev.zacsweers.metro.ContributesIntoSet
-          import dev.zacsweers.metro.Inject
-          import dev.zacsweers.metro.Provider
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Origin
+        import dev.zacsweers.metro.Provider
 
-          @Inject
-          @ContributesIntoSet(AppScope::class)
-          public class FavoritesPresenterFactory(
-            private val provider: Provider<FavoritesPresenter>,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> provider()
-              else -> null
-            }
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
+        public class FavoritesPresenterFactory(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider()
+            else -> null
           }
+        }
         """
           .trimIndent(),
       codegenMode = CodegenMode.METRO,
@@ -1713,29 +1781,32 @@ class CircuitSymbolProcessorTest {
       generatedFilePath = "test/FavoritesPresenterFactory.kt",
       expectedContent =
         """
-          package test
+        package test
 
-          import com.slack.circuit.runtime.CircuitContext
-          import com.slack.circuit.runtime.Navigator
-          import com.slack.circuit.runtime.presenter.Presenter
-          import com.slack.circuit.runtime.screen.Screen
-          import dev.zacsweers.metro.ContributesIntoSet
-          import dev.zacsweers.metro.Inject
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.AppScope
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Origin
 
-          @Inject
-          @ContributesIntoSet(AppScope::class)
-          public class FavoritesPresenterFactory(
-            private val factory: FavoritesPresenter.Factory,
-          ) : Presenter.Factory {
-            override fun create(
-              screen: Screen,
-              navigator: Navigator,
-              context: CircuitContext,
-            ): Presenter<*>? = when (screen) {
-              is FavoritesScreen -> factory.create(navigator = navigator)
-              else -> null
-            }
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
+        public class FavoritesPresenterFactory(
+          private val factory: FavoritesPresenter.Factory,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory.create(navigator = navigator)
+            else -> null
           }
+        }
         """
           .trimIndent(),
       codegenMode = CodegenMode.METRO,
@@ -1747,12 +1818,17 @@ class CircuitSymbolProcessorTest {
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
+    kspOptions: Map<String, String> = emptyMap(),
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation =
+      prepareCompilation(sourceFile, codegenMode = codegenMode, kspOptions = kspOptions)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedAdapter = File(generatedSourcesDir, "kotlin/$generatedFilePath")
+    if (!generatedAdapter.exists()) {
+      throw AssertionError("No adapter found at path $generatedFilePath\n${result.messages}")
+    }
     assertThat(generatedAdapter.exists()).isTrue()
     assertThat(generatedAdapter.readText().trim()).isEqualTo(expectedContent.trimIndent())
   }
@@ -1760,9 +1836,11 @@ class CircuitSymbolProcessorTest {
   private fun assertProcessingError(
     sourceFile: SourceFile,
     codegenMode: CodegenMode = CodegenMode.ANVIL,
+    kspOptions: Map<String, String> = emptyMap(),
     body: (messages: String) -> Unit,
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation =
+      prepareCompilation(sourceFile, codegenMode = codegenMode, kspOptions = kspOptions)
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     body(result.messages)
@@ -1771,33 +1849,29 @@ class CircuitSymbolProcessorTest {
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
     codegenMode: CodegenMode,
+    kspOptions: Map<String, String>,
   ): KotlinCompilation =
     KotlinCompilation().apply {
+      jvmTarget = "11"
       sources =
         sourceFiles.toList() +
           screens +
+          circuitSymbols +
           when (codegenMode) {
-            CodegenMode.ANVIL -> listOf(appScope)
-            CodegenMode.HILT -> listOf(singletonComponent)
+            CodegenMode.UNKNOWN -> error("Not possible in tests")
+            CodegenMode.ANVIL -> listOf(appScope, anvilAnnotations)
+            CodegenMode.HILT -> hiltSymbols
             CodegenMode.KOTLIN_INJECT_ANVIL -> {
-              listOf(appScope, kotlinInjectAnnotation)
+              kotlinInjectSymbols + appScope
             }
-            CodegenMode.METRO ->
-              listOf(
-                appScope,
-                metroAnnotation,
-                metroAssistedAnnotation,
-                metroAssistedFactoryAnnotation,
-              )
+            CodegenMode.METRO -> listOf(appScope, metroSymbols)
           }
       inheritClassPath = true
-      symbolProcessorProviders += CircuitSymbolProcessorProvider()
-      kspProcessorOptions += "circuit.codegen.mode" to codegenMode.name
-      // Necessary for KSP
-      languageVersion = "1.9"
+      kotlincArguments += "-Xannotation-default-target=param-property"
+      configureKsp {
+        kspProcessorOptions += CircuitOptions.MODE to codegenMode.name
+        kspProcessorOptions += kspOptions
+        symbolProcessorProviders += CircuitSymbolProcessorProvider()
+      }
     }
-
-  private fun compile(vararg sourceFiles: SourceFile, codegenMode: CodegenMode): CompilationResult {
-    return prepareCompilation(*sourceFiles, codegenMode = codegenMode).compile()
-  }
 }

@@ -18,21 +18,34 @@ class FakeNavigationInterceptor : NavigationInterceptor {
   private val popResults = mutableListOf<InterceptedPopResult>()
   private val resetRootResults = mutableListOf<InterceptedResetRootResult>()
 
-  override fun goTo(screen: Screen): InterceptedGoToResult {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedGoToResult {
     val result = goToResults.removeFirst()
-    goToEvents.add(GoToEvent(screen, result))
+    goToEvents.add(GoToEvent(navigationContext.peekBackStack().orEmpty(), screen, result))
     return result
   }
 
-  override fun pop(peekBackStack: List<Screen>, result: PopResult?): InterceptedPopResult {
+  override fun pop(result: PopResult?, navigationContext: NavigationContext): InterceptedPopResult {
     val interceptorPopResult = popResults.removeFirst()
-    popEvents.add(PopEvent(peekBackStack, result, interceptorPopResult))
+    popEvents.add(
+      PopEvent(navigationContext.peekBackStack().orEmpty(), result, interceptorPopResult)
+    )
     return interceptorPopResult
   }
 
-  override fun resetRoot(newRoot: Screen, options: StateOptions): InterceptedResetRootResult {
+  override fun resetRoot(
+    newRoot: Screen,
+    options: StateOptions,
+    navigationContext: NavigationContext,
+  ): InterceptedResetRootResult {
     val interceptorResetRootResult = resetRootResults.removeFirst()
-    resetRootEvents.add(ResetRootEvent(newRoot, interceptorResetRootResult, options))
+    resetRootEvents.add(
+      ResetRootEvent(
+        navigationContext.peekBackStack().orEmpty(),
+        newRoot,
+        interceptorResetRootResult,
+        options,
+      )
+    )
     return interceptorResetRootResult
   }
 
@@ -70,7 +83,11 @@ class FakeNavigationInterceptor : NavigationInterceptor {
   }
 
   /** Represents a recorded [NavigationInterceptor.goTo] event. */
-  data class GoToEvent(val screen: Screen, val interceptorGoToResult: InterceptedGoToResult)
+  data class GoToEvent(
+    val peekBackStack: List<Screen>,
+    val screen: Screen,
+    val interceptorGoToResult: InterceptedGoToResult,
+  )
 
   /** Represents a recorded [NavigationInterceptor.pop] event. */
   data class PopEvent(
@@ -81,6 +98,7 @@ class FakeNavigationInterceptor : NavigationInterceptor {
 
   /** Represents a recorded [NavigationInterceptor.resetRoot] event. */
   data class ResetRootEvent(
+    val peekBackStack: List<Screen>,
     val newRoot: Screen,
     val interceptorResetRootResult: InterceptedResetRootResult,
     val options: StateOptions = StateOptions.Default,

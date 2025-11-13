@@ -1,7 +1,10 @@
 public final class com/slack/circuit/foundation/AnsweringNavigatorKt {
 	public static final fun answeringNavigationAvailable (Landroidx/compose/runtime/Composer;I)Z
-	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
-	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
+	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
+}
+
+public final class com/slack/circuit/foundation/AnsweringResultHandler$Companion {
+	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/foundation/Circuit {
@@ -83,13 +86,6 @@ public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 	public final fun getLambda$-1518521136$circuit_foundation ()Lkotlin/jvm/functions/Function4;
 }
 
-public final class com/slack/circuit/foundation/ContentProviderState {
-	public static final field $stable I
-	public fun <init> (Landroidx/compose/runtime/saveable/SaveableStateHolder;Lcom/slack/circuit/retained/RetainedStateHolder;Lcom/slack/circuit/backstack/BackStack;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function4;)V
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-}
-
 public abstract interface annotation class com/slack/circuit/foundation/DelicateCircuitFoundationApi : java/lang/annotation/Annotation {
 }
 
@@ -168,6 +164,7 @@ public final class com/slack/circuit/foundation/NavEventKt {
 
 public final class com/slack/circuit/foundation/NavigableCircuitContentKt {
 	public static final fun NavigableCircuitContent (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/backstack/BackStack;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/foundation/Circuit;Ljava/util/Map;Lcom/slack/circuit/backstack/NavDecoration;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getLocalAnsweringResultHandler ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 	public static final fun getLocalBackStack ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
@@ -224,16 +221,6 @@ public abstract interface class com/slack/circuit/foundation/NonPausablePresente
 public final class com/slack/circuit/foundation/PausableStateKt {
 	public static final fun pausableState (Ljava/lang/String;ZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
 	public static final fun presentWithLifecycle (Lcom/slack/circuit/runtime/presenter/Presenter;Ljava/lang/String;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/CircuitUiState;
-}
-
-public final class com/slack/circuit/foundation/RecordContentProvider : com/slack/circuit/backstack/NavArgument {
-	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/backstack/BackStack$Record;Lkotlin/jvm/functions/Function4;)V
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
-	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class com/slack/circuit/foundation/RecordLifecycle {

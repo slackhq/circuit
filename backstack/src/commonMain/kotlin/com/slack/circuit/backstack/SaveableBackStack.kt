@@ -88,15 +88,23 @@ internal constructor(
   override val rootRecord: Record?
     get() = entryList.lastOrNull()
 
-  public override fun push(screen: Screen): Boolean {
-    return push(screen, emptyMap())
+  override val currentIndex: Int
+    get() = 0
+
+  override val currentRecord: Record?
+    get() = entryList.firstOrNull()
+
+  override fun add(
+    index: Int,
+    screen: Screen
+  ): Record? {
+    return add(index, Record(screen, emptyMap()))
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
-    return push(Record(screen, args))
-  }
-
-  public override fun push(record: Record): Boolean {
+  override fun add(
+    index: Int,
+    record: Record
+  ): Record? {
     val topRecord = Snapshot.withoutReadObservation { topRecord }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
@@ -104,6 +112,22 @@ internal constructor(
       entryList.add(0, record)
       true
     } else false
+  }
+
+  override fun remove(index: Int): Record? {
+    TODO("Not yet implemented")
+  }
+
+  override fun backward(): Record? {
+    TODO("Not yet implemented")
+  }
+
+  public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
+    return
+  }
+
+  public override fun push(record: Record): Boolean {
+
   }
 
   override fun pop(): Record? {
@@ -170,7 +194,7 @@ internal constructor(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
-  ) : BackStack.Record {
+  ) : NavStack.Record {
 
     internal companion object {
       val Saver: Saver<Record, Any> =

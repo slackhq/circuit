@@ -14,9 +14,11 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.NavArgument
+import com.slack.circuit.foundation.NavDecoration
+import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
@@ -97,14 +99,16 @@ public class AnimatedNavDecoration(
 
   @Composable
   public override fun <T : NavArgument> DecoratedContent(
-    args: List<T>,
+    args: NavStackList<T>,
+    navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val decorator = remember {
-      @Suppress("UNCHECKED_CAST")
-      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
-    }
+    val decorator =
+      remember(navigator) {
+        @Suppress("UNCHECKED_CAST")
+        decoratorFactory.create<T>(navigator) as AnimatedNavDecorator<T, AnimatedNavState>
+      }
     with(decorator) {
       val transition = updateTransition(args)
       transition.AnimatedContent(
@@ -124,16 +128,24 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
   animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
   val animatedNavEvent =
-    if (targetState.root != initialState.root) {
-      AnimatedNavEvent.RootReset
-    } else if (targetState.top == initialState.top) {
-      // Target screen has not changed, probably we should not show any animation even if the back
-      // stack is changed
-      return@spec EnterTransition.None togetherWith ExitTransition.None
-    } else if (initialState.backStack.contains(targetState.top)) {
-      AnimatedNavEvent.Pop
-    } else {
-      AnimatedNavEvent.GoTo
+    when {
+      targetState.navStack.root != initialState.navStack.root -> {
+        AnimatedNavEvent.RootReset
+      }
+      targetState.navStack.current == initialState.navStack.current -> {
+        // Target screen has not changed, probably we should not show any animation even if the back
+        // stack is changed
+        return@spec EnterTransition.None togetherWith ExitTransition.None
+      }
+      initialState.navStack.backwardStack().contains(targetState.navStack.current) -> {
+        AnimatedNavEvent.Pop
+      }
+      initialState.navStack.forwardStack().contains(targetState.navStack.current) -> {
+        AnimatedNavEvent.GoTo // todo New Event?
+      }
+      else -> {
+        AnimatedNavEvent.GoTo
+      }
     }
 
   val baseTransform = transitionSpec(animatedNavEvent)
@@ -148,9 +160,9 @@ private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverr
 ): PartialContentTransform {
   // Read any screen specific overrides
   val targetAnimatedScreenTransform =
-    animatedScreenTransforms[targetState.top.screen::class] ?: NoOpAnimatedScreenTransform
+    animatedScreenTransforms[targetState.navStack.current.screen::class] ?: NoOpAnimatedScreenTransform
   val initialAnimatedScreenTransform =
-    animatedScreenTransforms[initialState.top.screen::class] ?: NoOpAnimatedScreenTransform
+    animatedScreenTransforms[initialState.navStack.current.screen::class] ?: NoOpAnimatedScreenTransform
 
   return PartialContentTransform(
     enter = targetAnimatedScreenTransform.run { enterTransition(animatedNavEvent) },

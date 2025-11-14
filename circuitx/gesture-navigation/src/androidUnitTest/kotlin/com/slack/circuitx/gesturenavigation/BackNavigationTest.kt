@@ -54,11 +54,11 @@ class BackNavigationTest(private val androidNavigator: Boolean) {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
           val navigator: Navigator
           if (androidNavigator) {
-            navigator = rememberCircuitNavigator(backStack = backStack, enableBackHandler = true)
+            navigator = rememberCircuitNavigator(navStack = backStack, enableBackHandler = true)
           } else {
             navigator =
               rememberCircuitNavigator(
-                backStack = backStack,
+                navStack = backStack,
                 onRootPop = {}, // no-op for tests
               )
             NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {

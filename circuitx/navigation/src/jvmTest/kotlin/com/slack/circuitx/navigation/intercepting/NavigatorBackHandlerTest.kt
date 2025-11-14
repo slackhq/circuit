@@ -60,7 +60,7 @@ class NavigatorBackHandlerTest {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val circuitNavigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              navStack = backStack,
               onRootPop = { BackDispatcher.onBack() },
               enableBackHandler = true,
             )
@@ -101,7 +101,7 @@ class NavigatorBackHandlerTest {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val circuitNavigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              navStack = backStack,
               onRootPop = { BackDispatcher.onBack() },
               enableBackHandler = true,
             )

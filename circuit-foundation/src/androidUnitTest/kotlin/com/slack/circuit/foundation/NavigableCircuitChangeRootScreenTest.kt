@@ -32,7 +32,7 @@ class NavigableCircuitChangeRootScreenTest {
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
         val backStack = rememberSaveableBackStack(rootScreen)
-        val navigator = rememberCircuitNavigator(backStack = backStack)
+        val navigator = rememberCircuitNavigator(navStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }

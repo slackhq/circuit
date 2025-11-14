@@ -135,7 +135,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       val backStack = rememberSaveableBackStack(root = state.navItems[state.selectedIndex].screen)
       val navigator =
         rememberCircuitNavigator(
-          backStack = backStack,
+          navStack = backStack,
           onRootPop = { state.eventSink(HomeScreen.Event.Back) },
         )
 

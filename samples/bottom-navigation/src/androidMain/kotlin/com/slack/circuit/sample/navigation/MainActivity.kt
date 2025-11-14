@@ -13,8 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
-import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.backstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.IntentScreen
@@ -46,8 +47,8 @@ class MainActivity : AppCompatActivity() {
     val tabs = TabScreen.all
     setContent {
       MaterialTheme {
-        val backStack = rememberSaveableBackStack(tabs.first())
-        val navigator = rememberCircuitNavigator(backStack)
+        val navStack = rememberSaveableNavStack(ContentScreen(tabs))
+        val navigator = rememberCircuitNavigator(navStack)
         // Build the delegate Navigator.
         val interceptingNavigator =
           rememberInterceptingNavigator(
@@ -60,13 +61,15 @@ class MainActivity : AppCompatActivity() {
           remember(navigator) {
             buildCircuitForTabs(tabs)
               .newBuilder()
-              .setAnimatedNavDecoratorFactory(
-                GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() })
-              )
+              .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
               .build()
           }
         CircuitCompositionLocals(circuit) {
-          ContentScaffold(backStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+          NavigableCircuitContent(
+            navigator = interceptingNavigator,
+            navStack = navStack,
+            modifier = Modifier.fillMaxSize(),
+          )
         }
       }
     }

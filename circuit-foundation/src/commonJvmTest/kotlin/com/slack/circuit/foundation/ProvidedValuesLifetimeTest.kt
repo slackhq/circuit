@@ -17,9 +17,9 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.BackStackRecordLocalProvider
+import com.slack.circuit.backstack.NavStackRecordLocalProvider
 import com.slack.circuit.backstack.ProvidedValues
-import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.backstack.providedValuesForNavStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags
 import com.slack.circuit.internal.test.TestEvent
@@ -51,16 +51,16 @@ class ProvidedValuesLifetimeTest {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val navigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              navStack = backStack,
               onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
             providedValues =
-              providedValuesForBackStack(
-                backStack = backStack,
-                backStackLocalProviders = listOf(TestBackStackRecordLocalProvider),
+              providedValuesForNavStack(
+                navStack = backStack,
+                backStackLocalProviders = listOf(TestNavStackRecordLocalProvider),
               ),
           )
         }
@@ -145,7 +145,7 @@ class ProvidedValuesLifetimeTest {
     }
   }
 
-  private object TestBackStackRecordLocalProvider : BackStackRecordLocalProvider<BackStack.Record> {
+  private object TestNavStackRecordLocalProvider : NavStackRecordLocalProvider<BackStack.Record> {
     @Composable
     override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
       return ProvidedValues {

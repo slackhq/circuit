@@ -59,7 +59,7 @@ class NavigatorBackHandlerTest {
       }
       CircuitCompositionLocals(circuit) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        navigator = rememberCircuitNavigator(backStack = backStack)
+        navigator = rememberCircuitNavigator(navStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }
@@ -89,7 +89,7 @@ class NavigatorBackHandlerTest {
           outerBackCount++
         }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        navigator = rememberCircuitNavigator(backStack = backStack)
+        navigator = rememberCircuitNavigator(navStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }
@@ -119,7 +119,7 @@ class NavigatorBackHandlerTest {
           outerBackCount++
         }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        navigator = rememberCircuitNavigator(backStack = backStack)
+        navigator = rememberCircuitNavigator(navStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }

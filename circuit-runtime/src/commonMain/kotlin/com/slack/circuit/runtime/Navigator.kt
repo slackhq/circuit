@@ -23,6 +23,10 @@ public interface GoToNavigator {
 public interface Navigator : GoToNavigator {
   public override fun goTo(screen: Screen): Boolean
 
+  public fun forward(): Boolean
+
+  public fun backward(): Boolean
+
   public fun pop(result: PopResult? = null): Screen?
 
   /** Returns current top most screen of backstack, or null if backstack is empty. */
@@ -110,6 +114,10 @@ public interface Navigator : GoToNavigator {
 
   public object NoOp : Navigator {
     override fun goTo(screen: Screen): Boolean = true
+
+    override fun forward(): Boolean = false
+
+    override fun backward(): Boolean = false
 
     override fun pop(result: PopResult?): Screen? = null
 

@@ -12,7 +12,7 @@ import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventHandler
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
-import com.slack.circuit.foundation.internal.PredictiveBack.Event
+import com.slack.circuit.foundation.internal.PredictiveNavProgress.Event
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlin.coroutines.cancellation.CancellationException
@@ -23,46 +23,55 @@ import kotlinx.coroutines.launch
 
 @InternalCircuitApi
 @Composable
-public fun PredictiveBackEventHandler(
-  isEnabled: Boolean = true,
-  onBackProgress: suspend (Float, Offset) -> Unit,
-  onBackCancelled: suspend () -> Unit,
-  onBackCompleted: suspend () -> Unit,
+public fun PredictiveNavEventHandler(
+  isBackEnabled: Boolean = true,
+  isForwardEnabled: Boolean = false,
+  onProgress: suspend (PredictiveNavDirection, Float, Offset) -> Unit = { _, _, _ -> },
+  onCancelled: suspend (PredictiveNavDirection) -> Unit = {},
+  onCompleted: suspend (PredictiveNavDirection) -> Unit = {},
 ) {
   val dispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher ?: return
   val scope = rememberStableCoroutineScope()
-  val handler = remember(dispatcher) { PredictiveBackEventHandler(isEnabled, scope, dispatcher) }
-  SideEffect {
-    with(handler) {
-      isBackEnabled = isEnabled
-      onProgress = onBackProgress
-      onCancelled = onBackCancelled
-      onCompleted = onBackCompleted
+  val handler =
+    remember(dispatcher) {
+      PredictiveNavEventHandler(isBackEnabled, isForwardEnabled, scope, dispatcher)
     }
+  SideEffect {
+    handler.isBackEnabled = isBackEnabled
+    handler.onProgress = onProgress
+    handler.onCancelled = onCancelled
+    handler.onCompleted = onCompleted
   }
 }
 
+public enum class PredictiveNavDirection {
+  Back,
+  Forward,
+}
+
 @OptIn(InternalCircuitApi::class)
-private class PredictiveBackEventHandler(
-  isEnabled: Boolean,
+private class PredictiveNavEventHandler(
+  isBackEnabled: Boolean,
+  isForwardEnabled: Boolean,
   private val scope: CoroutineScope,
   private val dispatcher: NavigationEventDispatcher,
 ) :
   RememberObserver,
   NavigationEventHandler<NavigationEventInfo.None>(
     initialInfo = NavigationEventInfo.None,
-    isBackEnabled = isEnabled,
+    isBackEnabled = isBackEnabled,
+    isForwardEnabled = isForwardEnabled,
   ) {
 
-  var back: PredictiveBack? = null
+  var current: PredictiveNavProgress? = null
 
-  var onProgress: suspend (Float, Offset) -> Unit = { _, _ -> }
-  var onCancelled: suspend () -> Unit = {}
-  var onCompleted: suspend () -> Unit = {}
+  var onProgress: suspend (PredictiveNavDirection, Float, Offset) -> Unit = { _, _, _ -> }
+  var onCancelled: suspend (PredictiveNavDirection) -> Unit = {}
+  var onCompleted: suspend (PredictiveNavDirection) -> Unit = {}
 
   override fun onBackStarted(event: NavigationEvent) {
-    back?.cancel()
-    back = PredictiveBack(scope) { event -> onEvent(event) }
+    current?.cancel()
+    current = PredictiveNavProgress(scope) { event -> onEvent(PredictiveNavDirection.Back, event) }
   }
 
   override fun onBackProgressed(event: NavigationEvent) {
@@ -73,30 +82,61 @@ private class PredictiveBackEventHandler(
         NavigationEvent.EDGE_RIGHT -> -event.progress
         else -> 0f
       }
-    back?.send(Event.Progress(progress, offset))
+    current?.send(Event.Progress(progress, offset))
   }
 
   override fun onBackCancelled() {
-    back?.send(Event.Canceled)
-    back = null
+    current?.send(Event.Canceled)
+    current = null
   }
 
   override fun onBackCompleted() {
-    if (back == null) {
+    if (current == null) {
       // Can happen if the back event is just a single "onBackPressed".
       onBackStarted(NavigationEvent())
     }
-    back?.send(Event.Completed)
-    back = null
+    current?.send(Event.Completed)
+    current = null
+  }
+
+  override fun onForwardStarted(event: NavigationEvent) {
+    current?.cancel()
+    current = PredictiveNavProgress(scope) { event -> onEvent(PredictiveNavDirection.Back, event) }
+  }
+
+  override fun onForwardProgressed(event: NavigationEvent) {
+    val offset = Offset(event.touchX, event.touchY)
+    val progress =
+      when (event.swipeEdge) {
+        // todo No idea what to do here
+        NavigationEvent.EDGE_LEFT -> -event.progress
+        NavigationEvent.EDGE_RIGHT -> event.progress
+        else -> 0f
+      }
+    current?.send(Event.Progress(progress, offset))
+  }
+
+  override fun onForwardCancelled() {
+    current?.send(Event.Canceled)
+    current = null
+  }
+
+  override fun onForwardCompleted() {
+    if (current == null) {
+      // Can happen if the back event is just a single "onBackPressed".
+      onBackStarted(NavigationEvent())
+    }
+    current?.send(Event.Completed)
+    current = null
   }
 
   override fun onRemembered() {
-    back = null
+    current = null
     dispatcher.addHandler(this)
   }
 
   override fun onForgotten() {
-    back?.cancel()
+    current?.cancel()
     remove()
   }
 
@@ -104,26 +144,34 @@ private class PredictiveBackEventHandler(
     onForgotten()
   }
 
-  private suspend fun onEvent(event: Event) {
+  private suspend fun onEvent(direction: PredictiveNavDirection, event: Event) {
     try {
-      if (isBackEnabled) {
+      val isEnabled =
+        when (direction) {
+          PredictiveNavDirection.Back -> isBackEnabled
+          PredictiveNavDirection.Forward -> isForwardEnabled
+        }
+      if (isEnabled) {
         when (event) {
-          is Event.Progress -> onProgress(event.progress, event.offset)
-          is Event.Completed -> onCompleted()
-          is Event.Canceled -> onCancelled()
+          is Event.Progress -> onProgress(direction, event.progress, event.offset)
+          is Event.Completed -> onCompleted(direction)
+          is Event.Canceled -> onCancelled(direction)
         }
       } else {
-        onCancelled()
+        onCancelled(direction)
       }
     } catch (e: CancellationException) {
-      onCancelled()
+      onCancelled(direction)
       throw e
     }
   }
 }
 
 @InternalCircuitApi
-public class PredictiveBack(scope: CoroutineScope, public val onEvent: suspend (Event) -> Unit) {
+public class PredictiveNavProgress(
+  scope: CoroutineScope,
+  public val onEvent: suspend (Event) -> Unit,
+) {
 
   private var initialTouch = Offset.Zero
   private val channel = Channel<Event>(capacity = BUFFERED)

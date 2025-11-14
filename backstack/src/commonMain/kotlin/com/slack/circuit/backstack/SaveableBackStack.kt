@@ -88,13 +88,15 @@ internal constructor(
   override val rootRecord: Record?
     get() = entryList.lastOrNull()
 
-  public override fun push(screen: Screen): Boolean {
-    return push(screen, emptyMap())
-  }
+  override fun add(screen: Screen): Boolean = push(Record(screen))
 
-  public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
-    return push(Record(screen, args))
-  }
+  override fun add(record: Record): Boolean = push(record)
+
+  override fun remove(): Record? = pop()
+
+  override fun move(direction: NavStack.Direction): Boolean = false
+
+  public override fun push(screen: Screen): Boolean = push(Record(screen))
 
   public override fun push(record: Record): Boolean {
     val topRecord = Snapshot.withoutReadObservation { topRecord }
@@ -108,6 +110,11 @@ internal constructor(
 
   override fun pop(): Record? {
     return Snapshot.withoutReadObservation { entryList.removeFirstOrNull() }
+  }
+
+  override fun snapshot(): NavStack.Snapshot<Record> {
+    // BackStack always has current at top (index 0)
+    return BackStackSnapshot(entryList.toList())
   }
 
   override fun saveState() {
@@ -164,6 +171,19 @@ internal constructor(
       }
     }
     return false
+  }
+
+  /**
+   * A snapshot of a back stack state. Since BackStack always has current at the top, currentIndex
+   * is always 0.
+   */
+  public data class BackStackSnapshot(override val entries: List<Record>) :
+    NavStack.Snapshot<Record> {
+    override val currentIndex: Int = 0
+
+    override fun forwardStack(): Iterable<Record> = emptyList()
+
+    override fun backwardStack(): Iterable<Record> = entries
   }
 
   public data class Record(

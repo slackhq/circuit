@@ -169,7 +169,7 @@ class KeyedCircuitContentTests {
     setContent {
       CircuitCompositionLocals(circuit) {
         val backStack = rememberSaveableBackStack(screen)
-        navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+        navigator = rememberCircuitNavigator(navStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }

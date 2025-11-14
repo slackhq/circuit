@@ -67,7 +67,7 @@ private fun ComposeContentTestRule.setCircuitContent(circuit: Circuit): Saveable
   setContent {
     CircuitCompositionLocals(circuit) {
       backStack = rememberSaveableBackStack(TestScreen)
-      val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+      val navigator = rememberCircuitNavigator(navStack = backStack, onRootPop = {})
       NavigableCircuitContent(navigator = navigator, backStack = backStack)
     }
   }

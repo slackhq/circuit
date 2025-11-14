@@ -49,6 +49,14 @@ public fun CircuitContent(
           return true
         }
 
+        override fun forward(): Boolean {
+          TODO("Not yet implemented")
+        }
+
+        override fun backward(): Boolean {
+          TODO("Not yet implemented")
+        }
+
         override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
           onNavEvent(NavEvent.ResetRoot(newRoot, options))
           return emptyList()

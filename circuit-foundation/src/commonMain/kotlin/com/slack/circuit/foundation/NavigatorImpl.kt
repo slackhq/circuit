@@ -126,6 +126,14 @@ internal class NavigatorImpl(
     return navStack.add(screen)
   }
 
+  override fun forward(): Boolean {
+    return navStack.move(NavStack.Direction.Forward)
+  }
+
+  override fun backward(): Boolean {
+    return navStack.move(NavStack.Direction.Backward)
+  }
+
   override fun pop(result: PopResult?): Screen? {
     if (navStack.isAtRoot) {
       onRootPop(result)

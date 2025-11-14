@@ -8,7 +8,6 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
-  alias(libs.plugins.compose.hotReload)
 }
 
 android {

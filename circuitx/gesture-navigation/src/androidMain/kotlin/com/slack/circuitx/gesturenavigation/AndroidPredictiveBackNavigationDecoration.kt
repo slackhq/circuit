@@ -44,8 +44,10 @@ public actual fun GestureNavigationDecorationFactory(
   }
 }
 
-internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked: () -> Unit) :
-  PredictiveBackNavigationDecorator<T>(onBackInvoked) {
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
+  onBackInvoked: () -> Unit,
+  onForwardInvoked: () -> Unit,
+) : PredictiveBackNavigationDecorator<T>(onBackInvoked, onForwardInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -68,6 +70,14 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
             NavigatorDefaults.backward
           }
           .apply { targetContentZIndex = --zIndexDepth }
+      }
+      AnimatedNavEvent.Forward -> {
+        if (showNext) {
+          // Handle all the animation in draggable
+          EnterTransition.None togetherWith ExitTransition.None
+        } else {
+          NavigatorDefaults.forward
+        }
       }
       // Root reset. Crossfade
       AnimatedNavEvent.RootReset -> {
@@ -93,13 +103,16 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
         progress = { seekableTransitionState.fraction },
       )
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navStack.current)
     }
   }
 
   object Factory : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
-      return AndroidPredictiveBackNavDecorator(onBackInvoked = { navigator.pop() })
+      return AndroidPredictiveBackNavDecorator(
+        onBackInvoked = { navigator.backward() },
+        onForwardInvoked = { navigator.forward() },
+      )
     }
   }
 }

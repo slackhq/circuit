@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
-import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.backstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
@@ -47,8 +47,8 @@ class MainActivity : AppCompatActivity() {
     val tabs = TabScreen.all
     setContent {
       MaterialTheme {
-        val backStack = rememberSaveableBackStack(ContentScreen(tabs))
-        val navigator = rememberCircuitNavigator(backStack)
+        val navStack = rememberSaveableNavStack(ContentScreen(tabs))
+        val navigator = rememberCircuitNavigator(navStack)
         // Build the delegate Navigator.
         val interceptingNavigator =
           rememberInterceptingNavigator(
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         CircuitCompositionLocals(circuit) {
           NavigableCircuitContent(
             navigator = interceptingNavigator,
-            backStack = backStack,
+            navStack = navStack,
             modifier = Modifier.fillMaxSize(),
           )
         }

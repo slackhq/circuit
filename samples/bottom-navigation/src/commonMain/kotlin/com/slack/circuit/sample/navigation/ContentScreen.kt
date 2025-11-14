@@ -36,7 +36,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.backstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -53,6 +53,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
 import com.slack.circuitx.navigation.intercepting.NavigationContext
@@ -150,50 +151,50 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
 @Composable
 fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElementTransitionLayout {
   val eventSink = rememberUpdatedState(state.eventSink)
-  val backStack = rememberSaveableBackStack(state.rootScreen)
+  val navStack = rememberSaveableNavStack(state.rootScreen)
   val contentInterceptor = remember { ContentInterceptor(eventSink) }
   val contentNavigator =
-    rememberCircuitNavigator(backStack, onRootPop = {}, enableBackHandler = true)
+    rememberCircuitNavigator(navStack, onRootPop = {}, enableBackHandler = true)
 
   val interceptingNavigator =
     rememberInterceptingNavigator(
       navigator = contentNavigator,
       interceptors = listOf(contentInterceptor),
     )
-  val slideOverNavigator = rememberSlideOverNavState({ it is DetailScreen }, interceptingNavigator)
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
     bottomBar = {
       BottomTabRow(
         tabs = state.tabs,
-        rootScreen = backStack.rootRecord?.screen,
-        onNavEvent = { slideOverNavigator.onNavEvent(it) },
+        rootScreen = navStack.rootRecord?.screen,
+        onNavEvent = { interceptingNavigator.onNavEvent(it) },
       )
     },
   ) { innerPadding ->
     val circuit = requireNotNull(LocalCircuit.current) { "Need a circuit in a circuit" }
     NavigableCircuitContent(
-      navigator = slideOverNavigator,
-      backStack = backStack,
+      navigator = interceptingNavigator,
+      navStack = navStack,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
-      decoration =
-        remember(circuit.animatedScreenTransforms, circuit.animatedNavDecoratorFactory) {
-          SlideOverNavDecoration(
-            screenTransforms = circuit.animatedScreenTransforms,
-            decoratorFactory = circuit.animatedNavDecoratorFactory,
-            slideOverNavState = slideOverNavigator,
-            showInDetailPane = { it.screen is DetailScreen },
-            backgroundColor = { MaterialTheme.colorScheme.background },
-            scrimColor = { MaterialTheme.colorScheme.scrim },
-          )
+      decoratorFactory = GestureNavigationDecorationFactory(),
+      //      decoration =
+      //        remember(circuit.animatedScreenTransforms, circuit.animatedNavDecoratorFactory) {
+      //          SlideOverNavDecoration(
+      //            screenTransforms = circuit.animatedScreenTransforms,
+      //            decoratorFactory = circuit.animatedNavDecoratorFactory,
+      //            slideOverNavState = slideOverNavigator,
+      //            showInDetailPane = { it.screen is DetailScreen },
+      //            backgroundColor = { MaterialTheme.colorScheme.background },
+      //            scrimColor = { MaterialTheme.colorScheme.scrim },
+      //          )
 
-          //          AdaptiveListDetailNavDecoration(
-          //            screenTransforms = circuit.animatedScreenTransforms,
-          //            normalDecoratorFactory = circuit.animatedNavDecoratorFactory,
-          //            detailPaneDecoratorFactory = circuit.animatedNavDecoratorFactory,
-          //            showInDetailPane = { it.screen is DetailScreen },
-          //          )
-        },
+      //          AdaptiveListDetailNavDecoration(
+      //            screenTransforms = circuit.animatedScreenTransforms,
+      //            normalDecoratorFactory = circuit.animatedNavDecoratorFactory,
+      //            detailPaneDecoratorFactory = circuit.animatedNavDecoratorFactory,
+      //            showInDetailPane = { it.screen is DetailScreen },
+      //          )
+      //        },
     )
   }
 }

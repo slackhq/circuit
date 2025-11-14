@@ -291,11 +291,11 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     public fun addBackStackRecordLocalProvider(
-      provider: NavStackRecordLocalProvider<BackStack.Record>
+      provider: NavStackRecordLocalProvider<NavStack.Record>
     ): Builder = apply { backStackLocalProviders.add(provider) }
 
     public fun addBackStackRecordLocalProvider(
-      vararg providers: NavStackRecordLocalProvider<BackStack.Record>
+      vararg providers: NavStackRecordLocalProvider<NavStack.Record>
     ): Builder = apply {
       for (p in providers) {
         backStackLocalProviders.add(p)
@@ -303,7 +303,7 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     public fun addBackStackRecordLocalProviders(
-      providers: Iterable<NavStackRecordLocalProvider<BackStack.Record>>
+      providers: Iterable<NavStackRecordLocalProvider<NavStack.Record>>
     ): Builder = apply { backStackLocalProviders.addAll(providers) }
 
     public fun clearBackStackRecordLocalProviders(): Builder = apply {

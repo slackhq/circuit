@@ -127,6 +127,7 @@ public data class NavStackList<T>(val entries: List<T>, val currentIndex: Int = 
    * backwardStack() = [B, C, D]  // Current B, can move back through C to D
    * ```
    */
+  // todo Should this include the current entry?
   public fun backwardStack(): List<T> = entries.subList(currentIndex, entries.size)
 }
 

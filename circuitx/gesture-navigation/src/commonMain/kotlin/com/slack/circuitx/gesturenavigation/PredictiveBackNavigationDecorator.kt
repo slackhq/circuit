@@ -17,12 +17,14 @@ import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
-import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
+import com.slack.circuit.foundation.internal.PredictiveNavDirection
+import com.slack.circuit.foundation.internal.PredictiveNavEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
 import kotlin.math.abs
 
 public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
-  private val onBackInvoked: () -> Unit
+  private val onBackInvoked: () -> Unit,
+  private val onForwardInvoked: () -> Unit,
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   protected lateinit var seekableTransitionState:
@@ -30,6 +32,7 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
     private set
 
   protected var showPrevious: Boolean by mutableStateOf(false)
+  protected var showNext: Boolean by mutableStateOf(false)
   protected var swipeProgress: Float by mutableFloatStateOf(0f)
 
   protected var isSeeking: Boolean by mutableStateOf(false)
@@ -50,7 +53,15 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
       remember(args) {
         val backwardStack = args.backwardStack()
         if (backwardStack.size > 1) {
-          targetState(NavStackList(backwardStack.subList(1, args.size)))
+          targetState(NavStackList(backwardStack.subList(1, backwardStack.size)))
+        } else null
+      }
+
+    val next =
+      remember(args) {
+        val forwardStack = args.forwardStack()
+        if (forwardStack.isNotEmpty()) {
+          targetState(NavStackList(forwardStack.subList(0, forwardStack.size)))
         } else null
       }
 
@@ -63,32 +74,59 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
       // After the current state has changed (i.e. any transition has completed),
       // clear out any transient state
       showPrevious = false
+      showNext = false
       swipeOffset = Offset.Zero
     }
 
-    LaunchedEffect(previous, current) {
-      if (previous != null) {
-        snapshotFlow { swipeProgress }
-          .collect { progress ->
-            if (progress != 0f) {
+    // todo Based on the swipe direction
+    LaunchedEffect(previous, current, next) {
+      snapshotFlow { Triple(swipeProgress, showNext, showPrevious) }
+        .collect { (progress, showingNext, showingPrevious) ->
+          val showingPrevious =
+            previous != null && showingPrevious && !showingNext && progress != 0f
+          val showingNext = next != null && showingNext && !showingPrevious && progress != 0f
+          when {
+            showingPrevious -> {
               isSeeking = true
               seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
             }
+            showingNext -> {
+              isSeeking = true
+              seekableTransitionState.seekTo(fraction = abs(progress), targetState = next)
+            }
           }
-      }
+        }
     }
-    PredictiveBackEventHandler(
-      isEnabled = args.size > 1,
-      onBackProgress = { progress, offset ->
-        showPrevious = progress != 0f
-        swipeProgress = progress
-        swipeOffset = offset
+
+    PredictiveNavEventHandler(
+      isBackEnabled = previous != null,
+      isForwardEnabled = next != null,
+      onProgress = { direction, progress, offset ->
+        when (direction) {
+          PredictiveNavDirection.Back -> {
+            showNext = false
+            showPrevious = progress != 0f
+            swipeProgress = progress
+            swipeOffset = offset
+          }
+          PredictiveNavDirection.Forward -> {
+            showPrevious = false
+            showNext = progress != 0f
+            swipeProgress = progress
+            swipeOffset = offset
+          }
+        }
       },
-      onBackCancelled = {
+      onCancelled = {
         isSeeking = false
         seekableTransitionState.animateTo(current)
       },
-      onBackCompleted = { onBackInvoked() },
+      onCompleted = { direction ->
+        when (direction) {
+          PredictiveNavDirection.Back -> onBackInvoked()
+          PredictiveNavDirection.Forward -> onForwardInvoked()
+        }
+      },
     )
     return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
   }

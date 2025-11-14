@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.backstack.NavStack
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
@@ -71,7 +72,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 }
 
 /**
- * Returns a [GoToNavigator] that answers with the given [resultType] using the given [backStack].
+ * Returns a [GoToNavigator] that answers with the given [resultType] using the given [navStack].
  *
  * Handling of the result type [T] should be handled in the [block] parameter and is guaranteed to
  * only be called _at most_ once. It may never be called if the navigated screen never pops with a
@@ -99,12 +100,12 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 @ExperimentalCircuitApi
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
-  backStack: BackStack<out BackStack.Record>,
+  navStack: NavStack<out NavStack.Record>,
   answeringResultHandler: AnsweringResultHandler,
   resultType: KClass<T>,
   block: (result: T) -> Unit,
 ): GoToNavigator {
-  val currentBackStack by rememberUpdatedState(backStack)
+  val currentBackStack by rememberUpdatedState(navStack)
   val currentResultType by rememberUpdatedState(resultType)
 
   // Top screen at the start, so we can ensure we only collect the result if
@@ -138,7 +139,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
         val previousTopRecord = currentBackStack.topRecord
-        val success = currentBackStack.push(screen)
+        val success = currentBackStack.add(screen)
         if (success) {
           // Clear the cached pending result from the previous top record
           if (previousTopRecord != null) {

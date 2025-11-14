@@ -18,11 +18,18 @@ public fun Navigator.onNavEvent(event: NavEvent) {
     is NavEvent.Pop -> pop(event.result)
     is NavEvent.GoTo -> goTo(event.screen)
     is NavEvent.ResetRoot -> resetRoot(event.newRoot, event.options)
+    is NavEvent.Backward -> backward()
+    is NavEvent.Forward -> forward()
   }
 }
 
 /** A sealed navigation interface intended to be used when making a navigation callback. */
 public sealed interface NavEvent : CircuitUiEvent {
+
+  public data object Forward : NavEvent
+
+  public data object Backward : NavEvent
+
   /** Corresponds to [Navigator.pop]. */
   public data class Pop(val result: PopResult? = null) : NavEvent
 

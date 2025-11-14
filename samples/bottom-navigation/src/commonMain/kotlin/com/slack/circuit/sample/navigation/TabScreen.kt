@@ -112,7 +112,7 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 @Composable
 fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
-    val backStack = LocalNavStack.current?.toList().orEmpty()
+    val navStack = LocalNavStack.current?.snapshot()
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
       Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -144,12 +144,14 @@ fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier =
             state.eventSink(TabScreenCircuit.Event.Next)
           }
       ) {
-        itemsIndexed(backStack) { i, item ->
-          Text(
-            text = "$i: ${item.screen}",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-          )
+        navStack?.let { navStack ->
+          itemsIndexed(navStack.toList()) { i, item ->
+            Text(
+              text = "$i: ${item.screen} ${if(navStack.currentIndex == i) "(active)" else ""}",
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+          }
         }
       }
     }

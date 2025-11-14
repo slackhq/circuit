@@ -29,39 +29,67 @@ import com.slack.circuit.runtime.screen.Screen
  */
 @Stable
 public interface BackStack<R : Record> : NavStack<R>, Iterable<R> {
-  // BackStack inherits all methods from NavStack
-}
+  /** The number of records contained in this [BackStack] that will be seen by an iterator. */
+  public override val size: Int
 
-public fun <R : Record> BackStack<R>.push(record: R): Boolean {
-  return add(record)
-}
+  /** The top-most record in the [BackStack], or `null` if the [BackStack] is empty. */
+  public override val currentRecord: R?
+    get() = topRecord
 
-public fun <R : Record> BackStack<R>.push(screen: Screen): Boolean {
-  return add(screen)
-}
+  /** The bottom-most record in the [BackStack], or `null` if the [BackStack] is empty. */
+  public override val rootRecord: R?
 
-/**
- * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
- * successful or `null` if no entry was popped.
- */
-public fun <R : Record> BackStack<R>.pop(): R? {
-  return Snapshot.withMutableSnapshot {
-    // todo edge cases
-    while (canGoForward) {
-      // Move forward and remove the previous record.
-      move(NavStack.Direction.Forward)
-      remove(NavStack.Direction.Backward)
+  /**
+   * Push a new [Record] onto the back stack. The new record will become the top of the stack.
+   *
+   * @param record The record to push onto the stack.
+   * @return If the [record] was successfully pushed onto the back stack
+   */
+  public fun push(record: R): Boolean
+
+  /**
+   * Push a new [Screen] onto the back stack. This will be enveloped in a [Record] and the new
+   * record will become the top of the stack.
+   *
+   * @param screen The screen to push onto the stack.
+   * @return If the [screen] was successfully pushed onto the back stack
+   */
+  public fun push(screen: Screen): Boolean
+
+  /**
+   * Attempt to pop the top item off of the back stack, returning the popped [Record] if popping was
+   * successful or `null` if no entry was popped.
+   */
+  public fun pop(): R?
+
+  /**
+   * Pop records off the top of the backstack until one is found that matches the given predicate.
+   */
+  public fun popUntil(predicate: (R) -> Boolean): List<R> {
+    return buildList {
+      while (topRecord?.let(predicate) == false) {
+        val popped = pop() ?: break
+        add(popped)
+      }
     }
-    remove(NavStack.Direction.Backward)
   }
+
+  @Stable public interface Record : NavStack.Record
 }
 
-/** Pop records off the top of the stack until one is found that matches the given predicate. */
-public fun <R : Record> NavStack<R>.popUntil(predicate: (R) -> Boolean): List<R> {
-  return buildList {
-    while (currentRecord?.let(predicate) == false) {
-      val popped = this@popUntil.remove(NavStack.Direction.Backward) ?: break
-      add(popped)
+/** `true` if the [BackStack] contains no records. [Iterable.firstOrNull] will return `null`. */
+public val BackStack<out Record>.isEmpty: Boolean
+  get() = size == 0
+
+/** `true` if the [BackStack] contains exactly one record. */
+public val BackStack<out Record>.isAtRoot: Boolean
+  get() = size == 1
+
+/** Clear any saved state from the [BackStack]. */
+public fun BackStack<out Record>.clearState() {
+  Snapshot.withMutableSnapshot {
+    for (screen in peekState()) {
+      removeState(screen)
     }
   }
 }

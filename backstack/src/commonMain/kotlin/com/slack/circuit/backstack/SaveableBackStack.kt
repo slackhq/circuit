@@ -88,23 +88,17 @@ internal constructor(
   override val rootRecord: Record?
     get() = entryList.lastOrNull()
 
-  override val currentIndex: Int
-    get() = 0
+  override fun add(screen: Screen): Boolean = push(Record(screen))
 
-  override val currentRecord: Record?
-    get() = entryList.firstOrNull()
+  override fun add(record: Record): Boolean = push(record)
 
-  override fun add(
-    index: Int,
-    screen: Screen
-  ): Record? {
-    return add(index, Record(screen, emptyMap()))
-  }
+  override fun remove(): Record? = pop()
 
-  override fun add(
-    index: Int,
-    record: Record
-  ): Record? {
+  override fun move(direction: NavStack.Direction): Boolean = false
+
+  public override fun push(screen: Screen): Boolean = push(Record(screen))
+
+  public override fun push(record: Record): Boolean {
     val topRecord = Snapshot.withoutReadObservation { topRecord }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
@@ -114,24 +108,13 @@ internal constructor(
     } else false
   }
 
-  override fun remove(index: Int): Record? {
-    TODO("Not yet implemented")
-  }
-
-  override fun backward(): Record? {
-    TODO("Not yet implemented")
-  }
-
-  public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
-    return
-  }
-
-  public override fun push(record: Record): Boolean {
-
-  }
-
   override fun pop(): Record? {
     return Snapshot.withoutReadObservation { entryList.removeFirstOrNull() }
+  }
+
+  override fun snapshot(): NavStack.Snapshot<Record> {
+    // BackStack always has current at top (index 0)
+    return BackStackSnapshot(entryList.toList())
   }
 
   override fun saveState() {
@@ -190,11 +173,22 @@ internal constructor(
     return false
   }
 
+  /**
+   * A snapshot of a back stack state. Since BackStack always has current at the top, currentIndex
+   * is always 0.
+   */
+  public data class BackStackSnapshot(override val entries: List<Record>) :
+    NavStack.Snapshot<Record> {
+    override val currentIndex: Int = 0
+
+    override fun iterator(): Iterator<Record> = entries.iterator()
+  }
+
   public data class Record(
     override val screen: Screen,
     val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
-  ) : NavStack.Record {
+  ) : BackStack.Record {
 
     internal companion object {
       val Saver: Saver<Record, Any> =

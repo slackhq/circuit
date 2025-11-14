@@ -43,8 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
-import com.slack.circuit.backstack.NavArgument
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.backstack.providedValuesForBackStack
@@ -256,7 +254,7 @@ public fun <R : Record> NavigableCircuitContent(
     val activeContentProviders = buildCircuitContentProviders(backStack = navigator.backStack)
     val circuitProvidedValues =
       providedValuesForBackStack(navigator.backStack, circuit.backStackLocalProviders)
-    navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
+    navDecoration.DecoratedContent(activeContentProviders, navigator, modifier) { provider ->
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
@@ -342,6 +340,9 @@ public class RecordContentProvider<R : Record>(
   public val record: R,
   internal val content: @Composable (R, ContentProviderState<R>) -> Unit,
 ) : NavArgument {
+
+  override val key: String
+    get() = record.key
 
   override val screen: Screen
     get() = record.screen
@@ -496,7 +497,9 @@ public object NavigatorDefaults {
   private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
   public object DefaultDecoratorFactory : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> = DefaultDecorator()
+
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> =
+      DefaultDecorator()
   }
 
   /**
@@ -612,6 +615,7 @@ public object NavigatorDefaults {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
       args: List<T>,
+      navigator: Navigator,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {

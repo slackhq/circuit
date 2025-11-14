@@ -284,8 +284,7 @@ internal enum class CodegenMode {
 
     fun inject(options: CircuitOptions): ClassName
 
-    fun declarationInjects(options: CircuitOptions): Collection<ClassName> =
-      listOf(inject(options))
+    fun declarationInjects(options: CircuitOptions): Collection<ClassName> = listOf(inject(options))
 
     val assisted: ClassName
     val assistedInject: ClassName?

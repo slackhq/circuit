@@ -24,7 +24,6 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Visibility
-import com.slack.circuit.codegen.CodegenMode.InjectionRuntime
 import com.slack.circuit.codegen.CodegenMode.KOTLIN_INJECT_ANVIL
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -448,12 +447,9 @@ private class CircuitSymbolProcessor(
         val useProvider =
           !isAssisted &&
             mode.filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration)).any {
-              // quick fix: Check for javax or jakarta inject annotations.
-              if (mode.runtime == InjectionRuntime.Jakarta) {
-                it.isAnnotationPresentWithLeniency(CircuitNames.INJECT_JAVAX) ||
-                  it.isAnnotationPresentWithLeniency(CircuitNames.INJECT)
-              } else {
-                it.isAnnotationPresentWithLeniency(mode.runtime.inject(options))
+              declaration ->
+              mode.runtime.declarationInjects(options).any { annotation ->
+                declaration.isAnnotationPresentWithLeniency(annotation)
               }
             }
         className = targetClass.simpleName.getShortName()

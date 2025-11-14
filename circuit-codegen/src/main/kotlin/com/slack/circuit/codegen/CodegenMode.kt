@@ -281,7 +281,11 @@ internal enum class CodegenMode {
   ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
 
   sealed interface InjectionRuntime {
+
     fun inject(options: CircuitOptions): ClassName
+
+    fun declarationInjects(options: CircuitOptions): Collection<ClassName> =
+      listOf(KotlinInject.inject(options))
 
     val assisted: ClassName
     val assistedInject: ClassName?
@@ -294,6 +298,15 @@ internal enum class CodegenMode {
     data object Jakarta : InjectionRuntime {
       override fun inject(options: CircuitOptions): ClassName =
         if (options.useJavax) CircuitNames.INJECT_JAVAX else CircuitNames.INJECT
+
+      override fun declarationInjects(options: CircuitOptions): Collection<ClassName> {
+        // If explicitly using javax only look for javax, otherwise look for both.
+        return if (options.useJavax) {
+          listOf(CircuitNames.INJECT_JAVAX)
+        } else {
+          listOf(CircuitNames.INJECT, CircuitNames.INJECT_JAVAX)
+        }
+      }
 
       override val assisted: ClassName = CircuitNames.ASSISTED
       override val assistedInject: ClassName = CircuitNames.ASSISTED_INJECT

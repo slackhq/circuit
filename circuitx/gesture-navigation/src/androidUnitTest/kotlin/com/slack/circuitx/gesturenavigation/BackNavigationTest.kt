@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -58,7 +61,9 @@ class BackNavigationTest(private val androidNavigator: Boolean) {
                 navStack = backStack,
                 onRootPop = {}, // no-op for tests
               )
-            BackHandler { navigator.pop() }
+            NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
+              navigator.pop()
+            }
           }
           NavigableCircuitContent(
             navigator = navigator,

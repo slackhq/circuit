@@ -6,12 +6,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
@@ -76,11 +81,13 @@ class NavigatorBackHandlerTest {
   @Test
   fun nestedAndroidNavigatorRootPopBackHandler() {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
-    var outerBackCount = 0
+    var outerBackCount by mutableStateOf(0)
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        BackHandler(enabled = true) { outerBackCount++ }
+        NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
+          outerBackCount++
+        }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(navStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -104,11 +111,13 @@ class NavigatorBackHandlerTest {
   @Test
   fun nestedAndroidNavigatorRootDispatchedBackHandler() {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
-    var outerBackCount = 0
+    var outerBackCount by mutableStateOf(0)
     lateinit var navigator: Navigator
     composeTestRule.setContent {
       CircuitCompositionLocals(circuit) {
-        BackHandler(enabled = true) { outerBackCount++ }
+        NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
+          outerBackCount++
+        }
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         navigator = rememberCircuitNavigator(navStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)

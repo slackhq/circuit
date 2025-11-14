@@ -11,19 +11,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
-import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
+import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
+import com.slack.circuit.runtime.InternalCircuitApi
 import kotlin.math.abs
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
 
 public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   private val onBackInvoked: () -> Unit
@@ -46,10 +42,9 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
     return GestureNavTransitionHolder(args)
   }
 
-  @OptIn(ExperimentalComposeUiApi::class)
+  @OptIn(InternalCircuitApi::class)
   @Composable
   override fun updateTransition(args: NavStackList<T>): Transition<GestureNavTransitionHolder<T>> {
-    val scope = rememberStableCoroutineScope()
     val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
@@ -82,61 +77,19 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
           }
       }
     }
-
-    if (previous != null) {
-      BackHandler(
-        onBackProgress = { progress, offset ->
-          showPrevious = progress != 0f
-          swipeProgress = progress
-          swipeOffset = offset
-        },
-        onBackCancelled = {
-          scope.launch {
-            isSeeking = false
-            seekableTransitionState.animateTo(current)
-          }
-        },
-        onBackInvoked = { onBackInvoked() },
-      )
-    }
+    PredictiveBackEventHandler(
+      isEnabled = args.size > 1,
+      onBackProgress = { progress, offset ->
+        showPrevious = progress != 0f
+        swipeProgress = progress
+        swipeOffset = offset
+      },
+      onBackCancelled = {
+        isSeeking = false
+        seekableTransitionState.animateTo(current)
+      },
+      onBackCompleted = { onBackInvoked() },
+    )
     return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
   }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun BackHandler(
-  onBackProgress: (Float, Offset) -> Unit,
-  onBackCancelled: () -> Unit,
-  onBackInvoked: () -> Unit,
-) {
-  val lastOnBackProgress by rememberUpdatedState(onBackProgress)
-  val lastOnBackCancelled by rememberUpdatedState(onBackCancelled)
-  val lastOnBackInvoked by rememberUpdatedState(onBackInvoked)
-
-  PredictiveBackHandler(
-    enabled = true,
-    onBack = { progress ->
-      try {
-        var initialTouch = Offset.Zero
-        progress.collect { backEvent ->
-          if (initialTouch == Offset.Zero) {
-            initialTouch = Offset(backEvent.touchX, backEvent.touchY)
-            lastOnBackProgress(0f, Offset.Zero)
-          } else {
-            lastOnBackProgress(
-              when (backEvent.swipeEdge) {
-                0 -> backEvent.progress // BackEventCompat.EDGE_LEFT
-                else -> -backEvent.progress
-              },
-              Offset(backEvent.touchX, backEvent.touchY) - initialTouch,
-            )
-          }
-        }
-        lastOnBackInvoked()
-      } catch (_: CancellationException) {
-        lastOnBackCancelled()
-      }
-    },
-  )
 }

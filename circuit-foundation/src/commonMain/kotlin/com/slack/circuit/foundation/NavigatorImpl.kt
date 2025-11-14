@@ -12,7 +12,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.NavStack
 import com.slack.circuit.backstack.NavStack.Record
 import com.slack.circuit.backstack.isAtRoot
@@ -43,7 +45,7 @@ public fun rememberCircuitNavigator(
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent] while also
- * handling back events with a [BackHandler].
+ * handling back events with a [NavigationBackHandler].
  *
  * @param navStack The backing [NavStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
@@ -74,9 +76,10 @@ public fun rememberCircuitNavigator(
   }
   var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
   var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
-  BackHandler(
-    enabled = enableBackHandler && enableRootBackHandler && navStack.size > 1,
-    onBack = {
+  NavigationBackHandler(
+    state = rememberNavigationEventState(NavigationEventInfo.None),
+    isBackEnabled = enableBackHandler && enableRootBackHandler && navStack.size > 1,
+    onBackCompleted = {
       // We need to unload this BackHandler from the composition before the root pop is triggered so
       // any outer back handler will get called. So delay calling pop until after the next
       // composition.

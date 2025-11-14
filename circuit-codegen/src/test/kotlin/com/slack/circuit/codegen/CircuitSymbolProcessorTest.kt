@@ -1056,6 +1056,61 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
+  fun presenterClass_javaxInjection_jakartaGeneration() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import javax.inject.Inject
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter @Inject constructor(val value: String): Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
   fun presenterClass_simpleInjection() {
     assertGeneratedFile(
       sourceFile =

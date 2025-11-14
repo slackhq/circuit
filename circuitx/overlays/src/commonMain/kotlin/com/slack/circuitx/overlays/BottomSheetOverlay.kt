@@ -19,11 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
@@ -147,7 +149,10 @@ private constructor(
     ModalBottomSheet(
       content = {
         val coroutineScope = rememberStableCoroutineScope()
-        BackHandler(enabled = sheetState.isVisible) {
+        NavigationBackHandler(
+          state = rememberNavigationEventState(NavigationEventInfo.None),
+          isBackEnabled = sheetState.isVisible,
+        ) {
           coroutineScope
             .launch { sheetState.hide() }
             .invokeOnCompletion {

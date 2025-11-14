@@ -42,24 +42,30 @@ public fun <T : R, R> Flow<T>.collectAsRetainedState(
   }
 
 /**
- * Collects values from a [Flow] provided by the [flow] lambda and represents its latest value via
- * retained [State]. Every time there would be new value posted into the [Flow] the returned [State]
- * will be updated causing recomposition of every [State.value] usage.
+ * Produces and collects values from a [Flow] provided by the [producer] lambda and represents its
+ * latest value via retained [State]. Every time there would be a new value posted into the [Flow],
+ * the returned [State] will be updated causing recomposition of every [State.value] usage.
  *
- * This function safely collects a Flow by retaining the [inputs] across configuration changes,
- * while the Flow itself is only remembered for the composition lifetime. This prevents memory leaks
- * from retaining the Flow instance.
+ * This function safely produces and collects a Flow by using a single retained state with unified
+ * inputs. The Flow is produced within the retained state's producer block, ensuring proper scoping
+ * and preventing memory leaks from retaining Flow instances across configuration changes.
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
- *   reset and [flow] to be rerun
+ *   reset and [producer] to be rerun
  * @param initial the initial value for the state
  * @param context [CoroutineContext] to use for collecting.
- * @param flow a lambda that provides the [Flow] to collect from
+ * @param producer a suspend lambda that provides the [Flow] to collect from
  */
 @Composable
-public fun <T : R, R> collectAsRetainedState(
+public fun <T : R, R> produceAndCollectAsRetainedState(
   vararg inputs: Any?,
   initial: R,
   context: CoroutineContext = EmptyCoroutineContext,
-  flow: () -> Flow<T>,
-): State<R> = rememberRetained(*inputs) { flow() }.collectAsRetainedState(initial, context)
+  producer: suspend () -> Flow<T>,
+): State<R> =
+  produceRetainedState(initial, *inputs) {
+    val flow = producer()
+    if (context == EmptyCoroutineContext) {
+      flow.collect { value = it }
+    } else withContext(context) { flow.collect { value = it } }
+  }

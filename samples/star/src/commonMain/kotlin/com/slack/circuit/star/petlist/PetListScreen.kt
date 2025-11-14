@@ -98,7 +98,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayEffect
-import com.slack.circuit.retained.collectAsRetainedState
+import com.slack.circuit.retained.produceAndCollectAsRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -198,7 +198,7 @@ class PetListPresenter(
     }
 
     val animalState by
-      collectAsRetainedState(petRepo, initial = null) {
+      produceAndCollectAsRetainedState(petRepo, initial = null) {
         petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
       }
 

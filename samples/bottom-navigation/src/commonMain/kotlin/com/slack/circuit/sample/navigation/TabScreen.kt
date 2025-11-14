@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
-import com.slack.circuit.foundation.LocalBackStack
+import com.slack.circuit.foundation.LocalNavStack
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -112,7 +112,7 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 @Composable
 fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
-    val backStack = LocalBackStack.current?.toList().orEmpty()
+    val backStack = LocalNavStack.current?.toList().orEmpty()
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
       Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

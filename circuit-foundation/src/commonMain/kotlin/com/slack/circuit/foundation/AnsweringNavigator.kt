@@ -28,7 +28,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun answeringNavigationAvailable(): Boolean =
-  LocalBackStack.current != null && LocalAnsweringResultHandler.current != null
+  LocalNavStack.current != null && LocalAnsweringResultHandler.current != null
 
 /**
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
@@ -51,7 +51,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   resultType: KClass<T>,
   block: (result: T) -> Unit,
 ): GoToNavigator {
-  val backStack = LocalBackStack.current ?: return fallbackNavigator
+  val backStack = LocalNavStack.current ?: return fallbackNavigator
   val resultHandler = LocalAnsweringResultHandler.current ?: return fallbackNavigator
   return rememberAnsweringNavigator(backStack, resultHandler, resultType, block)
 }

@@ -320,7 +320,6 @@ internal constructor(
     override val entries: List<Record>,
     override val currentIndex: Int,
   ) : NavStack.Snapshot<Record> {
-    override fun iterator(): Iterator<Record> = entries.iterator()
 
     internal companion object {
       val Saver: Saver<NavStack.Snapshot<Record>, Any> =

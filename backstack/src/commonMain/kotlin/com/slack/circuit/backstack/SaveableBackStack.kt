@@ -181,7 +181,9 @@ internal constructor(
     NavStack.Snapshot<Record> {
     override val currentIndex: Int = 0
 
-    override fun iterator(): Iterator<Record> = entries.iterator()
+    override fun forwardStack(): Iterable<Record> = emptyList()
+
+    override fun backwardStack(): Iterable<Record> = entries
   }
 
   public data class Record(

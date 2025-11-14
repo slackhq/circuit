@@ -55,7 +55,7 @@ class GestureNavigationCrashTest {
       setContent {
         CircuitCompositionLocals(circuit) {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
-          navigator = rememberCircuitNavigator(backStack = backStack)
+          navigator = rememberCircuitNavigator(navStack = backStack)
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,

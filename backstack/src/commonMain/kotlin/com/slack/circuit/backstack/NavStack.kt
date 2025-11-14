@@ -215,7 +215,7 @@ public interface NavStack<R : Record> {
   public interface Record {
     /**
      * A value that identifies this record uniquely, even if it shares the same [screen] with
-     * another record. This key may be used by [BackStackRecordLocalProvider]s to associate
+     * another record. This key may be used by [NavStackRecordLocalProvider]s to associate
      * presentation data with a record across composition recreation.
      *
      * [key] MUST NOT change for the life of the record.
@@ -227,13 +227,134 @@ public interface NavStack<R : Record> {
   }
 
   /**
-   * A snapshot of a nav stack state, capturing both the entries and the current position. Used for
-   * saving and restoring stack state, and for iterating over stack entries.
+   * An immutable snapshot of a navigation stack's state at a point in time.
+   *
+   * ## Structure
+   *
+   * A snapshot captures the complete state using a **List+Index model**:
+   * - **entries**: An immutable list of all records in the stack
+   * - **currentIndex**: The position of the currently active record
+   *
+   * ## Index Semantics
+   *
+   * The list is ordered from newest (index 0) to oldest (last index):
+   * ```
+   * entries:  [TopScreen, MiddleScreen, RootScreen]
+   * indices:   0          1             2
+   *            ^                        ^
+   *          newest                  oldest
+   * ```
+   *
+   * - `currentIndex = 0`: At the top (newest entry), no forward history
+   * - `currentIndex = lastIndex`: At the root (oldest entry), no backward history
+   * - `0 < currentIndex < lastIndex`: In the middle, can move both directions
+   *
+   * ## Navigation View
+   *
+   * The snapshot provides convenient methods to view the stack from a navigation perspective:
+   * - **[forwardStack]**: Entries between current and top (newer entries you can navigate to)
+   * - **[backwardStack]**: Entries from current to root (includes current, older entries)
+   *
+   * ```
+   * Stack: [A, B, C, D, E]  (currentIndex = 2, current = C)
+   *         ^        ^  ^
+   *       top      cur root
+   *
+   * forwardStack()  = [B, A]     // Can move forward to these
+   * backwardStack() = [C, D, E]  // Current and entries behind
+   * ```
+   *
+   * ## Immutability
+   *
+   * Snapshots are immutable and will not change even if the source [NavStack] is modified. This
+   * makes them safe to:
+   * - Pass across composition boundaries
+   * - Store for later comparison
+   * - Serialize for state restoration
+   * - Iterate over without synchronization
+   *
+   * ## Use Cases
+   *
+   * 1. **State Persistence**: Save via [saveState] and restore via [restoreState]
+   * 2. **Inspection**: Examine stack contents without modifying the live stack
+   * 3. **Iteration**: Use the [Iterable] interface to traverse all entries
+   * 4. **Testing**: Verify navigation state in unit tests
+   * 5. **UI Display**: Show forward/backward history in navigation UI
+   *
+   * ## Example
+   *
+   * ```kotlin
+   * val snapshot = navStack.snapshot()
+   *
+   * // Check position
+   * val isAtTop = snapshot.currentIndex == 0
+   * val isAtRoot = snapshot.currentIndex == snapshot.entries.lastIndex
+   *
+   * // Access entries
+   * val current = snapshot[snapshot.currentIndex]
+   * val top = snapshot[0]
+   *
+   * // Iterate over all entries (top to root)
+   * snapshot.forEach { record ->
+   *   println("Screen: ${record.screen}")
+   * }
+   *
+   * // View navigation stacks
+   * val canGoForward = snapshot.forwardStack().any()
+   * snapshot.forwardStack().forEach { record ->
+   *   println("Can navigate forward to: ${record.screen}")
+   * }
+   * ```
+   *
+   * @see NavStack.snapshot
+   * @see NavStack.saveState
+   * @see NavStack.restoreState
    */
   @Stable
   public interface Snapshot<R : Record> : Iterable<R> {
+    /** All records in the stack, ordered from top (newest, index 0) to root (oldest, last index). */
     public val entries: List<R>
+
+    /**
+     * The index of the currently active record in [entries].
+     * - `0`: At the top (newest entry)
+     * - `entries.lastIndex`: At the root (oldest entry)
+     * - Between: In the middle of the history
+     */
     public val currentIndex: Int
+
+    /** Retrieves the record at the given [index] in [entries]. */
+    public operator fun get(index: Int): R = entries[index]
+
+    /** Returns an iterator over all entries from top (index 0) to root (last index). */
+    override fun iterator(): Iterator<R> = entries.iterator()
+
+    /**
+     * Returns entries between the current position and the top, in order from nearest to top.
+     * These are entries you can navigate forward to (toward newer entries).
+     *
+     * Empty when [currentIndex] is 0 (at top).
+     *
+     * Example:
+     * ```
+     * entries = [A, B, C, D], currentIndex = 2 (at C)
+     * forwardStack() = [B, A]  // Can move forward through B to reach A
+     * ```
+     */
+    public fun forwardStack(): Iterable<R> = entries.subList(0, currentIndex).asReversed()
+
+    /**
+     * Returns entries from the current position to the root, in order from current to root.
+     * This includes the current entry and all entries you can navigate backward to (toward older
+     * entries).
+     *
+     * Example:
+     * ```
+     * entries = [A, B, C, D], currentIndex = 1 (at B)
+     * backwardStack() = [B, C, D]  // Current B, can move back through C to D
+     * ```
+     */
+    public fun backwardStack(): Iterable<R> = entries.subList(currentIndex, entries.size)
   }
 }
 

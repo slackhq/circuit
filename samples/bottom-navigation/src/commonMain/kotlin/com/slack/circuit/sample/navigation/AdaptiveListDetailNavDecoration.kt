@@ -45,6 +45,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavDecoration
+import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
@@ -114,7 +115,7 @@ class AdaptiveListDetailNavDecoration(
   @OptIn(DelicateCircuitFoundationApi::class)
   @Composable
   override fun <T : NavArgument> DecoratedContent(
-    args: List<T>,
+    args: NavStackList<T>,
     navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
@@ -128,7 +129,7 @@ class AdaptiveListDetailNavDecoration(
       ProvideAnimatedTransitionScope(AdaptiveListDetailAnimatedScope, this) {
         if (shouldUsePaneLayout) {
           // todo I had expected the `PaneContent` retains to work with just the navigable_registry
-          rememberRetainedStateHolder().RetainedStateProvider("list-detail-${args.first().key}") {
+          rememberRetainedStateHolder().RetainedStateProvider("list-detail-${args.current.key}") {
             ListDetailContent(
               args = args,
               navigator = navigator,
@@ -155,7 +156,7 @@ class AdaptiveListDetailNavDecoration(
   )
   @Composable
   private fun <T : NavArgument> ListDetailContent(
-    args: List<T>,
+    args: NavStackList<T>,
     navigator: Navigator,
     listDetailScaffoldStyle: ListDetailScaffoldStyle,
     modifier: Modifier = Modifier,
@@ -167,7 +168,7 @@ class AdaptiveListDetailNavDecoration(
       val secondaryArgs =
         with(secondaryLookupTransition) { currentState[primary] ?: targetState[primary] }
 
-      val hasSecondary = !secondaryArgs.isNullOrEmpty()
+      val hasSecondary = !secondaryArgs?.entries.isNullOrEmpty()
       val scaffoldValue = if (hasSecondary) PrimarySecondary else Primary
       val scaffoldState = remember { MutableThreePaneScaffoldState(scaffoldValue) }
 
@@ -328,33 +329,39 @@ private fun Density.paneExpansionAnchors(
 }
 
 /**
- * Partitions navigation arguments into primary (list) and secondary (detail) panes based on the
- * [showInDetailPane] predicate.
+ * Strategy that partitions navigation arguments into primary (list) and secondary (detail) panes
+ * based on the [showInDetailPane] predicate.
  */
 @Composable
 internal fun <T : NavArgument> rememberListDetailNavArguments(
-  args: List<T>,
+  navStackList: NavStackList<T>,
   showInDetailPane: (T) -> Boolean,
-): Pair<List<T>, Map<T, List<T>>> =
-  remember(args) {
+): Pair<NavStackList<T>, Map<T, NavStackList<T>>> =
+  remember(navStackList) {
     val primary = mutableListOf<T>()
-    val secondaryLookup = mutableMapOf<T, List<T>>()
+    val secondaryLookup = mutableMapOf<T, NavStackList<T>>()
     val secondary = mutableListOf<T>()
-    for (arg in args) {
+    for (arg in navStackList.backwardStack()) {
       when {
         showInDetailPane(arg) -> {
           secondary += arg
         }
         else -> {
           primary += arg
-          secondaryLookup[arg] = secondary.toList()
+          secondaryLookup[arg] = NavStackList(secondary.toList())
           secondary.clear()
         }
       }
     }
     if (primary.isEmpty()) {
-      secondary.toList() to emptyMap()
+      NavStackList(secondary.toList()) to emptyMap()
     } else {
-      primary.toList() to secondaryLookup.toMap()
+      // Show the next secondary if it exists
+      navStackList
+        .forwardStack()
+        .firstOrNull()
+        ?.takeIf { showInDetailPane(it) }
+        ?.let { secondaryLookup.getOrPut(primary.first()) { NavStackList(listOf(it)) } }
+      NavStackList(primary.toList()) to secondaryLookup.toMap()
     }
   }

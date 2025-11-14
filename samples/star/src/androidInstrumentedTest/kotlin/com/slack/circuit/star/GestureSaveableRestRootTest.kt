@@ -104,7 +104,7 @@ class GestureSaveableRestRootTest {
 private fun TestContent(liftNavigator: (Navigator) -> Unit) {
   Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
     val backStack = rememberSaveableBackStack(root = TestScreen.RootAlpha)
-    val navigator = rememberCircuitNavigator(backStack = backStack)
+    val navigator = rememberCircuitNavigator(navStack = backStack)
     SideEffect { liftNavigator(navigator) }
     NavigableCircuitContent(navigator, backStack, modifier = Modifier)
   }

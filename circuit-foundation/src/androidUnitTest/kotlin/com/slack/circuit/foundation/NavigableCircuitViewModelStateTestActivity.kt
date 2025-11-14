@@ -22,7 +22,7 @@ class NavigableCircuitViewModelStateTestActivity : ComponentActivity() {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         val navigator =
           rememberCircuitNavigator(
-            backStack = backStack,
+            navStack = backStack,
             onRootPop = {}, // no-op for tests
           )
         NavigableCircuitContent(navigator = navigator, backStack = backStack)

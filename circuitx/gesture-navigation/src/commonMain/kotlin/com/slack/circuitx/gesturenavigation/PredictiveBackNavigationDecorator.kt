@@ -18,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.NavArgument
+import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlin.math.abs
@@ -41,19 +42,20 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)
     private set
 
-  override fun targetState(args: List<T>): GestureNavTransitionHolder<T> {
+  override fun targetState(args: NavStackList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
 
   @OptIn(ExperimentalComposeUiApi::class)
   @Composable
-  override fun updateTransition(args: List<T>): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: NavStackList<T>): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
     val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
-        if (args.size > 1) {
-          targetState(args.subList(1, args.size))
+        val backwardStack = args.backwardStack()
+        if (backwardStack.size > 1) {
+          targetState(NavStackList(backwardStack.subList(1, args.size)))
         } else null
       }
 
@@ -81,7 +83,7 @@ public abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
       }
     }
 
-    if (args.size > 1) {
+    if (previous != null) {
       BackHandler(
         onBackProgress = { progress, offset ->
           showPrevious = progress != 0f

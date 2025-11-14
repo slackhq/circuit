@@ -41,11 +41,11 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.backstack.NavStack
+import com.slack.circuit.backstack.NavStack.Record
 import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
-import com.slack.circuit.backstack.providedValuesForBackStack
+import com.slack.circuit.backstack.providedValuesForNavStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
@@ -62,6 +62,7 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.collections.mutableSetOf
 
 /**
  * A composable that provides the core navigation and state management for Circuit-based navigation
@@ -85,9 +86,9 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * ```kotlin
  * setContent {
- *   val backStack = rememberSaveableBackStack(root = HomeScreen)
- *   val navigator = rememberCircuitNavigator(backStack)
- *   NavigableCircuitContent(navigator, backStack)
+ *   val navStack = rememberSaveableNavStack(root = HomeScreen)
+ *   val navigator = rememberCircuitNavigator(navStack)
+ *   NavigableCircuitContent(navigator, navStack)
  * }
  * ```
  *
@@ -99,7 +100,7 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * @param navigator The [Navigator] used to handle navigation events. Typically created via
  *   [rememberCircuitNavigator].
- * @param backStack The [BackStack] containing the stack of [Record]s to display. Must have at least
+ * @param navStack The [NavStack] containing the stack of [Record]s to display. Must have at least
  *   one record. Typically created via [rememberSaveableBackStack].
  * @param modifier The [Modifier] to apply to the content.
  * @param circuit The [Circuit] instance providing UI factories and configuration. Defaults to
@@ -122,7 +123,7 @@ import com.slack.circuit.runtime.screen.Screen
 @Composable
 public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,
-  backStack: BackStack<R>,
+  navStack: NavStack<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
   providedValues: Map<out Record, ProvidedValues> = emptyMap(),
@@ -132,7 +133,7 @@ public fun <R : Record> NavigableCircuitContent(
     circuit.onUnavailableContent,
 ) {
   NavigableCircuitContent(
-    navigator = rememberAnsweringResultNavigator(navigator, backStack),
+    navigator = rememberAnsweringResultNavigator(navigator, navStack),
     modifier = modifier,
     circuit = circuit,
     providedValues = providedValues,
@@ -151,15 +152,15 @@ public fun <R : Record> NavigableCircuitContent(
  * shared result handling, or when you need custom control over the result handler lifecycle.
  *
  * For most use cases, prefer the standard [NavigableCircuitContent] overload that takes a
- * [Navigator] and [BackStack], as it automatically creates and manages the result navigator.
+ * [Navigator] and [NavStack], as it automatically creates and manages the result navigator.
  *
  * ## Usage
  *
  * ```kotlin
  * setContent {
- *   val backStack = rememberSaveableBackStack(root = HomeScreen)
- *   val baseNavigator = rememberCircuitNavigator(backStack)
- *   val navigator = rememberAnsweringResultNavigator(baseNavigator, backStack)
+ *   val navStack = rememberSaveableNavStack(root = HomeScreen)
+ *   val baseNavigator = rememberCircuitNavigator(navStack)
+ *   val navigator = rememberAnsweringResultNavigator(baseNavigator, navStack)
  *   NavigableCircuitContent(navigator)
  * }
  * ```
@@ -187,7 +188,7 @@ public fun <R : Record> NavigableCircuitContent(
   unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
     circuit.onUnavailableContent,
 ) {
-  if (navigator.backStack.isEmpty) return
+  if (navigator.navStack.isEmpty) return
   /*
    * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
    * RetainedStateRegistry. If we don't do this, those registries would be stored directly in the
@@ -251,9 +252,9 @@ public fun <R : Record> NavigableCircuitContent(
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
         }
-    val activeContentProviders = buildCircuitContentProviders(backStack = navigator.backStack)
+    val activeContentProviders = buildCircuitContentProviders(navStack = navigator.navStack)
     val circuitProvidedValues =
-      providedValuesForBackStack(navigator.backStack, circuit.backStackLocalProviders)
+      providedValuesForNavStack(navigator.navStack, circuit.backStackLocalProviders)
     navDecoration.DecoratedContent(activeContentProviders, navigator, modifier) { provider ->
       val record = provider.record
 
@@ -266,10 +267,10 @@ public fun <R : Record> NavigableCircuitContent(
         remember(values, circuitProvidedValues) {
           (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
-      val localBackstack = contentProviderState.lastNavigator.backStack
+      val localNavStack = contentProviderState.lastNavigator.navStack
       val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
       CompositionLocalProvider(
-        LocalBackStack provides localBackstack,
+        LocalNavStack provides localNavStack,
         LocalAnsweringResultHandler provides localResultHandler,
         *providedLocals,
       ) {
@@ -288,7 +289,7 @@ public fun <R : Record> NavigableCircuitContent(
  * screens are popped.
  *
  * @param navigator The base [Navigator] to wrap with result handling.
- * @param backStack The [BackStack] used for tracking navigation state.
+ * @param navStack The [NavStack] used for tracking navigation state.
  * @param answeringResultHandler The [AnsweringResultHandler] for managing screen results. Defaults
  *   to a new instance created via [rememberAnsweringResultHandler]. Only provide a custom handler
  *   if you need to share result handling across multiple navigation graphs or require custom result
@@ -301,11 +302,11 @@ public fun <R : Record> NavigableCircuitContent(
 @Composable
 public fun <R : Record> rememberAnsweringResultNavigator(
   navigator: Navigator,
-  backStack: BackStack<R>,
+  navStack: NavStack<R>,
   answeringResultHandler: AnsweringResultHandler = rememberAnsweringResultHandler(),
 ): AnsweringResultNavigator<R> {
-  return remember(navigator, backStack, answeringResultHandler) {
-    AnsweringResultNavigator(navigator, backStack, answeringResultHandler)
+  return remember(navigator, navStack, answeringResultHandler) {
+    AnsweringResultNavigator(navigator, navStack, answeringResultHandler)
   }
 }
 
@@ -313,7 +314,7 @@ public fun <R : Record> rememberAnsweringResultNavigator(
 @ExperimentalCircuitApi
 public class AnsweringResultNavigator<R : Record>(
   internal val originalNavigator: Navigator,
-  internal val backStack: BackStack<R>,
+  internal val navStack: NavStack<R>,
   internal val answeringResultHandler: AnsweringResultHandler,
 ) : Navigator by originalNavigator {
   override fun pop(result: PopResult?): Screen? {
@@ -321,8 +322,8 @@ public class AnsweringResultNavigator<R : Record>(
     return Snapshot.withMutableSnapshot {
       val popped = originalNavigator.pop(result)
       if (result != null) {
-        // Send the pending result to our new top record, but only if it's expecting one
-        backStack.topRecord?.apply {
+        // Send the pending result to our new current record, but only if it's expecting one
+        navStack.currentRecord?.apply {
           if (answeringResultHandler.expectingResult(key)) {
             answeringResultHandler.sendResult(key, result)
           }
@@ -365,14 +366,15 @@ public class RecordContentProvider<R : Record>(
 @ExperimentalCircuitApi
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
-  backStack: BackStack<R>
-): List<RecordContentProvider<R>> {
+  navStack: NavStack<R>
+): NavStackList<RecordContentProvider<R>> {
+  val navStackSnapshot = navStack.snapshot()
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
   val recordKeys by
     remember { mutableStateOf(emptySet<String>()) }
-      .apply { value = backStack.mapTo(mutableSetOf()) { it.key } }
-  val latestBackStack by rememberUpdatedState(backStack)
+      .apply { value = navStackSnapshot.mapTo(mutableSetOf()) { it.key } }
+  val latestBackStack by rememberUpdatedState(navStack)
   DisposableEffect(recordKeys) {
     // Delay cleanup until the next backstack change.
     // - Any record in composition is considered active
@@ -395,20 +397,22 @@ private fun <R : Record> buildCircuitContentProviders(
         .forEach { previousContentProviders.remove(it) }
     }
   }
-  return backStack.map { record ->
-    // Query the previous content providers map, so that we use the same
-    // RecordContentProvider instances across calls.
-    previousContentProviders.getOrPut(record.key) {
-      RecordContentProvider(
-        record = record,
-        content =
-          createRecordContent(
-            onActive = { activeRecordKeys.add(record.key) },
-            onDispose = { activeRecordKeys.remove(record.key) },
-          ),
-      )
+  val entries =
+    navStackSnapshot.map { record ->
+      // Query the previous content providers map, so that we use the same
+      // RecordContentProvider instances across calls.
+      previousContentProviders.getOrPut(record.key) {
+        RecordContentProvider(
+          record = record,
+          content =
+            createRecordContent(
+              onActive = { activeRecordKeys.add(record.key) },
+              onDispose = { activeRecordKeys.remove(record.key) },
+            ),
+        )
+      }
     }
-  }
+  return NavStackList(entries, navStackSnapshot.currentIndex)
 }
 
 @ExperimentalCircuitApi
@@ -448,7 +452,7 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
     with(contentProviderState) {
       val lifecycle =
         remember { MutableRecordLifecycle() }
-          .apply { isActive = lastNavigator.backStack.topRecord == record }
+          .apply { isActive = lastNavigator.navStack.topRecord == record }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
@@ -467,7 +471,7 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
       // Remove saved states for records that are no longer in the back stack
       DisposableEffect(record.registryKey) {
         onDispose {
-          if (!lastNavigator.backStack.containsRecord(record, includeSaved = true)) {
+          if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
             retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)
           }
@@ -570,16 +574,18 @@ public object NavigatorDefaults {
   public class DefaultDecorator<T : NavArgument> :
     AnimatedNavDecorator<T, DefaultAnimatedState<T>> {
 
-    public data class DefaultAnimatedState<T : NavArgument>(val args: List<T>) : AnimatedNavState {
-      override val backStack: List<NavArgument> = args
-    }
+    public data class DefaultAnimatedState<T : NavArgument>(
+      override val navStack: NavStackList<T>
+    ) : AnimatedNavState
 
-    override fun targetState(args: List<T>): DefaultAnimatedState<T> {
+    override fun targetState(args: NavStackList<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }
 
     @Composable
-    public override fun updateTransition(args: List<T>): Transition<DefaultAnimatedState<T>> {
+    public override fun updateTransition(
+      args: NavStackList<T>
+    ): Transition<DefaultAnimatedState<T>> {
       return updateTransition(targetState(args))
     }
 
@@ -606,7 +612,7 @@ public object NavigatorDefaults {
       targetState: DefaultAnimatedState<T>,
       innerContent: @Composable (T) -> Unit,
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navStack.current)
     }
   }
 
@@ -614,18 +620,18 @@ public object NavigatorDefaults {
   public object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
-      args: List<T>,
+      args: NavStackList<T>,
       navigator: Navigator,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {
-      Box(modifier = modifier) { content(args.first()) }
+      Box(modifier = modifier) { content(args.current) }
     }
   }
 }
 
 /**
- * Delicate API to access the [BackStack] from within a [CircuitContent] or
+ * Delicate API to access the [NavStack] from within a [CircuitContent] or
  * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
  *
  * This is generally considered an internal API to Circuit, but can be useful for interop cases and
@@ -633,7 +639,7 @@ public object NavigatorDefaults {
  * [DelicateCircuitFoundationApi].
  */
 @DelicateCircuitFoundationApi
-public val LocalBackStack: ProvidableCompositionLocal<BackStack<out Record>?> = compositionLocalOf {
+public val LocalNavStack: ProvidableCompositionLocal<NavStack<out Record>?> = compositionLocalOf {
   null
 }
 

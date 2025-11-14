@@ -13,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
-import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.BackStack.Record
+import com.slack.circuit.backstack.NavStack
+import com.slack.circuit.backstack.NavStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.foundation.internal.mapToImmutableList
@@ -25,27 +25,27 @@ import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
- * A new [Navigator] will be created if the [backStack] instance changes.
+ * A new [Navigator] will be created if the [navStack] instance changes.
  *
- * @param backStack The backing [BackStack] to navigate.
+ * @param navStack The backing [NavStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @see NavigableCircuitContent
  */
 @Composable
 public fun rememberCircuitNavigator(
-  backStack: BackStack<out Record>,
+  navStack: NavStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
 ): Navigator {
   val latestOnRootPop by rememberUpdatedState(onRootPop)
-  return remember(backStack) { Navigator(backStack) { popResult -> latestOnRootPop(popResult) } }
+  return remember(navStack) { Navigator(navStack) { popResult -> latestOnRootPop(popResult) } }
 }
 
 /**
  * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent] while also
  * handling back events with a [BackHandler].
  *
- * @param backStack The backing [BackStack] to navigate.
+ * @param navStack The backing [NavStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
@@ -55,11 +55,11 @@ public fun rememberCircuitNavigator(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 public fun rememberCircuitNavigator(
-  backStack: BackStack<out Record>,
+  navStack: NavStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
   enableBackHandler: Boolean = true,
 ): Navigator {
-  val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
+  val navigator = rememberCircuitNavigator(navStack = navStack, onRootPop = onRootPop)
   // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
   // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
   val hasScreenChanged = remember {
@@ -75,12 +75,12 @@ public fun rememberCircuitNavigator(
   var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
   var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
   BackHandler(
-    enabled = enableBackHandler && enableRootBackHandler && backStack.size > 1,
+    enabled = enableBackHandler && enableRootBackHandler && navStack.size > 1,
     onBack = {
       // We need to unload this BackHandler from the composition before the root pop is triggered so
       // any outer back handler will get called. So delay calling pop until after the next
       // composition.
-      if (backStack.size > 1) {
+      if (navStack.size > 1) {
         navigator.pop()
       } else {
         hasPendingRootPop = true
@@ -106,51 +106,57 @@ public fun rememberCircuitNavigator(
  * @see NavigableCircuitContent
  */
 public fun Navigator(
-  backStack: BackStack<out Record>,
+  backStack: NavStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
 ): Navigator = NavigatorImpl(backStack, onRootPop)
 
 internal class NavigatorImpl(
-  private val backStack: BackStack<out Record>,
+  private val navStack: NavStack<out Record>,
   private val onRootPop: (result: PopResult?) -> Unit,
 ) : Navigator {
 
   init {
-    check(!backStack.isEmpty) { "Backstack size must not be empty." }
+    check(!navStack.isEmpty) { "Backstack size must not be empty." }
   }
 
   override fun goTo(screen: Screen): Boolean {
-    return backStack.push(screen)
+    return navStack.add(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
-    if (backStack.isAtRoot) {
+    if (navStack.isAtRoot) {
       onRootPop(result)
       return null
     }
-    return backStack.pop()?.screen
+    return navStack.remove()?.screen
   }
 
-  override fun peek(): Screen? = backStack.firstOrNull()?.screen
+  override fun peek(): Screen? = navStack.currentRecord?.screen
 
-  override fun peekBackStack(): List<Screen> = backStack.mapToImmutableList { it.screen }
+  override fun peekBackStack(): List<Screen> =
+    navStack.snapshot().backwardStack().mapToImmutableList { it.screen }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
     val currentStack =
       Snapshot.withMutableSnapshot {
-        if (options.save) backStack.saveState()
+        if (options.save) navStack.saveState()
         // Pop everything off the back stack
-        val popped = backStack.popUntil { false }.mapToImmutableList { it.screen }
+        val popped = buildList {
+          while (navStack.size > 0) {
+            val screen = navStack.remove()?.screen ?: break
+            add(screen)
+          }
+        }
 
         // If we're not restoring state, or the restore didn't work, we need to push the new root
         // onto the stack
-        if (!options.restore || !backStack.restoreState(newRoot)) {
-          backStack.push(newRoot)
+        if (!options.restore || !navStack.restoreState(newRoot)) {
+          navStack.add(newRoot)
         }
 
         // Clear the state if requested, do this last to allow restoring the state once.
-        if (options.clear) backStack.removeState(newRoot)
+        if (options.clear) navStack.removeState(newRoot)
         popped
       }
 
@@ -163,19 +169,19 @@ internal class NavigatorImpl(
 
     other as NavigatorImpl
 
-    if (backStack != other.backStack) return false
+    if (navStack != other.navStack) return false
     if (onRootPop != other.onRootPop) return false
 
     return true
   }
 
   override fun hashCode(): Int {
-    var result = backStack.hashCode()
+    var result = navStack.hashCode()
     result = 31 * result + onRootPop.hashCode()
     return result
   }
 
   override fun toString(): String {
-    return "NavigatorImpl(backStack=$backStack, onRootPop=$onRootPop)"
+    return "NavigatorImpl(backStack=$navStack, onRootPop=$onRootPop)"
   }
 }

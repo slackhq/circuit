@@ -55,6 +55,7 @@ import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
+import com.slack.circuitx.navigation.intercepting.NavigationContext
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
@@ -113,6 +114,7 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
   override fun resetRoot(
     newRoot: Screen,
     options: Navigator.StateOptions,
+    navigationContext: NavigationContext,
   ): InterceptedResetRootResult {
     return when (newRoot) {
       is TabScreen,
@@ -126,7 +128,7 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
     }
   }
 
-  override fun goTo(screen: Screen): InterceptedGoToResult {
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedGoToResult {
     return when (screen) {
       is TabScreen,
       is DetailScreen -> {

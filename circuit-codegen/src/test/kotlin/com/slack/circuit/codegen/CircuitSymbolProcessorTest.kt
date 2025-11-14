@@ -664,7 +664,7 @@ class CircuitSymbolProcessorTest {
           """
             .trimIndent(),
         ),
-      kspOptions = mapOf(CircuitOptions.USE_JAVAX to "true"),
+      kspOptions = mapOf(CircuitOptions.USE_JAVAX_ONLY to "true"),
       generatedFilePath = "test/FavoritesFactory.kt",
       expectedContent =
         """

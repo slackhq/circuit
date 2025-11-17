@@ -51,8 +51,6 @@ androidx.documentfile:documentfile
 androidx.dynamicanimation:dynamicanimation
 androidx.emoji2:emoji2
 androidx.graphics:graphics-path
-androidx.graphics:graphics-shapes-android
-androidx.graphics:graphics-shapes
 androidx.interpolator:interpolator
 androidx.legacy:legacy-support-core-utils
 androidx.lifecycle:lifecycle-common-java8

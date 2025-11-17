@@ -6,8 +6,6 @@ androidx.collection:collection
 androidx.compose.runtime:runtime-annotation-jvm
 androidx.compose.runtime:runtime-annotation
 androidx.compose.runtime:runtime-desktop
-androidx.compose.runtime:runtime-retain-desktop
-androidx.compose.runtime:runtime-retain
 androidx.compose.runtime:runtime-saveable-desktop
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
@@ -21,8 +19,6 @@ androidx.lifecycle:lifecycle-viewmodel-desktop
 androidx.lifecycle:lifecycle-viewmodel-savedstate-desktop
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
-androidx.navigationevent:navigationevent-desktop
-androidx.navigationevent:navigationevent
 androidx.savedstate:savedstate-compose-desktop
 androidx.savedstate:savedstate-compose
 androidx.savedstate:savedstate-desktop
@@ -70,7 +66,6 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core
 org.jetbrains.kotlinx:kotlinx-serialization-bom
 org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
 org.jetbrains.kotlinx:kotlinx-serialization-core
-org.jetbrains.runtime:jbr-api
 org.jetbrains.skiko:skiko-awt
 org.jetbrains.skiko:skiko
 org.jetbrains:annotations

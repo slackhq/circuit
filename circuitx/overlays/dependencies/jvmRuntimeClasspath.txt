@@ -11,8 +11,6 @@ androidx.compose.runtime:runtime-retain
 androidx.compose.runtime:runtime-saveable-desktop
 androidx.compose.runtime:runtime-saveable
 androidx.compose.runtime:runtime
-androidx.graphics:graphics-shapes-desktop
-androidx.graphics:graphics-shapes
 androidx.lifecycle:lifecycle-common-jvm
 androidx.lifecycle:lifecycle-common
 androidx.lifecycle:lifecycle-runtime-compose-desktop

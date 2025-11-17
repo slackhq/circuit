@@ -27,6 +27,7 @@ import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
@@ -34,15 +35,6 @@ import org.junit.rules.RuleChain
 
 internal const val TAG_PRODUCED_STATE = "produced_state"
 
-/**
- * Test class for produceAndCollectAsRetainedState function.
- *
- * These tests verify that:
- * - Flow values are collected and retained across configuration changes
- * - Changing inputs causes the producer to be rerun and state to reset
- * - Changing the producer instance itself causes the producer to be rerun and state to reset
- * - The Flow is properly scoped and doesn't cause memory leaks
- */
 class ProduceAndCollectAsRetainedStateTest {
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
@@ -85,9 +77,12 @@ class ProduceAndCollectAsRetainedStateTest {
   fun resetsStateWhenInputsChange() {
     // Track how many times the producer is called
     var producerCallCount = 0
-
-    // Use a MutableStateFlow to track the input so we can change it reactively
     val inputFlow = MutableStateFlow("input1")
+
+    val stableProducer: suspend () -> Flow<String> = {
+      producerCallCount++
+      flowOf("value_${producerCallCount}")
+    }
 
     val content =
       @Composable {
@@ -96,10 +91,7 @@ class ProduceAndCollectAsRetainedStateTest {
           produceAndCollectAsRetainedState(
             currentInput,
             initial = "initial",
-            producer = {
-              producerCallCount++
-              flow { emit("produced_$currentInput") }
-            },
+            producer = stableProducer,
           )
         Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
       }
@@ -108,16 +100,14 @@ class ProduceAndCollectAsRetainedStateTest {
 
     // Wait for the flow to emit and verify
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("produced_input1")
-    assertThat(producerCallCount).isEqualTo(1)
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("value_1")
 
     // Change the input
     inputFlow.value = "input2"
 
     // Verify the producer was called again and state was reset
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("produced_input2")
-    assertThat(producerCallCount).isEqualTo(2)
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("value_2")
   }
 
   @Test

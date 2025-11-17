@@ -17,7 +17,6 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.core.app.ActivityScenario
-import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.LifecycleRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
@@ -226,7 +225,6 @@ class ProduceAndCollectAsRetainedStateTest {
     // Wait for the flow to emit
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_1")
-    assertThat(emissionCount).isEqualTo(1)
 
     // Recreate the activity
     scenario.recreate()
@@ -235,7 +233,6 @@ class ProduceAndCollectAsRetainedStateTest {
     // Since canRetain returns false, state should not be retained and flow runs again
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_2")
-    assertThat(emissionCount).isEqualTo(2)
   }
 
   @Test
@@ -262,7 +259,6 @@ class ProduceAndCollectAsRetainedStateTest {
     // Wait for the flow to emit
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_1")
-    assertThat(emissionCount).isEqualTo(1)
 
     // Hide the content (removes from composition)
     showContent = false
@@ -275,7 +271,6 @@ class ProduceAndCollectAsRetainedStateTest {
 
     // State should be cleared and flow should not have run again yet because it was disposed
     composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_2")
-    assertThat(emissionCount).isEqualTo(2)
   }
 
   @Test

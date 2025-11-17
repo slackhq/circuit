@@ -48,7 +48,8 @@ public fun <T : R, R> Flow<T>.collectAsRetainedState(
  *
  * This function safely produces and collects a Flow by using a single retained state with unified
  * inputs. The Flow is produced within the retained state's producer block, ensuring proper scoping
- * and preventing memory leaks from retaining Flow instances across configuration changes.
+ * and preventing memory leaks by re-initializing retained Flow instances across configuration
+ * changes.
  *
  * @param inputs A set of inputs such that, when any of them have changed, will cause the state to
  *   reset and [producer] to be rerun

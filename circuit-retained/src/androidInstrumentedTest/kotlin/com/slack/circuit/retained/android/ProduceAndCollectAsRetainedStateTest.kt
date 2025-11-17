@@ -26,6 +26,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
@@ -112,8 +113,7 @@ class ProduceAndCollectAsRetainedStateTest {
 
   @Test
   fun usesInitialValue() {
-    // Test that the initial value is used correctly
-    val testFlow: suspend () -> Flow<String> = { flow { emit("final_value") } }
+    val testFlow: suspend () -> Flow<String> = { emptyFlow() }
 
     val content =
       @Composable {
@@ -123,10 +123,8 @@ class ProduceAndCollectAsRetainedStateTest {
       }
 
     setActivityContent(content)
-
-    // Wait for the flow to emit and verify the final value is displayed
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("final_value")
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("initial_value")
   }
 
   @Test

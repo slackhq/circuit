@@ -63,7 +63,7 @@ public fun <T : R, R> produceAndCollectAsRetainedState(
   context: CoroutineContext = EmptyCoroutineContext,
   producer: suspend () -> Flow<T>,
 ): State<R> =
-  produceRetainedState(initial, *inputs) {
+  produceRetainedState(initial, producer, *inputs) {
     val flow = producer()
     if (context == EmptyCoroutineContext) {
       flow.collect { value = it }

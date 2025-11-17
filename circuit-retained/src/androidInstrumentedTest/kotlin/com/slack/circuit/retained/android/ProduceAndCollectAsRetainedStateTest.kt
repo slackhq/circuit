@@ -40,6 +40,7 @@ internal const val TAG_PRODUCED_STATE = "produced_state"
  * These tests verify that:
  * - Flow values are collected and retained across configuration changes
  * - Changing inputs causes the producer to be rerun and state to reset
+ * - Changing the producer instance itself causes the producer to be rerun and state to reset
  * - The Flow is properly scoped and doesn't cause memory leaks
  */
 class ProduceAndCollectAsRetainedStateTest {
@@ -293,6 +294,38 @@ class ProduceAndCollectAsRetainedStateTest {
     // State should be cleared and flow should not have run again yet because it was disposed
     composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_2")
     assertThat(emissionCount).isEqualTo(2)
+  }
+
+  @Test
+  fun resetsStateWhenProducerInstanceChanges() {
+    // Test that changing the producer instance itself causes state to reset
+    // This uses a producer class instead of a lambda to bypass lambda memoization
+    class TestFlowProducer(private val value: String) : suspend () -> Flow<String> {
+      override suspend fun invoke(): Flow<String> = flow { emit(value) }
+    }
+
+    // Track the current producer instance
+    var currentProducer by mutableStateOf(TestFlowProducer("producer1"))
+
+    val content =
+      @Composable {
+        val state by
+          produceAndCollectAsRetainedState(initial = "initial", producer = currentProducer)
+        Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
+      }
+
+    setActivityContent(content)
+
+    // Wait for the flow to emit and verify initial producer value
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("producer1")
+
+    // Change to a new producer instance
+    currentProducer = TestFlowProducer("producer2")
+
+    // Verify the new producer was used and state was reset
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("producer2")
   }
 
   private fun setActivityContent(content: @Composable () -> Unit) {

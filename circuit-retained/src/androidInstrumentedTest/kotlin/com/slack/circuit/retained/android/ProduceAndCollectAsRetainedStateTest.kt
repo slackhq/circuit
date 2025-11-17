@@ -181,12 +181,12 @@ class ProduceAndCollectAsRetainedStateTest {
 
   @Test
   fun behavesLikeRegularCollectAsStateWithoutRegistry() {
-    // Test that without a registry, state is not retained across activity recreation
-    val testFlow: suspend () -> Flow<String> = { flow { emit("test_value") } }
+    var emissionCount = 0
+    val testFlow = flow { emit("emission_${++emissionCount}") }
 
     val content =
       @Composable {
-        val state by produceAndCollectAsRetainedState(initial = "initial", producer = testFlow)
+        val state by produceAndCollectAsRetainedState(initial = "initial", producer = { testFlow })
         Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
       }
 
@@ -194,16 +194,14 @@ class ProduceAndCollectAsRetainedStateTest {
     scenario.onActivity { activity -> activity.setContent(content = content) }
 
     // Wait for the flow to emit
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("test_value")
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_1")
 
     // Recreate the activity
     scenario.recreate()
     scenario.onActivity { activity -> activity.setContent(content = content) }
 
-    // Without a registry, state should reset to initial value then re-emit
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("test_value")
+    // Without a registry, state should collect the next value emitted by the flow
+    composeTestRule.onNodeWithTag(TAG_PRODUCED_STATE).assertTextEquals("emission_2")
   }
 
   @Test

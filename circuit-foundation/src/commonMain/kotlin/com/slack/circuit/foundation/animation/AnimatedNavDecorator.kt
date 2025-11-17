@@ -123,10 +123,6 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 /** A state created for the [Transition] in [AnimatedNavDecorator.Decoration]. */
 @Stable
 public interface AnimatedNavState {
-  /** The depth of the back stack at the time this state was created. */
-  public val backStackDepth: Int
-    get() = navStack.size - navStack.currentIndex
-
   /** Snapshot of the back stack at the time this state was created. */
   public val navStack: NavStackList<out NavArgument>
 }

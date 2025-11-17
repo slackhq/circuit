@@ -100,7 +100,7 @@ class BackNavigationTest {
           navigator = navigator,
           backStack = backStack,
           decoratorFactory =
-            remember { IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+            remember { IOSPredictiveNavDecorator.Factory(onBackInvoked = navigator::pop) },
         )
       }
     }

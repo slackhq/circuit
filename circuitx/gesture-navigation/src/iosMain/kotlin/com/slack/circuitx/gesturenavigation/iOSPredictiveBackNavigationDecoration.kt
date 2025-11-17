@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 private val End: (Int) -> Int = { it }
 
 /**
- * A factory that creates an [IOSPredictiveBackNavDecorator] for iOS predictive back navigation.
+ * A factory that creates an [IOSPredictiveNavDecorator] for iOS predictive back navigation.
  *
  * @param fallback The [AnimatedNavDecorator.Factory] to use when predictive back is not supported.
  * @return An [AnimatedNavDecorator.Factory] that provides iOS predictive back navigation.
@@ -50,11 +50,11 @@ private val End: (Int) -> Int = { it }
 public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
-  return IOSPredictiveBackNavDecorator.Factory()
+  return IOSPredictiveNavDecorator.Factory()
 }
 
 /**
- * iOS implementation of [PredictiveBackNavigationDecorator] that relies on
+ * iOS implementation of [PredictiveNavigationDecorator] that relies on
  * `androidx.compose.ui.backhandler.UIKitBackGestureDispatcher` to perform the predictive back
  * gesture.
  *
@@ -62,10 +62,10 @@ public actual fun GestureNavigationDecorationFactory(
  *   the content starts from. Defaults to 0.25f (25%).
  * @param onBackInvoked A callback to be invoked when a back gesture is performed.
  */
-internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
+internal class IOSPredictiveNavDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
   onBackInvoked: () -> Unit,
-) : PredictiveBackNavigationDecorator<T>(onBackInvoked) {
+) : PredictiveNavigationDecorator<T>(onBackInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -83,7 +83,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
       AnimatedNavEvent.Pop -> {
         slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           .togetherWith(
-            if (showPrevious) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
+            if (showBackward) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
           )
           .apply { targetContentZIndex = --zIndexDepth }
       }
@@ -106,7 +106,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
           targetState = targetState,
           transition = transition,
           isSeeking = { isSeeking },
-          showPrevious = { showPrevious },
+          showPrevious = { showBackward },
           swipeOffset = { swipeOffset },
         )
     ) {
@@ -117,7 +117,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
   internal class Factory(private val enterOffsetFraction: Float = 0.25f) :
     AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
-      return IOSPredictiveBackNavDecorator(
+      return IOSPredictiveNavDecorator(
         enterOffsetFraction = enterOffsetFraction,
         onBackInvoked = { navigator.pop() },
       )

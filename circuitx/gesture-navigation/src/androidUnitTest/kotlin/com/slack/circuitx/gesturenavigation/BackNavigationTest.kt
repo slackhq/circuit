@@ -69,7 +69,7 @@ class BackNavigationTest(private val androidNavigator: Boolean) {
             navigator = navigator,
             backStack = backStack,
             decoratorFactory =
-              remember { AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+              remember { AndroidPredictiveNavDecorator.Factory(onBackInvoked = navigator::pop) },
           )
         }
       }

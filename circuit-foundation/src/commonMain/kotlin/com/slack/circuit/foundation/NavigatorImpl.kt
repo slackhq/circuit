@@ -20,6 +20,7 @@ import com.slack.circuit.backstack.NavStack.Record
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.backstack.isEmpty
 import com.slack.circuit.foundation.internal.mapToImmutableList
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
@@ -103,15 +104,15 @@ public fun rememberCircuitNavigator(
 /**
  * Creates a new [Navigator].
  *
- * @param backStack The backing [BackStack] to navigate.
+ * @param navStack The backing [NavStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
  * @see NavigableCircuitContent
  */
 public fun Navigator(
-  backStack: NavStack<out Record>,
+  navStack: NavStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
-): Navigator = NavigatorImpl(backStack, onRootPop)
+): Navigator = NavigatorImpl(navStack, onRootPop)
 
 internal class NavigatorImpl(
   private val navStack: NavStack<out Record>,
@@ -123,15 +124,15 @@ internal class NavigatorImpl(
   }
 
   override fun goTo(screen: Screen): Boolean {
-    return navStack.add(screen)
+    return navStack.push(screen)
   }
 
   override fun forward(): Boolean {
-    return navStack.move(NavStack.Direction.Forward)
+    return navStack.forward()
   }
 
   override fun backward(): Boolean {
-    return navStack.move(NavStack.Direction.Backward)
+    return navStack.backward()
   }
 
   override fun pop(result: PopResult?): Screen? {
@@ -139,13 +140,19 @@ internal class NavigatorImpl(
       onRootPop(result)
       return null
     }
-    return navStack.remove()?.screen
+    return navStack.pop()?.screen
   }
 
   override fun peek(): Screen? = navStack.currentRecord?.screen
 
   override fun peekBackStack(): List<Screen> =
-    navStack.snapshot().backwardStack().mapToImmutableList { it.screen }
+    navStack
+      .snapshot()
+      .run { entries.subList(currentIndex, entries.size) }
+      .mapToImmutableList { it.screen }
+
+  override fun peekNavStack(): NavStackList<Screen> =
+    navStack.snapshot().run { NavStackList(entries.mapToImmutableList { it.screen }, currentIndex) }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
@@ -155,7 +162,7 @@ internal class NavigatorImpl(
         // Pop everything off the back stack
         val popped = buildList {
           while (navStack.size > 0) {
-            val screen = navStack.remove()?.screen ?: break
+            val screen = navStack.pop()?.screen ?: break
             add(screen)
           }
         }
@@ -163,7 +170,7 @@ internal class NavigatorImpl(
         // If we're not restoring state, or the restore didn't work, we need to push the new root
         // onto the stack
         if (!options.restore || !navStack.restoreState(newRoot)) {
-          navStack.add(newRoot)
+          navStack.push(newRoot)
         }
 
         // Clear the state if requested, do this last to allow restoring the state once.

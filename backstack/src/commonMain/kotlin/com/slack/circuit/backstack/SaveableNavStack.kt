@@ -14,7 +14,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.backstack.SaveableNavStack.Record
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.collections.set
-import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -43,7 +42,7 @@ public fun rememberSaveableNavStack(initialScreens: List<Screen>): SaveableNavSt
   return rememberSaveable(initialScreens, saver = SaveableNavStack.Saver) {
     SaveableNavStack().apply {
       for (screen in initialScreens) {
-        add(screen)
+        push(screen)
       }
     }
   }
@@ -148,7 +147,7 @@ internal constructor(
   public constructor(root: Screen) : this(Record(root))
 
   public constructor(root: Record) : this() {
-    add(root)
+    push(root)
     // Set current to the new top
     currentIndex = 0
   }
@@ -167,15 +166,15 @@ internal constructor(
   override val rootRecord: Record?
     get() = entryList.lastOrNull()
 
-  override fun add(screen: Screen): Boolean {
-    return add(Record(screen))
+  override fun push(screen: Screen): Boolean {
+    return push(Record(screen))
   }
 
-  override fun add(record: Record): Boolean {
-    val topRecord = Snapshot.withoutReadObservation { topRecord }
+  override fun push(record: Record): Boolean {
+    val currentRecord = Snapshot.withoutReadObservation { currentRecord }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
-    return if (topRecord?.screen != record.screen || topRecord.args != record.args) {
+    return if (currentRecord?.screen != record.screen || currentRecord.args != record.args) {
       // When adding a new record, truncate any entries above the current position (forward history)
       if (currentIndex > 0) {
         // Remove all entries before currentIndex
@@ -189,7 +188,7 @@ internal constructor(
     } else false
   }
 
-  override fun remove(): Record? {
+  override fun pop(): Record? {
     if (currentIndex < 0 || entryList.isEmpty()) return null
     return Snapshot.withMutableSnapshot {
       // When removing the current record, truncate any entries above the current position (forward
@@ -205,23 +204,20 @@ internal constructor(
     }
   }
 
-  override fun move(direction: NavStack.Direction): Boolean {
-    return when (direction) {
-      NavStack.Direction.Forward -> {
-        // Move forward (toward top, decrease index)
-        if (currentIndex > 0) {
-          currentIndex--
-          true
-        } else false
-      }
-      NavStack.Direction.Backward -> {
-        // Move backward (toward root, increase index)
-        if (currentIndex < entryList.lastIndex) {
-          currentIndex++
-          true
-        } else false
-      }
-    }
+  override fun forward(): Boolean {
+    // Move forward (toward top, decrease index)
+    return if (currentIndex > 0) {
+      currentIndex--
+      true
+    } else false
+  }
+
+  override fun backward(): Boolean {
+    // Move backward (toward root, increase index)
+    return if (currentIndex < entryList.lastIndex) {
+      currentIndex++
+      true
+    } else false
   }
 
   override fun snapshot(): NavStack.Snapshot<Record> {
@@ -273,17 +269,33 @@ internal constructor(
   override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
     if (depth < 0) return false
     // Check in the current entry list
-    for (i in 0 until min(depth, entryList.size)) {
-      if (entryList[i].key == key) return true
+    if (isRecordReachable(key, depth, currentIndex, entryList)) {
+      return true
     }
     // If includeSaved, check saved stack states too
     if (includeSaved && stateStore.isNotEmpty()) {
-      val storedSnapshots = stateStore.values
-      for ((i, snapshot) in storedSnapshots.withIndex()) {
-        if (i >= depth) break
-        // snapshot.entries is immutable, so safely get the record.
-        if (snapshot.entries.getOrNull(i)?.key == key) return true
+      for (snapshot in stateStore.values) {
+        if (isRecordReachable(key, depth, snapshot.currentIndex, snapshot.entries)) {
+          return true
+        }
       }
+    }
+    return true
+  }
+
+  private fun isRecordReachable(
+    key: String,
+    depth: Int,
+    index: Int,
+    records: List<Record>,
+  ): Boolean {
+    val min = maxOf(0, index - depth)
+    for (i in min until index) {
+      if (records[i].key == key) return true
+    }
+    val max = minOf(index + depth, records.size)
+    for (i in index until max) {
+      if (records[i].key == key) return true
     }
     return false
   }

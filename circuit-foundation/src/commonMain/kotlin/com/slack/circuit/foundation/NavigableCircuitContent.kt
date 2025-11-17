@@ -597,8 +597,9 @@ public object NavigatorDefaults {
       // the transitionSpec recomposing.
       // The states are available as `targetState` and `initialState`.
       return when (animatedNavEvent) {
-        AnimatedNavEvent.Forward -> forward
+        AnimatedNavEvent.Forward,
         AnimatedNavEvent.GoTo -> forward
+        AnimatedNavEvent.Backward,
         AnimatedNavEvent.Pop -> backward
         AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
       }.using(

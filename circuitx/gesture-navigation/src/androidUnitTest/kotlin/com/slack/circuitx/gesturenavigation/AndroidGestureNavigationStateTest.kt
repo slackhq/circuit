@@ -38,8 +38,8 @@ class AndroidGestureNavigationStateTest(
     composeTestRule.activityRule.scenario.performGestureNavigationBackSwipe()
   }
 
-  private fun decoratorFactory(navigator: Navigator): AndroidPredictiveBackNavDecorator.Factory {
-    return AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
+  private fun decoratorFactory(navigator: Navigator): AndroidPredictiveNavDecorator.Factory {
+    return AndroidPredictiveNavDecorator.Factory(onBackInvoked = navigator::pop)
   }
 
   @Test

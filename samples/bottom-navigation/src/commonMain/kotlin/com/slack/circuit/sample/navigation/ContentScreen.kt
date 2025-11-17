@@ -37,7 +37,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.backstack.rememberSaveableNavStack
-import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.onNavEvent
@@ -53,7 +52,6 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
 import com.slack.circuitx.navigation.intercepting.NavigationContext
@@ -171,23 +169,12 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
       )
     },
   ) { innerPadding ->
-    val circuit = requireNotNull(LocalCircuit.current) { "Need a circuit in a circuit" }
     NavigableCircuitContent(
       navigator = interceptingNavigator,
       navStack = navStack,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
-      decoratorFactory = GestureNavigationDecorationFactory(),
       //      decoration =
       //        remember(circuit.animatedScreenTransforms, circuit.animatedNavDecoratorFactory) {
-      //          SlideOverNavDecoration(
-      //            screenTransforms = circuit.animatedScreenTransforms,
-      //            decoratorFactory = circuit.animatedNavDecoratorFactory,
-      //            slideOverNavState = slideOverNavigator,
-      //            showInDetailPane = { it.screen is DetailScreen },
-      //            backgroundColor = { MaterialTheme.colorScheme.background },
-      //            scrimColor = { MaterialTheme.colorScheme.scrim },
-      //          )
-
       //          AdaptiveListDetailNavDecoration(
       //            screenTransforms = circuit.animatedScreenTransforms,
       //            normalDecoratorFactory = circuit.animatedNavDecoratorFactory,

@@ -28,10 +28,10 @@ class SaveableNavStackTest {
   }
 
   @Test
-  fun test_add_records() {
+  fun test_push_records() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    assertTrue(navStack.add(TestScreen.ScreenA))
-    assertTrue(navStack.add(TestScreen.ScreenB))
+    assertTrue(navStack.push(TestScreen.ScreenA))
+    assertTrue(navStack.push(TestScreen.ScreenB))
 
     assertEquals(3, navStack.size)
     assertEquals(TestScreen.ScreenB, navStack.topRecord?.screen)
@@ -44,9 +44,9 @@ class SaveableNavStackTest {
   @Test
   fun test_move_backward_and_forward() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     // [C, B, A, RootAlpha] - current at C (index 0)
     assertEquals(TestScreen.ScreenC, navStack.currentRecord?.screen)
@@ -95,11 +95,11 @@ class SaveableNavStackTest {
   }
 
   @Test
-  fun test_add_truncates_forward_history() {
+  fun test_push_truncates_forward_history() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     // [C, B, A, RootAlpha] - current at C
     assertEquals(4, navStack.size)
@@ -109,7 +109,7 @@ class SaveableNavStackTest {
     assertEquals(TestScreen.ScreenB, navStack.currentRecord?.screen)
 
     // Add a new screen - should truncate C
-    navStack.add(TestScreen.RootBeta)
+    navStack.push(TestScreen.RootBeta)
 
     // [RootBeta, B, A, RootAlpha] - current at Beta
     assertEquals(4, navStack.size)
@@ -126,11 +126,11 @@ class SaveableNavStackTest {
   }
 
   @Test
-  fun test_remove() {
+  fun test_pop() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     // Move back to B
     navStack.move(NavStack.Direction.Backward)
@@ -138,7 +138,7 @@ class SaveableNavStackTest {
     assertEquals(TestScreen.ScreenA, navStack.currentRecord?.screen)
 
     // Remove (removes A, current stays at same index pointing to Root)
-    val removed = navStack.remove()
+    val removed = navStack.pop()
     assertEquals(TestScreen.ScreenA, removed?.screen)
     assertEquals(TestScreen.RootAlpha, navStack.currentRecord?.screen)
     assertEquals(1, navStack.size)
@@ -147,8 +147,8 @@ class SaveableNavStackTest {
   @Test
   fun test_save_and_restore_state() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
 
     // Move back to A
     navStack.move(NavStack.Direction.Backward)
@@ -168,18 +168,18 @@ class SaveableNavStackTest {
 
     // Clear the nav stack
     while (navStack.size > 0) {
-      navStack.remove()
+      navStack.pop()
     }
     assertEquals(0, navStack.size)
 
     // Add a different root
-    navStack.add(TestScreen.RootBeta)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.RootBeta)
+    navStack.push(TestScreen.ScreenC)
     assertEquals(TestScreen.ScreenC, navStack.currentRecord?.screen)
 
     // Clear again and restore the saved state
     while (navStack.size > 0) {
-      navStack.remove()
+      navStack.pop()
     }
     assertTrue(navStack.restoreState(TestScreen.RootAlpha))
 
@@ -194,8 +194,8 @@ class SaveableNavStackTest {
   @Test
   fun test_saveable_save_and_restore() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
 
     // Move back to A
     navStack.move(NavStack.Direction.Backward)
@@ -215,8 +215,8 @@ class SaveableNavStackTest {
   @Test
   fun test_saveable_save_and_restore_with_saved_state() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
 
     // Move back and save state
     navStack.move(NavStack.Direction.Backward)
@@ -224,10 +224,10 @@ class SaveableNavStackTest {
 
     // Add different screens
     while (navStack.size > 0) {
-      navStack.remove()
+      navStack.pop()
     }
-    navStack.add(TestScreen.RootBeta)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.RootBeta)
+    navStack.push(TestScreen.ScreenC)
 
     val saved = save(navStack)
     assertNotNull(saved)
@@ -250,17 +250,17 @@ class SaveableNavStackTest {
   @Test
   fun test_guard_pushing_same_top_record() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    assertTrue(navStack.add(TestScreen.ScreenA))
-    assertTrue(navStack.add(TestScreen.ScreenB))
-    assertFalse(navStack.add(TestScreen.ScreenB))
+    assertTrue(navStack.push(TestScreen.ScreenA))
+    assertTrue(navStack.push(TestScreen.ScreenB))
+    assertFalse(navStack.push(TestScreen.ScreenB))
   }
 
   @Test
   fun test_iteration() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     val screens = navStack.map { it.screen }
     assertEquals(
@@ -273,15 +273,15 @@ class SaveableNavStackTest {
   fun test_contains_record() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
     val recordA = SaveableNavStack.Record(TestScreen.ScreenA)
-    navStack.add(recordA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(recordA)
+    navStack.push(TestScreen.ScreenB)
 
     assertTrue(navStack.containsRecord(recordA, includeSaved = false))
 
     // Save state and clear
     navStack.saveState()
     while (navStack.size > 0) {
-      navStack.remove()
+      navStack.pop()
     }
 
     assertFalse(navStack.containsRecord(recordA, includeSaved = false))
@@ -292,9 +292,9 @@ class SaveableNavStackTest {
   fun test_is_record_reachable() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
     val recordA = SaveableNavStack.Record(TestScreen.ScreenA)
-    navStack.add(recordA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(recordA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     // Stack is [C, B, A, Root]
     assertTrue(navStack.isRecordReachable(recordA.key, depth = 10, includeSaved = false))
@@ -304,9 +304,9 @@ class SaveableNavStackTest {
   @Test
   fun test_snapshot_captures_current_state() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     // Move back to B
     navStack.move(NavStack.Direction.Backward)
@@ -327,8 +327,8 @@ class SaveableNavStackTest {
   @Test
   fun test_snapshot_is_immutable() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
 
     // Create snapshot
     val snapshot = navStack.snapshot()
@@ -336,7 +336,7 @@ class SaveableNavStackTest {
     val originalIndex = snapshot.currentIndex
 
     // Modify the nav stack
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenC)
     navStack.move(NavStack.Direction.Backward)
 
     // Verify snapshot hasn't changed
@@ -353,7 +353,7 @@ class SaveableNavStackTest {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
 
     // Remove everything
-    navStack.remove()
+    navStack.pop()
 
     val snapshot = navStack.snapshot()
     assertTrue(snapshot.entries.isEmpty())
@@ -363,8 +363,8 @@ class SaveableNavStackTest {
   @Test
   fun test_snapshot_iteration() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
 
     val snapshot = navStack.snapshot()
 
@@ -379,9 +379,9 @@ class SaveableNavStackTest {
   @Test
   fun test_snapshot_reflects_navigation_state() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
-    navStack.add(TestScreen.ScreenC)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenC)
 
     // At top
     val snapshot1 = navStack.snapshot()
@@ -403,8 +403,8 @@ class SaveableNavStackTest {
   @Test
   fun test_saved_state_snapshot_is_iterable() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
-    navStack.add(TestScreen.ScreenB)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
 
     navStack.saveState()
     val snapshot = navStack.stateStore[TestScreen.RootAlpha]
@@ -418,17 +418,17 @@ class SaveableNavStackTest {
   }
 
   @Test
-  fun test_remove_at_boundaries() {
+  fun test_pop_at_boundaries() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
-    navStack.add(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenA)
 
     // At top, remove forward
-    val removed = navStack.remove()
+    val removed = navStack.pop()
     assertEquals(TestScreen.ScreenA, removed?.screen)
     assertEquals(TestScreen.RootAlpha, navStack.currentRecord?.screen)
 
     // At root after removal
-    val removed2 = navStack.remove()
+    val removed2 = navStack.pop()
     assertEquals(TestScreen.RootAlpha, removed2?.screen)
     assertEquals(0, navStack.size)
   }

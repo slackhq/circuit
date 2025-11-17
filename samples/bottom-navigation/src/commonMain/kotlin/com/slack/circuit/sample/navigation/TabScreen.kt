@@ -12,8 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,11 +73,20 @@ sealed interface TabScreen : Screen {
 
 object TabScreenCircuit {
 
-  data class State(val label: String, val hasDetails: Boolean, val eventSink: (Event) -> Unit) :
-    CircuitUiState
+  data class State(
+    val label: String,
+    val canGoBack: Boolean,
+    val canGoForward: Boolean,
+    val hasDetails: Boolean,
+    val eventSink: (Event) -> Unit,
+  ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data object Next : Event
+
+    data object Forward : Event
+
+    data object Backward : Event
 
     data class Details(val screen: TabScreen) : Event
   }
@@ -82,12 +96,18 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
+    val navStack = navigator.peekNavStack()
     return TabScreenCircuit.State(
       label = screen.label,
+      canGoBack =
+        navStack.entries.subList(navStack.currentIndex + 1, navStack.entries.size).isNotEmpty(),
+      canGoForward = navStack.entries.subList(0, navStack.currentIndex).isNotEmpty(),
       hasDetails = screen !is TabScreen.Screen2,
     ) { event ->
       when (event) {
-        TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
+        is TabScreenCircuit.Event.Backward -> navigator.backward()
+        is TabScreenCircuit.Event.Forward -> navigator.forward()
+        is TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
         is TabScreenCircuit.Event.Details -> navigator.goTo(DetailScreen(event.screen))
       }
     }
@@ -115,14 +135,25 @@ fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier =
     val navStack = LocalNavStack.current?.snapshot()
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
       Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
       ) {
+        IconButton(
+          enabled = state.canGoBack,
+          onClick = { state.eventSink(TabScreenCircuit.Event.Backward) },
+        ) {
+          Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+        }
+        IconButton(
+          enabled = state.canGoForward,
+          onClick = { state.eventSink(TabScreenCircuit.Event.Forward) },
+        ) {
+          Icon(Icons.AutoMirrored.Default.ArrowForward, contentDescription = "Forward")
+        }
         Text(
           text = state.label,
           style = MaterialTheme.typography.headlineMedium,
-          modifier =
-            Modifier.testTag(ContentTags.TAG_LABEL).weight(1f).padding(top = 24.dp, bottom = 8.dp),
+          modifier = Modifier.testTag(ContentTags.TAG_LABEL).weight(1f),
         )
         if (state.hasDetails) {
           Button(
@@ -130,9 +161,10 @@ fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier =
             onClick = { state.eventSink(TabScreenCircuit.Event.Details(screen)) },
             modifier =
               Modifier.sharedBounds(
-                sharedContentState = rememberSharedContentState(key = "${screen}-details"),
-                animatedVisibilityScope = requireAnimatedScope(Navigation),
-              ),
+                  sharedContentState = rememberSharedContentState(key = "${screen}-details"),
+                  animatedVisibilityScope = requireAnimatedScope(Navigation),
+                )
+                .padding(horizontal = 16.dp),
           ) {
             Text(text = "View details")
           }

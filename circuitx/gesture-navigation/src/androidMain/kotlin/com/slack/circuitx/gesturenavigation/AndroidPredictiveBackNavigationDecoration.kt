@@ -17,6 +17,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
@@ -39,15 +40,15 @@ public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
   return when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavDecorator.Factory
     else -> fallback
   }
 }
 
-internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
+internal class AndroidPredictiveNavDecorator<T : NavArgument>(
   onBackInvoked: () -> Unit,
   onForwardInvoked: () -> Unit,
-) : PredictiveBackNavigationDecorator<T>(onBackInvoked, onForwardInvoked) {
+) : PredictiveNavigationDecorator<T>(onBackInvoked, onForwardInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -56,28 +57,30 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
+    println("PredictiveBackNavigationDecorator: transitionSpec($animatedNavEvent)")
     return when (animatedNavEvent) {
       // adding to back stack
+      AnimatedNavEvent.Forward -> {
+        if (showForward) {
+          // Handle all the animation in draggable
+          EnterTransition.None togetherWith ExitTransition.None
+        } else {
+          NavigatorDefaults.forward
+        }
+      }
       AnimatedNavEvent.GoTo -> {
         NavigatorDefaults.forward
       }
       // come back from back stack
+      AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
-        if (showPrevious) {
+        if (showBackward) {
             // Handle all the animation in predictiveBackMotion
             EnterTransition.None togetherWith ExitTransition.None
           } else {
             NavigatorDefaults.backward
           }
           .apply { targetContentZIndex = --zIndexDepth }
-      }
-      AnimatedNavEvent.Forward -> {
-        if (showNext) {
-          // Handle all the animation in draggable
-          EnterTransition.None togetherWith ExitTransition.None
-        } else {
-          NavigatorDefaults.forward
-        }
       }
       // Root reset. Crossfade
       AnimatedNavEvent.RootReset -> {
@@ -92,9 +95,11 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
     targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
+    val current = targetState.navStack.current
+    SideEffect { println("PredictiveBackNavigationDecorator: Decoration($current)") }
     Box(
       Modifier.predictiveBackMotion(
-        enabled = { showPrevious },
+        enabled = { showBackward },
         isSeeking = { isSeeking },
         shape = MaterialTheme.shapes.extraLarge,
         elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
@@ -109,8 +114,15 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
 
   object Factory : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
-      return AndroidPredictiveBackNavDecorator(
-        onBackInvoked = { navigator.backward() },
+      return AndroidPredictiveNavDecorator(
+        onBackInvoked = {
+          // todo Handle this in nav?
+          if (navigator.peekNavStack().currentIndex < 1) {
+            navigator.pop()
+          } else {
+            navigator.backward()
+          }
+        },
         onForwardInvoked = { navigator.forward() },
       )
     }

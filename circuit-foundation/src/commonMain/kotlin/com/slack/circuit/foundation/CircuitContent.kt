@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
@@ -50,11 +51,13 @@ public fun CircuitContent(
         }
 
         override fun forward(): Boolean {
-          TODO("Not yet implemented")
+          onNavEvent(NavEvent.Forward)
+          return true
         }
 
         override fun backward(): Boolean {
-          TODO("Not yet implemented")
+          onNavEvent(NavEvent.Backward)
+          return true
         }
 
         override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
@@ -70,6 +73,8 @@ public fun CircuitContent(
         override fun peek(): Screen = screen
 
         override fun peekBackStack(): List<Screen> = listOf(screen)
+
+        override fun peekNavStack(): NavStackList<Screen> = NavStackList(listOf(screen))
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent, key)

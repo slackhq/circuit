@@ -38,6 +38,7 @@ public fun PredictiveNavEventHandler(
     }
   SideEffect {
     handler.isBackEnabled = isBackEnabled
+    handler.isForwardEnabled = isForwardEnabled
     handler.onProgress = onProgress
     handler.onCancelled = onCancelled
     handler.onCompleted = onCompleted
@@ -101,7 +102,7 @@ private class PredictiveNavEventHandler(
 
   override fun onForwardStarted(event: NavigationEvent) {
     current?.cancel()
-    current = PredictiveNavProgress(scope) { event -> onEvent(PredictiveNavDirection.Back, event) }
+    current = PredictiveNavProgress(scope) { event -> onEvent(PredictiveNavDirection.Forward, event) }
   }
 
   override fun onForwardProgressed(event: NavigationEvent) {

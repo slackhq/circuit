@@ -139,7 +139,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
         val previousTopRecord = currentBackStack.topRecord
-        val success = currentBackStack.add(screen)
+        val success = currentBackStack.push(screen)
         if (success) {
           // Clear the cached pending result from the previous top record
           if (previousTopRecord != null) {

@@ -12,6 +12,7 @@ package com.slack.circuit.foundation.animation
 public enum class AnimatedNavEvent {
   GoTo,
   Pop,
-  Forward,
   RootReset,
+  Backward,
+  Forward,
 }

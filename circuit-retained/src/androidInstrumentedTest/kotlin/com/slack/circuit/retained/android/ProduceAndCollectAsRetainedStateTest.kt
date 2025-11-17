@@ -51,11 +51,11 @@ class ProduceAndCollectAsRetainedStateTest {
   @Test
   fun retainsStateAcrossConfigurationChanges() {
     // Create a flow that emits a single value
-    val testFlow: suspend () -> Flow<String> = { flow { emit("test_value") } }
+    val testFlow = flow { emit("test_value") }
 
     val content =
       @Composable {
-        val state by produceAndCollectAsRetainedState(initial = "", producer = testFlow)
+        val state by produceAndCollectAsRetainedState(initial = "", producer = { testFlow })
         Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
       }
 
@@ -113,12 +113,12 @@ class ProduceAndCollectAsRetainedStateTest {
 
   @Test
   fun usesInitialValue() {
-    val testFlow: suspend () -> Flow<String> = { emptyFlow() }
+    val testFlow = emptyFlow<String>()
 
     val content =
       @Composable {
         val state by
-          produceAndCollectAsRetainedState(initial = "initial_value", producer = testFlow)
+          produceAndCollectAsRetainedState(initial = "initial_value", producer = { testFlow })
         Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
       }
 
@@ -129,17 +129,15 @@ class ProduceAndCollectAsRetainedStateTest {
 
   @Test
   fun handlesMultipleEmissions() {
-    val testFlow: suspend () -> Flow<Int> = {
-      flow {
-        emit(1)
-        emit(2)
-        emit(3)
-      }
+    val testFlow = flow {
+      emit(1)
+      emit(2)
+      emit(3)
     }
 
     val content =
       @Composable {
-        val state by produceAndCollectAsRetainedState(initial = 0, producer = testFlow)
+        val state by produceAndCollectAsRetainedState(initial = 0, producer = { testFlow })
         Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state.toString())
       }
 
@@ -156,11 +154,11 @@ class ProduceAndCollectAsRetainedStateTest {
   fun worksWithNoExplicitInputs() {
     // Test that when no explicit inputs are provided, the function still works correctly
     // Note: The flow collection restarts on activity recreate, but that's expected behavior
-    val testFlow: suspend () -> Flow<String> = { flow { emit("test_value") } }
+    val testFlow = flow { emit("test_value") }
 
     val content =
       @Composable {
-        val state by produceAndCollectAsRetainedState(initial = "initial", producer = testFlow)
+        val state by produceAndCollectAsRetainedState(initial = "initial", producer = { testFlow })
         Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
       }
 
@@ -208,18 +206,17 @@ class ProduceAndCollectAsRetainedStateTest {
   fun doesNotRetainWhenCanRetainCheckerReturnsFalse() {
     // Test that state is not retained when CanRetainChecker returns false
     var emissionCount = 0
-    val testFlow: suspend () -> Flow<String> = {
-      flow {
-        emissionCount++
-        emit("emission_$emissionCount")
-      }
+    val testFlow = flow {
+      emissionCount++
+      emit("emission_$emissionCount")
     }
 
     val content =
       @Composable {
         val registry = rememberRetained { RetainedStateRegistry(canRetainChecker = { false }) }
         CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
-          val state by produceAndCollectAsRetainedState(initial = "initial", producer = testFlow)
+          val state by
+            produceAndCollectAsRetainedState(initial = "initial", producer = { testFlow })
           Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
         }
       }
@@ -246,17 +243,16 @@ class ProduceAndCollectAsRetainedStateTest {
     // Test that state is properly cleaned up when the composable leaves composition
     var showContent by mutableStateOf(true)
     var emissionCount = 0
-    val testFlow: suspend () -> Flow<String> = {
-      flow {
-        emissionCount++
-        emit("emission_$emissionCount")
-      }
+    val testFlow = flow {
+      emissionCount++
+      emit("emission_$emissionCount")
     }
 
     val content =
       @Composable {
         if (showContent) {
-          val state by produceAndCollectAsRetainedState(initial = "initial", producer = testFlow)
+          val state by
+            produceAndCollectAsRetainedState(initial = "initial", producer = { testFlow })
           Text(modifier = Modifier.testTag(TAG_PRODUCED_STATE), text = state)
         }
       }

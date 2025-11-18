@@ -7,7 +7,6 @@ import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,19 +51,18 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
     val currentState = remember(args) { targetState(args) }
     val backwardState =
       remember(args) {
-        val previousIndex = args.currentIndex + 1
-        if (previousIndex < args.size) {
-          targetState(args.copy(currentIndex = previousIndex))
+        val index = args.currentIndex + 1
+        if (index < args.size) {
+          targetState(args.copy(currentIndex = index))
         } else null
       }
     val forwardState =
       remember(args) {
-        val nextIndex = args.currentIndex - 1
-        if (nextIndex > -1) {
-          targetState(args.copy(currentIndex = nextIndex))
+        val index = args.currentIndex - 1
+        if (index > -1) {
+          targetState(args.copy(currentIndex = index))
         } else null
       }
-
     seekableTransitionState = remember { SeekableTransitionState(currentState) }
 
     LaunchedEffect(currentState) {
@@ -98,11 +96,6 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
           }
         }
     }
-    SideEffect {
-      println(
-        "PredictiveBackNavigationDecorator: ${backwardState?.navStack?.entries?.joinToString {  "${it.screen::class.simpleName}_${it.key}" }}[${backwardState?.navStack?.currentIndex}] -> ${currentState.navStack.entries.joinToString { "${it.screen::class.simpleName}_${it.key}" }}[${currentState.navStack.currentIndex}]"
-      )
-    }
 
     PredictiveNavEventHandler(
       isBackEnabled = backwardState != null,
@@ -134,6 +127,6 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
         }
       },
     )
-    return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
+    return rememberTransition(seekableTransitionState, label = "PredictiveNavigationDecorator")
   }
 }

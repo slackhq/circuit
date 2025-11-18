@@ -29,12 +29,12 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.currentCompositeKeyHashCode
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -258,7 +258,6 @@ public fun <R : Record> NavigableCircuitContent(
       providedValuesForNavStack(navigator.navStack, circuit.backStackLocalProviders)
     navDecoration.DecoratedContent(activeContentProviders, navigator, modifier) { provider ->
       val record = provider.record
-
       // Remember the `providedValues` lookup because this composition can live longer than
       // the record is present in the backstack, if the decoration is animated for example.
       val values = remember(record) { providedValues[record] }?.provideValues()
@@ -369,51 +368,48 @@ public class RecordContentProvider<R : Record>(
 private fun <R : Record> buildCircuitContentProviders(
   navStack: NavStack<R>
 ): NavStackList<RecordContentProvider<R>> {
-  val navStackSnapshot = navStack.snapshot()
+  val composer = currentComposer
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
-  val recordKeys by
-    remember { mutableStateOf(emptySet<String>()) }
-      .apply { value = navStackSnapshot.mapTo(mutableSetOf()) { it.key } }
-  val latestBackStack by rememberUpdatedState(navStack)
-  DisposableEffect(recordKeys) {
-    // Delay cleanup until the next backstack change.
-    // - Any record in composition is considered active
-    // - Any record in the backstack can be shown by a decorator
-    // - Any reachable record can be shown on a root reset
-    val contentNotInBackStack =
-      previousContentProviders.keys.filterNot {
-        it in activeRecordKeys ||
-          it in recordKeys ||
-          // Depth of 2 to exclude records that are late at leaving the composition.
-          latestBackStack.isRecordReachable(key = it, depth = 2, includeSaved = true)
-      }
-    onDispose {
-      // Only remove the keys that are no longer in the backstack or composition.
-      contentNotInBackStack
-        .filterNot {
-          latestBackStack.isRecordReachable(key = it, depth = 1, includeSaved = true) ||
-            it in activeRecordKeys
+  val snapshot = navStack.snapshot()
+  val navList =
+    snapshot
+      .map { record ->
+        // Query the previous content providers map, so that we use the same
+        // RecordContentProvider instances across calls.
+        previousContentProviders.getOrPut(record.key) {
+          RecordContentProvider(
+            record = record,
+            content =
+              createRecordContent(
+                onActive = { activeRecordKeys.add(record.key) },
+                onDispose = { activeRecordKeys.remove(record.key) },
+              ),
+          )
         }
-        .forEach { previousContentProviders.remove(it) }
-    }
-  }
-  val entries =
-    navStackSnapshot.map { record ->
-      // Query the previous content providers map, so that we use the same
-      // RecordContentProvider instances across calls.
-      previousContentProviders.getOrPut(record.key) {
-        RecordContentProvider(
-          record = record,
-          content =
-            createRecordContent(
-              onActive = { activeRecordKeys.add(record.key) },
-              onDispose = { activeRecordKeys.remove(record.key) },
-            ),
-        )
       }
-    }
-  return NavStackList(entries, navStackSnapshot.currentIndex)
+      .let { NavStackList(it, snapshot.currentIndex) }
+
+  // Remove any previous content providers that are no longer in the back stack.
+  DisposableEffect(snapshot) {
+    val cancellationHandle =
+      composer.scheduleFrameEndCallback {
+        // Any of these can be shown by the decoration, so we don't want to remove them.
+        val recordKeys = snapshot.mapTo(mutableSetOf()) { it.key }
+        previousContentProviders.keys
+          .filterNot {
+            it in activeRecordKeys ||
+              it in recordKeys ||
+              navStack.isRecordReachable(key = it, depth = 3, includeSaved = true)
+          }
+          .forEach {
+            println("Removing previous content provider for $it")
+            previousContentProviders.remove(it)
+          }
+      }
+    onDispose { cancellationHandle.cancel() }
+  }
+  return navList
 }
 
 @ExperimentalCircuitApi
@@ -450,30 +446,34 @@ public class ContentProviderState<R : Record>(
 @OptIn(ExperimentalCircuitApi::class)
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
-    with(contentProviderState) {
-      val lifecycle = remember { MutableRecordLifecycle() }
-      SideEffect { lifecycle.isActive = lastNavigator.navStack.topRecord == record }
-      saveableStateHolder.SaveableStateProvider(record.registryKey) {
-        // Provides a RetainedStateRegistry that is maintained independently for each record while
-        // the record exists in the back stack.
-        retainedStateHolder.RetainedStateProvider(record.registryKey) {
-          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
-            CircuitContent(
-              screen = record.screen,
-              navigator = lastNavigator,
-              circuit = lastCircuit,
-              unavailableContent = lastUnavailableRoute,
-              key = record.key,
-            )
-          }
+    val lifecycle = remember { MutableRecordLifecycle() }
+    // todo Allow this to be customized by the decoration for multiple active records.
+    SideEffect {
+      lifecycle.isActive = contentProviderState.lastNavigator.navStack.currentRecord == record
+    }
+    contentProviderState.saveableStateHolder.SaveableStateProvider(record.registryKey) {
+      // Provides a RetainedStateRegistry that is maintained independently for each record while
+      // the record exists in the back stack.
+      contentProviderState.retainedStateHolder.RetainedStateProvider(record.registryKey) {
+        CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+          CircuitContent(
+            screen = record.screen,
+            navigator = contentProviderState.lastNavigator,
+            circuit = contentProviderState.lastCircuit,
+            unavailableContent = contentProviderState.lastUnavailableRoute,
+            key = record.key,
+          )
         }
       }
-      // Remove saved states for records that are no longer in the back stack
-      DisposableEffect(record.registryKey) {
-        onDispose {
+    }
+    // Remove saved states for records that are no longer in the back stack
+    DisposableEffect(record.registryKey) {
+      onDispose {
+        with(contentProviderState) {
           if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
             retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)
+            println("RecordContentProvider: removedState ${record.key}")
           }
         }
       }
@@ -481,7 +481,11 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
     // Track if the movableContent is still active to correctly reuse it and not create a new one.
     DisposableEffect(Unit) {
       onActive()
-      onDispose { onDispose() }
+      println("RecordContentProvider: onActive ${record.key}")
+      onDispose {
+        onDispose()
+        println("RecordContentProvider: onDispose ${record.key}")
+      }
     }
   }
 

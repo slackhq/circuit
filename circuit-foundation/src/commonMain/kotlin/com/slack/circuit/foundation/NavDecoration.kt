@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.Navigator
@@ -32,6 +33,7 @@ public interface NavDecoration {
  * @see NavDecoration
  * @see NavArgument
  */
+@Immutable
 public data class NavStackList<T>(val entries: List<T>, val currentIndex: Int = 0) {
   /** The number of entries in the stack. */
   public val size: Int
@@ -64,9 +66,8 @@ public data class NavStackList<T>(val entries: List<T>, val currentIndex: Int = 
   public fun forwardStack(): List<T> = entries.subList(0, currentIndex).asReversed()
 
   /**
-   * Returns entries from the current position to the root, in order from current to root. This
-   * includes the current entry and all entries the user can navigate backward to (toward older
-   * entries).
+   * Returns entries between the current position and the root, in order from current to root. This
+   * includes all entries the user can navigate backward to (toward older entries).
    *
    * Example:
    * ```

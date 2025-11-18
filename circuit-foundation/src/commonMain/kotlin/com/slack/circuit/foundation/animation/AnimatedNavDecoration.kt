@@ -111,11 +111,16 @@ public class AnimatedNavDecoration(
       }
     with(decorator) {
       val transition = updateTransition(args)
+      // TODO Animated content only really works for a single screen at a time. We need a way to
+      //  support enter/exit transitions for multiple screens, across the two nav stacks.
       transition.AnimatedContent(
         modifier = modifier,
         transitionSpec = transitionSpec(animatedScreenTransforms),
+        contentKey = { it.navStack.current.key },
       ) { targetState ->
-        ProvideAnimatedTransitionScope(Navigation, this) { Decoration(targetState) { content(it) } }
+        ProvideAnimatedTransitionScope(Navigation, this) {
+          Decoration(targetState) { arg: T -> content(arg) }
+        }
       }
     }
   }

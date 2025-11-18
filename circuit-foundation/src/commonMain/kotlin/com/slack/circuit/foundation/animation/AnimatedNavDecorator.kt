@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavDecoration
-import com.slack.circuit.foundation.NavStackList
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 
 /**

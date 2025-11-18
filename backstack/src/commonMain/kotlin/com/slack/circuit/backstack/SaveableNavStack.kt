@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.backstack.SaveableNavStack.Record
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.collections.set
 import kotlin.uuid.ExperimentalUuidApi
@@ -54,89 +55,12 @@ public fun rememberSaveableNavStack(initialScreens: List<Screen>): SaveableNavSt
  *
  * Unlike [SaveableBackStack], this implementation supports forward navigation, removal in both
  * directions, and moving through the stack without removing entries.
- *
- * ## Internal Structure
- *
- * The stack maintains an [entryList] of records and a [currentIndex] to track position:
- * ```
- * entryList indices:  [0,    1,    2,    3,    4,    5]
- *                      ^                        ^     ^
- *                    topRecord            currentIndex rootRecord
- *                    (newest)               (current) (oldest)
- * ```
- *
- * ## Navigation Examples
- *
- * ### Moving Forward (toward top/newer entries):
- * ```
- * Before:  [A, B, C, D, E, F]
- *                    ^
- *              currentIndex = 3
- *
- * move(Forward)
- *
- * After:   [A, B, C, D, E, F]
- *                 ^
- *              currentIndex = 2
- * ```
- *
- * ### Moving Backward (toward root/older entries):
- * ```
- * Before:  [A, B, C, D, E, F]
- *                 ^
- *              currentIndex = 2
- *
- * move(Backward)
- *
- * After:   [A, B, C, D, E, F]
- *                    ^
- *              currentIndex = 3
- * ```
- *
- * ### Adding New Entry (truncates forward history):
- * ```
- * Before:  [A, B, C, D, E, F]
- *                 ^
- *              currentIndex = 2 (pointing to C)
- *
- * add(G)
- *
- * After:   [G, C, D, E, F]
- *           ^
- *        currentIndex = 0 (pointing to G)
- *        (A & B removed, G becomes new top and current)
- * ```
- *
- * ### Removing with Direction:
- * ```
- * # Forward removal (removes current, moves toward top)
- * Before:  [A, B, C, D, E, F]
- *                    ^
- *              currentIndex = 3
- *
- * remove(Forward)
- *
- * After:   [A, B, C, E, F]
- *                 ^
- *              currentIndex = 2
- *
- * # Backward removal (removes current, stays at same logical position)
- * Before:  [A, B, C, D, E, F]
- *                    ^
- *              currentIndex = 3
- *
- * remove(Backward)
- *
- * After:   [A, B, C, E, F]
- *                    ^
- *              currentIndex = 3 (now points to E)
- * ```
  */
 public class SaveableNavStack
 internal constructor(
   // Both visible for testing
   internal val entryList: SnapshotStateList<Record> = mutableStateListOf(),
-  internal val stateStore: MutableMap<Screen, NavStack.Snapshot<Record>> = mutableMapOf(),
+  internal val stateStore: MutableMap<Screen, SaveableNavStackList> = mutableMapOf(),
   initialIndex: Int = -1,
 ) : NavStack<Record>, Iterable<Record> {
 
@@ -220,14 +144,16 @@ internal constructor(
     } else false
   }
 
-  override fun snapshot(): NavStack.Snapshot<Record> {
-    return SaveableSnapshot(entryList.toList(), currentIndex)
+  override fun snapshot(): NavStackList<Record>? {
+    return if (entryList.isNotEmpty()) {
+      SaveableNavStackList(entryList.toList(), currentIndex)
+    } else null
   }
 
   override fun saveState() {
     if (entryList.isNotEmpty()) {
       val rootScreen = entryList.last().screen
-      stateStore[rootScreen] = SaveableSnapshot(entryList.toList(), currentIndex)
+      stateStore[rootScreen] = SaveableNavStackList(entryList.toList(), currentIndex)
     }
   }
 
@@ -328,13 +254,30 @@ internal constructor(
     }
   }
 
-  public data class SaveableSnapshot(
-    override val entries: List<Record>,
-    override val currentIndex: Int,
-  ) : NavStack.Snapshot<Record> {
+  internal data class SaveableNavStackList(val entries: List<Record>, val currentIndex: Int) :
+    NavStackList<Record> {
 
-    internal companion object {
-      val Saver: Saver<NavStack.Snapshot<Record>, Any> =
+    override val top: Record
+      get() = entries.first()
+
+    override val current: Record
+      get() = entries[currentIndex]
+
+    override val root: Record
+      get() = entries.last()
+
+    override val forward: Iterable<Record>
+      get() = entries.subList(0, currentIndex).asReversed()
+
+    override val backward: Iterable<Record>
+      get() = entries.subList(currentIndex + 1, entries.size)
+
+    override fun iterator(): Iterator<Record> {
+      return entries.iterator()
+    }
+
+    companion object {
+      val Saver: Saver<SaveableNavStackList, Any> =
         mapSaver(
           save = { value ->
             buildMap {
@@ -344,7 +287,7 @@ internal constructor(
           },
           restore = { map ->
             @Suppress("UNCHECKED_CAST")
-            SaveableSnapshot(
+            SaveableNavStackList(
               entries = (map["entries"] as List<List<Any>>).mapNotNull { Record.Saver.restore(it) },
               currentIndex = map["currentIndex"] as Int,
             )
@@ -364,7 +307,7 @@ internal constructor(
             // Save the entry list
             with(Record.Saver) { add(value.entryList.mapNotNull { save(it) }) }
             // Now add any snapshots from the state store
-            with(SaveableSnapshot.Saver) { add(value.stateStore.values.map { save(it) }) }
+            with(SaveableNavStackList.Saver) { add(value.stateStore.values.map { save(it) }) }
           }
         },
         restore = { value ->
@@ -383,7 +326,7 @@ internal constructor(
                 else -> {
                   // Any list after that is from the state store (as snapshots)
                   item
-                    .mapNotNull { SaveableSnapshot.Saver.restore(it as List<Any>) }
+                    .mapNotNull { SaveableNavStackList.Saver.restore(it as List<Any>) }
                     .forEach { snapshot ->
                       // The key is always the root screen (i.e. last item)
                       navStack.stateStore[snapshot.entries.last().screen] = snapshot

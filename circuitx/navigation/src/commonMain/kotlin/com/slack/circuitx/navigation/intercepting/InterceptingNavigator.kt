@@ -14,6 +14,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.slack.circuit.backstack.NavStack
+import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -36,6 +38,7 @@ import com.slack.circuit.runtime.screen.Screen
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 public fun rememberInterceptingNavigator(
+  navStack: NavStack<*>,
   navigator: Navigator,
   interceptors: List<NavigationInterceptor> = emptyList(),
   eventListeners: List<NavigationEventListener> = emptyList(),
@@ -53,7 +56,7 @@ public fun rememberInterceptingNavigator(
       )
     }
   // Handle the back button here to get pop events from it.
-  if (enableBackHandler) {
+  if (enableBackHandler && !navStack.isAtRoot) {
     // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
     // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
     val hasScreenChanged = remember {
@@ -76,7 +79,7 @@ public fun rememberInterceptingNavigator(
         // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need
         // to unload this BackHandler from the composition before the root pop is triggered, so
         // delay calling pop until after the next composition.
-        if (navigator.peekBackStack().size > 1) {
+        if (!navStack.isAtRoot) {
           interceptingNavigator.pop()
         } else {
           hasPendingRootPop = true

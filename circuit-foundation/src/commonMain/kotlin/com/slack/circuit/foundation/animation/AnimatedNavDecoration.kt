@@ -16,8 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavDecoration
-import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
@@ -138,11 +138,11 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
   val previous = initialStack.current
   val current = targetStack.current
 
-  val initialBackStack = initialStack.backwardStack()
-  val initialForwardStack = initialStack.forwardStack()
+  val initialBackStack = initialStack.backward
+  val initialForwardStack = initialStack.forward
 
-  val targetBackStack = targetStack.backwardStack()
-  val targetForwardStack = targetStack.forwardStack()
+  val targetBackStack = targetStack.backward
+  val targetForwardStack = targetStack.forward
 
   val animatedNavEvent =
     when {

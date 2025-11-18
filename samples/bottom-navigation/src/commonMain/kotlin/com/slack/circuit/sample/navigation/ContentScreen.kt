@@ -156,6 +156,7 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
 
   val interceptingNavigator =
     rememberInterceptingNavigator(
+      navStack = navStack,
       navigator = contentNavigator,
       interceptors = listOf(contentInterceptor),
     )

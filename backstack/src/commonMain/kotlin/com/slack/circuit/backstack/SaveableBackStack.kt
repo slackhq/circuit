@@ -18,8 +18,8 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.SaveableBackStack.Record
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -99,8 +99,8 @@ internal constructor(
     return delegate.pop()?.let { Record(it) }
   }
 
-  override fun snapshot(): NavStack.Snapshot<Record> {
-    return BackStackSnapshot(delegate.snapshot())
+  override fun snapshot(): NavStackList<Record>? {
+    return delegate.snapshot()?.let { BackStackList(it) }
   }
 
   override fun saveState() {
@@ -134,11 +134,22 @@ internal constructor(
    * A snapshot of a back stack state. Since BackStack always has current at the top, currentIndex
    * is always 0.
    */
-  private data class BackStackSnapshot(val other: NavStack.Snapshot<SaveableNavStack.Record>) :
-    NavStack.Snapshot<Record> {
-    override val entries: List<Record> = other.entries.map { Record(it) }
+  private data class BackStackList(val other: NavStackList<SaveableNavStack.Record>) :
+    NavStackList<Record> {
 
-    override val currentIndex: Int = other.currentIndex
+    override val top: Record = Record(other.top)
+    override val current: Record = Record(other.current)
+    override val root: Record = Record(other.root)
+
+    override val forward: Iterable<Record>
+      get() = other.forward.map { Record(it) }
+
+    override val backward: Iterable<Record>
+      get() = other.backward.map { Record(it) }
+
+    override fun iterator(): Iterator<Record> {
+      return other.iterator().asSequence().map { Record(it) }.iterator()
+    }
   }
 
   public data class Record(

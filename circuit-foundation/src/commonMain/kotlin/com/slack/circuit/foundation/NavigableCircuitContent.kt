@@ -42,6 +42,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.NavStack
 import com.slack.circuit.backstack.NavStack.Record
 import com.slack.circuit.backstack.ProvidedValues
@@ -60,9 +61,11 @@ import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateRegistry
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.transform
 import kotlin.collections.mutableSetOf
 
 /**
@@ -135,6 +138,30 @@ public fun <R : Record> NavigableCircuitContent(
 ) {
   NavigableCircuitContent(
     navigator = rememberAnsweringResultNavigator(navigator, navStack),
+    modifier = modifier,
+    circuit = circuit,
+    providedValues = providedValues,
+    decoration = decoration,
+    decoratorFactory = decoratorFactory,
+    unavailableRoute = unavailableRoute,
+  )
+}
+
+@OptIn(ExperimentalCircuitApi::class)
+@Composable
+public fun <R : Record> NavigableCircuitContent(
+  navigator: Navigator,
+  backStack: BackStack<R>,
+  modifier: Modifier = Modifier,
+  circuit: Circuit = requireNotNull(LocalCircuit.current),
+  providedValues: Map<out Record, ProvidedValues> = emptyMap(),
+  decoration: NavDecoration = circuit.defaultNavDecoration,
+  decoratorFactory: AnimatedNavDecorator.Factory? = null,
+  unavailableRoute: (@Composable (screen: Screen, modifier: Modifier) -> Unit) =
+    circuit.onUnavailableContent,
+) {
+  NavigableCircuitContent(
+    navigator = rememberAnsweringResultNavigator(navigator, backStack),
     modifier = modifier,
     circuit = circuit,
     providedValues = providedValues,
@@ -256,25 +283,27 @@ public fun <R : Record> NavigableCircuitContent(
     val activeContentProviders = buildCircuitContentProviders(navStack = navigator.navStack)
     val circuitProvidedValues =
       providedValuesForNavStack(navigator.navStack, circuit.backStackLocalProviders)
-    navDecoration.DecoratedContent(activeContentProviders, navigator, modifier) { provider ->
-      val record = provider.record
-      // Remember the `providedValues` lookup because this composition can live longer than
-      // the record is present in the backstack, if the decoration is animated for example.
-      val values = remember(record) { providedValues[record] }?.provideValues()
-      val circuitProvidedValues =
-        remember(record) { circuitProvidedValues[record] }?.provideValues()
-      val providedLocals =
-        remember(values, circuitProvidedValues) {
-          (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
+    if (activeContentProviders != null) {
+      navDecoration.DecoratedContent(activeContentProviders, navigator, modifier) { provider ->
+        val record = provider.record
+        // Remember the `providedValues` lookup because this composition can live longer than
+        // the record is present in the backstack, if the decoration is animated for example.
+        val values = remember(record) { providedValues[record] }?.provideValues()
+        val circuitProvidedValues =
+          remember(record) { circuitProvidedValues[record] }?.provideValues()
+        val providedLocals =
+          remember(values, circuitProvidedValues) {
+            (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
+          }
+        val localNavStack = contentProviderState.lastNavigator.navStack
+        val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
+        CompositionLocalProvider(
+          LocalNavStack provides localNavStack,
+          LocalAnsweringResultHandler provides localResultHandler,
+          *providedLocals,
+        ) {
+          provider.content(record, contentProviderState)
         }
-      val localNavStack = contentProviderState.lastNavigator.navStack
-      val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
-      CompositionLocalProvider(
-        LocalNavStack provides localNavStack,
-        LocalAnsweringResultHandler provides localResultHandler,
-        *providedLocals,
-      ) {
-        provider.content(record, contentProviderState)
       }
     }
   }
@@ -367,35 +396,33 @@ public class RecordContentProvider<R : Record>(
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
   navStack: NavStack<R>
-): NavStackList<RecordContentProvider<R>> {
+): NavStackList<RecordContentProvider<R>>? {
   val composer = currentComposer
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
   val snapshot = navStack.snapshot()
   val navList =
-    snapshot
-      .map { record ->
-        // Query the previous content providers map, so that we use the same
-        // RecordContentProvider instances across calls.
-        previousContentProviders.getOrPut(record.key) {
-          RecordContentProvider(
-            record = record,
-            content =
-              createRecordContent(
-                onActive = { activeRecordKeys.add(record.key) },
-                onDispose = { activeRecordKeys.remove(record.key) },
-              ),
-          )
-        }
+    snapshot?.transform { record ->
+      // Query the previous content providers map, so that we use the same
+      // RecordContentProvider instances across calls.
+      previousContentProviders.getOrPut(record.key) {
+        RecordContentProvider(
+          record = record,
+          content =
+            createRecordContent(
+              onActive = { activeRecordKeys.add(record.key) },
+              onDispose = { activeRecordKeys.remove(record.key) },
+            ),
+        )
       }
-      .let { NavStackList(it, snapshot.currentIndex) }
+    }
 
   // Remove any previous content providers that are no longer in the back stack.
   DisposableEffect(snapshot) {
     val cancellationHandle =
       composer.scheduleFrameEndCallback {
         // Any of these can be shown by the decoration, so we don't want to remove them.
-        val recordKeys = snapshot.mapTo(mutableSetOf()) { it.key }
+        val recordKeys = snapshot?.mapTo(mutableSetOf()) { it.key } ?: emptySet()
         previousContentProviders.keys
           .filterNot {
             it in activeRecordKeys ||

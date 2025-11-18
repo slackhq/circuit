@@ -15,11 +15,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.NavArgument
-import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.internal.PredictiveNavDirection
 import com.slack.circuit.foundation.internal.PredictiveNavEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.NavStackList
+import com.slack.circuit.runtime.navStackListOf
 import kotlin.math.abs
 
 public abstract class PredictiveNavigationDecorator<T : NavArgument>(
@@ -51,16 +52,22 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
     val currentState = remember(args) { targetState(args) }
     val backwardState =
       remember(args) {
-        val index = args.currentIndex + 1
-        if (index < args.size) {
-          targetState(args.copy(currentIndex = index))
+        val hasBackward = args.backward.iterator().hasNext()
+        if (hasBackward) {
+          val forward = listOf(args.current) + args.forward
+          val current = args.backward.first()
+          val backward = args.backward.drop(1)
+          targetState(navStackListOf(forward, current, backward))
         } else null
       }
     val forwardState =
       remember(args) {
-        val index = args.currentIndex - 1
-        if (index > -1) {
-          targetState(args.copy(currentIndex = index))
+        val hasForward = args.forward.iterator().hasNext()
+        if (hasForward) {
+          val forward = args.forward.drop(1)
+          val current = args.forward.first()
+          val backward = listOf(args.current) + args.backward
+          targetState(navStackListOf(forward, current, backward))
         } else null
       }
     seekableTransitionState = remember { SeekableTransitionState(currentState) }

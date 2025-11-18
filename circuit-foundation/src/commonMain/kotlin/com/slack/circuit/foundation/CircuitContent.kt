@@ -15,6 +15,7 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navStackListOf
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -74,7 +75,7 @@ public fun CircuitContent(
 
         override fun peekBackStack(): List<Screen> = listOf(screen)
 
-        override fun peekNavStack(): NavStackList<Screen> = NavStackList(listOf(screen))
+        override fun peekNavStack(): NavStackList<Screen> = navStackListOf(screen)
       }
     }
   CircuitContent(screen, navigator, modifier, circuit, unavailableContent, key)

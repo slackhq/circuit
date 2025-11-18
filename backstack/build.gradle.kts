@@ -61,7 +61,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(libs.coroutines)
-        api(projects.circuitRuntimeScreen)
+        api(projects.circuitRuntime)
         implementation(libs.compose.runtime.saveable)
       }
     }

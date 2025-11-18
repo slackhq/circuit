@@ -25,14 +25,14 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.transform
 
 /**
  * Creates and remembers a new [Navigator] for navigating within [CircuitContents][CircuitContent].
  * A new [Navigator] will be created if the [navStack] instance changes.
  *
  * @param navStack The backing [NavStack] to navigate.
- * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
- *   button.
+ * @param onRootPop Invoked when the backstack [NavStack.isAtRoot] and a [Navigator.pop] is called.
  * @see NavigableCircuitContent
  */
 @Composable
@@ -79,12 +79,12 @@ public fun rememberCircuitNavigator(
   var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
   NavigationBackHandler(
     state = rememberNavigationEventState(NavigationEventInfo.None),
-    isBackEnabled = enableBackHandler && enableRootBackHandler && navStack.size > 1,
+    isBackEnabled = enableBackHandler && enableRootBackHandler && !navStack.isAtRoot,
     onBackCompleted = {
       // We need to unload this BackHandler from the composition before the root pop is triggered so
       // any outer back handler will get called. So delay calling pop until after the next
       // composition.
-      if (navStack.size > 1) {
+      if (!navStack.isAtRoot) {
         navigator.pop()
       } else {
         hasPendingRootPop = true
@@ -146,13 +146,9 @@ internal class NavigatorImpl(
   override fun peek(): Screen? = navStack.currentRecord?.screen
 
   override fun peekBackStack(): List<Screen> =
-    navStack
-      .snapshot()
-      .run { entries.subList(currentIndex, entries.size) }
-      .mapToImmutableList { it.screen }
+    navStack.snapshot()?.backward?.mapToImmutableList { it.screen } ?: emptyList()
 
-  override fun peekNavStack(): NavStackList<Screen> =
-    navStack.snapshot().run { NavStackList(entries.mapToImmutableList { it.screen }, currentIndex) }
+  override fun peekNavStack(): NavStackList<Screen>? = navStack.snapshot()?.transform { it.screen }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)

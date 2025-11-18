@@ -99,9 +99,8 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
     val navStack = navigator.peekNavStack()
     return TabScreenCircuit.State(
       label = screen.label,
-      canGoBack =
-        navStack.entries.subList(navStack.currentIndex + 1, navStack.entries.size).isNotEmpty(),
-      canGoForward = navStack.entries.subList(0, navStack.currentIndex).isNotEmpty(),
+      canGoBack = navStack?.backward?.firstOrNull() != null,
+      canGoForward = navStack?.forward?.firstOrNull() != null,
       hasDetails = screen !is TabScreen.Screen2,
     ) { event ->
       when (event) {
@@ -179,7 +178,7 @@ fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier =
         navStack?.let { navStack ->
           itemsIndexed(navStack.toList()) { i, item ->
             Text(
-              text = "$i: ${item.screen} ${if(navStack.currentIndex == i) "(active)" else ""}",
+              text = "$i: ${item.screen} ${if(navStack.current == item) "(active)" else ""}",
               style = MaterialTheme.typography.bodyMedium,
               modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             )

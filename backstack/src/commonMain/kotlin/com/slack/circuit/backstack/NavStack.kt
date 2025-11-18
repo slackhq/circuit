@@ -3,6 +3,7 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.NavStack.Record
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -133,14 +134,14 @@ public interface NavStack<R : Record> {
   public fun backward(): Boolean
 
   /**
-   * Creates a snapshot of the current stack state, including all entries and the current position.
+   * Creates a snapshot of the current stack state.
    *
    * The returned snapshot is immutable and can be used to capture the current navigation state for
    * inspection, serialization, or other purposes.
    *
-   * @return A [Snapshot] containing the current entries and position
+   * @return A [NavStackList] representing the current stack state, null if the stack is empty.
    */
-  public fun snapshot(): Snapshot<R>
+  public fun snapshot(): NavStackList<R>?
 
   /**
    * Saves the current stack entry list and position in an internal state store. It can be later
@@ -213,57 +214,6 @@ public interface NavStack<R : Record> {
 
     /** The [Screen] that should present this record. */
     public val screen: Screen
-  }
-
-  /**
-   * An immutable snapshot of a navigation stack's state at a point in time.
-   *
-   * ## Structure
-   *
-   * A snapshot captures the complete state using a **List+Index model**:
-   * - **entries**: An immutable list of all records in the stack
-   * - **currentIndex**: The position of the currently active record
-   *
-   * ## Index Semantics
-   *
-   * The list is ordered from newest (index 0) to oldest (last index):
-   * ```
-   * entries:  [TopScreen, MiddleScreen, RootScreen]
-   * indices:   0          1             2
-   *            ^                        ^
-   *          newest                  oldest
-   * ```
-   * - `currentIndex = 0`: At the top (newest entry), no forward history
-   * - `currentIndex = lastIndex`: At the root (oldest entry), no backward history
-   * - `0 < currentIndex < lastIndex`: In the middle, can move both directions
-   *
-   * @see NavStack.snapshot
-   * @see NavStack.saveState
-   * @see NavStack.restoreState
-   */
-  @Stable
-  public interface Snapshot<R : Record> : Iterable<R> {
-    /**
-     * All records in the stack, ordered from top (newest, index 0) to root (oldest, last index).
-     */
-    public val entries: List<R>
-
-    /**
-     * The index of the currently active record in [entries].
-     * - `0`: At the top (newest entry)
-     * - `entries.lastIndex`: At the root (oldest entry)
-     * - Between: In the middle of the history
-     */
-    public val currentIndex: Int
-
-    /** Retrieves the record at the given [index] in [entries]. */
-    public operator fun get(index: Int): R = entries[index]
-
-    /** Returns an iterator over all entries from top (index 0) to root (last index). */
-    override fun iterator(): Iterator<R> = entries.iterator()
-
-    public val current: R
-      get() = entries[currentIndex]
   }
 }
 

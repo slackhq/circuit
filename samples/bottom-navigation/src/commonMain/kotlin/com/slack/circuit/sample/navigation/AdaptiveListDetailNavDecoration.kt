@@ -1,4 +1,5 @@
 @file:Suppress("Deprecation")
+
 // Copyright (C) 2025 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
@@ -46,14 +47,15 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavDecoration
-import com.slack.circuit.foundation.NavStackList
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navStackListOf
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sample.navigation.ListDetailScaffoldStyle.Companion.defaultListDetailScaffoldStyle
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
@@ -169,7 +171,7 @@ class AdaptiveListDetailNavDecoration(
       val secondaryArgs =
         with(secondaryLookupTransition) { currentState[primary] ?: targetState[primary] }
 
-      val hasSecondary = !secondaryArgs?.entries.isNullOrEmpty()
+      val hasSecondary = secondaryArgs != null
       val scaffoldValue = if (hasSecondary) PrimarySecondary else Primary
       val scaffoldState = remember { MutableThreePaneScaffoldState(scaffoldValue) }
 
@@ -209,7 +211,7 @@ class AdaptiveListDetailNavDecoration(
       )
 
       // Prevent the detailPaneDelegate from handling the back press
-      val singleSecondary = hasSecondary && secondaryArgs.size == 1
+      val singleSecondary = hasSecondary && secondaryArgs.singleOrNull() != null
       PredictiveBackHandler(enabled = singleSecondary) { progress ->
         try {
           progress.collect { backEvent ->
@@ -342,27 +344,28 @@ internal fun <T : NavArgument> rememberListDetailNavArguments(
     val primary = mutableListOf<T>()
     val secondaryLookup = mutableMapOf<T, NavStackList<T>>()
     val secondary = mutableListOf<T>()
-    for (arg in navStackList.backwardStack()) {
+    for (arg in navStackList.backward) {
       when {
         showInDetailPane(arg) -> {
           secondary += arg
         }
         else -> {
           primary += arg
-          secondaryLookup[arg] = NavStackList(secondary.toList())
+          if (secondary.isNotEmpty()) {
+            secondaryLookup[arg] = navStackListOf(secondary.toList())
+          }
           secondary.clear()
         }
       }
     }
     if (primary.isEmpty()) {
-      NavStackList(secondary.toList()) to emptyMap()
+      navStackListOf(secondary.toList()) to emptyMap()
     } else {
       // Show the next secondary if it exists
-      navStackList
-        .forwardStack()
+      navStackList.forward
         .firstOrNull()
         ?.takeIf { showInDetailPane(it) }
-        ?.let { secondaryLookup.getOrPut(primary.first()) { NavStackList(listOf(it)) } }
-      NavStackList(primary.toList()) to secondaryLookup.toMap()
+        ?.let { secondaryLookup.getOrPut(primary.first()) { navStackListOf(it) } }
+      navStackListOf(primary.toList()) to secondaryLookup.toMap()
     }
   }

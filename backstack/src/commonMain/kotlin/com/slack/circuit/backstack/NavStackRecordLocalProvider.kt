@@ -43,7 +43,7 @@ public fun <R : NavStack.Record> providedValuesForNavStack(
   backStackLocalProviders: List<NavStackRecordLocalProvider<R>> = emptyList(),
 ): Map<R, ProvidedValues> =
   buildMap(navStack.size) {
-    navStack.snapshot().forEach { record ->
+    navStack.snapshot()?.forEach { record ->
       key(record) {
         put(
           record,

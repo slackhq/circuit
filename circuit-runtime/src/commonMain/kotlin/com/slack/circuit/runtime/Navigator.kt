@@ -36,7 +36,7 @@ public interface Navigator : GoToNavigator {
   /** Returns the current back stack. */
   public fun peekBackStack(): List<Screen>
 
-  public fun peekNavStack(): NavStackList<Screen>
+  public fun peekNavStack(): NavStackList<Screen>?
 
   /**
    * Clear the existing backstack of [screens][Screen] and navigate to [newRoot].
@@ -128,41 +128,11 @@ public interface Navigator : GoToNavigator {
 
     override fun peekBackStack(): List<Screen> = emptyList()
 
-    override fun peekNavStack(): NavStackList<Screen> = EmptyNavStackList
+    override fun peekNavStack(): NavStackList<Screen>? = null
 
     override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> = emptyList()
   }
 }
-
-/**
- * A lightweight view of a navigation stack state, used by [Navigator] to provide context about the
- * current navigation position and history.
- *
- * @param T The type of entries stored in the navigation stack
- * @param entries The complete list of entries, ordered from top (newest, index 0) to root (oldest,
- *   last index)
- * @param currentIndex The index of the currently active/visible entry in [entries]. Defaults to 0
- *   (top).
- */
-public data class NavStackList<T>(val entries: List<T>, val currentIndex: Int = 0) {
-  /** The number of entries in the stack. */
-  public val size: Int
-    get() = entries.size
-
-  /** The top (newest) entry in the stack at index 0. Could be in the forward history. */
-  public val top: T
-    get() = entries.first()
-
-  /** The currently active/visible entry at [currentIndex]. */
-  public val current: T
-    get() = entries[currentIndex]
-
-  /** The root (oldest) entry in the stack at the last index. */
-  public val root: T
-    get() = entries.last()
-}
-
-internal val EmptyNavStackList = NavStackList<Screen>(emptyList())
 
 /** Parameter based alternate for [Navigator.resetRoot]. */
 public fun Navigator.resetRoot(

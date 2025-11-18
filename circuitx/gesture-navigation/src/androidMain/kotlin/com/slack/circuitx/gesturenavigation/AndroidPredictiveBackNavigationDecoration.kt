@@ -95,7 +95,7 @@ internal class AndroidPredictiveNavDecorator<T : NavArgument>(
         enabled = { showBackward },
         isSeeking = { isSeeking },
         shape = MaterialTheme.shapes.extraLarge,
-        elevation = 6.dp, // if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
+        elevation = 6.dp,
         transition = transition,
         offset = { swipeOffset },
         progress = { seekableTransitionState.fraction },

@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         // Build the delegate Navigator.
         val interceptingNavigator =
           rememberInterceptingNavigator(
+            navStack = navStack,
             navigator = navigator,
             interceptors = interceptors,
             eventListeners = eventListeners,

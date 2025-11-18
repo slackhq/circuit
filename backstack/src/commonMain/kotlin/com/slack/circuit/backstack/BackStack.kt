@@ -16,7 +16,6 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.backstack.NavStack.Record
 
 /**
@@ -30,21 +29,4 @@ import com.slack.circuit.backstack.NavStack.Record
 public interface BackStack<R : Record> : NavStack<R>, Iterable<R> {
 
   @Stable public interface Record : NavStack.Record
-}
-
-/** `true` if the [BackStack] contains no records. [Iterable.firstOrNull] will return `null`. */
-public val BackStack<out Record>.isEmpty: Boolean
-  get() = size == 0
-
-/** `true` if the [BackStack] contains exactly one record. */
-public val BackStack<out Record>.isAtRoot: Boolean
-  get() = size == 1
-
-/** Clear any saved state from the [BackStack]. */
-public fun BackStack<out Record>.clearState() {
-  Snapshot.withMutableSnapshot {
-    for (screen in peekState()) {
-      removeState(screen)
-    }
-  }
 }

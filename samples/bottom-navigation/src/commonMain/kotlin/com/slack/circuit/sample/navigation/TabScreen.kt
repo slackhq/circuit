@@ -5,6 +5,7 @@ package com.slack.circuit.sample.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -133,33 +134,33 @@ fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier =
   SharedElementTransitionScope {
     val navStack = LocalNavStack.current?.snapshot()
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-      Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        IconButton(
-          enabled = state.canGoBack,
-          onClick = { state.eventSink(TabScreenCircuit.Event.Backward) },
-        ) {
-          Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
-        }
-        IconButton(
-          enabled = state.canGoForward,
-          onClick = { state.eventSink(TabScreenCircuit.Event.Forward) },
-        ) {
-          Icon(Icons.AutoMirrored.Default.ArrowForward, contentDescription = "Forward")
+      Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Row(modifier = Modifier.align(Alignment.CenterStart)) {
+          IconButton(
+            enabled = state.canGoBack,
+            onClick = { state.eventSink(TabScreenCircuit.Event.Backward) },
+          ) {
+            Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+          }
+          IconButton(
+            enabled = state.canGoForward,
+            onClick = { state.eventSink(TabScreenCircuit.Event.Forward) },
+          ) {
+            Icon(Icons.AutoMirrored.Default.ArrowForward, contentDescription = "Forward")
+          }
         }
         Text(
           text = state.label,
           style = MaterialTheme.typography.headlineMedium,
-          modifier = Modifier.testTag(ContentTags.TAG_LABEL).weight(1f),
+          modifier = Modifier.testTag(ContentTags.TAG_LABEL).align(Alignment.Center),
         )
         if (state.hasDetails) {
           Button(
             colors = ButtonDefaults.outlinedButtonColors(),
             onClick = { state.eventSink(TabScreenCircuit.Event.Details(screen)) },
             modifier =
-              Modifier.sharedBounds(
+              Modifier.align(Alignment.CenterEnd)
+                .sharedBounds(
                   sharedContentState = rememberSharedContentState(key = "${screen}-details"),
                   animatedVisibilityScope = requireAnimatedScope(Navigation),
                 )

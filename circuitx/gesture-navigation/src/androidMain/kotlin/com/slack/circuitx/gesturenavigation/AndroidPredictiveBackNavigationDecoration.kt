@@ -108,10 +108,7 @@ internal class AndroidPredictiveNavDecorator<T : NavArgument>(
   object Factory : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
       return AndroidPredictiveNavDecorator(
-        onBackInvoked = {
-          // todo Handle root?
-          navigator.backward()
-        },
+        onBackInvoked = { navigator.pop() },
         onForwardInvoked = { navigator.forward() },
       )
     }

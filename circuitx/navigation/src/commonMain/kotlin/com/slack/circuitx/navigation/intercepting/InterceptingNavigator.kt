@@ -56,7 +56,7 @@ public fun rememberInterceptingNavigator(
       )
     }
   // Handle the back button here to get pop events from it.
-  if (enableBackHandler && !navStack.isAtRoot) {
+  if (enableBackHandler) {
     // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
     // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
     val hasScreenChanged = remember {
@@ -73,7 +73,7 @@ public fun rememberInterceptingNavigator(
     var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
     NavigationBackHandler(
       state = rememberNavigationEventState(NavigationEventInfo.None),
-      isBackEnabled = enableRootBackHandler,
+      isBackEnabled = enableRootBackHandler && !navStack.isAtRoot,
       onBackCompleted = {
         // Root pop check to prevent an infinite loop if this is used with the Android variant of
         // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need

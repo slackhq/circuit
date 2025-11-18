@@ -106,7 +106,8 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
 
     PredictiveNavEventHandler(
       isBackEnabled = backwardState != null,
-      isForwardEnabled = forwardState != null,
+      // If we're at root, disable forward so system predictive back works..
+      isForwardEnabled = forwardState != null && backwardState != null,
       onProgress = { direction, progress, offset ->
         when (direction) {
           PredictiveNavDirection.Back -> {

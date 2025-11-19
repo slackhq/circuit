@@ -7,118 +7,61 @@ import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 
 /**
- * A navigation stack that supports forward navigation in addition to backward navigation. This is
- * the base interface for navigation stacks in Circuit.
+ * A navigation stack supporting bidirectional navigation with browser-style forward/backward
+ * traversal.
  *
- * ## Navigation Model
+ * Manages [Record]s in a list with position tracking, enabling navigation without modifying the
+ * stack structure. Key positions are [topRecord] (newest), [currentRecord] (active), and
+ * [rootRecord] (oldest).
  *
- * NavStack maintains a list of records with a current position, supporting browser-style
- * navigation:
- * - **topRecord**: The newest entry (most recently added)
- * - **currentRecord**: The currently visible/active entry
- * - **rootRecord**: The oldest entry (initial screen)
+ * Supports multiple independent nav stacks (e.g., bottom nav tabs) via [saveState], [restoreState],
+ * [peekState], and [removeState]. State is keyed by root screen.
  *
- * Navigation operations:
- * - **add()**: Adds a new entry at the top and truncates forward history
- * - **remove()**: Removes the current entry (and forward history), makes the next entry current
- * - **move()**: Changes position without modifying the stack
- * - **snapshot()**: Captures the current state immutably
- *
- * ## Example Usage
- *
- * ```kotlin
- * val navStack = rememberSaveableNavStack(HomeScreen)
- *
- * // Build up a stack: [Home, Profile, Settings]
- * navStack.add(ProfileScreen)
- * navStack.add(SettingsScreen)
- * // Stack: [Settings (current), Profile, Home]
- *
- * // Navigate backward through history
- * navStack.move(Direction.Backward)
- * // Stack: [Settings, Profile (current), Home]
- *
- * navStack.move(Direction.Backward)
- * // Stack: [Settings, Profile, Home (current)]
- *
- * // Navigate forward
- * navStack.move(Direction.Forward)
- * // Stack: [Settings, Profile (current), Home]
- *
- * // Adding a new screen truncates forward history
- * navStack.add(NotificationsScreen)
- * // Stack: [Notifications (current), Profile, Home]
- * // Settings was removed from forward history
- *
- * // Remove current entry (also truncates forward history if any)
- * navStack.remove()
- * // Stack: [Profile (current), Home]
- * ```
- *
- * @see SaveableNavStack for a concrete implementation
+ * @see SaveableNavStack for the primary implementation
+ * @see NavStackList for immutable snapshots
  */
 @Stable
 public interface NavStack<R : Record> {
   /** The number of records in the stack. */
   public val size: Int
 
-  /**
-   * The top-most (newest) record in the stack, or `null` if the stack is empty. This is always the
-   * most recently added record, regardless of the current position.
-   */
+  /** The top-most (newest) record, or null if empty. Always the most recently added record. */
   public val topRecord: R?
 
   /**
-   * The currently active record in the stack, or `null` if the stack is empty. This is the record
-   * at the current navigation position, which may differ from [topRecord] when the user has
-   * navigated backward.
+   * The currently active record, or null if empty. May differ from [topRecord] when navigated
+   * backward.
    */
   public val currentRecord: R?
 
-  /**
-   * The bottom-most (oldest) record in the stack, or `null` if the stack is empty. This is
-   * typically the initial root screen of the navigation flow.
-   */
+  /** The bottom-most (oldest) record, or null if empty. Typically the initial root screen. */
   public val rootRecord: R?
 
   /**
-   * Adds a screen to the stack, wrapping it in a new [Record].
+   * Adds a screen to the stack. Truncates forward history if not at top.
    *
-   * Implementations may truncate forward history when adding from a non-top position, similar to
-   * browser navigation behavior.
-   *
-   * @param screen The screen to add
-   * @return true if the screen was added, false if it was a duplicate of the current top
+   * @return true if added, false otherwise
    */
   public fun push(screen: Screen): Boolean
 
   /**
-   * Adds a record to the stack.
+   * Adds a record to the stack. Truncates forward history if not at top.
    *
-   * Implementations may truncate forward history when adding from a non-top position, similar to
-   * browser navigation behavior.
-   *
-   * @param record The record to add
-   * @return true if the record was added, false if it was a duplicate of the current top
+   * @return true if added, false otherwise
    */
   public fun push(record: R): Boolean
 
   /**
-   * Removes and returns the current record from the stack.
+   * Removes and returns the current record, truncating forward history.
    *
-   * When called from a non-top position, this operation:
-   * 1. Truncates any forward history (entries between top and current)
-   * 2. Removes the current record
-   * 3. Sets the new top as current
-   *
-   * This provides browser-like "remove and discard forward history" behavior.
-   *
-   * @return The removed record, or null if the stack is empty
+   * @return The removed record, or null if empty
    */
   public fun pop(): R?
 
   /**
-   * Pop records off the top of the backstack until one is found that matches the given predicate.
+   * Pops records until one matches the predicate.
+   *
+   * @return List of popped records
    */
   public fun popUntil(predicate: (R) -> Boolean): List<R> {
     return buildList {
@@ -129,116 +72,115 @@ public interface NavStack<R : Record> {
     }
   }
 
+  /**
+   * Move forward in navigation history towards the [topRecord].
+   *
+   * @return true if moved, false otherwise.
+   */
   public fun forward(): Boolean
 
+  /**
+   * Move backward in navigation history towards the [rootRecord].
+   *
+   * @return true if moved, false otherwise.
+   */
   public fun backward(): Boolean
 
   /**
-   * Creates a snapshot of the current stack state.
+   * Creates an immutable snapshot of the current stack state.
    *
-   * The returned snapshot is immutable and can be used to capture the current navigation state for
-   * inspection, serialization, or other purposes.
-   *
-   * @return A [NavStackList] representing the current stack state, null if the stack is empty.
+   * @return [NavStackList] of current state, or null if empty.
    */
   public fun snapshot(): NavStackList<R>?
 
-  /**
-   * Saves the current stack entry list and position in an internal state store. It can be later
-   * restored by the root screen to [restoreState].
-   *
-   * The saved state includes both the list of records and the current position, allowing for
-   * complete restoration of the navigation state.
-   *
-   * This call will overwrite any existing stored state with the same root screen.
-   */
+  /** Saves the current stack to an internal store, keyed by the root screen. */
   public fun saveState()
 
   /**
-   * Restores the saved state with the given [screen], adding it on top of the existing entry list.
-   * If you wish to replace the current entry list, you should [pop] all of the existing entries
-   * before calling this function.
+   * Restores previously saved state for the given root [screen], replacing the current stack.
    *
-   * @param screen The root screen which was previously saved using [saveState].
-   * @return Returns true if there was any stack state to restore.
+   * @return true if state was restored, false if no saved state found
    */
   public fun restoreState(screen: Screen): Boolean
 
   /**
-   * Peek at the [Screen] in the internal state store that have been saved using [saveState].
+   * Returns list of root screens that have saved state.
    *
-   * @return The list of [Screen]s currently in the internal state store, will be empty if there is
-   *   no saved state.
+   * @return List of screens with saved state, empty if none.
    */
   public fun peekState(): List<Screen>
 
   /**
-   * Removes the state associated with the given [screen] from the internal state store.
+   * Removes saved state for the given [screen].
    *
-   * @return true if the state was removed, false if no state was found for the given screen.
+   * @return true if state was removed, false otherwise.
    */
   public fun removeState(screen: Screen): Boolean
 
   /**
-   * Whether the stack contains the given [record].
+   * Checks if the stack contains the given [record].
    *
-   * @param includeSaved Whether to also check if the record is contained by any saved stack state.
-   *   See [saveState].
+   * @param includeSaved Whether to also check saved stack states
    */
   public fun containsRecord(record: R, includeSaved: Boolean): Boolean
 
   /**
-   * Whether a record with the given [key] is reachable within the stack or saved state. Reachable
-   * means that it is either currently in the visible stack or if we popped `depth` times, it would
-   * be found.
+   * Checks if a record with the given [key] is reachable within [depth] pops from current position.
    *
-   * @param key The record's key to look for.
-   * @param depth How many records to consider popping from the top of the stack before considering
-   *   the key unreachable. A depth of zero means only check the current visible stack. A depth of 1
-   *   means check the current visible stack plus one record popped off the top, and so on.
-   * @param includeSaved Whether to also check if the record is contained by any saved stack state.
-   *   See [saveState].
+   * @param key The record key to find
+   * @param depth Depth to search (0 = the current record, 1 = single record before and after)
+   * @param includeSaved Whether to also check saved states
    */
   public fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean
 
+  /**
+   * A record in the navigation stack, wrapping a [Screen] with a unique identity.
+   *
+   * Each record has a stable [key] for identity tracking across configuration changes and state
+   * restoration.
+   */
   @Stable
   public interface Record {
     /**
-     * A value that identifies this record uniquely, even if it shares the same [screen] with
-     * another record. This key may be used by [NavStackRecordLocalProvider]s to associate
-     * presentation data with a record across composition recreation.
-     *
-     * [key] MUST NOT change for the life of the record.
+     * Unique identifier for this record. Remains stable across configuration changes and must not
+     * change for the life of the record. Used to associate retained and saved data with records.
      */
     public val key: String
 
-    /** The [Screen] that should present this record. */
+    /** The [Screen] that this record presents. */
     public val screen: Screen
   }
 }
 
+/** The screen of the current record, or null if empty. */
 public val NavStack<out Record>.currentScreen: Screen?
   get() = currentRecord?.screen
 
+/** True if the stack is empty. */
 public val NavStack<out Record>.isEmpty: Boolean
   get() = size == 0
 
+/** The index of the last record in the stack. */
 public val NavStack<out Record>.lastIndex: Int
   get() = size - 1
 
+/** True if the current position is at the root. */
 public val NavStack<out Record>.isAtRoot: Boolean
   get() = currentRecord == rootRecord
 
+/** True if the current position is at the top. */
 public val NavStack<out Record>.isAtTop: Boolean
   get() = currentRecord == topRecord
 
+/** True if we can navigate backwards (not at root). */
 public val NavStack<out Record>.canGoBack: Boolean
   get() = currentRecord != rootRecord
 
+/** True if we can navigate forwards (not at top). */
 public val NavStack<out Record>.canGoForward: Boolean
   get() = currentRecord != topRecord
 
-/** Clear any saved state from the [BackStack]. */
+/** Clears all saved state from the stack. */
 public fun NavStack<out Record>.clearState() {
   Snapshot.withMutableSnapshot {
     for (screen in peekState()) {

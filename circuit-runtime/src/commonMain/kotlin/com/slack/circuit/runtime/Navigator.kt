@@ -7,13 +7,18 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
-/** A Navigator that only supports [goTo]. */
+/**
+ * A minimal navigation interface that only supports forward navigation via [goTo].
+ *
+ * @see Navigator for the full navigation interface
+ */
 @Stable
 public interface GoToNavigator {
   /**
    * Navigate to the [screen].
    *
-   * @return If the navigator successfully went to the [screen]
+   * @return true if the navigator successfully navigated to the [screen], false if the navigation
+   *   was rejected.
    */
   public fun goTo(screen: Screen): Boolean
 }
@@ -23,19 +28,36 @@ public interface GoToNavigator {
 public interface Navigator : GoToNavigator {
   public override fun goTo(screen: Screen): Boolean
 
+  /**
+   * Move forward in navigation history toward the top.
+   *
+   * @return true if moved forward, false if already at the top or no forward history exists
+   */
   public fun forward(): Boolean
 
-  // todo PopResult? Root behavior?
+  /**
+   * Move backward in navigation history toward the root.
+   *
+   * @return true if moved backward, false if already at the root
+   */
+  // todo PopResult? Root behavior? Should this be an option pop?
   public fun backward(): Boolean
 
+  /**
+   * Remove and return the current screen from the navigation stack.
+   *
+   * @param result Optional result to pass back to the previous screen
+   * @return The removed screen, or null if the stack is empty
+   */
   public fun pop(result: PopResult? = null): Screen?
 
-  /** Returns current top most screen of backstack, or null if backstack is empty. */
+  /** Returns current top most screen of backstack, or null if the navStack is empty. */
   public fun peek(): Screen?
 
   /** Returns the current back stack. */
   public fun peekBackStack(): List<Screen>
 
+  /** Returns a snapshot of the current navigation stack, or null if empty. */
   public fun peekNavStack(): NavStackList<Screen>?
 
   /**
@@ -115,6 +137,7 @@ public interface Navigator : GoToNavigator {
     }
   }
 
+  /** A no-op implementation of [Navigator] that performs no actual navigation. */
   public object NoOp : Navigator {
     override fun goTo(screen: Screen): Boolean = true
 

@@ -5,6 +5,5 @@ package com.slack.circuitx.gesturenavigation
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory = fallback

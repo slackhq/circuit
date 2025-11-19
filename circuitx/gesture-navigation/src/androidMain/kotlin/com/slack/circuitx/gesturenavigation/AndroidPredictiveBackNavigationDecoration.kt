@@ -17,8 +17,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
@@ -27,27 +25,28 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
-import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.runtime.Navigator
 import kotlin.math.absoluteValue
 
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
   return when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavDecorator.Factory
     else -> fallback
   }
 }
 
-internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked: () -> Unit) :
-  PredictiveBackNavigationDecorator<T>(onBackInvoked) {
+internal class AndroidPredictiveNavDecorator<T : NavArgument>(
+  onBackInvoked: () -> Unit,
+  onForwardInvoked: () -> Unit,
+) : PredictiveNavigationDecorator<T>(onBackInvoked, onForwardInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -57,13 +56,20 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
     return when (animatedNavEvent) {
-      // adding to back stack
+      // Adding to back stack
+      AnimatedNavEvent.Forward,
       AnimatedNavEvent.GoTo -> {
-        NavigatorDefaults.forward
+        if (showForward) {
+          // Handle all the animation in draggable
+          EnterTransition.None togetherWith ExitTransition.None
+        } else {
+          NavigatorDefaults.forward
+        }
       }
       // come back from back stack
+      AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
-        if (showPrevious) {
+        if (showBackward) {
             // Handle all the animation in predictiveBackMotion
             EnterTransition.None togetherWith ExitTransition.None
           } else {
@@ -86,22 +92,25 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
   ) {
     Box(
       Modifier.predictiveBackMotion(
-        enabled = { showPrevious },
+        enabled = { showBackward },
         isSeeking = { isSeeking },
         shape = MaterialTheme.shapes.extraLarge,
-        elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
+        elevation = 6.dp,
         transition = transition,
         offset = { swipeOffset },
         progress = { seekableTransitionState.fraction },
       )
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navStack.current)
     }
   }
 
-  class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
-      return AndroidPredictiveBackNavDecorator(onBackInvoked = onBackInvoked)
+  object Factory : AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
+      return AndroidPredictiveNavDecorator(
+        onBackInvoked = { navigator.pop() },
+        onForwardInvoked = { navigator.forward() },
+      )
     }
   }
 }

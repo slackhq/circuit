@@ -16,16 +16,11 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.Snapshot
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.backstack.SaveableBackStack.Record
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.screen.Screen
-import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -40,8 +35,10 @@ import kotlin.uuid.Uuid
 public fun rememberSaveableBackStack(
   root: Screen,
   init: SaveableBackStack.() -> Unit = {},
-): SaveableBackStack =
-  rememberSaveable(root, saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
+): SaveableBackStack {
+  val navStack = rememberSaveableNavStack(root)
+  return remember(navStack) { SaveableBackStack(navStack).apply { init() } }
+}
 
 /**
  * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
@@ -51,13 +48,8 @@ public fun rememberSaveableBackStack(
 @Composable
 public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
-  return rememberSaveable(initialScreens, saver = SaveableBackStack.Saver) {
-    SaveableBackStack().apply {
-      for (screen in initialScreens) {
-        push(screen)
-      }
-    }
-  }
+  val navStack = rememberSaveableNavStack(initialScreens)
+  return remember(navStack) { SaveableBackStack(navStack) }
 }
 
 /**
@@ -66,9 +58,8 @@ public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBack
  */
 public class SaveableBackStack
 internal constructor(
-  // Both visible for testing
-  internal val entryList: SnapshotStateList<Record> = mutableStateListOf(),
-  internal val stateStore: MutableMap<Screen, List<Record>> = mutableMapOf(),
+  // Visible for testing
+  internal val delegate: SaveableNavStack = SaveableNavStack()
 ) : BackStack<Record> {
 
   public constructor(root: Screen) : this(Record(root))
@@ -78,92 +69,87 @@ internal constructor(
   }
 
   override val size: Int
-    get() = entryList.size
+    get() = delegate.size
 
-  override fun iterator(): Iterator<Record> = entryList.iterator()
+  override fun iterator(): Iterator<Record> =
+    delegate.entryList.iterator().asSequence().map { Record(it) }.iterator()
 
-  public override val topRecord: Record?
-    get() = entryList.firstOrNull()
+  override val topRecord: Record?
+    get() = delegate.topRecord?.let { Record(it) }
+
+  override val currentRecord: Record?
+    get() = delegate.currentRecord?.let { Record(it) }
 
   override val rootRecord: Record?
-    get() = entryList.lastOrNull()
+    get() = delegate.rootRecord?.let { Record(it) }
 
-  public override fun push(screen: Screen): Boolean {
-    return push(screen, emptyMap())
+  override fun forward(): Boolean = false
+
+  override fun backward(): Boolean {
+    return delegate.pop() != null
   }
 
-  public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
-    return push(Record(screen, args))
-  }
+  public override fun push(screen: Screen): Boolean = push(Record(screen))
 
   public override fun push(record: Record): Boolean {
-    val topRecord = Snapshot.withoutReadObservation { topRecord }
-    // Guard pushing the exact same record value to the top, records.key is always unique so verify
-    // the parameters individually.
-    return if (topRecord?.screen != record.screen || topRecord.args != record.args) {
-      entryList.add(0, record)
-      true
-    } else false
+    return delegate.push(SaveableNavStack.Record(record.screen, record.args, record.key))
   }
 
   override fun pop(): Record? {
-    return Snapshot.withoutReadObservation { entryList.removeFirstOrNull() }
+    return delegate.pop()?.let { Record(it) }
+  }
+
+  override fun snapshot(): NavStackList<Record>? {
+    return delegate.snapshot()?.let { BackStackList(it) }
   }
 
   override fun saveState() {
-    val rootScreen = entryList.last().screen
-    stateStore[rootScreen] = entryList.toList()
+    delegate.saveState()
   }
 
   override fun restoreState(screen: Screen): Boolean {
-    val stored = stateStore[screen]
-    if (!stored.isNullOrEmpty()) {
-      // Add the store state into the entry list
-      entryList.addAll(stored)
-      // Clear the stored state
-      stateStore.remove(screen)
-      return true
-    }
-    return false
+    return delegate.restoreState(screen)
   }
 
   override fun peekState(): List<Screen> {
-    return stateStore.keys.toList()
+    return delegate.peekState()
   }
 
   override fun removeState(screen: Screen): Boolean {
-    return stateStore.remove(screen) != null
+    return delegate.removeState(screen)
   }
 
   override fun containsRecord(record: Record, includeSaved: Boolean): Boolean {
-    // If it's in the main entry list, return true
-    if (record in entryList) return true
-
-    if (includeSaved && stateStore.isNotEmpty()) {
-      // If we're checking our saved lists too, iterate through them and check
-      for (stored in stateStore.values) {
-        if (record in stored) return true
-      }
-    }
-    return false
+    return delegate.containsRecord(
+      SaveableNavStack.Record(record.screen, record.args, record.key),
+      includeSaved,
+    )
   }
 
   override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
-    if (depth < 0) return false
-    // Check in the current entry list
-    for (i in 0 until min(depth, entryList.size)) {
-      if (entryList[i].key == key) return true
+    return delegate.isRecordReachable(key, depth, includeSaved)
+  }
+
+  /**
+   * A snapshot of a back stack state. Since BackStack always has current at the top, currentIndex
+   * is always 0.
+   */
+  private data class BackStackList(val other: NavStackList<SaveableNavStack.Record>) :
+    NavStackList<Record> {
+
+    override val top: Record = Record(other.top)
+    override val current: Record = Record(other.current)
+    override val root: Record = Record(other.root)
+
+    override val forward: Iterable<Record>
+      get() = other.forward.map { Record(it) }
+
+    override val backward: Iterable<Record>
+      get() = other.backward.map { Record(it) }
+
+    override fun iterator(): Iterator<Record> {
+      return other.iterator().asSequence().map { Record(it) }.iterator()
     }
-    // If includeSaved, check saved backstack states too
-    if (includeSaved && stateStore.isNotEmpty()) {
-      val storedValues = stateStore.values
-      for ((i, stored) in storedValues.withIndex()) {
-        if (i >= depth) break
-        // stored can mutate, so safely get the record.
-        if (stored.getOrNull(i)?.key == key) return true
-      }
-    }
-    return false
   }
 
   public data class Record(
@@ -171,58 +157,6 @@ internal constructor(
     val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : BackStack.Record {
-
-    internal companion object {
-      val Saver: Saver<Record, Any> =
-        mapSaver(
-          save = { value ->
-            buildMap {
-              put("screen", value.screen)
-              put("args", value.args)
-              put("key", value.key)
-            }
-          },
-          restore = { map ->
-            @Suppress("UNCHECKED_CAST")
-            Record(
-              screen = map["screen"] as Screen,
-              args = map["args"] as Map<String, Any?>,
-              key = map["key"] as String,
-            )
-          },
-        )
-    }
-  }
-
-  internal companion object {
-    @Suppress("UNCHECKED_CAST")
-    val Saver =
-      listSaver<SaveableBackStack, List<Any?>>(
-        save = { value ->
-          buildList {
-            with(Record.Saver) {
-              // First list is the entry list
-              add(value.entryList.mapNotNull { save(it) })
-              // Now add any stacks from the state store
-              value.stateStore.values.forEach { records -> add(records.mapNotNull { save(it) }) }
-            }
-          }
-        },
-        restore = { value ->
-          SaveableBackStack().also { backStack ->
-            value.forEachIndexed { index, list ->
-              if (index == 0) {
-                // The first list is the entry list
-                list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
-              } else {
-                // Any list after that is from the state store
-                val records = list.mapNotNull { Record.Saver.restore(it as List<Any>) }
-                // The key is always the root screen (i.e. last item)
-                backStack.stateStore[records.last().screen] = records
-              }
-            }
-          }
-        },
-      )
+    internal constructor(other: SaveableNavStack.Record) : this(other.screen, other.args, other.key)
   }
 }

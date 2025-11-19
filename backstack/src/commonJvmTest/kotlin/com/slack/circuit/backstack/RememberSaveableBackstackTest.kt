@@ -20,7 +20,7 @@ class RememberSaveableBackstackTest {
   fun backStackStartsWithRootScreen() = runTest {
     moleculeFlow(RecompositionMode.Immediate) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        backStack.toList()
+        backStack.peekNavStack()
       }
       .test { assertEquals(awaitItem().first().screen, TestScreen.ScreenA) }
   }
@@ -52,8 +52,8 @@ class RememberSaveableBackstackTest {
         val secondStack = awaitItem()
 
         assertNotSame(firstStack, secondStack)
-        assertEquals(firstStack.toList().first().screen, TestScreen.ScreenA)
-        assertEquals(secondStack.toList().first().screen, TestScreen.ScreenB)
+        assertEquals(firstStack.peekNavStack().first().screen, TestScreen.ScreenA)
+        assertEquals(secondStack.peekNavStack().first().screen, TestScreen.ScreenB)
       }
   }
 
@@ -67,8 +67,8 @@ class RememberSaveableBackstackTest {
         val secondStack = awaitItem()
 
         assertNotSame(firstStack, secondStack)
-        assertEquals(firstStack.toList().first().screen, TestScreen.ScreenA)
-        assertEquals(secondStack.toList().first().screen, TestScreen.ScreenB)
+        assertEquals(firstStack.peekNavStack().first().screen, TestScreen.ScreenA)
+        assertEquals(secondStack.peekNavStack().first().screen, TestScreen.ScreenB)
       }
   }
 }

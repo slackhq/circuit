@@ -11,12 +11,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.BackStackRecordLocalProvider
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.backstack.NavStack
+import com.slack.circuit.backstack.NavStackRecordLocalProvider
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
-import com.slack.circuit.foundation.backstack.ViewModelBackStackRecordLocalProvider
+import com.slack.circuit.foundation.backstack.ViewModelNavStackRecordLocalProvider
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.ExperimentalCircuitApi
@@ -106,7 +106,7 @@ public class Circuit private constructor(builder: Builder) {
    */
   public val presentWithLifecycle: Boolean = builder.presentWithLifecycle
 
-  public val backStackLocalProviders: List<BackStackRecordLocalProvider<BackStack.Record>> =
+  public val backStackLocalProviders: List<NavStackRecordLocalProvider<NavStack.Record>> =
     builder.backStackLocalProviders.toList()
 
   @OptIn(InternalCircuitApi::class)
@@ -189,8 +189,8 @@ public class Circuit private constructor(builder: Builder) {
       private set
 
     public val backStackLocalProviders:
-      MutableList<BackStackRecordLocalProvider<BackStack.Record>> =
-      mutableListOf(ViewModelBackStackRecordLocalProvider)
+      MutableList<NavStackRecordLocalProvider<NavStack.Record>> =
+      mutableListOf(ViewModelNavStackRecordLocalProvider)
 
     @OptIn(ExperimentalCircuitApi::class)
     internal constructor(circuit: Circuit) : this() {
@@ -291,11 +291,11 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     public fun addBackStackRecordLocalProvider(
-      provider: BackStackRecordLocalProvider<BackStack.Record>
+      provider: NavStackRecordLocalProvider<NavStack.Record>
     ): Builder = apply { backStackLocalProviders.add(provider) }
 
     public fun addBackStackRecordLocalProvider(
-      vararg providers: BackStackRecordLocalProvider<BackStack.Record>
+      vararg providers: NavStackRecordLocalProvider<NavStack.Record>
     ): Builder = apply {
       for (p in providers) {
         backStackLocalProviders.add(p)
@@ -303,7 +303,7 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     public fun addBackStackRecordLocalProviders(
-      providers: Iterable<BackStackRecordLocalProvider<BackStack.Record>>
+      providers: Iterable<NavStackRecordLocalProvider<NavStack.Record>>
     ): Builder = apply { backStackLocalProviders.addAll(providers) }
 
     public fun clearBackStackRecordLocalProviders(): Builder = apply {

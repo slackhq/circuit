@@ -18,8 +18,8 @@ class IOSGestureNavigationStateTest : GestureNavigationStateTest {
     TODO("Revisit testing with swipeRight() after the upstream navigation event changes.")
   }
 
-  private fun decoratorFactory(navigator: Navigator): IOSPredictiveBackNavDecorator.Factory {
-    return IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
+  private fun decoratorFactory(navigator: Navigator): IOSPredictiveNavDecorator.Factory {
+    return IOSPredictiveNavDecorator.Factory(onBackInvoked = navigator::pop)
   }
 
   @Ignore

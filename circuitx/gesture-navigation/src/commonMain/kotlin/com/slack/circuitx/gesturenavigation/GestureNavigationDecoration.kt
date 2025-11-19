@@ -15,10 +15,7 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecorator
  *
  * @param fallback The [AnimatedNavDecorator.Factory] which should be used when running on platforms
  *   which [GestureNavigationDecorationFactory] does not support.
- * @param onBackInvoked A lambda which will be called when the user has invoked a 'back' gesture.
- *   Typically this should call `Navigator.pop()`.
  */
 public expect fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory = NavigatorDefaults.DefaultDecoratorFactory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory = NavigatorDefaults.DefaultDecoratorFactory
 ): AnimatedNavDecorator.Factory

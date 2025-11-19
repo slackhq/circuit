@@ -16,6 +16,7 @@ detekt = "1.23.8"
 dokka = "2.1.0"
 eithernet = "2.0.0"
 jb-compose = "1.10.0-beta01"
+jb-compose-adaptive = "1.1.2"
 jb-compose-material-icons-core = "1.7.3"
 jb-compose-material3 = "1.9.0"
 jb-compose-navigationevent = "1.0.0-beta01"
@@ -120,6 +121,8 @@ compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", v
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jb-compose-material-icons-core" }
 compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "jb-compose" }
 compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jb-compose-material3" }
+compose-material-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "jb-compose-adaptive" }
+compose-material-material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "jb-compose-adaptive" }
 compose-navigationevent = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "jb-compose-navigationevent" }
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-runtime" }
 compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "jb-compose" }

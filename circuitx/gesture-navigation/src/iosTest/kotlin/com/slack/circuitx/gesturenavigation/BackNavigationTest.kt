@@ -86,12 +86,12 @@ class BackNavigationTest {
         if (useIntegratedBackHandler) {
           navigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              navStack = backStack,
               onRootPop = {},
               enableBackHandler = true,
             )
         } else {
-          navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+          navigator = rememberCircuitNavigator(navStack = backStack, onRootPop = {})
           NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
             navigator.pop()
           }
@@ -100,7 +100,7 @@ class BackNavigationTest {
           navigator = navigator,
           backStack = backStack,
           decoratorFactory =
-            remember { IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+            remember { IOSPredictiveNavDecorator.Factory(onBackInvoked = navigator::pop) },
         )
       }
     }

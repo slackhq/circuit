@@ -28,10 +28,11 @@ import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateLayer
 import androidx.compose.ui.unit.Constraints
-import com.slack.circuit.backstack.NavArgument
+import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.Navigator
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.collectLatest
@@ -41,21 +42,19 @@ import kotlinx.coroutines.launch
 private val End: (Int) -> Int = { it }
 
 /**
- * A factory that creates an [IOSPredictiveBackNavDecorator] for iOS predictive back navigation.
+ * A factory that creates an [IOSPredictiveNavDecorator] for iOS predictive back navigation.
  *
  * @param fallback The [AnimatedNavDecorator.Factory] to use when predictive back is not supported.
- * @param onBackInvoked A callback to be invoked when a back gesture is performed.
  * @return An [AnimatedNavDecorator.Factory] that provides iOS predictive back navigation.
  */
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
-  return IOSPredictiveBackNavDecorator.Factory(onBackInvoked = onBackInvoked)
+  return IOSPredictiveNavDecorator.Factory()
 }
 
 /**
- * iOS implementation of [PredictiveBackNavigationDecorator] that relies on
+ * iOS implementation of [PredictiveNavigationDecorator] that relies on
  * `androidx.compose.ui.backhandler.UIKitBackGestureDispatcher` to perform the predictive back
  * gesture.
  *
@@ -63,10 +62,10 @@ public actual fun GestureNavigationDecorationFactory(
  *   the content starts from. Defaults to 0.25f (25%).
  * @param onBackInvoked A callback to be invoked when a back gesture is performed.
  */
-internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
+internal class IOSPredictiveNavDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
   onBackInvoked: () -> Unit,
-) : PredictiveBackNavigationDecorator<T>(onBackInvoked) {
+) : PredictiveNavigationDecorator<T>(onBackInvoked) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -84,7 +83,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
       AnimatedNavEvent.Pop -> {
         slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           .togetherWith(
-            if (showPrevious) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
+            if (showBackward) ExitTransition.None else slideOutHorizontally(targetOffsetX = End)
           )
           .apply { targetContentZIndex = --zIndexDepth }
       }
@@ -107,7 +106,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
           targetState = targetState,
           transition = transition,
           isSeeking = { isSeeking },
-          showPrevious = { showPrevious },
+          showPrevious = { showBackward },
           swipeOffset = { swipeOffset },
         )
     ) {
@@ -115,14 +114,12 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
     }
   }
 
-  internal class Factory(
-    private val enterOffsetFraction: Float = 0.25f,
-    private val onBackInvoked: () -> Unit,
-  ) : AnimatedNavDecorator.Factory {
-    override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
-      return IOSPredictiveBackNavDecorator(
+  internal class Factory(private val enterOffsetFraction: Float = 0.25f) :
+    AnimatedNavDecorator.Factory {
+    override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
+      return IOSPredictiveNavDecorator(
         enterOffsetFraction = enterOffsetFraction,
-        onBackInvoked = onBackInvoked,
+        onBackInvoked = { navigator.pop() },
       )
     }
   }

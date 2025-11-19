@@ -14,6 +14,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.slack.circuit.backstack.NavStack
+import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -36,6 +38,7 @@ import com.slack.circuit.runtime.screen.Screen
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 public fun rememberInterceptingNavigator(
+  navStack: NavStack<*>,
   navigator: Navigator,
   interceptors: List<NavigationInterceptor> = emptyList(),
   eventListeners: List<NavigationEventListener> = emptyList(),
@@ -70,13 +73,13 @@ public fun rememberInterceptingNavigator(
     var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
     NavigationBackHandler(
       state = rememberNavigationEventState(NavigationEventInfo.None),
-      isBackEnabled = enableRootBackHandler,
+      isBackEnabled = enableRootBackHandler && !navStack.isAtRoot,
       onBackCompleted = {
         // Root pop check to prevent an infinite loop if this is used with the Android variant of
         // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need
         // to unload this BackHandler from the composition before the root pop is triggered, so
         // delay calling pop until after the next composition.
-        if (navigator.peekBackStack().size > 1) {
+        if (!navStack.isAtRoot) {
           interceptingNavigator.pop()
         } else {
           hasPendingRootPop = true

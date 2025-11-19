@@ -55,7 +55,7 @@ class NavigableCircuitSaveableStateTest {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val navigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              navStack = backStack,
               onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -126,7 +126,7 @@ class NavigableCircuitSaveableStateTest {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
           val navigator =
             rememberCircuitNavigator(
-              backStack = backStack,
+              navStack = backStack,
               onRootPop = {}, // no-op for tests
             )
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -222,7 +222,7 @@ class NavigableCircuitSaveableStateTest {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         val navigator =
           rememberCircuitNavigator(
-            backStack = backStack,
+            navStack = backStack,
             onRootPop = {}, // no-op for tests
           )
         CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {

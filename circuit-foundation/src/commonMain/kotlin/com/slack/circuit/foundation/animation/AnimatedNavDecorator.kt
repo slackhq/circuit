@@ -9,8 +9,8 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.screen.Screen
 
 /**

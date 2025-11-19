@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.circuit.backstack
+package com.slack.circuit.foundation.navstack
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
+import com.slack.circuit.runtime.navigation.NavStack
 
 @Stable
-public fun interface BackStackRecordLocalProvider<in R : BackStack.Record> {
+public fun interface NavStackRecordLocalProvider<in R : NavStack.Record> {
   @Composable public fun providedValuesFor(record: R): ProvidedValues
 }
 
@@ -38,12 +39,12 @@ internal class CompositeProvidedValues(private val list: List<ProvidedValues>) :
 }
 
 @Composable
-public fun <R : BackStack.Record> providedValuesForBackStack(
-  backStack: BackStack<R>,
-  backStackLocalProviders: List<BackStackRecordLocalProvider<R>> = emptyList(),
+public fun <R : NavStack.Record> providedValuesForNavStack(
+  navStack: NavStack<R>,
+  backStackLocalProviders: List<NavStackRecordLocalProvider<R>> = emptyList(),
 ): Map<R, ProvidedValues> =
-  buildMap(backStack.size) {
-    backStack.forEach { record ->
+  buildMap(navStack.size) {
+    navStack.snapshot()?.forEach { record ->
       key(record) {
         put(
           record,

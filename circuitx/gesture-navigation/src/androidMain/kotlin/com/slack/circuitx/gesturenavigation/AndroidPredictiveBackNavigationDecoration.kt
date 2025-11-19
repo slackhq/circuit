@@ -27,12 +27,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
 

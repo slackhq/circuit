@@ -1,0 +1,59 @@
+public abstract interface class com/slack/circuit/runtime/navigation/NavArgument {
+	public abstract fun getKey ()Ljava/lang/String;
+	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+}
+
+public abstract interface class com/slack/circuit/runtime/navigation/NavStack {
+	public abstract fun backward ()Z
+	public abstract fun containsRecord (Lcom/slack/circuit/runtime/navigation/NavStack$Record;Z)Z
+	public abstract fun forward ()Z
+	public abstract fun getCurrentRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public abstract fun getRootRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public abstract fun getSize ()I
+	public abstract fun getTopRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public abstract fun isRecordReachable (Ljava/lang/String;IZ)Z
+	public abstract fun peekState ()Ljava/util/List;
+	public abstract fun pop ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public fun popUntil (Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public abstract fun push (Lcom/slack/circuit/runtime/navigation/NavStack$Record;)Z
+	public abstract fun push (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public abstract fun removeState (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public abstract fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public abstract fun saveState ()V
+	public abstract fun snapshot ()Lcom/slack/circuit/runtime/navigation/NavStackList;
+}
+
+public abstract interface class com/slack/circuit/runtime/navigation/NavStack$Record : com/slack/circuit/runtime/navigation/NavArgument {
+	public abstract fun getKey ()Ljava/lang/String;
+	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+}
+
+public final class com/slack/circuit/runtime/navigation/NavStackKt {
+	public static final fun clearState (Lcom/slack/circuit/runtime/navigation/NavStack;)V
+	public static final fun getCanGoBack (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
+	public static final fun getCanGoForward (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
+	public static final fun getCurrentScreen (Lcom/slack/circuit/runtime/navigation/NavStack;)Lcom/slack/circuit/runtime/screen/Screen;
+	public static final fun getLastIndex (Lcom/slack/circuit/runtime/navigation/NavStack;)I
+	public static final fun isAtRoot (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
+	public static final fun isAtTop (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
+	public static final fun isEmpty (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
+}
+
+public abstract interface class com/slack/circuit/runtime/navigation/NavStackList : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
+	public abstract fun getBackward ()Ljava/lang/Iterable;
+	public abstract fun getCurrent ()Ljava/lang/Object;
+	public abstract fun getForward ()Ljava/lang/Iterable;
+	public abstract fun getRoot ()Ljava/lang/Object;
+	public abstract fun getTop ()Ljava/lang/Object;
+	public abstract fun iterator ()Ljava/util/Iterator;
+}
+
+public final class com/slack/circuit/runtime/navigation/NavStackListKt {
+	public static final fun navStackListOf (Ljava/lang/Iterable;)Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public static final fun navStackListOf (Ljava/lang/Object;)Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public static final fun navStackListOf (Ljava/util/List;Ljava/lang/Object;Ljava/util/List;)Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public static final fun navStackListOf ([Ljava/lang/Object;)Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public static synthetic fun navStackListOf$default (Ljava/util/List;Ljava/lang/Object;Ljava/util/List;ILjava/lang/Object;)Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public static final fun transform (Lcom/slack/circuit/runtime/navigation/NavStackList;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/navigation/NavStackList;
+}
+

@@ -48,7 +48,6 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitRuntimeScreen)
-        implementation(libs.compose.runtime.saveable)
       }
     }
   }

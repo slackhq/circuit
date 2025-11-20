@@ -18,6 +18,8 @@ public fun Navigator.onNavEvent(event: NavEvent) {
     is NavEvent.Pop -> pop(event.result)
     is NavEvent.GoTo -> goTo(event.screen)
     is NavEvent.ResetRoot -> resetRoot(event.newRoot, event.options)
+    is NavEvent.Backward -> backward()
+    is NavEvent.Forward -> forward()
   }
 }
 
@@ -39,4 +41,10 @@ public sealed interface NavEvent : CircuitUiEvent {
       clearState: Boolean = false,
     ) : this(newRoot, StateOptions(save = saveState, restore = restoreState, clear = clearState))
   }
+
+  /** Corresponds to [Navigator.forward]. */
+  public data object Forward : NavEvent
+
+  /** Corresponds to [Navigator.backward]. */
+  public data object Backward : NavEvent
 }

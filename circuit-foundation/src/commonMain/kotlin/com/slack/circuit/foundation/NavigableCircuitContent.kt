@@ -126,7 +126,7 @@ import kotlin.collections.mutableSetOf
  */
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
-public fun <R : BackStack.Record> NavigableCircuitContent(
+public fun <R : Record> NavigableCircuitContent(
   navigator: Navigator,
   navStack: NavStack<R>,
   modifier: Modifier = Modifier,
@@ -208,7 +208,7 @@ public fun <R : BackStack.Record> NavigableCircuitContent(
  */
 @ExperimentalCircuitApi // For AnsweringResultNavigator
 @Composable
-public fun <R : BackStack.Record> NavigableCircuitContent(
+public fun <R : Record> NavigableCircuitContent(
   navigator: AnsweringResultNavigator<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),

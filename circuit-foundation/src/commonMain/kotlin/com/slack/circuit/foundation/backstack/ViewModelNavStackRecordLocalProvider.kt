@@ -17,10 +17,10 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.retained.rememberRetained
-import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.foundation.navstack.NavStackRecordLocalProvider
 import com.slack.circuit.foundation.navstack.ProvidedValues
+import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.navigation.NavStack
 import kotlin.reflect.KClass
 
 /**

@@ -62,6 +62,9 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStack
+import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.navigation.transform
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -253,7 +256,9 @@ public fun <R : BackStack.Record> NavigableCircuitContent(
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
         }
-    val activeContentProviders = buildCircuitContentProviders(backStack = navigator.backStack)
+    val activeContentProviders =
+      buildCircuitContentProviders(navStack = navigator.backStack)
+        ?: return@CompositionLocalProvider
     val circuitProvidedValues =
       providedValuesForNavStack(navigator.backStack, circuit.navStackLocalProviders)
     navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
@@ -361,37 +366,37 @@ public class RecordContentProvider<R : Record>(
 @ExperimentalCircuitApi
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
-  backStack: BackStack<R>
-): List<RecordContentProvider<R>> {
+  navStack: NavStack<R>
+): NavStackList<RecordContentProvider<R>>? {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
-  val recordKeys by
-    remember { mutableStateOf(emptySet<String>()) }
-      .apply { value = backStack.mapTo(mutableSetOf()) { it.key } }
-  val latestBackStack by rememberUpdatedState(backStack)
+
+  val navStackList = navStack.snapshot()
+  val recordKeys = remember(navStackList) { buildSet { navStackList?.forEach { add(it.key) } } }
+  val latestNavStack by rememberUpdatedState(navStack)
   DisposableEffect(recordKeys) {
-    // Delay cleanup until the next backstack change.
+    // Delay cleanup until the next navstack change.
     // - Any record in composition is considered active
-    // - Any record in the backstack can be shown by a decorator
+    // - Any record in the navstack can be shown by a decorator
     // - Any reachable record can be shown on a root reset
-    val contentNotInBackStack =
+    val contentNotInNavStack =
       previousContentProviders.keys.filterNot {
         it in activeRecordKeys ||
           it in recordKeys ||
           // Depth of 2 to exclude records that are late at leaving the composition.
-          latestBackStack.isRecordReachable(key = it, depth = 2, includeSaved = true)
+          latestNavStack.isRecordReachable(key = it, depth = 2, includeSaved = true)
       }
     onDispose {
-      // Only remove the keys that are no longer in the backstack or composition.
-      contentNotInBackStack
+      // Only remove the keys that are no longer in the navstack or composition.
+      contentNotInNavStack
         .filterNot {
-          latestBackStack.isRecordReachable(key = it, depth = 1, includeSaved = true) ||
+          latestNavStack.isRecordReachable(key = it, depth = 1, includeSaved = true) ||
             it in activeRecordKeys
         }
         .forEach { previousContentProviders.remove(it) }
     }
   }
-  return backStack.map { record ->
+  return navStackList?.transform { record ->
     // Query the previous content providers map, so that we use the same
     // RecordContentProvider instances across calls.
     previousContentProviders.getOrPut(record.key) {
@@ -564,16 +569,16 @@ public object NavigatorDefaults {
   public class DefaultDecorator<T : NavArgument> :
     AnimatedNavDecorator<T, DefaultAnimatedState<T>> {
 
-    public data class DefaultAnimatedState<T : NavArgument>(val args: List<T>) : AnimatedNavState {
-      override val backStack: List<NavArgument> = args
-    }
+    public data class DefaultAnimatedState<T : NavArgument>(
+      override val navStack: NavStackList<T>
+    ) : AnimatedNavState {}
 
-    override fun targetState(args: List<T>): DefaultAnimatedState<T> {
+    override fun targetState(args: NavStackList<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }
 
     @Composable
-    public override fun updateTransition(args: List<T>): Transition<DefaultAnimatedState<T>> {
+    override fun updateTransition(args: NavStackList<T>): Transition<DefaultAnimatedState<T>> {
       return updateTransition(targetState(args))
     }
 
@@ -585,7 +590,9 @@ public object NavigatorDefaults {
       // the transitionSpec recomposing.
       // The states are available as `targetState` and `initialState`.
       return when (animatedNavEvent) {
+        AnimatedNavEvent.Forward,
         AnimatedNavEvent.GoTo -> forward
+        AnimatedNavEvent.Backward,
         AnimatedNavEvent.Pop -> backward
         AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
       }.using(
@@ -600,7 +607,7 @@ public object NavigatorDefaults {
       targetState: DefaultAnimatedState<T>,
       innerContent: @Composable (T) -> Unit,
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navStack.current)
     }
   }
 
@@ -608,11 +615,11 @@ public object NavigatorDefaults {
   public object EmptyDecoration : NavDecoration {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
-      args: List<T>,
+      args: NavStackList<T>,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {
-      Box(modifier = modifier) { content(args.first()) }
+      Box(modifier = modifier) { content(args.current) }
     }
   }
 }

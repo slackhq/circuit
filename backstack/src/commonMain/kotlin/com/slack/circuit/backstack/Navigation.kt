@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.DeprecationLevel.ERROR
 
@@ -27,7 +28,7 @@ import kotlin.DeprecationLevel.ERROR
 public interface NavDecoration {
   @Composable
   public fun <T : NavArgument> DecoratedContent(
-    args: List<T>,
+    args: NavStackList<T>,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   )

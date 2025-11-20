@@ -9,11 +9,7 @@ import com.slack.circuit.runtime.screen.Screen
 
 /**
  * A navigation stack supporting bidirectional navigation with browser-style forward/backward
- * traversal.
- *
- * Manages [Record]s in a list with position tracking, enabling navigation without modifying the
- * stack structure. Key positions are [topRecord] (newest), [currentRecord] (active), and
- * [rootRecord] (oldest).
+ * traversal as well as push/pop operations that truncate history.
  *
  * Supports multiple independent nav stacks (e.g., bottom nav tabs) via [saveState], [restoreState],
  * [peekState], and [removeState]. State is keyed by root screen.
@@ -66,7 +62,7 @@ public interface NavStack<R : Record> {
    */
   public fun popUntil(predicate: (R) -> Boolean): List<R> {
     return buildList {
-      while (topRecord?.let(predicate) == false) {
+      while (currentRecord?.let(predicate) == false) {
         val popped = pop() ?: break
         add(popped)
       }
@@ -134,12 +130,7 @@ public interface NavStack<R : Record> {
    */
   public fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean
 
-  /**
-   * A record in the navigation stack, wrapping a [Screen] with a unique identity.
-   *
-   * Each record has a stable [key] for identity tracking across configuration changes and state
-   * restoration.
-   */
+  /** A record in the navigation stack, wrapping a [Screen] with a unique identity. */
   @Stable
   public interface Record : NavArgument {
     /**
@@ -161,25 +152,21 @@ public val NavStack<out Record>.currentScreen: Screen?
 public val NavStack<out Record>.isEmpty: Boolean
   get() = size == 0
 
-/** The index of the last record in the stack. */
-public val NavStack<out Record>.lastIndex: Int
-  get() = size - 1
-
 /** True if the current position is at the root. */
 public val NavStack<out Record>.isAtRoot: Boolean
-  get() = currentRecord == rootRecord
+  get() = currentRecord === rootRecord
 
 /** True if the current position is at the top. */
 public val NavStack<out Record>.isAtTop: Boolean
-  get() = currentRecord == topRecord
+  get() = currentRecord === topRecord
 
 /** True if we can navigate backwards (not at root). */
 public val NavStack<out Record>.canGoBack: Boolean
-  get() = currentRecord != rootRecord
+  get() = currentRecord !== rootRecord
 
 /** True if we can navigate forwards (not at top). */
 public val NavStack<out Record>.canGoForward: Boolean
-  get() = currentRecord != topRecord
+  get() = currentRecord !== topRecord
 
 /** Clears all saved state from the stack. */
 public fun NavStack<out Record>.clearState() {

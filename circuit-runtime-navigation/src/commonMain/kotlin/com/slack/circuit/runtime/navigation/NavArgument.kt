@@ -4,8 +4,13 @@ package com.slack.circuit.runtime.navigation
 
 import com.slack.circuit.runtime.screen.Screen
 
-/** Argument provided to [NavDecoration] that exposes the underlying [Screen]. */
+/** Argument used in navigation that exposes the underlying [Screen]. */
 public interface NavArgument {
-  public val screen: Screen
+  /**
+   * Identifier unique to the lifespan of the argument. Must be stable across configuration changes.
+   */
   public val key: String
+
+  /** The [Screen] that this argument presents. */
+  public val screen: Screen
 }

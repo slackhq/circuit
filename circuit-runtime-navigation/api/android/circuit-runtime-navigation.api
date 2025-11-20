@@ -33,7 +33,6 @@ public final class com/slack/circuit/runtime/navigation/NavStackKt {
 	public static final fun getCanGoBack (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
 	public static final fun getCanGoForward (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
 	public static final fun getCurrentScreen (Lcom/slack/circuit/runtime/navigation/NavStack;)Lcom/slack/circuit/runtime/screen/Screen;
-	public static final fun getLastIndex (Lcom/slack/circuit/runtime/navigation/NavStack;)I
 	public static final fun isAtRoot (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
 	public static final fun isAtTop (Lcom/slack/circuit/runtime/navigation/NavStack;)Z
 	public static final fun isEmpty (Lcom/slack/circuit/runtime/navigation/NavStack;)Z

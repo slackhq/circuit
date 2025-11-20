@@ -5,11 +5,9 @@ package com.slack.circuit.runtime.navigation
 import androidx.compose.runtime.Immutable
 
 /**
- * An immutable snapshot of a navigation stack with position tracking.
- *
- * Represents a point-in-time view of a navigation stack, capturing items and a current position.
- * Provides access to [top] (newest), [current] (active), and [root] (oldest) items, plus [forward]
- * and [backward] sublists for navigation history. An empty [NavStackList] is not allowed.
+ * Represents an immutable point-in-time view of a navigation stack, capturing items and a current
+ * position. Provides access to [top] (newest), [current] (active), and [root] (oldest) items, plus
+ * [forward] and [backward] sublists for navigation history. An empty [NavStackList] is not allowed.
  *
  * Example with stack `[D, C, B, A]` where D is top, A is root, and current is C:
  * ```
@@ -51,16 +49,32 @@ public interface NavStackList<T> : Iterable<T> {
 }
 
 /** Creates a [NavStackList] with a single item (which is top, current, and root). */
-public fun <T> navStackListOf(item: T): NavStackList<T> = SingletonNavStackList(item)
+public fun <T> navStackListOf(item: T): NavStackList<T> = SingleNavStackList(item)
 
-/** Creates a [NavStackList] from the given items, with the first item as top and last as root. */
-public fun <T> navStackListOf(vararg items: T): NavStackList<T> = navStackListOf(items.toList())
+/**
+ * Creates a [NavStackList] from the given items, with the first item as top and last as root. If
+ * there are no items, returns null.
+ */
+public fun <T> navStackListOf(vararg items: T): NavStackList<T>? {
+  return when (items.size) {
+    0 -> null
+    1 -> SingleNavStackList(items[0])
+    else -> navStackListOf(items.toList())
+  }
+}
 
 /**
  * Creates a [NavStackList] from the given items, with the first item as top/current and last as
- * root.
+ * root. If there are no items, returns null.
  */
-public fun <T> navStackListOf(items: Iterable<T>): NavStackList<T> = DefaultNavStackList(items)
+public fun <T> navStackListOf(items: Iterable<T>): NavStackList<T>? {
+  // Check for an empty iterable.
+  val iterator = items.iterator()
+  if (!iterator.hasNext()) {
+    return null
+  }
+  return DefaultNavStackList(items)
+}
 
 /**
  * Creates a [NavStackList] with explicit forward/backward lists around a current item.
@@ -86,7 +100,7 @@ public fun <T, R> NavStackList<T>.transform(transform: (T) -> R): NavStackList<R
 }
 
 /** Implementation for a single-item [NavStackList]. */
-private data class SingletonNavStackList<T>(val item: T) : NavStackList<T> {
+private data class SingleNavStackList<T>(val item: T) : NavStackList<T> {
   private val list = listOf(item)
   override val top: T = item
   override val current: T = item

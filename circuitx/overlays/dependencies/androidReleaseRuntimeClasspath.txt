@@ -66,6 +66,10 @@ androidx.lifecycle:lifecycle-viewmodel-ktx
 androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
+androidx.navigationevent:navigationevent-android
+androidx.navigationevent:navigationevent-compose-android
+androidx.navigationevent:navigationevent-compose
+androidx.navigationevent:navigationevent
 androidx.profileinstaller:profileinstaller
 androidx.savedstate:savedstate-android
 androidx.savedstate:savedstate-compose-android

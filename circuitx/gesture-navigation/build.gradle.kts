@@ -35,7 +35,7 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
       }
     }
 

@@ -32,6 +32,7 @@ import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
@@ -48,7 +49,11 @@ private val End: (Int) -> Int = { it }
  * @return An [AnimatedNavDecorator.Factory] that provides iOS predictive back navigation.
  */
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory
+  fallback: AnimatedNavDecorator.Factory,
+  isForwardEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  isBackEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  onForwardInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
+  onBackInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
 ): AnimatedNavDecorator.Factory {
   return IOSPredictiveNavDecorator.Factory()
 }
@@ -114,12 +119,17 @@ internal class IOSPredictiveNavDecorator<T : NavArgument>(
     }
   }
 
-  internal class Factory(private val enterOffsetFraction: Float = 0.25f) :
-    AnimatedNavDecorator.Factory {
+  internal class Factory(
+    isForwardEnabled: (NavStackList<out NavArgument>) -> Boolean,
+    isBackEnabled: (NavStackList<out NavArgument>) -> Boolean,
+    onForwardInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
+    onBackInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
+    private val enterOffsetFraction: Float = 0.25f,
+  ) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
       return IOSPredictiveNavDecorator(
         enterOffsetFraction = enterOffsetFraction,
-        onBackInvoked = { navigator.pop() },
+        onBackInvoked = { onBackInvoked(navigator, it) },
       )
     }
   }

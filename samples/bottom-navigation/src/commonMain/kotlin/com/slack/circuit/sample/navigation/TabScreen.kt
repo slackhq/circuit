@@ -23,16 +23,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
-import com.slack.circuit.foundation.LocalNavStack
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
@@ -76,8 +78,7 @@ object TabScreenCircuit {
 
   data class State(
     val label: String,
-    val canGoBack: Boolean,
-    val canGoForward: Boolean,
+    val navStack: NavStackList<Screen>?,
     val hasDetails: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
@@ -97,11 +98,17 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
+    val peeked = navigator.peek()
     val navStack = navigator.peekNavStack()
+    SideEffect {
+      val forwardStack = navStack?.forward?.reversed()?.joinToString { it.loggingName() ?: "" } ?: ""
+      val backwardStack = navStack?.backward?.joinToString { it.loggingName() ?: "" } ?: ""
+      val currentScreen = navStack?.current?.loggingName() ?: "$peeked"
+      println("TabPresenter(${screen.loggingName()}) changed [$forwardStack] $currentScreen [$backwardStack]")
+    }
     return TabScreenCircuit.State(
       label = screen.label,
-      canGoBack = navStack?.backward?.firstOrNull() != null,
-      canGoForward = navStack?.forward?.firstOrNull() != null,
+      navStack = navStack,
       hasDetails = screen !is TabScreen.Screen2,
     ) { event ->
       when (event) {
@@ -132,18 +139,17 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 @Composable
 fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
-    val navStack = LocalNavStack.current?.snapshot()
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
       Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Row(modifier = Modifier.align(Alignment.CenterStart)) {
           IconButton(
-            enabled = state.canGoBack,
+            enabled = state.navStack?.backward?.any() == true,
             onClick = { state.eventSink(TabScreenCircuit.Event.Backward) },
           ) {
             Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
           }
           IconButton(
-            enabled = state.canGoForward,
+            enabled = state.navStack?.forward?.any() == true,
             onClick = { state.eventSink(TabScreenCircuit.Event.Forward) },
           ) {
             Icon(Icons.AutoMirrored.Default.ArrowForward, contentDescription = "Forward")
@@ -176,10 +182,12 @@ fun TabUI(state: TabScreenCircuit.State, screen: TabScreen, modifier: Modifier =
             state.eventSink(TabScreenCircuit.Event.Next)
           }
       ) {
-        navStack?.let { navStack ->
+        state.navStack?.let { navStack ->
+          val current = navStack.current
+          val top = current === screen
           itemsIndexed(navStack.toList()) { i, item ->
             Text(
-              text = "$i: ${item.screen} ${if(navStack.current == item) "(active)" else ""}",
+              text = "$i: $item ${if(current === item) "(active)" else "$top"}",
               style = MaterialTheme.typography.bodyMedium,
               modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             )
@@ -198,3 +206,5 @@ class TabUiFactory(private val tabClass: KClass<out TabScreen>) : Ui.Factory {
     }
   }
 }
+
+private fun Screen.loggingName() = this::class.simpleName

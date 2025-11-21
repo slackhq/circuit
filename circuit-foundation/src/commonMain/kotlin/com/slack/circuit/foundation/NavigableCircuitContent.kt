@@ -475,9 +475,8 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     val lifecycle = remember { MutableRecordLifecycle() }
     // todo Allow this to be customized by the decoration for multiple active records.
-    SideEffect {
-      lifecycle.isActive = contentProviderState.lastNavigator.navStack.currentRecord == record
-    }
+    val currentRecord = contentProviderState.lastNavigator.navStack.currentRecord
+    SideEffect { lifecycle.isActive = currentRecord == record }
     contentProviderState.saveableStateHolder.SaveableStateProvider(record.registryKey) {
       // Provides a RetainedStateRegistry that is maintained independently for each record while
       // the record exists in the back stack.

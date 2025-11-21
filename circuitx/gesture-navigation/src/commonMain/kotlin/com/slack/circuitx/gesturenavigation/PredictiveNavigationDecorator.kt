@@ -24,8 +24,10 @@ import com.slack.circuit.runtime.navStackListOf
 import kotlin.math.abs
 
 public abstract class PredictiveNavigationDecorator<T : NavArgument>(
-  private val onBackInvoked: () -> Unit,
-  private val onForwardInvoked: () -> Unit,
+  private val isForwardEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  private val isBackEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  private val onForwardInvoked: (NavStackList<out NavArgument>) -> Unit,
+  private val onBackInvoked: (NavStackList<out NavArgument>) -> Unit,
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   protected lateinit var seekableTransitionState:
@@ -52,7 +54,7 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
     val currentState = remember(args) { targetState(args) }
     val backwardState =
       remember(args) {
-        val hasBackward = args.backward.iterator().hasNext()
+        val hasBackward = args.backward.any()
         if (hasBackward) {
           val forward = listOf(args.current) + args.forward
           val current = args.backward.first()
@@ -62,7 +64,7 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
       }
     val forwardState =
       remember(args) {
-        val hasForward = args.forward.iterator().hasNext()
+        val hasForward = args.forward.any()
         if (hasForward) {
           val forward = args.forward.drop(1)
           val current = args.forward.first()
@@ -105,9 +107,8 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
     }
 
     PredictiveNavEventHandler(
-      isBackEnabled = backwardState != null,
-      // If we're at root, disable forward so system predictive back works..
-      isForwardEnabled = forwardState != null && backwardState != null,
+      isBackEnabled = isBackEnabled(currentState.navStack),
+      isForwardEnabled = isForwardEnabled(currentState.navStack),
       onProgress = { direction, progress, offset ->
         when (direction) {
           PredictiveNavDirection.Back -> {
@@ -130,8 +131,8 @@ public abstract class PredictiveNavigationDecorator<T : NavArgument>(
       },
       onCompleted = { direction ->
         when (direction) {
-          PredictiveNavDirection.Back -> onBackInvoked()
-          PredictiveNavDirection.Forward -> onForwardInvoked()
+          PredictiveNavDirection.Back -> onBackInvoked(currentState.navStack)
+          PredictiveNavDirection.Forward -> onForwardInvoked(currentState.navStack)
         }
       },
     )

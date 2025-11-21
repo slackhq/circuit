@@ -31,22 +31,42 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.NavStackList
 import com.slack.circuit.runtime.Navigator
 import kotlin.math.absoluteValue
 
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory
+  fallback: AnimatedNavDecorator.Factory,
+  isForwardEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  isBackEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  onForwardInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
+  onBackInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
 ): AnimatedNavDecorator.Factory {
   return when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveNavDecorator.Factory
+    Build.VERSION.SDK_INT >= 34 ->
+      AndroidPredictiveNavDecorator.Factory(
+        // If we're at root, disable forward so system predictive back works...
+        isForwardEnabled = { isForwardEnabled(it) && !it.backward.any() },
+        onForwardInvoked = onForwardInvoked,
+        isBackEnabled = isBackEnabled,
+        onBackInvoked = onBackInvoked,
+      )
     else -> fallback
   }
 }
 
 internal class AndroidPredictiveNavDecorator<T : NavArgument>(
-  onBackInvoked: () -> Unit,
-  onForwardInvoked: () -> Unit,
-) : PredictiveNavigationDecorator<T>(onBackInvoked, onForwardInvoked) {
+  isForwardEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  isBackEnabled: (NavStackList<out NavArgument>) -> Boolean,
+  onForwardInvoked: (NavStackList<out NavArgument>) -> Unit,
+  onBackInvoked: (NavStackList<out NavArgument>) -> Unit,
+) :
+  PredictiveNavigationDecorator<T>(
+    isForwardEnabled = isForwardEnabled,
+    isBackEnabled = isBackEnabled,
+    onForwardInvoked = onForwardInvoked,
+    onBackInvoked = onBackInvoked,
+  ) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -105,11 +125,18 @@ internal class AndroidPredictiveNavDecorator<T : NavArgument>(
     }
   }
 
-  object Factory : AnimatedNavDecorator.Factory {
+  class Factory(
+    val isForwardEnabled: (NavStackList<out NavArgument>) -> Boolean,
+    val isBackEnabled: (NavStackList<out NavArgument>) -> Boolean,
+    val onForwardInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
+    val onBackInvoked: (Navigator, NavStackList<out NavArgument>) -> Unit,
+  ) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(navigator: Navigator): AnimatedNavDecorator<T, *> {
       return AndroidPredictiveNavDecorator(
-        onBackInvoked = { navigator.pop() },
-        onForwardInvoked = { navigator.forward() },
+        isForwardEnabled = isForwardEnabled,
+        isBackEnabled = isBackEnabled,
+        onForwardInvoked = { onForwardInvoked(navigator, it) },
+        onBackInvoked = { onBackInvoked(navigator, it) },
       )
     }
   }

@@ -48,12 +48,15 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.InterceptedResetRootResult
+import com.slack.circuitx.navigation.intercepting.InterceptedResult
 import com.slack.circuitx.navigation.intercepting.NavigationContext
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.Skipped
@@ -141,6 +144,25 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
   }
 }
 
+private object ForwardHistoryInterceptor : NavigationInterceptor {
+
+  override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedResult {
+    val navStack = navigationContext.peekNavStack()
+    // If the next screen is the same as the screen we're going to just go forward to it.
+    return if (navStack?.forward?.firstOrNull() == screen) {
+      InterceptedResult.Rewrite(NavEvent.Forward)
+    } else Skipped
+  }
+
+  override fun pop(result: PopResult?, navigationContext: NavigationContext): InterceptedResult {
+    val navStack = navigationContext.peekNavStack()
+    // Single root backstack, so keep the current screen for quick return.
+    return if (result == null && navStack?.backward?.singleOrNull() != null) {
+      InterceptedResult.Rewrite(NavEvent.Backward) // todo What should happen to pop result?
+    } else Skipped
+  }
+}
+
 @OptIn(
   ExperimentalCircuitApi::class,
   ExperimentalSharedTransitionApi::class,
@@ -150,7 +172,7 @@ private class ContentInterceptor(private val eventSink: State<(ContentEvent) -> 
 fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElementTransitionLayout {
   val eventSink = rememberUpdatedState(state.eventSink)
   val navStack = rememberSaveableNavStack(state.rootScreen)
-  val contentInterceptor = remember { ContentInterceptor(eventSink) }
+  val interceptors = remember { listOf(ContentInterceptor(eventSink), ForwardHistoryInterceptor) }
   val contentNavigator =
     rememberCircuitNavigator(navStack, onRootPop = {}, enableBackHandler = true)
 
@@ -158,7 +180,7 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
     rememberInterceptingNavigator(
       navStack = navStack,
       navigator = contentNavigator,
-      interceptors = listOf(contentInterceptor),
+      interceptors = interceptors,
     )
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
@@ -174,6 +196,8 @@ fun ContentUi(state: ContentState, modifier: Modifier = Modifier) = SharedElemen
       navigator = interceptingNavigator,
       navStack = navStack,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
+      decoratorFactory = GestureNavigationDecorationFactory(),
+
       //      decoration =
       //        remember(circuit.animatedScreenTransforms, circuit.animatedNavDecoratorFactory) {
       //          AdaptiveListDetailNavDecoration(
@@ -202,7 +226,7 @@ private fun BottomTabRow(
         .windowInsetsPadding(WindowInsets.safeContent.only(WindowInsetsSides.Bottom)),
   ) {
     tabs.forEach { tab ->
-      val selected = tab == rootScreen
+      val selected = tab === rootScreen
       Text(
         text = tab.label,
         color = if (selected) MaterialTheme.colorScheme.onSecondary else Color.Unspecified,

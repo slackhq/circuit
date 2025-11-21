@@ -1,6 +1,6 @@
 [versions]
 agp = "8.13.1"
-androidx-activity = "1.12.0-rc01"
+androidx-activity = "1.11.0"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
@@ -11,7 +11,7 @@ benchmark = "1.4.1"
 coil = "3.3.0"
 compose-runtime = "1.10.0-beta01" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.57.2"
-datastore = "1.1.7"
+datastore = "1.2.0"
 detekt = "1.23.8"
 dokka = "2.1.0"
 eithernet = "2.0.0"
@@ -22,7 +22,7 @@ jb-compose-navigationevent = "1.0.0-beta01"
 jb-lifecycle = "2.9.6"
 jdk = "23"
 jvmTarget = "11"
-kct = "0.11.0"
+kct = "0.11.1"
 kotlin = "2.2.21"
 kotlinInject = "0.8.0"
 kotlinInject-anvil = "0.1.6"
@@ -35,13 +35,13 @@ ktor = "3.3.2"
 leakcanary = "2.14"
 mavenPublish = "0.35.0"
 molecule = "2.2.0"
-okhttp = "5.3.0"
-okio = "3.16.2"
+okhttp = "5.3.2"
+okio = "3.16.4"
 picnic = "0.7.0"
 robolectric = "4.16"
 roborazzi = "1.51.0"
 spotless = "8.0.0"
-sqldelight = "2.1.0"
+sqldelight = "2.2.1"
 telephoto = "0.18.0"
 testParameterInjector = "1.19"
 turbine = "1.2.1"
@@ -68,7 +68,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.7.5" }
+metro = { id = "dev.zacsweers.metro", version = "0.7.7" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

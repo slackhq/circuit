@@ -447,7 +447,10 @@ private class CircuitSymbolProcessor(
         val useProvider =
           !isAssisted &&
             mode.filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration)).any {
-              it.isAnnotationPresentWithLeniency(mode.runtime.inject(options))
+              injectionSite ->
+              mode.runtime.declarationInjects(options).any { annotation ->
+                injectionSite.isAnnotationPresentWithLeniency(annotation)
+              }
             }
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()

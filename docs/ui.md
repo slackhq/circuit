@@ -9,10 +9,10 @@ interface Ui<UiState : CircuitUiState> {
 }
 ```
 
-Like presenters, simple UIs can also skip the class all together for use in other UIs. Core unit of granularity is just the @Composable function. In fact, when implementing these in practice they rarely use dependency injection at all and can normally just be written as top-level composable functions annotated with` @CircuitInject`.
+Like presenters, simple UIs can also skip the class all together for use in other UIs. Core unit of granularity is just the @Composable function. In fact, when implementing these in practice they rarely use dependency injection at all and can normally just be written as top-level composable functions annotated with `@CircuitInject`.
 
 ```kotlin
-@CircuitInject<FavoritesScreen> // Relevant DI wiring is generated
+@CircuitInject(FavoritesScreen::class, AppScope::class) // Relevant DI wiring is generated
 @Composable
 private fun Favorites(state: FavoritesState, modifier: Modifier = Modifier) {
   // ...

@@ -281,7 +281,10 @@ internal enum class CodegenMode {
   ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
 
   sealed interface InjectionRuntime {
+
     fun inject(options: CircuitOptions): ClassName
+
+    fun declarationInjects(options: CircuitOptions): Collection<ClassName> = listOf(inject(options))
 
     val assisted: ClassName
     val assistedInject: ClassName?
@@ -293,14 +296,24 @@ internal enum class CodegenMode {
 
     data object Jakarta : InjectionRuntime {
       override fun inject(options: CircuitOptions): ClassName =
-        if (options.useJavax) CircuitNames.INJECT_JAVAX else CircuitNames.INJECT
+        if (options.useJavaxOnly) CircuitNames.INJECT_JAVAX else CircuitNames.INJECT
+
+      override fun declarationInjects(options: CircuitOptions): Collection<ClassName> {
+        // If explicitly using javax only look for javax, otherwise look for both.
+        return if (options.useJavaxOnly) {
+          listOf(CircuitNames.INJECT_JAVAX)
+        } else {
+          listOf(CircuitNames.INJECT, CircuitNames.INJECT_JAVAX)
+        }
+      }
 
       override val assisted: ClassName = CircuitNames.ASSISTED
       override val assistedInject: ClassName = CircuitNames.ASSISTED_INJECT
       override val assistedFactory: ClassName = CircuitNames.ASSISTED_FACTORY
 
       override fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName {
-        val className = if (options.useJavax) CircuitNames.PROVIDER_JAVAX else CircuitNames.PROVIDER
+        val className =
+          if (options.useJavaxOnly) CircuitNames.PROVIDER_JAVAX else CircuitNames.PROVIDER
         return className.parameterizedBy(providedType)
       }
 

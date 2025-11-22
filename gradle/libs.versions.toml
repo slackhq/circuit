@@ -44,7 +44,7 @@ roborazzi = "1.51.0"
 spotless = "8.0.0"
 sqldelight = "2.2.1"
 telephoto = "0.18.0"
-testParameterInjector = "1.19"
+testParameterInjector = "1.20"
 turbine = "1.2.1"
 
 [plugins]

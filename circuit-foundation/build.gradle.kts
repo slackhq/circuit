@@ -67,7 +67,7 @@ kotlin {
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
         api(projects.circuitSharedElements)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
       }
     }
     androidMain { dependencies { implementation(libs.androidx.activity.compose) } }

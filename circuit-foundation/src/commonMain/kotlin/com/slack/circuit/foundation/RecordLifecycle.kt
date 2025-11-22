@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.runtime.CompositionLocalAccessorScope
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -38,7 +39,12 @@ public val LocalRecordLifecycle: ProvidableCompositionLocal<RecordLifecycle> =
     staticRecordLifecycle(true)
   }
 
-private fun staticRecordLifecycle(isActive: Boolean): RecordLifecycle =
+public fun staticRecordLifecycle(isActive: Boolean): RecordLifecycle =
   object : RecordLifecycle {
     override val isActive: Boolean = isActive
   }
+
+
+internal object UnsetRecordLifecycle : RecordLifecycle {
+  override val isActive: Boolean = false
+}

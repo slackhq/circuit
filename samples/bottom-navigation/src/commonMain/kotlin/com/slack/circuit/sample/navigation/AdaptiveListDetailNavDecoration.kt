@@ -27,6 +27,7 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.defaultDragHandleSemantics
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -45,11 +46,13 @@ import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.isUnspecified
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
+import com.slack.circuit.foundation.LocalRecordLifecycle
 import com.slack.circuit.foundation.NavArgument
 import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
+import com.slack.circuit.foundation.staticRecordLifecycle
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.runtime.ExperimentalCircuitApi
@@ -170,7 +173,6 @@ class AdaptiveListDetailNavDecoration(
     delegate.DecoratedContent(primaryArgs, navigator, modifier) { primary ->
       val secondaryArgs =
         with(secondaryLookupTransition) { currentState[primary] ?: targetState[primary] }
-
       val hasSecondary = secondaryArgs != null
       val scaffoldValue = if (hasSecondary) PrimarySecondary else Primary
       val scaffoldState = remember { MutableThreePaneScaffoldState(scaffoldValue) }
@@ -199,12 +201,28 @@ class AdaptiveListDetailNavDecoration(
         scaffoldState = scaffoldState,
         paneExpansionState = paneExpansionState,
         paneExpansionDragHandle = listDetailScaffoldStyle.dragHandle,
-        listPane = { AnimatedPane(modifier = Modifier) { content(primary) } },
+        listPane = {
+          AnimatedPane(modifier = Modifier) {
+            val isActive = primaryArgs == primary
+            CompositionLocalProvider(
+              LocalRecordLifecycle provides staticRecordLifecycle(isActive)
+            ) {
+              content(primary)
+            }
+          }
+        },
         detailPane = {
           AnimatedPane {
             if (hasSecondary) {
               // Stack multiple with a normal decoration
-              detailPaneDelegate.DecoratedContent(secondaryArgs, navigator, Modifier, content)
+              detailPaneDelegate.DecoratedContent(secondaryArgs, navigator, Modifier) { args ->
+                val isActive = secondaryArgs == args
+                CompositionLocalProvider(
+                  LocalRecordLifecycle provides staticRecordLifecycle(isActive)
+                ) {
+                  content(args)
+                }
+              }
             }
           }
         },

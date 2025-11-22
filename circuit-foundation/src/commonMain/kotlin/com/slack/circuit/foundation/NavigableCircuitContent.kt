@@ -262,7 +262,10 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
-  CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+  CompositionLocalProvider(
+    LocalRetainedStateRegistry provides outerRegistry,
+    LocalRecordLifecycle provides UnsetRecordLifecycle, // Set a no-op to check for later
+  ) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
     val contentProviderState =
@@ -473,15 +476,19 @@ public class ContentProviderState<R : Record>(
 @OptIn(ExperimentalCircuitApi::class)
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
-    val lifecycle = remember { MutableRecordLifecycle() }
-    // todo Allow this to be customized by the decoration for multiple active records.
-    val currentRecord = contentProviderState.lastNavigator.navStack.currentRecord
-    SideEffect { lifecycle.isActive = currentRecord == record }
+    val outerLifecycle = LocalRecordLifecycle.current.takeUnless { it === UnsetRecordLifecycle }
+    val recordLifecycle =
+      outerLifecycle
+        ?: remember { MutableRecordLifecycle() }
+          .apply {
+            val currentRecord = contentProviderState.lastNavigator.navStack.currentRecord
+            SideEffect { isActive = currentRecord == record }
+          }
     contentProviderState.saveableStateHolder.SaveableStateProvider(record.registryKey) {
       // Provides a RetainedStateRegistry that is maintained independently for each record while
       // the record exists in the back stack.
       contentProviderState.retainedStateHolder.RetainedStateProvider(record.registryKey) {
-        CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+        CompositionLocalProvider(LocalRecordLifecycle provides recordLifecycle) {
           CircuitContent(
             screen = record.screen,
             navigator = contentProviderState.lastNavigator,

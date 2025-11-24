@@ -114,6 +114,7 @@ class CircuitSymbolProcessorTest {
         """
         package me.tatarka.inject.annotations
 
+        annotation class Assisted
         annotation class Inject
         """
           .trimIndent(),
@@ -955,6 +956,61 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
+  fun simplePresenterFunction_withInjectedClassScreen_kotlinInjectAnvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          @Composable
+          fun FavoritesPresenter(screen: FavoritesScreen, navigator: Navigator): FavoritesScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        public class FavoritesPresenterFactory : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> presenterOf { FavoritesPresenter(screen = screen, navigator = navigator) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
   fun simplePresenterFunction_withInjectedObjectScreen() {
     assertGeneratedFile(
       sourceFile =
@@ -1218,6 +1274,72 @@ class CircuitSymbolProcessorTest {
             context: CircuitContext,
           ): Presenter<*>? = when (screen) {
             is FavoritesScreen -> provider()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
+    )
+  }
+
+  @Test
+  fun presenterClass_assistedInjection_kotlinInjectAnvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import me.tatarka.inject.annotations.Assisted
+          import me.tatarka.inject.annotations.Inject
+
+          @Inject
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter(
+            private val value: String,
+            @Assisted private val screen: FavoritesScreen,
+          ) : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+        import software.amazon.lastmile.kotlin.inject.anvil.`internal`.Origin
+
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        @Origin(FavoritesPresenter::class)
+        public class FavoritesPresenterFactory(
+          private val factory: (screen: FavoritesScreen) -> FavoritesPresenter,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> factory(screen)
             else -> null
           }
         }
@@ -1729,6 +1851,110 @@ class CircuitSymbolProcessorTest {
         public class StaticUiFactory @Inject constructor() : Ui.Factory {
           override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
             Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen as Static) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun parameterOrderDoesNotMatter_StaticScreen_kotlinInjectAnvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "ParameterOrdering.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.screen.StaticScreen
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          data object Static : StaticScreen
+
+          @CircuitInject(Static::class, AppScope::class)
+          @Composable
+          fun StaticUi(screen: Static, modifier: Modifier) {}
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/StaticUiFactory.kt",
+      codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        public class StaticUiFactory : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            Static -> ui<CircuitUiState> { _, modifier -> StaticUi(modifier = modifier, screen = screen as Static) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun parameterOrderDoesNotMatter_NormalScreen_kotlinInjectAnvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "ParameterOrdering.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.screen.Screen
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+
+          data class TestScreen(val value: String) : Screen
+
+          @CircuitInject(TestScreen::class, AppScope::class)
+          @Composable
+          fun TestUi(screen: TestScreen, modifier: Modifier) {}
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/TestUiFactory.kt",
+      codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.CircuitUiState
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        public class TestUiFactory : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            is TestScreen -> ui<CircuitUiState> { _, modifier -> TestUi(modifier = modifier, screen = screen) }
             else -> null
           }
         }

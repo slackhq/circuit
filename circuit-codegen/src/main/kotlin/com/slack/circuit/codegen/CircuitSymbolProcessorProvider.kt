@@ -304,11 +304,11 @@ private class CircuitSymbolProcessor(
           }
         val assistedParams =
           fd.assistedParameters(
-            symbols,
-            logger,
-            screenKSType,
-            factoryType == FactoryType.PRESENTER,
-            includeParameterNames = mode != KOTLIN_INJECT_ANVIL,
+            symbols = symbols,
+            logger = logger,
+            screenType = screenKSType,
+            allowNavigator = factoryType == FactoryType.PRESENTER,
+            includeParameterNames = true,
           )
 
         // Check we have a return type
@@ -486,11 +486,12 @@ private class CircuitSymbolProcessor(
             CodeBlock.of("")
           } else {
             creatorOrConstructor?.assistedParameters(
-              symbols,
-              logger,
-              screenKSType,
+              symbols = symbols,
+              logger = logger,
+              screenType = screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
-              includeParameterNames = mode != KOTLIN_INJECT_ANVIL,
+              // Don't include parameter names if a factory lambda is going to be used.
+              includeParameterNames = !(isAssisted && mode == KOTLIN_INJECT_ANVIL),
             )
           }
         codeBlock =

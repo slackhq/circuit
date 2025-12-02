@@ -39,12 +39,12 @@ abstract interface <#A: com.slack.circuit.runtime.navigation/NavStack.Record> co
 }
 
 abstract interface <#A: kotlin/Any?> com.slack.circuit.runtime.navigation/NavStackList : kotlin.collections/Iterable<#A> { // com.slack.circuit.runtime.navigation/NavStackList|null[0]
-    abstract val backward // com.slack.circuit.runtime.navigation/NavStackList.backward|{}backward[0]
-        abstract fun <get-backward>(): kotlin.collections/Iterable<#A> // com.slack.circuit.runtime.navigation/NavStackList.backward.<get-backward>|<get-backward>(){}[0]
-    abstract val current // com.slack.circuit.runtime.navigation/NavStackList.current|{}current[0]
-        abstract fun <get-current>(): #A // com.slack.circuit.runtime.navigation/NavStackList.current.<get-current>|<get-current>(){}[0]
-    abstract val forward // com.slack.circuit.runtime.navigation/NavStackList.forward|{}forward[0]
-        abstract fun <get-forward>(): kotlin.collections/Iterable<#A> // com.slack.circuit.runtime.navigation/NavStackList.forward.<get-forward>|<get-forward>(){}[0]
+    abstract val active // com.slack.circuit.runtime.navigation/NavStackList.active|{}active[0]
+        abstract fun <get-active>(): #A // com.slack.circuit.runtime.navigation/NavStackList.active.<get-active>|<get-active>(){}[0]
+    abstract val backwardItems // com.slack.circuit.runtime.navigation/NavStackList.backwardItems|{}backwardItems[0]
+        abstract fun <get-backwardItems>(): kotlin.collections/Iterable<#A> // com.slack.circuit.runtime.navigation/NavStackList.backwardItems.<get-backwardItems>|<get-backwardItems>(){}[0]
+    abstract val forwardItems // com.slack.circuit.runtime.navigation/NavStackList.forwardItems|{}forwardItems[0]
+        abstract fun <get-forwardItems>(): kotlin.collections/Iterable<#A> // com.slack.circuit.runtime.navigation/NavStackList.forwardItems.<get-forwardItems>|<get-forwardItems>(){}[0]
     abstract val root // com.slack.circuit.runtime.navigation/NavStackList.root|{}root[0]
         abstract fun <get-root>(): #A // com.slack.circuit.runtime.navigation/NavStackList.root.<get-root>|<get-root>(){}[0]
     abstract val top // com.slack.circuit.runtime.navigation/NavStackList.top|{}top[0]

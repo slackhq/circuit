@@ -6,8 +6,9 @@ import androidx.compose.runtime.Immutable
 
 /**
  * Represents an immutable point-in-time view of a navigation stack, capturing items and a current
- * position. Provides access to [top] (newest), [current] (active), and [root] (oldest) items, plus
- * [forward] and [backward] sublists for navigation history. An empty [NavStackList] is not allowed.
+ * position. Provides access to [top] (newest), [active] (active), and [root] (oldest) items, plus
+ * [forwardItems] and [backwardItems] sublists for navigation history. An empty [NavStackList] is
+ * not allowed.
  *
  * Example with stack `[D, C, B, A]` where D is top, A is root, and current is C:
  * ```
@@ -29,20 +30,20 @@ public interface NavStackList<T> : Iterable<T> {
   public val top: T
 
   /** The currently active item in the stack. May differ from [top] when forward history exists. */
-  public val current: T
+  public val active: T
 
   /** The root (oldest/initial) item in the stack. */
   public val root: T
 
   /**
-   * Items between [current] and [top] (exclusive of current). Empty if no forward history exists.
+   * Items between [active] and [top] (exclusive of current). Empty if no forward history exists.
    */
-  public val forward: Iterable<T>
+  public val forwardItems: Iterable<T>
 
   /**
-   * Items between [current] and [root] (exclusive of current). Empty if no backward history exists.
+   * Items between [active] and [root] (exclusive of current). Empty if no backward history exists.
    */
-  public val backward: Iterable<T>
+  public val backwardItems: Iterable<T>
 
   /** Returns an iterator over all items from [top] to [root]. */
   override fun iterator(): Iterator<T>
@@ -103,24 +104,24 @@ public fun <T, R> NavStackList<T>.transform(transform: (T) -> R): NavStackList<R
 private data class SingleNavStackList<T>(val item: T) : NavStackList<T> {
   private val list = listOf(item)
   override val top: T = item
-  override val current: T = item
+  override val active: T = item
   override val root: T = item
-  override val forward: Iterable<T> = emptyList()
-  override val backward: Iterable<T> = emptyList()
+  override val forwardItems: Iterable<T> = emptyList()
+  override val backwardItems: Iterable<T> = emptyList()
 
   override fun iterator(): Iterator<T> = list.iterator()
 }
 
 /** Default implementation of [NavStackList] backed by lists of items. */
 private data class DefaultNavStackList<T>(
-  override val forward: Iterable<T>,
-  override val current: T,
-  override val backward: Iterable<T>,
+  override val forwardItems: Iterable<T>,
+  override val active: T,
+  override val backwardItems: Iterable<T>,
 ) : NavStackList<T> {
 
   constructor(list: Iterable<T>) : this(emptyList(), list.first(), list.drop(1))
 
-  private val list = forward.reversed() + current + backward
+  private val list = forwardItems.reversed() + active + backwardItems
 
   override val top: T = list.first()
   override val root: T = list.last()
@@ -134,13 +135,13 @@ private class MappingNavStackList<T, R>(
   private val transform: (T) -> R,
 ) : NavStackList<R> {
   override val top: R by lazy(LazyThreadSafetyMode.NONE) { original.top.let(transform) }
-  override val current: R by lazy(LazyThreadSafetyMode.NONE) { original.current.let(transform) }
+  override val active: R by lazy(LazyThreadSafetyMode.NONE) { original.active.let(transform) }
   override val root: R by lazy(LazyThreadSafetyMode.NONE) { original.root.let(transform) }
-  override val forward: Iterable<R> by
-    lazy(LazyThreadSafetyMode.NONE) { original.forward.map(transform) }
+  override val forwardItems: Iterable<R> by
+    lazy(LazyThreadSafetyMode.NONE) { original.forwardItems.map(transform) }
 
-  override val backward: Iterable<R> by
-    lazy(LazyThreadSafetyMode.NONE) { original.backward.map(transform) }
+  override val backwardItems: Iterable<R> by
+    lazy(LazyThreadSafetyMode.NONE) { original.backwardItems.map(transform) }
 
   override fun iterator(): Iterator<R> {
     return original.iterator().asSequence().map(transform).iterator()

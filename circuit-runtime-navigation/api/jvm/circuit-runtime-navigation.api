@@ -39,9 +39,9 @@ public final class com/slack/circuit/runtime/navigation/NavStackKt {
 }
 
 public abstract interface class com/slack/circuit/runtime/navigation/NavStackList : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
-	public abstract fun getBackward ()Ljava/lang/Iterable;
-	public abstract fun getCurrent ()Ljava/lang/Object;
-	public abstract fun getForward ()Ljava/lang/Iterable;
+	public abstract fun getActive ()Ljava/lang/Object;
+	public abstract fun getBackwardItems ()Ljava/lang/Iterable;
+	public abstract fun getForwardItems ()Ljava/lang/Iterable;
 	public abstract fun getRoot ()Ljava/lang/Object;
 	public abstract fun getTop ()Ljava/lang/Object;
 	public abstract fun iterator ()Ljava/util/Iterator;

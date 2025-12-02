@@ -6,17 +6,17 @@ import androidx.compose.runtime.Immutable
 
 /**
  * Represents an immutable point-in-time view of a navigation stack, capturing items and a current
- * position. Provides access to [top] (newest), [active] (active), and [root] (oldest) items, plus
+ * position. Provides access to [top] (newest), [active] (current), and [root] (oldest) items, plus
  * [forwardItems] and [backwardItems] sublists for navigation history. An empty [NavStackList] is
  * not allowed.
  *
  * Example with stack `[D, C, B, A]` where D is top, A is root, and current is C:
  * ```
- * top:      D
- * forward:  [D]
- * current:  C  ← current position
- * backward: [B, A]
- * root:     A
+ * top:           D
+ * forwardItems:  [D]
+ * active:        C  ← current position
+ * backwardItems: [B, A]
+ * root:          A
  * ```
  *
  * Can be created by the [navStackListOf] factory functions.
@@ -65,7 +65,7 @@ public fun <T> navStackListOf(vararg items: T): NavStackList<T>? {
 }
 
 /**
- * Creates a [NavStackList] from the given items, with the first item as top/current and last as
+ * Creates a [NavStackList] from the given items, with the first item as top/active and last as
  * root. If there are no items, returns null.
  */
 public fun <T> navStackListOf(items: Iterable<T>): NavStackList<T>? {
@@ -78,17 +78,17 @@ public fun <T> navStackListOf(items: Iterable<T>): NavStackList<T>? {
 }
 
 /**
- * Creates a [NavStackList] with explicit forward/backward lists around a current item.
+ * Creates a [NavStackList] with explicit forward/backward lists around an active item.
  *
- * @param forward Items between current and top (ordered from current toward top)
- * @param current The currently active item
- * @param backward Items between current and root (ordered from current toward root)
+ * @param forwardItems Items between active and top (ordered from active toward top)
+ * @param activeItem The currently active item
+ * @param backwardItems Items between active and root (ordered from active toward root)
  */
 public fun <T> navStackListOf(
-  forward: List<T> = emptyList(),
-  current: T,
-  backward: List<T> = emptyList(),
-): NavStackList<T> = DefaultNavStackList(forward, current, backward)
+  forwardItems: List<T> = emptyList(),
+  activeItem: T,
+  backwardItems: List<T> = emptyList(),
+): NavStackList<T> = DefaultNavStackList(forwardItems, activeItem, backwardItems)
 
 /**
  * Transforms each item in this [NavStackList] using the given [transform] function.

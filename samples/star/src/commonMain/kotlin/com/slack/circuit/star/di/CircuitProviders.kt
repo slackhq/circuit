@@ -10,6 +10,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.MapKey
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -30,9 +31,9 @@ interface CircuitProviders {
   @SingleIn(AppScope::class)
   @Provides
   fun provideCircuit(
-    presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
-    uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
-    animatedScreenTransforms: @JvmSuppressWildcards Map<KClass<out Screen>, AnimatedScreenTransform>,
+    presenterFactories: Set<Presenter.Factory>,
+    uiFactories: Set<Ui.Factory>,
+    animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
   ): Circuit {
     return Circuit.Builder()
       .addPresenterFactories(presenterFactories)
@@ -41,3 +42,5 @@ interface CircuitProviders {
       .build()
   }
 }
+
+@MapKey annotation class ScreenTransformKey(val screen: KClass<out Screen>)

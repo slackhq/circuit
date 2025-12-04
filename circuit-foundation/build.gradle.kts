@@ -64,6 +64,7 @@ kotlin {
         api(projects.backstack)
         api(projects.circuitRetained)
         api(projects.circuitRuntime)
+        api(projects.circuitRuntimeNavigation)
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
         api(projects.circuitSharedElements)

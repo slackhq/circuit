@@ -101,7 +101,7 @@ public fun <T, R> NavStackList<T>.transform(transform: (T) -> R): NavStackList<R
 }
 
 /** Implementation for a single-item [NavStackList]. */
-private data class SingleNavStackList<T>(val item: T) : NavStackList<T> {
+private class SingleNavStackList<T>(item: T) : NavStackList<T> {
   private val list = listOf(item)
   override val top: T = item
   override val active: T = item
@@ -110,10 +110,14 @@ private data class SingleNavStackList<T>(val item: T) : NavStackList<T> {
   override val backwardItems: Iterable<T> = emptyList()
 
   override fun iterator(): Iterator<T> = list.iterator()
+
+  override fun equals(other: Any?): Boolean = equalsTo(other)
+
+  override fun hashCode(): Int = hashCodeOf()
 }
 
 /** Default implementation of [NavStackList] backed by lists of items. */
-private data class DefaultNavStackList<T>(
+private class DefaultNavStackList<T>(
   override val forwardItems: Iterable<T>,
   override val active: T,
   override val backwardItems: Iterable<T>,
@@ -127,6 +131,10 @@ private data class DefaultNavStackList<T>(
   override val root: T = list.last()
 
   override fun iterator(): Iterator<T> = list.iterator()
+
+  override fun equals(other: Any?): Boolean = equalsTo(other)
+
+  override fun hashCode(): Int = hashCodeOf()
 }
 
 /** Implementation of [NavStackList] that lazily applies a transform function to items. */
@@ -146,4 +154,30 @@ private class MappingNavStackList<T, R>(
   override fun iterator(): Iterator<R> {
     return original.iterator().asSequence().map(transform).iterator()
   }
+
+  override fun equals(other: Any?): Boolean {
+    return original == other
+  }
+
+  override fun hashCode(): Int {
+    return original.hashCode()
+  }
+}
+
+private fun NavStackList<*>.hashCodeOf(): Int {
+  var result = forwardItems.hashCode()
+  result = 31 * result + (active?.hashCode() ?: 0)
+  result = 31 * result + backwardItems.hashCode()
+  return result
+}
+
+private fun NavStackList<*>.equalsTo(other: Any?): Boolean {
+  if (this === other) return true
+  if (other == null || other !is NavStackList<*>) return false
+  if (top != other.top) return false
+  if (active != other.active) return false
+  if (root != other.root) return false
+  if (forwardItems != other.forwardItems) return false
+  if (backwardItems != other.backwardItems) return false
+  return true
 }

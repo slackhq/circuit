@@ -133,6 +133,7 @@ class SaveableNavStackTest {
 
     // Can't go backward anymore
     assertFalse(navStack.backward())
+    assertEquals(TestScreen.RootAlpha, navStack.currentRecord?.screen)
 
     // Go forward (decrease currentIndex to 2)
     assertTrue(navStack.forward())
@@ -148,6 +149,7 @@ class SaveableNavStackTest {
 
     // Can't go forward anymore
     assertFalse(navStack.forward())
+    assertEquals(TestScreen.ScreenC, navStack.currentRecord?.screen)
   }
 
   @Test

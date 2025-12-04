@@ -200,19 +200,16 @@ final class com.slack.circuit.foundation.navstack/SaveableNavStack : com.slack.c
     final fun snapshot(): com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.foundation.navstack/SaveableNavStack.Record>? // com.slack.circuit.foundation.navstack/SaveableNavStack.snapshot|snapshot(){}[0]
 
     final class Record : com.slack.circuit.runtime.navigation/NavStack.Record { // com.slack.circuit.foundation.navstack/SaveableNavStack.Record|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin.collections/Map<kotlin/String, kotlin/Any?> = ..., kotlin/String = ...) // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.collections.Map<kotlin.String,kotlin.Any?>;kotlin.String){}[0]
+        constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/String = ...) // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.String){}[0]
 
-        final val args // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.args|{}args[0]
-            final fun <get-args>(): kotlin.collections/Map<kotlin/String, kotlin/Any?> // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.args.<get-args>|<get-args>(){}[0]
         final val key // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.key|{}key[0]
             final fun <get-key>(): kotlin/String // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.key.<get-key>|<get-key>(){}[0]
         final val screen // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.screen|{}screen[0]
             final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.screen.<get-screen>|<get-screen>(){}[0]
 
         final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.component1|component1(){}[0]
-        final fun component2(): kotlin.collections/Map<kotlin/String, kotlin/Any?> // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.component2|component2(){}[0]
-        final fun component3(): kotlin/String // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.component3|component3(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin.collections/Map<kotlin/String, kotlin/Any?> = ..., kotlin/String = ...): com.slack.circuit.foundation.navstack/SaveableNavStack.Record // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.collections.Map<kotlin.String,kotlin.Any?>;kotlin.String){}[0]
+        final fun component2(): kotlin/String // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.component2|component2(){}[0]
+        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., kotlin/String = ...): com.slack.circuit.foundation.navstack/SaveableNavStack.Record // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.copy|copy(com.slack.circuit.runtime.screen.Screen;kotlin.String){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.toString|toString(){}[0]

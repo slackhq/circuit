@@ -101,7 +101,7 @@ internal constructor(
     val currentRecord = Snapshot.withoutReadObservation { currentRecord }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
     // the parameters individually.
-    return if (currentRecord?.screen != record.screen || currentRecord.args != record.args) {
+    return if (currentRecord?.screen != record.screen) {
       // When adding a new record, truncate any entries above the current position (forward history)
       if (currentIndex > 0) {
         // Remove all entries before currentIndex
@@ -232,7 +232,6 @@ internal constructor(
 
   public data class Record(
     override val screen: Screen,
-    val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : NavStack.Record {
 
@@ -242,17 +241,12 @@ internal constructor(
           save = { value ->
             buildMap {
               put("screen", value.screen)
-              put("args", value.args)
               put("key", value.key)
             }
           },
           restore = { map ->
             @Suppress("UNCHECKED_CAST")
-            Record(
-              screen = map["screen"] as Screen,
-              args = map["args"] as Map<String, Any?>,
-              key = map["key"] as String,
-            )
+            Record(screen = map["screen"] as Screen, key = map["key"] as String)
           },
         )
     }
@@ -323,10 +317,12 @@ internal constructor(
                   // The first list is the current index
                   currentIndex = item.first() as Int
                 }
+
                 1 -> {
                   // The second list is the entry list
                   item.mapNotNullTo(navStack.entryList) { Record.Saver.restore(it as List<Any>) }
                 }
+
                 else -> {
                   // Any list after that is from the state store (as snapshots)
                   item

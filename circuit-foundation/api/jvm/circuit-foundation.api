@@ -315,3 +315,53 @@ public final class com/slack/circuit/foundation/backstack/ViewModelBackStackReco
 	public static final fun backStackHostViewModelStoreOwner (Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModelStoreOwner;
 }
 
+public final class com/slack/circuit/foundation/navstack/SaveableNavStack : com/slack/circuit/runtime/navigation/NavStack, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;)V
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;)V
+	public fun backward ()Z
+	public fun containsRecord (Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;Z)Z
+	public synthetic fun containsRecord (Lcom/slack/circuit/runtime/navigation/NavStack$Record;Z)Z
+	public fun forward ()Z
+	public fun getCurrentRecord ()Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;
+	public synthetic fun getCurrentRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public fun getRootRecord ()Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;
+	public synthetic fun getRootRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public fun getSize ()I
+	public fun getTopRecord ()Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;
+	public synthetic fun getTopRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public fun isRecordReachable (Ljava/lang/String;IZ)Z
+	public fun iterator ()Ljava/util/Iterator;
+	public fun peekState ()Ljava/util/List;
+	public fun pop ()Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;
+	public synthetic fun pop ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public fun push (Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;)Z
+	public synthetic fun push (Lcom/slack/circuit/runtime/navigation/NavStack$Record;)Z
+	public fun push (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public fun removeState (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
+	public fun saveState ()V
+	public fun snapshot ()Lcom/slack/circuit/runtime/navigation/NavStackList;
+}
+
+public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record : com/slack/circuit/runtime/navigation/NavStack$Record {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;)Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;
+	public static synthetic fun copy$default (Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;Lcom/slack/circuit/runtime/screen/Screen;Ljava/lang/String;ILjava/lang/Object;)Lcom/slack/circuit/foundation/navstack/SaveableNavStack$Record;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getKey ()Ljava/lang/String;
+	public fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/foundation/navstack/SaveableNavStackKt {
+	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/navigation/NavStack;
+	public static final fun rememberSaveableNavStack (Ljava/util/List;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/navigation/NavStack;
+}
+

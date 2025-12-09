@@ -10,12 +10,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -90,7 +92,9 @@ class BackNavigationTest {
             )
         } else {
           navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
-          BackHandler { navigator.pop() }
+          NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
+            navigator.pop()
+          }
         }
         NavigableCircuitContent(
           navigator = navigator,
@@ -113,12 +117,11 @@ fun createTestBackCircuit(
     .addUiFactory { _, _ -> ui<TestState> { state, modifier -> TestBackContent(state, modifier) } }
     .build()
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TestBackContent(state: TestState, modifier: Modifier = Modifier) {
   TestContent(state, modifier)
   if (state.label.contains("root", true)) {
-    BackHandler {}
+    NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {}
   }
 }
 

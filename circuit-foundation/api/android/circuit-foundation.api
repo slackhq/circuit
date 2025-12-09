@@ -11,8 +11,8 @@ public final class com/slack/circuit/foundation/Circuit {
 	public static final field $stable I
 	public synthetic fun <init> (Lcom/slack/circuit/foundation/Circuit$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
-	public final fun getBackStackLocalProviders ()Ljava/util/List;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/backstack/NavDecoration;
+	public final fun getNavStackLocalProviders ()Ljava/util/List;
 	public final fun getOnUnavailableContent ()Lkotlin/jvm/functions/Function4;
 	public final fun getPresentWithLifecycle ()Z
 	public final fun newBuilder ()Lcom/slack/circuit/foundation/Circuit$Builder;
@@ -27,9 +27,9 @@ public final class com/slack/circuit/foundation/Circuit {
 public final class com/slack/circuit/foundation/Circuit$Builder {
 	public static final field $stable I
 	public fun <init> ()V
-	public final fun addBackStackRecordLocalProvider (Lcom/slack/circuit/backstack/BackStackRecordLocalProvider;)Lcom/slack/circuit/foundation/Circuit$Builder;
-	public final fun addBackStackRecordLocalProvider ([Lcom/slack/circuit/backstack/BackStackRecordLocalProvider;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addBackStackRecordLocalProviders (Ljava/lang/Iterable;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun addNavStackRecordLocalProvider (Lcom/slack/circuit/foundation/navstack/NavStackRecordLocalProvider;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun addNavStackRecordLocalProvider ([Lcom/slack/circuit/foundation/navstack/NavStackRecordLocalProvider;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addPresenterFactories (Ljava/lang/Iterable;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addPresenterFactory (Lcom/slack/circuit/runtime/presenter/Presenter$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addPresenterFactory ([Lcom/slack/circuit/runtime/presenter/Presenter$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
@@ -37,12 +37,12 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 	public final fun addUiFactory (Lcom/slack/circuit/runtime/ui/Ui$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun addUiFactory ([Lcom/slack/circuit/runtime/ui/Ui$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun build ()Lcom/slack/circuit/foundation/Circuit;
-	public final fun clearBackStackRecordLocalProviders ()Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun clearNavStackRecordLocalProviders ()Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun eventListenerFactory (Lcom/slack/circuit/foundation/EventListener$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
-	public final fun getBackStackLocalProviders ()Ljava/util/List;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/backstack/NavDecoration;
 	public final fun getEventListenerFactory ()Lcom/slack/circuit/foundation/EventListener$Factory;
+	public final fun getNavStackLocalProviders ()Ljava/util/List;
 	public final fun getOnUnavailableContent ()Lkotlin/jvm/functions/Function4;
 	public final fun getPresentWithLifecycle ()Z
 	public final fun getPresenterFactories ()Ljava/util/List;
@@ -264,8 +264,8 @@ public final class com/slack/circuit/foundation/animation/AnimatedNavEvent : jav
 public abstract interface class com/slack/circuit/foundation/animation/AnimatedNavState {
 	public abstract fun getBackStack ()Ljava/util/List;
 	public fun getBackStackDepth ()I
-	public fun getRoot ()Lcom/slack/circuit/backstack/NavArgument;
-	public fun getTop ()Lcom/slack/circuit/backstack/NavArgument;
+	public fun getRoot ()Lcom/slack/circuit/runtime/navigation/NavArgument;
+	public fun getTop ()Lcom/slack/circuit/runtime/navigation/NavArgument;
 }
 
 public final class com/slack/circuit/foundation/animation/PartialContentTransform {
@@ -309,14 +309,26 @@ public final class com/slack/circuit/foundation/animation/PartialContentTransfor
 	public static final fun asPartialContentTransform (Landroidx/compose/animation/ContentTransform;)Lcom/slack/circuit/foundation/animation/PartialContentTransform;
 }
 
-public final class com/slack/circuit/foundation/backstack/ViewModelBackStackRecordLocalProvider : com/slack/circuit/backstack/BackStackRecordLocalProvider {
+public final class com/slack/circuit/foundation/backstack/ViewModelNavStackRecordLocalProvider : com/slack/circuit/foundation/navstack/NavStackRecordLocalProvider {
 	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuit/foundation/backstack/ViewModelBackStackRecordLocalProvider;
-	public fun providedValuesFor (Lcom/slack/circuit/backstack/BackStack$Record;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/backstack/ProvidedValues;
+	public static final field INSTANCE Lcom/slack/circuit/foundation/backstack/ViewModelNavStackRecordLocalProvider;
+	public fun providedValuesFor (Lcom/slack/circuit/runtime/navigation/NavStack$Record;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/foundation/navstack/ProvidedValues;
 }
 
-public final class com/slack/circuit/foundation/backstack/ViewModelBackStackRecordLocalProviderKt {
+public final class com/slack/circuit/foundation/backstack/ViewModelNavStackRecordLocalProviderKt {
 	public static final fun backStackHostViewModelStoreOwner (Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModelStoreOwner;
+}
+
+public abstract interface class com/slack/circuit/foundation/navstack/NavStackRecordLocalProvider {
+	public abstract fun providedValuesFor (Lcom/slack/circuit/runtime/navigation/NavStack$Record;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/foundation/navstack/ProvidedValues;
+}
+
+public final class com/slack/circuit/foundation/navstack/NavStackRecordLocalProviderKt {
+	public static final fun providedValuesForNavStack (Lcom/slack/circuit/runtime/navigation/NavStack;Ljava/util/List;Landroidx/compose/runtime/Composer;II)Ljava/util/Map;
+}
+
+public abstract interface class com/slack/circuit/foundation/navstack/ProvidedValues {
+	public abstract fun provideValues (Landroidx/compose/runtime/Composer;I)Ljava/util/List;
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack : com/slack/circuit/runtime/navigation/NavStack, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {

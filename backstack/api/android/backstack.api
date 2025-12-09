@@ -1,22 +1,12 @@
-public abstract interface class com/slack/circuit/backstack/BackStack : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
-	public abstract fun containsRecord (Lcom/slack/circuit/backstack/BackStack$Record;Z)Z
-	public abstract fun getRootRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
-	public abstract fun getSize ()I
-	public abstract fun getTopRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
-	public abstract fun isRecordReachable (Ljava/lang/String;IZ)Z
-	public abstract fun peekState ()Ljava/util/List;
-	public abstract fun pop ()Lcom/slack/circuit/backstack/BackStack$Record;
-	public fun popUntil (Lkotlin/jvm/functions/Function1;)Ljava/util/List;
-	public abstract fun push (Lcom/slack/circuit/backstack/BackStack$Record;)Z
-	public abstract fun push (Lcom/slack/circuit/runtime/screen/Screen;)Z
-	public abstract fun removeState (Lcom/slack/circuit/runtime/screen/Screen;)Z
-	public abstract fun restoreState (Lcom/slack/circuit/runtime/screen/Screen;)Z
-	public abstract fun saveState ()V
+public abstract interface class com/slack/circuit/backstack/BackStack : com/slack/circuit/runtime/navigation/NavStack, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
+	public fun backward ()Z
+	public fun forward ()Z
+	public fun getCurrentRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
+	public synthetic fun getCurrentRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
+	public fun snapshot ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 }
 
-public abstract interface class com/slack/circuit/backstack/BackStack$Record {
-	public abstract fun getKey ()Ljava/lang/String;
-	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+public abstract interface class com/slack/circuit/backstack/BackStack$Record : com/slack/circuit/runtime/navigation/NavStack$Record {
 }
 
 public final class com/slack/circuit/backstack/BackStackKt {
@@ -25,24 +15,8 @@ public final class com/slack/circuit/backstack/BackStackKt {
 	public static final fun isEmpty (Lcom/slack/circuit/backstack/BackStack;)Z
 }
 
-public abstract interface class com/slack/circuit/backstack/BackStackRecordLocalProvider {
-	public abstract fun providedValuesFor (Lcom/slack/circuit/backstack/BackStack$Record;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/backstack/ProvidedValues;
-}
-
-public final class com/slack/circuit/backstack/BackStackRecordLocalProviderKt {
-	public static final fun providedValuesForBackStack (Lcom/slack/circuit/backstack/BackStack;Ljava/util/List;Landroidx/compose/runtime/Composer;II)Ljava/util/Map;
-}
-
-public abstract interface class com/slack/circuit/backstack/NavArgument {
-	public abstract fun getScreen ()Lcom/slack/circuit/runtime/screen/Screen;
-}
-
 public abstract interface class com/slack/circuit/backstack/NavDecoration {
 	public abstract fun DecoratedContent (Ljava/util/List;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-}
-
-public abstract interface class com/slack/circuit/backstack/ProvidedValues {
-	public abstract fun provideValues (Landroidx/compose/runtime/Composer;I)Ljava/util/List;
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/circuit/backstack/BackStack {
@@ -50,20 +24,20 @@ public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/cir
 	public fun <init> ()V
 	public fun <init> (Lcom/slack/circuit/backstack/SaveableBackStack$Record;)V
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;)V
-	public synthetic fun containsRecord (Lcom/slack/circuit/backstack/BackStack$Record;Z)Z
 	public fun containsRecord (Lcom/slack/circuit/backstack/SaveableBackStack$Record;Z)Z
-	public synthetic fun getRootRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
+	public synthetic fun containsRecord (Lcom/slack/circuit/runtime/navigation/NavStack$Record;Z)Z
 	public fun getRootRecord ()Lcom/slack/circuit/backstack/SaveableBackStack$Record;
+	public synthetic fun getRootRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
 	public fun getSize ()I
-	public synthetic fun getTopRecord ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun getTopRecord ()Lcom/slack/circuit/backstack/SaveableBackStack$Record;
+	public synthetic fun getTopRecord ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
 	public fun isRecordReachable (Ljava/lang/String;IZ)Z
 	public fun iterator ()Ljava/util/Iterator;
 	public fun peekState ()Ljava/util/List;
-	public synthetic fun pop ()Lcom/slack/circuit/backstack/BackStack$Record;
 	public fun pop ()Lcom/slack/circuit/backstack/SaveableBackStack$Record;
-	public synthetic fun push (Lcom/slack/circuit/backstack/BackStack$Record;)Z
+	public synthetic fun pop ()Lcom/slack/circuit/runtime/navigation/NavStack$Record;
 	public fun push (Lcom/slack/circuit/backstack/SaveableBackStack$Record;)Z
+	public synthetic fun push (Lcom/slack/circuit/runtime/navigation/NavStack$Record;)Z
 	public fun push (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public final fun push (Lcom/slack/circuit/runtime/screen/Screen;Ljava/util/Map;)Z
 	public fun removeState (Lcom/slack/circuit/runtime/screen/Screen;)Z

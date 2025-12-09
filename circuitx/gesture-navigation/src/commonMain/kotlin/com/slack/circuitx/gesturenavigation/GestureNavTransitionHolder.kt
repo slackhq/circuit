@@ -3,8 +3,8 @@
 package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.runtime.Immutable
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.navigation.NavArgument
 
 /**
  * A holder class used by the `AnimatedContent` composables. This enables us to pass through all of

@@ -91,7 +91,7 @@ internal enum class CodegenMode {
    * ```
    */
   HILT {
-    override val originAnnotation: ClassName = CircuitNames.DAGGER_ORIGINATING_ELEMENT
+    override val originAnnotation: OriginAnnotation = CircuitNames.DAGGER_ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Hilt only supports JVM & Android
@@ -175,7 +175,7 @@ internal enum class CodegenMode {
    */
   KOTLIN_INJECT_ANVIL {
     override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
-    override val originAnnotation: ClassName = CircuitNames.KotlinInject.Anvil.ORIGIN
+    override val originAnnotation: OriginAnnotation = CircuitNames.KotlinInject.Anvil.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
@@ -223,7 +223,7 @@ internal enum class CodegenMode {
    */
   METRO {
     override val runtime: InjectionRuntime = InjectionRuntime.Metro
-    override val originAnnotation: ClassName = CircuitNames.Metro.ORIGIN
+    override val originAnnotation: OriginAnnotation = CircuitNames.Metro.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Metro supports all
@@ -254,7 +254,7 @@ internal enum class CodegenMode {
   };
 
   open val runtime: InjectionRuntime = InjectionRuntime.Jakarta
-  open val originAnnotation: ClassName? = null
+  open val originAnnotation: OriginAnnotation? = null
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 
@@ -355,3 +355,8 @@ internal enum class CodegenMode {
     }
   }
 }
+
+public class OriginAnnotation(
+  public val className: ClassName,
+  public val parameterName: String? = null,
+)

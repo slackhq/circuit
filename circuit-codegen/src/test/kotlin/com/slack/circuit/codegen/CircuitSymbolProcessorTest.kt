@@ -1530,7 +1530,7 @@ class CircuitSymbolProcessorTest {
         import dagger.hilt.codegen.OriginatingElement
         import jakarta.inject.Inject
 
-        @OriginatingElement(FavoritesPresenter::class)
+        @OriginatingElement(topLevelClass = FavoritesPresenter::class)
         public class FavoritesPresenterFactory @Inject constructor(
           private val factory: FavoritesPresenter.Factory,
         ) : Presenter.Factory {

@@ -6,48 +6,19 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root:backstack>
-abstract fun interface <#A: in com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.backstack/BackStackRecordLocalProvider { // com.slack.circuit.backstack/BackStackRecordLocalProvider|null[0]
-    abstract fun providedValuesFor(#A, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.backstack/ProvidedValues // com.slack.circuit.backstack/BackStackRecordLocalProvider.providedValuesFor|providedValuesFor(1:0;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
-}
+abstract interface <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.backstack/BackStack : com.slack.circuit.runtime.navigation/NavStack<#A>, kotlin.collections/Iterable<#A> { // com.slack.circuit.backstack/BackStack|null[0]
+    open val currentRecord // com.slack.circuit.backstack/BackStack.currentRecord|{}currentRecord[0]
+        open fun <get-currentRecord>(): #A? // com.slack.circuit.backstack/BackStack.currentRecord.<get-currentRecord>|<get-currentRecord>(){}[0]
 
-abstract fun interface com.slack.circuit.backstack/ProvidedValues { // com.slack.circuit.backstack/ProvidedValues|null[0]
-    abstract fun provideValues(androidx.compose.runtime/Composer?, kotlin/Int): kotlin.collections/List<androidx.compose.runtime/ProvidedValue<*>> // com.slack.circuit.backstack/ProvidedValues.provideValues|provideValues(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
-}
+    open fun backward(): kotlin/Boolean // com.slack.circuit.backstack/BackStack.backward|backward(){}[0]
+    open fun forward(): kotlin/Boolean // com.slack.circuit.backstack/BackStack.forward|forward(){}[0]
+    open fun snapshot(): com.slack.circuit.runtime.navigation/NavStackList<#A>? // com.slack.circuit.backstack/BackStack.snapshot|snapshot(){}[0]
 
-abstract interface <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.backstack/BackStack : kotlin.collections/Iterable<#A> { // com.slack.circuit.backstack/BackStack|null[0]
-    abstract val rootRecord // com.slack.circuit.backstack/BackStack.rootRecord|{}rootRecord[0]
-        abstract fun <get-rootRecord>(): #A? // com.slack.circuit.backstack/BackStack.rootRecord.<get-rootRecord>|<get-rootRecord>(){}[0]
-    abstract val size // com.slack.circuit.backstack/BackStack.size|{}size[0]
-        abstract fun <get-size>(): kotlin/Int // com.slack.circuit.backstack/BackStack.size.<get-size>|<get-size>(){}[0]
-    abstract val topRecord // com.slack.circuit.backstack/BackStack.topRecord|{}topRecord[0]
-        abstract fun <get-topRecord>(): #A? // com.slack.circuit.backstack/BackStack.topRecord.<get-topRecord>|<get-topRecord>(){}[0]
-
-    abstract fun containsRecord(#A, kotlin/Boolean): kotlin/Boolean // com.slack.circuit.backstack/BackStack.containsRecord|containsRecord(1:0;kotlin.Boolean){}[0]
-    abstract fun isRecordReachable(kotlin/String, kotlin/Int, kotlin/Boolean): kotlin/Boolean // com.slack.circuit.backstack/BackStack.isRecordReachable|isRecordReachable(kotlin.String;kotlin.Int;kotlin.Boolean){}[0]
-    abstract fun peekState(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.backstack/BackStack.peekState|peekState(){}[0]
-    abstract fun pop(): #A? // com.slack.circuit.backstack/BackStack.pop|pop(){}[0]
-    abstract fun push(#A): kotlin/Boolean // com.slack.circuit.backstack/BackStack.push|push(1:0){}[0]
-    abstract fun push(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.backstack/BackStack.push|push(com.slack.circuit.runtime.screen.Screen){}[0]
-    abstract fun removeState(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.backstack/BackStack.removeState|removeState(com.slack.circuit.runtime.screen.Screen){}[0]
-    abstract fun restoreState(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.backstack/BackStack.restoreState|restoreState(com.slack.circuit.runtime.screen.Screen){}[0]
-    abstract fun saveState() // com.slack.circuit.backstack/BackStack.saveState|saveState(){}[0]
-    open fun popUntil(kotlin/Function1<#A, kotlin/Boolean>): kotlin.collections/List<#A> // com.slack.circuit.backstack/BackStack.popUntil|popUntil(kotlin.Function1<1:0,kotlin.Boolean>){}[0]
-
-    abstract interface Record { // com.slack.circuit.backstack/BackStack.Record|null[0]
-        abstract val key // com.slack.circuit.backstack/BackStack.Record.key|{}key[0]
-            abstract fun <get-key>(): kotlin/String // com.slack.circuit.backstack/BackStack.Record.key.<get-key>|<get-key>(){}[0]
-        abstract val screen // com.slack.circuit.backstack/BackStack.Record.screen|{}screen[0]
-            abstract fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.backstack/BackStack.Record.screen.<get-screen>|<get-screen>(){}[0]
-    }
-}
-
-abstract interface com.slack.circuit.backstack/NavArgument { // com.slack.circuit.backstack/NavArgument|null[0]
-    abstract val screen // com.slack.circuit.backstack/NavArgument.screen|{}screen[0]
-        abstract fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.backstack/NavArgument.screen.<get-screen>|<get-screen>(){}[0]
+    abstract interface Record : com.slack.circuit.runtime.navigation/NavStack.Record // com.slack.circuit.backstack/BackStack.Record|null[0]
 }
 
 abstract interface com.slack.circuit.backstack/NavDecoration { // com.slack.circuit.backstack/NavDecoration|null[0]
-    abstract fun <#A1: com.slack.circuit.backstack/NavArgument> DecoratedContent(kotlin.collections/List<#A1>, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.backstack/NavDecoration.DecoratedContent|DecoratedContent(kotlin.collections.List<0:0>;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.backstack.NavArgument>}[0]
+    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> DecoratedContent(kotlin.collections/List<#A1>, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.backstack/NavDecoration.DecoratedContent|DecoratedContent(kotlin.collections.List<0:0>;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
 }
 
 final class com.slack.circuit.backstack/SaveableBackStack : com.slack.circuit.backstack/BackStack<com.slack.circuit.backstack/SaveableBackStack.Record> { // com.slack.circuit.backstack/SaveableBackStack|null[0]
@@ -101,7 +72,6 @@ final val com.slack.circuit.backstack/isEmpty // com.slack.circuit.backstack/isE
     final fun (com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>).<get-isEmpty>(): kotlin/Boolean // com.slack.circuit.backstack/isEmpty.<get-isEmpty>|<get-isEmpty>@com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>(){}[0]
 
 final fun (com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>).com.slack.circuit.backstack/clearState() // com.slack.circuit.backstack/clearState|clearState@com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>(){}[0]
-final fun <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.circuit.backstack/providedValuesForBackStack(com.slack.circuit.backstack/BackStack<#A>, kotlin.collections/List<com.slack.circuit.backstack/BackStackRecordLocalProvider<#A>>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): kotlin.collections/Map<#A, com.slack.circuit.backstack/ProvidedValues> // com.slack.circuit.backstack/providedValuesForBackStack|providedValuesForBackStack(com.slack.circuit.backstack.BackStack<0:0>;kotlin.collections.List<com.slack.circuit.backstack.BackStackRecordLocalProvider<0:0>>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.backstack.BackStack.Record>}[0]
 final fun com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack$stableprop_getter(): kotlin/Int // com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack$stableprop_getter|com_slack_circuit_backstack_SaveableBackStack$stableprop_getter(){}[0]
 final fun com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack_Record$stableprop_getter(): kotlin/Int // com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack_Record$stableprop_getter|com_slack_circuit_backstack_SaveableBackStack_Record$stableprop_getter(){}[0]
 final fun com.slack.circuit.backstack/rememberSaveableBackStack(com.slack.circuit.runtime.screen/Screen, kotlin/Function1<com.slack.circuit.backstack/SaveableBackStack, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.backstack/SaveableBackStack // com.slack.circuit.backstack/rememberSaveableBackStack|rememberSaveableBackStack(com.slack.circuit.runtime.screen.Screen;kotlin.Function1<com.slack.circuit.backstack.SaveableBackStack,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]

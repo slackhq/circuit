@@ -43,17 +43,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
-import com.slack.circuit.backstack.ProvidedValues
 import com.slack.circuit.backstack.isEmpty
-import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.foundation.navstack.ProvidedValues
+import com.slack.circuit.foundation.navstack.providedValuesForNavStack
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetained
@@ -62,6 +61,7 @@ import com.slack.circuit.retained.rememberRetainedStateRegistry
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -122,7 +122,7 @@ import com.slack.circuit.runtime.screen.Screen
  */
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
-public fun <R : Record> NavigableCircuitContent(
+public fun <R : BackStack.Record> NavigableCircuitContent(
   navigator: Navigator,
   backStack: BackStack<R>,
   modifier: Modifier = Modifier,
@@ -179,7 +179,7 @@ public fun <R : Record> NavigableCircuitContent(
  */
 @ExperimentalCircuitApi // For AnsweringResultNavigator
 @Composable
-public fun <R : Record> NavigableCircuitContent(
+public fun <R : BackStack.Record> NavigableCircuitContent(
   navigator: AnsweringResultNavigator<R>,
   modifier: Modifier = Modifier,
   circuit: Circuit = requireNotNull(LocalCircuit.current),
@@ -255,7 +255,7 @@ public fun <R : Record> NavigableCircuitContent(
         }
     val activeContentProviders = buildCircuitContentProviders(backStack = navigator.backStack)
     val circuitProvidedValues =
-      providedValuesForBackStack(navigator.backStack, circuit.backStackLocalProviders)
+      providedValuesForNavStack(navigator.backStack, circuit.navStackLocalProviders)
     navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
       val record = provider.record
 
@@ -341,10 +341,7 @@ public class AnsweringResultNavigator<R : Record>(
 public class RecordContentProvider<R : Record>(
   public val record: R,
   internal val content: @Composable (R, ContentProviderState<R>) -> Unit,
-) : NavArgument {
-
-  override val screen: Screen
-    get() = record.screen
+) : NavArgument by record {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

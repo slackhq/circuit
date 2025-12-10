@@ -18,6 +18,8 @@ import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.overlay.OverlayTransitionController
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.navigation.navStackListOf
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.jvm.JvmInline
@@ -88,6 +90,14 @@ internal class DispatchingOverlayNavigator(
     error("goTo() is not supported in full screen overlays!")
   }
 
+  override fun forward(): Boolean {
+    error("forward() is not supported in full screen overlays!")
+  }
+
+  override fun backward(): Boolean {
+    error("backward() is not supported in full screen overlays!")
+  }
+
   override fun pop(result: PopResult?): Screen? {
     overlayNavigator.finish(FullScreenOverlay.Result(result))
     onPop()
@@ -97,6 +107,8 @@ internal class DispatchingOverlayNavigator(
   override fun peek(): Screen = currentScreen
 
   override fun peekBackStack(): List<Screen> = listOf(currentScreen)
+
+  override fun peekNavStack(): NavStackList<Screen> = navStackListOf(currentScreen)
 
   override fun resetRoot(newRoot: Screen, options: Navigator.StateOptions): List<Screen> {
     error("resetRoot() is not supported in full screen overlays!")

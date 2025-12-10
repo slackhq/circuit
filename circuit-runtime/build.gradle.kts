@@ -48,6 +48,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(projects.circuitRuntimeScreen)
+        api(projects.circuitRuntimeNavigation)
       }
     }
   }

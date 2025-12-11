@@ -35,7 +35,9 @@ class AnsweringNavigatorTest {
 
   private val circuit =
     Circuit.Builder()
-      .addPresenter<TestScreen, State> { _, navigator, _ -> AnsweringPresenter(navigator, resultTracker) }
+      .addPresenter<TestScreen, State> { _, navigator, _ ->
+        AnsweringPresenter(navigator, resultTracker)
+      }
       .addPresenter<TestScreen2, State> { _, navigator, _ -> NormalPresenter(navigator) }
       .addPresenter<TestScreen3, State> { _, navigator, _ -> NormalPresenter(navigator) }
       .addUi<TestScreen, State> { state, _ -> SideEffect { state1.add(state) } }
@@ -82,12 +84,13 @@ class AnsweringNavigatorTest {
   }
 
   @Test
-  fun `answeringNavigationAvailable returns false when locals are not available`() = runComposeUiTest {
-    var navigationAvailable = true
-    setContent { navigationAvailable = answeringNavigationAvailable() }
-    waitForIdle()
-    assertEquals(false, navigationAvailable)
-  }
+  fun `answeringNavigationAvailable returns false when locals are not available`() =
+    runComposeUiTest {
+      var navigationAvailable = true
+      setContent { navigationAvailable = answeringNavigationAvailable() }
+      waitForIdle()
+      assertEquals(false, navigationAvailable)
+    }
 
   @Test
   fun `fallback navigator is used when answering navigation is not available`() = runComposeUiTest {
@@ -180,13 +183,15 @@ class AnsweringNavigatorTest {
 
   @Test
   fun `subtype result is accepted`() = runTest {
-
-    val typeCircuit = Circuit.Builder()
-      .addPresenter<TestScreen, State> { _, navigator, _ -> TypePresenter(navigator, resultTracker) }
-      .addPresenter<TestScreen2, State> { _, navigator, _ -> NormalPresenter(navigator) }
-      .addUi<TestScreen, State> { state, _ -> SideEffect { state1.add(state) } }
-      .addUi<TestScreen2, State> { state, _ -> SideEffect { state2.add(state) } }
-      .build()
+    val typeCircuit =
+      Circuit.Builder()
+        .addPresenter<TestScreen, State> { _, navigator, _ ->
+          TypePresenter(navigator, resultTracker)
+        }
+        .addPresenter<TestScreen2, State> { _, navigator, _ -> NormalPresenter(navigator) }
+        .addUi<TestScreen, State> { state, _ -> SideEffect { state1.add(state) } }
+        .addUi<TestScreen2, State> { state, _ -> SideEffect { state2.add(state) } }
+        .build()
 
     runComposeUiTest {
       val backStack = setCircuitContent(typeCircuit)
@@ -224,8 +229,7 @@ private fun ComposeUiTest.setCircuitContent(circuit: Circuit): SaveableBackStack
 private val BackStack<*>.screens
   get() = map { it.screen }
 
-private data class State(val eventSink: (NavEvent) -> Unit) :
-  CircuitUiState
+private data class State(val eventSink: (NavEvent) -> Unit) : CircuitUiState
 
 private class AnsweringPresenter(
   private val navigator: Navigator,
@@ -234,9 +238,8 @@ private class AnsweringPresenter(
 
   @Composable
   override fun present(): State {
-    val answeringNavigator = rememberAnsweringNavigator<TestValuePopResult>(navigator) {
-      resultTracker.add(it)
-    }
+    val answeringNavigator =
+      rememberAnsweringNavigator<TestValuePopResult>(navigator) { resultTracker.add(it) }
     return State {
       when (it) {
         is NavEvent.GoTo -> answeringNavigator.goTo(it.screen)
@@ -253,9 +256,8 @@ private class TypePresenter(
 
   @Composable
   override fun present(): State {
-    val answeringNavigator = rememberAnsweringNavigator<SuperPopResult>(navigator) {
-      resultTracker.add(it)
-    }
+    val answeringNavigator =
+      rememberAnsweringNavigator<SuperPopResult>(navigator) { resultTracker.add(it) }
     return State {
       when (it) {
         is NavEvent.GoTo -> answeringNavigator.goTo(it.screen)
@@ -269,8 +271,6 @@ private class NormalPresenter(private val navigator: Navigator) : Presenter<Stat
 
   @Composable
   override fun present(): State {
-    return State {
-      navigator.onNavEvent(it)
-    }
+    return State { navigator.onNavEvent(it) }
   }
 }

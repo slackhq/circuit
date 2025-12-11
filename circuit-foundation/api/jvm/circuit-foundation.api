@@ -116,6 +116,22 @@ public abstract interface class com/slack/circuit/foundation/EventListener$Facto
 public abstract interface class com/slack/circuit/foundation/NavEvent : com/slack/circuit/runtime/CircuitUiEvent {
 }
 
+public final class com/slack/circuit/foundation/NavEvent$Backward : com/slack/circuit/foundation/NavEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuit/foundation/NavEvent$Backward;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/foundation/NavEvent$Forward : com/slack/circuit/foundation/NavEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuit/foundation/NavEvent$Forward;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/slack/circuit/foundation/NavEvent$GoTo : com/slack/circuit/foundation/NavEvent {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;)V
@@ -210,9 +226,11 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$EmptyDecoratio
 }
 
 public final class com/slack/circuit/foundation/NavigatorImplKt {
-	public static final fun Navigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/Navigator;
+	public static final fun Navigator (Lcom/slack/circuit/runtime/navigation/NavStack;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/Navigator;
 	public static final fun rememberCircuitNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
 	public static final fun rememberCircuitNavigator (Lcom/slack/circuit/backstack/BackStack;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/Navigator;
+	public static final fun rememberCircuitNavigator (Lcom/slack/circuit/runtime/navigation/NavStack;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/Navigator;
+	public static final fun rememberCircuitNavigator (Lcom/slack/circuit/runtime/navigation/NavStack;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/Navigator;
 }
 
 public abstract interface class com/slack/circuit/foundation/NonPausablePresenter : com/slack/circuit/runtime/presenter/Presenter {

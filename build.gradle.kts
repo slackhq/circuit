@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import wtf.emulator.DeviceModel
 import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
@@ -436,7 +437,10 @@ subprojects {
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
     configure<EwExtension> {
-      devices.set(listOf(mapOf("model" to "Pixel2Atd", "version" to "30", "atd" to "true")))
+      device {
+        model = DeviceModel.PIXEL_2_ATD
+        version = 30
+      }
       if (emulatorWtfToken.isPresent) {
         token.set(emulatorWtfToken)
       }

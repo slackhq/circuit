@@ -11,6 +11,7 @@ import app.cash.turbine.Turbine
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -26,6 +27,7 @@ import kotlinx.coroutines.test.runTest
  * navigation event.
  */
 @OptIn(ExperimentalTestApi::class)
+@RunWith(ComposeUiTestRunner::class)
 class AnsweringNavigatorTest {
 
   private val state1 = Turbine<State>()
@@ -209,8 +211,9 @@ class AnsweringNavigatorTest {
   }
 }
 
+@Parcelize
 private open class SuperPopResult : PopResult {
-  class SubPopResult : SuperPopResult()
+  @Parcelize class SubPopResult : SuperPopResult()
 }
 
 @OptIn(ExperimentalTestApi::class)

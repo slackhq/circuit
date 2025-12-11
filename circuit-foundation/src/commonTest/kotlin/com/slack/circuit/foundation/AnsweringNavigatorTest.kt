@@ -4,8 +4,9 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.runComposeUiTest
 import app.cash.turbine.Turbine
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
@@ -19,18 +20,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
-import org.junit.runner.RunWith
 
 /**
  * Test verifying that a [PopResult] is returned to a [rememberAnsweringNavigator] across a
  * navigation event.
  */
-@RunWith(ComposeUiTestRunner::class)
+@OptIn(ExperimentalTestApi::class)
 class AnsweringNavigatorTest {
-
-  @get:Rule
-  val composeTestRule = createComposeRule()
 
   private val state1 = Turbine<State>()
   private val state2 = Turbine<State>()
@@ -49,7 +45,7 @@ class AnsweringNavigatorTest {
 
   @Test
   fun `verify pop result is returned to the answering navigator`() = runTest {
-    with(composeTestRule) {
+    runComposeUiTest {
       val backStack = setCircuitContent(circuit)
       assertEquals(listOf(TestScreen), backStack.screens)
       // Go to next screen
@@ -66,7 +62,7 @@ class AnsweringNavigatorTest {
   }
 
   @Test
-  fun `answeringNavigationAvailable is true in NavigableCircuitContent`() = runTest {
+  fun `answeringNavigationAvailable is true in NavigableCircuitContent`() = runComposeUiTest {
     var navigationAvailable = true
     val testCircuit =
       Circuit.Builder()
@@ -74,27 +70,27 @@ class AnsweringNavigatorTest {
           navigationAvailable = answeringNavigationAvailable()
         }
         .build()
-    composeTestRule.setContent {
+    setContent {
       CircuitCompositionLocals(testCircuit) {
         val backStack = rememberSaveableBackStack(TestStaticScreen)
         val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
       }
     }
-    composeTestRule.waitForIdle()
+    waitForIdle()
     assertEquals(true, navigationAvailable)
   }
 
   @Test
-  fun `answeringNavigationAvailable returns false when locals are not available`() {
+  fun `answeringNavigationAvailable returns false when locals are not available`() = runComposeUiTest {
     var navigationAvailable = true
-    composeTestRule.setContent { navigationAvailable = answeringNavigationAvailable() }
-    composeTestRule.waitForIdle()
+    setContent { navigationAvailable = answeringNavigationAvailable() }
+    waitForIdle()
     assertEquals(false, navigationAvailable)
   }
 
   @Test
-  fun `fallback navigator is used when answering navigation is not available`() {
+  fun `fallback navigator is used when answering navigation is not available`() = runComposeUiTest {
     var fallbackCalled: Screen? = null
     val fallbackNavigator =
       object : Navigator by Navigator(SaveableBackStack(TestScreen), {}) {
@@ -104,20 +100,20 @@ class AnsweringNavigatorTest {
         }
       }
 
-    composeTestRule.setContent {
+    setContent {
       val answeringNavigator =
         rememberAnsweringNavigator<TestPopResult>(fallbackNavigator) {
           error("Result handler should not be called")
         }
       SideEffect { answeringNavigator.goTo(TestScreen2) }
     }
-    composeTestRule.waitForIdle()
+    waitForIdle()
     assertEquals(TestScreen2, fallbackCalled)
   }
 
   @Test
   fun `result type filtering - wrong type is ignored`() = runTest {
-    with(composeTestRule) {
+    runComposeUiTest {
       val backStack = setCircuitContent(circuit)
       assertEquals(listOf(TestScreen), backStack.screens)
       // Go to next screen
@@ -135,7 +131,7 @@ class AnsweringNavigatorTest {
 
   @Test
   fun `multiple navigations with results`() = runTest {
-    with(composeTestRule) {
+    runComposeUiTest {
       val backStack = setCircuitContent(circuit)
       assertEquals(listOf(TestScreen), backStack.screens)
       waitForIdle()
@@ -166,7 +162,7 @@ class AnsweringNavigatorTest {
 
   @Test
   fun `pop without result does not invoke result handler`() = runTest {
-    with(composeTestRule) {
+    runComposeUiTest {
       val backStack = setCircuitContent(circuit)
       assertEquals(listOf(TestScreen), backStack.screens)
       // Go to next screen
@@ -192,7 +188,7 @@ class AnsweringNavigatorTest {
       .addUi<TestScreen2, State> { state, _ -> SideEffect { state2.add(state) } }
       .build()
 
-    with(composeTestRule) {
+    runComposeUiTest {
       val backStack = setCircuitContent(typeCircuit)
       assertEquals(listOf(TestScreen), backStack.screens)
       // Go to next screen
@@ -212,7 +208,8 @@ private open class SuperPopResult : PopResult {
   class SubPopResult : SuperPopResult()
 }
 
-private fun ComposeContentTestRule.setCircuitContent(circuit: Circuit): SaveableBackStack {
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.setCircuitContent(circuit: Circuit): SaveableBackStack {
   lateinit var backStack: SaveableBackStack
   setContent {
     CircuitCompositionLocals(circuit) {

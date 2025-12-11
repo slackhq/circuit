@@ -156,7 +156,7 @@ internal class NavigatorImpl(
 ) : Navigator {
 
   init {
-    check(!navStack.isEmpty) { "Backstack size must not be empty." }
+    check(!navStack.isEmpty) { "NavStack size must not be empty." }
   }
 
   override fun goTo(screen: Screen): Boolean {

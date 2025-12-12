@@ -75,12 +75,14 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
     return when (animatedNavEvent) {
+      AnimatedNavEvent.Forward,
       AnimatedNavEvent.GoTo -> {
         slideInHorizontally(initialOffsetX = End)
           .togetherWith(
             slideOutHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           )
       }
+      AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
         slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
           .togetherWith(
@@ -111,7 +113,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
           swipeOffset = { swipeOffset },
         )
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navStack.active)
     }
   }
 

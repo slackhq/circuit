@@ -16,7 +16,7 @@ public final class com/slack/circuit/backstack/BackStackKt {
 }
 
 public abstract interface class com/slack/circuit/backstack/NavDecoration {
-	public abstract fun DecoratedContent (Ljava/util/List;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/circuit/backstack/BackStack {

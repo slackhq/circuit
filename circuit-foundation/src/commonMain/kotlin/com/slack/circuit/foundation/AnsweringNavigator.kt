@@ -11,10 +11,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
@@ -28,7 +28,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCircuitApi::class)
 @Composable
 public fun answeringNavigationAvailable(): Boolean =
-  LocalBackStack.current != null && LocalAnsweringResultHandler.current != null
+  LocalNavStack.current != null && LocalAnsweringResultHandler.current != null
 
 /**
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
@@ -51,9 +51,9 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   resultType: KClass<T>,
   block: (result: T) -> Unit,
 ): GoToNavigator {
-  val backStack = LocalBackStack.current ?: return fallbackNavigator
+  val navStack = LocalNavStack.current ?: return fallbackNavigator
   val resultHandler = LocalAnsweringResultHandler.current ?: return fallbackNavigator
-  return rememberAnsweringNavigator(backStack, resultHandler, resultType, block)
+  return rememberAnsweringNavigator(navStack, resultHandler, resultType, block)
 }
 
 /**
@@ -63,11 +63,11 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 @ExperimentalCircuitApi
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
-  backStack: BackStack<out BackStack.Record>,
+  navStack: NavStack<out NavStack.Record>,
   answeringResultHandler: AnsweringResultHandler,
   noinline block: (result: T) -> Unit,
 ): GoToNavigator {
-  return rememberAnsweringNavigator(backStack, answeringResultHandler, T::class, block)
+  return rememberAnsweringNavigator(navStack, answeringResultHandler, T::class, block)
 }
 
 /**
@@ -99,12 +99,12 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 @ExperimentalCircuitApi
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
-  backStack: BackStack<out BackStack.Record>,
+  navStack: NavStack<out NavStack.Record>,
   answeringResultHandler: AnsweringResultHandler,
   resultType: KClass<T>,
   block: (result: T) -> Unit,
 ): GoToNavigator {
-  val currentBackStack by rememberUpdatedState(backStack)
+  val currentBackStack by rememberUpdatedState(navStack)
   val currentResultType by rememberUpdatedState(resultType)
 
   // Top screen at the start, so we can ensure we only collect the result if

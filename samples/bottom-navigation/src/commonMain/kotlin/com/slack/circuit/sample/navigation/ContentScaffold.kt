@@ -31,26 +31,26 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.SaveableBackStack.Record
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavStack
+import com.slack.circuit.runtime.navigation.NavStack.Record
 
 @Composable
 fun ContentScaffold(
-  backStack: BackStack<Record>,
+  navStack: NavStack<out Record>,
   navigator: Navigator,
   tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
-    bottomBar = { BottomTabRow(tabs, backStack, navigator) },
+    bottomBar = { BottomTabRow(tabs, navStack, navigator) },
   ) { innerPadding ->
     NavigableCircuitContent(
       navigator = navigator,
-      backStack = backStack,
+      navStack = navStack,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
     )
   }
@@ -59,7 +59,7 @@ fun ContentScaffold(
 @Composable
 private fun BottomTabRow(
   tabs: List<TabScreen>,
-  backStack: BackStack<Record>,
+  navStack: NavStack<out Record>,
   navigator: Navigator,
   modifier: Modifier = Modifier,
 ) {
@@ -71,7 +71,7 @@ private fun BottomTabRow(
         .windowInsetsPadding(WindowInsets.safeContent.only(WindowInsetsSides.Bottom)),
   ) {
     tabs.forEach { tab ->
-      val selected = tab == backStack.rootRecord?.screen
+      val selected = tab == navStack.rootRecord?.screen
       Text(
         text = tab.label,
         color = if (selected) MaterialTheme.colorScheme.onSecondary else Color.Unspecified,

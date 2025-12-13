@@ -18,7 +18,7 @@ abstract interface <#A: com.slack.circuit.backstack/BackStack.Record> com.slack.
 }
 
 abstract interface com.slack.circuit.backstack/NavDecoration { // com.slack.circuit.backstack/NavDecoration|null[0]
-    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> DecoratedContent(kotlin.collections/List<#A1>, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.backstack/NavDecoration.DecoratedContent|DecoratedContent(kotlin.collections.List<0:0>;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> DecoratedContent(com.slack.circuit.runtime.navigation/NavStackList<#A1>, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.backstack/NavDecoration.DecoratedContent|DecoratedContent(com.slack.circuit.runtime.navigation.NavStackList<0:0>;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
 }
 
 final class com.slack.circuit.backstack/SaveableBackStack : com.slack.circuit.backstack/BackStack<com.slack.circuit.backstack/SaveableBackStack.Record> { // com.slack.circuit.backstack/SaveableBackStack|null[0]

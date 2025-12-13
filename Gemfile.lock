@@ -174,7 +174,7 @@ GEM
     mutex_m (0.3.0)
     nanaimo (0.4.0)
     naturally (2.3.0)
-    optparse (0.8.0)
+    optparse (0.8.1)
     os (1.1.4)
     ostruct (0.6.3)
     plist (3.7.2)

@@ -1,5 +1,5 @@
 [versions]
-androidx-activity = "1.12.1"
+androidx-activity = "1.12.2"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"

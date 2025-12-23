@@ -1,11 +1,11 @@
 [versions]
-agp = "8.13.1"
-androidx-activity = "1.12.1"
+agp = "8.13.2"
+androidx-activity = "1.12.2"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-compose = "1.10.0"  # Keep in sync with the androidx version used by jb-compose
-anvil = "0.5.1"
+anvil = "0.5.2"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
@@ -22,15 +22,15 @@ jb-compose-navigationevent = "1.0.0-rc02"
 jb-lifecycle = "2.9.6"
 jdk = "23"
 jvmTarget = "11"
-kct = "0.11.1"
+kct = "0.12.0"
 kotlin = "2.2.21"
 kotlinInject = "0.8.0"
 kotlinInject-anvil = "0.1.6"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.3"
-ktfmt = "0.59"
+ksp = "2.3.4"
+ktfmt = "0.60"
 ktor = "3.3.3"
 leakcanary = "2.14"
 mavenPublish = "0.35.0"
@@ -57,7 +57,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "0.19.4" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "1.0.3" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -68,7 +68,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.8.2" }
+metro = { id = "dev.zacsweers.metro", version = "0.9.2" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

@@ -24,7 +24,12 @@ kotlin {
   macosArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser {
+      testTask {
+        // https://youtrack.jetbrains.com/issue/CMP-4906
+        enabled = false
+      }
+    }
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
@@ -117,6 +122,14 @@ kotlin {
         implementation(libs.coroutines.android)
         implementation(libs.junit)
         implementation(projects.internalTestUtils)
+      }
+    }
+  }
+
+  targets.configureEach {
+    compilations.configureEach {
+      compileTaskProvider.configure {
+        compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
       }
     }
   }

@@ -18,10 +18,8 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
@@ -154,17 +152,8 @@ subprojects {
         // Don't double apply to stub gen
         return@configureEach
       }
-      val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
-        if (isWasmTask && this is KotlinJsCompilerOptions) {
-          // TODO https://youtrack.jetbrains.com/issue/KT-64115
-          allWarningsAsErrors.set(false)
-        } else if (this is KotlinNativeCompilerOptions) {
-          // TODO https://youtrack.jetbrains.com/issue/KT-38719
-          allWarningsAsErrors.set(false)
-        } else {
-          allWarningsAsErrors.set(true)
-        }
+        allWarningsAsErrors.set(true)
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(
             jvmTargetProject
@@ -183,7 +172,7 @@ subprojects {
               "-Xemit-jvm-type-annotations",
               // Enable new jvm-default behavior
               // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-              "-Xjvm-default=all",
+              "-jvm-default=no-compatibility",
               // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
               "-Xtype-enhancement-improvements-strict-mode",
               "-Xjspecify-annotations=strict",
@@ -338,10 +327,7 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 23 }
-      testOptions {
-        // TODO update once robolectric supports it
-        targetSdk = 35
-      }
+      testOptions { targetSdk = 36 }
     }
 
     // Single-variant libraries

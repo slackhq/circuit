@@ -95,7 +95,7 @@ class PetListPresenterTest : BasePresenterTest() {
 }
 
 class TestRepository(private val animals: List<Animal>) : PetRepository {
-  override suspend fun refreshData(forceRefresh: Boolean) {
+  override suspend fun refreshData() {
     // Do nothing
   }
 

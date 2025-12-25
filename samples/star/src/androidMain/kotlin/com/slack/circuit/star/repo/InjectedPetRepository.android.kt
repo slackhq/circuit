@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.repo
 
-import com.slack.circuit.star.data.petfinder.PetBioParserApi
-import com.slack.circuit.star.data.petfinder.PetfinderApi
+import com.slack.circuit.star.data.socialteesnyc.StarApi
 import com.slack.circuit.star.db.SqlDriverFactory
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -13,8 +12,5 @@ import dev.zacsweers.metro.SingleIn
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 @Inject
-class InjectedPetRepository(
-  sqliteDriverFactory: SqlDriverFactory,
-  private val petFinderApi: PetfinderApi,
-  private val petBioParserApi: PetBioParserApi,
-) : PetRepository by PetRepositoryImpl(sqliteDriverFactory, petFinderApi, petBioParserApi)
+class InjectedPetRepository(sqliteDriverFactory: SqlDriverFactory, private val starApi: StarApi) :
+  PetRepository by PetRepositoryImpl(sqliteDriverFactory, starApi)

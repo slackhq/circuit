@@ -492,7 +492,7 @@ private class CircuitSymbolProcessor(
             // Nothing to do here, we'll just use the provider directly.
             CodeBlock.of("")
           } else {
-            creatorOrConstructor?.assistedParameters(
+            creatorOrConstructor.assistedParameters(
               symbols = symbols,
               logger = logger,
               screenType = screenKSType,

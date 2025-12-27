@@ -392,7 +392,7 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
         Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
           Text(
             modifier = Modifier.testTag(FULL_BIO_TAG),
-            text = "Full bio on Petfinder ➡",
+            text = "Full bio on Adoptapet ➡",
             style = MaterialTheme.typography.headlineSmall,
           )
         }

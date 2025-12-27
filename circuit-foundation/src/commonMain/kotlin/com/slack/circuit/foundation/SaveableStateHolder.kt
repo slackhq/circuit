@@ -9,7 +9,7 @@ import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import com.slack.circuit.foundation.internal.withCompositionLocalProvider
+import androidx.compose.runtime.withCompositionLocal
 
 /**
  * This is a copy of [androidx.compose.runtime.saveable.SaveableStateHolder], tweaked so that
@@ -53,7 +53,7 @@ private class SaveableStateHolderImpl(
     }
 
     val result =
-      withCompositionLocalProvider(
+      withCompositionLocal(
         LocalSaveableStateRegistry provides registryHolder.registry,
         content = content,
       )

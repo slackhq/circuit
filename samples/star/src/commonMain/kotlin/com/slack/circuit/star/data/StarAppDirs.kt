@@ -12,6 +12,13 @@ interface StarAppDirs {
   val userConfig: Path
   val userData: Path
   val userCache: Path
+
+  /** Deletes all app data directories. */
+  fun clearAll() {
+    fs.deleteRecursively(userConfig, mustExist = false)
+    fs.deleteRecursively(userData, mustExist = false)
+    fs.deleteRecursively(userCache, mustExist = false)
+  }
 }
 
 class FakeStarAppDirs(override val fs: FileSystem) : StarAppDirs {

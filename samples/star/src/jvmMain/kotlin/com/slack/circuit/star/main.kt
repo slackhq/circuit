@@ -14,6 +14,7 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -60,6 +61,7 @@ fun main() {
         position = WindowPosition(Alignment.Center),
       )
     var darkMode by remember { mutableStateOf(false) }
+
     Window(
       title = "STAR",
       state = windowState,
@@ -68,31 +70,31 @@ fun main() {
       // In lieu of a global shortcut handler, we best-effort with this
       // https://youtrack.jetbrains.com/issue/CMP-5337
       onKeyEvent = { event ->
-        when {
-          // Cmd+W
-          event.key == Key.W && event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+        when (event.key) {
+          Key.W if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
             exitApplication()
             true
           }
-          // Cmd+U
-          // Toggles dark mode
-          event.key == Key.U && event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+          Key.U if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
             darkMode = !darkMode
             true
           }
-          // Backpress ish
-          event.key == Key.Escape -> {
-            if (backStack.size > 1) {
-              navigator.pop()
-              true
-            } else {
-              false
-            }
-          }
+          // TODO: Escape key for back navigation can't work at Window level because HomeScreen
+          //  has its own internal backstack. In Compose 1.10.0, use NavigationEventHandler API
+          //  to properly propagate back events through nested navigators.
+          //  See: https://github.com/slackhq/circuit/pull/2379
           else -> false
         }
       },
     ) {
+      MenuBar {
+        Menu("Data") {
+          Item("Clear app data and quit") {
+            appGraph.appDirs.clearAll()
+            exitApplication()
+          }
+        }
+      }
       StarTheme(useDarkTheme = darkMode) {
         CircuitCompositionLocals(appGraph.circuit) {
           SharedElementTransitionLayout {

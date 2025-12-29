@@ -92,8 +92,8 @@ data class PetDetailScreen(
     val name: String,
     val imageUrl: String?,
     val breed: String?,
-    val gender: Gender,
-    val size: Size,
+    val gender: Gender?,
+    val size: Size?,
   ) : Parcelable
 
   sealed interface State : CircuitUiState {
@@ -105,6 +105,7 @@ data class PetDetailScreen(
       val id: Long
       val photoUrls: List<String>
       val photoUrlMemoryCacheKey: String?
+      val photoAspectRatio: Float?
       val name: String
       val tags: List<String>
     }
@@ -113,6 +114,7 @@ data class PetDetailScreen(
       override val id: Long,
       override val photoUrls: List<String>,
       override val photoUrlMemoryCacheKey: String,
+      override val photoAspectRatio: Float?,
       override val name: String,
       override val tags: List<String>,
     ) : AnimalState
@@ -122,6 +124,7 @@ data class PetDetailScreen(
       val url: String,
       override val photoUrls: List<String>,
       override val photoUrlMemoryCacheKey: String?,
+      override val photoAspectRatio: Float?,
       override val name: String,
       val description: String,
       override val tags: List<String>,
@@ -136,7 +139,7 @@ data class PetDetailScreen(
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
-  description: String = this.description,
+  description: String = this.description ?: "",
   eventSink: (Event) -> Unit,
 ): State {
   return Full(
@@ -144,6 +147,7 @@ internal fun Animal.toPetDetailState(
     url = url,
     photoUrls = photoUrls,
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+    photoAspectRatio = primaryPhotoAspectRatio?.toFloat(),
     name = name,
     description = description,
     tags = tags,
@@ -157,12 +161,14 @@ internal fun PetDetailScreen.toPetDetailState(): State {
       id = animal.id,
       photoUrls = buildList { animal.imageUrl?.let { add(it) } },
       photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+      // Partial state doesn't have aspect ratio, will be loaded with full state
+      photoAspectRatio = null,
       name = animal.name,
       tags =
         buildList {
           animal.breed?.let { add(it) }
-          add(animal.gender.displayName)
-          add(animal.size.name.lowercase())
+          animal.gender?.let { add(it.displayName) }
+          animal.size?.let { add(it.name.lowercase()) }
         },
     )
   } else Loading
@@ -182,15 +188,11 @@ class PetDetailPresenter(
     val state by
       produceState(initialState) {
         val animal = petRepository.getAnimal(screen.petId)
-        val bioText = petRepository.getAnimalBio(screen.petId)
         value =
           when (animal) {
             null -> UnknownAnimal
             else -> {
-              animal.toPetDetailState(
-                screen.photoUrlMemoryCacheKey,
-                bioText ?: animal.description,
-              ) {
+              animal.toPetDetailState(screen.photoUrlMemoryCacheKey, animal.description ?: "") {
                 navigator.goTo(OpenUrlScreen(animal.url))
               }
             }
@@ -297,6 +299,7 @@ private fun ShowAnimal(state: AnimalState, padding: PaddingValues) {
             name = it.name,
             photoUrls = it.photoUrls,
             photoUrlMemoryCacheKey = it.photoUrlMemoryCacheKey,
+            photoAspectRatio = it.photoAspectRatio,
           ),
         key = it.id,
       )
@@ -315,11 +318,13 @@ private fun ShowAnimalLandscape(
   carouselContent: @Composable (AnimalState) -> Unit,
 ) {
   Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-    carouselContent(state)
+    Box(Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+      carouselContent(state)
+    }
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
+      modifier = Modifier.weight(1f),
     ) {
       petDetailDescriptions(state)
     }

@@ -213,7 +213,8 @@ sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 
-telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
+telephoto-flick = { module = "me.saket.telephoto:flick", version.ref = "telephoto" }
+telephoto-zoomableImageCoil3 = { module = "me.saket.telephoto:zoomable-image-coil3", version.ref = "telephoto" }
 
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }

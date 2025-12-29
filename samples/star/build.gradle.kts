@@ -109,7 +109,8 @@ kotlin {
         implementation(libs.compose.ui.tooling)
         implementation(libs.coroutines.android)
         implementation(libs.sqldelight.driver.android)
-        implementation(libs.telephoto.zoomableImageCoil)
+        implementation(libs.telephoto.flick)
+        implementation(libs.telephoto.zoomableImageCoil3)
         implementation(projects.circuitx.android)
       }
     }

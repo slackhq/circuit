@@ -94,6 +94,7 @@ class PetDetailUiTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = listOf("dog", "terrier", "male"),
+        photoAspectRatio = 1.33f,
         eventSink = {},
       )
 
@@ -103,6 +104,7 @@ class PetDetailUiTest {
         name = success.name,
         photoUrls = success.photoUrls,
         photoUrlMemoryCacheKey = null,
+        photoAspectRatio = 1.33f,
       )
 
     composeTestRule.run {
@@ -135,6 +137,7 @@ class PetDetailUiTest {
         name = "Baxter",
         description = "Grumpy looking Australian Terrier",
         tags = listOf("dog", "terrier", "male"),
+        photoAspectRatio = 1.33f,
         eventSink = testSink,
       )
 

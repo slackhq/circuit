@@ -494,19 +494,34 @@ private fun PetListGridItem(
           )
           .fillMaxWidth()
           .testTag(IMAGE_TAG)
-      // Use the image's aspect ratio if available, default to 4:3 otherwise
-      val imageAspectRatio = animal.imageAspectRatio ?: (4f / 3f)
+      // Use the image's aspect ratio if available
+      val imageAspectRatio = animal.imageAspectRatio
       if (animal.imageUrl == null) {
         Image(
           rememberVectorPainter(Pets),
-          modifier = imageModifier.aspectRatio(imageAspectRatio).padding(8.dp),
+          modifier = imageModifier
+            .let {
+              if (imageAspectRatio ==null) {
+                it
+              } else {
+                it.aspectRatio(imageAspectRatio)
+              }
+            }
+            .padding(8.dp),
           contentDescription = animal.name,
           contentScale = ContentScale.Fit,
           colorFilter = ColorFilter.tint(LocalContentColor.current),
         )
       } else {
         AsyncImage(
-          modifier = imageModifier.aspectRatio(imageAspectRatio),
+          modifier = imageModifier
+            .let {
+              if (imageAspectRatio ==null) {
+                it
+              } else {
+                it.aspectRatio(imageAspectRatio)
+              }
+            },
           model =
             Builder(LocalPlatformContext.current)
               .data(animal.imageUrl)

@@ -81,7 +81,7 @@ class PetListUiTest {
       onAllNodesWithTag(CARD_TAG).assertCountEquals(1)
       onNodeWithTag(IMAGE_TAG, useUnmergedTree = true).assertExists()
       onNodeWithTag(AGE_AND_BREED_TAG, useUnmergedTree = true)
-        .assertTextEquals("${ANIMAL.gender.displayName} – ${ANIMAL.age}")
+        .assertTextEquals("${ANIMAL.gender!!.displayName} – ${ANIMAL.age}")
     }
   }
 

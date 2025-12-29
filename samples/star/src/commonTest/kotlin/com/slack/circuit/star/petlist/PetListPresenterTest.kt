@@ -81,6 +81,7 @@ class PetListPresenterTest : BasePresenterTest() {
         id = 1L,
         name = "name",
         primaryPhotoUrl = "https://example.com/photo.png",
+        primaryPhotoAspectRatio = 1.33,
         primaryBreed = "Shepherd",
         gender = Gender.MALE,
         size = Size.SMALL,
@@ -95,13 +96,9 @@ class PetListPresenterTest : BasePresenterTest() {
 }
 
 class TestRepository(private val animals: List<Animal>) : PetRepository {
-  override suspend fun refreshData() {
-    // Do nothing
-  }
+  override suspend fun refreshData() {}
 
   override fun animalsFlow(): Flow<List<Animal>> = flow { emit(animals) }
 
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
-
-  override suspend fun getAnimalBio(id: Long): String? = getAnimal(id)?.description
 }

@@ -1,5 +1,6 @@
 import com.slack.circuit.star.db.Gender;
 import com.slack.circuit.star.db.Size;
+import com.slack.circuit.star.db.PetAttribute;
 import kotlin.collections.List;
 import kotlin.String;
 
@@ -28,6 +29,8 @@ CREATE TABLE IF NOT EXISTS animal (
   primaryPhotoAspectRatio REAL,
   tags TEXT AS List<String> NOT NULL,
   description TEXT,
+  descriptionMarkdown TEXT,
+  attributes TEXT AS List<PetAttribute> NOT NULL,
   primaryBreed TEXT,
   gender TEXT AS Gender,
   size TEXT AS Size,

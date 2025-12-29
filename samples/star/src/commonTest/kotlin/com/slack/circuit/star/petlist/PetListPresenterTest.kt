@@ -7,6 +7,7 @@ import assertk.assertions.isEqualTo
 import com.slack.circuit.star.BasePresenterTest
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.PetAttribute
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
@@ -86,6 +87,8 @@ class PetListPresenterTest : BasePresenterTest() {
         gender = Gender.MALE,
         size = Size.SMALL,
         description = "description",
+        descriptionMarkdown = "**description**",
+        attributes = listOf(PetAttribute("good_with_cats", "Good with cats")),
         photoUrls = listOf("https://example.com/photo.png"),
         sort = 0,
         tags = listOf("tag"),

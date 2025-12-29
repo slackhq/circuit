@@ -35,6 +35,7 @@ ktor = "3.3.3"
 leakcanary = "2.14"
 lifecycle-jb = "2.9.6"
 mavenPublish = "0.35.0"
+markdownRenderer = "0.38.1"
 molecule = "2.2.0"
 okhttp = "5.3.2"
 okio = "3.16.4"
@@ -188,6 +189,9 @@ lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecyc
 lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-jb" }
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
+
+markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
+markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 

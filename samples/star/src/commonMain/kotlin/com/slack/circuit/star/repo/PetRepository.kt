@@ -10,6 +10,8 @@ import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.ListColumnAdapter
 import com.slack.circuit.star.db.OpJournal
+import com.slack.circuit.star.db.PetAttribute
+import com.slack.circuit.star.db.PetAttributeListAdapter
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
@@ -49,18 +51,22 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
   PetRepository {
 
   private val backgroundScope = CoroutineScope(SupervisorJob() + IO)
-  private val driver = sqliteDriverFactory.create(StarDatabase.Schema, "star.db")
-  private val starDb =
+  private val driver by lazy { sqliteDriverFactory.create(StarDatabase.Schema, "star.db") }
+
+  private val starDb by lazy {
     StarDatabase(
       driver,
       Animal.Adapter(
         // Use | as delimiter since URLs contain commas
-        ListColumnAdapter("|"),
-        ListColumnAdapter(":"),
-        EnumColumnAdapter(),
-        EnumColumnAdapter(),
+        photoUrlsAdapter = ListColumnAdapter("|"),
+        tagsAdapter = ListColumnAdapter(":"),
+        attributesAdapter = PetAttributeListAdapter(),
+        genderAdapter = EnumColumnAdapter(),
+        sizeAdapter = EnumColumnAdapter(),
       ),
     )
+  }
+
   private val fetchMutex = Mutex()
 
   override suspend fun refreshData() {
@@ -160,6 +166,8 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
             primaryPhotoAspectRatio = pet.photo?.aspectRatio?.toDouble(),
             tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
             description = pet.description,
+            descriptionMarkdown = pet.descriptionMarkdown,
+            attributes = pet.attributes.map { PetAttribute(it.key, it.display) },
             primaryBreed = pet.breed,
             gender = Gender.fromApiString(pet.sex),
             size = Size.fromApiString(pet.size),

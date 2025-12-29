@@ -58,6 +58,7 @@ kotlin {
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
         implementation(libs.ktor.serialization.json)
+        implementation(libs.markdownRenderer.m3)
         implementation(libs.okio)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)

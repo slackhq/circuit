@@ -190,7 +190,7 @@ class PetListPresenter(
 ) : Presenter<State> {
   @Composable
   override fun present(): State {
-    var isRefreshing by remember { mutableStateOf(false) }
+    var isRefreshing by rememberRetained { mutableStateOf(false) }
     if (isRefreshing) {
       LaunchedEffect(Unit) {
         petRepo.refreshData()

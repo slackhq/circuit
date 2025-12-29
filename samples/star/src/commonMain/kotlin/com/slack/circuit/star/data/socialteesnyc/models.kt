@@ -49,8 +49,24 @@ data class Animal(
   val photoUrls: List<String> = emptyList(),
   /** Photo metadata with original dimensions (if available) */
   val photo: PhotoMetadata? = null,
+  /** Plain text description (HTML stripped) */
   val description: String? = null,
-  @SerialName("short_description") val shortDescription: String? = null,
+  /** Original HTML description */
+  val descriptionHtml: String? = null,
+  /** Markdown description (converted from HTML) */
+  val descriptionMarkdown: String? = null,
+  val shortDescription: String? = null,
+  /** Physical color */
+  val color: String? = null,
+  /** Compatibility and status attributes */
+  val attributes: List<Attribute> = emptyList(),
+)
+
+/** A named attribute with display name. Only true attributes are included. */
+@Serializable
+data class Attribute(
+  val key: String,
+  val display: String,
 )
 
 /**

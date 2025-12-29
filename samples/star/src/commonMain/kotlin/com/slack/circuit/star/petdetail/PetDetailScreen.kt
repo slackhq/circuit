@@ -54,6 +54,7 @@ import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.PetAttribute
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
@@ -71,7 +72,7 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TA
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.transition.PetCardBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
-import com.slack.circuit.star.ui.ExpandableText
+import com.mikepenz.markdown.m3.Markdown
 import com.slack.circuit.star.ui.thenIf
 import com.slack.circuit.star.ui.thenIfNotNull
 import dev.zacsweers.metro.AppScope
@@ -108,6 +109,7 @@ data class PetDetailScreen(
       val photoAspectRatio: Float?
       val name: String
       val tags: List<String>
+      val attributes: List<PetAttribute>
     }
 
     data class Partial(
@@ -117,6 +119,7 @@ data class PetDetailScreen(
       override val photoAspectRatio: Float?,
       override val name: String,
       override val tags: List<String>,
+      override val attributes: List<PetAttribute> = emptyList(),
     ) : AnimalState
 
     data class Full(
@@ -126,8 +129,9 @@ data class PetDetailScreen(
       override val photoUrlMemoryCacheKey: String?,
       override val photoAspectRatio: Float?,
       override val name: String,
-      val description: String,
+      val descriptionMarkdown: String?,
       override val tags: List<String>,
+      override val attributes: List<PetAttribute>,
       val eventSink: (Event) -> Unit,
     ) : AnimalState
   }
@@ -139,7 +143,6 @@ data class PetDetailScreen(
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
-  description: String = this.description ?: "",
   eventSink: (Event) -> Unit,
 ): State {
   return Full(
@@ -149,8 +152,9 @@ internal fun Animal.toPetDetailState(
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
     photoAspectRatio = primaryPhotoAspectRatio?.toFloat(),
     name = name,
-    description = description,
+    descriptionMarkdown = descriptionMarkdown,
     tags = tags,
+    attributes = attributes,
     eventSink,
   )
 }
@@ -192,7 +196,7 @@ class PetDetailPresenter(
           when (animal) {
             null -> UnknownAnimal
             else -> {
-              animal.toPetDetailState(screen.photoUrlMemoryCacheKey, animal.description ?: "") {
+              animal.toPetDetailState(screen.photoUrlMemoryCacheKey) {
                 navigator.goTo(OpenUrlScreen(animal.url))
               }
             }
@@ -377,6 +381,20 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
             )
           }
         }
+        // Render attributes as secondary-colored tags
+        state.attributes.forEach { attribute ->
+          Surface(
+            color = MaterialTheme.colorScheme.secondary,
+            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+          ) {
+            Text(
+              modifier = Modifier.padding(12.dp),
+              text = attribute.display,
+              color = MaterialTheme.colorScheme.onSecondary,
+              style = MaterialTheme.typography.labelLarge,
+            )
+          }
+        }
       }
     }
   }
@@ -386,12 +404,8 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
       item("partial-${state.id}") { Loading(PaddingValues(0.dp)) }
     }
     is Full -> {
-      item(state.description) {
-        ExpandableText(
-          text = state.description,
-          style = MaterialTheme.typography.bodyLarge,
-          initiallyExpanded = true,
-        )
+      if (!state.descriptionMarkdown.isNullOrBlank()) {
+        item(state.descriptionMarkdown) { Markdown(content = state.descriptionMarkdown) }
       }
       item(state.url) {
         Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {

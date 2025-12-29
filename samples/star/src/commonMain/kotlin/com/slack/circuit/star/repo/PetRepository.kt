@@ -27,19 +27,19 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
 private const val METADATA_KEY_UPDATED_AT = "animals_updated_at"
 
 interface PetRepository {
+  /** Force refresh data from the API. */
   suspend fun refreshData()
 
   fun animalsFlow(): Flow<List<Animal>?>
 
   suspend fun getAnimal(id: Long): Animal?
-
-  suspend fun getAnimalBio(id: Long): String?
 }
 
 @SingleIn(AppScope::class)
@@ -61,25 +61,20 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
         EnumColumnAdapter(),
       ),
     )
+  private val fetchMutex = Mutex()
 
   override suspend fun refreshData() {
     withContext(IO) { fetchAnimals(forceRefresh = true) }
   }
 
   override fun animalsFlow(): Flow<List<Animal>?> {
-    backgroundScope.launch {
-      if (isOperationStale("animals")) {
-        // Fetch new data
-        fetchAnimals(forceRefresh = false)
-      }
-    }
-
     // If empty, check if the DB has been updated at all. If it hasn't, then it's just that we
     // haven't fetched yet and we return null instead to indicate it's still loading.
     return starDb.starQueries
       .getAllAnimals()
       .asFlow()
       .mapToList(backgroundScope.coroutineContext)
+      .onStart { fetchAnimals(forceRefresh = false) }
       .map { animals ->
         animals.ifEmpty {
           val dbHasOps = starDb.starQueries.lastUpdate("animals").executeAsOneOrNull()
@@ -98,6 +93,21 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
 
   @Suppress("SwallowedException")
   private suspend fun fetchAnimals(forceRefresh: Boolean) {
+    // Check if we even need to fetch - skip if data isn't stale (unless force refreshing)
+    if (!forceRefresh && !isOperationStale("animals")) {
+      return
+    }
+
+    // Drop concurrent fetch requests - if one is in-flight, skip this one
+    if (!fetchMutex.tryLock()) return
+    try {
+      doFetchAnimals(forceRefresh)
+    } finally {
+      fetchMutex.unlock()
+    }
+  }
+
+  private suspend fun doFetchAnimals(forceRefresh: Boolean) {
     val result = retryWithExponentialBackoff { starApi.getPets() }
     if (result !is ApiResult.Success) {
       System.err.println("Failed to fetch animals: $result.")
@@ -142,8 +152,12 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
                 if (it.isLowerCase()) it.titlecase() else it.toString()
               },
             url = pet.url,
-            photoUrls = listOfNotNull(pet.photoUrl),
-            primaryPhotoUrl = pet.photoUrl,
+            // Use all photo URLs if available, otherwise fall back to single photoUrl
+            // Clean the URLs to remove any cropping transformations
+            photoUrls =
+              pet.photoUrls.ifEmpty { listOfNotNull(pet.photoUrl) }.map { it.toCleanImageUrl() },
+            primaryPhotoUrl = pet.photoUrl?.toCleanImageUrl(),
+            primaryPhotoAspectRatio = pet.photo?.aspectRatio?.toDouble(),
             tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
             description = pet.description,
             primaryBreed = pet.breed,
@@ -159,11 +173,6 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
 
       logUpdate("animals")
     }
-  }
-
-  override suspend fun getAnimalBio(id: Long): String? {
-    // The SocialTees API already provides full descriptions, no need to fetch separately
-    return withContext(IO) { getAnimal(id)?.description }
   }
 
   private fun logUpdate(operation: String) {
@@ -188,4 +197,13 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
   private fun currentTimestamp(): Long {
     return Clock.System.now().epochSeconds
   }
+}
+
+/**
+ * Converts any Cloudinary URL to a clean URL without cropping transformations. Extracts the image
+ * ID and returns a URL with only format/quality optimization.
+ */
+private fun String.toCleanImageUrl(): String {
+  val imageId = substringAfterLast('/').takeIf { it.isNotBlank() } ?: return this
+  return "https://media.adoptapet.com/image/upload/f_auto,q_auto/$imageId"
 }

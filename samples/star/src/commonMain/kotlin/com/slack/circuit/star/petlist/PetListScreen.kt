@@ -499,24 +499,25 @@ private fun PetListGridItem(
       if (animal.imageUrl == null) {
         Image(
           rememberVectorPainter(Pets),
-          modifier = imageModifier
-            .let {
-              if (imageAspectRatio ==null) {
-                it
-              } else {
-                it.aspectRatio(imageAspectRatio)
+          modifier =
+            imageModifier
+              .let {
+                if (imageAspectRatio == null) {
+                  it
+                } else {
+                  it.aspectRatio(imageAspectRatio)
+                }
               }
-            }
-            .padding(8.dp),
+              .padding(8.dp),
           contentDescription = animal.name,
           contentScale = ContentScale.Fit,
           colorFilter = ColorFilter.tint(LocalContentColor.current),
         )
       } else {
         AsyncImage(
-          modifier = imageModifier
-            .let {
-              if (imageAspectRatio ==null) {
+          modifier =
+            imageModifier.let {
+              if (imageAspectRatio == null) {
                 it
               } else {
                 it.aspectRatio(imageAspectRatio)

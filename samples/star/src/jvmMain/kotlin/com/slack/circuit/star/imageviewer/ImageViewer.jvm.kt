@@ -40,7 +40,6 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
 import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetImageElementKey
@@ -111,7 +110,9 @@ actual fun ImageViewer(state: State, modifier: Modifier) = SharedElementTransiti
                 .clickable(
                   interactionSource = remember { MutableInteractionSource() },
                   indication = null,
-                ) { showChrome = !showChrome }
+                ) {
+                  showChrome = !showChrome
+                }
                 .sharedElement(
                   sharedContentState =
                     rememberSharedContentState(key = PetImageElementKey(state.url)),

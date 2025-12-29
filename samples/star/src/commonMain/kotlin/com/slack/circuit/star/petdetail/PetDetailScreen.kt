@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
+import com.mikepenz.markdown.m3.Markdown
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.internal.runtime.Parcelable
@@ -72,7 +73,6 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TA
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.transition.PetCardBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
-import com.mikepenz.markdown.m3.Markdown
 import com.slack.circuit.star.ui.thenIf
 import com.slack.circuit.star.ui.thenIfNotNull
 import dev.zacsweers.metro.AppScope

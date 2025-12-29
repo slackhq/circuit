@@ -5,8 +5,8 @@ package com.slack.circuit.star.db
 import app.cash.sqldelight.ColumnAdapter
 
 /**
- * A pet attribute with a key and display name. Only true/positive attributes are stored
- * (e.g., "good_with_cats" -> "Good with cats").
+ * A pet attribute with a key and display name. Only true/positive attributes are stored (e.g.,
+ * "good_with_cats" -> "Good with cats").
  */
 data class PetAttribute(val key: String, val display: String)
 

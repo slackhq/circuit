@@ -63,17 +63,13 @@ data class Animal(
 )
 
 /** A named attribute with display name. Only true attributes are included. */
-@Serializable
-data class Attribute(
-  val key: String,
-  val display: String,
-)
+@Serializable data class Attribute(val key: String, val display: String)
 
 /**
  * Photo metadata with original dimensions.
  *
- * This includes the original (untransformed) image URL and its dimensions,
- * allowing clients to properly size and crop images based on their aspect ratio.
+ * This includes the original (untransformed) image URL and its dimensions, allowing clients to
+ * properly size and crop images based on their aspect ratio.
  */
 @Serializable
 data class PhotoMetadata(

@@ -68,5 +68,4 @@ class ImageViewerPresenter(
   }
 }
 
-@Composable
-expect fun ImageViewer(state: State, modifier: Modifier = Modifier)
+@Composable expect fun ImageViewer(state: State, modifier: Modifier = Modifier)

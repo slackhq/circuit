@@ -5,9 +5,8 @@ package com.slack.circuit.star.imageviewer
 import androidx.compose.runtime.Composable
 
 /**
- * Platform-specific effect for managing system UI visibility in an immersive image viewer.
- * On Android, this hides/shows the system bars based on [showChrome].
- * On other platforms, this is a no-op.
+ * Platform-specific effect for managing system UI visibility in an immersive image viewer. On
+ * Android, this hides/shows the system bars based on [showChrome]. On other platforms, this is a
+ * no-op.
  */
-@Composable
-expect fun ImmersiveSystemUiEffect(showChrome: Boolean)
+@Composable expect fun ImmersiveSystemUiEffect(showChrome: Boolean)

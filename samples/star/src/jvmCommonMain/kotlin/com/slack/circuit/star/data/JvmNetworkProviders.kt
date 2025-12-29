@@ -24,10 +24,7 @@ interface JvmNetworkProviders {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideOkHttpClient(cache: Cache): OkHttpClient =
-    OkHttpClient.Builder()
-      .cache(cache)
-      .build()
+  fun provideOkHttpClient(cache: Cache): OkHttpClient = OkHttpClient.Builder().cache(cache).build()
 
   @Provides
   @SingleIn(AppScope::class)

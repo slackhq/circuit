@@ -119,11 +119,12 @@ actual fun ImageViewer(state: State, modifier: Modifier) = SharedElementTransiti
                 .build(),
             contentDescription = "Full size image",
             modifier =
-              Modifier.fillMaxSize().sharedElement(
-                sharedContentState =
-                  rememberSharedContentState(key = PetImageElementKey(state.url)),
-                animatedVisibilityScope = requireAnimatedScope(Overlay),
-              ),
+              Modifier.fillMaxSize()
+                .sharedElement(
+                  sharedContentState =
+                    rememberSharedContentState(key = PetImageElementKey(state.url)),
+                  animatedVisibilityScope = requireAnimatedScope(Overlay),
+                ),
             state = imageState,
             imageLoader = SingletonImageLoader.get(context),
             onClick = { showChrome = !showChrome },

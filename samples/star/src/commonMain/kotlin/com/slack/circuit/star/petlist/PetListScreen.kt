@@ -268,15 +268,16 @@ class PetListPresenter(
 }
 
 internal fun Animal.toPetListAnimal(): PetListAnimal {
+  val primaryPhoto = photos.firstOrNull()
   return PetListAnimal(
     id = id,
     name = name,
-    imageUrl = primaryPhotoUrl?.toThumbnailUrl(),
+    imageUrl = primaryPhoto?.originalUrl?.toThumbnailUrl(),
     breed = primaryBreed,
     gender = gender,
     size = size,
     age = age,
-    imageAspectRatio = primaryPhotoAspectRatio?.toFloat(),
+    imageAspectRatio = primaryPhoto?.aspectRatio,
   )
 }
 

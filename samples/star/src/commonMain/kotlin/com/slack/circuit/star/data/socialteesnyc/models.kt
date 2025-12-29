@@ -44,11 +44,8 @@ data class Animal(
   /** Size, e.g. "Small 25 lbs (11 kg) or less" */
   val size: String? = null,
   val url: String,
-  val photoUrl: String? = null,
-  /** All photo URLs for this pet (high-res with auto format) */
-  val photoUrls: List<String> = emptyList(),
-  /** Photo metadata with original dimensions (if available) */
-  val photo: PhotoMetadata? = null,
+  /** All photos with metadata (dimensions, aspect ratio, URL) */
+  val photos: List<PhotoMetadata> = emptyList(),
   /** Plain text description (HTML stripped) */
   val description: String? = null,
   /** Original HTML description */

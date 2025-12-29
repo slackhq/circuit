@@ -8,6 +8,7 @@ import com.slack.circuit.star.BasePresenterTest
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.PetAttribute
+import com.slack.circuit.star.db.Photo
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.petlist.PetListScreen.Event.ClickAnimal
@@ -81,15 +82,21 @@ class PetListPresenterTest : BasePresenterTest() {
       Animal(
         id = 1L,
         name = "name",
-        primaryPhotoUrl = "https://example.com/photo.png",
-        primaryPhotoAspectRatio = 1.33,
+        photos =
+          listOf(
+            Photo(
+              originalUrl = "https://example.com/photo.png",
+              width = 800,
+              height = 600,
+              aspectRatio = 1.33f,
+            )
+          ),
         primaryBreed = "Shepherd",
         gender = Gender.MALE,
         size = Size.SMALL,
         description = "description",
         descriptionMarkdown = "**description**",
         attributes = listOf(PetAttribute("good_with_cats", "Good with cats")),
-        photoUrls = listOf("https://example.com/photo.png"),
         sort = 0,
         tags = listOf("tag"),
         url = "https://example.com",

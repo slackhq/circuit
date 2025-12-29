@@ -12,6 +12,8 @@ import com.slack.circuit.star.db.ListColumnAdapter
 import com.slack.circuit.star.db.OpJournal
 import com.slack.circuit.star.db.PetAttribute
 import com.slack.circuit.star.db.PetAttributeListAdapter
+import com.slack.circuit.star.db.Photo
+import com.slack.circuit.star.db.PhotoListAdapter
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
@@ -57,8 +59,7 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     StarDatabase(
       driver,
       Animal.Adapter(
-        // Use | as delimiter since URLs contain commas
-        photoUrlsAdapter = ListColumnAdapter("|"),
+        photosAdapter = PhotoListAdapter(),
         tagsAdapter = ListColumnAdapter(":"),
         attributesAdapter = PetAttributeListAdapter(),
         genderAdapter = EnumColumnAdapter(),
@@ -158,12 +159,7 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
                 if (it.isLowerCase()) it.titlecase() else it.toString()
               },
             url = pet.url,
-            // Use all photo URLs if available, otherwise fall back to single photoUrl
-            // Clean the URLs to remove any cropping transformations
-            photoUrls =
-              pet.photoUrls.ifEmpty { listOfNotNull(pet.photoUrl) }.map { it.toCleanImageUrl() },
-            primaryPhotoUrl = pet.photoUrl?.toCleanImageUrl(),
-            primaryPhotoAspectRatio = pet.photo?.aspectRatio?.toDouble(),
+            photos = pet.photos.map { Photo(it.originalUrl, it.width, it.height, it.aspectRatio) },
             tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
             description = pet.description,
             descriptionMarkdown = pet.descriptionMarkdown,
@@ -205,13 +201,4 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
   private fun currentTimestamp(): Long {
     return Clock.System.now().epochSeconds
   }
-}
-
-/**
- * Converts any Cloudinary URL to a clean URL without cropping transformations. Extracts the image
- * ID and returns a URL with only format/quality optimization.
- */
-private fun String.toCleanImageUrl(): String {
-  val imageId = substringAfterLast('/').takeIf { it.isNotBlank() } ?: return this
-  return "https://media.adoptapet.com/image/upload/f_auto,q_auto/$imageId"
 }

@@ -148,9 +148,9 @@ internal fun Animal.toPetDetailState(
   return Full(
     id = id,
     url = url,
-    photoUrls = photoUrls,
+    photoUrls = photos.map { it.originalUrl },
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
-    photoAspectRatio = primaryPhotoAspectRatio?.toFloat(),
+    photoAspectRatio = photos.firstOrNull()?.aspectRatio,
     name = name,
     descriptionMarkdown = descriptionMarkdown,
     tags = tags,

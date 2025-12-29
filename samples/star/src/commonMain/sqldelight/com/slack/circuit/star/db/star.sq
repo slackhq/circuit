@@ -25,12 +25,13 @@ CREATE TABLE IF NOT EXISTS animal (
   url TEXT NOT NULL,
   photoUrls TEXT AS List<String> NOT NULL,
   primaryPhotoUrl TEXT,
+  primaryPhotoAspectRatio REAL,
   tags TEXT AS List<String> NOT NULL,
-  description TEXT NOT NULL,
+  description TEXT,
   primaryBreed TEXT,
-  gender TEXT AS Gender NOT NULL,
-  size TEXT AS Size NOT NULL,
-  age TEXT NOT NULL,
+  gender TEXT AS Gender,
+  size TEXT AS Size,
+  age TEXT,
   PRIMARY KEY(id)
 );
 

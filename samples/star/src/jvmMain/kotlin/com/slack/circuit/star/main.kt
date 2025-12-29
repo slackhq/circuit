@@ -79,10 +79,6 @@ fun main() {
             darkMode = !darkMode
             true
           }
-          // TODO: Escape key for back navigation can't work at Window level because HomeScreen
-          //  has its own internal backstack. In Compose 1.10.0, use NavigationEventHandler API
-          //  to properly propagate back events through nested navigators.
-          //  See: https://github.com/slackhq/circuit/pull/2379
           else -> false
         }
       },

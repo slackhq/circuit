@@ -37,14 +37,36 @@ data class Animal(
   val name: String,
   /** "Dog" or "Cat" */
   @SerialName("type") val petType: String,
-  val breed: String,
+  val breed: String? = null,
   /** Life stage: "Puppy", "Young", "Adult", "Senior" */
-  val age: String,
-  val sex: String,
-  /** Size with weight, e.g. "Small 25 lbs (11 kg) or less", or null */
+  val age: String? = null,
+  val sex: String? = null,
+  /** Size, e.g. "Small 25 lbs (11 kg) or less" */
   val size: String? = null,
   val url: String,
   val photoUrl: String? = null,
-  val description: String,
-  @SerialName("short_description") val shortDescription: String,
+  /** All photo URLs for this pet (high-res with auto format) */
+  val photoUrls: List<String> = emptyList(),
+  /** Photo metadata with original dimensions (if available) */
+  val photo: PhotoMetadata? = null,
+  val description: String? = null,
+  @SerialName("short_description") val shortDescription: String? = null,
+)
+
+/**
+ * Photo metadata with original dimensions.
+ *
+ * This includes the original (untransformed) image URL and its dimensions,
+ * allowing clients to properly size and crop images based on their aspect ratio.
+ */
+@Serializable
+data class PhotoMetadata(
+  /** Original full-resolution image URL (from Cloudinary, no custom transformations) */
+  val originalUrl: String,
+  /** Width of original image in pixels */
+  val width: Int,
+  /** Height of original image in pixels */
+  val height: Int,
+  /** Aspect ratio of the original image (width / height) */
+  val aspectRatio: Float,
 )

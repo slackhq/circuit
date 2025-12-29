@@ -5,7 +5,6 @@ package com.slack.circuit.star.data.socialteesnyc
 import com.slack.circuit.star.resources.Res
 import com.slack.eithernet.ApiResult
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.serialization.json.Json
@@ -18,7 +17,6 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
  */
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, replaces = [StarApiImpl::class])
 class FakeStarApi(private val json: Json) : StarApi {
   @OptIn(ExperimentalResourceApi::class)
   override suspend fun getPets(): ApiResult<PetsListResponse, Unit> {

@@ -21,14 +21,23 @@ import okio.IOException
 private const val PETS_URL =
   "https://raw.githubusercontent.com/ZacSweers/socialteesjs/refs/heads/main/data/pets.json"
 
+/** Toggle to use fake API data from bundled JSON instead of network. */
+const val USE_FAKE_API = false
+
 interface StarApi {
   suspend fun getPets(): ApiResult<PetsListResponse, Unit>
 }
 
+/** Delegate that picks between [RealStarApi] and [FakeStarApi] based on [USE_FAKE_API]. */
 @Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class StarApiImpl(httpClient: HttpClient, json: Json) : StarApi {
+class StarApiImpl(realApi: Lazy<RealStarApi>, fakeApi: Lazy<FakeStarApi>) :
+  StarApi by if (USE_FAKE_API) fakeApi.value else realApi.value
+
+@Inject
+@SingleIn(AppScope::class)
+class RealStarApi(httpClient: HttpClient, json: Json) : StarApi {
   private val httpClient =
     httpClient.config {
       // We're reading from raw github, which serves in plain text responses

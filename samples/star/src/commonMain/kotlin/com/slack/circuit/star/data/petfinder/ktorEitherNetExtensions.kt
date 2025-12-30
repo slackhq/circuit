@@ -40,16 +40,18 @@ internal fun <E : Any> Exception.asKtorApiResult(): ApiResult<Nothing, E> {
       ApiResult.httpFailure(response.status.value)
     }
     is ConnectTimeoutException -> {
-      ApiResult.networkFailure(IOException(this))
+      ApiResult.networkFailure(EitherNetIoException(this))
     }
     is SocketTimeoutException -> {
-      ApiResult.networkFailure(IOException(this))
+      ApiResult.networkFailure(EitherNetIoException(this))
     }
     is UnresolvedAddressException -> {
-      ApiResult.networkFailure(IOException(this))
+      ApiResult.networkFailure(EitherNetIoException(this))
     }
     else -> {
       ApiResult.unknownFailure(this)
     }
   }
 }
+
+class EitherNetIoException(override val cause: Throwable) : IOException()

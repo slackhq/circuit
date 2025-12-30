@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
+import com.mikepenz.markdown.m3.Markdown
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.internal.runtime.Parcelable
@@ -54,6 +55,7 @@ import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
+import com.slack.circuit.star.db.PetAttribute
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event
@@ -71,7 +73,6 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TA
 import com.slack.circuit.star.repo.PetRepository
 import com.slack.circuit.star.transition.PetCardBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
-import com.slack.circuit.star.ui.ExpandableText
 import com.slack.circuit.star.ui.thenIf
 import com.slack.circuit.star.ui.thenIfNotNull
 import dev.zacsweers.metro.AppScope
@@ -92,8 +93,8 @@ data class PetDetailScreen(
     val name: String,
     val imageUrl: String?,
     val breed: String?,
-    val gender: Gender,
-    val size: Size,
+    val gender: Gender?,
+    val size: Size?,
   ) : Parcelable
 
   sealed interface State : CircuitUiState {
@@ -105,16 +106,20 @@ data class PetDetailScreen(
       val id: Long
       val photoUrls: List<String>
       val photoUrlMemoryCacheKey: String?
+      val photoAspectRatio: Float?
       val name: String
       val tags: List<String>
+      val attributes: List<PetAttribute>
     }
 
     data class Partial(
       override val id: Long,
       override val photoUrls: List<String>,
       override val photoUrlMemoryCacheKey: String,
+      override val photoAspectRatio: Float?,
       override val name: String,
       override val tags: List<String>,
+      override val attributes: List<PetAttribute> = emptyList(),
     ) : AnimalState
 
     data class Full(
@@ -122,9 +127,11 @@ data class PetDetailScreen(
       val url: String,
       override val photoUrls: List<String>,
       override val photoUrlMemoryCacheKey: String?,
+      override val photoAspectRatio: Float?,
       override val name: String,
-      val description: String,
+      val descriptionMarkdown: String?,
       override val tags: List<String>,
+      override val attributes: List<PetAttribute>,
       val eventSink: (Event) -> Unit,
     ) : AnimalState
   }
@@ -136,17 +143,18 @@ data class PetDetailScreen(
 
 internal fun Animal.toPetDetailState(
   photoUrlMemoryCacheKey: String?,
-  description: String = this.description,
   eventSink: (Event) -> Unit,
 ): State {
   return Full(
     id = id,
     url = url,
-    photoUrls = photoUrls,
+    photoUrls = photos.map { it.originalUrl },
     photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+    photoAspectRatio = photos.firstOrNull()?.aspectRatio,
     name = name,
-    description = description,
+    descriptionMarkdown = descriptionMarkdown,
     tags = tags,
+    attributes = attributes,
     eventSink,
   )
 }
@@ -157,12 +165,14 @@ internal fun PetDetailScreen.toPetDetailState(): State {
       id = animal.id,
       photoUrls = buildList { animal.imageUrl?.let { add(it) } },
       photoUrlMemoryCacheKey = photoUrlMemoryCacheKey,
+      // Partial state doesn't have aspect ratio, will be loaded with full state
+      photoAspectRatio = null,
       name = animal.name,
       tags =
         buildList {
           animal.breed?.let { add(it) }
-          add(animal.gender.displayName)
-          add(animal.size.name.lowercase())
+          animal.gender?.let { add(it.displayName) }
+          animal.size?.let { add(it.name.lowercase()) }
         },
     )
   } else Loading
@@ -182,15 +192,11 @@ class PetDetailPresenter(
     val state by
       produceState(initialState) {
         val animal = petRepository.getAnimal(screen.petId)
-        val bioText = petRepository.getAnimalBio(screen.petId)
         value =
           when (animal) {
             null -> UnknownAnimal
             else -> {
-              animal.toPetDetailState(
-                screen.photoUrlMemoryCacheKey,
-                bioText ?: animal.description,
-              ) {
+              animal.toPetDetailState(screen.photoUrlMemoryCacheKey) {
                 navigator.goTo(OpenUrlScreen(animal.url))
               }
             }
@@ -297,6 +303,7 @@ private fun ShowAnimal(state: AnimalState, padding: PaddingValues) {
             name = it.name,
             photoUrls = it.photoUrls,
             photoUrlMemoryCacheKey = it.photoUrlMemoryCacheKey,
+            photoAspectRatio = it.photoAspectRatio,
           ),
         key = it.id,
       )
@@ -315,11 +322,13 @@ private fun ShowAnimalLandscape(
   carouselContent: @Composable (AnimalState) -> Unit,
 ) {
   Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-    carouselContent(state)
+    Box(Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+      carouselContent(state)
+    }
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
+      modifier = Modifier.weight(1f),
     ) {
       petDetailDescriptions(state)
     }
@@ -372,6 +381,20 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
             )
           }
         }
+        // Render attributes as secondary-colored tags
+        state.attributes.forEach { attribute ->
+          Surface(
+            color = MaterialTheme.colorScheme.secondary,
+            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+          ) {
+            Text(
+              modifier = Modifier.padding(12.dp),
+              text = attribute.display,
+              color = MaterialTheme.colorScheme.onSecondary,
+              style = MaterialTheme.typography.labelLarge,
+            )
+          }
+        }
       }
     }
   }
@@ -381,18 +404,14 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
       item("partial-${state.id}") { Loading(PaddingValues(0.dp)) }
     }
     is Full -> {
-      item(state.description) {
-        ExpandableText(
-          text = state.description,
-          style = MaterialTheme.typography.bodyLarge,
-          initiallyExpanded = true,
-        )
+      if (!state.descriptionMarkdown.isNullOrBlank()) {
+        item(state.descriptionMarkdown) { Markdown(content = state.descriptionMarkdown) }
       }
       item(state.url) {
         Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
           Text(
             modifier = Modifier.testTag(FULL_BIO_TAG),
-            text = "Full bio on Petfinder ➡",
+            text = "Full bio on Adoptapet ➡",
             style = MaterialTheme.typography.headlineSmall,
           )
         }

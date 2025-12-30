@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -98,7 +99,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayEffect
-import com.slack.circuit.retained.produceAndCollectAsRetainedState
+import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -189,7 +190,7 @@ class PetListPresenter(
 ) : Presenter<State> {
   @Composable
   override fun present(): State {
-    var isRefreshing by remember { mutableStateOf(false) }
+    var isRefreshing by rememberRetained { mutableStateOf(false) }
     if (isRefreshing) {
       LaunchedEffect(Unit) {
         petRepo.refreshData()
@@ -197,10 +198,12 @@ class PetListPresenter(
       }
     }
 
-    val animalState by
-      produceAndCollectAsRetainedState(petRepo, initial = null) {
+    val animalsFlow =
+      rememberRetained(petRepo) {
         petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
       }
+
+    val animalState by animalsFlow.collectAsRetainedState(null)
 
     var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
@@ -251,7 +254,10 @@ class PetListPresenter(
   }
 
   private fun shouldKeep(filters: Filters, animal: PetListAnimal): Boolean {
-    return animal.gender in filters.genders && animal.size in filters.sizes
+    // Null gender/size means unknown - always include unless filters explicitly exclude
+    val genderMatch = animal.gender == null || animal.gender in filters.genders
+    val sizeMatch = animal.size == null || animal.size in filters.sizes
+    return genderMatch && sizeMatch
   }
 
   @CircuitInject(PetListScreen::class, AppScope::class)
@@ -262,15 +268,29 @@ class PetListPresenter(
 }
 
 internal fun Animal.toPetListAnimal(): PetListAnimal {
+  val primaryPhoto = photos.firstOrNull()
   return PetListAnimal(
     id = id,
     name = name,
-    imageUrl = primaryPhotoUrl,
+    imageUrl = primaryPhoto?.originalUrl?.toThumbnailUrl(),
     breed = primaryBreed,
     gender = gender,
     size = size,
     age = age,
+    imageAspectRatio = primaryPhoto?.aspectRatio,
   )
+}
+
+/**
+ * Convert a Cloudinary URL to a thumbnail version by replacing the transformation params. This
+ * extracts the image ID and creates a smaller, aspect-ratio-preserving thumbnail.
+ */
+private fun String.toThumbnailUrl(): String {
+  // Extract image ID from URL like:
+  // https://media.adoptapet.com/image/upload/c_fill,w_800,h_600,g_auto/f_auto,q_auto/1268757503
+  val imageId = substringAfterLast('/').takeIf { it.isNotBlank() } ?: return this
+  // Create a thumbnail that scales to 400px wide while preserving aspect ratio
+  return "https://media.adoptapet.com/image/upload/c_scale,w_400/f_auto,q_auto/$imageId"
 }
 
 internal fun PetListAnimal.toPartialAnimal(): PetDetailScreen.PartialAnimal {
@@ -475,17 +495,35 @@ private fun PetListGridItem(
           )
           .fillMaxWidth()
           .testTag(IMAGE_TAG)
+      // Use the image's aspect ratio if available
+      val imageAspectRatio = animal.imageAspectRatio
       if (animal.imageUrl == null) {
         Image(
           rememberVectorPainter(Pets),
-          modifier = imageModifier.padding(8.dp),
+          modifier =
+            imageModifier
+              .let {
+                if (imageAspectRatio == null) {
+                  it
+                } else {
+                  it.aspectRatio(imageAspectRatio)
+                }
+              }
+              .padding(8.dp),
           contentDescription = animal.name,
-          contentScale = ContentScale.Crop,
+          contentScale = ContentScale.Fit,
           colorFilter = ColorFilter.tint(LocalContentColor.current),
         )
       } else {
         AsyncImage(
-          modifier = imageModifier,
+          modifier =
+            imageModifier.let {
+              if (imageAspectRatio == null) {
+                it
+              } else {
+                it.aspectRatio(imageAspectRatio)
+              }
+            },
           model =
             Builder(LocalPlatformContext.current)
               .data(animal.imageUrl)
@@ -493,7 +531,7 @@ private fun PetListGridItem(
               .crossfade(AnimationConstants.DefaultDurationMillis)
               .build(),
           contentDescription = animal.name,
-          contentScale = ContentScale.Crop,
+          contentScale = ContentScale.Fit,
           imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
         )
       }
@@ -527,9 +565,15 @@ private fun PetListGridItem(
           LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
         ) {
           // Gender, age
+          val genderAge =
+            buildList {
+                animal.gender?.let { add(it.displayName) }
+                add(animal.age)
+              }
+              .joinToString(" – ")
           Text(
             modifier = Modifier.testTag(AGE_AND_BREED_TAG),
-            text = "${animal.gender.displayName} – ${animal.age}",
+            text = genderAge,
             style = MaterialTheme.typography.bodySmall,
           )
         }

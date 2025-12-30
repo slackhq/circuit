@@ -12,7 +12,6 @@ import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.engine.okhttp.OkHttpEngine
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 private const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
 
@@ -25,16 +24,7 @@ interface JvmNetworkProviders {
 
   @Provides
   @SingleIn(AppScope::class)
-  fun provideOkHttpClient(cache: Cache): OkHttpClient =
-    OkHttpClient.Builder()
-      .cache(cache)
-      .addInterceptor(
-        HttpLoggingInterceptor().apply {
-          level = HttpLoggingInterceptor.Level.BASIC
-          redactHeader("Authorization")
-        }
-      )
-      .build()
+  fun provideOkHttpClient(cache: Cache): OkHttpClient = OkHttpClient.Builder().cache(cache).build()
 
   @Provides
   @SingleIn(AppScope::class)

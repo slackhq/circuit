@@ -76,7 +76,7 @@ class PetListTest {
       onNodeWithTag(IMAGE_TAG, true).assertIsDisplayed()
       onNodeWithText(ANIMAL.name).assertIsDisplayed()
       onNodeWithText(ANIMAL.breed.orEmpty()).assertIsDisplayed()
-      onNodeWithText("${ANIMAL.gender.displayName} – ${ANIMAL.age}").assertIsDisplayed()
+      onNodeWithText("${ANIMAL.gender!!.displayName} – ${ANIMAL.age}").assertIsDisplayed()
     }
   }
 

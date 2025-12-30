@@ -12,7 +12,8 @@ data class PetListAnimal(
   val name: String,
   val imageUrl: String?,
   val breed: String?,
-  val gender: Gender,
-  val size: Size,
-  val age: String,
+  val gender: Gender?,
+  val size: Size?,
+  val age: String?,
+  val imageAspectRatio: Float? = null,
 )

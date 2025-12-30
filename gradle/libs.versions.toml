@@ -35,6 +35,7 @@ ktor = "3.3.3"
 leakcanary = "2.14"
 lifecycle-jb = "2.9.6"
 mavenPublish = "0.35.0"
+markdownRenderer = "0.38.1"
 molecule = "2.2.0"
 okhttp = "5.3.2"
 okio = "3.16.4"
@@ -189,6 +190,9 @@ lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifec
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
+markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
+markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }
+
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
 mosaic = "com.jakewharton.mosaic:mosaic-runtime:0.18.0"
@@ -213,7 +217,8 @@ sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 
-telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
+telephoto-flick = { module = "me.saket.telephoto:flick", version.ref = "telephoto" }
+telephoto-zoomableImageCoil3 = { module = "me.saket.telephoto:zoomable-image-coil3", version.ref = "telephoto" }
 
 testing-assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 testing-testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }

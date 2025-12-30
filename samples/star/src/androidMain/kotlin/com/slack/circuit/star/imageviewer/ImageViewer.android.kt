@@ -1,4 +1,4 @@
-// Copyright (C) 2023 Slack Technologies, LLC
+// Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.imageviewer
 
@@ -21,86 +21,42 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.WindowInsetsControllerCompat
-import coil.request.ImageRequest.Builder
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest.Builder
+import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.imageviewer.FlickToDismissState.FlickGestureState.Dismissed
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.Close
-import com.slack.circuit.star.imageviewer.ImageViewerScreen.Event.NoOp
 import com.slack.circuit.star.imageviewer.ImageViewerScreen.State
 import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.StarTheme
-import com.slack.circuit.star.ui.rememberSystemUiController
 import com.slack.circuit.star.ui.thenIf
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
+import me.saket.telephoto.ExperimentalTelephotoApi
+import me.saket.telephoto.flick.FlickToDismiss
+import me.saket.telephoto.flick.FlickToDismissState.GestureState.Dismissed
+import me.saket.telephoto.flick.rememberFlickToDismissState
 import me.saket.telephoto.zoomable.ZoomSpec
-import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
+import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 
-@AssistedInject
-class ImageViewerPresenter(
-  @Assisted private val screen: ImageViewerScreen,
-  @Assisted private val navigator: Navigator,
-) : Presenter<State> {
-  @CircuitInject(ImageViewerScreen::class, AppScope::class)
-  @AssistedFactory
-  fun interface Factory {
-    fun create(screen: ImageViewerScreen, navigator: Navigator): ImageViewerPresenter
-  }
-
-  @Composable
-  override fun present(): State {
-    return State(
-      id = screen.id,
-      url = screen.url,
-      index = screen.index,
-      placeholderKey = screen.placeholderKey,
-    ) { event ->
-      when (event) {
-        Close -> navigator.pop()
-        NoOp -> {}
-      }
-    }
-  }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalTelephotoApi::class)
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
-fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
+actual fun ImageViewer(state: State, modifier: Modifier) = SharedElementTransitionScope {
   var showChrome by remember { mutableStateOf(true) }
-  val systemUiController = rememberSystemUiController()
-  systemUiController.isSystemBarsVisible = showChrome
-  DisposableEffect(systemUiController) {
-    systemUiController.statusBarDarkContentEnabled = false
-    val originalSystemBarsBehavior = systemUiController.systemBarsBehavior
-    // Set BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE so the UI doesn't jump when it hides
-    systemUiController.systemBarsBehavior =
-      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    onDispose {
-      // TODO this is too late for some reason
-      systemUiController.isSystemBarsVisible = true
-      systemUiController.systemBarsBehavior = originalSystemBarsBehavior
-    }
-  }
+  ImmersiveSystemUiEffect(showChrome)
 
   val overlayTransition = findAnimatedScope(Overlay)?.transition
   val backgroundColor =
@@ -114,8 +70,8 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
             EnterExitState.PostExit -> tween(easing = EaseOutQuint)
           }
         },
-      ) { state ->
-        when (state) {
+      ) { enterExitState ->
+        when (enterExitState) {
           EnterExitState.PreEnter -> Color.Transparent
           EnterExitState.Visible -> Color.Black
           EnterExitState.PostExit -> Color.Transparent
@@ -130,17 +86,15 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
       contentColor = Color.White,
     ) {
       Box(Modifier.fillMaxSize()) {
-        // Image + scrim
-
+        // Image + flick to dismiss
         val dismissState = rememberFlickToDismissState()
         if (dismissState.gestureState is Dismissed) {
           state.eventSink(Close)
         }
-        // TODO bind scrim with flick. animate scrim out after flick finishes? Or with flick?
         FlickToDismiss(
           state = dismissState,
           modifier =
-            Modifier.thenIf(!dismissState.willDismissOnRelease) {
+            Modifier.thenIf(dismissState.gestureState !is Dismissed) {
               sharedBounds(
                 sharedContentState =
                   rememberSharedContentState(key = PetImageBoundsKey(state.id, state.index)),
@@ -153,31 +107,31 @@ fun ImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTran
         ) {
           val zoomableState = rememberZoomableState(ZoomSpec(maxZoomFactor = 4f))
           val imageState = rememberZoomableImageState(zoomableState)
-          // TODO loading loading indicator if there's no memory cached placeholderKey
+          val context = LocalPlatformContext.current
           ZoomableAsyncImage(
             model =
-              Builder(LocalContext.current)
+              Builder(context)
                 .data(state.url)
                 .apply {
                   state.placeholderKey?.let { placeholderMemoryCacheKey(it) }
                   crossfade(AnimationConstants.DefaultDurationMillis)
                 }
                 .build(),
-            contentDescription = "TODO",
+            contentDescription = "Full size image",
             modifier =
-              Modifier.fillMaxSize().thenIf(!dismissState.isAnimatingOnRelease) {
-                sharedElement(
+              Modifier.fillMaxSize()
+                .sharedElement(
                   sharedContentState =
                     rememberSharedContentState(key = PetImageElementKey(state.url)),
                   animatedVisibilityScope = requireAnimatedScope(Overlay),
-                )
-              },
+                ),
             state = imageState,
+            imageLoader = SingletonImageLoader.get(context),
             onClick = { showChrome = !showChrome },
           )
         }
 
-        // TODO pick color based on if image is underneath it or not. Similar to badges
+        // Chrome (back button)
         val backVisible =
           showChrome &&
             overlayTransition?.targetState?.let { it == EnterExitState.Visible } != false

@@ -4,5 +4,15 @@ package com.slack.circuit.star.db
 
 enum class Gender(val displayName: String) {
   MALE("Male"),
-  FEMALE("Female"),
+  FEMALE("Female");
+
+  companion object {
+    fun fromApiString(gender: String?): Gender? {
+      return when (gender?.lowercase()) {
+        "male" -> MALE
+        "female" -> FEMALE
+        else -> null
+      }
+    }
+  }
 }

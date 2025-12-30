@@ -52,8 +52,7 @@ data class Animal(
   val descriptionHtml: String? = null,
   /** Markdown description (converted from HTML) */
   val descriptionMarkdown: String? = null,
-  @SerialName("short_description")
-  val shortDescription: String? = null,
+  @SerialName("short_description") val shortDescription: String? = null,
   /** Physical color */
   val color: String? = null,
   /** Compatibility and status attributes */

@@ -5,20 +5,25 @@ package com.slack.circuit.star.repo
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.slack.circuit.star.data.petfinder.PetBioParserApi
-import com.slack.circuit.star.data.petfinder.PetfinderApi
+import com.slack.circuit.star.data.socialteesnyc.StarApi
 import com.slack.circuit.star.db.Animal
-import com.slack.circuit.star.db.AnimalBio
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.ListColumnAdapter
 import com.slack.circuit.star.db.OpJournal
+import com.slack.circuit.star.db.PetAttribute
+import com.slack.circuit.star.db.PetAttributeListAdapter
+import com.slack.circuit.star.db.Photo
+import com.slack.circuit.star.db.PhotoListAdapter
 import com.slack.circuit.star.db.Size
 import com.slack.circuit.star.db.SqlDriverFactory
 import com.slack.circuit.star.db.StarDatabase
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.exceptionOrNull
 import com.slack.eithernet.retryWithExponentialBackoff
-import kotlin.LazyThreadSafetyMode.NONE
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
@@ -26,60 +31,57 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
+private const val METADATA_KEY_UPDATED_AT = "animals_updated_at"
+
 interface PetRepository {
+  /** Force refresh data from the API. */
   suspend fun refreshData()
 
   fun animalsFlow(): Flow<List<Animal>?>
 
   suspend fun getAnimal(id: Long): Animal?
-
-  suspend fun getAnimalBio(id: Long): String?
 }
 
-class PetRepositoryImpl(
-  sqliteDriverFactory: SqlDriverFactory,
-  private val petFinderApi: PetfinderApi,
-  private val petBioParserApi: PetBioParserApi,
-) : PetRepository {
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
+@Inject
+class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starApi: StarApi) :
+  PetRepository {
 
   private val backgroundScope = CoroutineScope(SupervisorJob() + IO)
-  private val driver = sqliteDriverFactory.create(StarDatabase.Schema, "star.db")
-  private val starDb =
+  private val driver by lazy { sqliteDriverFactory.create(StarDatabase.Schema, "star.db") }
+
+  private val starDb by lazy {
     StarDatabase(
       driver,
       Animal.Adapter(
-        ListColumnAdapter(","),
-        ListColumnAdapter(":"),
-        EnumColumnAdapter(),
-        EnumColumnAdapter(),
+        photosAdapter = PhotoListAdapter(),
+        tagsAdapter = ListColumnAdapter(":"),
+        attributesAdapter = PetAttributeListAdapter(),
+        genderAdapter = EnumColumnAdapter(),
+        sizeAdapter = EnumColumnAdapter(),
       ),
     )
+  }
+
+  private val fetchMutex = Mutex()
 
   override suspend fun refreshData() {
-    withContext(IO) {
-      fetchAnimals()
-      // Clear the existing bios but lazily repopulate them
-      starDb.starQueries.deleteAllBios()
-    }
+    withContext(IO) { fetchAnimals(forceRefresh = true) }
   }
 
   override fun animalsFlow(): Flow<List<Animal>?> {
-    backgroundScope.launch {
-      if (isOperationStale("animals")) {
-        // Fetch new data
-        fetchAnimals()
-      }
-    }
-
     // If empty, check if the DB has been updated at all. If it hasn't, then it's just that we
     // haven't fetched yet and we return null instead to indicate it's still loading.
     return starDb.starQueries
       .getAllAnimals()
       .asFlow()
       .mapToList(backgroundScope.coroutineContext)
+      .onStart { fetchAnimals(forceRefresh = false) }
       .map { animals ->
         animals.ifEmpty {
           val dbHasOps = starDb.starQueries.lastUpdate("animals").executeAsOneOrNull()
@@ -97,11 +99,23 @@ class PetRepositoryImpl(
   }
 
   @Suppress("SwallowedException")
-  private suspend fun fetchAnimals() {
-    val result = retryWithExponentialBackoff {
-      // Sometimes petfinder's API throws 429s for no reason.
-      petFinderApi.animals(limit = 100)
+  private suspend fun fetchAnimals(forceRefresh: Boolean) {
+    // Check if we even need to fetch - skip if data isn't stale (unless force refreshing)
+    if (!forceRefresh && !isOperationStale("animals")) {
+      return
     }
+
+    // Drop concurrent fetch requests - if one is in-flight, skip this one
+    if (!fetchMutex.tryLock()) return
+    try {
+      doFetchAnimals(forceRefresh)
+    } finally {
+      fetchMutex.unlock()
+    }
+  }
+
+  private suspend fun doFetchAnimals(forceRefresh: Boolean) {
+    val result = retryWithExponentialBackoff { starApi.getPets() }
     if (result !is ApiResult.Success) {
       System.err.println("Failed to fetch animals: $result.")
       (result as ApiResult.Failure).exceptionOrNull()?.stackTraceToString()?.let {
@@ -109,71 +123,59 @@ class PetRepositoryImpl(
       }
       return
     }
-    val animals = result.value.animals
+
+    val response = result.value
+    val newUpdatedAt = response.updatedAt
+
+    // Check if the data has changed since last fetch (unless force refreshing)
+    if (!forceRefresh) {
+      val lastUpdatedAtEpoch =
+        starDb.starQueries.getMetadata(METADATA_KEY_UPDATED_AT).executeAsOneOrNull()?.toLongOrNull()
+      if (lastUpdatedAtEpoch != null) {
+        val lastUpdatedAt = Instant.fromEpochSeconds(lastUpdatedAtEpoch)
+        if (newUpdatedAt <= lastUpdatedAt) {
+          // Data hasn't changed, just update the operation timestamp so we don't check again soon
+          logUpdate("animals")
+          return
+        }
+      }
+    }
+
+    val animals = response.pets
     // Do everything in a single transaction for atomicity
     starDb.transaction {
       // Delete any not present
       starDb.starQueries.deleteAllAnimals()
 
       // Re-populate the DB
-      for ((index, animal) in animals.withIndex()) {
+      for ((index, pet) in animals.withIndex()) {
         starDb.starQueries.updateAnimal(
           Animal(
-            id = animal.id,
+            id = pet.id.toLong(),
             sort = index.toLong(),
             // Names are sometimes all caps
             name =
-              animal.name.lowercase().replaceFirstChar {
+              pet.name.lowercase().replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase() else it.toString()
               },
-            url = animal.url,
-            photoUrls = animal.photos.map { it.full },
-            primaryPhotoUrl = animal.photos.firstOrNull()?.medium,
-            tags =
-              listOfNotNull(
-                animal.colors.primary,
-                animal.colors.secondary,
-                animal.breeds.primary,
-                animal.breeds.secondary,
-                animal.gender,
-                animal.size,
-                animal.status,
-              ),
-            description = animal.description.orEmpty(),
-            primaryBreed = animal.breeds.primary,
-            gender = Gender.valueOf(animal.gender.uppercase()),
-            size = Size.valueOf(animal.size.uppercase()),
-            age = animal.age,
+            url = pet.url,
+            photos = pet.photos.map { Photo(it.originalUrl, it.width, it.height, it.aspectRatio) },
+            tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
+            description = pet.description,
+            descriptionMarkdown = pet.descriptionMarkdown,
+            attributes = pet.attributes.map { PetAttribute(it.key, it.display) },
+            primaryBreed = pet.breed,
+            gender = Gender.fromApiString(pet.sex),
+            size = Size.fromApiString(pet.size),
+            age = pet.age,
           )
         )
       }
 
-      logUpdate("animals")
-    }
-  }
+      // Store the API's updatedAt timestamp as epoch seconds
+      starDb.starQueries.putMetadata(METADATA_KEY_UPDATED_AT, newUpdatedAt.epochSeconds.toString())
 
-  override suspend fun getAnimalBio(id: Long): String? {
-    return withContext(IO) {
-      val animal = getAnimal(id) ?: return@withContext null
-      val opId = "bio:$id"
-      val isStale = isOperationStale(opId)
-      val dbBio by lazy(NONE) { starDb.starQueries.getAnimalBio(id).executeAsOneOrNull() }
-      if (isStale || dbBio == null) {
-        when (val result = petBioParserApi.parseBio(animal.url)) {
-          is ApiResult.Success -> {
-            val bio = result.value
-            // Single transaction to log the operation update with the put
-            starDb.transactionWithResult {
-              logUpdate(opId)
-              starDb.starQueries.putAnimalBio(AnimalBio(id, bio))
-            }
-            bio
-          }
-          is ApiResult.Failure -> null
-        }
-      } else {
-        dbBio?.description
-      }
+      logUpdate("animals")
     }
   }
 
@@ -192,7 +194,8 @@ class PetRepositoryImpl(
     val timestamp = currentTimestamp()
 
     return (Instant.fromEpochSeconds(timestamp) - Instant.fromEpochSeconds(lastUpdate))
-      .inWholeDays > 1
+      // Data updates 2x/day
+      .inWholeHours > 12
   }
 
   private fun currentTimestamp(): Long {

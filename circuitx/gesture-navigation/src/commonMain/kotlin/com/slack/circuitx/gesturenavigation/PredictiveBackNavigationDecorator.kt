@@ -20,6 +20,8 @@ import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -44,19 +46,24 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)
     private set
 
-  override fun targetState(args: List<T>): GestureNavTransitionHolder<T> {
+  override fun targetState(args: NavStackList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
   }
 
   @OptIn(ExperimentalComposeUiApi::class)
   @Composable
-  override fun updateTransition(args: List<T>): Transition<GestureNavTransitionHolder<T>> {
+  override fun updateTransition(args: NavStackList<T>): Transition<GestureNavTransitionHolder<T>> {
     val scope = rememberStableCoroutineScope()
     val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
-        if (args.size > 1) {
-          targetState(args.subList(1, args.size))
+        val hasBackward = args.backwardItems.iterator().hasNext()
+        if (hasBackward) {
+          // Building the state we'd go to if we go backwards.
+          val forward = listOf(args.active) + args.forwardItems
+          val current = args.backwardItems.first()
+          val backward = args.backwardItems.drop(1)
+          targetState(navStackListOf(forward, current, backward))
         } else null
       }
 
@@ -84,7 +91,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
       }
     }
 
-    if (args.size > 1) {
+    if (previous != null) {
       BackHandler(
         onBackProgress = { progress, offset ->
           showPrevious = progress != 0f

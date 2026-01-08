@@ -13,4 +13,6 @@ public enum class AnimatedNavEvent {
   GoTo,
   Pop,
   RootReset,
+  Forward,
+  Backward,
 }

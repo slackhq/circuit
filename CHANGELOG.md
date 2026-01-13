@@ -4,6 +4,12 @@ Changelog
 Unreleased
 ----------
 
+
+0.32.0
+------
+
+_2026-01-13_
+
 ### Enhancements
 - New `produceAndCollectAsRetainedState` that produces and collects values from a `Flow`.
 

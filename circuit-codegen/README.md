@@ -1,4 +1,4 @@
-# circuit-codegen
+# Module circuit-codegen
 
 A Kotlin Symbol Processing (KSP) plugin that automatically generates `Ui.Factory` and `Presenter.Factory` implementations for Circuit.
 

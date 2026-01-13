@@ -41,7 +41,6 @@ public interface Navigator : GoToNavigator {
    *
    * @return true if moved backward, false if already at the root
    */
-  // todo PopResult? Root behavior? Should this be an option pop?
   public fun backward(): Boolean
 
   /**

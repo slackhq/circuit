@@ -148,7 +148,7 @@ internal constructor(
   }
 
   override fun snapshot(): NavStackList<Record>? {
-    return if (entryList.isNotEmpty()) {
+    return if (entryList.isNotEmpty() && currentIndex >= 0 && currentIndex <= entryList.lastIndex) {
       SaveableNavStackList(entryList.toList(), currentIndex)
     } else null
   }
@@ -210,7 +210,7 @@ internal constructor(
         }
       }
     }
-    return true
+    return false
   }
 
   private fun isRecordReachable(

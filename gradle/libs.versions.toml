@@ -1,27 +1,27 @@
 [versions]
+agp = "8.13.2"
 androidx-activity = "1.12.2"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
-androidx-compose = "1.9.4"
-agp = "8.13.2"
+androidx-compose = "1.10.0"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.2"
 atomicfu = "0.29.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
-compose-hotReload = "1.0.0"
-compose-runtime = "1.9.4" # Keep in sync with the androidx version used by compose-jb until 1.10
-compose-jb = "1.9.3"
-compose-jb-material3 = "1.9.0"
-compose-jb-material-icons-core = "1.7.3"
+compose-runtime = "1.10.0" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.57.2"
 datastore = "1.2.0"
 detekt = "1.23.8"
 dokka = "2.1.0"
 eithernet = "2.0.0"
+jb-compose = "1.10.0"
+jb-compose-material-icons-core = "1.7.3"
+jb-compose-material3 = "1.9.0"
+jb-compose-navigationevent = "1.0.0"
+jb-lifecycle = "2.9.6"
 jdk = "23"
 jvmTarget = "11"
-publishedJvmTarget = "11"
 kct = "0.12.1"
 kotlin = "2.3.0"
 kotlinInject = "0.9.0"
@@ -33,7 +33,6 @@ ksp = "2.3.4"
 ktfmt = "0.61"
 ktor = "3.3.3"
 leakcanary = "2.14"
-lifecycle-jb = "2.9.6"
 mavenPublish = "0.35.0"
 markdownRenderer = "0.38.1"
 molecule = "2.2.0"
@@ -55,8 +54,7 @@ agp-test = { id = "com.android.test", version.ref = "agp" }
 anvil = { id = "dev.zacsweers.anvil", version.ref = "anvil" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
-compose = { id = "org.jetbrains.compose", version.ref = "compose-jb" }
-compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotReload" }
+compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
@@ -118,20 +116,22 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 coil-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil" }
 
 # Compose Mutliplatform
-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-jb" }
-compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-jb-material-icons-core" }
-compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-jb" }
-compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-jb-material3" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jb-compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jb-compose" }
+compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jb-compose-material-icons-core" }
+compose-material-material = { module = "org.jetbrains.compose.material:material", version.ref = "jb-compose" }
+compose-material-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jb-compose-material3" }
+compose-navigationevent = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "jb-compose-navigationevent" }
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-runtime" }
-compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "compose-jb" }
-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-jb" }
-compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-jb" }
-compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose-jb" }
-compose-ui-testing-junit = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "compose-jb" }
-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-jb" }
-compose-ui-tooling-data = { module = "org.jetbrains.compose.ui:ui-tooling-data", version.ref = "compose-jb" }
-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-jb" }
-compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose-jb" }
+compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "jb-compose" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jb-compose" }
+compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jb-compose" }
+compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "jb-compose" }
+compose-ui-testing-junit = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "jb-compose" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jb-compose" }
+compose-ui-tooling-data = { module = "org.jetbrains.compose.ui:ui-tooling-data", version.ref = "jb-compose" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jb-compose" }
+compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "jb-compose" }
 
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -185,8 +185,8 @@ leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", ve
 leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
 
 # Lifecycle Mutliplatform
-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-jb" }
-lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-jb" }
+lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jb-lifecycle" }
+lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jb-lifecycle" }
 
 lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 

@@ -9,19 +9,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.PredictiveBackHandler
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.overlay.AnimatedOverlay
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.overlay.OverlayTransitionController
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.jvm.JvmInline
-import kotlinx.coroutines.CancellationException
 
 /**
  * Shows a full screen overlay with the given [screen]. As the name suggests, this overlay takes
@@ -53,7 +52,7 @@ internal class FullScreenOverlay<S : Screen>(
 
   @JvmInline internal value class Result(val result: PopResult?)
 
-  @OptIn(ExperimentalComposeUiApi::class) // For PredictiveBackHandler
+  @OptIn(InternalCircuitApi::class) // For PredictiveBackHandler
   @Composable
   override fun AnimatedVisibilityScope.AnimatedContent(
     navigator: OverlayNavigator<Result>,
@@ -63,14 +62,11 @@ internal class FullScreenOverlay<S : Screen>(
     val dispatchingNavigator = remember {
       DispatchingOverlayNavigator(screen, navigator, callbacks::onFinish)
     }
-    PredictiveBackHandler(enabled = true) { progress ->
-      try {
-        progress.collect { transitionController.seek(it.progress) }
-        dispatchingNavigator.pop()
-      } catch (_: CancellationException) {
-        transitionController.cancel()
-      }
-    }
+    PredictiveBackEventHandler(
+      onBackProgress = { progress, _ -> transitionController.seek(progress) },
+      onBackCancelled = { transitionController.cancel() },
+      onBackCompleted = { dispatchingNavigator.pop() },
+    )
     CircuitContent(screen = screen, onNavEvent = dispatchingNavigator::onNavEvent)
   }
 }

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import com.slack.circuit.foundation.internal.withCompositionLocalProvider
+import androidx.compose.runtime.withCompositionLocal
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
@@ -40,24 +40,19 @@ private class RetainedStateHolderImpl(private var canRetainChecker: CanRetainChe
 
   @Composable
   override fun <T> RetainedStateProvider(key: String, content: @Composable (() -> T)): T {
-    return withCompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+    return withCompositionLocal(LocalRetainedStateRegistry provides registry) {
       key(key) {
         val entryCanRetainChecker = remember { EntryCanRetainChecker() }
         val childRegistry =
           rememberRetainedStateRegistry(key = key, canRetainChecker = entryCanRetainChecker)
-        withCompositionLocalProvider(
-            LocalRetainedStateRegistry provides childRegistry,
-            content = content,
-          )
-          .also {
-            DisposableEffect(Unit) {
-              entryCheckers[key] = entryCanRetainChecker
-              onDispose {
-                registry.saveValue(key)
-                entryCheckers -= key
-              }
-            }
+        DisposableEffect(Unit) {
+          entryCheckers[key] = entryCanRetainChecker
+          onDispose {
+            registry.saveValue(key)
+            entryCheckers -= key
           }
+        }
+        withCompositionLocal(LocalRetainedStateRegistry provides childRegistry, content = content)
       }
     }
   }

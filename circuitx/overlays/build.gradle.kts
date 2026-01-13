@@ -39,7 +39,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(libs.compose.material.material3)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
         implementation(projects.circuitFoundation)
       }
     }

@@ -11,7 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -66,18 +68,22 @@ public fun rememberInterceptingNavigator(
     }
     var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
     var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
-    BackHandler(enableRootBackHandler) {
-      // Root pop check to prevent an infinite loop if this is used with the Android variant of
-      // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need to
-      // unload this BackHandler from the composition before the root pop is triggered, so delay
-      // calling pop until after the next composition.
-      if (navigator.peekBackStack().size > 1) {
-        interceptingNavigator.pop()
-      } else {
-        hasPendingRootPop = true
-        enableRootBackHandler = false
-      }
-    }
+    NavigationBackHandler(
+      state = rememberNavigationEventState(NavigationEventInfo.None),
+      isBackEnabled = enableRootBackHandler,
+      onBackCompleted = {
+        // Root pop check to prevent an infinite loop if this is used with the Android variant of
+        // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need
+        // to unload this BackHandler from the composition before the root pop is triggered, so
+        // delay calling pop until after the next composition.
+        if (navigator.peekBackStack().size > 1) {
+          interceptingNavigator.pop()
+        } else {
+          hasPendingRootPop = true
+          enableRootBackHandler = false
+        }
+      },
+    )
     if (hasPendingRootPop) {
       SideEffect {
         interceptingNavigator.pop()

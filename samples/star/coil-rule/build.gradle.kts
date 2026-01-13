@@ -22,8 +22,8 @@ kotlin {
         api(libs.junit)
         api(libs.coil)
         api(libs.coil.test)
+        implementation(libs.compose.components.resources)
         implementation(libs.compose.runtime) // Required for the compose compiler
-        implementation(compose.components.resources)
       }
     }
     androidMain { dependencies { implementation(libs.androidx.test.monitor) } }

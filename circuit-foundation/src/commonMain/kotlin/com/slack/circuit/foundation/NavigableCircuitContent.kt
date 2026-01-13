@@ -26,6 +26,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHashCode
@@ -445,9 +446,8 @@ public class ContentProviderState<R : Record>(
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
-      val lifecycle =
-        remember { MutableRecordLifecycle() }
-          .apply { isActive = lastNavigator.backStack.topRecord == record }
+      val lifecycle = remember { MutableRecordLifecycle() }
+      SideEffect { lifecycle.isActive = lastNavigator.backStack.topRecord == record }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.

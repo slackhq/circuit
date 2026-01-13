@@ -57,9 +57,9 @@ kotlin {
     }
     wasmJsMain {
       dependencies {
-        implementation(compose.components.resources)
-        implementation(compose.ui)
-        implementation(compose.runtime)
+        implementation(libs.compose.components.resources)
+        implementation(libs.compose.runtime)
+        implementation(libs.compose.ui)
       }
     }
   }

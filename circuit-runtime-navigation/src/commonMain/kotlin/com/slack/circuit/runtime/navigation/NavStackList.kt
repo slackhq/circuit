@@ -97,7 +97,11 @@ public fun <T> navStackListOf(
  * different types (e.g., Records to Screens).
  */
 public fun <T, R> NavStackList<T>.transform(transform: (T) -> R): NavStackList<R> {
-  return MappingNavStackList(this, transform)
+  return navStackListOf(
+    forwardItems = forwardItems.map(transform),
+    activeItem = transform(active),
+    backwardItems = backwardItems.map(transform),
+  )
 }
 
 /** Implementation for a single-item [NavStackList]. */
@@ -135,33 +139,6 @@ private class DefaultNavStackList<T>(
   override fun equals(other: Any?): Boolean = equalsTo(other)
 
   override fun hashCode(): Int = hashCodeOf()
-}
-
-/** Implementation of [NavStackList] that lazily applies a transform function to items. */
-private class MappingNavStackList<T, R>(
-  private val original: NavStackList<T>,
-  private val transform: (T) -> R,
-) : NavStackList<R> {
-  override val top: R by lazy(LazyThreadSafetyMode.NONE) { original.top.let(transform) }
-  override val active: R by lazy(LazyThreadSafetyMode.NONE) { original.active.let(transform) }
-  override val root: R by lazy(LazyThreadSafetyMode.NONE) { original.root.let(transform) }
-  override val forwardItems: Iterable<R> by
-    lazy(LazyThreadSafetyMode.NONE) { original.forwardItems.map(transform) }
-
-  override val backwardItems: Iterable<R> by
-    lazy(LazyThreadSafetyMode.NONE) { original.backwardItems.map(transform) }
-
-  override fun iterator(): Iterator<R> {
-    return original.iterator().asSequence().map(transform).iterator()
-  }
-
-  override fun equals(other: Any?): Boolean {
-    return original == other
-  }
-
-  override fun hashCode(): Int {
-    return original.hashCode()
-  }
 }
 
 private fun NavStackList<*>.hashCodeOf(): Int {

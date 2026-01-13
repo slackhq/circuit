@@ -4,6 +4,37 @@ Changelog
 Unreleased
 ----------
 
+### New Navigation Architecture:
+
+Circuit now supports **bidirectional navigation** with browser-style forward/backward capabilities!
+
+```kotlin
+val navStack = rememberSaveableNavStack(root = HomeScreen)
+val navigator = rememberCircuitNavigator(navStack)
+navigator.backward() // Move back without removing history
+navigator.forward()  // Move forward to a previously visited screen
+```
+
+**Navigation changes**:
+
+- `Navigator.forward()`: Move forward in navigation history
+- `Navigator.backward()`: Move backward in navigation history
+- `Navigator.peekNavStack()`: Immutable snapshot of the current navigation stack state
+- `NavigableCircuitContent` is aware of the full navigation stack and provides `NavStackList` to
+  decorations, enabling them to render forward stack records.
+
+**SaveableNavStack**:
+
+- New implementation in `circuit-foundation` providing full bidirectional navigation state
+- The existing BackStack implementation has been updated to extend `NavStack`
+
+**New `circuit-runtime-navigation` artifact**:
+
+- `NavStack`: Core navigation stack supporting push/pop and forward/backward traversal
+- `NavStackList`: Immutable snapshot of navigation state
+
+### Misc:
+
 - [code gen] Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
 - [code gen] Switch to `jakarta.inject` types for Dagger/Anvil code gen. This should have no source-breaking changes to users since this only affected generated code, but note that the square/anvil implementation may not support this in factory generation ([the KSP fork does](https://github.com/zacsweers/anvil)). If you need to only use javax annotations, use the `circuit.codegen.useJavaxOnly=true` KSP option.
 - [code gen] Drop KSP1 support.

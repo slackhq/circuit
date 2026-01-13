@@ -492,6 +492,7 @@ private class CircuitSymbolProcessor(
             // Nothing to do here, we'll just use the provider directly.
             CodeBlock.of("")
           } else {
+            @Suppress("UnnecessarySafeCall") // detekt hasn't caught up to Kotlin 2.3
             creatorOrConstructor?.assistedParameters(
               symbols = symbols,
               logger = logger,

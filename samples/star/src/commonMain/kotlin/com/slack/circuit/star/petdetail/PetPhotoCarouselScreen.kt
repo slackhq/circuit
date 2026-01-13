@@ -6,7 +6,6 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.animation.core.EaseInExpo
 import androidx.compose.animation.core.EaseOutExpo
@@ -15,16 +14,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -80,12 +78,16 @@ import dev.zacsweers.metro.AppScope
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.launch
 
+/** Default aspect ratio to use when photo metadata is not available (4:3) */
+private const val DEFAULT_ASPECT_RATIO = 4f / 3f
+
 @Parcelize
 data class PetPhotoCarouselScreen(
   val id: Long,
   val name: String,
   val photoUrls: List<String>,
   val photoUrlMemoryCacheKey: String?,
+  val photoAspectRatio: Float? = null,
 ) : StaticScreen
 
 /*
@@ -115,40 +117,36 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
-  val columnModifier =
+  val isLandscape =
     when (calculateWindowSizeClass().widthSizeClass) {
       WindowWidthSizeClass.Medium,
-      WindowWidthSizeClass.Expanded -> modifier.fillMaxWidth(0.5f)
-      else -> modifier.fillMaxSize()
+      WindowWidthSizeClass.Expanded -> true
+      else -> false
     }
+  // Use the primary photo's aspect ratio for consistent container sizing
+  val containerAspectRatio = screen.photoAspectRatio ?: DEFAULT_ASPECT_RATIO
+
   Column(
-    columnModifier
-      .testTag(CAROUSEL_TAG)
-      // Some images are different sizes. We probably want to constrain them to the same
-      // common
-      // size though
-      .animateContentSize()
-      .focusRequester(requester)
-      .focusable()
-      .onKeyEvent { event ->
-        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
-        val index =
-          when (event.key) {
-            Key.DirectionRight -> {
-              pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
-            }
-            Key.DirectionLeft -> {
-              pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
-            }
-            else -> -1
+    modifier.testTag(CAROUSEL_TAG).focusRequester(requester).focusable().onKeyEvent { event ->
+      if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
+      val index =
+        when (event.key) {
+          Key.DirectionRight -> {
+            pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
           }
-        if (index == -1) {
-          false
-        } else {
-          scope.launch { pagerState.animateScrollToPage(index) }
-          true
+          Key.DirectionLeft -> {
+            pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
+          }
+          else -> -1
         }
+      if (index == -1) {
+        false
+      } else {
+        scope.launch { pagerState.animateScrollToPage(index) }
+        true
       }
+    },
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     PhotoPager(
       id = screen.id,
@@ -156,21 +154,21 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
       photoUrls = screen.photoUrls,
       name = screen.name,
       photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-      modifier = Modifier,
+      containerAspectRatio = containerAspectRatio,
     )
 
     HorizontalPagerIndicator(
       pagerState = pagerState,
       pageCount = totalPhotos,
-      modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+      modifier = Modifier.padding(16.dp),
       activeColor = MaterialTheme.colorScheme.onBackground,
     )
   }
 
-  // Check for the PinnableContainer to prevent a crash on rotate
+  // Always request focus for keyboard navigation in landscape
+  // In portrait, skip focus request to avoid issues with LazyColumn/PinnableContainer
   // https://issuetracker.google.com/issues/381270279
-  if (LocalPinnableContainer.current == null) {
-    // Focus the pager so we can cycle through it with arrow keys
+  if (isLandscape || LocalPinnableContainer.current == null) {
     LaunchedEffect(Unit) { requester.requestFocus() }
   }
 }
@@ -187,13 +185,16 @@ private fun PhotoPager(
   pagerState: PagerState,
   photoUrls: List<String>,
   name: String,
+  containerAspectRatio: Float,
   modifier: Modifier = Modifier,
   photoUrlMemoryCacheKey: String? = null,
 ) = SharedElementTransitionScope {
   HorizontalPager(
     state = pagerState,
-    key = photoUrls::get,
-    modifier = modifier,
+    // Use safe accessor to avoid IndexOutOfBoundsException during pager prefetching
+    key = { page -> photoUrls.getOrElse(page) { page } },
+    // Apply aspectRatio to give HorizontalPager a defined height (needed in LazyColumn)
+    modifier = modifier.aspectRatio(containerAspectRatio),
     contentPadding = PaddingValues(16.dp),
   ) { page ->
     val photoUrl by remember { derivedStateOf { photoUrls[page].takeIf(String::isNotBlank) } }
@@ -215,63 +216,47 @@ private fun PhotoPager(
     val exitingToList =
       animatedVisibilityScope == navScope &&
         animatedVisibilityScope.transition.targetState == EnterExitState.PostExit
-    val clickableModifier =
+    val sharedBoundsModifier =
       when {
-          exitingToList && page != 0 ->
-            with(animatedVisibilityScope) {
-              Modifier.animateEnterExit(
-                enter = fadeIn(),
-                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = EaseOutExpo)),
-              )
-            }
-          pagerState.currentPage == page ->
-            Modifier.sharedBounds(
-              sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(id, page)),
-              animatedVisibilityScope = animatedVisibilityScope,
-              placeholderSize = AnimatedSize,
-              resizeMode = RemeasureToBounds,
-              enter = fadeIn(animationSpec = tween(durationMillis = 20, easing = EaseInExpo)),
-              exit = fadeOut(animationSpec = tween(durationMillis = 20, easing = EaseOutExpo)),
-              zIndexInOverlay = 3f,
+        exitingToList && page != 0 ->
+          with(animatedVisibilityScope) {
+            Modifier.animateEnterExit(
+              enter = fadeIn(),
+              exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = EaseOutExpo)),
             )
-          else -> Modifier
-        }
-        .clip(shape)
-        .clickable(enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null) {
-          shownOverlayUrl = photoUrl
-        }
-    Card(
-      shape = shape,
-      modifier =
-        clickableModifier.aspectRatio(1f).graphicsLayer {
-          // Calculate the absolute offset for the current page from the
-          // scroll position. We use the absolute value which allows us to mirror
-          // any effects for both directions
-          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
+          }
+        pagerState.currentPage == page ->
+          Modifier.sharedBounds(
+            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(id, page)),
+            animatedVisibilityScope = animatedVisibilityScope,
+            placeholderSize = AnimatedSize,
+            resizeMode = RemeasureToBounds,
+            enter = fadeIn(animationSpec = tween(durationMillis = 20, easing = EaseInExpo)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 20, easing = EaseOutExpo)),
+            zIndexInOverlay = 3f,
+          )
+        else -> Modifier
+      }
+    val context = LocalPlatformContext.current
+    val imageLoader = SingletonImageLoader.get(context)
 
-          // We animate the scaleX + scaleY, between 85% and 100%
+    // Box centers the image and applies shared element + scaling effects to the container
+    Box(
+      modifier =
+        Modifier.fillMaxSize().then(sharedBoundsModifier).graphicsLayer {
+          val pageOffset = pagerState.calculateCurrentOffsetForPage(page).absoluteValue
           lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f)).also { scale
             ->
             scaleX = scale
             scaleY = scale
           }
-
-          // We animate the alpha, between 50% and 100%
           alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.coerceIn(0f, 1f))
         },
+      contentAlignment = Alignment.Center,
     ) {
       AsyncImage(
-        modifier =
-          Modifier.fillMaxWidth().thenIfNotNull(photoUrl) {
-            sharedElement(
-                sharedContentState = rememberSharedContentState(key = PetImageElementKey(it)),
-                animatedVisibilityScope = requireAnimatedScope(Overlay),
-                zIndexInOverlay = 5f,
-              )
-              .clip(shape)
-          },
         model =
-          Builder(LocalPlatformContext.current)
+          Builder(context)
             .data(photoUrl)
             .memoryCacheKey(photoUrl)
             .apply {
@@ -282,8 +267,21 @@ private fun PhotoPager(
             }
             .build(),
         contentDescription = name,
-        contentScale = ContentScale.Crop,
-        imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+        imageLoader = imageLoader,
+        modifier =
+          Modifier.clip(shape)
+            .fillMaxSize()
+            .clickable(enabled = LocalOverlayState.current != UNAVAILABLE && photoUrl != null) {
+              shownOverlayUrl = photoUrl
+            }
+            .thenIfNotNull(photoUrl) {
+              sharedElement(
+                sharedContentState = rememberSharedContentState(key = PetImageElementKey(it)),
+                animatedVisibilityScope = requireAnimatedScope(Overlay),
+                zIndexInOverlay = 5f,
+              )
+            },
+        contentScale = ContentScale.Fit,
       )
     }
   }

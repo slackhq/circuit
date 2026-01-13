@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
-import coil.annotation.ExperimentalCoilApi
 import com.github.takahirom.roborazzi.RoborazziActivity
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -36,7 +35,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@ExperimentalCoilApi
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class PetListSnapshotTest(private val useDarkMode: Boolean) {
 

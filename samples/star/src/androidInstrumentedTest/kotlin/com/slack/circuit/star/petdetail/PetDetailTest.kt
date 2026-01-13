@@ -76,8 +76,10 @@ class PetDetailTest {
         photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
-        description = "Grumpy looking Australian Terrier",
+        descriptionMarkdown = "Grumpy looking Australian Terrier",
         tags = listOf("dog", "terrier", "male"),
+        attributes = emptyList(),
+        photoAspectRatio = null,
         eventSink = {},
       )
 
@@ -96,6 +98,7 @@ class PetDetailTest {
         name = success.name,
         photoUrls = success.photoUrls,
         photoUrlMemoryCacheKey = null,
+        photoAspectRatio = null,
       )
 
     composeTestRule.run {
@@ -108,7 +111,8 @@ class PetDetailTest {
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
       onNodeWithText(success.name).assertIsDisplayed()
-      onNodeWithText(success.description).assertIsDisplayed()
+      // Markdown renderer displays text, just check it exists
+      onNodeWithText("Grumpy looking Australian Terrier").assertIsDisplayed()
 
       assertThat(carouselScreen).run {
         isNotNull()
@@ -128,8 +132,10 @@ class PetDetailTest {
         photoUrls = listOf("http://some.url"),
         photoUrlMemoryCacheKey = null,
         name = "Baxter",
-        description = "Grumpy looking Australian Terrier",
+        descriptionMarkdown = "Grumpy looking Australian Terrier",
         tags = listOf("dog", "terrier", "male"),
+        attributes = emptyList(),
+        photoAspectRatio = null,
         eventSink = testSink,
       )
 

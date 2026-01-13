@@ -43,7 +43,6 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        implementation(libs.androidx.datastore.preferences)
         implementation(libs.coil)
         implementation(libs.coil.compose)
         implementation(libs.coil.network.ktor)
@@ -56,11 +55,10 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.ui.util)
         implementation(libs.coroutines)
-        implementation(libs.ksoup)
         implementation(libs.ktor.client)
-        implementation(libs.ktor.client.auth)
         implementation(libs.ktor.client.contentNegotiation)
         implementation(libs.ktor.serialization.json)
+        implementation(libs.markdownRenderer.m3)
         implementation(libs.okio)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
@@ -82,7 +80,6 @@ kotlin {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
-        implementation(libs.okio.fakefilesystem)
         implementation(libs.testing.assertk)
         implementation(projects.circuitTest)
         implementation(libs.eithernet.testFixtures)
@@ -91,7 +88,6 @@ kotlin {
     maybeCreate("jvmCommonMain").apply {
       dependencies {
         implementation(libs.compose.material.icons)
-        implementation(libs.jsoup)
         implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
@@ -113,7 +109,8 @@ kotlin {
         implementation(libs.compose.ui.tooling)
         implementation(libs.coroutines.android)
         implementation(libs.sqldelight.driver.android)
-        implementation(libs.telephoto.zoomableImageCoil)
+        implementation(libs.telephoto.flick)
+        implementation(libs.telephoto.zoomableImageCoil3)
         implementation(projects.circuitx.android)
       }
     }

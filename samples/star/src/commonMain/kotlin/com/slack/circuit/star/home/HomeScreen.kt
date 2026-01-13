@@ -99,7 +99,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         val fraction by
           remember(scope) {
             derivedStateOf {
-              val progress = scope.progress().value / .8f
+              val progress = scope.progress().floatValue / .8f
               EaseInOutCubic.transform(progress.coerceIn(0f, 1f))
             }
           }
@@ -137,6 +137,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         rememberCircuitNavigator(
           backStack = backStack,
           onRootPop = { state.eventSink(HomeScreen.Event.Back) },
+          enableBackHandler = true,
         )
 
       // When tab changes, use resetRoot to switch tabs while preserving state

@@ -18,7 +18,6 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
@@ -28,6 +27,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import wtf.emulator.DeviceModel
 import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
@@ -153,42 +153,64 @@ subprojects {
         // Don't double apply to stub gen
         return@configureEach
       }
-      val isWasmTask = name.contains("wasm", ignoreCase = true)
       compilerOptions {
-        if (isWasmTask && this is KotlinJsCompilerOptions) {
-          // TODO https://youtrack.jetbrains.com/issue/KT-64115
-          allWarningsAsErrors.set(false)
-        } else if (this is KotlinNativeCompilerOptions) {
-          // TODO https://youtrack.jetbrains.com/issue/KT-38719
-          allWarningsAsErrors.set(false)
-        } else {
-          allWarningsAsErrors.set(true)
-        }
-        if (this is KotlinJvmCompilerOptions) {
-          jvmTarget.set(
-            jvmTargetProject
-              .map(JavaVersion::toVersion)
-              .map { it.toString() }
-              .map(JvmTarget::fromTarget)
-          )
-          // Stub gen copies args from the parent compilation
-          if (this@configureEach !is KaptGenerateStubsTask) {
-            freeCompilerArgs.addAll(
-              "-Xjsr305=strict",
-              // Match JVM assertion behavior:
-              // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
-              "-Xassertions=jvm",
-              // Potentially useful for static analysis tools or annotation processors.
-              "-Xemit-jvm-type-annotations",
-              // Enable new jvm-default behavior
-              // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-              "-Xjvm-default=all",
-              // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-              "-Xtype-enhancement-improvements-strict-mode",
-              "-Xjspecify-annotations=strict",
-              // https://youtrack.jetbrains.com/issue/KT-73255
-              "-Xannotation-default-target=param-property",
+        allWarningsAsErrors.convention(true)
+        when (this) {
+          is KotlinJvmCompilerOptions -> {
+            jvmTarget.set(
+              jvmTargetProject
+                .map(JavaVersion::toVersion)
+                .map { it.toString() }
+                .map(JvmTarget::fromTarget)
             )
+            // Stub gen copies args from the parent compilation
+            if (this@configureEach !is KaptGenerateStubsTask) {
+              freeCompilerArgs.addAll(
+                "-Xjsr305=strict",
+                // Match JVM assertion behavior:
+                // https://publicobject.com/2019/11/18/kotlins-assert-is-not-like-javas-assert/
+                "-Xassertions=jvm",
+                // Potentially useful for static analysis tools or annotation processors.
+                "-Xemit-jvm-type-annotations",
+                // Enable new jvm-default behavior
+                // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+                "-jvm-default=no-compatibility",
+                // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
+                "-Xtype-enhancement-improvements-strict-mode",
+                "-Xjspecify-annotations=strict",
+                // https://youtrack.jetbrains.com/issue/KT-73255
+                "-Xannotation-default-target=param-property",
+              )
+            }
+          }
+
+          is KotlinNativeCompilerOptions -> {
+            // Cover for
+            // w: KLIB resolver: The same 'unique_name=lifecycle-common_commonMain' found in more
+            // than
+            // one library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.lifecycle-lifecycle-common-2.9.4-commonMain-2l5nFA.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.androidx.lifecycle-lifecycle-common-2.9.6-commonMain-_EOCYQ.klib
+            // w: KLIB resolver: The same 'unique_name=lifecycle-runtime-compose_commonMain' found
+            // in
+            // more than one library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.lifecycle-lifecycle-runtime-compose-2.9.4-commonMain-Jyns3Q.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.androidx.lifecycle-lifecycle-runtime-compose-2.9.6-commonMain-MM2pxQ.klib
+            // w: KLIB resolver: The same 'unique_name=lifecycle-runtime_commonMain' found in more
+            // than one library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.lifecycle-lifecycle-runtime-2.9.4-commonMain-IrcNlw.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.androidx.lifecycle-lifecycle-runtime-2.9.6-commonMain-WvMiUA.klib
+            // w: KLIB resolver: The same 'unique_name=runtime-saveable_commonMain' found in more
+            // than
+            // one library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.compose.runtime-runtime-saveable-1.9.4-commonMain-0zF0yA.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.compose.runtime-runtime-saveable-1.9.3-commonMain-UtAgeQ.klib
+            // w: KLIB resolver: The same 'unique_name=runtime_commonMain' found in more than one
+            // library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.compose.runtime-runtime-1.9.4-commonMain-_TGNUg.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.compose.runtime-runtime-1.9.3-commonMain-QgBs-g.klib
+            // w: KLIB resolver: The same 'unique_name=savedstate-compose_commonMain' found in more
+            // than one library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.savedstate-savedstate-compose-1.3.3-commonMain-9pLK_g.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.androidx.savedstate-savedstate-compose-1.3.6-commonMain-Fw7d1w.klib
+            // w: KLIB resolver: The same 'unique_name=savedstate_commonMain' found in more than one
+            // library:
+            // .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/androidx.savedstate-savedstate-1.3.3-commonMain-NwmUsg.klib, .../circuit-retained/build/kotlinTransformedMetadataLibraries/commonMain/org.jetbrains.androidx.savedstate-savedstate-1.3.6-commonMain-Gx5ULw.klib
+            allWarningsAsErrors.convention(false)
           }
         }
 
@@ -337,10 +359,7 @@ subprojects {
     with(extensions.getByType<LibraryExtension>()) {
       commonAndroidConfig()
       defaultConfig { minSdk = 23 }
-      testOptions {
-        // TODO update once robolectric supports it
-        targetSdk = 35
-      }
+      testOptions { targetSdk = 36 }
     }
 
     // Single-variant libraries
@@ -436,7 +455,10 @@ subprojects {
   pluginManager.withPlugin("wtf.emulator.gradle") {
     val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
     configure<EwExtension> {
-      devices.set(listOf(mapOf("model" to "Pixel2Atd", "version" to "30", "atd" to "true")))
+      device {
+        model = DeviceModel.PIXEL_2_ATD
+        version = 30
+      }
       if (emulatorWtfToken.isPresent) {
         token.set(emulatorWtfToken)
       }

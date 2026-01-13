@@ -166,8 +166,15 @@ private class CircuitSymbolProcessor(
         mode.annotateFactory(builder = this, scope = scope)
         if (topLevelClass != null && mode.originAnnotation != null) {
           addAnnotation(
-            AnnotationSpec.builder(mode.originAnnotation)
-              .addMember("%T::class", topLevelClass)
+            AnnotationSpec.builder(mode.originAnnotation.className)
+              .apply {
+                val parameterName = mode.originAnnotation.parameterName
+                if (parameterName != null) {
+                  addMember("%L = %T::class", parameterName, topLevelClass)
+                } else {
+                  addMember("%T::class", topLevelClass)
+                }
+              }
               .build()
           )
         }
@@ -485,6 +492,7 @@ private class CircuitSymbolProcessor(
             // Nothing to do here, we'll just use the provider directly.
             CodeBlock.of("")
           } else {
+            @Suppress("UnnecessarySafeCall") // detekt hasn't caught up to Kotlin 2.3
             creatorOrConstructor?.assistedParameters(
               symbols = symbols,
               logger = logger,

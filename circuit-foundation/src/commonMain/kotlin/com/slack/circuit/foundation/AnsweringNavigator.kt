@@ -106,6 +106,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 ): GoToNavigator {
   val currentBackStack by rememberUpdatedState(navStack)
   val currentResultType by rememberUpdatedState(resultType)
+  val currentAnsweringResultHandler by rememberUpdatedState(answeringResultHandler)
 
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen
@@ -127,7 +128,8 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   if (launched && currentTopRecord != null && currentTopRecord.key == initialRecordKey) {
     LaunchedEffect(key) {
       val result =
-        answeringResultHandler.awaitResult(currentTopRecord.key, key) ?: return@LaunchedEffect
+        currentAnsweringResultHandler.awaitResult(currentTopRecord.key, key)
+          ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
@@ -142,7 +144,7 @@ public fun <T : PopResult> rememberAnsweringNavigator(
         if (success) {
           // Clear the cached pending result from the previous top record
           if (previousTopRecord != null) {
-            answeringResultHandler.prepareForResult(previousTopRecord.key, key)
+            currentAnsweringResultHandler.prepareForResult(previousTopRecord.key, key)
           }
           launched = true
         }

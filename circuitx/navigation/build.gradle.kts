@@ -37,7 +37,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(projects.circuitFoundation)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
       }
     }
     commonTest {

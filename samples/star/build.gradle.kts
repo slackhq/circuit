@@ -19,7 +19,6 @@ plugins {
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
-  alias(libs.plugins.compose.hotReload)
 }
 
 kotlin {
@@ -47,6 +46,7 @@ kotlin {
         implementation(libs.coil)
         implementation(libs.coil.compose)
         implementation(libs.coil.network.ktor)
+        implementation(libs.compose.components.resources)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
@@ -63,7 +63,6 @@ kotlin {
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
-        implementation(compose.components.resources)
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitOverlay)

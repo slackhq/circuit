@@ -26,19 +26,42 @@ navigator.forward()  // Move forward to a previously visited screen
 **SaveableNavStack**:
 
 - New implementation in `circuit-foundation` providing full bidirectional navigation state
-- The existing BackStack implementation has been updated to extend `NavStack`
+- The existing `SaveableBackStack` implementation has been updated to extend `NavStack`
 
 **New `circuit-runtime-navigation` artifact**:
 
 - `NavStack`: Core navigation stack supporting push/pop and forward/backward traversal
 - `NavStackList`: Immutable snapshot of navigation state
 
-### Misc:
 
-- [code gen] Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
-- [code gen] Switch to `jakarta.inject` types for Dagger/Anvil code gen. This should have no source-breaking changes to users since this only affected generated code, but note that the square/anvil implementation may not support this in factory generation ([the KSP fork does](https://github.com/zacsweers/anvil)). If you need to only use javax annotations, use the `circuit.codegen.useJavaxOnly=true` KSP option.
-- [code gen] Drop KSP1 support.
-- [code gen] Fix not using named parameters with the `kotlin-inject` Anvil codegen mode.
+0.32.0
+------
+
+_2026-01-13_
+
+### Enhancements
+- New `produceAndCollectAsRetainedState` that produces and collects values from a `Flow`.
+
+### Changes
+
+- Update to Kotlin `2.3.0`.
+- Update Compose Multiplatform to `1.10.0`.
+- Circuits `BackHandler` uses now depend on `org.jetbrains.androidx.navigationevent`.
+
+#### Code-gen
+
+- Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
+- Switch to `jakarta.inject` types for Dagger/Anvil code gen. This should have no source-breaking changes to users since this only affected generated code, but note that the square/anvil implementation may not support this in factory generation ([the KSP fork does](https://github.com/zacsweers/anvil)). If you need to only use javax annotations, use the `circuit.codegen.useJavaxOnly=true` KSP option.
+- Drop KSP1 support.
+- Fix not using named parameters with the `kotlin-inject` Anvil codegen mode.
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@amirroid](https://github.com/amirroid)
+- [@evanisnor](https://github.com/evanisnor)
+- [@hossain-khan](https://github.com/hossain-khan)
 
 0.31.0
 ------

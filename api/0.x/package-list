@@ -11,6 +11,7 @@ module:circuit-foundation
 com.slack.circuit.foundation
 com.slack.circuit.foundation.animation
 com.slack.circuit.foundation.backstack
+com.slack.circuit.foundation.internal
 module:circuit-overlay
 com.slack.circuit.overlay
 module:circuit-retained

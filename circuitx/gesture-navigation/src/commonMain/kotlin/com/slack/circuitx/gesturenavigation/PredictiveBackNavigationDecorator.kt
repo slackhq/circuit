@@ -15,12 +15,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
-import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
+import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
-import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
-import com.slack.circuit.runtime.InternalCircuitApi
 import kotlin.math.abs
 
 internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
@@ -28,7 +27,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   protected lateinit var seekableTransitionState:
-          SeekableTransitionState<GestureNavTransitionHolder<T>>
+    SeekableTransitionState<GestureNavTransitionHolder<T>>
     private set
 
   protected var showPrevious: Boolean by mutableStateOf(false)

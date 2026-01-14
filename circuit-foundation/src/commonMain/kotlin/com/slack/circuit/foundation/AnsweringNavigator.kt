@@ -111,25 +111,24 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen
   val initialRecordKey = rememberSaveable {
-    currentBackStack.topRecord?.key ?: error("Navigator must have a top screen at start.")
+    currentBackStack.currentRecord?.key ?: error("Navigator must have a top screen at start.")
   }
 
   // Key for the resultKey, so we can track who owns this requested result
   val key = rememberSaveable { @OptIn(ExperimentalUuidApi::class) Uuid.random().toString() }
 
   // Current top record of the navigator
-  val currentTopRecordState by remember { derivedStateOf { currentBackStack.topRecord } }
+  val currentRecordState by remember { derivedStateOf { currentBackStack.currentRecord } }
 
   // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
 
   // Collect the result if we've launched and now returned to the initial record
-  val currentTopRecord = currentTopRecordState
-  if (launched && currentTopRecord != null && currentTopRecord.key == initialRecordKey) {
+  val currentRecord = currentRecordState
+  if (launched && currentRecord != null && currentRecord.key == initialRecordKey) {
     LaunchedEffect(key) {
       val result =
-        currentAnsweringResultHandler.awaitResult(currentTopRecord.key, key)
-          ?: return@LaunchedEffect
+        currentAnsweringResultHandler.awaitResult(currentRecord.key, key) ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
@@ -139,12 +138,12 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   val answeringNavigator = remember {
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
-        val previousTopRecord = currentBackStack.topRecord
+        val previousRecord = currentBackStack.currentRecord
         val success = currentBackStack.push(screen)
         if (success) {
           // Clear the cached pending result from the previous top record
-          if (previousTopRecord != null) {
-            currentAnsweringResultHandler.prepareForResult(previousTopRecord.key, key)
+          if (previousRecord != null) {
+            currentAnsweringResultHandler.prepareForResult(previousRecord.key, key)
           }
           launched = true
         }

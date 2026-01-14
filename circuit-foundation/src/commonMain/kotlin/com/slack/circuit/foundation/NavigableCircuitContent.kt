@@ -360,7 +360,7 @@ public class AnsweringResultNavigator<R : Record>(
       val popped = originalNavigator.pop(result)
       if (result != null) {
         // Send the pending result to our new top record, but only if it's expecting one
-        navStack.topRecord?.apply {
+        navStack.currentRecord?.apply {
           if (answeringResultHandler.expectingResult(key)) {
             answeringResultHandler.sendResult(key, result)
           }
@@ -479,7 +479,7 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
       val lifecycle = remember { MutableRecordLifecycle() }
-      SideEffect { lifecycle.isActive = lastNavigator.navStack.topRecord == record }
+      SideEffect { lifecycle.isActive = lastNavigator.navStack.currentRecord == record }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.

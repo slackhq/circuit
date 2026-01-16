@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -20,6 +21,9 @@ public interface NavigationContext {
 
   /** Returns the full navigation backstack, or null if the backstack is unavailable. */
   public fun peekBackStack(): List<Screen>?
+
+  /** Returns the full navigation stack, or null if the stack is unavailable. */
+  public fun peekNavStack(): NavStackList<Screen>?
 }
 
 /** A no-op [NavigationContext] implementation with no navigation state. */
@@ -27,4 +31,6 @@ public object NoOpNavigationContext : NavigationContext {
   override fun peek(): Screen? = null
 
   override fun peekBackStack(): List<Screen>? = null
+
+  override fun peekNavStack(): NavStackList<Screen>? = null
 }

@@ -14,9 +14,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -76,7 +78,7 @@ public fun rememberInterceptingNavigator(
         // rememberCircuitNavigator as that calls `OnBackPressedDispatcher.onBackPressed`. We need
         // to unload this BackHandler from the composition before the root pop is triggered, so
         // delay calling pop until after the next composition.
-        if (navigator.peekBackStack().size > 1) {
+        if (navigator.peekNavStack()?.backwardItems?.any() == true) {
           interceptingNavigator.pop()
         } else {
           hasPendingRootPop = true
@@ -117,65 +119,139 @@ public class InterceptingNavigator(
 ) : Navigator by delegate {
 
   override fun goTo(screen: Screen): Boolean {
-    val navigationContext = InterceptingNavigationContext(this)
+    val navigationContext = InterceptingNavigationContext(peekNavStack())
     for (interceptor in interceptors) {
       when (val interceptedResult = interceptor.goTo(screen, navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return true
         }
+
         is InterceptedResult.Failure -> {
           notifier?.goToFailure(interceptedResult)
           if (interceptedResult.consumed) return false
         }
-        is InterceptedGoToResult.Rewrite -> {
-          // Recurse in case another interceptor wants to intercept the new screen.
-          return goTo(interceptedResult.screen)
+
+        is InterceptedResult.Rewrite -> {
+          return rewriteBooleanResult(interceptedResult)
         }
       }
     }
-    eventListeners.forEach { it.goTo(screen, navigationContext) }
+    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
+    eventListeners.forEach { it.goTo(screen, eventNavigationContext) }
     return delegate.goTo(screen)
   }
 
   override fun pop(result: PopResult?): Screen? {
-    val navigationContext = InterceptingNavigationContext(this)
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.pop(result, navigationContext)) {
+      when (
+        val interceptedResult =
+          interceptor.pop(result, InterceptingNavigationContext(peekNavStack()))
+      ) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return null
         }
+
         is InterceptedResult.Failure -> {
           notifier?.popFailure(interceptedResult)
           if (interceptedResult.consumed) return null
         }
+
+        is InterceptedResult.Rewrite -> {
+          when (val event = interceptedResult.navEvent) {
+            is NavEvent.Pop -> return pop(event.result)
+            is NavEvent.ResetRoot -> return resetRoot(event.newRoot, event.options).lastOrNull()
+            is NavEvent.GoTo -> goTo(event.screen)
+            is NavEvent.Backward -> backward()
+            is NavEvent.Forward -> forward()
+          }
+          return null
+        }
       }
     }
-    eventListeners.forEach { it.pop(result, navigationContext) }
+    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
+    eventListeners.forEach { it.pop(result, eventNavigationContext) }
     return delegate.pop(result)
   }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
-    val navigationContext = InterceptingNavigationContext(this)
+    val navigationContext = InterceptingNavigationContext(peekNavStack())
     for (interceptor in interceptors) {
       when (val interceptedResult = interceptor.resetRoot(newRoot, options, navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return emptyList()
         }
+
         is InterceptedResult.Failure -> {
           notifier?.rootResetFailure(interceptedResult)
           if (interceptedResult.consumed) return emptyList()
         }
-        is InterceptedResetRootResult.Rewrite -> {
-          // Recurse in case another interceptor wants to intercept the new screen.
-          return resetRoot(interceptedResult.screen, interceptedResult.stateOptions)
+
+        is InterceptedResult.Rewrite -> {
+          when (val event = interceptedResult.navEvent) {
+            is NavEvent.ResetRoot -> return resetRoot(event.newRoot, event.options)
+            is NavEvent.Pop -> pop(event.result)
+            is NavEvent.GoTo -> goTo(event.screen)
+            is NavEvent.Backward -> backward()
+            is NavEvent.Forward -> forward()
+          }
+          return emptyList()
         }
       }
     }
-    eventListeners.forEach { it.resetRoot(newRoot, options, navigationContext) }
+    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
+    eventListeners.forEach { it.resetRoot(newRoot, options, eventNavigationContext) }
     return delegate.resetRoot(newRoot, options)
+  }
+
+  override fun forward(): Boolean {
+    val navigationContext = InterceptingNavigationContext(peekNavStack())
+    for (interceptor in interceptors) {
+      when (val interceptedResult = interceptor.forward(navigationContext)) {
+        is InterceptedResult.Skipped -> continue
+        is InterceptedResult.Success -> {
+          if (interceptedResult.consumed) return true
+        }
+
+        is InterceptedResult.Failure -> {
+          notifier?.forwardFailure(interceptedResult)
+          if (interceptedResult.consumed) return false
+        }
+
+        is InterceptedResult.Rewrite -> {
+          return rewriteBooleanResult(interceptedResult)
+        }
+      }
+    }
+    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
+    eventListeners.forEach { it.forward(eventNavigationContext) }
+    return delegate.forward()
+  }
+
+  override fun backward(): Boolean {
+    val navigationContext = InterceptingNavigationContext(peekNavStack())
+    for (interceptor in interceptors) {
+      when (val interceptedResult = interceptor.backward(navigationContext)) {
+        is InterceptedResult.Skipped -> continue
+        is InterceptedResult.Success -> {
+          if (interceptedResult.consumed) return true
+        }
+
+        is InterceptedResult.Failure -> {
+          notifier?.backwardFailure(interceptedResult)
+          if (interceptedResult.consumed) return false
+        }
+
+        is InterceptedResult.Rewrite -> {
+          return rewriteBooleanResult(interceptedResult)
+        }
+      }
+    }
+    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
+    eventListeners.forEach { it.backward(eventNavigationContext) }
+    return delegate.backward()
   }
 
   /** Notifies of [NavigationInterceptor] failures. Useful for logging or analytics. */
@@ -186,29 +262,61 @@ public class InterceptingNavigator(
      * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
      * [NavigationInterceptor.goTo].
      */
-    public fun goToFailure(interceptedResult: InterceptedResult.Failure)
+    public fun goToFailure(interceptedResult: InterceptedResult.Failure) {}
 
     /**
      * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
      * [NavigationInterceptor.pop].
      */
-    public fun popFailure(interceptedResult: InterceptedResult.Failure)
+    public fun popFailure(interceptedResult: InterceptedResult.Failure) {}
+
+    /**
+     * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
+     * [NavigationInterceptor.forward].
+     */
+    public fun forwardFailure(interceptedResult: InterceptedResult.Failure) {}
+
+    /**
+     * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
+     * [NavigationInterceptor.backward].
+     */
+    public fun backwardFailure(interceptedResult: InterceptedResult.Failure) {}
 
     /**
      * Notifies of a [InterceptedResult.Failure] from a [NavigationInterceptor] during a
      * [NavigationInterceptor.resetRoot].
      */
-    public fun rootResetFailure(interceptedResult: InterceptedResult.Failure)
+    public fun rootResetFailure(interceptedResult: InterceptedResult.Failure) {}
   }
 }
 
-private class InterceptingNavigationContext(
-  private val interceptingNavigator: InterceptingNavigator
-) : NavigationContext {
+private fun InterceptingNavigator.rewriteBooleanResult(
+  interceptedResult: InterceptedResult.Rewrite
+): Boolean {
+  when (val event = interceptedResult.navEvent) {
+    is NavEvent.GoTo -> return goTo(event.screen)
+    is NavEvent.Backward -> return backward()
+    is NavEvent.Forward -> return forward()
+    is NavEvent.Pop -> pop(event.result)
+    is NavEvent.ResetRoot -> resetRoot(event.newRoot, event.options)
+  }
+  return true
+}
 
-  override fun peek(): Screen? = interceptingNavigator.peek()
+private class InterceptingNavigationContext(private val navStackList: NavStackList<Screen>?) :
+  NavigationContext {
 
-  override fun peekBackStack(): List<Screen> = interceptingNavigator.peekBackStack()
+  override fun peek() = navStackList?.active
+
+  override fun peekBackStack() =
+    navStackList?.run {
+      buildList {
+        add(active)
+        addAll(backwardItems)
+      }
+    }
+
+  override fun peekNavStack() = navStackList
 }
 
 /** A SideEffect that notifies the [NavigationEventListener] when the backstack changes. */
@@ -218,9 +326,13 @@ private fun BackStackChangedEffect(
   eventListeners: List<NavigationEventListener>,
 ) {
   // Key using the screens as it'll be the same through rotation, as the record key will change.
-  val screens = navigator.peekBackStack()
-  rememberRetained(screens) {
-    val navigationContext = InterceptingNavigationContext(navigator)
-    eventListeners.forEach { it.onBackStackChanged(screens, navigationContext) }
+  val navStack = navigator.peekNavStack()
+  rememberRetained(navStack) {
+    val backStack = navigator.peekBackStack()
+    val navigationContext = InterceptingNavigationContext(navStack)
+    eventListeners.forEach {
+      it.onBackStackChanged(backStack, navigationContext)
+      it.onNavStackChanged(navStack, navigationContext)
+    }
   }
 }

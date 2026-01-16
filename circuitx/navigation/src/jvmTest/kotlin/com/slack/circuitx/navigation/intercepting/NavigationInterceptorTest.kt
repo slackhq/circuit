@@ -485,7 +485,7 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       val stateOptions = StateOptions.SaveAndRestore
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+        InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
         Skipped,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -496,7 +496,7 @@ class NavigationInterceptorTest {
         ResetRootEvent(
           peekBackStack,
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+          InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
@@ -516,7 +516,7 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       val stateOptions = StateOptions.Default
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+        InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
         SuccessConsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -527,7 +527,7 @@ class NavigationInterceptorTest {
         ResetRootEvent(
           peekBackStack,
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+          InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
@@ -544,7 +544,7 @@ class NavigationInterceptorTest {
     composeTestRule.run {
       val stateOptions = StateOptions.Default
       fakeInterceptor1.queueResetRoot(
-        InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+        InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
         SuccessUnconsumed,
       )
       val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
@@ -555,7 +555,7 @@ class NavigationInterceptorTest {
         ResetRootEvent(
           peekBackStack,
           TestScreen.ScreenA,
-          InterceptedResetRootResult.Rewrite(TestScreen.RootBeta, stateOptions = stateOptions),
+          InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )

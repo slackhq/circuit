@@ -118,6 +118,10 @@ private class SingleNavStackList<T>(item: T) : NavStackList<T> {
   override fun equals(other: Any?): Boolean = equalsTo(other)
 
   override fun hashCode(): Int = hashCodeOf()
+
+  override fun toString(): String {
+    return "NavStackList(active=$active, top=$top, root=$root, stack=$list)"
+  }
 }
 
 /** Default implementation of [NavStackList] backed by lists of items. */
@@ -139,6 +143,10 @@ private class DefaultNavStackList<T>(
   override fun equals(other: Any?): Boolean = equalsTo(other)
 
   override fun hashCode(): Int = hashCodeOf()
+
+  override fun toString(): String {
+    return "NavStackList(active=$active, top=$top, root=$root, stack=$list)"
+  }
 }
 
 private fun NavStackList<*>.hashCodeOf(): Int {

@@ -18,20 +18,26 @@ package com.slack.circuit.backstack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
+import kotlin.DeprecationLevel.WARNING
 
 /** Presentation logic for currently visible routes of a navigable UI. */
 @Stable
 public interface NavDecoration {
   @Composable
   public fun <T : NavArgument> DecoratedContent(
-    args: List<T>,
+    args: NavStackList<T>,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   )
 }
 
+@Deprecated(
+  message = "Use NavArgument from the new package instead",
+  replaceWith = ReplaceWith("NavArgument", "com.slack.circuit.runtime.navigation.NavArgument"),
+  level = WARNING,
+)
 /** Argument provided to [NavDecoration] that exposes the underlying [Screen]. */
-public interface NavArgument {
-  public val screen: Screen
-}
+public typealias NavArgument = NavArgument

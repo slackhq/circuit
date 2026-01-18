@@ -17,9 +17,10 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.BackStackRecordLocalProvider
-import com.slack.circuit.backstack.ProvidedValues
+import com.slack.circuit.foundation.navstack.NavStackRecordLocalProvider
+import com.slack.circuit.foundation.navstack.ProvidedValues
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.navigation.NavStack
 import kotlin.reflect.KClass
 
 /**
@@ -56,7 +57,7 @@ public inline fun <reified VM : ViewModel> backStackHostViewModel(
 
 /**
  * Returns the [ViewModelStoreOwner] of the component hosting the back stack, populated by
- * [ViewModelBackStackRecordLocalProvider] or the current [LocalViewModelStoreOwner].
+ * [ViewModelNavStackRecordLocalProvider] or the current [LocalViewModelStoreOwner].
  *
  * @return The [ViewModelStoreOwner], or `null` if none is set.
  */
@@ -72,21 +73,20 @@ private val LocalBackStackHostViewModelStoreOwner:
   }
 
 /**
- * A [BackStackRecordLocalProvider] that provides a [LocalViewModelStoreOwner] for each record in
- * the back stack.
+ * A [NavStackRecordLocalProvider] that provides a [LocalViewModelStoreOwner] for each record in the
+ * back stack.
  *
  * This allows [ViewModel] instances to be scoped to the lifecycle of a specific [BackStack.Record].
  * It also provides [LocalBackStackHostViewModelStoreOwner] with the [ViewModelStoreOwner] of the
  * host of the back stack.
  */
-public object ViewModelBackStackRecordLocalProvider :
-  BackStackRecordLocalProvider<BackStack.Record> {
+public object ViewModelNavStackRecordLocalProvider : NavStackRecordLocalProvider<NavStack.Record> {
   /**
    * Provides [LocalViewModelStoreOwner] scoped to the given [record] and
    * [LocalBackStackHostViewModelStoreOwner] scoped to the host of the back stack.
    */
   @Composable
-  override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
+  override fun providedValuesFor(record: NavStack.Record): ProvidedValues {
     // Gracefully fail if we don't have a host ViewModelStoreOwner.
     val backStackHostViewModelStoreOwner =
       LocalViewModelStoreOwner.current ?: return EMPTY_PROVIDED_VALUES
@@ -115,21 +115,15 @@ public object ViewModelBackStackRecordLocalProvider :
               override val viewModelStore: ViewModelStore = viewModelStore
             },
         )
-      object : ProvidedValues {
-        @Composable
-        override fun provideValues(): List<ProvidedValue<*>> {
-          remember { observer.UiRememberObserver() }
-          return list
-        }
+      ProvidedValues {
+        remember { observer.UiRememberObserver() }
+        list
       }
     }
   }
 }
 
-private val EMPTY_PROVIDED_VALUES =
-  object : ProvidedValues {
-    @Composable override fun provideValues() = emptyList<ProvidedValue<*>>()
-  }
+private val EMPTY_PROVIDED_VALUES = ProvidedValues { emptyList() }
 
 /**
  * A [ViewModel] responsible for holding and managing [ViewModelStore] instances for each record in

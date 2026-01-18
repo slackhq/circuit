@@ -13,6 +13,7 @@ import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -81,6 +82,18 @@ private class OnNavEventNavigator(val delegate: Navigator, val onNavEvent: () ->
     onNavEvent()
     return delegate.pop(result)
   }
+
+  override fun forward(): Boolean {
+    onNavEvent()
+    return delegate.forward()
+  }
+
+  override fun backward(): Boolean {
+    onNavEvent()
+    return delegate.backward()
+  }
+
+  override fun peekNavStack(): NavStackList<Screen>? = delegate.peekNavStack()
 
   override fun peek(): Screen? = delegate.peek()
 

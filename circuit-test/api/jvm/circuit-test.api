@@ -11,26 +11,59 @@ public abstract interface annotation class com/slack/circuit/test/ExperimentalFo
 
 public final class com/slack/circuit/test/FakeNavigator : com/slack/circuit/runtime/Navigator {
 	public static final field $stable I
-	public fun <init> (Lcom/slack/circuit/backstack/BackStack;)V
+	public fun <init> (Lcom/slack/circuit/runtime/navigation/NavStack;)V
 	public fun <init> (Lcom/slack/circuit/runtime/screen/Screen;[Lcom/slack/circuit/runtime/screen/Screen;)V
+	public final fun assertBackwardIsEmpty ()V
+	public final fun assertForwardIsEmpty ()V
 	public final fun assertGoToIsEmpty ()V
 	public final fun assertIsEmpty ()V
 	public final fun assertPopIsEmpty ()V
 	public final fun assertResetRootIsEmpty ()V
+	public final fun awaitBackward (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun awaitForward (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun awaitNextGoTo (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun awaitNextScreen (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun awaitPop (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun awaitResetRoot (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun backward ()Z
+	public final fun expectNoBackwardEvents ()V
 	public final fun expectNoEvents ()V
+	public final fun expectNoForwardEvents ()V
 	public final fun expectNoGoToEvents ()V
 	public final fun expectNoPopEvents ()V
 	public final fun expectNoResetRootEvents ()V
+	public fun forward ()Z
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun peekBackStack ()Ljava/util/List;
+	public fun peekNavStack ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
 	public final fun takeNextScreen ()Lcom/slack/circuit/runtime/screen/Screen;
+}
+
+public final class com/slack/circuit/test/FakeNavigator$BackwardEvent {
+	public static final field $stable I
+	public fun <init> (Z)V
+	public final fun component1 ()Z
+	public final fun copy (Z)Lcom/slack/circuit/test/FakeNavigator$BackwardEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$BackwardEvent;ZILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$BackwardEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSuccess ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuit/test/FakeNavigator$ForwardEvent {
+	public static final field $stable I
+	public fun <init> (Z)V
+	public final fun component1 ()Z
+	public final fun copy (Z)Lcom/slack/circuit/test/FakeNavigator$ForwardEvent;
+	public static synthetic fun copy$default (Lcom/slack/circuit/test/FakeNavigator$ForwardEvent;ZILjava/lang/Object;)Lcom/slack/circuit/test/FakeNavigator$ForwardEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSuccess ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/slack/circuit/test/FakeNavigator$GoToEvent {

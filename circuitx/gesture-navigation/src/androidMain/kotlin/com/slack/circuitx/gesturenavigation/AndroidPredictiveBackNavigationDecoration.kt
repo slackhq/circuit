@@ -27,12 +27,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
 
@@ -58,10 +58,12 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
   ): ContentTransform {
     return when (animatedNavEvent) {
       // adding to back stack
+      AnimatedNavEvent.Forward,
       AnimatedNavEvent.GoTo -> {
         NavigatorDefaults.forward
       }
       // come back from back stack
+      AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
         if (showPrevious) {
             // Handle all the animation in predictiveBackMotion
@@ -95,7 +97,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
         progress = { seekableTransitionState.fraction },
       )
     ) {
-      innerContent(targetState.args.first())
+      innerContent(targetState.navStack.active)
     }
   }
 

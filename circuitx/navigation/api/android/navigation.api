@@ -82,9 +82,12 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptingNaviga
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuit/runtime/Navigator;Ljava/util/List;Ljava/util/List;Lcom/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier;)V
 	public synthetic fun <init> (Lcom/slack/circuit/runtime/Navigator;Ljava/util/List;Ljava/util/List;Lcom/slack/circuitx/navigation/intercepting/InterceptingNavigator$FailureNotifier;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun backward ()Z
+	public fun forward ()Z
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun peekBackStack ()Ljava/util/List;
+	public fun peekNavStack ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
 }

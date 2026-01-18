@@ -17,10 +17,10 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.BackStackRecordLocalProvider
-import com.slack.circuit.backstack.ProvidedValues
-import com.slack.circuit.backstack.providedValuesForBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.navstack.NavStackRecordLocalProvider
+import com.slack.circuit.foundation.navstack.ProvidedValues
+import com.slack.circuit.foundation.navstack.providedValuesForNavStack
 import com.slack.circuit.internal.test.TestContentTags
 import com.slack.circuit.internal.test.TestEvent
 import com.slack.circuit.internal.test.TestScreen
@@ -58,9 +58,9 @@ class ProvidedValuesLifetimeTest {
             navigator = navigator,
             backStack = backStack,
             providedValues =
-              providedValuesForBackStack(
-                backStack = backStack,
-                backStackLocalProviders = listOf(TestBackStackRecordLocalProvider),
+              providedValuesForNavStack(
+                navStack = backStack,
+                navStackLocalProviders = listOf(TestBackStackRecordLocalProvider),
               ),
           )
         }
@@ -137,6 +137,7 @@ class ProvidedValuesLifetimeTest {
               else -> error("Can't navigate from $screen")
             }
           }
+
           else -> {
             /* no-op */
           }
@@ -145,7 +146,7 @@ class ProvidedValuesLifetimeTest {
     }
   }
 
-  private object TestBackStackRecordLocalProvider : BackStackRecordLocalProvider<BackStack.Record> {
+  private object TestBackStackRecordLocalProvider : NavStackRecordLocalProvider<BackStack.Record> {
     @Composable
     override fun providedValuesFor(record: BackStack.Record): ProvidedValues {
       return ProvidedValues {

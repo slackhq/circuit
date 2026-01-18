@@ -28,9 +28,12 @@ public abstract interface annotation class com/slack/circuit/runtime/InternalCir
 }
 
 public abstract interface class com/slack/circuit/runtime/Navigator : com/slack/circuit/runtime/GoToNavigator {
+	public abstract fun backward ()Z
+	public abstract fun forward ()Z
 	public abstract fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public abstract fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
 	public abstract fun peekBackStack ()Ljava/util/List;
+	public abstract fun peekNavStack ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 	public abstract fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public static synthetic fun pop$default (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/screen/PopResult;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/Screen;
 	public abstract fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
@@ -40,9 +43,12 @@ public abstract interface class com/slack/circuit/runtime/Navigator : com/slack/
 public final class com/slack/circuit/runtime/Navigator$NoOp : com/slack/circuit/runtime/Navigator {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/slack/circuit/runtime/Navigator$NoOp;
+	public fun backward ()Z
+	public fun forward ()Z
 	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;)Z
 	public fun peek ()Lcom/slack/circuit/runtime/screen/Screen;
 	public fun peekBackStack ()Ljava/util/List;
+	public fun peekNavStack ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 	public fun pop (Lcom/slack/circuit/runtime/screen/PopResult;)Lcom/slack/circuit/runtime/screen/Screen;
 	public fun resetRoot (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator$StateOptions;)Ljava/util/List;
 }

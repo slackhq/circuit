@@ -327,7 +327,7 @@ class TestResultPresenter(private val navigator: Navigator, private val screen: 
  */
 @Composable
 fun UnscrupulousResultListenerEffect() {
-  val backStack = LocalBackStack.current!!
+  val backStack = LocalNavStack.current!!
   val resultHandler = LocalAnsweringResultHandler.current!!
   LaunchedEffect(Unit) {
     resultHandler

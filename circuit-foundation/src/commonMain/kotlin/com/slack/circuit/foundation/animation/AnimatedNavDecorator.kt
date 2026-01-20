@@ -9,8 +9,9 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 
 /**
@@ -94,14 +95,14 @@ import com.slack.circuit.runtime.screen.Screen
 @Stable
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
   /** For the args create the expected target [AnimatedNavState]. */
-  public fun targetState(args: List<T>): S
+  public fun targetState(args: NavStackList<T>): S
 
   /**
    * Sets up a [Transition] for driving an [AnimatedContent] used to navigate between screens. The
    * transition should be setup from the current [NavDecoration.DecoratedContent] arguments, and
    * then updated when the arguments change.
    */
-  @Composable public fun updateTransition(args: List<T>): Transition<S>
+  @Composable public fun updateTransition(args: NavStackList<T>): Transition<S>
 
   /** Builds the default [AnimatedContent] transition spec. */
   public fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
@@ -122,18 +123,10 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 /** A state created for the [Transition] in [AnimatedNavDecorator.Decoration]. */
 @Stable
 public interface AnimatedNavState {
-  /** The [Screen] associated with this state. */
-  public val top: NavArgument
-    get() = backStack.first()
-
-  /** The root screen of the back stack at the time this state was created. */
-  public val root: NavArgument
-    get() = backStack.last()
-
-  /** The depth of the back stack at the time this state was created. */
-  public val backStackDepth: Int
-    get() = backStack.size
+  /** The active [Screen] associated with this state. */
+  public val active: Screen
+    get() = navStack.active.screen
 
   /** Snapshot of the back stack at the time this state was created. */
-  public val backStack: List<NavArgument>
+  public val navStack: NavStackList<out NavArgument>
 }

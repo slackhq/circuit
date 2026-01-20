@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
@@ -49,6 +50,20 @@ class NavEventTest {
     assertTrue(options.restore)
     assertFalse(options.clear) // default value
   }
+
+  @Test
+  fun onNavEvent_forward_callsNavigatorForward() {
+    val navigator = FakeNavigator()
+    navigator.onNavEvent(NavEvent.Forward)
+    assertTrue(navigator.forwardCalled)
+  }
+
+  @Test
+  fun onNavEvent_backward_callsNavigatorBackward() {
+    val navigator = FakeNavigator()
+    navigator.onNavEvent(NavEvent.Backward)
+    assertTrue(navigator.backwardCalled)
+  }
 }
 
 private class FakeNavigator : Navigator {
@@ -56,9 +71,21 @@ private class FakeNavigator : Navigator {
   var lastPopResult: PopResult? = null
   var lastResetRootScreen: Screen? = null
   var lastResetRootOptions: StateOptions? = null
+  var forwardCalled = false
+  var backwardCalled = false
 
   override fun goTo(screen: Screen): Boolean {
     lastGoToScreen = screen
+    return true
+  }
+
+  override fun forward(): Boolean {
+    forwardCalled = true
+    return true
+  }
+
+  override fun backward(): Boolean {
+    backwardCalled = true
     return true
   }
 
@@ -76,4 +103,6 @@ private class FakeNavigator : Navigator {
   override fun peek() = TODO("Not implemented")
 
   override fun peekBackStack() = TODO("Not implemented")
+
+  override fun peekNavStack(): NavStackList<Screen> = TODO("Not implemented")
 }

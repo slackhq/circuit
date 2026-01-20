@@ -110,6 +110,22 @@ class SaveableBackStackTest {
     assertTrue(backStack.push(TestScreen.ScreenB))
     assertFalse(backStack.push(TestScreen.ScreenB))
   }
+
+  @Test
+  fun test_forward_incompatibility() {
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.push(TestScreen.ScreenB)
+    assertFalse(backStack.forward())
+  }
+
+  @Test
+  fun test_backward_incompatibility() {
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.push(TestScreen.ScreenB)
+    assertFalse(backStack.backward())
+  }
 }
 
 private fun save(backStack: SaveableBackStack) =

@@ -4,6 +4,7 @@ Changelog
 Unreleased
 ----------
 
+- Fix an issue where `AnsweringResultHandler` was not correctly parceling pending results.
 
 0.32.0
 ------

@@ -8,12 +8,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.runtime.navigation.NavArgument
 
 data class CrossFadeNavDecoratorFactory(val durationMillis: Int = 300) :
   AnimatedNavDecorator.Factory {

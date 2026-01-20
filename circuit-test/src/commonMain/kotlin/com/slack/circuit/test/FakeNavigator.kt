@@ -8,6 +8,8 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.Navigator
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavStack
+import com.slack.circuit.runtime.navigation.NavStack.Record
 import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -35,10 +37,10 @@ import com.slack.circuit.runtime.screen.Screen
 public class FakeNavigator internal constructor(private val delegate: Navigator) :
   Navigator by delegate {
   public constructor(
-    backStack: BackStack<out BackStack.Record>
+    navStack: NavStack<out Record>
   ) : this(
     // Use a real navigator. This fake more or less just decorates it and intercepts events
-    Navigator(backStack) {}
+    Navigator(navStack) {}
   )
 
   public constructor(
@@ -52,6 +54,8 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   private val goToEvents = Turbine<GoToEvent>()
   private val resetRootEvents = Turbine<ResetRootEvent>()
   private val popEvents = Turbine<PopEvent>()
+  private val forwardEvents = Turbine<ForwardEvent>()
+  private val backwardsEvents = Turbine<BackwardEvent>()
 
   override fun goTo(screen: Screen): Boolean {
     val success = delegate.goTo(screen)
@@ -63,6 +67,18 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     val popped = delegate.pop(result)
     popEvents.add(PopEvent(popped, result))
     return popped
+  }
+
+  override fun forward(): Boolean {
+    val result = delegate.forward()
+    forwardEvents.add(ForwardEvent(result))
+    return result
+  }
+
+  override fun backward(): Boolean {
+    val result = delegate.backward()
+    backwardsEvents.add(BackwardEvent(result))
+    return result
   }
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
@@ -90,6 +106,12 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
   /** Awaits the next navigation [pop] event or throws if no pops are performed. */
   public suspend fun awaitPop(): PopEvent = popEvents.awaitItem()
 
+  /** Awaits the next navigation [forward] event or throws if no forwards are performed. */
+  public suspend fun awaitForward(): ForwardEvent = forwardEvents.awaitItem()
+
+  /** Awaits the next navigation [backward] event or throws if no backwards are performed. */
+  public suspend fun awaitBackward(): BackwardEvent = backwardsEvents.awaitItem()
+
   /** Asserts that all goTo events so far have been consumed. */
   @Deprecated(
     "Only checks for goToEvents, use assertGoToIsEmpty instead",
@@ -109,6 +131,14 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
 
   public fun assertResetRootIsEmpty() {
     resetRootEvents.ensureAllEventsConsumed()
+  }
+
+  public fun assertForwardIsEmpty() {
+    forwardEvents.ensureAllEventsConsumed()
+  }
+
+  public fun assertBackwardIsEmpty() {
+    backwardsEvents.ensureAllEventsConsumed()
   }
 
   /** Asserts that no goTo events have been emitted. */
@@ -132,11 +162,25 @@ public class FakeNavigator internal constructor(private val delegate: Navigator)
     resetRootEvents.expectNoEvents()
   }
 
+  public fun expectNoForwardEvents() {
+    forwardEvents.expectNoEvents()
+  }
+
+  public fun expectNoBackwardEvents() {
+    backwardsEvents.expectNoEvents()
+  }
+
   /** Represents a recorded [Navigator.goTo] event. */
   public data class GoToEvent(val screen: Screen, val success: Boolean)
 
   /** Represents a recorded [Navigator.pop] event. */
   public data class PopEvent(val poppedScreen: Screen?, val result: PopResult? = null)
+
+  /** Represents a recorded [Navigator.forward] event. */
+  public data class ForwardEvent(val success: Boolean)
+
+  /** Represents a recorded [Navigator.backward] event. */
+  public data class BackwardEvent(val success: Boolean)
 
   /** Represents a recorded [Navigator.resetRoot] event. */
   public data class ResetRootEvent(

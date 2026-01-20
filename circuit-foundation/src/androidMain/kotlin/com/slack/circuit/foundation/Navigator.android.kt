@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.BackStack.Record
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.screen.PopResult
 
 /**
@@ -24,7 +25,28 @@ public fun rememberCircuitNavigator(
   enableBackHandler: Boolean = true,
 ): Navigator {
   return rememberCircuitNavigator(
-    backStack = backStack,
+    navStack = backStack,
+    onRootPop = backDispatcherRootPop(),
+    enableBackHandler = enableBackHandler,
+  )
+}
+
+/**
+ * Returns a new [Navigator] for navigating within [CircuitContents][CircuitContent]. Delegates
+ * onRootPop to the [LocalOnBackPressedDispatcherOwner].
+ *
+ * @param navStack The backing [NavStack] to navigate.
+ * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
+ *   back handler. Defaults to true.
+ * @see NavigableCircuitContent
+ */
+@Composable
+public fun rememberCircuitNavigator(
+  navStack: NavStack<out NavStack.Record>,
+  enableBackHandler: Boolean = true,
+): Navigator {
+  return rememberCircuitNavigator(
+    navStack = navStack,
     onRootPop = backDispatcherRootPop(),
     enableBackHandler = enableBackHandler,
   )

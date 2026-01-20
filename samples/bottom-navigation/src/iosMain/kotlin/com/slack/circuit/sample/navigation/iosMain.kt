@@ -9,8 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
-import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
@@ -37,8 +37,8 @@ fun MainViewController(): UIViewController {
   val tabs = TabScreen.all
   return ComposeUIViewController {
     MaterialTheme {
-      val backStack = rememberSaveableBackStack(tabs.first())
-      val navigator = rememberCircuitNavigator(backStack) {}
+      val navStack = rememberSaveableNavStack(tabs.first())
+      val navigator = rememberCircuitNavigator(navStack = navStack) {}
       // Build the delegate Navigator.
       val interceptingNavigator =
         rememberInterceptingNavigator(
@@ -57,7 +57,7 @@ fun MainViewController(): UIViewController {
             .build()
         }
       CircuitCompositionLocals(circuit) {
-        ContentScaffold(backStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+        ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
       }
     }
   }

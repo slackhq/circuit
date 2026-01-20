@@ -35,27 +35,62 @@ final class <#A: com.slack.circuit.runtime/CircuitUiEvent> com.slack.circuit.tes
 }
 
 final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Navigator { // com.slack.circuit.test/FakeNavigator|null[0]
-    constructor <init>(com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>) // com.slack.circuit.test/FakeNavigator.<init>|<init>(com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>){}[0]
+    constructor <init>(com.slack.circuit.runtime.navigation/NavStack<out com.slack.circuit.runtime.navigation/NavStack.Record>) // com.slack.circuit.test/FakeNavigator.<init>|<init>(com.slack.circuit.runtime.navigation.NavStack<out|com.slack.circuit.runtime.navigation.NavStack.Record>){}[0]
     constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Array<out com.slack.circuit.runtime.screen/Screen>...) // com.slack.circuit.test/FakeNavigator.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Array<out|com.slack.circuit.runtime.screen.Screen>...){}[0]
 
+    final fun assertBackwardIsEmpty() // com.slack.circuit.test/FakeNavigator.assertBackwardIsEmpty|assertBackwardIsEmpty(){}[0]
+    final fun assertForwardIsEmpty() // com.slack.circuit.test/FakeNavigator.assertForwardIsEmpty|assertForwardIsEmpty(){}[0]
     final fun assertGoToIsEmpty() // com.slack.circuit.test/FakeNavigator.assertGoToIsEmpty|assertGoToIsEmpty(){}[0]
     final fun assertIsEmpty() // com.slack.circuit.test/FakeNavigator.assertIsEmpty|assertIsEmpty(){}[0]
     final fun assertPopIsEmpty() // com.slack.circuit.test/FakeNavigator.assertPopIsEmpty|assertPopIsEmpty(){}[0]
     final fun assertResetRootIsEmpty() // com.slack.circuit.test/FakeNavigator.assertResetRootIsEmpty|assertResetRootIsEmpty(){}[0]
+    final fun backward(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.backward|backward(){}[0]
+    final fun expectNoBackwardEvents() // com.slack.circuit.test/FakeNavigator.expectNoBackwardEvents|expectNoBackwardEvents(){}[0]
     final fun expectNoEvents() // com.slack.circuit.test/FakeNavigator.expectNoEvents|expectNoEvents(){}[0]
+    final fun expectNoForwardEvents() // com.slack.circuit.test/FakeNavigator.expectNoForwardEvents|expectNoForwardEvents(){}[0]
     final fun expectNoGoToEvents() // com.slack.circuit.test/FakeNavigator.expectNoGoToEvents|expectNoGoToEvents(){}[0]
     final fun expectNoPopEvents() // com.slack.circuit.test/FakeNavigator.expectNoPopEvents|expectNoPopEvents(){}[0]
     final fun expectNoResetRootEvents() // com.slack.circuit.test/FakeNavigator.expectNoResetRootEvents|expectNoResetRootEvents(){}[0]
+    final fun forward(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.forward|forward(){}[0]
     final fun goTo(com.slack.circuit.runtime.screen/Screen): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.goTo|goTo(com.slack.circuit.runtime.screen.Screen){}[0]
     final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.peek|peek(){}[0]
     final fun peekBackStack(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.peekBackStack|peekBackStack(){}[0]
+    final fun peekNavStack(): com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.runtime.screen/Screen>? // com.slack.circuit.test/FakeNavigator.peekNavStack|peekNavStack(){}[0]
     final fun pop(com.slack.circuit.runtime.screen/PopResult?): com.slack.circuit.runtime.screen/Screen? // com.slack.circuit.test/FakeNavigator.pop|pop(com.slack.circuit.runtime.screen.PopResult?){}[0]
     final fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuit.test/FakeNavigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
     final fun takeNextScreen(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.takeNextScreen|takeNextScreen(){}[0]
+    final suspend fun awaitBackward(): com.slack.circuit.test/FakeNavigator.BackwardEvent // com.slack.circuit.test/FakeNavigator.awaitBackward|awaitBackward(){}[0]
+    final suspend fun awaitForward(): com.slack.circuit.test/FakeNavigator.ForwardEvent // com.slack.circuit.test/FakeNavigator.awaitForward|awaitForward(){}[0]
     final suspend fun awaitNextGoTo(): com.slack.circuit.test/FakeNavigator.GoToEvent // com.slack.circuit.test/FakeNavigator.awaitNextGoTo|awaitNextGoTo(){}[0]
     final suspend fun awaitNextScreen(): com.slack.circuit.runtime.screen/Screen // com.slack.circuit.test/FakeNavigator.awaitNextScreen|awaitNextScreen(){}[0]
     final suspend fun awaitPop(): com.slack.circuit.test/FakeNavigator.PopEvent // com.slack.circuit.test/FakeNavigator.awaitPop|awaitPop(){}[0]
     final suspend fun awaitResetRoot(): com.slack.circuit.test/FakeNavigator.ResetRootEvent // com.slack.circuit.test/FakeNavigator.awaitResetRoot|awaitResetRoot(){}[0]
+
+    final class BackwardEvent { // com.slack.circuit.test/FakeNavigator.BackwardEvent|null[0]
+        constructor <init>(kotlin/Boolean) // com.slack.circuit.test/FakeNavigator.BackwardEvent.<init>|<init>(kotlin.Boolean){}[0]
+
+        final val success // com.slack.circuit.test/FakeNavigator.BackwardEvent.success|{}success[0]
+            final fun <get-success>(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.BackwardEvent.success.<get-success>|<get-success>(){}[0]
+
+        final fun component1(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.BackwardEvent.component1|component1(){}[0]
+        final fun copy(kotlin/Boolean = ...): com.slack.circuit.test/FakeNavigator.BackwardEvent // com.slack.circuit.test/FakeNavigator.BackwardEvent.copy|copy(kotlin.Boolean){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.BackwardEvent.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.test/FakeNavigator.BackwardEvent.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.test/FakeNavigator.BackwardEvent.toString|toString(){}[0]
+    }
+
+    final class ForwardEvent { // com.slack.circuit.test/FakeNavigator.ForwardEvent|null[0]
+        constructor <init>(kotlin/Boolean) // com.slack.circuit.test/FakeNavigator.ForwardEvent.<init>|<init>(kotlin.Boolean){}[0]
+
+        final val success // com.slack.circuit.test/FakeNavigator.ForwardEvent.success|{}success[0]
+            final fun <get-success>(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ForwardEvent.success.<get-success>|<get-success>(){}[0]
+
+        final fun component1(): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ForwardEvent.component1|component1(){}[0]
+        final fun copy(kotlin/Boolean = ...): com.slack.circuit.test/FakeNavigator.ForwardEvent // com.slack.circuit.test/FakeNavigator.ForwardEvent.copy|copy(kotlin.Boolean){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.test/FakeNavigator.ForwardEvent.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.test/FakeNavigator.ForwardEvent.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.test/FakeNavigator.ForwardEvent.toString|toString(){}[0]
+    }
 
     final class GoToEvent { // com.slack.circuit.test/FakeNavigator.GoToEvent|null[0]
         constructor <init>(com.slack.circuit.runtime.screen/Screen, kotlin/Boolean) // com.slack.circuit.test/FakeNavigator.GoToEvent.<init>|<init>(com.slack.circuit.runtime.screen.Screen;kotlin.Boolean){}[0]
@@ -110,12 +145,16 @@ final class com.slack.circuit.test/FakeNavigator : com.slack.circuit.runtime/Nav
 }
 
 final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop|#static{}com_slack_circuit_test_FakeNavigator$stableprop[0]
+final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_BackwardEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_BackwardEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_BackwardEvent$stableprop[0]
+final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ForwardEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ForwardEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_ForwardEvent$stableprop[0]
 final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop[0]
 final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_PopEvent$stableprop[0]
 final val com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop|#static{}com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop[0]
 final val com.slack.circuit.test/com_slack_circuit_test_TestEventSink$stableprop // com.slack.circuit.test/com_slack_circuit_test_TestEventSink$stableprop|#static{}com_slack_circuit_test_TestEventSink$stableprop[0]
 
 final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator$stableprop_getter|com_slack_circuit_test_FakeNavigator$stableprop_getter(){}[0]
+final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_BackwardEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_BackwardEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_BackwardEvent$stableprop_getter(){}[0]
+final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ForwardEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ForwardEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_ForwardEvent$stableprop_getter(){}[0]
 final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_GoToEvent$stableprop_getter(){}[0]
 final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_PopEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_PopEvent$stableprop_getter(){}[0]
 final fun com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop_getter(): kotlin/Int // com.slack.circuit.test/com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop_getter|com_slack_circuit_test_FakeNavigator_ResetRootEvent$stableprop_getter(){}[0]

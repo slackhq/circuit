@@ -4,6 +4,37 @@ Changelog
 Unreleased
 ----------
 
+### New Navigation Architecture:
+
+Circuit now supports **bidirectional navigation** with browser-style forward/backward capabilities!
+
+```kotlin
+val navStack = rememberSaveableNavStack(root = HomeScreen)
+val navigator = rememberCircuitNavigator(navStack)
+navigator.backward() // Move back without removing history
+navigator.forward()  // Move forward to a previously visited screen
+```
+
+**Navigation changes**:
+
+- `Navigator.forward()`: Move forward in navigation history
+- `Navigator.backward()`: Move backward in navigation history
+- `Navigator.peekNavStack()`: Immutable snapshot of the current navigation stack state
+- `NavigableCircuitContent` is aware of the full navigation stack and provides `NavStackList` to
+  decorations, enabling them to render forward stack records.
+
+**SaveableNavStack**:
+
+- New implementation in `circuit-foundation` providing full bidirectional navigation state
+- The existing `SaveableBackStack` implementation has been updated to extend `NavStack`
+
+**New `circuit-runtime-navigation` artifact**:
+
+- `NavStack`: Core navigation stack supporting push/pop and forward/backward traversal
+- `NavStackList`: Immutable snapshot of navigation state
+
+### Fixes
+
 - Fix an issue where `AnsweringResultHandler` was not correctly parceling pending results.
 
 0.32.0

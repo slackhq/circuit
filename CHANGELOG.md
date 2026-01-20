@@ -33,6 +33,12 @@ navigator.forward()  // Move forward to a previously visited screen
 - `NavStack`: Core navigation stack supporting push/pop and forward/backward traversal
 - `NavStackList`: Immutable snapshot of navigation state
 
+**circuitx-navigation**:
+
+- `InterceptingNavigator` now supports `forward()` and `backward()` navigation methods
+- Updated to use `NavStack` and `NavStackList` instead of `BackStack` and `List<Screen>`
+- Rewrite interceptors can now rewrite to any `NavEvent` (not just specific navigation types like `InterceptedGoToResult.Rewrite` or `InterceptedResetRootResult.Rewrite`)
+- `FailureNotifier` interface updated with `forwardFailure()` and `backwardFailure()` methods with default implementations
 
 0.32.0
 ------

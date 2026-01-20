@@ -33,6 +33,9 @@ navigator.forward()  // Move forward to a previously visited screen
 - `NavStack`: Core navigation stack supporting push/pop and forward/backward traversal
 - `NavStackList`: Immutable snapshot of navigation state
 
+### Fixes
+
+- Fix an issue where `AnsweringResultHandler` was not correctly parceling pending results.
 
 0.32.0
 ------

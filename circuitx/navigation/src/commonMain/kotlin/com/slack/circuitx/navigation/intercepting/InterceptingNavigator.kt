@@ -119,35 +119,20 @@ public class InterceptingNavigator(
 ) : Navigator by delegate {
 
   override fun goTo(screen: Screen): Boolean {
-    val navigationContext = InterceptingNavigationContext(peekNavStack())
-    for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.goTo(screen, navigationContext)) {
-        is InterceptedResult.Skipped -> continue
-        is InterceptedResult.Success -> {
-          if (interceptedResult.consumed) return true
-        }
-
-        is InterceptedResult.Failure -> {
-          notifier?.goToFailure(interceptedResult)
-          if (interceptedResult.consumed) return false
-        }
-
-        is InterceptedResult.Rewrite -> {
-          return rewriteBooleanResult(interceptedResult)
-        }
-      }
+    return iterateBooleanResultInterceptors(onFailure = FailureNotifier::goToFailure) {
+      goTo(screen, it)
     }
-    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
-    eventListeners.forEach { it.goTo(screen, eventNavigationContext) }
-    return delegate.goTo(screen)
+      ?: run {
+        // Fallback to the delegate, notifying of normal navigation
+        notifyListeners { context -> goTo(screen, context) }
+        delegate.goTo(screen)
+      }
   }
 
   override fun pop(result: PopResult?): Screen? {
+    val navigationContext = InterceptingNavigationContext(peekNavStack())
     for (interceptor in interceptors) {
-      when (
-        val interceptedResult =
-          interceptor.pop(result, InterceptingNavigationContext(peekNavStack()))
-      ) {
+      when (val interceptedResult = interceptor.pop(result, navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return null
@@ -170,8 +155,7 @@ public class InterceptingNavigator(
         }
       }
     }
-    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
-    eventListeners.forEach { it.pop(result, eventNavigationContext) }
+    notifyListeners { context -> pop(result, context) }
     return delegate.pop(result)
   }
 
@@ -201,46 +185,55 @@ public class InterceptingNavigator(
         }
       }
     }
-    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
-    eventListeners.forEach { it.resetRoot(newRoot, options, eventNavigationContext) }
+    notifyListeners { context -> resetRoot(newRoot, options, context) }
     return delegate.resetRoot(newRoot, options)
   }
 
   override fun forward(): Boolean {
-    val navigationContext = InterceptingNavigationContext(peekNavStack())
-    for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.forward(navigationContext)) {
-        is InterceptedResult.Skipped -> continue
-        is InterceptedResult.Success -> {
-          if (interceptedResult.consumed) return true
-        }
-
-        is InterceptedResult.Failure -> {
-          notifier?.forwardFailure(interceptedResult)
-          if (interceptedResult.consumed) return false
-        }
-
-        is InterceptedResult.Rewrite -> {
-          return rewriteBooleanResult(interceptedResult)
-        }
+    return iterateBooleanResultInterceptors(
+      onFailure = FailureNotifier::forwardFailure,
+      action = NavigationInterceptor::forward,
+    )
+      ?: run {
+        // Fallback to the delegate, notifying of normal navigation
+        notifyListeners { context -> forward(context) }
+        delegate.forward()
       }
-    }
-    val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
-    eventListeners.forEach { it.forward(eventNavigationContext) }
-    return delegate.forward()
   }
 
   override fun backward(): Boolean {
+    return iterateBooleanResultInterceptors(
+      onFailure = FailureNotifier::backwardFailure,
+      action = NavigationInterceptor::backward,
+    )
+      ?: run {
+        // Fallback to the delegate, notifying of normal navigation
+        notifyListeners { context -> backward(context) }
+        delegate.backward()
+      }
+  }
+
+  /**
+   * Sequentially processes interceptors until one consumes the navigation event or all interceptors
+   * have been processed.
+   *
+   * @return true/false if the interceptor consumed the navigation event, or null if no interceptor
+   *   consumed the navigation event.
+   */
+  private fun iterateBooleanResultInterceptors(
+    onFailure: FailureNotifier.(InterceptedResult.Failure) -> Unit,
+    action: NavigationInterceptor.(NavigationContext) -> InterceptedResult,
+  ): Boolean? {
     val navigationContext = InterceptingNavigationContext(peekNavStack())
     for (interceptor in interceptors) {
-      when (val interceptedResult = interceptor.backward(navigationContext)) {
+      when (val interceptedResult = interceptor.action(navigationContext)) {
         is InterceptedResult.Skipped -> continue
         is InterceptedResult.Success -> {
           if (interceptedResult.consumed) return true
         }
 
         is InterceptedResult.Failure -> {
-          notifier?.backwardFailure(interceptedResult)
+          notifier?.onFailure(interceptedResult)
           if (interceptedResult.consumed) return false
         }
 
@@ -249,9 +242,13 @@ public class InterceptingNavigator(
         }
       }
     }
+    return null
+  }
+
+  private fun notifyListeners(action: NavigationEventListener.(NavigationContext) -> Unit) {
+    // Get the context again as it can be modified by recursive rewrites.
     val eventNavigationContext = InterceptingNavigationContext(peekNavStack())
-    eventListeners.forEach { it.backward(eventNavigationContext) }
-    return delegate.backward()
+    eventListeners.forEach { it.action(eventNavigationContext) }
   }
 
   /** Notifies of [NavigationInterceptor] failures. Useful for logging or analytics. */

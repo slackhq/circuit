@@ -143,7 +143,6 @@ val navigator = rememberCircuitNavigator(backStack, onRootPop)
 **When:**
 
 - You want bidirectional navigation (forward/backward)
-- You want to be on the latest and greatest APIs
 
 **Steps:**
 

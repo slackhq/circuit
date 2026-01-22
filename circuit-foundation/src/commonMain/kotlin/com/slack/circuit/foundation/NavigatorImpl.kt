@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.BackStack
@@ -99,42 +100,44 @@ public fun rememberCircuitNavigator(
 public fun rememberCircuitNavigator(
   navStack: NavStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
-  enableBackHandler: Boolean = true,
+  enableBackHandler: Boolean = LocalNavigationEventDispatcherOwner.current != null,
 ): Navigator {
   val navigator = rememberCircuitNavigator(navStack = navStack, onRootPop = onRootPop)
-  // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
-  // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
-  val hasScreenChanged = remember {
-    var lastScreen: Screen? = navigator.peek()
-    derivedStateOf {
-      val screen = navigator.peek()
-      if (screen != null && screen != lastScreen) {
-        lastScreen = screen
+  if (enableBackHandler) {
+    // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
+    // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
+    val hasScreenChanged = remember {
+      var lastScreen: Screen? = navigator.peek()
+      derivedStateOf {
+        val screen = navigator.peek()
+        if (screen != null && screen != lastScreen) {
+          lastScreen = screen
+        }
+        lastScreen
       }
-      lastScreen
     }
-  }
-  var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
-  var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
-  NavigationBackHandler(
-    state = rememberNavigationEventState(NavigationEventInfo.None),
-    isBackEnabled = enableBackHandler && enableRootBackHandler && !navStack.isAtRoot,
-    onBackCompleted = {
-      // We need to unload this BackHandler from the composition before the root pop is triggered so
-      // any outer back handler will get called. So delay calling pop until after the next
-      // composition.
-      if (!navStack.isAtRoot) {
+    var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
+    var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
+    NavigationBackHandler(
+      state = rememberNavigationEventState(NavigationEventInfo.None),
+      isBackEnabled = enableRootBackHandler && !navStack.isAtRoot,
+      onBackCompleted = {
+        // We need to unload this BackHandler from the composition before the root pop is triggered
+        // so any outer back handler will get called. So delay calling pop until after the next
+        // composition.
+        if (!navStack.isAtRoot) {
+          navigator.pop()
+        } else {
+          hasPendingRootPop = true
+          enableRootBackHandler = false
+        }
+      },
+    )
+    if (hasPendingRootPop) {
+      SideEffect {
         navigator.pop()
-      } else {
-        hasPendingRootPop = true
-        enableRootBackHandler = false
+        hasPendingRootPop = false
       }
-    },
-  )
-  if (hasPendingRootPop) {
-    SideEffect {
-      navigator.pop()
-      hasPendingRootPop = false
     }
   }
   return navigator

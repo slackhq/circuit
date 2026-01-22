@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.foundation.NavEvent
@@ -42,7 +43,7 @@ public fun rememberInterceptingNavigator(
   interceptors: List<NavigationInterceptor> = emptyList(),
   eventListeners: List<NavigationEventListener> = emptyList(),
   notifier: InterceptingNavigator.FailureNotifier? = null,
-  enableBackHandler: Boolean = true,
+  enableBackHandler: Boolean = LocalNavigationEventDispatcherOwner.current != null,
 ): Navigator {
   // Handle the NavigationInterceptors.
   val interceptingNavigator =

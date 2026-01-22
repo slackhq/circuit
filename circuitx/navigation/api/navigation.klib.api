@@ -9,19 +9,25 @@
 abstract interface com.slack.circuitx.navigation.intercepting/NavigationContext { // com.slack.circuitx.navigation.intercepting/NavigationContext|null[0]
     abstract fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuitx.navigation.intercepting/NavigationContext.peek|peek(){}[0]
     abstract fun peekBackStack(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>? // com.slack.circuitx.navigation.intercepting/NavigationContext.peekBackStack|peekBackStack(){}[0]
+    abstract fun peekNavStack(): com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.runtime.screen/Screen>? // com.slack.circuitx.navigation.intercepting/NavigationContext.peekNavStack|peekNavStack(){}[0]
 }
 
 abstract interface com.slack.circuitx.navigation.intercepting/NavigationEventListener { // com.slack.circuitx.navigation.intercepting/NavigationEventListener|null[0]
+    open fun backward(com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.backward|backward(com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun forward(com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.forward|forward(com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     open fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     open fun onBackStackChanged(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.onBackStackChanged|onBackStackChanged(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun onNavStackChanged(com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.runtime.screen/Screen>?, com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.onNavStackChanged|onNavStackChanged(com.slack.circuit.runtime.navigation.NavStackList<com.slack.circuit.runtime.screen.Screen>?;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     open fun pop(com.slack.circuit.runtime.screen/PopResult?, com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.pop|pop(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     open fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions, com.slack.circuitx.navigation.intercepting/NavigationContext = ...) // com.slack.circuitx.navigation.intercepting/NavigationEventListener.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
 }
 
 abstract interface com.slack.circuitx.navigation.intercepting/NavigationInterceptor { // com.slack.circuitx.navigation.intercepting/NavigationInterceptor|null[0]
-    open fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedGoToResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
-    open fun pop(com.slack.circuit.runtime.screen/PopResult?, com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedPopResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.pop|pop(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
-    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions, com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun backward(com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.backward|backward(com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun forward(com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.forward|forward(com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun pop(com.slack.circuit.runtime.screen/PopResult?, com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.pop|pop(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    open fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions, com.slack.circuitx.navigation.intercepting/NavigationContext = ...): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
 
     final object Companion { // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion|null[0]
         final val Skipped // com.slack.circuitx.navigation.intercepting/NavigationInterceptor.Companion.Skipped|{}Skipped[0]
@@ -35,42 +41,7 @@ abstract interface com.slack.circuitx.navigation.intercepting/NavigationLogger {
     abstract fun log(kotlin/String) // com.slack.circuitx.navigation.intercepting/NavigationLogger.log|log(kotlin.String){}[0]
 }
 
-sealed interface com.slack.circuitx.navigation.intercepting/InterceptedGoToResult { // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult|null[0]
-    final class Rewrite : com.slack.circuitx.navigation.intercepting/InterceptedGoToResult { // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen) // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.<init>|<init>(com.slack.circuit.runtime.screen.Screen){}[0]
-
-        final val screen // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.screen|{}screen[0]
-            final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.screen.<get-screen>|<get-screen>(){}[0]
-
-        final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.component1|component1(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ...): com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.copy|copy(com.slack.circuit.runtime.screen.Screen){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // com.slack.circuitx.navigation.intercepting/InterceptedGoToResult.Rewrite.toString|toString(){}[0]
-    }
-}
-
-sealed interface com.slack.circuitx.navigation.intercepting/InterceptedPopResult // com.slack.circuitx.navigation.intercepting/InterceptedPopResult|null[0]
-
-sealed interface com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult { // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult|null[0]
-    final class Rewrite : com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult { // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite|null[0]
-        constructor <init>(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions) // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.<init>|<init>(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
-
-        final val screen // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.screen|{}screen[0]
-            final fun <get-screen>(): com.slack.circuit.runtime.screen/Screen // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.screen.<get-screen>|<get-screen>(){}[0]
-        final val stateOptions // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.stateOptions|{}stateOptions[0]
-            final fun <get-stateOptions>(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.stateOptions.<get-stateOptions>|<get-stateOptions>(){}[0]
-
-        final fun component1(): com.slack.circuit.runtime.screen/Screen // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.component1|component1(){}[0]
-        final fun component2(): com.slack.circuit.runtime/Navigator.StateOptions // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.component2|component2(){}[0]
-        final fun copy(com.slack.circuit.runtime.screen/Screen = ..., com.slack.circuit.runtime/Navigator.StateOptions = ...): com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.copy|copy(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult.Rewrite.toString|toString(){}[0]
-    }
-}
-
-sealed interface com.slack.circuitx.navigation.intercepting/InterceptedResult : com.slack.circuitx.navigation.intercepting/InterceptedGoToResult, com.slack.circuitx.navigation.intercepting/InterceptedPopResult, com.slack.circuitx.navigation.intercepting/InterceptedResetRootResult { // com.slack.circuitx.navigation.intercepting/InterceptedResult|null[0]
+sealed interface com.slack.circuitx.navigation.intercepting/InterceptedResult { // com.slack.circuitx.navigation.intercepting/InterceptedResult|null[0]
     final class Failure : com.slack.circuitx.navigation.intercepting/InterceptedResult { // com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure|null[0]
         constructor <init>(kotlin/Boolean, kotlin/Throwable? = ...) // com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure.<init>|<init>(kotlin.Boolean;kotlin.Throwable?){}[0]
 
@@ -87,6 +58,19 @@ sealed interface com.slack.circuitx.navigation.intercepting/InterceptedResult : 
         final fun toString(): kotlin/String // com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure.toString|toString(){}[0]
     }
 
+    final class Rewrite : com.slack.circuitx.navigation.intercepting/InterceptedResult { // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite|null[0]
+        constructor <init>(com.slack.circuit.foundation/NavEvent) // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.<init>|<init>(com.slack.circuit.foundation.NavEvent){}[0]
+
+        final val navEvent // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.navEvent|{}navEvent[0]
+            final fun <get-navEvent>(): com.slack.circuit.foundation/NavEvent // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.navEvent.<get-navEvent>|<get-navEvent>(){}[0]
+
+        final fun component1(): com.slack.circuit.foundation/NavEvent // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.component1|component1(){}[0]
+        final fun copy(com.slack.circuit.foundation/NavEvent = ...): com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.copy|copy(com.slack.circuit.foundation.NavEvent){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuitx.navigation.intercepting/InterceptedResult.Rewrite.toString|toString(){}[0]
+    }
+
     final class Success : com.slack.circuitx.navigation.intercepting/InterceptedResult { // com.slack.circuitx.navigation.intercepting/InterceptedResult.Success|null[0]
         constructor <init>(kotlin/Boolean) // com.slack.circuitx.navigation.intercepting/InterceptedResult.Success.<init>|<init>(kotlin.Boolean){}[0]
 
@@ -98,6 +82,10 @@ sealed interface com.slack.circuitx.navigation.intercepting/InterceptedResult : 
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navigation.intercepting/InterceptedResult.Success.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuitx.navigation.intercepting/InterceptedResult.Success.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuitx.navigation.intercepting/InterceptedResult.Success.toString|toString(){}[0]
+    }
+
+    final object Companion { // com.slack.circuitx.navigation.intercepting/InterceptedResult.Companion|null[0]
+        final fun Rewrite(com.slack.circuit.runtime.screen/Screen): com.slack.circuitx.navigation.intercepting/InterceptedResult // com.slack.circuitx.navigation.intercepting/InterceptedResult.Companion.Rewrite|Rewrite(com.slack.circuit.runtime.screen.Screen){}[0]
     }
 
     final object Skipped : com.slack.circuitx.navigation.intercepting/InterceptedResult { // com.slack.circuitx.navigation.intercepting/InterceptedResult.Skipped|null[0]
@@ -120,23 +108,31 @@ final class com.slack.circuitx.navigation.intercepting/InterceptingNavigator : c
     final fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen> // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions){}[0]
 
     abstract interface FailureNotifier { // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier|null[0]
-        abstract fun goToFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.goToFailure|goToFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
-        abstract fun popFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.popFailure|popFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
-        abstract fun rootResetFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.rootResetFailure|rootResetFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
+        open fun backwardFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.backwardFailure|backwardFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
+        open fun forwardFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.forwardFailure|forwardFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
+        open fun goToFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.goToFailure|goToFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
+        open fun popFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.popFailure|popFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
+        open fun rootResetFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier.rootResetFailure|rootResetFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
     }
 }
 
 final class com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener : com.slack.circuitx.navigation.intercepting/NavigationEventListener { // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener|null[0]
     constructor <init>(com.slack.circuitx.navigation.intercepting/NavigationLogger) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.<init>|<init>(com.slack.circuitx.navigation.intercepting.NavigationLogger){}[0]
 
+    final fun backward(com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.backward|backward(com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    final fun forward(com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.forward|forward(com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     final fun goTo(com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.goTo|goTo(com.slack.circuit.runtime.screen.Screen;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     final fun onBackStackChanged(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.onBackStackChanged|onBackStackChanged(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    final fun onNavStackChanged(com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.runtime.screen/Screen>?, com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.onNavStackChanged|onNavStackChanged(com.slack.circuit.runtime.navigation.NavStackList<com.slack.circuit.runtime.screen.Screen>?;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
     final fun pop(com.slack.circuit.runtime.screen/PopResult?, com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.pop|pop(com.slack.circuit.runtime.screen.PopResult?;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
+    final fun resetRoot(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime/Navigator.StateOptions, com.slack.circuitx.navigation.intercepting/NavigationContext) // com.slack.circuitx.navigation.intercepting/LoggingNavigationEventListener.resetRoot|resetRoot(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.Navigator.StateOptions;com.slack.circuitx.navigation.intercepting.NavigationContext){}[0]
 }
 
 final class com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier : com.slack.circuitx.navigation.intercepting/InterceptingNavigator.FailureNotifier { // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier|null[0]
     constructor <init>(com.slack.circuitx.navigation.intercepting/NavigationLogger) // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier.<init>|<init>(com.slack.circuitx.navigation.intercepting.NavigationLogger){}[0]
 
+    final fun backwardFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier.backwardFailure|backwardFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
+    final fun forwardFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier.forwardFailure|forwardFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
     final fun goToFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier.goToFailure|goToFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
     final fun popFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier.popFailure|popFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
     final fun rootResetFailure(com.slack.circuitx.navigation.intercepting/InterceptedResult.Failure) // com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNotifier.rootResetFailure|rootResetFailure(com.slack.circuitx.navigation.intercepting.InterceptedResult.Failure){}[0]
@@ -145,11 +141,11 @@ final class com.slack.circuitx.navigation.intercepting/LoggingNavigatorFailureNo
 final object com.slack.circuitx.navigation.intercepting/NoOpNavigationContext : com.slack.circuitx.navigation.intercepting/NavigationContext { // com.slack.circuitx.navigation.intercepting/NoOpNavigationContext|null[0]
     final fun peek(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuitx.navigation.intercepting/NoOpNavigationContext.peek|peek(){}[0]
     final fun peekBackStack(): kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>? // com.slack.circuitx.navigation.intercepting/NoOpNavigationContext.peekBackStack|peekBackStack(){}[0]
+    final fun peekNavStack(): com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.runtime.screen/Screen>? // com.slack.circuitx.navigation.intercepting/NoOpNavigationContext.peekNavStack|peekNavStack(){}[0]
 }
 
-final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedGoToResult_Rewrite$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedGoToResult_Rewrite$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptedGoToResult_Rewrite$stableprop[0]
-final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResetRootResult_Rewrite$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResetRootResult_Rewrite$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptedResetRootResult_Rewrite$stableprop[0]
 final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Failure$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Failure$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptedResult_Failure$stableprop[0]
+final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Rewrite$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Rewrite$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptedResult_Rewrite$stableprop[0]
 final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Skipped$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Skipped$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptedResult_Skipped$stableprop[0]
 final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Success$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Success$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptedResult_Success$stableprop[0]
 final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptingNavigator$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptingNavigator$stableprop|#static{}com_slack_circuitx_navigation_intercepting_InterceptingNavigator$stableprop[0]
@@ -157,9 +153,8 @@ final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigati
 final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_LoggingNavigatorFailureNotifier$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_LoggingNavigatorFailureNotifier$stableprop|#static{}com_slack_circuitx_navigation_intercepting_LoggingNavigatorFailureNotifier$stableprop[0]
 final val com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_NoOpNavigationContext$stableprop // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_NoOpNavigationContext$stableprop|#static{}com_slack_circuitx_navigation_intercepting_NoOpNavigationContext$stableprop[0]
 
-final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedGoToResult_Rewrite$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedGoToResult_Rewrite$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptedGoToResult_Rewrite$stableprop_getter(){}[0]
-final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResetRootResult_Rewrite$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResetRootResult_Rewrite$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptedResetRootResult_Rewrite$stableprop_getter(){}[0]
 final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Failure$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Failure$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptedResult_Failure$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Rewrite$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Rewrite$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptedResult_Rewrite$stableprop_getter(){}[0]
 final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Skipped$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Skipped$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptedResult_Skipped$stableprop_getter(){}[0]
 final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Success$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptedResult_Success$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptedResult_Success$stableprop_getter(){}[0]
 final fun com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptingNavigator$stableprop_getter(): kotlin/Int // com.slack.circuitx.navigation.intercepting/com_slack_circuitx_navigation_intercepting_InterceptingNavigator$stableprop_getter|com_slack_circuitx_navigation_intercepting_InterceptingNavigator$stableprop_getter(){}[0]

@@ -4,6 +4,7 @@ package com.slack.circuitx.navigation.intercepting
 
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
@@ -15,6 +16,7 @@ public interface NavigationEventListener {
    * following operation that mutates the back stack.
    *
    * @param backStack The state of the back stack after the change.
+   * @param navigationContext The navigation context after the change.
    */
   public fun onBackStackChanged(
     backStack: List<Screen>,
@@ -22,22 +24,35 @@ public interface NavigationEventListener {
   ) {}
 
   /**
-   * Called when the [InterceptingNavigator] goes to the [screen].
+   * Called when a nav stack has changed. Will be called with the initial state and any other
+   * following operation that mutates the back stack.
+   *
+   * @param navStack The state of the nav stack after the change.
+   * @param navigationContext The navigation context after the change.
+   */
+  public fun onNavStackChanged(
+    navStack: NavStackList<Screen>?,
+    navigationContext: NavigationContext = NoOpNavigationContext,
+  ) {}
+
+  /**
+   * Called before the [InterceptingNavigator] goes to the [screen].
    *
    * This is not called if navigation was intercepted.
    *
    * @param screen The screen that was navigated to.
+   * @param navigationContext The navigation context before the operation was called.
    * @see InterceptingNavigator.goTo
    */
   public fun goTo(screen: Screen, navigationContext: NavigationContext = NoOpNavigationContext) {}
 
   /**
-   * Called when the [InterceptingNavigator] pops the back stack.
+   * Called before the [InterceptingNavigator] pops the back stack.
    *
    * This is not called if navigation was intercepted.
    *
-   * @param peekBackStack The state of the back stack before the pop operation.
    * @param result The optional pop result passed to [Navigator.pop].
+   * @param navigationContext The navigation context before the operation was called.
    * @see InterceptingNavigator.pop
    */
   public fun pop(
@@ -46,13 +61,33 @@ public interface NavigationEventListener {
   ) {}
 
   /**
-   * Called when the [InterceptingNavigator] resets the back stack to [newRoot].
+   * Called before the [InterceptingNavigator] moves forward in navigation history.
    *
    * This is not called if navigation was intercepted.
    *
-   * @param peekBackStack The state of the back stack before the [resetRoot] operation.
+   * @param navigationContext The navigation context before the operation was called.
+   * @see InterceptingNavigator.forward
+   */
+  public fun forward(navigationContext: NavigationContext = NoOpNavigationContext) {}
+
+  /**
+   * Called before the [InterceptingNavigator] moves backward in navigation history.
+   *
+   * This is not called if navigation was intercepted.
+   *
+   * @param navigationContext The navigation context before the operation was called.
+   * @see InterceptingNavigator.backward
+   */
+  public fun backward(navigationContext: NavigationContext = NoOpNavigationContext) {}
+
+  /**
+   * Called before the [InterceptingNavigator] resets the back stack to [newRoot].
+   *
+   * This is not called if navigation was intercepted.
+   *
    * @param newRoot The new root screen that replaces the entire back stack.
    * @param options State options to apply when resetting the root.
+   * @param navigationContext The navigation context before the operation was called.
    * @see InterceptingNavigator.resetRoot
    */
   public fun resetRoot(

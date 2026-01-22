@@ -19,4 +19,12 @@ public class LoggingNavigatorFailureNotifier(private val logger: NavigationLogge
   override fun rootResetFailure(interceptedResult: InterceptedResult.Failure) {
     logger.log("rootResetFailure: $interceptedResult")
   }
+
+  override fun forwardFailure(interceptedResult: InterceptedResult.Failure) {
+    logger.log("forwardFailure: $interceptedResult")
+  }
+
+  override fun backwardFailure(interceptedResult: InterceptedResult.Failure) {
+    logger.log("backwardFailure: $interceptedResult")
+  }
 }

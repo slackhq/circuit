@@ -20,7 +20,6 @@ import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 fun main() {
 
   val tabs = TabScreen.all
-  val circuit = buildCircuitForTabs(tabs)
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {
       MaterialTheme {
@@ -28,9 +27,23 @@ fun main() {
         val navigator = rememberCircuitNavigator(navStack) { exitApplication() }
         // CircuitX Navigation
         val uriHandler = LocalUriHandler.current
-        val interceptors = remember { listOf(InfoScreenInterceptor(uriHandler)) }
+        val interceptors = remember {
+          listOf(SlideOverNavigationInterceptor(), InfoScreenInterceptor(uriHandler))
+        }
         val interceptingNavigator =
           rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
+        val circuit =
+          remember(navigator) {
+            buildCircuitForTabs(tabs)
+              .newBuilder()
+              .setAnimatedNavDecoratorFactory(
+                SlideOverNavDecoratorFactory(
+                  onBackInvoked = { interceptingNavigator.pop() },
+                  onForwardInvoked = { interceptingNavigator.forward() },
+                )
+              )
+              .build()
+          }
         CircuitCompositionLocals(circuit) {
           SharedElementTransitionLayout {
             ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())

@@ -13,7 +13,6 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
@@ -30,7 +29,7 @@ import platform.UIKit.UIViewController
 @Suppress("Unused") // Called from Swift
 fun MainViewController(): UIViewController {
   // CircuitX Navigation
-  val interceptors = listOf(InfoScreenRewriteInterceptor)
+  val interceptors = listOf(SlideOverNavigationInterceptor(), InfoScreenRewriteInterceptor)
   val eventListeners = listOf(LoggingNavigationEventListener(Logger))
   val notifier = LoggingNavigatorFailureNotifier(Logger)
 
@@ -52,7 +51,10 @@ fun MainViewController(): UIViewController {
           buildCircuitForTabs(tabs)
             .newBuilder()
             .setAnimatedNavDecoratorFactory(
-              GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() })
+              SlideOverNavDecoratorFactory(
+                onBackInvoked = { interceptingNavigator.pop() },
+                onForwardInvoked = { interceptingNavigator.forward() },
+              )
             )
             .build()
         }

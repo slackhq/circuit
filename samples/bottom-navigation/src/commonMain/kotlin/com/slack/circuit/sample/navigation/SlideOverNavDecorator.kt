@@ -5,6 +5,7 @@ package com.slack.circuit.sample.navigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
@@ -25,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -39,6 +39,7 @@ import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 /**
  * Factory that creates a [SlideOverNavDecorator] for iOS-style slide-over navigation.
@@ -113,8 +114,8 @@ class SlideOverNavDecorator<T : NavArgument>(
   private var swipeProgress: Float by mutableFloatStateOf(0f)
   private var swipeOffset: Offset by mutableStateOf(Offset.Zero)
 
-  // Direction of current gesture: true = backward, false = forward
-  private var isBackwardGesture: Boolean by mutableStateOf(true)
+  // Direction of current gesture
+  private var direction: GestureDirection by mutableStateOf(GestureDirection.Backward)
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -166,7 +167,12 @@ class SlideOverNavDecorator<T : NavArgument>(
     // Handle backward gesture seeking
     LaunchedEffect(current.previous, current) {
       current.previous?.let { previous ->
-        snapshotFlow { if (isBackwardGesture) swipeProgress else 0f }
+        snapshotFlow {
+            when (direction) {
+              GestureDirection.Backward -> swipeProgress
+              GestureDirection.Forward -> 0f
+            }
+          }
           .collect { progress ->
             if (progress != 0f) {
               isSeeking = true
@@ -179,7 +185,12 @@ class SlideOverNavDecorator<T : NavArgument>(
     // Handle forward gesture seeking
     LaunchedEffect(current.next, current) {
       current.next?.let { next ->
-        snapshotFlow { if (!isBackwardGesture) swipeProgress else 0f }
+        snapshotFlow {
+            when (direction) {
+              GestureDirection.Backward -> 0f
+              GestureDirection.Forward -> swipeProgress
+            }
+          }
           .collect { progress ->
             if (progress != 0f) {
               isSeeking = true
@@ -193,10 +204,12 @@ class SlideOverNavDecorator<T : NavArgument>(
     PredictiveBackEventHandler(
       isEnabled = current.previous != null,
       onBackProgress = { progress, offset ->
-        isBackwardGesture = true
+        direction = GestureDirection.Backward
+        showNext = false
         showPrevious = progress != 0f
-        swipeProgress = progress
+        swipeProgress = abs(progress)
         swipeOffset = offset
+        println("Backward progress: $progress, offset: $offset")
       },
       onBackCancelled = {
         isSeeking = false
@@ -217,19 +230,32 @@ class SlideOverNavDecorator<T : NavArgument>(
       // During gesture (showNext), use ExitTransition.None since gesture handles translation.
       AnimatedNavEvent.Forward,
       AnimatedNavEvent.GoTo -> {
-        val exitTransition =
-          if (showNext) ExitTransition.None
-          else slideOutHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
-        slideInHorizontally { it }.togetherWith(exitTransition)
+        val enterTransition =
+          if (isSeeking) {
+            EnterTransition.None
+          } else {
+            slideInHorizontally { it }
+          }
+        val exitTransition = slideOutHorizontally { width ->
+          -(enterOffsetFraction * width).roundToInt()
+        }
+        enterTransition.togetherWith(exitTransition)
       }
       // Backward (Pop, Backward event): Previous screen slides in from partial left offset,
       // current screen slides out to the right (full width).
       // During gesture (showPrevious), use ExitTransition.None since gesture handles translation.
       AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
-        slideInHorizontally { width -> -(enterOffsetFraction * width).roundToInt() }
-          .togetherWith(if (showPrevious) ExitTransition.None else slideOutHorizontally { it })
-          .apply { targetContentZIndex = --zIndexDepth }
+        val enterTransition = slideInHorizontally { width ->
+          -(enterOffsetFraction * width).roundToInt()
+        }
+        val exitTransition =
+          if (showPrevious) {
+            ExitTransition.None
+          } else {
+            slideOutHorizontally { it }
+          }
+        enterTransition.togetherWith(exitTransition).apply { targetContentZIndex = --zIndexDepth }
       }
       // RootReset: Crossfade
       AnimatedNavEvent.RootReset -> {
@@ -245,29 +271,34 @@ class SlideOverNavDecorator<T : NavArgument>(
     innerContent: @Composable (T) -> Unit,
   ) {
     val scope = rememberCoroutineScope()
-    val direction = if (isBackwardGesture) GestureDirection.Backward else GestureDirection.Forward
     Box(
       modifier =
         Modifier.forwardEdgeSwipe(
-          enabled = targetState.next != null,
-          onProgress = { progress, offset ->
-            isBackwardGesture = false
-            showNext = progress != 0f
-            swipeProgress = progress
-            swipeOffset = offset
-          },
-          onCompleted = { onForwardInvoked() },
-          onCancelled = {
-            isSeeking = false
-            scope.launch { seekableTransitionState.animateTo(targetState) }
-          },
-        )
+            enabled = targetState.next != null,
+            onProgress = { progress, offset ->
+              direction = GestureDirection.Forward
+              showPrevious = false
+              showNext = progress != 0f
+              swipeProgress = progress
+              swipeOffset = offset
+              println("Forward progress: $progress, offset: $offset")
+            },
+            onCompleted = { onForwardInvoked() },
+            onCancelled = {
+              isSeeking = false
+              scope.launch { seekableTransitionState.animateTo(targetState) }
+            },
+          )
           .gestureTranslation(
-            targetState = targetState,
             transition = transition,
             direction = direction,
             isSeeking = { isSeeking },
-            isGestureActive = { if (isBackwardGesture) showPrevious else showNext },
+            isGestureActive = {
+              when (direction) {
+                GestureDirection.Backward -> showPrevious
+                GestureDirection.Forward -> showNext
+              }
+            },
             swipeOffset = { swipeOffset },
             scrimColor = scrimColor,
           )

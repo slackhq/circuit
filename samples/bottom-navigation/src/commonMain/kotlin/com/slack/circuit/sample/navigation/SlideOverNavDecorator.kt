@@ -29,6 +29,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import com.slack.circuit.foundation.ProvideRecordLifecycle
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
@@ -209,7 +210,6 @@ class SlideOverNavDecorator<T : NavArgument>(
         showPrevious = progress != 0f
         swipeProgress = abs(progress)
         swipeOffset = offset
-        println("Backward progress: $progress, offset: $offset")
       },
       onBackCancelled = {
         isSeeking = false
@@ -271,17 +271,17 @@ class SlideOverNavDecorator<T : NavArgument>(
     innerContent: @Composable (T) -> Unit,
   ) {
     val scope = rememberCoroutineScope()
+    val canGoForward = targetState.navStack.forwardItems.any()
     Box(
       modifier =
         Modifier.forwardEdgeSwipe(
-            enabled = targetState.next != null,
+            enabled = canGoForward,
             onProgress = { progress, offset ->
               direction = GestureDirection.Forward
               showPrevious = false
               showNext = progress != 0f
               swipeProgress = progress
               swipeOffset = offset
-              println("Forward progress: $progress, offset: $offset")
             },
             onCompleted = { onForwardInvoked() },
             onCancelled = {
@@ -303,7 +303,8 @@ class SlideOverNavDecorator<T : NavArgument>(
             scrimColor = scrimColor,
           )
     ) {
-      innerContent(targetState.navStack.active)
+      // Record is active if it is in the animation
+      ProvideRecordLifecycle(true) { innerContent(targetState.navStack.active) }
     }
   }
 }

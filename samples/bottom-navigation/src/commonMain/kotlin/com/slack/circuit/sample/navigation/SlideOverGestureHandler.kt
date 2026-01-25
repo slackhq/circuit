@@ -222,7 +222,7 @@ private class GestureTranslationNode(
   private var maxWidth = 0f
 
   private var layerBlock: GraphicsLayerScope.() -> Unit = {
-    // Apply translation only to the exiting screen
+    // Apply translation only to the active screen
     val isActive = isGestureActive()
     val enabled =
       when (direction) {
@@ -252,20 +252,18 @@ private class GestureTranslationNode(
 
   override fun ContentDrawScope.draw() {
     drawContent()
-
     // Only draw scrim if scrimColor is provided
     val color = scrimColor ?: return
-
+    // Apply translation only to the active screen
+    val isActive = isGestureActive()
     // Determine if we should show scrim based on direction and transition state
     val shouldShowScrim =
       when (direction) {
-        // Backward: scrim on entering screen (Visible) - gets lighter as revealed
         GestureDirection.Backward -> transition.targetState == EnterExitState.Visible
-        // Forward: scrim on exiting screen (PostExit) - gets darker as covered
         GestureDirection.Forward -> transition.targetState == EnterExitState.PostExit
       }
 
-    if (shouldShowScrim && scrimAnimatable.value > 0f) {
+    if (isActive && shouldShowScrim && scrimAnimatable.value > 0f) {
       val alpha =
         when (direction) {
           // Backward: scrim fades out as screen is revealed (darker when covered)
@@ -333,15 +331,16 @@ private class GestureTranslationNode(
               seeking && maxWidth > 0f -> {
                 val seekingTarget = (abs(offset.x) / maxWidth).coerceIn(0f, 1f)
                 when (direction) {
-                  GestureDirection.Backward -> {
-                    seekingTarget
-                  }
-                  GestureDirection.Forward -> {
-                    1f - seekingTarget
-                  }
+                  GestureDirection.Backward -> seekingTarget
+                  GestureDirection.Forward -> 1f - seekingTarget
                 }
               }
-              gestureActive -> 1f
+              gestureActive -> {
+                when (direction) {
+                  GestureDirection.Backward -> 0f
+                  GestureDirection.Forward -> 1f
+                }
+              }
               else -> 0f
             }
 

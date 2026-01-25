@@ -38,7 +38,11 @@ public val LocalRecordLifecycle: ProvidableCompositionLocal<RecordLifecycle> =
     staticRecordLifecycle(true)
   }
 
-private fun staticRecordLifecycle(isActive: Boolean): RecordLifecycle =
+public fun staticRecordLifecycle(isActive: Boolean): RecordLifecycle =
   object : RecordLifecycle {
     override val isActive: Boolean = isActive
   }
+
+internal object UnsetRecordLifecycle : RecordLifecycle {
+  override val isActive: Boolean = false
+}

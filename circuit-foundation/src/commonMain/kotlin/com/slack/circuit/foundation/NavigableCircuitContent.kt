@@ -270,7 +270,10 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
-  CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+  CompositionLocalProvider(
+    LocalRetainedStateRegistry provides outerRegistry,
+    LocalRecordLifecycle provides UnsetRecordLifecycle, // Set a no-op to allow decoration to modify
+  ) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
     val contentProviderState =
@@ -478,13 +481,12 @@ public class ContentProviderState<R : Record>(
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
-      val lifecycle = remember { MutableRecordLifecycle() }
-      SideEffect { lifecycle.isActive = lastNavigator.navStack.currentRecord == record }
+      val recordLifecycle = recordLifecycle(contentProviderState, record)
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
         retainedStateHolder.RetainedStateProvider(record.registryKey) {
-          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+          CompositionLocalProvider(LocalRecordLifecycle provides recordLifecycle) {
             CircuitContent(
               screen = record.screen,
               navigator = lastNavigator,
@@ -511,6 +513,23 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
       onDispose { onDispose() }
     }
   }
+
+@Composable
+@OptIn(ExperimentalCircuitApi::class)
+private fun <R : Record> recordLifecycle(
+  contentProviderState: ContentProviderState<R>,
+  record: R,
+): RecordLifecycle {
+  val outerLifecycle = LocalRecordLifecycle.current.takeUnless { it === UnsetRecordLifecycle }
+  return if (outerLifecycle != null) {
+    outerLifecycle
+  } else {
+    val recordLifecycle = remember { MutableRecordLifecycle() }
+    val currentRecord = contentProviderState.lastNavigator.navStack.currentRecord
+    SideEffect { recordLifecycle.isActive = currentRecord == record }
+    recordLifecycle
+  }
+}
 
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36

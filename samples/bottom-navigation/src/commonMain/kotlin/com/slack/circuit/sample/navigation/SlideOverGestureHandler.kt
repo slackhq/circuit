@@ -4,6 +4,7 @@ package com.slack.circuit.sample.navigation
 
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.Transition
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -22,7 +23,6 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.LayoutModifierNode
@@ -57,61 +57,59 @@ internal fun Modifier.forwardEdgeSwipe(
   onCancelled: () -> Unit,
 ): Modifier {
   if (!enabled) return this
-  return this
-    .pointerInput(enabled) {
-      awaitEachGesture {
-        // Wait for first down, only if not consumed by children
-        val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Final)
+  return this.pointerInput(enabled) {
+    awaitEachGesture {
+      // Wait for first down, only if not consumed by children
+      val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Final)
 
-        var totalDragX = 0f
-        var dragStarted = false
+      var totalDragX = 0f
+      var dragStarted = false
 
-        // Wait for horizontal touch slop - only claim leftward drags
-        val drag =
-          awaitHorizontalTouchSlopOrCancellation(down.id) { change, overSlop ->
-            // Only claim leftward (negative) drags that aren't consumed
-            if (overSlop < 0 && !change.isConsumed) {
-              totalDragX = overSlop
-              dragStarted = true
-              change.consume()
-            }
+      // Wait for horizontal touch slop - only claim leftward drags
+      val drag =
+        awaitHorizontalTouchSlopOrCancellation(down.id) { change, overSlop ->
+          // Only claim leftward (negative) drags that aren't consumed
+          if (overSlop < 0 && !change.isConsumed) {
+            totalDragX = overSlop
+            dragStarted = true
+            change.consume()
+          }
+        }
+
+      if (drag != null && dragStarted) {
+        val width = size.width.toFloat()
+        // Clamp to bounds: can't drag past 0 (right) or -width (full left)
+        totalDragX = totalDragX.coerceIn(-width, 0f)
+
+        // Report initial progress
+        val initialProgress = if (width > 0f) (abs(totalDragX) / width).coerceIn(0f, 1f) else 0f
+        onProgress(initialProgress, Offset(totalDragX, 0f))
+
+        // Track the horizontal drag
+        val dragSuccess =
+          horizontalDrag(drag.id) { change ->
+            val delta = change.positionChange().x
+            // Clamp to bounds: can't drag past 0 (right) or -width (full left)
+            totalDragX = (totalDragX + delta).coerceIn(-width, 0f)
+            change.consume()
+            // Update progress
+            val rawProgress = if (width > 0f) (abs(totalDragX) / width).coerceIn(0f, 1f) else 0f
+            val progress = EaseIn.transform(rawProgress)
+            val offset = (width + totalDragX).coerceIn(0f, width)
+            onProgress(progress, Offset(offset, 0f))
           }
 
-        if (drag != null && dragStarted) {
-          val width = size.width.toFloat()
-          // Clamp to bounds: can't drag past 0 (right) or -width (full left)
-          totalDragX = totalDragX.coerceIn(-width, 0f)
+        // Calculate final progress
+        val finalProgress = if (width > 0f) (abs(totalDragX) / width).coerceIn(0f, 1f) else 0f
 
-          // Report initial progress
-          val initialProgress = if (width > 0f) (abs(totalDragX) / width).coerceIn(0f, 1f) else 0f
-          onProgress(initialProgress, Offset(totalDragX, 0f))
-
-          // Track the horizontal drag
-          val dragSuccess =
-            horizontalDrag(drag.id) { change ->
-              val delta = change.positionChange().x
-              // Clamp to bounds: can't drag past 0 (right) or -width (full left)
-              totalDragX = (totalDragX + delta * FORWARD_DELTA_COEFFICIENT).coerceIn(-width, 0f)
-              change.consume()
-              // Update progress
-              val progress = if (width > 0f) (abs(totalDragX) / width).coerceIn(0f, 1f) else 0f
-              onProgress(progress, Offset(totalDragX, 0f))
-            }
-
-          // Calculate final progress
-          val finalProgress = if (width > 0f) (abs(totalDragX) / width).coerceIn(0f, 1f) else 0f
-
-          if (dragSuccess && finalProgress >= completionThreshold) {
-            onCompleted()
-          } else {
-            onCancelled()
-          }
-
-          // Reset progress
-          onProgress(0f, Offset.Zero)
+        if (dragSuccess && finalProgress >= completionThreshold) {
+          onCompleted()
+        } else {
+          onCancelled()
         }
       }
     }
+  }
 }
 
 /** Direction of the gesture-driven navigation. */
@@ -132,7 +130,6 @@ enum class GestureDirection {
  * - **Forward**: Translates the exiting screen to the left (negative X), applies scrim to the
  *   exiting screen that gets darker as it's covered
  *
- * @param targetState The current navigation state
  * @param transition The enter/exit transition
  * @param direction The direction of the gesture (backward or forward)
  * @param isSeeking Lambda that returns true if the user is currently seeking/swiping
@@ -141,7 +138,6 @@ enum class GestureDirection {
  * @param scrimColor The color to use for the scrim overlay, or null to disable scrim
  */
 internal fun Modifier.gestureTranslation(
-  targetState: SlideOverTransitionState<*>,
   transition: Transition<EnterExitState>,
   direction: GestureDirection,
   isSeeking: () -> Boolean,
@@ -150,18 +146,16 @@ internal fun Modifier.gestureTranslation(
   scrimColor: Color? = Color.Black.copy(alpha = SCRIM_MAX_ALPHA),
 ): Modifier =
   this then
-          GestureTranslationElement(
-            targetState = targetState,
-            transition = transition,
-            direction = direction,
-            isSeeking = isSeeking,
-            isGestureActive = isGestureActive,
-            swipeOffset = swipeOffset,
-            scrimColor = scrimColor,
-          )
+    GestureTranslationElement(
+      transition = transition,
+      direction = direction,
+      isSeeking = isSeeking,
+      isGestureActive = isGestureActive,
+      swipeOffset = swipeOffset,
+      scrimColor = scrimColor,
+    )
 
 private data class GestureTranslationElement(
-  val targetState: SlideOverTransitionState<*>,
   val transition: Transition<EnterExitState>,
   val direction: GestureDirection,
   val isSeeking: () -> Boolean,
@@ -172,7 +166,6 @@ private data class GestureTranslationElement(
 
   override fun create(): GestureTranslationNode =
     GestureTranslationNode(
-      targetState = targetState,
       transition = transition,
       direction = direction,
       isSeeking = isSeeking,
@@ -183,7 +176,6 @@ private data class GestureTranslationElement(
 
   override fun update(node: GestureTranslationNode) {
     node.update(
-      targetState = targetState,
       transition = transition,
       direction = direction,
       isSeeking = isSeeking,
@@ -217,7 +209,6 @@ private data class GestureTranslationElement(
  * @property scrimColor The color to use for the scrim overlay, or null to disable scrim.
  */
 private class GestureTranslationNode(
-  private var targetState: SlideOverTransitionState<*>,
   private var transition: Transition<EnterExitState>,
   private var direction: GestureDirection,
   private var isSeeking: () -> Boolean,
@@ -232,9 +223,18 @@ private class GestureTranslationNode(
 
   private var layerBlock: GraphicsLayerScope.() -> Unit = {
     // Apply translation only to the exiting screen
-    if (transition.targetState == EnterExitState.PostExit) {
-      translationX = animatable.value
-    }
+    val isActive = isGestureActive()
+    val enabled =
+      when (direction) {
+        GestureDirection.Backward -> transition.targetState == EnterExitState.PostExit
+        GestureDirection.Forward -> transition.targetState == EnterExitState.Visible
+      }
+    translationX =
+      if (isActive && enabled) {
+        animatable.value
+      } else {
+        0f
+      }
   }
 
   override val shouldAutoInvalidate: Boolean = false
@@ -281,32 +281,31 @@ private class GestureTranslationNode(
   }
 
   override fun onAttach() {
-    // Handle translation animation for exiting screen
+    // Handle translation animation
     coroutineScope.launch {
       animatable.snapTo(0f)
       snapshotFlow {
-        val offset = swipeOffset()
-        val seeking = isSeeking()
-        val gestureActive = isGestureActive()
+          val offset = swipeOffset()
+          val seeking = isSeeking()
+          val gestureActive = isGestureActive()
 
-        // Calculate target translation
-        val target =
-          when {
-            !offset.isValid() -> 0f
-            seeking -> offset.x
-            gestureActive ->
-              when (direction) {
-                GestureDirection.Backward -> maxWidth
-                GestureDirection.Forward -> -maxWidth
-              }
+          // Calculate target translation
+          val target =
+            when {
+              !offset.isValid() -> 0f
+              seeking -> offset.x
+              gestureActive ->
+                when (direction) {
+                  GestureDirection.Backward -> maxWidth
+                  GestureDirection.Forward -> 0f
+                }
+              else -> 0f
+            }
 
-            else -> 0f
-          }
-
-        // Return pair of (target, shouldSnap)
-        // Snap during seeking for immediate response, animate when gesture ends
-        target to seeking
-      }
+          // Return pair of (target, shouldSnap)
+          // Snap during seeking for immediate response, animate when gesture ends
+          target to seeking
+        }
         .collectLatest { (target, shouldSnap) ->
           if (shouldSnap) {
             // During seeking, snap to follow finger directly (no animation lag)
@@ -322,24 +321,34 @@ private class GestureTranslationNode(
     coroutineScope.launch {
       scrimAnimatable.snapTo(0f)
       snapshotFlow {
-        val offset = swipeOffset()
-        val seeking = isSeeking()
-        val gestureActive = isGestureActive()
+          val offset = swipeOffset()
+          val seeking = isSeeking()
+          val gestureActive = isGestureActive()
 
-        // Calculate target progress
-        val target =
-          when {
-            !offset.isValid() -> 0f
-            // Progress is based on how far we've swiped relative to max width
-            seeking && maxWidth > 0f -> (abs(offset.x) / maxWidth).coerceIn(0f, 1f)
-            gestureActive -> 1f
-            else -> 0f
-          }
+          // Calculate target progress
+          val target =
+            when {
+              !offset.isValid() -> 0f
+              // Progress is based on how far we've swiped relative to max width
+              seeking && maxWidth > 0f -> {
+                val seekingTarget = (abs(offset.x) / maxWidth).coerceIn(0f, 1f)
+                when (direction) {
+                  GestureDirection.Backward -> {
+                    seekingTarget
+                  }
+                  GestureDirection.Forward -> {
+                    1f - seekingTarget
+                  }
+                }
+              }
+              gestureActive -> 1f
+              else -> 0f
+            }
 
-        // Return pair of (target, shouldSnap)
-        // Snap during seeking and when resetting to 0
-        target to (seeking || target == 0f)
-      }
+          // Return pair of (target, shouldSnap)
+          // Snap during seeking and when resetting to 0
+          target to (seeking || target == 0f)
+        }
         .collectLatest { (target, shouldSnap) ->
           if (shouldSnap) {
             // During seeking or when resetting, snap immediately
@@ -358,7 +367,6 @@ private class GestureTranslationNode(
   }
 
   fun update(
-    targetState: SlideOverTransitionState<*>,
     transition: Transition<EnterExitState>,
     direction: GestureDirection,
     isSeeking: () -> Boolean,
@@ -366,7 +374,6 @@ private class GestureTranslationNode(
     swipeOffset: () -> Offset,
     scrimColor: Color?,
   ) {
-    this.targetState = targetState
     this.transition = transition
     this.direction = direction
     this.isSeeking = isSeeking
@@ -383,8 +390,3 @@ private const val SCRIM_MAX_ALPHA = 0.32f
 
 /** Default threshold for completing the forward gesture (0.5 = 50% of screen width) */
 private const val DEFAULT_COMPLETION_THRESHOLD = 0.5f
-
-/**
- * Coefficient applied when calculating the delta for forward navigation animations.
- */
-private const val FORWARD_DELTA_COEFFICIENT = 0.8f

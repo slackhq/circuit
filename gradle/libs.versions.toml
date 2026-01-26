@@ -6,7 +6,7 @@ androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-compose = "1.10.1"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.2"
-atomicfu = "0.30.0"
+atomicfu = "0.31.0"
 benchmark = "1.4.1"
 coil = "3.3.0"
 compose-runtime = "1.10.1" # Keep in sync with the androidx version used by jb-compose
@@ -40,7 +40,7 @@ okhttp = "5.3.2"
 okio = "3.16.4"
 picnic = "0.7.0"
 robolectric = "4.16.1"
-roborazzi = "1.56.0"
+roborazzi = "1.57.0"
 spotless = "8.0.0"
 sqldelight = "2.2.1"
 telephoto = "0.18.0"
@@ -58,7 +58,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "1.2.0" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "1.2.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -69,7 +69,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.10.0" }
+metro = { id = "dev.zacsweers.metro", version = "0.10.1" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-kotlin-2.3.20-Beta1" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

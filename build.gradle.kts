@@ -300,25 +300,20 @@ subprojects {
             it.substringBeforeLast(":")
           }
         }
-      } else if (project.path == ":circuitx:android") {
-        // Android-only project
+      } else {
         configuration("releaseRuntimeClasspath") {
           baselineMap = {
             // Remove the version
             it.substringBeforeLast(":")
           }
         }
-      } else {
-        configuration("androidReleaseRuntimeClasspath") {
-          baselineMap = {
-            // Remove the version
-            it.substringBeforeLast(":")
-          }
-        }
-        configuration("jvmRuntimeClasspath") {
-          baselineMap = {
-            // Remove the version
-            it.substringBeforeLast(":")
+        if (project.path != ":circuitx:android") {
+          // Android-only project
+          configuration("jvmRuntimeClasspath") {
+            baselineMap = {
+              // Remove the version
+              it.substringBeforeLast(":")
+            }
           }
         }
       }

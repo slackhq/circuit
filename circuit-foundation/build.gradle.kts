@@ -20,6 +20,8 @@ kotlin {
   iosX64()
   iosArm64()
   iosSimulatorArm64()
+  linuxArm64()
+  linuxX64()
   macosX64()
   macosArm64()
   js(IR) {

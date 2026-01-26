@@ -15,10 +15,8 @@ kotlin {
   // region KMP Targets
   androidTarget()
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
-  macosX64()
   macosArm64()
   js(IR) {
     outputModuleName = "internal-test-utils"

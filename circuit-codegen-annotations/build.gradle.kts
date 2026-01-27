@@ -28,8 +28,7 @@ kotlin {
   macosArm64()
   linuxArm64()
   linuxX64()
-  // TODO https://github.com/amzn/kotlin-inject-anvil/pull/124
-  //  mingwX64()
+  mingwX64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()

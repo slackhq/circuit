@@ -66,6 +66,7 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core
 org.jetbrains.kotlinx:kotlinx-serialization-bom
 org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
 org.jetbrains.kotlinx:kotlinx-serialization-core
+org.jetbrains.runtime:jbr-api
 org.jetbrains.skiko:skiko-awt
 org.jetbrains.skiko:skiko
 org.jetbrains:annotations

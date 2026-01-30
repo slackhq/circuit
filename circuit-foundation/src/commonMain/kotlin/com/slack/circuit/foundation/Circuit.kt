@@ -106,6 +106,13 @@ public class Circuit private constructor(builder: Builder) {
    */
   public val presentWithLifecycle: Boolean = builder.presentWithLifecycle
 
+  /**
+   * If enabled, `NavigationEventHandler` use in Circuit will be disabled when no
+   * `NavigationEventDispatcherOwner` is present.
+   */
+  public val lenientNavigationEventDispatcherOwner: Boolean =
+    builder.lenientNavigationEventDispatcherOwner
+
   public val navStackLocalProviders: List<NavStackRecordLocalProvider<NavStack.Record>> =
     builder.navStackLocalProviders.toList()
 
@@ -188,6 +195,9 @@ public class Circuit private constructor(builder: Builder) {
     public var presentWithLifecycle: Boolean = true
       private set
 
+    public var lenientNavigationEventDispatcherOwner: Boolean = true
+      private set
+
     public val navStackLocalProviders: MutableList<NavStackRecordLocalProvider<NavStack.Record>> =
       mutableListOf(ViewModelNavStackRecordLocalProvider)
 
@@ -198,6 +208,8 @@ public class Circuit private constructor(builder: Builder) {
       animatedScreenTransforms.putAll(circuit.animatedScreenTransforms)
       animatedNavDecoratorFactory = circuit.animatedNavDecoratorFactory
       eventListenerFactory = circuit.eventListenerFactory
+      presentWithLifecycle = circuit.presentWithLifecycle
+      lenientNavigationEventDispatcherOwner = circuit.lenientNavigationEventDispatcherOwner
       navStackLocalProviders.clear()
       navStackLocalProviders.addAll(circuit.navStackLocalProviders)
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
@@ -343,6 +355,10 @@ public class Circuit private constructor(builder: Builder) {
 
     public fun presentWithLifecycle(enable: Boolean = true): Builder = apply {
       presentWithLifecycle = enable
+    }
+
+    public fun lenientNavigationEventDispatcherOwner(lenient: Boolean = true): Builder = apply {
+      lenientNavigationEventDispatcherOwner = lenient
     }
 
     public fun build(): Circuit {

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventDispatcher
+import androidx.navigationevent.NavigationEventDispatcherOwner
 import androidx.navigationevent.NavigationEventHandler
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
@@ -24,12 +25,15 @@ import kotlinx.coroutines.launch
 @InternalCircuitApi
 @Composable
 public fun PredictiveBackEventHandler(
-  isEnabled: Boolean = true,
   onBackProgress: suspend (Float, Offset) -> Unit,
   onBackCancelled: suspend () -> Unit,
   onBackCompleted: suspend () -> Unit,
+  isEnabled: Boolean = true,
 ) {
-  val dispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher ?: return
+  if (!shouldEnableNavEventHandler()) {
+    return
+  }
+  val dispatcher = requireNavigationEventDispatcherOwner().navigationEventDispatcher
   val scope = rememberStableCoroutineScope()
   val handler = remember(dispatcher) { PredictiveBackEventHandler(isEnabled, scope, dispatcher) }
   SideEffect {
@@ -39,6 +43,13 @@ public fun PredictiveBackEventHandler(
       onCancelled = onBackCancelled
       onCompleted = onBackCompleted
     }
+  }
+}
+
+@Composable
+private fun requireNavigationEventDispatcherOwner(): NavigationEventDispatcherOwner {
+  return checkNotNull(LocalNavigationEventDispatcherOwner.current) {
+    "No NavigationEventDispatcherOwner found, unable to handle navigation events."
   }
 }
 

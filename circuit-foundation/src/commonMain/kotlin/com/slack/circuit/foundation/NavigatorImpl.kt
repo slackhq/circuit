@@ -13,10 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
-import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.navigation.NavStack
@@ -91,19 +92,19 @@ public fun rememberCircuitNavigator(
  * @param navStack The backing [NavStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
- * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
- *   back handler. Defaults to true.
+ * @param enableBackHandler Indicates whether [Navigator.pop] should be called by the system back
+ *   handler. Defaults to true.
  * @see NavigableCircuitContent
  */
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, InternalCircuitApi::class)
 @Composable
 public fun rememberCircuitNavigator(
   navStack: NavStack<out Record>,
   onRootPop: (result: PopResult?) -> Unit,
-  enableBackHandler: Boolean = LocalNavigationEventDispatcherOwner.current != null,
+  enableBackHandler: Boolean = true,
 ): Navigator {
   val navigator = rememberCircuitNavigator(navStack = navStack, onRootPop = onRootPop)
-  if (enableBackHandler) {
+  if (enableBackHandler && shouldEnableNavEventHandler()) {
     // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
     // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
     val hasScreenChanged = remember {

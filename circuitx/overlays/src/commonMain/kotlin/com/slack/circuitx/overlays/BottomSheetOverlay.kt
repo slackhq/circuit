@@ -24,11 +24,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
-import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlinx.coroutines.launch
 
@@ -130,7 +131,7 @@ private constructor(
     content = content,
   )
 
-  @OptIn(ExperimentalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class, InternalCircuitApi::class)
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
     var hasShown by remember { mutableStateOf(false) }
@@ -150,8 +151,7 @@ private constructor(
     ModalBottomSheet(
       content = {
         val coroutineScope = rememberStableCoroutineScope()
-        val isBackEnabled =
-          sheetState.isVisible && LocalNavigationEventDispatcherOwner.current != null
+        val isBackEnabled = sheetState.isVisible && shouldEnableNavEventHandler()
         if (isBackEnabled) {
           NavigationBackHandler(
             state = rememberNavigationEventState(NavigationEventInfo.None),

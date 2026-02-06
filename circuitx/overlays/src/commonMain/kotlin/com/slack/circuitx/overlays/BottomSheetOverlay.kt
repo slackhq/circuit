@@ -57,6 +57,7 @@ private constructor(
   private val dragHandle: (@Composable () -> Unit)?,
   private val skipPartiallyExpandedState: Boolean,
   private val properties: ModalBottomSheetProperties,
+  private val contentWindowInsets: @Composable () -> WindowInsets,
   private val content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
 ) : Overlay<Result> {
 
@@ -71,6 +72,8 @@ private constructor(
    *   it's height exceed the partial height threshold)
    * @param isFocusable corresponds to [ModalBottomSheetProperties.isFocusable] and will be passed
    *   on to the final sheet as such.
+   * @param contentWindowInsets the window insets for the sheet content. Defaults to
+   *   [BottomSheetDefaults.windowInsets].
    */
   public constructor(
     model: Model,
@@ -80,6 +83,7 @@ private constructor(
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
     isFocusable: Boolean = true,
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
@@ -91,6 +95,7 @@ private constructor(
     tonalElevation = tonalElevation,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
     properties = createBottomSheetProperties(shouldDismissOnBackPress = false),
+    contentWindowInsets = contentWindowInsets,
     content = content,
   )
 
@@ -105,6 +110,8 @@ private constructor(
    *   it's height exceed the partial height threshold)
    * @param properties any [ModalBottomSheetProperties]. Defaults to
    *   [ModalBottomSheetDefaults.properties].
+   * @param contentWindowInsets the window insets for the sheet content. Defaults to
+   *   [BottomSheetDefaults.windowInsets].
    */
   public constructor(
     model: Model,
@@ -115,6 +122,7 @@ private constructor(
     dragHandle: @Composable (() -> Unit)? = null,
     skipPartiallyExpandedState: Boolean = false,
     properties: ModalBottomSheetProperties = DEFAULT_PROPERTIES,
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     content: @Composable (Model, OverlayNavigator<Result>) -> Unit,
   ) : this(
     model = model,
@@ -126,6 +134,7 @@ private constructor(
     tonalElevation = tonalElevation,
     skipPartiallyExpandedState = skipPartiallyExpandedState,
     properties = properties,
+    contentWindowInsets = contentWindowInsets,
     content = content,
   )
 
@@ -175,8 +184,7 @@ private constructor(
       containerColor = sheetContainerColor ?: BottomSheetDefaults.ContainerColor,
       tonalElevation = tonalElevation ?: 0.dp,
       dragHandle = dragHandle ?: { BottomSheetDefaults.DragHandle() },
-      // Go edge-to-edge
-      contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+      contentWindowInsets = contentWindowInsets,
       onDismissRequest = {
         // Only possible if dismissOnTapOutside is false
         check(dismissOnTapOutside)

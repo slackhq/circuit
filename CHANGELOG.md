@@ -40,9 +40,17 @@ navigator.forward()  // Move forward to a previously visited screen
 - Rewrite interceptors can now rewrite to any `NavEvent` (not just specific navigation types like `InterceptedGoToResult.Rewrite` or `InterceptedResetRootResult.Rewrite`)
 - `FailureNotifier` interface updated with `forwardFailure()` and `backwardFailure()` methods with default implementations
 
+### New
+
+- Add `mingwX64()` target to `circuit-codegen-annotations`.
+
 ### Fixes
 
 - Fix an issue where `AnsweringResultHandler` was not correctly parceling pending results.
+
+### Changes
+
+- Compile against kotlin-inject-anvil `0.1.7`.
 
 0.32.0
 ------

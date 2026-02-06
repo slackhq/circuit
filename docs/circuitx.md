@@ -12,10 +12,10 @@ These packages differ from Circuit's core artifacts in a few ways:
 - These artifacts are under the `com.slack.circuitx` package prefix.
 - These artifacts may be platform-specific where appropriate.
 
-| Artifact                                         | Documentation                                        |
-|--------------------------------------------------|------------------------------------------------------|
-| `com.slack.circuitx:circuitx-android`            | [Android](circuitx/android.md)                       |
-| `com.slack.circuitx:circuitx-effects`            | [Effects](circuitx/effects.md)                       |
-| `com.slack.circuitx:circuitx-gesture-navigation` | [Gesture Navigation](circuitx/gesture-navigation.md) |
-| `com.slack.circuitx:circuitx-navigation`         | [Navigation](circuitx/navigation.md)                 |
-| `com.slack.circuitx:circuitx-overlays`           | [Overlays](circuitx/overlays.md)                     |
+| Artifact                                        | Documentation                                        |
+|-------------------------------------------------|------------------------------------------------------|
+| `com.slack.circuit:circuitx-android`            | [Android](circuitx/android.md)                       |
+| `com.slack.circuit:circuitx-effects`            | [Effects](circuitx/effects.md)                       |
+| `com.slack.circuit:circuitx-gesture-navigation` | [Gesture Navigation](circuitx/gesture-navigation.md) |
+| `com.slack.circuit:circuitx-navigation`         | [Navigation](circuitx/navigation.md)                 |
+| `com.slack.circuit:circuitx-overlays`           | [Overlays](circuitx/overlays.md)                     |

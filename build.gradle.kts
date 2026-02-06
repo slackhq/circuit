@@ -173,8 +173,6 @@ subprojects {
                 // Enable new jvm-default behavior
                 // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
                 "-jvm-default=no-compatibility",
-                // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-                "-Xtype-enhancement-improvements-strict-mode",
                 "-Xjspecify-annotations=strict",
                 // https://youtrack.jetbrains.com/issue/KT-73255
                 "-Xannotation-default-target=param-property",

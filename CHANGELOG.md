@@ -51,6 +51,7 @@ navigator.forward()  // Move forward to a previously visited screen
 ### Changes
 
 - Compile against kotlin-inject-anvil `0.1.7`.
+- `NavigationEventHandler` usage is now disabled by default when no `NavigationEventDispatcherOwner` is available, preventing crashes in environments with dynamic navigation event support. This behaviour can be configured with the `Circuit.lenientNavigationEventDispatcherOwner` option.
 
 0.32.0
 ------

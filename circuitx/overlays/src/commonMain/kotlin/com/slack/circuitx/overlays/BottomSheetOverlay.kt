@@ -26,8 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
 import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import kotlinx.coroutines.launch
 
@@ -138,7 +140,7 @@ private constructor(
     content = content,
   )
 
-  @OptIn(ExperimentalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class, InternalCircuitApi::class)
   @Composable
   override fun Content(navigator: OverlayNavigator<Result>) {
     var hasShown by remember { mutableStateOf(false) }
@@ -158,17 +160,20 @@ private constructor(
     ModalBottomSheet(
       content = {
         val coroutineScope = rememberStableCoroutineScope()
-        NavigationBackHandler(
-          state = rememberNavigationEventState(NavigationEventInfo.None),
-          isBackEnabled = sheetState.isVisible,
-        ) {
-          coroutineScope
-            .launch { sheetState.hide() }
-            .invokeOnCompletion {
-              if (!sheetState.isVisible) {
-                navigator.finish(onDismiss!!.invoke())
+        val isBackEnabled = sheetState.isVisible && shouldEnableNavEventHandler()
+        if (isBackEnabled) {
+          NavigationBackHandler(
+            state = rememberNavigationEventState(NavigationEventInfo.None),
+            isBackEnabled = true,
+          ) {
+            coroutineScope
+              .launch { sheetState.hide() }
+              .invokeOnCompletion {
+                if (!sheetState.isVisible) {
+                  navigator.finish(onDismiss!!.invoke())
+                }
               }
-            }
+          }
         }
         // Delay setting the result until we've finished dismissing
         content(model) { result ->

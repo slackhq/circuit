@@ -23,7 +23,7 @@ jb-lifecycle = "2.9.6"
 jdk = "23"
 jvmTarget = "11"
 kct = "0.12.1"
-kotlin = "2.3.0"
+kotlin = "2.3.20-Beta2"
 kotlinInject = "0.9.0"
 kotlinInject-anvil = "0.1.7"
 kotlinpoet = "2.2.0"
@@ -70,7 +70,7 @@ kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization"
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 metro = { id = "dev.zacsweers.metro", version = "0.10.2" }
-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0" }
+nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-kotlin-2.3.20-Beta1" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

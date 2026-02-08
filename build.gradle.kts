@@ -173,8 +173,6 @@ subprojects {
                 // Enable new jvm-default behavior
                 // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
                 "-jvm-default=no-compatibility",
-                // https://kotlinlang.org/docs/whatsnew1520.html#support-for-jspecify-nullness-annotations
-                "-Xtype-enhancement-improvements-strict-mode",
                 "-Xjspecify-annotations=strict",
                 // https://youtrack.jetbrains.com/issue/KT-73255
                 "-Xannotation-default-target=param-property",
@@ -300,25 +298,20 @@ subprojects {
             it.substringBeforeLast(":")
           }
         }
-      } else if (project.path == ":circuitx:android") {
-        // Android-only project
+      } else {
         configuration("releaseRuntimeClasspath") {
           baselineMap = {
             // Remove the version
             it.substringBeforeLast(":")
           }
         }
-      } else {
-        configuration("androidReleaseRuntimeClasspath") {
-          baselineMap = {
-            // Remove the version
-            it.substringBeforeLast(":")
-          }
-        }
-        configuration("jvmRuntimeClasspath") {
-          baselineMap = {
-            // Remove the version
-            it.substringBeforeLast(":")
+        if (project.path != ":circuitx:android") {
+          // Android-only project
+          configuration("jvmRuntimeClasspath") {
+            baselineMap = {
+              // Remove the version
+              it.substringBeforeLast(":")
+            }
           }
         }
       }

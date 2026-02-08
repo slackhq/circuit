@@ -12,6 +12,7 @@ public final class com/slack/circuit/foundation/Circuit {
 	public synthetic fun <init> (Lcom/slack/circuit/foundation/Circuit$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/backstack/NavDecoration;
+	public final fun getLenientNavigationEventDispatcherOwner ()Z
 	public final fun getNavStackLocalProviders ()Ljava/util/List;
 	public final fun getOnUnavailableContent ()Lkotlin/jvm/functions/Function4;
 	public final fun getPresentWithLifecycle ()Z
@@ -42,11 +43,14 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/backstack/NavDecoration;
 	public final fun getEventListenerFactory ()Lcom/slack/circuit/foundation/EventListener$Factory;
+	public final fun getLenientNavigationEventDispatcherOwner ()Z
 	public final fun getNavStackLocalProviders ()Ljava/util/List;
 	public final fun getOnUnavailableContent ()Lkotlin/jvm/functions/Function4;
 	public final fun getPresentWithLifecycle ()Z
 	public final fun getPresenterFactories ()Ljava/util/List;
 	public final fun getUiFactories ()Ljava/util/List;
+	public final fun lenientNavigationEventDispatcherOwner (Z)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public static synthetic fun lenientNavigationEventDispatcherOwner$default (Lcom/slack/circuit/foundation/Circuit$Builder;ZILjava/lang/Object;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun presentWithLifecycle (Z)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public static synthetic fun presentWithLifecycle$default (Lcom/slack/circuit/foundation/Circuit$Builder;ZILjava/lang/Object;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setAnimatedNavDecoratorFactory (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;

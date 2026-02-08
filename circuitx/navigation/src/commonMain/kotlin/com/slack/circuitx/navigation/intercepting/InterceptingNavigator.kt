@@ -15,7 +15,9 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.foundation.NavEvent
+import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -35,7 +37,7 @@ import com.slack.circuit.runtime.screen.Screen
  * @see Navigator
  * @see InterceptingNavigator
  */
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, InternalCircuitApi::class)
 @Composable
 public fun rememberInterceptingNavigator(
   navigator: Navigator,
@@ -55,7 +57,7 @@ public fun rememberInterceptingNavigator(
       )
     }
   // Handle the back button here to get pop events from it.
-  if (enableBackHandler) {
+  if (enableBackHandler && shouldEnableNavEventHandler()) {
     // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
     // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
     val hasScreenChanged = remember {

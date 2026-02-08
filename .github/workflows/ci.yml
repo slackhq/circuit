@@ -150,7 +150,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: '3.2.2'
+          ruby-version: '4.0.1'
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:

@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+0.33.0
+------
+
+_2026-02-10_
+
 ### New Navigation Architecture:
 
 Circuit now supports **bidirectional navigation** with browser-style forward/backward capabilities!

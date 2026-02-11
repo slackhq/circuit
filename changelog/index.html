@@ -387,9 +387,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../navigation/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -398,7 +409,65 @@
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Navigation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation-navstack-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NavStack migration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -963,6 +1032,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0330" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.33.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.33.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-navigation-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Navigation Architecture:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      New
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0320" class="md-nav__link">
     <span class="md-ellipsis">
       0.32.0
@@ -982,7 +1102,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changes" class="md-nav__link">
+  <a href="#changes_1" class="md-nav__link">
     <span class="md-ellipsis">
       Changes
     </span>
@@ -1989,6 +2109,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0330" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.33.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.33.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-navigation-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Navigation Architecture:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      New
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0320" class="md-nav__link">
     <span class="md-ellipsis">
       0.32.0
@@ -2008,7 +2179,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changes" class="md-nav__link">
+  <a href="#changes_1" class="md-nav__link">
     <span class="md-ellipsis">
       Changes
     </span>
@@ -2948,13 +3119,60 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0330">0.33.0<a class="headerlink" href="#0330" title="Permanent link">&para;</a></h2>
+<p><em>2026-02-10</em></p>
+<h3 id="new-navigation-architecture">New Navigation Architecture:<a class="headerlink" href="#new-navigation-architecture" title="Permanent link">&para;</a></h3>
+<p>Circuit now supports <strong>bidirectional navigation</strong> with browser-style forward/backward capabilities!</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span>
+<span class="n">navigator</span><span class="p">.</span><span class="na">backward</span><span class="p">()</span><span class="w"> </span><span class="c1">// Move back without removing history</span>
+<span class="n">navigator</span><span class="p">.</span><span class="na">forward</span><span class="p">()</span><span class="w">  </span><span class="c1">// Move forward to a previously visited screen</span>
+</code></pre></div>
+<p><strong>Navigation changes</strong>:</p>
+<ul>
+<li><code>Navigator.forward()</code>: Move forward in navigation history</li>
+<li><code>Navigator.backward()</code>: Move backward in navigation history</li>
+<li><code>Navigator.peekNavStack()</code>: Immutable snapshot of the current navigation stack state</li>
+<li><code>NavigableCircuitContent</code> is aware of the full navigation stack and provides <code>NavStackList</code> to
+  decorations, enabling them to render forward stack records.</li>
+</ul>
+<p><strong>SaveableNavStack</strong>:</p>
+<ul>
+<li>New implementation in <code>circuit-foundation</code> providing full bidirectional navigation state</li>
+<li>The existing <code>SaveableBackStack</code> implementation has been updated to extend <code>NavStack</code></li>
+</ul>
+<p><strong>New <code>circuit-runtime-navigation</code> artifact</strong>:</p>
+<ul>
+<li><code>NavStack</code>: Core navigation stack supporting push/pop and forward/backward traversal</li>
+<li><code>NavStackList</code>: Immutable snapshot of navigation state</li>
+</ul>
+<p><strong>circuitx-navigation</strong>:</p>
+<ul>
+<li><code>InterceptingNavigator</code> now supports <code>forward()</code> and <code>backward()</code> navigation methods</li>
+<li>Updated to use <code>NavStack</code> and <code>NavStackList</code> instead of <code>BackStack</code> and <code>List&lt;Screen&gt;</code></li>
+<li>Rewrite interceptors can now rewrite to any <code>NavEvent</code> (not just specific navigation types like <code>InterceptedGoToResult.Rewrite</code> or <code>InterceptedResetRootResult.Rewrite</code>)</li>
+<li><code>FailureNotifier</code> interface updated with <code>forwardFailure()</code> and <code>backwardFailure()</code> methods with default implementations</li>
+</ul>
+<h3 id="new">New<a class="headerlink" href="#new" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add <code>mingwX64()</code> target to <code>circuit-codegen-annotations</code>.</li>
+</ul>
+<h3 id="fixes">Fixes<a class="headerlink" href="#fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix an issue where <code>AnsweringResultHandler</code> was not correctly parceling pending results.</li>
+</ul>
+<h3 id="changes">Changes<a class="headerlink" href="#changes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Compile against kotlin-inject-anvil <code>0.1.7</code>.</li>
+<li><code>NavigationEventHandler</code> usage is now disabled by default when no <code>NavigationEventDispatcherOwner</code> is available, preventing crashes in environments with dynamic navigation event support. This behaviour can be configured with the <code>Circuit.lenientNavigationEventDispatcherOwner</code> option.</li>
+</ul>
 <h2 id="0320">0.32.0<a class="headerlink" href="#0320" title="Permanent link">&para;</a></h2>
 <p><em>2026-01-13</em></p>
 <h3 id="enhancements">Enhancements<a class="headerlink" href="#enhancements" title="Permanent link">&para;</a></h3>
 <ul>
 <li>New <code>produceAndCollectAsRetainedState</code> that produces and collects values from a <code>Flow</code>.</li>
 </ul>
-<h3 id="changes">Changes<a class="headerlink" href="#changes" title="Permanent link">&para;</a></h3>
+<h3 id="changes_1">Changes<a class="headerlink" href="#changes_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Update to Kotlin <code>2.3.0</code>.</li>
 <li>Update Compose Multiplatform to <code>1.10.0</code>.</li>

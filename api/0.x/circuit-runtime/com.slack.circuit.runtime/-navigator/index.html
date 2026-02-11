@@ -94,7 +94,7 @@
   <div class="breadcrumbs"><a href="../../index.html">circuit-runtime</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.runtime</a><span class="delimiter">/</span><span class="current">Navigator</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Navigator</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="index.html">Navigator</a> : <a href="../-go-to-navigator/index.html">GoToNavigator</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime/src/commonMain/kotlin/com/slack/circuit/runtime/Navigator.kt#L23">source</a>)</span></span></div><p class="paragraph">A basic navigation interface for navigating between <a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">screens</a>.</p><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-no-op/index.html">NoOp</a></div></span></div><div></div></div></div></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">interface </span><a href="index.html">Navigator</a> : <a href="../-go-to-navigator/index.html">GoToNavigator</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-runtime/src/commonMain/kotlin/com/slack/circuit/runtime/Navigator.kt#L29">source</a>)</span></span></div><p class="paragraph">A basic navigation interface for navigating between <a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">screens</a>.</p><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-no-op/index.html">NoOp</a></div></span></div><div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
@@ -111,7 +111,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-no-op/index.html">NoOp</a> : <a href="index.html">Navigator</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-no-op/index.html">NoOp</a> : <a href="index.html">Navigator</a></div><div class="brief "><p class="paragraph">A no-op implementation of <a href="index.html">Navigator</a> that performs no actual navigation.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -135,7 +135,37 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="tableheader">Functions</h2>
-        <div class="table"><a data-name="-1751568193%2FFunctions%2F2135306989" anchor-label="goTo" id="-1751568193%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+        <div class="table"><a data-name="-290783333%2FFunctions%2F2135306989" anchor-label="backward" id="-290783333%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="backward.html"><span><span>backward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-290783333%2FFunctions%2F2135306989"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="backward.html"><span class="token function">backward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Move backward in navigation history toward the root.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-463608297%2FFunctions%2F2135306989" anchor-label="forward" id="-463608297%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="forward.html"><span><span>forward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-463608297%2FFunctions%2F2135306989"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="forward.html"><span class="token function">forward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Move forward in navigation history toward the top.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1751568193%2FFunctions%2F2135306989" anchor-label="goTo" id="-1751568193%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -160,7 +190,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="peek.html"><span class="token function">peek</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns current top most screen of backstack, or null if backstack is empty.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="peek.html"><span class="token function">peek</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns current top most screen of backstack, or null if the navStack is empty.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -180,6 +210,21 @@
               </div>
             </div>
           </div>
+<a data-name="365887486%2FFunctions%2F2135306989" anchor-label="peekNavStack" id="365887486%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="peek-nav-stack.html"><span>peek</span><wbr><span>Nav</span><wbr><span><span>Stack</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="365887486%2FFunctions%2F2135306989"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="peek-nav-stack.html"><span class="token function">peekNavStack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime.navigation/NavStackList///PointingToDeclaration/">NavStackList</span><span class="token operator">&lt;</span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a snapshot of the current navigation stack, or null if empty.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="965709642%2FFunctions%2F2135306989" anchor-label="pop" id="965709642%2FFunctions%2F2135306989" data-filterable-set=":circuit-runtime/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":circuit-runtime/commonMain" data-filterable-set=":circuit-runtime/commonMain">
             <div class="main-subrow keyValue ">
@@ -190,7 +235,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">result<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-pop-result/index.html">PopResult</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-runtime/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="pop.html"><span class="token function">pop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">result<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-pop-result/index.html">PopResult</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Remove and return the current screen from the navigation stack.</p></div></div></div>
                 </div>
               </div>
             </div>

@@ -16,7 +16,7 @@
         <link rel="prev" href="../circuit-content/">
       
       
-        <link rel="next" href="../presenter/">
+        <link rel="next" href="../navigation-navstack-migration/">
       
       
       <link rel="icon" href="../images/slack_logo_small.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Navigation - Circuit</title>
+        <title>Usage - Circuit</title>
       
     
     
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Navigation
+              Usage
             
           </span>
         </div>
@@ -389,6 +389,46 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Navigation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Navigation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
@@ -402,7 +442,7 @@
   
   
   <span class="md-ellipsis">
-    Navigation
+    Usage
     
   </span>
   
@@ -415,7 +455,7 @@
   
   
   <span class="md-ellipsis">
-    Navigation
+    Usage
     
   </span>
   
@@ -467,6 +507,37 @@
     </ul>
   
 </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation-navstack-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NavStack migration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -1105,21 +1176,21 @@
 
 
 <h1 id="navigation">Navigation<a class="headerlink" href="#navigation" title="Permanent link">&para;</a></h1>
-<p>For navigable contents, we have a custom compose-based backstack implementation that the androidx folks shared with us. Navigation becomes two parts:</p>
+<p>For navigable contents, navigation becomes two parts:</p>
 <ol>
-<li>A <code>BackStack</code>, where we use a <code>SaveableBackStack</code> implementation that saves a stack of <code>Screen</code>s and the <code>ProvidedValues</code> for each record on that stack (allowing us to save and restore on configuration changes automatically).</li>
-<li>A <code>Navigator</code>, which is a simple interface that we can point at a <code>BackStack</code> and offers simple <code>goTo(&lt;screen&gt;)</code>/<code>pop()</code> semantics. These are offered to presenters to perform navigation as needed to other screens.</li>
+<li>A <code>NavStack</code>, where we use a <code>SaveableNavStack</code> implementation that saves a stack of <code>Screen</code>s and the <code>ProvidedValues</code> for each record on that stack (allowing us to save and restore on configuration changes automatically).</li>
+<li>A <code>Navigator</code>, which is a simple interface that we can point at a <code>NavStack</code> and offers simple <code>goTo(&lt;screen&gt;)</code>/<code>pop()</code> semantics. These are offered to presenters to perform navigation as needed to other screens.</li>
 </ol>
 <p>A new navigable content surface is handled via the <code>NavigableCircuitContent</code> functions.</p>
 <div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
-<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span>
+<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p><code>SaveableBackStack</code> <em>must</em> have a size of 1 or more after initialization. It&rsquo;s an error to have a backstack with zero items.</p>
+<p><code>SaveableNavStack</code> <em>must</em> have a size of 1 or more after initialization. It&rsquo;s an error to have a navstack with zero items.</p>
 </div>
 <p>Presenters are then given access to these navigator instances via <code>Presenter.Factory</code> (described in <a href="https://slackhq.github.io/circuit/factories/">Factories</a>), which they can save if needed to perform navigation.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">showAddFavorites</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -1130,13 +1201,13 @@
 <span class="w">  </span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>If you want to have custom behavior for when back is pressed on the root screen (i.e. <code>backstack.size == 1</code>), you should implement your own <code>BackHandler</code> and use it <em>before</em> creating the backstack.</p>
+<p>If you want to have custom behavior for when back is pressed on the root screen (i.e. <code>navStack.isAtRoot</code>), you should implement your own <code>BackHandler</code> and use it <em>before</em> creating the navstack.</p>
 <div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
 <span class="w">  </span><span class="n">BackHandler</span><span class="p">(</span><span class="n">onBack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* do something on root */</span><span class="w"> </span><span class="p">})</span>
 <span class="w">  </span><span class="c1">// The Navigator&#39;s internal BackHandler will take precedence until it is at the root screen.</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
-<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span>
+<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h4 id="deep-linking">Deep Linking<a class="headerlink" href="#deep-linking" title="Permanent link">&para;</a></h4>

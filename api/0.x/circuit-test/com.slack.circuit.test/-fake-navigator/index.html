@@ -94,24 +94,24 @@
   <div class="breadcrumbs"><a href="../../index.html">circuit-test</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuit.test</a><span class="delimiter">/</span><span class="current">FakeNavigator</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Fake</span><wbr><span><span>Navigator</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FakeNavigator</a> : <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/commonMain/kotlin/com/slack/circuit/test/FakeNavigator.kt#L35">source</a>)</span></span></div><p class="paragraph">A fake <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a> that can be used in tests to record and assert navigation events.</p><p class="paragraph">This navigator acts as a real navigator for all intents and purposes, navigating either a given <a href="../../../backstack/com.slack.circuit.backstack/-back-stack/index.html">BackStack</a> or using a simple real one under the hood if one isn't provided.</p><p class="paragraph">Example</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val navigator = FakeNavigator(FavoritesScreen)<br>val presenter = FavoritesPresenter(navigator)<br><br>presenter.test {<br>  val state = awaitItem()<br>  state.eventSink(AddFavoriteClick)<br>  assertThat(navigator.awaitNextScreen())<br>    .isEqualTo(AddFavoriteScreen)<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FakeNavigator</a> : <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuit-test/src/commonMain/kotlin/com/slack/circuit/test/FakeNavigator.kt#L37">source</a>)</span></span></div><p class="paragraph">A fake <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/index.html">Navigator</a> that can be used in tests to record and assert navigation events.</p><p class="paragraph">This navigator acts as a real navigator for all intents and purposes, navigating either a given <a href="../../../backstack/com.slack.circuit.backstack/-back-stack/index.html">BackStack</a> or using a simple real one under the hood if one isn't provided.</p><p class="paragraph">Example</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val navigator = FakeNavigator(FavoritesScreen)<br>val presenter = FavoritesPresenter(navigator)<br><br>presenter.test {<br>  val state = awaitItem()<br>  state.eventSink(AddFavoriteClick)<br>  assertThat(navigator.awaitNextScreen())<br>    .isEqualTo(AddFavoriteScreen)<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="tableheader">Constructors</h2>
-        <div class="table"><a data-name="664583894%2FConstructors%2F-290334015" anchor-label="FakeNavigator" id="664583894%2FConstructors%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+        <div class="table"><a data-name="176128236%2FConstructors%2F-290334015" anchor-label="FakeNavigator" id="176128236%2FConstructors%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
           <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-fake-navigator.html"><span>Fake</span><wbr><span><span>Navigator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="664583894%2FConstructors%2F-290334015"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="176128236%2FConstructors%2F-290334015"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">backStack<span class="token operator">: </span><a href="../../../backstack/com.slack.circuit.backstack/-back-stack/index.html">BackStack</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../../backstack/com.slack.circuit.backstack/-back-stack/-record/index.html">BackStack.Record</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">root<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>additionalScreens<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">navStack<span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime.navigation/NavStack///PointingToDeclaration/">NavStack</span><span class="token operator">&lt;</span><span class="token keyword">out </span><span data-unresolved-link="com.slack.circuit.runtime.navigation/NavStack.Record///PointingToDeclaration/">NavStack.Record</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">root<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>additionalScreens<span class="token operator">: </span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -120,7 +120,37 @@
       </div>
       <div data-togglable="TYPE">
         <h2 class="tableheader">Types</h2>
-        <div class="table"><a data-name="-2004521421%2FClasslikes%2F-290334015" anchor-label="GoToEvent" id="-2004521421%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+        <div class="table"><a data-name="1805660179%2FClasslikes%2F-290334015" anchor-label="BackwardEvent" id="1805660179%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-backward-event/index.html"><span>Backward</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1805660179%2FClasslikes%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-backward-event/index.html">BackwardEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>success<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents a recorded <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/backward.html">Navigator.backward</a> event.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1111242909%2FClasslikes%2F-290334015" anchor-label="ForwardEvent" id="-1111242909%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-forward-event/index.html"><span>Forward</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1111242909%2FClasslikes%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-forward-event/index.html">ForwardEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>success<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents a recorded <a href="../../../circuit-runtime/com.slack.circuit.runtime/-navigator/forward.html">Navigator.forward</a> event.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2004521421%2FClasslikes%2F-290334015" anchor-label="GoToEvent" id="-2004521421%2FClasslikes%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -169,7 +199,37 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="tableheader">Functions</h2>
-        <div class="table"><a data-name="-419072643%2FFunctions%2F-290334015" anchor-label="assertGoToIsEmpty" id="-419072643%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+        <div class="table"><a data-name="-1785740323%2FFunctions%2F-290334015" anchor-label="assertBackwardIsEmpty" id="-1785740323%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="assert-backward-is-empty.html"><span>assert</span><wbr><span>Backward</span><wbr><span>Is</span><wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1785740323%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="assert-backward-is-empty.html"><span class="token function">assertBackwardIsEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1740683073%2FFunctions%2F-290334015" anchor-label="assertForwardIsEmpty" id="-1740683073%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="assert-forward-is-empty.html"><span>assert</span><wbr><span>Forward</span><wbr><span>Is</span><wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1740683073%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="assert-forward-is-empty.html"><span class="token function">assertForwardIsEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-419072643%2FFunctions%2F-290334015" anchor-label="assertGoToIsEmpty" id="-419072643%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -210,6 +270,36 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="assert-reset-root-is-empty.html"><span class="token function">assertResetRootIsEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1519117342%2FFunctions%2F-290334015" anchor-label="awaitBackward" id="1519117342%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="await-backward.html"><span>await</span><wbr><span><span>Backward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1519117342%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-backward.html"><span class="token function">awaitBackward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-backward-event/index.html">FakeNavigator.BackwardEvent</a></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="backward.html">backward</a> event or throws if no backwards are performed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-128129740%2FFunctions%2F-290334015" anchor-label="awaitForward" id="-128129740%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="await-forward.html"><span>await</span><wbr><span><span>Forward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-128129740%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="await-forward.html"><span class="token function">awaitForward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-forward-event/index.html">FakeNavigator.ForwardEvent</a></div><div class="brief "><p class="paragraph">Awaits the next navigation <a href="forward.html">forward</a> event or throws if no forwards are performed.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -274,6 +364,51 @@
               </div>
             </div>
           </div>
+<a data-name="-1011259552%2FFunctions%2F-290334015" anchor-label="backward" id="-1011259552%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="backward.html"><span><span>backward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1011259552%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="backward.html"><span class="token function">backward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1244585645%2FFunctions%2F-290334015" anchor-label="expectNoBackwardEvents" id="1244585645%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="expect-no-backward-events.html"><span>expect</span><wbr><span>No</span><wbr><span>Backward</span><wbr><span><span>Events</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1244585645%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="expect-no-backward-events.html"><span class="token function">expectNoBackwardEvents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="230810995%2FFunctions%2F-290334015" anchor-label="expectNoForwardEvents" id="230810995%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="expect-no-forward-events.html"><span>expect</span><wbr><span>No</span><wbr><span>Forward</span><wbr><span><span>Events</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="230810995%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="expect-no-forward-events.html"><span class="token function">expectNoForwardEvents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="-1202323699%2FFunctions%2F-290334015" anchor-label="expectNoGoToEvents" id="-1202323699%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
@@ -319,6 +454,21 @@
               </div>
             </div>
           </div>
+<a data-name="-1179586126%2FFunctions%2F-290334015" anchor-label="forward" id="-1179586126%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="forward.html"><span><span>forward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1179586126%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="forward.html"><span class="token function">forward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="-1675638054%2FFunctions%2F-290334015" anchor-label="goTo" id="-1675638054%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
             <div class="main-subrow keyValue ">
@@ -360,6 +510,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1038329334%2FFunctions%2F-290334015"><span class="token function">peekBackStack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="365887486%2FFunctions%2F-290334015" anchor-label="peekNavStack" id="365887486%2FFunctions%2F-290334015" data-filterable-set=":circuit-test/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuit-test/commonMain" data-filterable-set=":circuit-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#365887486%2FFunctions%2F-290334015"><span>peek</span><wbr><span>Nav</span><wbr><span><span>Stack</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="365887486%2FFunctions%2F-290334015"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-test/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#365887486%2FFunctions%2F-290334015"><span class="token function">peekNavStack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.slack.circuit.runtime.navigation/NavStackList///PointingToDeclaration/">NavStackList</span><span class="token operator">&lt;</span><a href="../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Screen</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>

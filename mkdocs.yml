@@ -70,7 +70,9 @@ nav:
   - 'Navigation':
       'Usage': navigation.md
       'NavStack migration': navigation-navstack-migration.md
-  - 'Presenter': presenter.md
+  - 'Presenter':
+      'Overview': presenter.md
+      'Scaling Presenters': presenter-patterns.md
   - 'Ui': ui.md
   - 'Overlays': overlays.md
   - 'Shared Elements':

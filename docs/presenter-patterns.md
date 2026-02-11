@@ -3,128 +3,186 @@ Scaling Presenters
 
 ## Overview
 
-As your Circuit application grows, presenters naturally accumulate complexity. This guide provides patterns and recipes to keep presenters maintainable, testable, and composable.
+As your Circuit application grows, presenters naturally accumulate complexity. If you've worked on a Circuit app for a while, you may have noticed some presenters becoming harder to maintain. This guide provides patterns and recipes to help.
 
 !!! info "Community Guide"
     This guide is based on experience at Slack building and scaling a large Android application with Circuit. We welcome contributions, alternative approaches, and feedback from the community to make this guide more comprehensive.
 
-Without guidance, presenters often become monolithic:
+Here are some common signs of presenter complexity:
 
 - **Event sink explosion**: Each mutable state value generally needs its own events, so the event sink grows quickly
 - **Internal state sprawl**: State scoped to `present()` makes it hard to break out event handling into smaller functions
 - **Boolean flag soup**: Many boolean flags (`showWarningBanner`, `showBottomSheetA`, `showDialogB`) lead to complex UIs with conditional blocks
 - **Testing difficulties**: The more properties state has, the harder it becomes to test comprehensively
 
-A well-structured presenter exhibits these qualities:
+Don't worry - these are natural growing pains! A well-structured presenter exhibits these qualities:
 
 | Quality | Description |
 |---------|-------------|
 | **Single Responsibility** | Handles only presentation logic |
 | **Testable** | Can be unit tested in isolation with clear inputs and outputs |
-| **Composable** | Can be combined with other presenters without tight coupling |
+| **Maintainable** | Easy to understand, modify, and extend over time |
 
 ---
 
 ## Composition Patterns
 
-There are three primary patterns for breaking down complex presenters, each suited to different scenarios.
+When a presenter grows too large, you have options. Here are three patterns for breaking it down, each suited to different scenarios.
 
-### Pattern 1: StateProducer
+### Pattern 1: Presenter Decomposition
 
-**StateProducers** are reusable components that produce state but aren't used on their own. Unlike full presenters, they don't implement the `Presenter` interface and are always consumed by a parent presenter that coordinates their output.
+**Presenter decomposition** involves breaking down a complex `present()` method into smaller `@Composable` helper functions without extracting full presenters.
 
 **When to use**:
 
-- Reusable state logic shared across multiple screens
-- Components that wouldn't make sense as standalone screens
-- Parent presenter needs to coordinate multiple related pieces of state
-- Extracting repetitive observation patterns into a single place
+- Single presenter handling multiple related concerns
+- Improving organization without full extraction
+- Observation logic that can be extracted
 
-**Example: Shopping cart with item producer**
+**Example: Order details with extracted observation**
 
-```kotlin
-// Screen is just a navigation marker
-data object CartScreen : Screen
+=== "Before"
 
-// Cart state and events
-data class CartState(
-  val items: List<CartItemState>,
-  val eventSink: (CartEvent) -> Unit,
-) : CircuitUiState
+    ```kotlin
+    class OrderDetailsPresenter(
+      private val screen: OrderDetailsScreen,
+      private val navigator: Navigator,
+      private val orderRepository: OrderRepository,
+      private val paymentRepository: PaymentRepository,
+    ) : Presenter<OrderDetailsState> {
 
-sealed interface CartEvent : CircuitUiEvent {
-  data class RemoveItem(val itemId: String) : CartEvent
-  data class UpdateQuantity(val itemId: String, val quantity: Int) : CartEvent
-}
+      @Composable
+      override fun present(): OrderDetailsState {
+        // All observation logic inline in present()
+        val order by produceRetainedState<Order?>(null) {
+          orderRepository.observeOrder(screen.orderId).collect { value = it }
+        }
 
-// State produced by the item state producer
-sealed interface CartItemState {
-  data object Loading : CartItemState
-  data class Loaded(val item: CartItem, val quantity: Int) : CartItemState
-  data class Updating(val item: CartItem, val quantity: Int) : CartItemState
-}
+        val paymentStatus by produceRetainedState(PaymentStatus.Unknown) {
+          paymentRepository.observePaymentStatus(screen.orderId).collect { value = it }
+        }
 
-class CartItemStateProducer(
-  private val cartRepository: CartRepository,
-) {
-  @Composable
-  fun produce(itemId: String): CartItemState {
-    var quantity by remember { mutableIntStateOf(1) }
-    var updateState by remember { mutableStateOf<UpdateState>(UpdateState.Idle) }
+        val shippingInfo by produceRetainedState<ShippingInfo?>(null) {
+          orderRepository.observeShipping(screen.orderId).collect { value = it }
+        }
 
-    val item by produceState<CartItem?>(null) {
-      value = cartRepository.getItem(itemId)
-    }
-
-    return when {
-      item == null -> CartItemState.Loading
-      updateState is UpdateState.InProgress -> CartItemState.Updating(item, quantity)
-      else -> CartItemState.Loaded(item, quantity)
-    }
-  }
-}
-
-private sealed interface UpdateState {
-  data object Idle : UpdateState
-  data object InProgress : UpdateState
-}
-
-// Parent presenter coordinates the producer
-class CartPresenter(
-  private val cartItemProducer: CartItemStateProducer,
-  private val cartRepository: CartRepository,
-) : Presenter<CartState> {
-
-  @Composable
-  override fun present(): CartState {
-    val cartItems by produceState(emptyList<String>()) {
-      value = cartRepository.getCartItemIds()
-    }
-
-    // Produce state for each item
-    val itemStates = cartItems.map { itemId ->
-      cartItemProducer.produce(itemId)
-    }
-
-    return CartState(
-      items = itemStates,
-    ) { event ->
-      when (event) {
-        is CartEvent.RemoveItem -> cartRepository.removeItem(event.itemId)
-        is CartEvent.UpdateQuantity -> cartRepository.updateQuantity(event.itemId, event.quantity)
+        // State construction and event handling all in one place
+        return when {
+          order == null -> OrderDetailsState.Loading
+          else -> OrderDetailsState.Success(
+            order = order,
+            paymentStatus = paymentStatus,
+            shippingInfo = shippingInfo,
+          ) { event ->
+            // Event handling inline
+            when (event) {
+              is OrderDetailsEvent.TrackPackage ->
+                navigator.goTo(TrackingScreen(event.trackingId))
+              is OrderDetailsEvent.ContactSupport ->
+                navigator.goTo(SupportScreen(screen.orderId))
+              is OrderDetailsEvent.RequestRefund ->
+                navigator.goTo(RefundScreen(screen.orderId))
+            }
+          }
+        }
       }
     }
-  }
-}
-```
+    ```
 
-**Key characteristics**:
+=== "After"
 
-- Producer is injected into the parent presenter
-- Parent typically handles events and coordinates state
-- Producers can have their own event sinks, though it's less common
-- Reusable across multiple screens that need the same state logic
-- Never used standalone; always consumed by a parent presenter
+    ```kotlin
+    class OrderDetailsPresenter(
+      private val screen: OrderDetailsScreen,
+      private val navigator: Navigator,
+      private val orderRepository: OrderRepository,
+      private val paymentRepository: PaymentRepository,
+    ) : Presenter<OrderDetailsState> {
+
+      @Composable
+      override fun present(): OrderDetailsState {
+        // Extracted observation logic - present() is now a coordinator
+        val order = observeOrder()
+        val paymentStatus = observePaymentStatus()
+        val shippingInfo = observeShipping()
+
+        return when {
+          order == null -> OrderDetailsState.Loading
+          else -> OrderDetailsState.Success(
+            order = order,
+            paymentStatus = paymentStatus,
+            shippingInfo = shippingInfo,
+          ) { event ->
+            handleEvent(event)
+          }
+        }
+      }
+
+      @Composable
+      private fun observeOrder(): Order? {
+        return produceRetainedState<Order?>(null) {
+          orderRepository.observeOrder(screen.orderId).collect { value = it }
+        }.value
+      }
+
+      @Composable
+      private fun observePaymentStatus(): PaymentStatus {
+        return produceRetainedState(PaymentStatus.Unknown) {
+          paymentRepository.observePaymentStatus(screen.orderId).collect { value = it }
+        }.value
+      }
+
+      @Composable
+      private fun observeShipping(): ShippingInfo? {
+        return produceRetainedState<ShippingInfo?>(null) {
+          orderRepository.observeShipping(screen.orderId).collect { value = it }
+        }.value
+      }
+
+      private fun handleEvent(event: OrderDetailsEvent) {
+        when (event) {
+          is OrderDetailsEvent.TrackPackage ->
+            navigator.goTo(TrackingScreen(event.trackingId))
+          is OrderDetailsEvent.ContactSupport ->
+            navigator.goTo(SupportScreen(screen.orderId))
+          is OrderDetailsEvent.RequestRefund ->
+            navigator.goTo(RefundScreen(screen.orderId))
+        }
+      }
+    }
+    ```
+
+=== "State & Events"
+
+    ```kotlin
+    // Screen with navigation parameter
+    data class OrderDetailsScreen(val orderId: String) : Screen
+
+    // State
+    sealed interface OrderDetailsState : CircuitUiState {
+      data object Loading : OrderDetailsState
+      data class Success(
+        val order: Order,
+        val paymentStatus: PaymentStatus,
+        val shippingInfo: ShippingInfo?,
+        val eventSink: (OrderDetailsEvent) -> Unit,
+      ) : OrderDetailsState
+    }
+
+    // Events
+    sealed interface OrderDetailsEvent : CircuitUiEvent {
+      data class TrackPackage(val trackingId: String) : OrderDetailsEvent
+      data object ContactSupport : OrderDetailsEvent
+      data object RequestRefund : OrderDetailsEvent
+    }
+    ```
+
+**Key techniques**:
+
+- Extract `@Composable` private functions for observation logic (e.g., `observeOrder()`)
+- Extract non-composable private functions for event handling (e.g., `handleEvent()`)
+- Keep `present()` focused on coordinating and combining state
+- Each helper function should have a single responsibility
 
 ### Pattern 2: Composite Presenters
 
@@ -138,18 +196,83 @@ class CartPresenter(
 
 **Example: User dashboard with profile and settings**
 
-=== "Presenters"
+=== "Dashboard (Composite)"
 
     ```kotlin
-    // Child presenters
+    // Composite presenter combining child presenters
+    class DashboardPresenter(
+      private val screen: DashboardScreen,
+      private val profilePresenter: ProfilePresenter,
+      private val settingsPresenter: SettingsPresenter,
+      private val refreshUseCase: RefreshDashboardUseCase,
+    ) : Presenter<DashboardState> {
+
+      @Composable
+      override fun present(): DashboardState {
+        val scope = rememberCoroutineScope()
+        var refreshState by rememberRetained {
+          mutableStateOf<DashboardRefreshState>(DashboardRefreshState.Idle)
+        }
+
+        val profileState = profilePresenter.present()
+        val settingsState = settingsPresenter.present()
+
+        return when (profileState) {
+          is ProfileState.Loading -> DashboardState.Loading
+          is ProfileState.Loaded -> DashboardState.Loaded(
+            profile = profileState,
+            settings = settingsState,
+            refreshState = refreshState,
+          ) { event ->
+            when (event) {
+              DashboardEvent.Refresh -> {
+                scope.launch {
+                  refreshState = DashboardRefreshState.Refreshing
+                  refreshUseCase.refresh()
+                  refreshState = DashboardRefreshState.Idle
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    data object DashboardScreen : Screen
+
+    sealed interface DashboardState : CircuitUiState {
+      data object Loading : DashboardState
+      data class Loaded(
+        val profile: ProfileState.Loaded,
+        val settings: SettingsState,
+        val refreshState: DashboardRefreshState,
+        val eventSink: (DashboardEvent) -> Unit,
+      ) : DashboardState
+    }
+
+    sealed interface DashboardRefreshState {
+      data object Idle : DashboardRefreshState
+      data object Refreshing : DashboardRefreshState
+    }
+
+    sealed interface DashboardEvent : CircuitUiEvent {
+      data object Refresh : DashboardEvent
+    }
+    ```
+
+=== "ProfilePresenter"
+
+    ```kotlin
+    // Child presenter - can be used standalone or embedded
     class ProfilePresenter(
+      private val screen: ProfileScreen,
       private val userRepository: UserRepository,
     ) : Presenter<ProfileState> {
 
       @Composable
       override fun present(): ProfileState {
         var bio by rememberRetained { mutableStateOf("") }
-        val user by produceState<User?>(null) {
+        val user by produceRetainedState<User?>(null) {
           value = userRepository.getCurrentUser()
           bio = value?.bio ?: ""
         }
@@ -171,13 +294,34 @@ class CartPresenter(
       }
     }
 
+    data object ProfileScreen : Screen
+
+    sealed interface ProfileState : CircuitUiState {
+      data object Loading : ProfileState
+      data class Loaded(
+        val username: String,
+        val bio: String,
+        val eventSink: (ProfileEvent) -> Unit,
+      ) : ProfileState
+    }
+
+    sealed interface ProfileEvent : CircuitUiEvent {
+      data class UpdateBio(val newBio: String) : ProfileEvent
+    }
+    ```
+
+=== "SettingsPresenter"
+
+    ```kotlin
+    // Child presenter - can be used standalone or embedded
     class SettingsPresenter(
+      private val screen: SettingsScreen,
       private val settingsRepository: SettingsRepository,
     ) : Presenter<SettingsState> {
 
       @Composable
       override fun present(): SettingsState {
-        val settings by produceState(Settings()) {
+        val settings by produceRetainedState(Settings()) {
           settingsRepository.observeSettings().collect { value = it }
         }
 
@@ -195,65 +339,8 @@ class CartPresenter(
       }
     }
 
-    // Composite presenter combining child presenters
-    class DashboardPresenter(
-      private val profilePresenter: ProfilePresenter,
-      private val settingsPresenter: SettingsPresenter,
-      private val refreshUseCase: RefreshDashboardUseCase,
-    ) : Presenter<DashboardState> {
-
-      @Composable
-      override fun present(): DashboardState {
-        var refreshState by remember {
-          mutableStateOf<DashboardRefreshState>(DashboardRefreshState.Idle)
-        }
-
-        val profileState = profilePresenter.present()
-        val settingsState = settingsPresenter.present()
-
-        return when (profileState) {
-          is ProfileState.Loading -> DashboardState.Loading
-          is ProfileState.Loaded -> DashboardState.Loaded(
-            profile = profileState,
-            settings = settingsState,
-            refreshState = refreshState,
-          ) { event ->
-            when (event) {
-              DashboardEvent.Refresh -> {
-                refreshState = DashboardRefreshState.Refreshing
-                refreshUseCase.refresh()
-                refreshState = DashboardRefreshState.Idle
-              }
-            }
-          }
-        }
-      }
-    }
-    ```
-
-=== "State & Events"
-
-    ```kotlin
-    // Screens are just navigation markers
-    data object ProfileScreen : Screen
     data object SettingsScreen : Screen
-    data object DashboardScreen : Screen
 
-    // Profile state and events
-    sealed interface ProfileState : CircuitUiState {
-      data object Loading : ProfileState
-      data class Loaded(
-        val username: String,
-        val bio: String,
-        val eventSink: (ProfileEvent) -> Unit,
-      ) : ProfileState
-    }
-
-    sealed interface ProfileEvent : CircuitUiEvent {
-      data class UpdateBio(val newBio: String) : ProfileEvent
-    }
-
-    // Settings state and events
     data class SettingsState(
       val isDarkMode: Boolean,
       val notificationsEnabled: Boolean,
@@ -263,26 +350,6 @@ class CartPresenter(
     sealed interface SettingsEvent : CircuitUiEvent {
       data class ToggleDarkMode(val enabled: Boolean) : SettingsEvent
       data class ToggleNotifications(val enabled: Boolean) : SettingsEvent
-    }
-
-    // Dashboard state and events
-    sealed interface DashboardState : CircuitUiState {
-      data object Loading : DashboardState
-      data class Loaded(
-        val profile: ProfileState.Loaded,
-        val settings: SettingsState,
-        val refreshState: DashboardRefreshState,
-        val eventSink: (DashboardEvent) -> Unit,
-      ) : DashboardState
-    }
-
-    sealed interface DashboardRefreshState {
-      data object Idle : DashboardRefreshState
-      data object Refreshing : DashboardRefreshState
-    }
-
-    sealed interface DashboardEvent : CircuitUiEvent {
-      data object Refresh : DashboardEvent
     }
     ```
 
@@ -339,105 +406,111 @@ class CartPresenter(
 !!! tip "Injecting Child Presenters"
     How you get child presenters into the composite presenter is flexible: inject them directly, create them inline, or pull them from a Circuit instance. The key is that shared state should flow through the data layer when possible.
 
-### Pattern 3: Presenter Decomposition
+### Pattern 3: StateProducer
 
-**Presenter decomposition** involves breaking down a complex `present()` method into smaller `@Composable` helper functions without extracting full presenters.
+**StateProducers** are reusable components that produce state but aren't used on their own. Unlike full presenters, they don't implement the `Presenter` interface and are always consumed by a parent presenter that coordinates their output.
 
 **When to use**:
 
-- Single presenter handling multiple related concerns
-- Improving organization without full extraction
-- Observation logic that can be extracted
+- Reusable state logic shared across multiple screens
+- Components that wouldn't make sense as standalone screens
+- Parent presenter needs to coordinate multiple related pieces of state
+- Extracting repetitive observation patterns into a single place
 
-**Example: Order details with extracted observation**
+**Example: Product details with availability check**
 
-```kotlin
-// Screen with navigation parameter
-data class OrderDetailsScreen(val orderId: String) : Screen
+=== "ProductDetailsPresenter"
 
-// State and events
-sealed interface OrderDetailsState : CircuitUiState {
-  data object Loading : OrderDetailsState
-  data class Success(
-    val order: Order,
-    val paymentStatus: PaymentStatus,
-    val shippingInfo: ShippingInfo?,
-    val eventSink: (OrderDetailsEvent) -> Unit,
-  ) : OrderDetailsState
-}
+    ```kotlin
+    // Parent presenter coordinates the producer
+    class ProductDetailsPresenter(
+      private val screen: ProductDetailsScreen,
+      private val navigator: Navigator,
+      private val productRepository: ProductRepository,
+      private val availabilityProducer: AvailabilityStateProducer,
+    ) : Presenter<ProductDetailsState> {
 
-sealed interface OrderDetailsEvent : CircuitUiEvent {
-  data class TrackPackage(val trackingId: String) : OrderDetailsEvent
-  data object ContactSupport : OrderDetailsEvent
-  data object RequestRefund : OrderDetailsEvent
-}
+      @Composable
+      override fun present(): ProductDetailsState {
+        val product by produceRetainedState<Product?>(null) {
+          value = productRepository.getProduct(screen.productId)
+        }
 
-class OrderDetailsPresenter(
-  private val screen: OrderDetailsScreen,
-  private val orderRepository: OrderRepository,
-  private val paymentRepository: PaymentRepository,
-  private val navigator: Navigator,
-) : Presenter<OrderDetailsState> {
+        // Producer handles availability presentation logic separately
+        val availability = availabilityProducer.produce(screen.productId)
 
-  @Composable
-  override fun present(): OrderDetailsState {
-    // Extracted observation logic
-    val order = observeOrder()
-    val paymentStatus = observePaymentStatus()
-    val shippingInfo = observeShipping()
-
-    // Combine into state
-    return when {
-      order == null -> OrderDetailsState.Loading
-      else -> OrderDetailsState.Success(
-        order = order,
-        paymentStatus = paymentStatus,
-        shippingInfo = shippingInfo,
-      ) { event ->
-        handleEvent(event)
+        return when (product) {
+          null -> ProductDetailsState.Loading
+          else -> ProductDetailsState.Loaded(
+            product = product,
+            availability = availability,
+          ) { event ->
+            when (event) {
+              is ProductDetailsEvent.AddToCart -> {
+                productRepository.addToCart(screen.productId)
+                navigator.goTo(CartScreen)
+              }
+            }
+          }
+        }
       }
     }
-  }
 
-  @Composable
-  private fun observeOrder(): Order? {
-    return produceState<Order?>(null) {
-      orderRepository.observeOrder(screen.orderId).collect { value = it }
-    }.value
-  }
+    data class ProductDetailsScreen(val productId: String) : Screen
 
-  @Composable
-  private fun observePaymentStatus(): PaymentStatus {
-    return produceState(PaymentStatus.Unknown) {
-      paymentRepository.observePaymentStatus(screen.orderId).collect { value = it }
-    }.value
-  }
-
-  @Composable
-  private fun observeShipping(): ShippingInfo? {
-    return produceState<ShippingInfo?>(null) {
-      orderRepository.observeShipping(screen.orderId).collect { value = it }
-    }.value
-  }
-
-  private fun handleEvent(event: OrderDetailsEvent) {
-    when (event) {
-      is OrderDetailsEvent.TrackPackage ->
-        navigator.goTo(TrackingScreen(event.trackingId))
-      is OrderDetailsEvent.ContactSupport ->
-        navigator.goTo(SupportScreen(screen.orderId))
-      is OrderDetailsEvent.RequestRefund ->
-        navigator.goTo(RefundScreen(screen.orderId))
+    sealed interface ProductDetailsState : CircuitUiState {
+      data object Loading : ProductDetailsState
+      data class Loaded(
+        val product: Product,
+        val availability: AvailabilityState,
+        val eventSink: (ProductDetailsEvent) -> Unit,
+      ) : ProductDetailsState
     }
-  }
-}
-```
 
-**Key techniques**:
+    sealed interface ProductDetailsEvent : CircuitUiEvent {
+      data object AddToCart : ProductDetailsEvent
+    }
 
-- Extract `@Composable` functions for observation logic
-- Extract non-composable functions for event handling
-- Use multiple small `LaunchedEffect` blocks instead of one large one
+    data object CartScreen : Screen
+    ```
+
+=== "AvailabilityStateProducer"
+
+    ```kotlin
+    // Reusable producer - used by ProductDetails, Wishlist, etc.
+    class AvailabilityStateProducer(
+      private val inventoryRepository: InventoryRepository,
+    ) {
+      @Composable
+      fun produce(productId: String): AvailabilityState {
+        val inventory by produceRetainedState<Inventory?>(null) {
+          inventoryRepository.observeInventory(productId).collect { value = it }
+        }
+
+        return when {
+          inventory == null -> AvailabilityState.Checking
+          inventory.quantity > 10 -> AvailabilityState.InStock
+          inventory.quantity > 0 -> AvailabilityState.LowStock(inventory.quantity)
+          else -> AvailabilityState.OutOfStock
+        }
+      }
+    }
+
+    sealed interface AvailabilityState {
+      data object Checking : AvailabilityState
+      data object InStock : AvailabilityState
+      data class LowStock(val remaining: Int) : AvailabilityState
+      data object OutOfStock : AvailabilityState
+    }
+    ```
+
+**Key characteristics**:
+
+- Producer is injected into the parent presenter
+- Parent typically handles events and coordinates state
+- Producers can have their own event sinks, though it's less common
+- Reusable across multiple screens that need the same state logic
+- Never used standalone; always consumed by a parent presenter
 
 ---
 
@@ -462,96 +535,62 @@ Business logic should live elsewhere:
 
 ### Using Use Cases in Presenters
 
-Inject use cases into presenters to keep presentation logic clean:
+This example brings together multiple patterns: decomposed observation functions (Pattern 1), a StateProducer (Pattern 3), use cases for business logic, and an internal state holder class.
 
 === "Presenter"
 
     ```kotlin
     class CheckoutPresenter(
+      private val screen: CheckoutScreen,
+      private val navigator: Navigator,
+      private val cartTotalProducer: CartTotalStateProducer,
+      private val observeOrderStatus: ObserveOrderStatusUseCase,
       private val validateEmail: ValidateEmailUseCase,
       private val placeOrder: PlaceOrderUseCase,
-      private val observeCartTotal: ObserveCartTotalUseCase,
-      private val navigator: Navigator,
     ) : Presenter<CheckoutState> {
 
       @Composable
       override fun present(): CheckoutState {
+        val cartTotalState = cartTotalProducer.produce()
         val emailField = rememberRetained { EmailFieldState(validateEmail) }
-        var orderState by remember { mutableStateOf<CheckoutOrderState>(CheckoutOrderState.Idle) }
+        val orderStatus = observeOrderStatus(screen.orderId)
 
-        val cartTotal by produceState<CartTotal?>(null) {
-          observeCartTotal().collect { value = it }
-        }
-
-        // Handle order submission
-        LaunchedEffect(orderState) {
-          if (orderState is CheckoutOrderState.Submitting) {
-            when (val result = placeOrder(/* cart */)) {
-              is OrderResult.Success -> {
-                orderState = CheckoutOrderState.Idle
-                navigator.goTo(OrderConfirmationScreen(result.order.id))
-              }
-              is OrderResult.ItemsUnavailable -> {
-                orderState = CheckoutOrderState.Error("Some items are no longer available")
-              }
-            }
-          }
-        }
-
-        return when (cartTotal) {
-          null -> CheckoutState.Loading
-          else -> CheckoutState.Ready(
+        return when (cartTotalState) {
+          is CartTotalState.Loading -> CheckoutState.Loading
+          is CartTotalState.Ready -> CheckoutState.Ready(
             email = emailField.value,
             emailError = emailField.error,
-            cartTotal = cartTotal,
-            orderState = orderState,
+            cartTotal = cartTotalState.total,
+            orderStatus = orderStatus,
           ) { event ->
             when (event) {
               is CheckoutEvent.EmailChanged -> emailField.onValueChange(event.email)
               is CheckoutEvent.SubmitOrder -> {
-                if (emailField.validate()) {
-                  orderState = CheckoutOrderState.Submitting
+                if (emailField.isValid) {
+                  placeOrder(screen.orderId)
                 }
               }
             }
           }
         }
       }
-    }
-    ```
 
-=== "State & Events"
-
-    ```kotlin
-    // Screen is just a navigation marker
-    data object CheckoutScreen : Screen
-
-    // State
-    sealed interface CheckoutState : CircuitUiState {
-      data object Loading : CheckoutState
-      data class Ready(
-        val email: String,
-        val emailError: String?,
-        val cartTotal: CartTotal,
-        val orderState: CheckoutOrderState,
-        val eventSink: (CheckoutEvent) -> Unit,
-      ) : CheckoutState
+      @Composable
+      private fun observeOrderStatus(orderId: String): OrderStatus {
+        val status by produceRetainedState<OrderStatus>(OrderStatus.Idle) {
+          observeOrderStatus(orderId).collect { status ->
+            // Navigate on success
+            if (status is OrderStatus.Success) {
+              navigator.goTo(OrderConfirmationScreen(status.orderId))
+            }
+            value = status
+          }
+        }
+        return status
+      }
     }
 
-    // Events
-    sealed interface CheckoutEvent : CircuitUiEvent {
-      data class EmailChanged(val email: String) : CheckoutEvent
-      data object SubmitOrder : CheckoutEvent
-    }
-
-    // Internal state for order submission
-    sealed interface CheckoutOrderState {
-      data object Idle : CheckoutOrderState
-      data object Submitting : CheckoutOrderState
-      data class Error(val message: String) : CheckoutOrderState
-    }
-
-    // Encapsulates email field state and validation (internal to presenter)
+    // Internal helper class for managing email field state
     private class EmailFieldState(
       private val validateEmail: ValidateEmailUseCase,
     ) {
@@ -560,20 +599,19 @@ Inject use cases into presenters to keep presentation logic clean:
       var error by mutableStateOf<String?>(null)
         private set
 
+      val isValid: Boolean
+        get() = error == null
+
       fun onValueChange(newValue: String) {
         value = newValue
-        error = when (val result = validateEmail(newValue)) {
-          is ValidationResult.Error -> result.message
-          ValidationResult.Valid -> null
-        }
+        validate()
       }
 
-      fun validate(): Boolean {
+      private fun validate() {
         error = when (val result = validateEmail(value)) {
           is ValidationResult.Error -> result.message
           ValidationResult.Valid -> null
         }
-        return error == null
       }
     }
     ```
@@ -592,25 +630,89 @@ Inject use cases into presenters to keep presentation logic clean:
       }
     }
 
-    // Suspend use case for one-shot operations
+    // Use case delegates to repository which handles the async operation
     class PlaceOrderUseCase(
       private val orderRepository: OrderRepository,
-      private val inventoryRepository: InventoryRepository,
-      private val analyticsTracker: AnalyticsTracker,
     ) {
-      suspend operator fun invoke(cart: Cart): OrderResult {
-        val unavailable = cart.items.filter { !inventoryRepository.isAvailable(it.id) }
-        if (unavailable.isNotEmpty()) {
-          return OrderResult.ItemsUnavailable(unavailable)
-        }
-
-        val order = orderRepository.createOrder(cart)
-        analyticsTracker.trackOrderPlaced(order)
-        return OrderResult.Success(order)
+      operator fun invoke(orderId: String) {
+        orderRepository.placeOrder(orderId)
       }
     }
 
-    // Flow-based use case for observing data
+    // Flow-based use case for observing order status
+    class ObserveOrderStatusUseCase(
+      private val orderRepository: OrderRepository,
+    ) {
+      operator fun invoke(orderId: String): Flow<OrderStatus> {
+        return orderRepository.observeOrderStatus(orderId)
+      }
+    }
+
+    sealed interface OrderStatus {
+      data object Idle : OrderStatus
+      data object Submitting : OrderStatus
+      data class Success(val orderId: String) : OrderStatus
+      data class Error(val message: String) : OrderStatus
+    }
+
+    sealed interface ValidationResult {
+      data object Valid : ValidationResult
+      data class Error(val message: String) : ValidationResult
+    }
+    ```
+
+=== "State & Events"
+
+    ```kotlin
+    // Screens
+    data class CheckoutScreen(val orderId: String) : Screen
+    data class OrderConfirmationScreen(val orderId: String) : Screen
+
+    // State
+    sealed interface CheckoutState : CircuitUiState {
+      data object Loading : CheckoutState
+      data class Ready(
+        val email: String,
+        val emailError: String?,
+        val cartTotal: CartTotal,
+        val orderStatus: OrderStatus,
+        val eventSink: (CheckoutEvent) -> Unit,
+      ) : CheckoutState
+    }
+
+    // Events
+    sealed interface CheckoutEvent : CircuitUiEvent {
+      data class EmailChanged(val email: String) : CheckoutEvent
+      data object SubmitOrder : CheckoutEvent
+    }
+    ```
+
+=== "StateProducer"
+
+    ```kotlin
+    // Reusable producer for cart total observation
+    class CartTotalStateProducer(
+      private val observeCartTotal: ObserveCartTotalUseCase,
+    ) {
+      @Composable
+      fun produce(): CartTotalState {
+        val cartTotal by produceRetainedState<CartTotal?>(null) {
+          observeCartTotal().collect { value = it }
+        }
+
+        return when (cartTotal) {
+          null -> CartTotalState.Loading
+          else -> CartTotalState.Ready(cartTotal)
+        }
+      }
+    }
+
+    sealed interface CartTotalState {
+      data object Loading : CartTotalState
+      data class Ready(val total: CartTotal) : CartTotalState
+    }
+
+    // Flow-based use case for observing cart data
     class ObserveCartTotalUseCase(
       private val cartRepository: CartRepository,
       private val pricingService: PricingService,
@@ -634,49 +736,19 @@ Extract business logic into a use case when:
 - The same logic is needed in multiple presenters
 - The logic involves multiple repositories or services
 - The logic has complex rules that warrant dedicated tests
-- You want to test business logic independently from UI logic
+- You want to test business logic independently from presentation logic
 
 !!! tip "Use Cases vs Repositories"
     Repositories handle data access (fetching, caching, persistence). Use cases handle business operations that may coordinate multiple repositories and apply business rules. A use case might call several repositories, but a repository should never call a use case.
 
 ---
 
-## Decision Framework
-
-| Aspect | StateProducer | Composite Presenter | Decomposition |
-|--------|---------------|---------------------|---------------|
-| **Reusability** | High (shared logic) | High (full screens) | Low |
-| **Standalone** | No, always consumed by parent | Yes, can be used alone | No |
-| **State Sharing** | Direct via parent | Through data layer | Within presenter |
-| **Event Handling** | Via parent | Each handles own | Via parent |
-| **Testing** | Test with Molecule | Test each presenter | Test whole presenter |
-| **Best For** | Shared state logic | Dashboard-style screens | Organize large presenter |
-
----
-
 ## Testing Strategies
 
-### Testing StateProducers
+One of the benefits of these patterns is improved testability. Here's how to test each pattern effectively.
 
-Test state producers using Molecule directly:
-
-```kotlin
-@Test
-fun `produces item state from repository`() = runTest {
-  val repository = FakeCartRepository().apply {
-    setItem("123", CartItem(id = "123", name = "Widget", price = 9.99))
-  }
-  val producer = CartItemStateProducer(repository)
-
-  moleculeFlow(RecompositionMode.Immediate) {
-    producer.produce("123")
-  }.test {
-    val state = awaitItem() as CartItemState.Loaded
-    assertEquals("Widget", state.item.name)
-    assertEquals(1, state.quantity)
-  }
-}
-```
+!!! note "Testing Decomposed Presenters"
+    Decomposed presenters are tested the same way as any other presenter - the extracted helper functions are implementation details. Use `Presenter.test()` as usual.
 
 ### Testing Composite Presenters
 
@@ -693,6 +765,7 @@ fun `dashboard combines profile and settings state`() = runTest {
   )
 
   val presenter = DashboardPresenter(
+    screen = DashboardScreen,
     profilePresenter = profilePresenter,
     settingsPresenter = settingsPresenter,
     refreshUseCase = FakeRefreshUseCase(),
@@ -706,15 +779,37 @@ fun `dashboard combines profile and settings state`() = runTest {
 }
 ```
 
+### Testing StateProducers
+
+Test state producers using Molecule directly:
+
+```kotlin
+@Test
+fun `produces availability state from repository`() = runTest {
+  val repository = FakeInventoryRepository().apply {
+    setInventory("product-123", Inventory(quantity = 5))
+  }
+  val producer = AvailabilityStateProducer(repository)
+
+  moleculeFlow(RecompositionMode.Immediate) {
+    producer.produce("product-123")
+  }.test {
+    val state = awaitItem() as AvailabilityState.LowStock
+    assertEquals(5, state.remaining)
+  }
+}
+```
+
 ### Testing Event Flow
 
-For presenters with complex event routing, use `TestEventSink`:
+For presenters with complex event routing, emit events through the state's `eventSink` and verify the expected side effects:
 
 ```kotlin
 @Test
 fun `refresh event triggers refresh use case`() = runTest {
   val refreshUseCase = FakeRefreshUseCase()
   val presenter = DashboardPresenter(
+    screen = DashboardScreen,
     profilePresenter = FakeProfilePresenter(),
     settingsPresenter = FakeSettingsPresenter(),
     refreshUseCase = refreshUseCase,
@@ -730,11 +825,13 @@ fun `refresh event triggers refresh use case`() = runTest {
 
 ---
 
-## Anti-Patterns to Avoid
+## Common Pitfalls
+
+These are patterns we've seen cause issues in practice. If you spot them in your code, consider refactoring.
 
 ### 1. Giant Presenters
 
-**Problem**: A single presenter file exceeds 500 lines with many responsibilities.
+**Problem**: A presenter file grows large with many responsibilities.
 
 **Solution**: Apply one of the composition patterns to break it down.
 
@@ -764,18 +861,7 @@ data class State(
 )
 ```
 
-### 3. Leaky State Retention
-
-**Problem**: Retaining `Navigator`, `Context`, or other framework objects.
-
-```kotlin
-// Avoid - will cause memory leaks!
-var navigator by rememberRetained { mutableStateOf(navigator) }
-```
-
-**Solution**: Only retain data, not framework objects. Access framework objects through injection.
-
-### 4. Event Handler Spaghetti
+### 3. Event Handler Spaghetti
 
 **Problem**: Deeply nested `when` statements in event handlers.
 
@@ -792,11 +878,13 @@ var navigator by rememberRetained { mutableStateOf(navigator) }
 }
 ```
 
-**Solution**: Extract event handlers into separate functions or use sealed classes with flatter hierarchies.
+**Solution**: Extract event handlers into separate functions, use sealed classes with flatter hierarchies, or encapsulate related state and handlers into helper classes (like `EmailFieldState` in the Use Cases example).
 
 ---
 
 ## Migration Recipes
+
+Ready to refactor? These step-by-step recipes show how to apply the patterns to existing code.
 
 ### Recipe: Boolean Flags to Sealed States
 
@@ -837,46 +925,6 @@ sealed interface SuccessEvent : CircuitUiEvent {
 }
 ```
 
-### Recipe: Extract StateProducer from Large Presenter
-
-1. Identify a cohesive piece of state with its observation logic
-2. Create a new class with a `@Composable` function that returns the state
-3. Inject the producer into the original presenter
-4. Call the producer's function in `present()`
-5. Update event handling to route through the parent
-
-**Before** (state logic embedded in presenter):
-
-```kotlin
-@Composable
-override fun present(): OrderState {
-  // This user-related logic could be reused elsewhere
-  val user by produceState<User?>(null) {
-    value = userRepository.getCurrentUser()
-  }
-  var isUserExpanded by remember { mutableStateOf(false) }
-  // ... rest of presenter
-}
-```
-
-**After** (extracted to producer):
-
-```kotlin
-class UserStateProducer(private val userRepository: UserRepository) {
-  @Composable
-  fun produce(): UserSectionState {
-    val user by produceState<User?>(null) {
-      value = userRepository.getCurrentUser()
-    }
-    var isExpanded by remember { mutableStateOf(false) }
-    return UserSectionState(user, isExpanded) { isExpanded = !isExpanded }
-  }
-}
-
-// In presenter
-val userState = userStateProducer.produce()
-```
-
 ### Recipe: Large Presenter to Composite
 
 1. Identify logically independent sections of the presenter
@@ -891,12 +939,12 @@ val userState = userStateProducer.produce()
 @Composable
 override fun present(): AccountState {
   // Profile logic
-  val profile by produceState<Profile?>(null) { ... }
+  val profile by produceRetainedState<Profile?>(null) { ... }
   // Settings logic
-  val settings by produceState<Settings?>(null) { ... }
+  val settings by produceRetainedState<Settings?>(null) { ... }
   // Billing logic
-  val billing by produceState<Billing?>(null) { ... }
-  // 500+ more lines...
+  val billing by produceRetainedState<Billing?>(null) { ... }
+  // ... more logic
 }
 ```
 
@@ -904,6 +952,7 @@ override fun present(): AccountState {
 
 ```kotlin
 class AccountPresenter(
+  private val screen: AccountScreen,
   private val profilePresenter: ProfilePresenter,
   private val settingsPresenter: SettingsPresenter,
   private val billingPresenter: BillingPresenter,
@@ -919,3 +968,42 @@ class AccountPresenter(
 }
 ```
 
+### Recipe: Extract StateProducer from Large Presenter
+
+1. Identify a cohesive piece of state with its observation logic
+2. Create a new class with a `@Composable` function that returns the state
+3. Inject the producer into the original presenter
+4. Call the producer's function in `present()`
+5. Update event handling to route through the parent
+
+**Before** (state logic embedded in presenter):
+
+```kotlin
+@Composable
+override fun present(): OrderState {
+  // This user-related logic could be reused elsewhere
+  val user by produceRetainedState<User?>(null) {
+    value = userRepository.getCurrentUser()
+  }
+  var isUserExpanded by rememberRetained { mutableStateOf(false) }
+  // ... rest of presenter
+}
+```
+
+**After** (extracted to producer):
+
+```kotlin
+class UserStateProducer(private val userRepository: UserRepository) {
+  @Composable
+  fun produce(): UserSectionState {
+    val user by produceRetainedState<User?>(null) {
+      value = userRepository.getCurrentUser()
+    }
+    var isExpanded by rememberRetained { mutableStateOf(false) }
+    return UserSectionState(user, isExpanded) { isExpanded = !isExpanded }
+  }
+}
+
+// In presenter
+val userState = userStateProducer.produce()
+```

@@ -5,6 +5,9 @@ Scaling Presenters
 
 As your Circuit application grows, presenters naturally accumulate complexity. This guide provides patterns and recipes to keep presenters maintainable, testable, and composable.
 
+!!! info "Community Guide"
+    This guide is based on experience at Slack building and scaling a large Android application with Circuit. We welcome contributions, alternative approaches, and feedback from the community to make this guide more comprehensive.
+
 Without guidance, presenters often become monolithic:
 
 - **Event sink explosion**: Each mutable state value generally needs its own events, so the event sink grows quickly

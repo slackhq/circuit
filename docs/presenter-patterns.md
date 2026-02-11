@@ -1,9 +1,9 @@
 Scaling Presenters
 ==================
 
-As your Circuit application grows, presenters naturally accumulate complexity. This guide provides patterns and recipes to keep presenters maintainable, testable, and composable.
+## Overview
 
-## The Problem
+As your Circuit application grows, presenters naturally accumulate complexity. This guide provides patterns and recipes to keep presenters maintainable, testable, and composable.
 
 Without guidance, presenters often become monolithic:
 
@@ -12,8 +12,6 @@ Without guidance, presenters often become monolithic:
 - **Boolean flag soup**: Many boolean flags (`showWarningBanner`, `showBottomSheetA`, `showDialogB`) lead to complex UIs with conditional blocks
 - **Testing difficulties**: The more properties state has, the harder it becomes to test comprehensively
 
-## What Makes a Presenter "Scalable"
-
 A well-structured presenter exhibits these qualities:
 
 | Quality | Description |
@@ -21,400 +19,6 @@ A well-structured presenter exhibits these qualities:
 | **Single Responsibility** | Handles only presentation logic |
 | **Testable** | Can be unit tested in isolation with clear inputs and outputs |
 | **Composable** | Can be combined with other presenters without tight coupling |
-
-**Target metrics**:
-
-- 80-200 lines of code
-- 2-5 state variables
-- Clear, single purpose
-
-**Warning signs** to watch for:
-
-- 500+ lines of presenter code
-- 15+ state variables
-- Nested `when` statements in event handlers
-
----
-
-## State Management Fundamentals
-
-Before diving into composition patterns, it's important to understand state retention and structure.
-
-### State Retention Strategies
-
-Circuit offers three retention mechanisms:
-
-| Function | Survives Recomposition | Survives Back Stack | Survives Config Changes | Survives Process Death |
-|----------|----------------------|-------------------|----------------------|---------------------|
-| `remember` | Yes | No | No | No |
-| `rememberRetained` | Yes | Yes* | Yes | No |
-| `rememberSaveable` | Yes | Yes* | Yes | Yes |
-
-*If using `NavigableCircuitContent`'s default configuration.
-
-**Guidelines**:
-
-- Use `remember` for transient UI state (animations, hover states)
-- Use `rememberRetained` for data that's expensive to reload
-- Use `rememberSaveable` for user-entered data that should survive process death
-
-!!! warning "Retention Pitfalls"
-    Never retain `Navigator`, `Context`, or other framework objects in `rememberRetained` or `rememberSaveable`. These can cause memory leaks.
-
-### Sealed State Classes Over Boolean Flags
-
-Instead of multiple boolean flags:
-
-```kotlin
-// Avoid: Boolean flag soup
-data class OrderState(
-  val isLoading: Boolean,
-  val hasError: Boolean,
-  val isEmpty: Boolean,
-  val data: Order?,
-  val eventSink: (Event) -> Unit,
-) : CircuitUiState
-```
-
-Use sealed classes to model mutually exclusive states:
-
-```kotlin
-// Prefer: Sealed state hierarchy
-sealed interface OrderState : CircuitUiState {
-  data object Loading : OrderState
-  data class Error(val message: String, val eventSink: (ErrorEvent) -> Unit) : OrderState
-  data object Empty : OrderState
-  data class Success(val order: Order, val eventSink: (SuccessEvent) -> Unit) : OrderState
-}
-```
-
-### State-Specific Events
-
-Different states often support different user interactions. Rather than having a single event type with events that only apply to certain states, define events specific to each state:
-
-```kotlin
-// Avoid: Monolithic event type where some events only apply to certain states
-sealed interface OrderEvent : CircuitUiEvent {
-  data object Retry : OrderEvent        // Only valid in Error state
-  data object Refresh : OrderEvent      // Only valid in Success state
-  data class UpdateQuantity(val quantity: Int) : OrderEvent  // Only valid in Success state
-}
-```
-
-```kotlin
-// Prefer: State-specific events
-sealed interface ErrorEvent : CircuitUiEvent {
-  data object Retry : ErrorEvent
-}
-
-sealed interface SuccessEvent : CircuitUiEvent {
-  data object Refresh : SuccessEvent
-  data class UpdateQuantity(val quantity: Int) : SuccessEvent
-}
-```
-
-This ensures events are only available when they make sense:
-
-```kotlin
-@Composable
-fun OrderScreen(state: OrderState, modifier: Modifier = Modifier) {
-  when (state) {
-    is OrderState.Loading -> LoadingIndicator()
-    is OrderState.Empty -> EmptyMessage()
-    is OrderState.Error -> {
-      ErrorMessage(
-        message = state.message,
-        // Only Retry is available here
-        onRetry = { state.eventSink(ErrorEvent.Retry) },
-      )
-    }
-    is OrderState.Success -> {
-      OrderDetails(
-        order = state.order,
-        // Refresh and UpdateQuantity are available here
-        onRefresh = { state.eventSink(SuccessEvent.Refresh) },
-        onQuantityChange = { state.eventSink(SuccessEvent.UpdateQuantity(it)) },
-      )
-    }
-  }
-}
-```
-
-The presenter handles each event type in the appropriate state:
-
-```kotlin
-@Composable
-override fun present(): OrderState {
-  var order by remember { mutableStateOf<Order?>(null) }
-  var error by remember { mutableStateOf<String?>(null) }
-
-  // ... loading logic ...
-
-  return when {
-    error != null -> OrderState.Error(error) { event ->
-      when (event) {
-        ErrorEvent.Retry -> {
-          error = null
-          // trigger reload
-        }
-      }
-    }
-    order == null -> OrderState.Loading
-    order.items.isEmpty() -> OrderState.Empty
-    else -> OrderState.Success(order) { event ->
-      when (event) {
-        SuccessEvent.Refresh -> { /* refresh order */ }
-        is SuccessEvent.UpdateQuantity -> { /* update quantity */ }
-      }
-    }
-  }
-}
-```
-
-This approach:
-
-- Makes invalid states unrepresentable
-- Ensures events are only available when they're valid
-- Simplifies UI rendering logic
-- Provides clearer testing scenarios
-- Eliminates impossible event handling (no need to handle `Retry` in `Success` state)
-
----
-
-## Use Cases: Separating Business Logic
-
-**Use cases** (also called interactors) encapsulate business logic in small, focused classes that can be injected into presenters and state producers. They separate "what the app does" from "how it's presented."
-
-### Why Use Cases?
-
-Presenters should focus on:
-
-- Observing data and transforming it into UI state
-- Routing events to the appropriate handlers
-- Managing UI-specific concerns (loading states, error display)
-
-Business logic should live elsewhere:
-
-- Validation rules
-- Data transformations
-- Coordinating multiple repository calls
-- Business rules and policies
-
-### Defining Use Cases
-
-Use cases are typically simple classes with a single public method. They can be synchronous, suspend functions, or return Flows:
-
-```kotlin
-// Synchronous use case for validation
-class ValidateEmailUseCase {
-  operator fun invoke(email: String): ValidationResult {
-    return when {
-      email.isBlank() -> ValidationResult.Error("Email is required")
-      !email.contains("@") -> ValidationResult.Error("Invalid email format")
-      else -> ValidationResult.Valid
-    }
-  }
-}
-
-// Suspend use case for one-shot operations
-class PlaceOrderUseCase(
-  private val orderRepository: OrderRepository,
-  private val inventoryRepository: InventoryRepository,
-  private val analyticsTracker: AnalyticsTracker,
-) {
-  suspend operator fun invoke(cart: Cart): OrderResult {
-    // Check inventory
-    val unavailable = cart.items.filter { !inventoryRepository.isAvailable(it.id) }
-    if (unavailable.isNotEmpty()) {
-      return OrderResult.ItemsUnavailable(unavailable)
-    }
-
-    // Place order
-    val order = orderRepository.createOrder(cart)
-
-    // Track analytics
-    analyticsTracker.trackOrderPlaced(order)
-
-    return OrderResult.Success(order)
-  }
-}
-
-// Flow-based use case for observing data
-class ObserveCartTotalUseCase(
-  private val cartRepository: CartRepository,
-  private val pricingService: PricingService,
-) {
-  operator fun invoke(): Flow<CartTotal> {
-    return cartRepository.observeCart()
-      .map { cart ->
-        val subtotal = cart.items.sumOf { it.price * it.quantity }
-        val discount = pricingService.calculateDiscount(cart)
-        val tax = pricingService.calculateTax(subtotal - discount)
-        CartTotal(subtotal, discount, tax)
-      }
-  }
-}
-```
-
-### Using Use Cases in Presenters
-
-Inject use cases into presenters to keep presentation logic clean:
-
-```kotlin
-// Screen definition with sealed state and events
-data object CheckoutScreen : Screen {
-  sealed interface State : CircuitUiState {
-    data object Loading : State
-    data class Ready(
-      val email: String,
-      val emailError: String?,
-      val cartTotal: CartTotal,
-      val orderState: OrderState,
-      val eventSink: (Event) -> Unit,
-    ) : State
-  }
-
-  sealed interface Event : CircuitUiEvent {
-    data class EmailChanged(val email: String) : Event
-    data object SubmitOrder : Event
-  }
-
-  // Order submission state (internal to presenter)
-  sealed interface OrderState {
-    data object Idle : OrderState
-    data object Submitting : OrderState
-    data class Error(val message: String) : OrderState
-  }
-}
-
-// Encapsulates email field state and validation
-private class EmailFieldState(
-  private val validateEmail: ValidateEmailUseCase,
-) {
-  var value by mutableStateOf("")
-    private set
-  var error by mutableStateOf<String?>(null)
-    private set
-
-  fun onValueChange(newValue: String) {
-    value = newValue
-    error = when (val result = validateEmail(newValue)) {
-      is ValidationResult.Error -> result.message
-      ValidationResult.Valid -> null
-    }
-  }
-
-  fun validate(): Boolean {
-    // Trigger validation and update error state
-    error = when (val result = validateEmail(value)) {
-      is ValidationResult.Error -> result.message
-      ValidationResult.Valid -> null
-    }
-    return error == null
-  }
-}
-
-class CheckoutPresenter(
-  private val validateEmail: ValidateEmailUseCase,
-  private val placeOrder: PlaceOrderUseCase,
-  private val observeCartTotal: ObserveCartTotalUseCase,
-  private val navigator: Navigator,
-) : Presenter<CheckoutScreen.State> {
-
-  @Composable
-  override fun present(): CheckoutScreen.State {
-    val emailField = rememberRetained { EmailFieldState(validateEmail) }
-    var orderState by remember {
-      mutableStateOf<CheckoutScreen.OrderState>(CheckoutScreen.OrderState.Idle)
-    }
-
-    val cartTotal by produceState<CartTotal?>(null) {
-      observeCartTotal().collect { value = it }
-    }
-
-    // Handle order submission
-    LaunchedEffect(orderState) {
-      if (orderState is CheckoutScreen.OrderState.Submitting) {
-        when (val result = placeOrder(/* cart */)) {
-          is OrderResult.Success -> {
-            orderState = CheckoutScreen.OrderState.Idle
-            navigator.goTo(OrderConfirmationScreen(result.order.id))
-          }
-          is OrderResult.ItemsUnavailable -> {
-            orderState = CheckoutScreen.OrderState.Error("Some items are no longer available")
-          }
-        }
-      }
-    }
-
-    return when (cartTotal) {
-      null -> CheckoutScreen.State.Loading
-      else -> CheckoutScreen.State.Ready(
-        email = emailField.value,
-        emailError = emailField.error,
-        cartTotal = cartTotal,
-        orderState = orderState,
-      ) { event ->
-        when (event) {
-          is CheckoutScreen.Event.EmailChanged -> emailField.onValueChange(event.email)
-          is CheckoutScreen.Event.SubmitOrder -> {
-            if (emailField.validate()) {
-              orderState = CheckoutScreen.OrderState.Submitting
-            }
-            // If validation fails, error is already set by validate()
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-### Using Use Cases in State Producers
-
-State producers can also leverage use cases for reusable business logic:
-
-```kotlin
-class PriceSummaryStateProducer(
-  private val observeCartTotal: ObserveCartTotalUseCase,
-  private val formatCurrency: FormatCurrencyUseCase,
-) {
-  @Composable
-  fun produce(): PriceSummaryState {
-    val cartTotal by produceState<CartTotal?>(null) {
-      observeCartTotal().collect { value = it }
-    }
-
-    return when (cartTotal) {
-      null -> PriceSummaryState.Loading
-      else -> PriceSummaryState.Loaded(
-        subtotal = formatCurrency(cartTotal.subtotal),
-        discount = formatCurrency(cartTotal.discount),
-        tax = formatCurrency(cartTotal.tax),
-        total = formatCurrency(cartTotal.total),
-      )
-    }
-  }
-}
-```
-
-### When to Extract a Use Case
-
-Extract business logic into a use case when:
-
-- The same logic is needed in multiple presenters
-- The logic involves multiple repositories or services
-- The logic has complex rules that warrant dedicated tests
-- You want to test business logic independently from UI logic
-
-Keep logic inline in the presenter when:
-
-- It's simple state transformation (mapping, filtering)
-- It's only used in one place
-- Extracting it would add indirection without benefit
-
-!!! tip "Use Cases vs Repositories"
-    Repositories handle data access (fetching, caching, persistence). Use cases handle business operations that may coordinate multiple repositories and apply business rules. A use case might call several repositories, but a repository should never call a use case.
 
 ---
 
@@ -436,6 +40,20 @@ There are three primary patterns for breaking down complex presenters, each suit
 **Example: Shopping cart with item producer**
 
 ```kotlin
+// Screen is just a navigation marker
+data object CartScreen : Screen
+
+// Cart state and events
+data class CartState(
+  val items: List<CartItemState>,
+  val eventSink: (CartEvent) -> Unit,
+) : CircuitUiState
+
+sealed interface CartEvent : CircuitUiEvent {
+  data class RemoveItem(val itemId: String) : CartEvent
+  data class UpdateQuantity(val itemId: String, val quantity: Int) : CartEvent
+}
+
 // State produced by the item state producer
 sealed interface CartItemState {
   data object Loading : CartItemState
@@ -472,10 +90,10 @@ private sealed interface UpdateState {
 class CartPresenter(
   private val cartItemProducer: CartItemStateProducer,
   private val cartRepository: CartRepository,
-) : Presenter<CartScreen.State> {
+) : Presenter<CartState> {
 
   @Composable
-  override fun present(): CartScreen.State {
+  override fun present(): CartState {
     val cartItems by produceState(emptyList<String>()) {
       value = cartRepository.getCartItemIds()
     }
@@ -485,7 +103,7 @@ class CartPresenter(
       cartItemProducer.produce(itemId)
     }
 
-    return CartScreen.State(
+    return CartState(
       items = itemStates,
     ) { event ->
       when (event) {
@@ -517,197 +135,203 @@ class CartPresenter(
 
 **Example: User dashboard with profile and settings**
 
-```kotlin
-// Child screen definitions
-data object ProfileScreen : Screen {
-  sealed interface State : CircuitUiState {
-    data object Loading : State
-    data class Loaded(
-      val username: String,
-      val bio: String,
-      val eventSink: (Event) -> Unit,
-    ) : State
-  }
+=== "Presenters"
 
-  sealed interface Event : CircuitUiEvent {
-    data class UpdateBio(val newBio: String) : Event
-  }
-}
+    ```kotlin
+    // Child presenters
+    class ProfilePresenter(
+      private val userRepository: UserRepository,
+    ) : Presenter<ProfileState> {
 
-data object SettingsScreen : Screen {
-  data class State(
-    val isDarkMode: Boolean,
-    val notificationsEnabled: Boolean,
-    val eventSink: (Event) -> Unit,
-  ) : CircuitUiState
+      @Composable
+      override fun present(): ProfileState {
+        var bio by rememberRetained { mutableStateOf("") }
+        val user by produceState<User?>(null) {
+          value = userRepository.getCurrentUser()
+          bio = value?.bio ?: ""
+        }
 
-  sealed interface Event : CircuitUiEvent {
-    data class ToggleDarkMode(val enabled: Boolean) : Event
-    data class ToggleNotifications(val enabled: Boolean) : Event
-  }
-}
-
-// Composite screen combining both
-data object DashboardScreen : Screen {
-  sealed interface State : CircuitUiState {
-    data object Loading : State
-    data class Loaded(
-      val profile: ProfileScreen.State.Loaded,
-      val settings: SettingsScreen.State,
-      val refreshState: RefreshState,
-      val eventSink: (Event) -> Unit,
-    ) : State
-  }
-
-  sealed interface RefreshState {
-    data object Idle : RefreshState
-    data object Refreshing : RefreshState
-  }
-
-  sealed interface Event : CircuitUiEvent {
-    data object Refresh : Event
-  }
-}
-
-// Child presenters
-class ProfilePresenter(
-  private val userRepository: UserRepository,
-) : Presenter<ProfileScreen.State> {
-
-  @Composable
-  override fun present(): ProfileScreen.State {
-    var bio by rememberRetained { mutableStateOf("") }
-    val user by produceState<User?>(null) {
-      value = userRepository.getCurrentUser()
-      bio = value?.bio ?: ""
-    }
-
-    return when (user) {
-      null -> ProfileScreen.State.Loading
-      else -> ProfileScreen.State.Loaded(
-        username = user.username,
-        bio = bio,
-      ) { event ->
-        when (event) {
-          is ProfileScreen.Event.UpdateBio -> {
-            bio = event.newBio
-            userRepository.updateBio(event.newBio)
+        return when (user) {
+          null -> ProfileState.Loading
+          else -> ProfileState.Loaded(
+            username = user.username,
+            bio = bio,
+          ) { event ->
+            when (event) {
+              is ProfileEvent.UpdateBio -> {
+                bio = event.newBio
+                userRepository.updateBio(event.newBio)
+              }
+            }
           }
         }
       }
     }
-  }
-}
 
-class SettingsPresenter(
-  private val settingsRepository: SettingsRepository,
-) : Presenter<SettingsScreen.State> {
+    class SettingsPresenter(
+      private val settingsRepository: SettingsRepository,
+    ) : Presenter<SettingsState> {
 
-  @Composable
-  override fun present(): SettingsScreen.State {
-    val settings by produceState(Settings()) {
-      settingsRepository.observeSettings().collect { value = it }
-    }
+      @Composable
+      override fun present(): SettingsState {
+        val settings by produceState(Settings()) {
+          settingsRepository.observeSettings().collect { value = it }
+        }
 
-    return SettingsScreen.State(
-      isDarkMode = settings.isDarkMode,
-      notificationsEnabled = settings.notificationsEnabled,
-    ) { event ->
-      when (event) {
-        is SettingsScreen.Event.ToggleDarkMode ->
-          settingsRepository.setDarkMode(event.enabled)
-        is SettingsScreen.Event.ToggleNotifications ->
-          settingsRepository.setNotifications(event.enabled)
-      }
-    }
-  }
-}
-
-// Composite presenter
-class DashboardPresenter(
-  private val profilePresenter: ProfilePresenter,
-  private val settingsPresenter: SettingsPresenter,
-  private val refreshUseCase: RefreshDashboardUseCase,
-) : Presenter<DashboardScreen.State> {
-
-  @Composable
-  override fun present(): DashboardScreen.State {
-    var refreshState by remember {
-      mutableStateOf<DashboardScreen.RefreshState>(DashboardScreen.RefreshState.Idle)
-    }
-
-    val profileState = profilePresenter.present()
-    val settingsState = settingsPresenter.present()
-
-    return when (profileState) {
-      is ProfileScreen.State.Loading -> DashboardScreen.State.Loading
-      is ProfileScreen.State.Loaded -> DashboardScreen.State.Loaded(
-        profile = profileState,
-        settings = settingsState,
-        refreshState = refreshState,
-      ) { event ->
-        when (event) {
-          DashboardScreen.Event.Refresh -> {
-            refreshState = DashboardScreen.RefreshState.Refreshing
-            refreshUseCase.refresh()
-            refreshState = DashboardScreen.RefreshState.Idle
+        return SettingsState(
+          isDarkMode = settings.isDarkMode,
+          notificationsEnabled = settings.notificationsEnabled,
+        ) { event ->
+          when (event) {
+            is SettingsEvent.ToggleDarkMode ->
+              settingsRepository.setDarkMode(event.enabled)
+            is SettingsEvent.ToggleNotifications ->
+              settingsRepository.setNotifications(event.enabled)
           }
         }
       }
     }
-  }
-}
-```
 
-**Corresponding UI**:
+    // Composite presenter combining child presenters
+    class DashboardPresenter(
+      private val profilePresenter: ProfilePresenter,
+      private val settingsPresenter: SettingsPresenter,
+      private val refreshUseCase: RefreshDashboardUseCase,
+    ) : Presenter<DashboardState> {
 
-```kotlin
-@Composable
-fun Dashboard(state: DashboardScreen.State, modifier: Modifier = Modifier) {
-  when (state) {
-    is DashboardScreen.State.Loading -> LoadingIndicator()
-    is DashboardScreen.State.Loaded -> {
-      PullToRefreshBox(
-        isRefreshing = state.refreshState is DashboardScreen.RefreshState.Refreshing,
-        onRefresh = { state.eventSink(DashboardScreen.Event.Refresh) },
-        modifier = modifier,
-      ) {
-        Column {
-          Profile(state.profile)
-          Settings(state.settings)
+      @Composable
+      override fun present(): DashboardState {
+        var refreshState by remember {
+          mutableStateOf<DashboardRefreshState>(DashboardRefreshState.Idle)
+        }
+
+        val profileState = profilePresenter.present()
+        val settingsState = settingsPresenter.present()
+
+        return when (profileState) {
+          is ProfileState.Loading -> DashboardState.Loading
+          is ProfileState.Loaded -> DashboardState.Loaded(
+            profile = profileState,
+            settings = settingsState,
+            refreshState = refreshState,
+          ) { event ->
+            when (event) {
+              DashboardEvent.Refresh -> {
+                refreshState = DashboardRefreshState.Refreshing
+                refreshUseCase.refresh()
+                refreshState = DashboardRefreshState.Idle
+              }
+            }
+          }
         }
       }
     }
-  }
-}
+    ```
 
-@Composable
-fun Profile(state: ProfileScreen.State.Loaded, modifier: Modifier = Modifier) {
-  Column(modifier) {
-    Text("Username: ${state.username}")
-    TextField(
-      value = state.bio,
-      onValueChange = { state.eventSink(ProfileScreen.Event.UpdateBio(it)) },
-    )
-  }
-}
+=== "State & Events"
 
-@Composable
-fun Settings(state: SettingsScreen.State, modifier: Modifier = Modifier) {
-  Column(modifier) {
-    SwitchRow(
-      label = "Dark Mode",
-      checked = state.isDarkMode,
-      onCheckedChange = { state.eventSink(SettingsScreen.Event.ToggleDarkMode(it)) },
-    )
-    SwitchRow(
-      label = "Notifications",
-      checked = state.notificationsEnabled,
-      onCheckedChange = { state.eventSink(SettingsScreen.Event.ToggleNotifications(it)) },
-    )
-  }
-}
-```
+    ```kotlin
+    // Screens are just navigation markers
+    data object ProfileScreen : Screen
+    data object SettingsScreen : Screen
+    data object DashboardScreen : Screen
+
+    // Profile state and events
+    sealed interface ProfileState : CircuitUiState {
+      data object Loading : ProfileState
+      data class Loaded(
+        val username: String,
+        val bio: String,
+        val eventSink: (ProfileEvent) -> Unit,
+      ) : ProfileState
+    }
+
+    sealed interface ProfileEvent : CircuitUiEvent {
+      data class UpdateBio(val newBio: String) : ProfileEvent
+    }
+
+    // Settings state and events
+    data class SettingsState(
+      val isDarkMode: Boolean,
+      val notificationsEnabled: Boolean,
+      val eventSink: (SettingsEvent) -> Unit,
+    ) : CircuitUiState
+
+    sealed interface SettingsEvent : CircuitUiEvent {
+      data class ToggleDarkMode(val enabled: Boolean) : SettingsEvent
+      data class ToggleNotifications(val enabled: Boolean) : SettingsEvent
+    }
+
+    // Dashboard state and events
+    sealed interface DashboardState : CircuitUiState {
+      data object Loading : DashboardState
+      data class Loaded(
+        val profile: ProfileState.Loaded,
+        val settings: SettingsState,
+        val refreshState: DashboardRefreshState,
+        val eventSink: (DashboardEvent) -> Unit,
+      ) : DashboardState
+    }
+
+    sealed interface DashboardRefreshState {
+      data object Idle : DashboardRefreshState
+      data object Refreshing : DashboardRefreshState
+    }
+
+    sealed interface DashboardEvent : CircuitUiEvent {
+      data object Refresh : DashboardEvent
+    }
+    ```
+
+=== "UI"
+
+    ```kotlin
+    @Composable
+    fun Dashboard(state: DashboardState, modifier: Modifier = Modifier) {
+      when (state) {
+        is DashboardState.Loading -> LoadingIndicator()
+        is DashboardState.Loaded -> {
+          PullToRefreshBox(
+            isRefreshing = state.refreshState is DashboardRefreshState.Refreshing,
+            onRefresh = { state.eventSink(DashboardEvent.Refresh) },
+            modifier = modifier,
+          ) {
+            Column {
+              Profile(state.profile)
+              Settings(state.settings)
+            }
+          }
+        }
+      }
+    }
+
+    @Composable
+    fun Profile(state: ProfileState.Loaded, modifier: Modifier = Modifier) {
+      Column(modifier) {
+        Text("Username: ${state.username}")
+        TextField(
+          value = state.bio,
+          onValueChange = { state.eventSink(ProfileEvent.UpdateBio(it)) },
+        )
+      }
+    }
+
+    @Composable
+    fun Settings(state: SettingsState, modifier: Modifier = Modifier) {
+      Column(modifier) {
+        SwitchRow(
+          label = "Dark Mode",
+          checked = state.isDarkMode,
+          onCheckedChange = { state.eventSink(SettingsEvent.ToggleDarkMode(it)) },
+        )
+        SwitchRow(
+          label = "Notifications",
+          checked = state.notificationsEnabled,
+          onCheckedChange = { state.eventSink(SettingsEvent.ToggleNotifications(it)) },
+        )
+      }
+    }
+    ```
 
 !!! tip "Injecting Child Presenters"
     How you get child presenters into the composite presenter is flexible: inject them directly, create them inline, or pull them from a Circuit instance. The key is that shared state should flow through the data layer when possible.
@@ -725,15 +349,35 @@ fun Settings(state: SettingsScreen.State, modifier: Modifier = Modifier) {
 **Example: Order details with extracted observation**
 
 ```kotlin
+// Screen with navigation parameter
+data class OrderDetailsScreen(val orderId: String) : Screen
+
+// State and events
+sealed interface OrderDetailsState : CircuitUiState {
+  data object Loading : OrderDetailsState
+  data class Success(
+    val order: Order,
+    val paymentStatus: PaymentStatus,
+    val shippingInfo: ShippingInfo?,
+    val eventSink: (OrderDetailsEvent) -> Unit,
+  ) : OrderDetailsState
+}
+
+sealed interface OrderDetailsEvent : CircuitUiEvent {
+  data class TrackPackage(val trackingId: String) : OrderDetailsEvent
+  data object ContactSupport : OrderDetailsEvent
+  data object RequestRefund : OrderDetailsEvent
+}
+
 class OrderDetailsPresenter(
   private val screen: OrderDetailsScreen,
   private val orderRepository: OrderRepository,
   private val paymentRepository: PaymentRepository,
   private val navigator: Navigator,
-) : Presenter<OrderDetailsScreen.State> {
+) : Presenter<OrderDetailsState> {
 
   @Composable
-  override fun present(): OrderDetailsScreen.State {
+  override fun present(): OrderDetailsState {
     // Extracted observation logic
     val order = observeOrder()
     val paymentStatus = observePaymentStatus()
@@ -741,8 +385,8 @@ class OrderDetailsPresenter(
 
     // Combine into state
     return when {
-      order == null -> OrderDetailsScreen.State.Loading
-      else -> OrderDetailsScreen.State.Success(
+      order == null -> OrderDetailsState.Loading
+      else -> OrderDetailsState.Success(
         order = order,
         paymentStatus = paymentStatus,
         shippingInfo = shippingInfo,
@@ -773,13 +417,13 @@ class OrderDetailsPresenter(
     }.value
   }
 
-  private fun handleEvent(event: OrderDetailsScreen.Event) {
+  private fun handleEvent(event: OrderDetailsEvent) {
     when (event) {
-      is OrderDetailsScreen.Event.TrackPackage ->
+      is OrderDetailsEvent.TrackPackage ->
         navigator.goTo(TrackingScreen(event.trackingId))
-      is OrderDetailsScreen.Event.ContactSupport ->
+      is OrderDetailsEvent.ContactSupport ->
         navigator.goTo(SupportScreen(screen.orderId))
-      is OrderDetailsScreen.Event.RequestRefund ->
+      is OrderDetailsEvent.RequestRefund ->
         navigator.goTo(RefundScreen(screen.orderId))
     }
   }
@@ -794,37 +438,207 @@ class OrderDetailsPresenter(
 
 ---
 
+## Use Cases: Separating Business Logic
+
+**Use cases** (also called interactors) encapsulate business logic in small, focused classes that can be injected into presenters and state producers. They separate "what the app does" from "how it's presented."
+
+### Why Use Cases?
+
+Presenters should focus on:
+
+- Observing data and transforming it into UI state
+- Routing events to the appropriate handlers
+- Managing UI-specific concerns (loading states, error display)
+
+Business logic should live elsewhere:
+
+- Validation rules
+- Data transformations
+- Coordinating multiple repository calls
+- Business rules and policies
+
+### Using Use Cases in Presenters
+
+Inject use cases into presenters to keep presentation logic clean:
+
+=== "Presenter"
+
+    ```kotlin
+    class CheckoutPresenter(
+      private val validateEmail: ValidateEmailUseCase,
+      private val placeOrder: PlaceOrderUseCase,
+      private val observeCartTotal: ObserveCartTotalUseCase,
+      private val navigator: Navigator,
+    ) : Presenter<CheckoutState> {
+
+      @Composable
+      override fun present(): CheckoutState {
+        val emailField = rememberRetained { EmailFieldState(validateEmail) }
+        var orderState by remember { mutableStateOf<CheckoutOrderState>(CheckoutOrderState.Idle) }
+
+        val cartTotal by produceState<CartTotal?>(null) {
+          observeCartTotal().collect { value = it }
+        }
+
+        // Handle order submission
+        LaunchedEffect(orderState) {
+          if (orderState is CheckoutOrderState.Submitting) {
+            when (val result = placeOrder(/* cart */)) {
+              is OrderResult.Success -> {
+                orderState = CheckoutOrderState.Idle
+                navigator.goTo(OrderConfirmationScreen(result.order.id))
+              }
+              is OrderResult.ItemsUnavailable -> {
+                orderState = CheckoutOrderState.Error("Some items are no longer available")
+              }
+            }
+          }
+        }
+
+        return when (cartTotal) {
+          null -> CheckoutState.Loading
+          else -> CheckoutState.Ready(
+            email = emailField.value,
+            emailError = emailField.error,
+            cartTotal = cartTotal,
+            orderState = orderState,
+          ) { event ->
+            when (event) {
+              is CheckoutEvent.EmailChanged -> emailField.onValueChange(event.email)
+              is CheckoutEvent.SubmitOrder -> {
+                if (emailField.validate()) {
+                  orderState = CheckoutOrderState.Submitting
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+=== "State & Events"
+
+    ```kotlin
+    // Screen is just a navigation marker
+    data object CheckoutScreen : Screen
+
+    // State
+    sealed interface CheckoutState : CircuitUiState {
+      data object Loading : CheckoutState
+      data class Ready(
+        val email: String,
+        val emailError: String?,
+        val cartTotal: CartTotal,
+        val orderState: CheckoutOrderState,
+        val eventSink: (CheckoutEvent) -> Unit,
+      ) : CheckoutState
+    }
+
+    // Events
+    sealed interface CheckoutEvent : CircuitUiEvent {
+      data class EmailChanged(val email: String) : CheckoutEvent
+      data object SubmitOrder : CheckoutEvent
+    }
+
+    // Internal state for order submission
+    sealed interface CheckoutOrderState {
+      data object Idle : CheckoutOrderState
+      data object Submitting : CheckoutOrderState
+      data class Error(val message: String) : CheckoutOrderState
+    }
+
+    // Encapsulates email field state and validation (internal to presenter)
+    private class EmailFieldState(
+      private val validateEmail: ValidateEmailUseCase,
+    ) {
+      var value by mutableStateOf("")
+        private set
+      var error by mutableStateOf<String?>(null)
+        private set
+
+      fun onValueChange(newValue: String) {
+        value = newValue
+        error = when (val result = validateEmail(newValue)) {
+          is ValidationResult.Error -> result.message
+          ValidationResult.Valid -> null
+        }
+      }
+
+      fun validate(): Boolean {
+        error = when (val result = validateEmail(value)) {
+          is ValidationResult.Error -> result.message
+          ValidationResult.Valid -> null
+        }
+        return error == null
+      }
+    }
+    ```
+
+=== "Use Cases"
+
+    ```kotlin
+    // Synchronous use case for validation
+    class ValidateEmailUseCase {
+      operator fun invoke(email: String): ValidationResult {
+        return when {
+          email.isBlank() -> ValidationResult.Error("Email is required")
+          !email.contains("@") -> ValidationResult.Error("Invalid email format")
+          else -> ValidationResult.Valid
+        }
+      }
+    }
+
+    // Suspend use case for one-shot operations
+    class PlaceOrderUseCase(
+      private val orderRepository: OrderRepository,
+      private val inventoryRepository: InventoryRepository,
+      private val analyticsTracker: AnalyticsTracker,
+    ) {
+      suspend operator fun invoke(cart: Cart): OrderResult {
+        val unavailable = cart.items.filter { !inventoryRepository.isAvailable(it.id) }
+        if (unavailable.isNotEmpty()) {
+          return OrderResult.ItemsUnavailable(unavailable)
+        }
+
+        val order = orderRepository.createOrder(cart)
+        analyticsTracker.trackOrderPlaced(order)
+        return OrderResult.Success(order)
+      }
+    }
+
+    // Flow-based use case for observing data
+    class ObserveCartTotalUseCase(
+      private val cartRepository: CartRepository,
+      private val pricingService: PricingService,
+    ) {
+      operator fun invoke(): Flow<CartTotal> {
+        return cartRepository.observeCart()
+          .map { cart ->
+            val subtotal = cart.items.sumOf { it.price * it.quantity }
+            val discount = pricingService.calculateDiscount(cart)
+            val tax = pricingService.calculateTax(subtotal - discount)
+            CartTotal(subtotal, discount, tax)
+          }
+      }
+    }
+    ```
+
+### When to Extract a Use Case
+
+Extract business logic into a use case when:
+
+- The same logic is needed in multiple presenters
+- The logic involves multiple repositories or services
+- The logic has complex rules that warrant dedicated tests
+- You want to test business logic independently from UI logic
+
+!!! tip "Use Cases vs Repositories"
+    Repositories handle data access (fetching, caching, persistence). Use cases handle business operations that may coordinate multiple repositories and apply business rules. A use case might call several repositories, but a repository should never call a use case.
+
+---
+
 ## Decision Framework
-
-Use this flowchart to choose the right pattern:
-
-```
-                    ┌─────────────────────────────┐
-                    │ Is it a standalone screen   │
-                    │ with its own navigation?    │
-                    └─────────────┬───────────────┘
-                                  │
-                    ┌─────────────┴───────────────┐
-                    │                             │
-                   YES                           NO
-                    │                             │
-                    ▼                             ▼
-        ┌───────────────────┐       ┌─────────────────────────┐
-        │ Composite         │       │ Is it reusable across   │
-        │ Presenters        │       │ multiple screens?       │
-        └───────────────────┘       └───────────┬─────────────┘
-                                                │
-                                    ┌───────────┴───────────┐
-                                    │                       │
-                                   YES                     NO
-                                    │                       │
-                                    ▼                       ▼
-                        ┌───────────────────┐   ┌───────────────────┐
-                        │ StateProducer     │   │ Decomposition     │
-                        └───────────────────┘   └───────────────────┘
-```
-
-### Pattern Comparison Table
 
 | Aspect | StateProducer | Composite Presenter | Decomposition |
 |--------|---------------|---------------------|---------------|
@@ -833,7 +647,7 @@ Use this flowchart to choose the right pattern:
 | **State Sharing** | Direct via parent | Through data layer | Within presenter |
 | **Event Handling** | Via parent | Each handles own | Via parent |
 | **Testing** | Test with Molecule | Test each presenter | Test whole presenter |
-| **Use Case** | Shared state logic | Dashboard-style | Organize large presenter |
+| **Best For** | Shared state logic | Dashboard-style screens | Organize large presenter |
 
 ---
 
@@ -869,10 +683,10 @@ Test composite presenters by injecting test implementations of child presenters:
 @Test
 fun `dashboard combines profile and settings state`() = runTest {
   val profilePresenter = FakeProfilePresenter(
-    ProfileScreen.State.Loaded(username = "testuser", bio = "Hello") {}
+    ProfileState.Loaded(username = "testuser", bio = "Hello") {}
   )
   val settingsPresenter = FakeSettingsPresenter(
-    SettingsScreen.State(isDarkMode = true, notificationsEnabled = false) {}
+    SettingsState(isDarkMode = true, notificationsEnabled = false) {}
   )
 
   val presenter = DashboardPresenter(
@@ -882,7 +696,7 @@ fun `dashboard combines profile and settings state`() = runTest {
   )
 
   presenter.test {
-    val state = awaitItem() as DashboardScreen.State.Loaded
+    val state = awaitItem() as DashboardState.Loaded
     assertEquals("testuser", state.profile.username)
     assertTrue(state.settings.isDarkMode)
   }
@@ -904,8 +718,8 @@ fun `refresh event triggers refresh use case`() = runTest {
   )
 
   presenter.test {
-    val state = awaitItem() as DashboardScreen.State.Loaded
-    state.eventSink(DashboardScreen.Event.Refresh)
+    val state = awaitItem() as DashboardState.Loaded
+    state.eventSink(DashboardEvent.Refresh)
     assertTrue(refreshUseCase.wasRefreshCalled)
   }
 }
@@ -977,12 +791,6 @@ var navigator by rememberRetained { mutableStateOf(navigator) }
 
 **Solution**: Extract event handlers into separate functions or use sealed classes with flatter hierarchies.
 
-### 5. Mixed UI and Presentation Logic
-
-**Problem**: Business logic mixed with Compose UI code.
-
-**Solution**: Keep presenters focused on state computation. UIs should only render state and emit events.
-
 ---
 
 ## Migration Recipes
@@ -1034,6 +842,38 @@ sealed interface SuccessEvent : CircuitUiEvent {
 4. Call the producer's function in `present()`
 5. Update event handling to route through the parent
 
+**Before** (state logic embedded in presenter):
+
+```kotlin
+@Composable
+override fun present(): OrderState {
+  // This user-related logic could be reused elsewhere
+  val user by produceState<User?>(null) {
+    value = userRepository.getCurrentUser()
+  }
+  var isUserExpanded by remember { mutableStateOf(false) }
+  // ... rest of presenter
+}
+```
+
+**After** (extracted to producer):
+
+```kotlin
+class UserStateProducer(private val userRepository: UserRepository) {
+  @Composable
+  fun produce(): UserSectionState {
+    val user by produceState<User?>(null) {
+      value = userRepository.getCurrentUser()
+    }
+    var isExpanded by remember { mutableStateOf(false) }
+    return UserSectionState(user, isExpanded) { isExpanded = !isExpanded }
+  }
+}
+
+// In presenter
+val userState = userStateProducer.produce()
+```
+
 ### Recipe: Large Presenter to Composite
 
 1. Identify logically independent sections of the presenter
@@ -1042,15 +882,37 @@ sealed interface SuccessEvent : CircuitUiEvent {
 4. Create a composite presenter that combines the child states
 5. Update the UI to render each child state
 
----
+**Before** (monolithic presenter):
 
-## Summary
+```kotlin
+@Composable
+override fun present(): AccountState {
+  // Profile logic
+  val profile by produceState<Profile?>(null) { ... }
+  // Settings logic
+  val settings by produceState<Settings?>(null) { ... }
+  // Billing logic
+  val billing by produceState<Billing?>(null) { ... }
+  // 500+ more lines...
+}
+```
 
-Building scalable presenters in Circuit requires thoughtful composition:
+**After** (composite presenter):
 
-- **Use Cases** for extracting business logic that can be tested independently
-- **StateProducers** for reusable state logic that isn't used standalone
-- **Composite Presenters** for combining independent, reusable screens
-- **Decomposition** for organizing complex presenters without full extraction
+```kotlin
+class AccountPresenter(
+  private val profilePresenter: ProfilePresenter,
+  private val settingsPresenter: SettingsPresenter,
+  private val billingPresenter: BillingPresenter,
+) : Presenter<AccountState> {
+  @Composable
+  override fun present(): AccountState {
+    return AccountState(
+      profile = profilePresenter.present(),
+      settings = settingsPresenter.present(),
+      billing = billingPresenter.present(),
+    )
+  }
+}
+```
 
-Start simple and extract only when complexity warrants it. The goal is maintainable, testable code that clearly expresses intent.

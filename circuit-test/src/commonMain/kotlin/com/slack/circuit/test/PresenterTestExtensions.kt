@@ -88,7 +88,7 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
     name = name,
     policy = policy,
   ) {
-    awaitItem()
+    block()
   }
 }
 

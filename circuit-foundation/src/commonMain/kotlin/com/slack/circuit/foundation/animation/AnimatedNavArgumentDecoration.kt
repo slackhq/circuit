@@ -11,7 +11,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.animateBounds
+import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
+import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
@@ -22,20 +23,20 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.unit.IntSize
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.foundation.internal.mapToImmutableSet
@@ -63,34 +64,36 @@ constructor(
     @Suppress("UNCHECKED_CAST") val castArgs = args as NavStackList<NavArgument>
     val transitionState = remember { SeekableTransitionState(sceneProvider(castArgs)) }
     // Scope
-    val transition = rememberTransition(
-      transitionState,
-      label = "SeekableTransitionState for ${decorator::class.simpleName}",
-    )
+    val transition =
+      rememberTransition(
+        transitionState,
+        label = "SeekableTransitionState for ${decorator::class.simpleName}",
+      )
     with(driver) { transitionState.updateTransition(castArgs, sceneProvider) }
     val innerContent by rememberUpdatedState(content)
+    val state = remember { AnimatedNavArgumentDecoratorState<T>(transition) }
     SharedTransitionScope { sharedModifier ->
-      val state = remember { AnimatedNavArgumentDecoratorState<T>(transition) }
       // todo Get rid of this
       state.Check()
-
       with(decorator) {
         transition.AnimatedContent(
           transitionSpec = {
-            val animatedNavEvent = determineAnimatedNavEvent()
-              ?: return@AnimatedContent EnterTransition.None togetherWith ExitTransition.None
+            val animatedNavEvent =
+              determineAnimatedNavEvent()
+                ?: return@AnimatedContent EnterTransition.None togetherWith ExitTransition.None
             this.targetState.transition(animatedNavEvent, this.initialState)
           },
           modifier = modifier.then(sharedModifier),
         ) { scene ->
           DefaultAnimatedSceneDecoratorScope(
-            transitionDriver = driver,
-            state = state,
-            scopeScene = scene,
-            sharedTransitionScope = this@SharedTransitionScope,
-            animatedScope = this,
-            innerContent = innerContent,
-          ).DecorateSceneContent<T>(scene, Modifier)
+              transitionDriver = driver,
+              state = state,
+              scopeScene = scene,
+              sharedTransitionScope = this@SharedTransitionScope,
+              animatedScope = this,
+              innerContent = innerContent,
+            )
+            .DecorateSceneContent<T>(scene, Modifier)
         }
       }
     }
@@ -104,8 +107,8 @@ public sealed interface AnimatedNavArgumentScope : AnimatedVisibilityScope {
     ): AnimatedNavArgumentScope = Impl(animatedVisibilityScope)
   }
 
-  private class Impl(animatedVisibilityScope: AnimatedVisibilityScope) : AnimatedNavArgumentScope,
-    AnimatedVisibilityScope by animatedVisibilityScope
+  private class Impl(animatedVisibilityScope: AnimatedVisibilityScope) :
+    AnimatedNavArgumentScope, AnimatedVisibilityScope by animatedVisibilityScope
 }
 
 public interface AnimatedScene : AnimatedNavState {
@@ -113,14 +116,12 @@ public interface AnimatedScene : AnimatedNavState {
 
   public fun transition(animatedNavEvent: AnimatedNavEvent, other: AnimatedScene): ContentTransform
 
-  @Composable
-  public fun AnimatedSceneDecoratorScope.Content(modifier: Modifier)
+  @Composable public fun AnimatedSceneDecoratorScope.Content(modifier: Modifier)
 }
 
 // todo DSL
-private data class NavListAnimatedScene(
-  override val navStack: NavStackList<out NavArgument>
-) : AnimatedScene {
+private data class NavListAnimatedScene(override val navStack: NavStackList<out NavArgument>) :
+  AnimatedScene {
 
   val forward = navStack.forwardItems.firstOrNull()
   val current = navStack.active
@@ -136,11 +137,20 @@ private data class NavListAnimatedScene(
   @OptIn(InternalCircuitApi::class)
   override fun transition(
     animatedNavEvent: AnimatedNavEvent,
-    other: AnimatedScene
+    other: AnimatedScene,
   ): ContentTransform {
     val sharedTransition = visible.intersect(other.visible.toSet()).isNotEmpty()
     if (sharedTransition) {
-      return fadeIn() togetherWith fadeOut()
+      // This is the base for anything running that doesn't match
+      return when (animatedNavEvent) {
+        AnimatedNavEvent.Forward,
+        AnimatedNavEvent.GoTo -> NavigatorDefaults.backward
+
+        AnimatedNavEvent.Backward,
+        AnimatedNavEvent.Pop -> NavigatorDefaults.forward
+
+        AnimatedNavEvent.RootReset -> fadeIn() togetherWith fadeOut()
+      }
     }
     return when (animatedNavEvent) {
       AnimatedNavEvent.Forward,
@@ -159,13 +169,15 @@ private data class NavListAnimatedScene(
       if (forward != null) {
         Place(arg = forward, modifier = Modifier.weight(1f))
       }
-      Place(arg = current, modifier = Modifier.weight(2f))
+      Place(
+        arg = current,
+        modifier = Modifier.weight(if (backward != null && forward != null) 1f else 2f),
+      )
       if (backward != null) {
         Place(arg = backward, modifier = Modifier.weight(1f))
       }
     }
   }
-
 }
 
 public interface AnimatedSceneTransitionDriver {
@@ -204,12 +216,9 @@ private class DefaultAnimatedNavArgumentDecorator : AnimatedNavArgumentDecorator
   @Composable
   override fun <T : NavArgument> AnimatedSceneDecoratorScope.DecorateSceneContent(
     scene: AnimatedScene,
-    // driver: AnimatedSceneTransitionDriver<NavArgument, AnimatedScene>, Local? special scope?
     modifier: Modifier,
   ) {
-    with(scene) {
-      Content(modifier)
-    }
+    with(scene) { Content(modifier) }
   }
 }
 
@@ -232,7 +241,7 @@ private class AnimatedNavArgumentDecoratorState<N : NavArgument>(
 ) {
 
   val staying = mutableScatterSetOf<String>()
-  val hiding = mutableScatterSetOf<String>()
+  val animating = mutableScatterSetOf<String>()
 
   val targetVisible
     get() = sceneTransition.targetState.visible.mapToImmutableSet { it.key }
@@ -240,9 +249,8 @@ private class AnimatedNavArgumentDecoratorState<N : NavArgument>(
   val currentVisible
     get() = sceneTransition.currentState.visible.mapToImmutableSet { it.key }
 
-  val currentlyVisible = mutableStateMapOf<String, Unit>().apply {
-    currentVisible.forEach { put(it, Unit) }
-  }
+  val currentlyVisible =
+    mutableStateMapOf<String, Unit>().apply { currentVisible.forEach { put(it, Unit) } }
 
   val fullSceneChange
     get() = staying.isEmpty()
@@ -254,16 +262,15 @@ private class AnimatedNavArgumentDecoratorState<N : NavArgument>(
   fun Check() {
     Snapshot.withMutableSnapshot {
       staying.clear()
-      hiding.clear()
       for (e in currentVisible) {
         if (targetVisible.contains(e)) {
           staying.add(e)
         } else {
-          hiding.add(e)
+          currentlyVisible.remove(e)
         }
       }
-      hiding.forEach { currentlyVisible.remove(it) }
       targetVisible.forEach { currentlyVisible[it] = Unit }
+      animating.forEach { currentlyVisible[it] = Unit }
     }
   }
 }
@@ -276,9 +283,13 @@ private data class DefaultAnimatedSceneDecoratorScope<N : NavArgument>(
   val animatedScope: AnimatedVisibilityScope,
   val scopeScene: AnimatedScene,
   val innerContent: @Composable (N) -> Unit,
-) : AnimatedSceneDecoratorScope {
+) :
+  AnimatedSceneDecoratorScope,
+  AnimatedVisibilityScope by animatedScope,
+  SharedTransitionScope by sharedTransitionScope {
 
-  fun isTargetScene(scene: AnimatedScene) = scene == state.sceneTransition.targetState || state.sameState
+  fun isTargetScene(scene: AnimatedScene) =
+    scene == state.sceneTransition.targetState || state.sameState
 
   fun isTargetVisible(key: String) = state.targetVisible.contains(key)
 
@@ -292,30 +303,55 @@ private data class DefaultAnimatedSceneDecoratorScope<N : NavArgument>(
     enterTransition: EnterTransition,
     exitTransition: ExitTransition,
     boundsTransform: BoundsTransform,
-  ) = with(sharedTransitionScope) {
-    with(animatedScope) {
-      // todo Placement Animations
-      var currentSize by remember { mutableStateOf(IntSize.Zero) }
-      val sharedModifier = Modifier.sharedBounds(
-        sharedContentState = rememberSharedContentState("___circuit_animated_scene_scope_${arg.key}___"),
-        animatedVisibilityScope = animatedScope,
-//        enter = EnterTransition.None,
-//        exit = ExitTransition.None,
-        boundsTransform = boundsTransform
-      ).then(modifier)
+  ) {
+    key(arg.key) {
+      DisposableEffect(Unit) {
+        state.animating.add(arg.key)
+        onDispose { state.animating.remove(arg.key) }
+      }
+      val sharedContentState =
+        rememberSharedContentState("___circuit_animated_scene_scope_${arg.key}___")
+      val isCurrentScene = scopeScene == state.sceneTransition.currentState
       val isTargetScene = scopeScene == state.sceneTransition.targetState
-      if (!isTargetScene && isCurrentVisible(arg.key) && isTargetVisible(arg.key)) {
-        // The content has moved to the target, don't include it in both to avoid the registry crash
-        Layout(sharedModifier) { _, _ ->
-          layout(currentSize.width, currentSize.height) {
-          }
-        }
+      val isActiveScene = isTargetScene || isCurrentScene
+      // The content is moving to the target, don't include right away in both to avoid the registry
+      // crash
+      val isSharedElsewhere =
+        !state.sameState && isTargetScene && isCurrentVisible(arg.key) && isTargetVisible(arg.key)
+      // This content is animating outside the active scene
+      val isAnimatingElsewhere = !isActiveScene && state.animating.contains(arg.key)
+      // Use a spacer as the shared element target
+      if (isSharedElsewhere || isAnimatingElsewhere) {
+        Spacer(
+          modifier
+            .then(
+              Modifier.sharedBounds(
+                  sharedContentState = sharedContentState,
+                  animatedVisibilityScope = animatedScope,
+                  resizeMode = RemeasureToBounds,
+                  placeholderSize = AnimatedSize,
+                  enter = EnterTransition.None,
+                  exit = ExitTransition.None,
+                  renderInOverlayDuringTransition = false,
+                )
+                .skipToLookaheadSize()
+            )
+            .fillMaxSize()
+        )
       } else {
         Box(
-          sharedModifier
-            .onPlaced { currentSize = it.size }
-            .animateEnterExit(enter = enterTransition, exit = exitTransition)
-            .animateBounds(lookaheadScope = sharedTransitionScope, boundsTransform = boundsTransform)
+          modifier.then(
+            Modifier.sharedBounds(
+              sharedContentState = sharedContentState,
+              animatedVisibilityScope = animatedScope,
+              resizeMode = RemeasureToBounds,
+              placeholderSize = AnimatedSize,
+              enter = EnterTransition.None,
+              exit = ExitTransition.None,
+              renderInOverlayDuringTransition = true,
+              zIndexInOverlay = 10f,
+            )
+          )
         ) {
           @Suppress("UNCHECKED_CAST") innerContent(arg as N)
         }
@@ -323,4 +359,3 @@ private data class DefaultAnimatedSceneDecoratorScope<N : NavArgument>(
     }
   }
 }
-

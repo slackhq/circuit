@@ -132,7 +132,8 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
   contextualNavigationOverride(baseTransform, screenOverride)
 }
 
-internal fun Transition.Segment<out AnimatedNavState>.determineAnimatedNavEvent(): AnimatedNavEvent? {
+internal fun Transition.Segment<out AnimatedNavState>.determineAnimatedNavEvent():
+  AnimatedNavEvent? {
   val initialStack = initialState.navStack
   val targetStack = targetState.navStack
 
@@ -156,8 +157,8 @@ internal fun Transition.Segment<out AnimatedNavState>.determineAnimatedNavEvent(
     }
     // Navigated backward with the screen moving to the forward stack.
     current in initialBackStack &&
-            previous !in initialForwardStack &&
-            previous in targetForwardStack -> {
+      previous !in initialForwardStack &&
+      previous in targetForwardStack -> {
       AnimatedNavEvent.Backward
     }
     // Popped the screen off the nav stack.

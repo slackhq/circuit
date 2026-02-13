@@ -60,7 +60,8 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
 }
 
 /**
- * Helper function to test a [Presenter] in a way that allows for providing dependencies via [CompositionLocalProvider]
+ * Helper function to test a [Presenter] in a way that allows for providing dependencies via
+ * [CompositionLocalProvider]
  *
  * @param locals Vararg of [ProvidedValue] to be provided to the presenter during the test
  * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
@@ -69,7 +70,6 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
  * @param block the block to invoke.
  * @see moleculeFlow
  * @see test
- *
  */
 public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   vararg locals: ProvidedValue<*>,
@@ -79,11 +79,7 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
   block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
 ) {
   presenterTestOf(
-    presentFunction = {
-      withCompositionLocals(*locals) {
-        present()
-      }
-    },
+    presentFunction = { withCompositionLocals(*locals) { present() } },
     timeout = timeout,
     name = name,
     policy = policy,
@@ -91,4 +87,3 @@ public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
     block()
   }
 }
-

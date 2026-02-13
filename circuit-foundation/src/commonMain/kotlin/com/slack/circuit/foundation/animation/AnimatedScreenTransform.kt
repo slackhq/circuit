@@ -41,7 +41,7 @@ import com.slack.circuit.runtime.screen.Screen
  * ```
  */
 @ExperimentalCircuitApi
-public interface AnimatedScreenTransform {
+public interface AnimatedTransform<T> {
 
   /**
    * Defines the transition used when this screen is becoming the top screen.
@@ -50,7 +50,7 @@ public interface AnimatedScreenTransform {
    * @return An [EnterTransition] or null to use the default enter transition.
    * @see ContentTransform.targetContentEnter
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.enterTransition(
+  public fun AnimatedContentTransitionScope<T>.enterTransition(
     animatedNavEvent: AnimatedNavEvent
   ): EnterTransition? = null
 
@@ -61,7 +61,7 @@ public interface AnimatedScreenTransform {
    * @return An [ExitTransition] or null to use the default exit transition.
    * @see ContentTransform.initialContentExit
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.exitTransition(
+  public fun AnimatedContentTransitionScope<T>.exitTransition(
     animatedNavEvent: AnimatedNavEvent
   ): ExitTransition? = null
 
@@ -73,9 +73,8 @@ public interface AnimatedScreenTransform {
    * @return The z-index or null to use the default z-index.
    * @see ContentTransform.targetContentZIndex
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.zIndex(
-    animatedNavEvent: AnimatedNavEvent
-  ): Float? = null // todo non-null?
+  public fun AnimatedContentTransitionScope<T>.zIndex(animatedNavEvent: AnimatedNavEvent): Float? =
+    null // todo non-null?
 
   /**
    * Defines the [ContentTransform.sizeTransform] to use when this screen is becoming the top
@@ -85,10 +84,15 @@ public interface AnimatedScreenTransform {
    * @return A [SizeTransform] or null to use the default size transform.
    * @see ContentTransform.sizeTransform
    */
-  public fun AnimatedContentTransitionScope<AnimatedNavState>.sizeTransform(
+  public fun AnimatedContentTransitionScope<T>.sizeTransform(
     animatedNavEvent: AnimatedNavEvent
   ): SizeTransform? = null
 }
+
+@ExperimentalCircuitApi
+public interface AnimatedScreenTransform : AnimatedTransform<AnimatedNavState>
+
+@ExperimentalCircuitApi public interface AnimatedSceneTransform : AnimatedTransform<AnimatedScene>
 
 /** A default [AnimatedScreenTransform] that does nothing. */
 @ExperimentalCircuitApi public object NoOpAnimatedScreenTransform : AnimatedScreenTransform

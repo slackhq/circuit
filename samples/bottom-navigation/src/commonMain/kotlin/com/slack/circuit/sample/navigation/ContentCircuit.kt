@@ -3,7 +3,10 @@
 package com.slack.circuit.sample.navigation
 
 import com.slack.circuit.foundation.Circuit
+import com.slack.circuit.foundation.animation.AnimatedSceneDecoration
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 
+@OptIn(ExperimentalCircuitApi::class)
 fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
   return Circuit.Builder()
     .apply {
@@ -12,6 +15,6 @@ fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
         addUiFactory(TabUiFactory(tab::class))
       }
     }
-    .setAnimatedNavDecoratorFactory(CrossFadeNavDecoratorFactory())
+    .setDefaultNavDecoration(AnimatedSceneDecoration())
     .build()
 }

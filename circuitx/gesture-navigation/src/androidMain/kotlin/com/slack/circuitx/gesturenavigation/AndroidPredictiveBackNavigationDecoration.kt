@@ -65,7 +65,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
       // come back from back stack
       AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
-        if (showPrevious) {
+        if (driver.showPrevious) {
             // Handle all the animation in predictiveBackMotion
             EnterTransition.None togetherWith ExitTransition.None
           } else {
@@ -88,12 +88,12 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
   ) {
     Box(
       Modifier.predictiveBackMotion(
-        enabled = { showPrevious },
-        isSeeking = { isSeeking },
+        enabled = { driver.showPrevious },
+        isSeeking = { driver.isSeeking },
         shape = MaterialTheme.shapes.extraLarge,
         elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
         transition = transition,
-        offset = { swipeOffset },
+        offset = { driver.swipeOffset },
         progress = { seekableTransitionState.fraction },
       )
     ) {

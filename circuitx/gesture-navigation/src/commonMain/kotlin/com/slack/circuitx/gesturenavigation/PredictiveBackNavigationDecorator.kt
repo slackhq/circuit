@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
+import com.slack.circuit.foundation.animation.AnimatedSceneTransitionDriver
 import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
@@ -23,23 +24,12 @@ import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
 
 internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
-  private val onBackInvoked: () -> Unit
+  onBackInvoked: () -> Unit
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
+  protected val driver = PredictiveBackAnimatedTransitionDriver(onBackInvoked)
   protected lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
-    private set
-
-  protected var showPrevious: Boolean by mutableStateOf(false)
-    private set
-
-  protected var isSeeking: Boolean by mutableStateOf(false)
-    private set
-
-  protected var swipeProgress: Float by mutableFloatStateOf(0f)
-    private set
-
-  protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)
     private set
 
   override fun targetState(args: NavStackList<T>): GestureNavTransitionHolder<T> {
@@ -49,6 +39,46 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   @OptIn(InternalCircuitApi::class)
   @Composable
   override fun updateTransition(args: NavStackList<T>): Transition<GestureNavTransitionHolder<T>> {
+    seekableTransitionState = remember { SeekableTransitionState(targetState(args)) }
+    driver.UpdateTransition(seekableTransitionState, args, targetState = { targetState(it) })
+    return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
+  }
+}
+
+public class PredictiveBackAnimatedSceneTransitionDriver(onBackInvoked: () -> Unit) :
+  AnimatedSceneTransitionDriver {
+  private val driver = PredictiveBackAnimatedTransitionDriver(onBackInvoked)
+
+  @Composable
+  override fun <T : NavArgument, S> SeekableTransitionState<S>.updateTransition(
+    args: NavStackList<T>,
+    targetScene: (NavStackList<T>) -> S,
+  ) {
+    driver.UpdateTransition(this, args, targetScene)
+  }
+}
+
+internal class PredictiveBackAnimatedTransitionDriver(private val onBackInvoked: () -> Unit) {
+
+  var showPrevious: Boolean by mutableStateOf(false)
+    private set
+
+  var isSeeking: Boolean by mutableStateOf(false)
+    private set
+
+  var swipeProgress: Float by mutableFloatStateOf(0f)
+    private set
+
+  var swipeOffset: Offset by mutableStateOf(Offset.Zero)
+    private set
+
+  @OptIn(InternalCircuitApi::class)
+  @Composable
+  fun <T : NavArgument, S> UpdateTransition(
+    state: SeekableTransitionState<S>,
+    args: NavStackList<T>,
+    targetState: (NavStackList<T>) -> S,
+  ) {
     val current = remember(args) { targetState(args) }
     val previous =
       remember(args) {
@@ -62,12 +92,10 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
         } else null
       }
 
-    seekableTransitionState = remember { SeekableTransitionState(current) }
-
-    LaunchedEffect(current) {
+    LaunchedEffect(state.currentState) {
       swipeProgress = 0f
       isSeeking = false
-      seekableTransitionState.animateTo(current)
+      state.animateTo(current)
       // After the current state has changed (i.e. any transition has completed),
       // clear out any transient state
       showPrevious = false
@@ -80,7 +108,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
           .collect { progress ->
             if (progress != 0f) {
               isSeeking = true
-              seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
+              state.seekTo(fraction = abs(progress), targetState = previous)
             }
           }
       }
@@ -94,10 +122,9 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
       },
       onBackCancelled = {
         isSeeking = false
-        seekableTransitionState.animateTo(current)
+        state.animateTo(current)
       },
       onBackCompleted = { onBackInvoked() },
     )
-    return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
   }
 }

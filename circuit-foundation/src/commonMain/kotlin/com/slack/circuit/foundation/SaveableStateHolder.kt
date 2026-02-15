@@ -4,6 +4,7 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
@@ -44,31 +45,28 @@ private class SaveableStateHolderImpl(
 
   @Composable
   override fun <R> SaveableStateProvider(key: Any, content: @Composable () -> R): R {
-    val registryHolder = remember {
-      require(parentSaveableStateRegistry?.canBeSaved(key) ?: true) {
-        "Type of the key $key is not supported. On Android you can only use types " +
-          "which can be stored inside the Bundle."
+    return key(key) {
+      val registryHolder = remember {
+        require(parentSaveableStateRegistry?.canBeSaved(key) ?: true) {
+          "Type of the key $key is not supported. On Android you can only use types " +
+            "which can be stored inside the Bundle."
+        }
+        RegistryHolder(key)
       }
-      RegistryHolder(key)
-    }
-
-    val result =
-      withCompositionLocal(
-        LocalSaveableStateRegistry provides registryHolder.registry,
-        content = content,
-      )
-
-    DisposableEffect(Unit) {
-      require(key !in registryHolders) { "Key $key was used multiple times " }
-      savedStates -= key
-      registryHolders[key] = registryHolder
-      onDispose {
-        registryHolder.saveTo(savedStates)
-        registryHolders -= key
+      withCompositionLocal(LocalSaveableStateRegistry provides registryHolder.registry) {
+        val result = content()
+        DisposableEffect(Unit) {
+          require(key !in registryHolders) { "Key $key was used multiple times " }
+          savedStates -= key
+          registryHolders[key] = registryHolder
+          onDispose {
+            registryHolder.saveTo(savedStates)
+            registryHolders -= key
+          }
+        }
+        result
       }
     }
-
-    return result
   }
 
   private fun saveAll(): MutableMap<Any, Map<String, List<Any?>>>? {

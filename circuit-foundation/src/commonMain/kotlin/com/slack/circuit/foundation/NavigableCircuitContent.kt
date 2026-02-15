@@ -26,7 +26,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.currentCompositeKeyHashCode
@@ -270,7 +269,10 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
-  CompositionLocalProvider(LocalRetainedStateRegistry provides outerRegistry) {
+  CompositionLocalProvider(
+    LocalRetainedStateRegistry provides outerRegistry,
+    LocalRecordLifecycleState provides RecordLifecycleState.Unset,
+  ) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
     val contentProviderState =
@@ -478,13 +480,22 @@ public class ContentProviderState<R : Record>(
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
-      val lifecycle = remember { MutableRecordLifecycle() }
-      SideEffect { lifecycle.isActive = lastNavigator.navStack.currentRecord == record }
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
         retainedStateHolder.RetainedStateProvider(record.registryKey) {
-          CompositionLocalProvider(LocalRecordLifecycle provides lifecycle) {
+          val lifecycle =
+            when (LocalRecordLifecycleState.current) {
+              RecordLifecycleState.Set -> LocalRecordLifecycle.current
+              RecordLifecycleState.Unset -> {
+                val isActive = lastNavigator.navStack.currentRecord == record
+                rememberUpdatedRecordLifecycle(isActive)
+              }
+            }
+          CompositionLocalProvider(
+            LocalRecordLifecycle provides lifecycle,
+            LocalRecordLifecycleState provides RecordLifecycleState.Set,
+          ) {
             CircuitContent(
               screen = record.screen,
               navigator = lastNavigator,

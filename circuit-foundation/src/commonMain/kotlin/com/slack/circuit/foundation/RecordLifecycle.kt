@@ -70,9 +70,10 @@ public fun ProvideRecordLifecycle(isActive: Boolean, content: @Composable () -> 
  * For static [CircuitContent]s used outside of [NavigableCircuitContent], the default value will be
  * a [RecordLifecycle] which always returned active.
  */
-public val LocalRecordLifecycle: ProvidableCompositionLocal<RecordLifecycle> = staticCompositionLocalOf {
-  staticRecordLifecycle(true)
-}
+public val LocalRecordLifecycle: ProvidableCompositionLocal<RecordLifecycle> =
+  staticCompositionLocalOf {
+    staticRecordLifecycle(true)
+  }
 
 private fun staticRecordLifecycle(isActive: Boolean): RecordLifecycle =
   object : RecordLifecycle {

@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
+
 0.33.0
 ------
 

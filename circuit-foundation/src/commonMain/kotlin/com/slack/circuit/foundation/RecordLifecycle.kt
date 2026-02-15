@@ -32,30 +32,19 @@ internal class MutableRecordLifecycle(initial: Boolean = false) : RecordLifecycl
 }
 
 @Composable
-private fun rememberUpdatedRecordLifecycle(isActive: Boolean): RecordLifecycle {
+internal fun rememberUpdatedRecordLifecycle(isActive: Boolean): RecordLifecycle {
   return remember { MutableRecordLifecycle() }.apply { this.isActive = isActive }
 }
 
 /**
  * Provides a [RecordLifecycle] for the current record via [LocalRecordLifecycle].
  *
- * If a [RecordLifecycle] has already been set by an outer call, this is a no-op and simply calls
- * [content] directly. The first caller wins, making it safe to call redundantly.
- *
- * By default, [NavigableCircuitContent] provides the [RecordLifecycle] directly around the record
- * content and only considers the current record active. [NavDecoration] implementations can use
- * this to override that behaviour and mark multiple records as active at once.
- *
  * @param isActive whether this record should be considered active.
  * @param content the composable content to provide the lifecycle to.
  */
 @Composable
 public fun ProvideRecordLifecycle(isActive: Boolean, content: @Composable () -> Unit) {
-  val lifecycle =
-    when (LocalRecordLifecycleState.current) {
-      RecordLifecycleState.Set -> LocalRecordLifecycle.current
-      RecordLifecycleState.Unset -> rememberUpdatedRecordLifecycle(isActive)
-    }
+  val lifecycle = rememberUpdatedRecordLifecycle(isActive)
   CompositionLocalProvider(
     LocalRecordLifecycle provides lifecycle,
     LocalRecordLifecycleState provides RecordLifecycleState.Set,

@@ -484,7 +484,16 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
         retainedStateHolder.RetainedStateProvider(record.registryKey) {
-          ProvideRecordLifecycle(isActive = lastNavigator.navStack.currentRecord == record) {
+          val isActive = lastNavigator.navStack.currentRecord == record
+          val lifecycle =
+            when (LocalRecordLifecycleState.current) {
+              RecordLifecycleState.Set -> LocalRecordLifecycle.current
+              RecordLifecycleState.Unset -> rememberUpdatedRecordLifecycle(isActive)
+            }
+          CompositionLocalProvider(
+            LocalRecordLifecycle provides lifecycle,
+            LocalRecordLifecycleState provides RecordLifecycleState.Set,
+          ) {
             CircuitContent(
               screen = record.screen,
               navigator = lastNavigator,

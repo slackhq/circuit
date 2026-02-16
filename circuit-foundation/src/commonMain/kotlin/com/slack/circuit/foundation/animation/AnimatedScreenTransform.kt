@@ -11,7 +11,7 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.screen.Screen
 
 /**
- * Defines the animated transitions fo a [Screen] based on particular [AnimatedNavEvent]s.
+ * Defines the animated transitions for a [Screen] based on particular [AnimatedNavEvent]s.
  *
  * This interface allows you to customize the [EnterTransition], z-index, and [SizeTransform] for a
  * [Screen] as it becomes the top screen or is replaced by another [Screen] in the navigation stack.
@@ -91,8 +91,6 @@ public interface AnimatedTransform<T> {
 
 @ExperimentalCircuitApi
 public interface AnimatedScreenTransform : AnimatedTransform<AnimatedNavState>
-
-@ExperimentalCircuitApi public interface AnimatedSceneTransform : AnimatedTransform<AnimatedScene>
 
 /** A default [AnimatedScreenTransform] that does nothing. */
 @ExperimentalCircuitApi public object NoOpAnimatedScreenTransform : AnimatedScreenTransform

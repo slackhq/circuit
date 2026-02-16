@@ -15,8 +15,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
-import com.slack.circuit.foundation.animation.AnimatedSceneTransitionDriver
 import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
+import com.slack.circuit.foundation.scene.AnimatedScene
+import com.slack.circuit.foundation.scene.AnimatedSceneTransitionDriver
+import com.slack.circuit.foundation.scene.AnimatedSceneTransitionScope
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -50,11 +52,9 @@ public class PredictiveBackAnimatedSceneTransitionDriver(onBackInvoked: () -> Un
   private val driver = PredictiveBackAnimatedTransitionDriver(onBackInvoked)
 
   @Composable
-  override fun <T : NavArgument, S> SeekableTransitionState<S>.updateTransition(
-    args: NavStackList<T>,
-    targetScene: (NavStackList<T>) -> S,
-  ) {
-    driver.UpdateTransition(this, args, targetScene)
+  override fun <T : NavArgument, S : AnimatedScene> AnimatedSceneTransitionScope<S>
+    .AnimateTransition(args: NavStackList<out T>, targetScene: (NavStackList<out T>) -> S) {
+    driver.UpdateTransition(transitionState, args, targetScene)
   }
 }
 

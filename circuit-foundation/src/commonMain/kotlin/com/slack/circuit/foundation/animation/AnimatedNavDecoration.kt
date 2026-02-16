@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
@@ -120,7 +121,7 @@ public class AnimatedNavDecoration(
 }
 
 /** Constructs the transition specification used in [AnimatedNavDecoration]. */
-@OptIn(ExperimentalCircuitApi::class)
+@OptIn(ExperimentalCircuitApi::class, InternalCircuitApi::class)
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>
@@ -132,8 +133,8 @@ private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transiti
   contextualNavigationOverride(baseTransform, screenOverride)
 }
 
-internal fun Transition.Segment<out AnimatedNavState>.determineAnimatedNavEvent():
-  AnimatedNavEvent? {
+@InternalCircuitApi
+public fun Transition.Segment<out AnimatedNavState>.determineAnimatedNavEvent(): AnimatedNavEvent? {
   val initialStack = initialState.navStack
   val targetStack = targetState.navStack
 
@@ -195,7 +196,8 @@ private fun AnimatedContentTransitionScope<AnimatedNavState>.screenSpecificOverr
   )
 }
 
-private fun contextualNavigationOverride(
+@InternalCircuitApi
+public fun contextualNavigationOverride(
   baseTransform: ContentTransform,
   screenOverride: PartialContentTransform,
 ): ContentTransform {

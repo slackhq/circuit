@@ -17,6 +17,12 @@ formatter, use the `spotlessApply` command.
 ./gradlew spotlessApply
 ```
 
+You can build and run the CI checks (aside from instrumentation tests) with:
+
+```bash
+./gradlew circuitCi
+```
+
 ### iOS
 
 To build any of the iOS checks, you must do the following:

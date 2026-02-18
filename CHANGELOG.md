@@ -4,6 +4,15 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
+
+0.33.0
+------
+
+_2026-02-10_
+
 ### New Navigation Architecture:
 
 Circuit now supports **bidirectional navigation** with browser-style forward/backward capabilities!
@@ -52,6 +61,13 @@ navigator.forward()  // Move forward to a previously visited screen
 
 - Compile against kotlin-inject-anvil `0.1.7`.
 - `NavigationEventHandler` usage is now disabled by default when no `NavigationEventDispatcherOwner` is available, preventing crashes in environments with dynamic navigation event support. This behaviour can be configured with the `Circuit.lenientNavigationEventDispatcherOwner` option.
+- `BottomSheetOverlay` now exposes `contentWindowInsets`, mirroring `ModalBottomSheet`
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@spectrl](https://github.com/spectrl)
 
 0.32.0
 ------

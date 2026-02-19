@@ -7,6 +7,7 @@ Unreleased
 ### New
 
 - Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
+- Add `rememberSaveableNavStack(NavStackList)` overload to initialize a nav stack from an existing snapshot.
 
 ### Docs
 

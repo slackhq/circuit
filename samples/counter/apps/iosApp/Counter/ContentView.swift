@@ -10,7 +10,7 @@ import SwiftUI
 import KMPNativeCoroutinesAsync
 
 struct ContentView: View {
-  @ObservedObject var presenter = SwiftPresenter<CounterScreenState>(delegate: SwiftSupportKt.doNewCounterPresenter())
+    @ObservedObject var presenter = SwiftPresenter<CounterScreen.State>(delegate: SwiftSupportKt.doNewCounterPresenter())
 
   var body: some View {
     NavigationView {

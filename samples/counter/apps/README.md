@@ -19,4 +19,4 @@ To run the Desktop app, run the `main` function in `DesktopCounterCircuit` in yo
 
 To run the iOS app, run the Counter iOS target in IntelliJ/Studio or open the Counter Xcode project and run the app from there.
 
-To run the WASM/JS app, run `./gradlew :samples:counter:apps:wasmJsBrowserRun --continuous` and it'll open automatically in your default browser.
+To run the WASM/JS app, run `./gradlew :samples:counter:apps:wasmJsBrowserDevelopmentRun --continuous` and it'll open automatically in your default browser.

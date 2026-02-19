@@ -1,0 +1,2631 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Compose-driven architecture for Android apps">
+      
+      
+        <meta name="author" content="Slack">
+      
+      
+      
+        <link rel="prev" href="../presenter/">
+      
+      
+        <link rel="next" href="../ui/">
+      
+      
+      <link rel="icon" href="../images/slack_logo_small.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+    
+    
+      
+        <title>Scaling Presenters - Circuit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scaling-presenters" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Circuit" class="md-header__button md-logo" aria-label="Circuit" data-md-component="logo">
+      
+  <img src="../images/slack_logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Circuit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scaling Presenters
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="yellow"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Circuit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Circuit" class="md-nav__button md-logo" aria-label="Circuit" data-md-component="logo">
+      
+  <img src="../images/slack_logo.png" alt="logo">
+
+    </a>
+    Circuit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/slackhq/circuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Circuit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting up Circuit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../states-and-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    States and Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Screen
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuit-content/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CircuitContent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Navigation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Navigation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation-navstack-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NavStack migration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Presenter
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Presenter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../presenter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Scaling Presenters
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scaling Presenters
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#composition-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Composition Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Composition Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-presenter-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 1: Presenter Decomposition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-2-composite-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 2: Composite Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-3-stateproducer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 3: StateProducer
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases-separating-business-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases: Separating Business Logic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases: Separating Business Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Use Cases?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-use-cases-in-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Use Cases in Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-extract-a-use-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Extract a Use Case
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-composite-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Composite Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-stateproducers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing StateProducers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-event-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Event Flow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Pitfalls
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Pitfalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-giant-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Giant Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-boolean-flag-soup" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Boolean Flag Soup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-event-handler-spaghetti" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Event Handler Spaghetti
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Recipes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Recipes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recipe-boolean-flags-to-sealed-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe: Boolean Flags to Sealed States
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recipe-large-presenter-to-composite" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe: Large Presenter to Composite
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recipe-extract-stateproducer-from-large-presenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe: Extract StateProducer from Large Presenter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ui
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overlays/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overlays
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Shared Elements
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Shared Elements
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared-elements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared-elements-tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../factories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Factories
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-gen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interop
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    CircuitX
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            CircuitX
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/android/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Android
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/effects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Effects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/gesture-navigation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gesture Navigation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/navigation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Navigation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/overlays/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overlays
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deep-linking-android/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deep Linking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/0.x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/slackhq/circuit/discussions" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Discussions ⏏
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Change Log
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-of-conduct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CoC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#composition-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Composition Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Composition Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-presenter-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 1: Presenter Decomposition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-2-composite-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 2: Composite Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-3-stateproducer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 3: StateProducer
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases-separating-business-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases: Separating Business Logic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases: Separating Business Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Use Cases?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-use-cases-in-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Use Cases in Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-extract-a-use-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Extract a Use Case
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-composite-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Composite Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-stateproducers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing StateProducers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-event-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Event Flow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Pitfalls
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Pitfalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-giant-presenters" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Giant Presenters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-boolean-flag-soup" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Boolean Flag Soup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-event-handler-spaghetti" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Event Handler Spaghetti
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Recipes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Recipes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recipe-boolean-flags-to-sealed-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe: Boolean Flags to Sealed States
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recipe-large-presenter-to-composite" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe: Large Presenter to Composite
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recipe-extract-stateproducer-from-large-presenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe: Extract StateProducer from Large Presenter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="scaling-presenters">Scaling Presenters<a class="headerlink" href="#scaling-presenters" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>As your Circuit application grows, presenters naturally accumulate complexity. If you&rsquo;ve worked on a Circuit app for a while, you may have noticed some presenters becoming harder to maintain. This guide provides patterns and recipes to help.</p>
+<div class="admonition info">
+<p class="admonition-title">Community Guide</p>
+<p>This guide is based on experience at Slack building and scaling a large Android application with Circuit. We welcome contributions, alternative approaches, and feedback from the community to make this guide more comprehensive.</p>
+</div>
+<p>Here are some common signs of presenter complexity:</p>
+<ul>
+<li><strong>Event sink explosion</strong>: Each mutable state value generally needs its own events, so the event sink grows quickly</li>
+<li><strong>Internal state sprawl</strong>: State scoped to <code>present()</code> makes it hard to break out event handling into smaller functions</li>
+<li><strong>Boolean flag soup</strong>: Many boolean flags (<code>showWarningBanner</code>, <code>showBottomSheetA</code>, <code>showDialogB</code>) lead to complex UIs with conditional blocks</li>
+<li><strong>Testing difficulties</strong>: The more properties state has, the harder it becomes to test comprehensively</li>
+</ul>
+<p>Don&rsquo;t worry - these are natural growing pains! A well-structured presenter exhibits these qualities:</p>
+<table>
+<thead>
+<tr>
+<th>Quality</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Single Responsibility</strong></td>
+<td>Handles only presentation logic</td>
+</tr>
+<tr>
+<td><strong>Testable</strong></td>
+<td>Can be unit tested in isolation with clear inputs and outputs</td>
+</tr>
+<tr>
+<td><strong>Maintainable</strong></td>
+<td>Easy to understand, modify, and extend over time</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="composition-patterns">Composition Patterns<a class="headerlink" href="#composition-patterns" title="Permanent link">&para;</a></h2>
+<p>When a presenter grows too large, you have options. Here are three patterns for breaking it down, each suited to different scenarios.</p>
+<h3 id="pattern-1-presenter-decomposition">Pattern 1: Presenter Decomposition<a class="headerlink" href="#pattern-1-presenter-decomposition" title="Permanent link">&para;</a></h3>
+<p><strong>Presenter decomposition</strong> involves breaking down a complex <code>present()</code> method into smaller <code>@Composable</code> helper functions without extracting full presenters.</p>
+<p><strong>When to use</strong>:</p>
+<ul>
+<li>Single presenter handling multiple related concerns</li>
+<li>Improving organization without full extraction</li>
+<li>Observation logic that can be extracted</li>
+</ul>
+<p><strong>Example: Order details with extracted observation</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Before</label><label for="__tabbed_1_2">After</label><label for="__tabbed_1_3">State &amp; Events</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">OrderDetailsPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">orderRepository</span><span class="p">:</span><span class="w"> </span><span class="n">OrderRepository</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">paymentRepository</span><span class="p">:</span><span class="w"> </span><span class="n">PaymentRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">OrderDetailsState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">OrderDetailsState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// All observation logic inline in present()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Order?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">observeOrder</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">paymentStatus</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="p">(</span><span class="n">PaymentStatus</span><span class="p">.</span><span class="na">Unknown</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">paymentRepository</span><span class="p">.</span><span class="na">observePaymentStatus</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">shippingInfo</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">ShippingInfo?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">observeShipping</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// State construction and event handling all in one place</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">order</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">OrderDetailsState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">OrderDetailsState</span><span class="p">.</span><span class="na">Success</span><span class="p">(</span>
+<span class="w">        </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order</span><span class="p">,</span>
+<span class="w">        </span><span class="n">paymentStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paymentStatus</span><span class="p">,</span>
+<span class="w">        </span><span class="n">shippingInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shippingInfo</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="c1">// Event handling inline</span>
+<span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">.</span><span class="na">TrackPackage</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">TrackingScreen</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">trackingId</span><span class="p">))</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">.</span><span class="na">ContactSupport</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">SupportScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">))</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">.</span><span class="na">RequestRefund</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">RefundScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">))</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">OrderDetailsPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">orderRepository</span><span class="p">:</span><span class="w"> </span><span class="n">OrderRepository</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">paymentRepository</span><span class="p">:</span><span class="w"> </span><span class="n">PaymentRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">OrderDetailsState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">OrderDetailsState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Extracted observation logic - present() is now a coordinator</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observeOrder</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">paymentStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observePaymentStatus</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">shippingInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observeShipping</span><span class="p">()</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">order</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">OrderDetailsState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">OrderDetailsState</span><span class="p">.</span><span class="na">Success</span><span class="p">(</span>
+<span class="w">        </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order</span><span class="p">,</span>
+<span class="w">        </span><span class="n">paymentStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paymentStatus</span><span class="p">,</span>
+<span class="w">        </span><span class="n">shippingInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shippingInfo</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">handleEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">observeOrder</span><span class="p">():</span><span class="w"> </span><span class="n">Order? </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Order?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">observeOrder</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}.</span><span class="na">value</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">observePaymentStatus</span><span class="p">():</span><span class="w"> </span><span class="n">PaymentStatus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="p">(</span><span class="n">PaymentStatus</span><span class="p">.</span><span class="na">Unknown</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">paymentRepository</span><span class="p">.</span><span class="na">observePaymentStatus</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}.</span><span class="na">value</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">observeShipping</span><span class="p">():</span><span class="w"> </span><span class="n">ShippingInfo? </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">ShippingInfo?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">observeShipping</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}.</span><span class="na">value</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">handleEvent</span><span class="p">(</span><span class="n">event</span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">.</span><span class="na">TrackPackage</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">TrackingScreen</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">trackingId</span><span class="p">))</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">.</span><span class="na">ContactSupport</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">SupportScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">))</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">OrderDetailsEvent</span><span class="p">.</span><span class="na">RequestRefund</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">RefundScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Screen with navigation parameter</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OrderDetailsScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="c1">// State</span>
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">OrderDetailsState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Success</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">order</span><span class="p">:</span><span class="w"> </span><span class="n">Order</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">paymentStatus</span><span class="p">:</span><span class="w"> </span><span class="n">PaymentStatus</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">shippingInfo</span><span class="p">:</span><span class="w"> </span><span class="n">ShippingInfo?,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">OrderDetailsEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsState</span>
+<span class="p">}</span>
+
+<span class="c1">// Events</span>
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">OrderDetailsEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">TrackPackage</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">trackingId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsEvent</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">ContactSupport</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsEvent</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">RequestRefund</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderDetailsEvent</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p><strong>Key techniques</strong>:</p>
+<ul>
+<li>Extract <code>@Composable</code> private functions for observation logic (e.g., <code>observeOrder()</code>)</li>
+<li>Extract non-composable private functions for event handling (e.g., <code>handleEvent()</code>)</li>
+<li>Keep <code>present()</code> focused on coordinating and combining state</li>
+<li>Each helper function should have a single responsibility</li>
+</ul>
+<h3 id="pattern-2-composite-presenters">Pattern 2: Composite Presenters<a class="headerlink" href="#pattern-2-composite-presenters" title="Permanent link">&para;</a></h3>
+<p><strong>Composite presenters</strong> embed full child presenters to create dashboard-style screens. Each child manages its own state and events.</p>
+<p><strong>When to use</strong>:</p>
+<ul>
+<li>Building screens that combine multiple independent features</li>
+<li>Child components could be screens on their own</li>
+<li>Each component handles its own events independently</li>
+</ul>
+<p><strong>Example: User dashboard with profile and settings</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Dashboard (Composite)</label><label for="__tabbed_2_2">ProfilePresenter</label><label for="__tabbed_2_3">SettingsPresenter</label><label for="__tabbed_2_4">UI</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Composite presenter combining child presenters</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">DashboardPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">DashboardScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">profilePresenter</span><span class="p">:</span><span class="w"> </span><span class="n">ProfilePresenter</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">settingsPresenter</span><span class="p">:</span><span class="w"> </span><span class="n">SettingsPresenter</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">refreshUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">RefreshDashboardUseCase</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">DashboardState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">DashboardState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">scope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCoroutineScope</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">refreshState</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rememberRetained</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">mutableStateOf</span><span class="o">&lt;</span><span class="n">DashboardRefreshState</span><span class="o">&gt;</span><span class="p">(</span><span class="n">DashboardRefreshState</span><span class="p">.</span><span class="na">Idle</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">profileState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profilePresenter</span><span class="p">.</span><span class="na">present</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">settingsState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settingsPresenter</span><span class="p">.</span><span class="na">present</span><span class="p">()</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">profileState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loading</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loaded</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">.</span><span class="na">Loaded</span><span class="p">(</span>
+<span class="w">        </span><span class="n">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profileState</span><span class="p">,</span>
+<span class="w">        </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settingsState</span><span class="p">,</span>
+<span class="w">        </span><span class="n">refreshState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">refreshState</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">DashboardEvent</span><span class="p">.</span><span class="na">Refresh</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">scope</span><span class="p">.</span><span class="na">launch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="n">refreshState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DashboardRefreshState</span><span class="p">.</span><span class="na">Refreshing</span>
+<span class="w">              </span><span class="n">refreshUseCase</span><span class="p">.</span><span class="na">refresh</span><span class="p">()</span>
+<span class="w">              </span><span class="n">refreshState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DashboardRefreshState</span><span class="p">.</span><span class="na">Idle</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">DashboardScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">DashboardState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DashboardState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Loaded</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">profile</span><span class="p">:</span><span class="w"> </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loaded</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">settings</span><span class="p">:</span><span class="w"> </span><span class="n">SettingsState</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">refreshState</span><span class="p">:</span><span class="w"> </span><span class="n">DashboardRefreshState</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">DashboardEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DashboardState</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">DashboardRefreshState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Idle</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DashboardRefreshState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Refreshing</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DashboardRefreshState</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">DashboardEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Refresh</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DashboardEvent</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Child presenter - can be used standalone or embedded</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">ProfilePresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">ProfileScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">userRepository</span><span class="p">:</span><span class="w"> </span><span class="n">UserRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">ProfileState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">ProfileState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">bio</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rememberRetained</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">user</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">User?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userRepository</span><span class="p">.</span><span class="na">getCurrentUser</span><span class="p">()</span>
+<span class="w">      </span><span class="n">bio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="o">?.</span><span class="na">bio</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kc">null</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loaded</span><span class="p">(</span>
+<span class="w">        </span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="na">username</span><span class="p">,</span>
+<span class="w">        </span><span class="n">bio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bio</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">ProfileEvent</span><span class="p">.</span><span class="na">UpdateBio</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">bio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">newBio</span>
+<span class="w">            </span><span class="n">userRepository</span><span class="p">.</span><span class="na">updateBio</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">newBio</span><span class="p">)</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">ProfileScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProfileState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProfileState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Loaded</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">username</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">bio</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">ProfileEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProfileState</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProfileEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">UpdateBio</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">newBio</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProfileEvent</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Child presenter - can be used standalone or embedded</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">SettingsPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">SettingsScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">settingsRepository</span><span class="p">:</span><span class="w"> </span><span class="n">SettingsRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">SettingsState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">SettingsState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">settings</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="p">(</span><span class="n">Settings</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">settingsRepository</span><span class="p">.</span><span class="na">observeSettings</span><span class="p">().</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">SettingsState</span><span class="p">(</span>
+<span class="w">      </span><span class="n">isDarkMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settings</span><span class="p">.</span><span class="na">isDarkMode</span><span class="p">,</span>
+<span class="w">      </span><span class="n">notificationsEnabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settings</span><span class="p">.</span><span class="na">notificationsEnabled</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">      </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">is</span><span class="w"> </span><span class="n">SettingsEvent</span><span class="p">.</span><span class="na">ToggleDarkMode</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">          </span><span class="n">settingsRepository</span><span class="p">.</span><span class="na">setDarkMode</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">enabled</span><span class="p">)</span>
+<span class="w">        </span><span class="k">is</span><span class="w"> </span><span class="n">SettingsEvent</span><span class="p">.</span><span class="na">ToggleNotifications</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">          </span><span class="n">settingsRepository</span><span class="p">.</span><span class="na">setNotifications</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">enabled</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">SettingsScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">SettingsState</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">isDarkMode</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">notificationsEnabled</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">SettingsEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">SettingsEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">ToggleDarkMode</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">enabled</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SettingsEvent</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">ToggleNotifications</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">enabled</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SettingsEvent</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">Dashboard</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">.</span><span class="na">Loading</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">LoadingIndicator</span><span class="p">()</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">.</span><span class="na">Loaded</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">PullToRefreshBox</span><span class="p">(</span>
+<span class="w">        </span><span class="n">isRefreshing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">refreshState</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">DashboardRefreshState</span><span class="p">.</span><span class="na">Refreshing</span><span class="p">,</span>
+<span class="w">        </span><span class="n">onRefresh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">DashboardEvent</span><span class="p">.</span><span class="na">Refresh</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modifier</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Column</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">Profile</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">profile</span><span class="p">)</span>
+<span class="w">          </span><span class="n">Settings</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">settings</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">Profile</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loaded</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Column</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Username: </span><span class="si">${</span><span class="n">state</span><span class="p">.</span><span class="na">username</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">TextField</span><span class="p">(</span>
+<span class="w">      </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">bio</span><span class="p">,</span>
+<span class="w">      </span><span class="n">onValueChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">ProfileEvent</span><span class="p">.</span><span class="na">UpdateBio</span><span class="p">(</span><span class="nb">it</span><span class="p">))</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">Settings</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">SettingsState</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Column</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SwitchRow</span><span class="p">(</span>
+<span class="w">      </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Dark Mode&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">checked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">isDarkMode</span><span class="p">,</span>
+<span class="w">      </span><span class="n">onCheckedChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">SettingsEvent</span><span class="p">.</span><span class="na">ToggleDarkMode</span><span class="p">(</span><span class="nb">it</span><span class="p">))</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="n">SwitchRow</span><span class="p">(</span>
+<span class="w">      </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Notifications&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">checked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">notificationsEnabled</span><span class="p">,</span>
+<span class="w">      </span><span class="n">onCheckedChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">SettingsEvent</span><span class="p">.</span><span class="na">ToggleNotifications</span><span class="p">(</span><span class="nb">it</span><span class="p">))</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Injecting Child Presenters</p>
+<p>How you get child presenters into the composite presenter is flexible: inject them directly, create them inline, or pull them from a Circuit instance. The key is that shared state should flow through the data layer when possible.</p>
+</div>
+<h3 id="pattern-3-stateproducer">Pattern 3: StateProducer<a class="headerlink" href="#pattern-3-stateproducer" title="Permanent link">&para;</a></h3>
+<p><strong>StateProducers</strong> are reusable components that produce state but aren&rsquo;t used on their own. Unlike full presenters, they don&rsquo;t implement the <code>Presenter</code> interface and are always consumed by a parent presenter that coordinates their output.</p>
+<p><strong>When to use</strong>:</p>
+<ul>
+<li>Reusable state logic shared across multiple screens</li>
+<li>Components that wouldn&rsquo;t make sense as standalone screens</li>
+<li>Parent presenter needs to coordinate multiple related pieces of state</li>
+<li>Extracting repetitive observation patterns into a single place</li>
+</ul>
+<p><strong>Example: Product details with availability check</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">ProductDetailsPresenter</label><label for="__tabbed_3_2">AvailabilityStateProducer</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Parent presenter coordinates the producer</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">ProductDetailsPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">ProductDetailsScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">productRepository</span><span class="p">:</span><span class="w"> </span><span class="n">ProductRepository</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">availabilityProducer</span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityStateProducer</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">ProductDetailsState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">ProductDetailsState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Product?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productRepository</span><span class="p">.</span><span class="na">getProduct</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">productId</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Producer handles availability presentation logic separately</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">availability</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">availabilityProducer</span><span class="p">.</span><span class="na">produce</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">productId</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kc">null</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ProductDetailsState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ProductDetailsState</span><span class="p">.</span><span class="na">Loaded</span><span class="p">(</span>
+<span class="w">        </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">product</span><span class="p">,</span>
+<span class="w">        </span><span class="n">availability</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">availability</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">ProductDetailsEvent</span><span class="p">.</span><span class="na">AddToCart</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">productRepository</span><span class="p">.</span><span class="na">addToCart</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">productId</span><span class="p">)</span>
+<span class="w">            </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">CartScreen</span><span class="p">)</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">ProductDetailsScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">productId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProductDetailsState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductDetailsState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Loaded</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">product</span><span class="p">:</span><span class="w"> </span><span class="n">Product</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">availability</span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">ProductDetailsEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductDetailsState</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProductDetailsEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">AddToCart</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductDetailsEvent</span>
+<span class="p">}</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">CartScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Reusable producer - used by ProductDetails, Wishlist, etc.</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">AvailabilityStateProducer</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">inventoryRepository</span><span class="p">:</span><span class="w"> </span><span class="n">InventoryRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">produce</span><span class="p">(</span><span class="n">productId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">):</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">inventory</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Inventory?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">inventoryRepository</span><span class="p">.</span><span class="na">observeInventory</span><span class="p">(</span><span class="n">productId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">inventory</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="p">.</span><span class="na">Checking</span>
+<span class="w">      </span><span class="n">inventory</span><span class="p">.</span><span class="na">quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="p">.</span><span class="na">InStock</span>
+<span class="w">      </span><span class="n">inventory</span><span class="p">.</span><span class="na">quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="p">.</span><span class="na">LowStock</span><span class="p">(</span><span class="n">inventory</span><span class="p">.</span><span class="na">quantity</span><span class="p">)</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="p">.</span><span class="na">OutOfStock</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">AvailabilityState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Checking</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InStock</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">LowStock</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">remaining</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">OutOfStock</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityState</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p><strong>Key characteristics</strong>:</p>
+<ul>
+<li>Producer is injected into the parent presenter</li>
+<li>Parent typically handles events and coordinates state</li>
+<li>Producers can have their own event sinks, though it&rsquo;s less common</li>
+<li>Reusable across multiple screens that need the same state logic</li>
+<li>Never used standalone; always consumed by a parent presenter</li>
+</ul>
+<hr />
+<h2 id="use-cases-separating-business-logic">Use Cases: Separating Business Logic<a class="headerlink" href="#use-cases-separating-business-logic" title="Permanent link">&para;</a></h2>
+<p><strong>Use cases</strong> (also called interactors) encapsulate business logic in small, focused classes that can be injected into presenters and state producers. They separate &ldquo;what the app does&rdquo; from &ldquo;how it&rsquo;s presented.&rdquo;</p>
+<h3 id="why-use-cases">Why Use Cases?<a class="headerlink" href="#why-use-cases" title="Permanent link">&para;</a></h3>
+<p>Presenters should focus on:</p>
+<ul>
+<li>Observing data and transforming it into UI state</li>
+<li>Routing events to the appropriate handlers</li>
+<li>Managing UI-specific concerns (loading states, error display)</li>
+</ul>
+<p>Business logic should live elsewhere:</p>
+<ul>
+<li>Validation rules</li>
+<li>Data transformations</li>
+<li>Coordinating multiple repository calls</li>
+<li>Business rules and policies</li>
+</ul>
+<h3 id="using-use-cases-in-presenters">Using Use Cases in Presenters<a class="headerlink" href="#using-use-cases-in-presenters" title="Permanent link">&para;</a></h3>
+<p>This example brings together multiple patterns: decomposed observation functions (Pattern 1), a StateProducer (Pattern 3), use cases for business logic, and an internal state holder class.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:4"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Presenter</label><label for="__tabbed_4_2">Use Cases</label><label for="__tabbed_4_3">State &amp; Events</label><label for="__tabbed_4_4">StateProducer</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">CheckoutPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">CheckoutScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">cartTotalProducer</span><span class="p">:</span><span class="w"> </span><span class="n">CartTotalStateProducer</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">observeOrderStatus</span><span class="p">:</span><span class="w"> </span><span class="n">ObserveOrderStatusUseCase</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">validateEmail</span><span class="p">:</span><span class="w"> </span><span class="n">ValidateEmailUseCase</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">placeOrder</span><span class="p">:</span><span class="w"> </span><span class="n">PlaceOrderUseCase</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">CheckoutState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">CheckoutState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">cartTotalState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cartTotalProducer</span><span class="p">.</span><span class="na">produce</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberRetained</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">EmailFieldState</span><span class="p">(</span><span class="n">validateEmail</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">orderStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observeOrderStatus</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">cartTotalState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">CartTotalState</span><span class="p">.</span><span class="na">Loading</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CheckoutState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">CartTotalState</span><span class="p">.</span><span class="na">Ready</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CheckoutState</span><span class="p">.</span><span class="na">Ready</span><span class="p">(</span>
+<span class="w">        </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emailField</span><span class="p">.</span><span class="na">value</span><span class="p">,</span>
+<span class="w">        </span><span class="n">emailError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emailField</span><span class="p">.</span><span class="na">error</span><span class="p">,</span>
+<span class="w">        </span><span class="n">cartTotal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cartTotalState</span><span class="p">.</span><span class="na">total</span><span class="p">,</span>
+<span class="w">        </span><span class="n">orderStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStatus</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">CheckoutEvent</span><span class="p">.</span><span class="na">EmailChanged</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">emailField</span><span class="p">.</span><span class="na">onValueChange</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">email</span><span class="p">)</span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">CheckoutEvent</span><span class="p">.</span><span class="na">SubmitOrder</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">emailField</span><span class="p">.</span><span class="na">isValid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="n">placeOrder</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="na">orderId</span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">observeOrderStatus</span><span class="p">(</span><span class="n">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">):</span><span class="w"> </span><span class="n">OrderStatus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">OrderStatus</span><span class="o">&gt;</span><span class="p">(</span><span class="n">OrderStatus</span><span class="p">.</span><span class="na">Idle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">observeOrderStatus</span><span class="p">(</span><span class="n">orderId</span><span class="p">).</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="c1">// Navigate on success</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">OrderStatus</span><span class="p">.</span><span class="na">Success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">navigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">OrderConfirmationScreen</span><span class="p">(</span><span class="n">status</span><span class="p">.</span><span class="na">orderId</span><span class="p">))</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">status</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">status</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Internal helper class for managing email field state</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">EmailFieldState</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">validateEmail</span><span class="p">:</span><span class="w"> </span><span class="n">ValidateEmailUseCase</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="k">set</span>
+<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nv">error</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="o">&lt;</span><span class="kt">String?</span><span class="o">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="k">set</span>
+
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">isValid</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span>
+<span class="w">    </span><span class="k">get</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span>
+
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onValueChange</span><span class="p">(</span><span class="n">newValue</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span>
+<span class="w">    </span><span class="n">validate</span><span class="p">()</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">validate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">validateEmail</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">Error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">message</span>
+<span class="w">      </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">Valid</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Synchronous use case for validation</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">ValidateEmailUseCase</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">operator</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">):</span><span class="w"> </span><span class="n">ValidationResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">email</span><span class="p">.</span><span class="na">isBlank</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">Error</span><span class="p">(</span><span class="s">&quot;Email is required&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="o">!</span><span class="n">email</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="s">&quot;@&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">Error</span><span class="p">(</span><span class="s">&quot;Invalid email format&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">Valid</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Use case delegates to repository which handles the async operation</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">PlaceOrderUseCase</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">orderRepository</span><span class="p">:</span><span class="w"> </span><span class="n">OrderRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">operator</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">placeOrder</span><span class="p">(</span><span class="n">orderId</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Flow-based use case for observing order status</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">ObserveOrderStatusUseCase</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">orderRepository</span><span class="p">:</span><span class="w"> </span><span class="n">OrderRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">operator</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">):</span><span class="w"> </span><span class="n">Flow</span><span class="o">&lt;</span><span class="n">OrderStatus</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">observeOrderStatus</span><span class="p">(</span><span class="n">orderId</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">OrderStatus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Idle</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderStatus</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Submitting</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderStatus</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Success</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderStatus</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Error</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">message</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">OrderStatus</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ValidationResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Valid</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ValidationResult</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Error</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">message</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ValidationResult</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Screens</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">CheckoutScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OrderConfirmationScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="c1">// State</span>
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">CheckoutState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CheckoutState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Ready</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emailError</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">cartTotal</span><span class="p">:</span><span class="w"> </span><span class="n">CartTotal</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">orderStatus</span><span class="p">:</span><span class="w"> </span><span class="n">OrderStatus</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">CheckoutEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CheckoutState</span>
+<span class="p">}</span>
+
+<span class="c1">// Events</span>
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">CheckoutEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">EmailChanged</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CheckoutEvent</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">SubmitOrder</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CheckoutEvent</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1">// Reusable producer for cart total observation</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">CartTotalStateProducer</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">observeCartTotal</span><span class="p">:</span><span class="w"> </span><span class="n">ObserveCartTotalUseCase</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">produce</span><span class="p">():</span><span class="w"> </span><span class="n">CartTotalState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">cartTotal</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">CartTotal?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">observeCartTotal</span><span class="p">().</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">cartTotal</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kc">null</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CartTotalState</span><span class="p">.</span><span class="na">Loading</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CartTotalState</span><span class="p">.</span><span class="na">Ready</span><span class="p">(</span><span class="n">cartTotal</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">CartTotalState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CartTotalState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Ready</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">total</span><span class="p">:</span><span class="w"> </span><span class="n">CartTotal</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CartTotalState</span>
+<span class="p">}</span>
+
+<span class="c1">// Flow-based use case for observing cart data</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">ObserveCartTotalUseCase</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">cartRepository</span><span class="p">:</span><span class="w"> </span><span class="n">CartRepository</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">pricingService</span><span class="p">:</span><span class="w"> </span><span class="n">PricingService</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">operator</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">invoke</span><span class="p">():</span><span class="w"> </span><span class="n">Flow</span><span class="o">&lt;</span><span class="n">CartTotal</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cartRepository</span><span class="p">.</span><span class="na">observeCart</span><span class="p">()</span>
+<span class="w">      </span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">cart</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">subtotal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cart</span><span class="p">.</span><span class="na">items</span><span class="p">.</span><span class="na">sumOf</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">quantity</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">discount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pricingService</span><span class="p">.</span><span class="na">calculateDiscount</span><span class="p">(</span><span class="n">cart</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">tax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pricingService</span><span class="p">.</span><span class="na">calculateTax</span><span class="p">(</span><span class="n">subtotal</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">discount</span><span class="p">)</span>
+<span class="w">        </span><span class="n">CartTotal</span><span class="p">(</span><span class="n">subtotal</span><span class="p">,</span><span class="w"> </span><span class="n">discount</span><span class="p">,</span><span class="w"> </span><span class="n">tax</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="when-to-extract-a-use-case">When to Extract a Use Case<a class="headerlink" href="#when-to-extract-a-use-case" title="Permanent link">&para;</a></h3>
+<p>Extract business logic into a use case when:</p>
+<ul>
+<li>The same logic is needed in multiple presenters</li>
+<li>The logic involves multiple repositories or services</li>
+<li>The logic has complex rules that warrant dedicated tests</li>
+<li>You want to test business logic independently from presentation logic</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Use Cases vs Repositories</p>
+<p>Repositories handle data access (fetching, caching, persistence). Use cases handle business operations that may coordinate multiple repositories and apply business rules. A use case might call several repositories, but a repository should never call a use case.</p>
+</div>
+<hr />
+<h2 id="testing-strategies">Testing Strategies<a class="headerlink" href="#testing-strategies" title="Permanent link">&para;</a></h2>
+<p>One of the benefits of these patterns is improved testability. Here&rsquo;s how to test each pattern effectively.</p>
+<div class="admonition note">
+<p class="admonition-title">Testing Decomposed Presenters</p>
+<p>Decomposed presenters are tested the same way as any other presenter - the extracted helper functions are implementation details. Use <code>Presenter.test()</code> as usual.</p>
+</div>
+<h3 id="testing-composite-presenters">Testing Composite Presenters<a class="headerlink" href="#testing-composite-presenters" title="Permanent link">&para;</a></h3>
+<p>Test composite presenters by injecting test implementations of child presenters:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">`dashboard combines profile and settings state`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">profilePresenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeProfilePresenter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">ProfileState</span><span class="p">.</span><span class="na">Loaded</span><span class="p">(</span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;testuser&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">settingsPresenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeSettingsPresenter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">SettingsState</span><span class="p">(</span><span class="n">isDarkMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="n">notificationsEnabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">presenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DashboardPresenter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">screen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DashboardScreen</span><span class="p">,</span>
+<span class="w">    </span><span class="n">profilePresenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profilePresenter</span><span class="p">,</span>
+<span class="w">    </span><span class="n">settingsPresenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settingsPresenter</span><span class="p">,</span>
+<span class="w">    </span><span class="n">refreshUseCase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeRefreshUseCase</span><span class="p">(),</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="w">  </span><span class="n">presenter</span><span class="p">.</span><span class="na">test</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">awaitItem</span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">.</span><span class="na">Loaded</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;testuser&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">profile</span><span class="p">.</span><span class="na">username</span><span class="p">)</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">settings</span><span class="p">.</span><span class="na">isDarkMode</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="testing-stateproducers">Testing StateProducers<a class="headerlink" href="#testing-stateproducers" title="Permanent link">&para;</a></h3>
+<p>Test state producers using Molecule directly:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">`produces availability state from repository`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeInventoryRepository</span><span class="p">().</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">setInventory</span><span class="p">(</span><span class="s">&quot;product-123&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Inventory</span><span class="p">(</span><span class="n">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">producer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AvailabilityStateProducer</span><span class="p">(</span><span class="n">repository</span><span class="p">)</span>
+
+<span class="w">  </span><span class="n">moleculeFlow</span><span class="p">(</span><span class="n">RecompositionMode</span><span class="p">.</span><span class="na">Immediate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">produce</span><span class="p">(</span><span class="s">&quot;product-123&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}.</span><span class="na">test</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">awaitItem</span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">AvailabilityState</span><span class="p">.</span><span class="na">LowStock</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">remaining</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="testing-event-flow">Testing Event Flow<a class="headerlink" href="#testing-event-flow" title="Permanent link">&para;</a></h3>
+<p>For presenters with complex event routing, emit events through the state&rsquo;s <code>eventSink</code> and verify the expected side effects:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">`refresh event triggers refresh use case`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">refreshUseCase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeRefreshUseCase</span><span class="p">()</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">presenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DashboardPresenter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">screen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DashboardScreen</span><span class="p">,</span>
+<span class="w">    </span><span class="n">profilePresenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeProfilePresenter</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">settingsPresenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FakeSettingsPresenter</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">refreshUseCase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">refreshUseCase</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="w">  </span><span class="n">presenter</span><span class="p">.</span><span class="na">test</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">awaitItem</span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">DashboardState</span><span class="p">.</span><span class="na">Loaded</span>
+<span class="w">    </span><span class="n">state</span><span class="p">.</span><span class="na">eventSink</span><span class="p">(</span><span class="n">DashboardEvent</span><span class="p">.</span><span class="na">Refresh</span><span class="p">)</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">refreshUseCase</span><span class="p">.</span><span class="na">wasRefreshCalled</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="common-pitfalls">Common Pitfalls<a class="headerlink" href="#common-pitfalls" title="Permanent link">&para;</a></h2>
+<p>These are patterns we&rsquo;ve seen cause issues in practice. If you spot them in your code, consider refactoring.</p>
+<h3 id="1-giant-presenters">1. Giant Presenters<a class="headerlink" href="#1-giant-presenters" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: A presenter file grows large with many responsibilities.</p>
+<p><strong>Solution</strong>: Apply one of the composition patterns to break it down.</p>
+<h3 id="2-boolean-flag-soup">2. Boolean Flag Soup<a class="headerlink" href="#2-boolean-flag-soup" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: State contains many boolean flags for UI visibility.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Avoid</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">showWarning</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">showDialog</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">showBottomSheet</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">showSnackbar</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">)</span>
+</code></pre></div>
+<p><strong>Solution</strong>: Use sealed classes or nullable sub-states:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Prefer</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">dialog</span><span class="p">:</span><span class="w"> </span><span class="n">DialogState?,</span><span class="w">      </span><span class="c1">// null = not shown</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">bottomSheet</span><span class="p">:</span><span class="w"> </span><span class="n">SheetState?,</span><span class="w">  </span><span class="c1">// null = not shown</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">snackbar</span><span class="p">:</span><span class="w"> </span><span class="n">SnackbarState?,</span><span class="w">  </span><span class="c1">// null = not shown</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="3-event-handler-spaghetti">3. Event Handler Spaghetti<a class="headerlink" href="#3-event-handler-spaghetti" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Deeply nested <code>when</code> statements in event handlers.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Avoid</span>
+<span class="p">{</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">  </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="n">Event</span><span class="p">.</span><span class="na">DialogAction</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">is</span><span class="w"> </span><span class="n">DialogAction</span><span class="p">.</span><span class="na">Confirm</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">action</span><span class="p">.</span><span class="na">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// More nesting...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Solution</strong>: Extract event handlers into separate functions, use sealed classes with flatter hierarchies, or encapsulate related state and handlers into helper classes (like <code>EmailFieldState</code> in the Use Cases example).</p>
+<hr />
+<h2 id="migration-recipes">Migration Recipes<a class="headerlink" href="#migration-recipes" title="Permanent link">&para;</a></h2>
+<p>Ready to refactor? These step-by-step recipes show how to apply the patterns to existing code.</p>
+<h3 id="recipe-boolean-flags-to-sealed-states">Recipe: Boolean Flags to Sealed States<a class="headerlink" href="#recipe-boolean-flags-to-sealed-states" title="Permanent link">&para;</a></h3>
+<p><strong>Before</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">ProductState</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">isLoading</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">hasError</span><span class="p">:</span><span class="w"> </span><span class="kt">Boolean</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">errorMessage</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">product</span><span class="p">:</span><span class="w"> </span><span class="n">Product?,</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+</code></pre></div>
+<p><strong>After</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProductState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Error</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">message</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">ErrorEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductState</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Success</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">product</span><span class="p">:</span><span class="w"> </span><span class="n">Product</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">SuccessEvent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductState</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ErrorEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Retry</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ErrorEvent</span>
+<span class="p">}</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">SuccessEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Refresh</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SuccessEvent</span>
+<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">AddToCart</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">quantity</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SuccessEvent</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="recipe-large-presenter-to-composite">Recipe: Large Presenter to Composite<a class="headerlink" href="#recipe-large-presenter-to-composite" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Identify logically independent sections of the presenter</li>
+<li>Create separate <code>Screen</code> definitions for each section</li>
+<li>Create child presenters that implement <code>Presenter</code> for each screen</li>
+<li>Create a composite presenter that combines the child states</li>
+<li>Update the UI to render each child state</li>
+</ol>
+<p><strong>Before</strong> (monolithic presenter):</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">AccountState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Profile logic</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">profile</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Profile?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// Settings logic</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">settings</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Settings?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// Billing logic</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">billing</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">Billing?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// ... more logic</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>After</strong> (composite presenter):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">AccountPresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">screen</span><span class="p">:</span><span class="w"> </span><span class="n">AccountScreen</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">profilePresenter</span><span class="p">:</span><span class="w"> </span><span class="n">ProfilePresenter</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">settingsPresenter</span><span class="p">:</span><span class="w"> </span><span class="n">SettingsPresenter</span><span class="p">,</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">billingPresenter</span><span class="p">:</span><span class="w"> </span><span class="n">BillingPresenter</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">AccountState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">AccountState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">AccountState</span><span class="p">(</span>
+<span class="w">      </span><span class="n">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profilePresenter</span><span class="p">.</span><span class="na">present</span><span class="p">(),</span>
+<span class="w">      </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settingsPresenter</span><span class="p">.</span><span class="na">present</span><span class="p">(),</span>
+<span class="w">      </span><span class="n">billing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">billingPresenter</span><span class="p">.</span><span class="na">present</span><span class="p">(),</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="recipe-extract-stateproducer-from-large-presenter">Recipe: Extract StateProducer from Large Presenter<a class="headerlink" href="#recipe-extract-stateproducer-from-large-presenter" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Identify a cohesive piece of state with its observation logic</li>
+<li>Create a new class with a <code>@Composable</code> function that returns the state</li>
+<li>Inject the producer into the original presenter</li>
+<li>Call the producer&rsquo;s function in <code>present()</code></li>
+<li>Update event handling to route through the parent</li>
+</ol>
+<p><strong>Before</strong> (state logic embedded in presenter):</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Composable</span>
+<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">present</span><span class="p">():</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// This user-related logic could be reused elsewhere</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">user</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">User?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userRepository</span><span class="p">.</span><span class="na">getCurrentUser</span><span class="p">()</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nv">isUserExpanded</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rememberRetained</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// ... rest of presenter</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>After</strong> (extracted to producer):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">UserStateProducer</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">userRepository</span><span class="p">:</span><span class="w"> </span><span class="n">UserRepository</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@Composable</span>
+<span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">produce</span><span class="p">():</span><span class="w"> </span><span class="n">UserSectionState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">user</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">produceRetainedState</span><span class="o">&lt;</span><span class="n">User?&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userRepository</span><span class="p">.</span><span class="na">getCurrentUser</span><span class="p">()</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">isExpanded</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rememberRetained</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">UserSectionState</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">isExpanded</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">isExpanded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">!</span><span class="n">isExpanded</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// In presenter</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">userState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userStateProducer</span><span class="p">.</span><span class="na">produce</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 Slack Technologies, LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -8,6 +8,10 @@ Unreleased
 
 - Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
 
+### Docs
+
+- New ["Scaling Presenters"](https://slackhq.github.io/circuit/presenter-patterns/) guide covering best practices for structuring presenters as they grow, including extracting sub-presenters, modularizing event handling, and testing strategies.
+
 0.33.0
 ------
 

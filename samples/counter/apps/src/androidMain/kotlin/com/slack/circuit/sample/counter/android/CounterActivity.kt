@@ -11,6 +11,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.platform.LocalContext
 import com.slack.circuit.sample.counter.CounterApp
+import com.slack.circuit.sample.counter.CounterScreen
 
 class CounterActivity : AppCompatActivity() {
 
@@ -25,7 +26,7 @@ class CounterActivity : AppCompatActivity() {
         } else {
           dynamicLightColorScheme(context)
         }
-      CounterApp(screen = AndroidCounterScreen, colorScheme = colorScheme, onRootPop = ::finish)
+      CounterApp(screen = CounterScreen, colorScheme = colorScheme, onRootPop = ::finish)
     }
   }
 }

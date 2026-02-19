@@ -39,11 +39,11 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.circuitFoundation)
-        api(projects.circuitx.gestureNavigation)
         api(projects.internalRuntime)
         api(libs.compose.foundation)
         api(libs.compose.material.icons)
         api(libs.compose.material.material3)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.molecule.runtime)
       }
     }

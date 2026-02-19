@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -41,9 +42,8 @@ private fun isPrime(value: Int): Boolean {
   return (2..value / 2).none { value % it == 0 }
 }
 
-// Unfortunately can't make this multiplatform by itself because plugin.parcelize doesn't play nice
-// in multiplatform android library projects
-interface CounterScreen : Screen {
+@Parcelize
+data object CounterScreen : Screen {
   data class State(val count: Int, val eventSink: (Event) -> Unit = {}) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
@@ -57,15 +57,14 @@ interface CounterScreen : Screen {
   }
 }
 
-interface PrimeScreen : Screen {
+@Parcelize
+data class PrimeScreen(val number: Int) : Screen {
   data class State(val number: Int, val isPrime: Boolean, val eventSink: (Event) -> Unit = {}) :
     CircuitUiState
 
   sealed interface Event {
     data object Pop : Event
   }
-
-  val number: Int
 }
 
 class CounterPresenterFactory : Presenter.Factory {

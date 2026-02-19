@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -48,6 +49,13 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
       ) {
         Icon(rememberVectorPainter(Remove), "Decrement")
       }
+      Spacer(modifier = Modifier.height(16.dp))
+      Button(
+        onClick = { state.eventSink(CounterScreen.Event.GoTo(CommonPrimeScreen(state.count))) },
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+      ) {
+        Text(modifier = Modifier.padding(4.dp), text = "Prime?")
+      }
     }
   }
 }
@@ -56,6 +64,9 @@ class CounterUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
       is CounterScreen -> ui<CounterScreen.State> { state, modifier -> Counter(state, modifier) }
+
+      is PrimeScreen -> ui<PrimeScreen.State> { state, modifier -> Prime(state, modifier) }
+
       else -> null
     }
   }

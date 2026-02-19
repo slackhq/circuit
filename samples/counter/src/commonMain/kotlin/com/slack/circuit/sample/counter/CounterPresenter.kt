@@ -5,8 +5,8 @@ package com.slack.circuit.sample.counter
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -18,7 +18,7 @@ import com.slack.circuit.runtime.screen.Screen
 
 @Composable
 fun CounterPresenter(navigator: Navigator): CounterScreen.State {
-  var count by remember { mutableStateOf(0) }
+  var count by rememberRetained { mutableStateOf(0) }
 
   return CounterScreen.State(count) { event ->
     when (event) {

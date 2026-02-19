@@ -1,6 +1,7 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
@@ -9,6 +10,7 @@ plugins {
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.library)
   alias(libs.plugins.nativecoroutines)
+  alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
 version = "1.0.0-SNAPSHOT"
@@ -37,6 +39,8 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.circuitFoundation)
+        api(projects.circuitx.gestureNavigation)
+        api(projects.internalRuntime)
         api(libs.compose.foundation)
         api(libs.compose.material.icons)
         api(libs.compose.material.material3)
@@ -48,6 +52,20 @@ kotlin {
     val iosSimulatorArm64Main by sourceSets.getting
 
     configureEach { languageSettings.optIn("kotlin.experimental.ExperimentalObjCName") }
+    targets.configureEach {
+      if (platformType == KotlinPlatformType.androidJvm) {
+        compilations.configureEach {
+          compileTaskProvider.configure {
+            compilerOptions {
+              freeCompilerArgs.addAll(
+                "-P",
+                "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
+              )
+            }
+          }
+        }
+      }
+    }
   }
 }
 

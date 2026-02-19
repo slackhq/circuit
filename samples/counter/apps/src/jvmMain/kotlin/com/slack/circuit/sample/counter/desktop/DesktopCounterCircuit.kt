@@ -44,7 +44,6 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sample.counter.CounterScreen
-import com.slack.circuit.sample.counter.Prime
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
 import com.slack.circuit.sample.counter.buildCircuit
@@ -120,7 +119,8 @@ fun DesktopPrime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
 class CounterUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
-      is CounterScreen -> ui<CounterScreen.State> { state, modifier -> DesktopCounter(state, modifier) }
+      is CounterScreen ->
+        ui<CounterScreen.State> { state, modifier -> DesktopCounter(state, modifier) }
       is PrimeScreen -> ui<PrimeScreen.State> { state, modifier -> DesktopPrime(state, modifier) }
       else -> null
     }

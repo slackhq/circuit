@@ -72,11 +72,12 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
         text = "${state.number}",
       )
       Spacer(modifier = Modifier.height(16.dp))
-      val text = if (state.isPrime) {
-        "${state.number} is a prime number!"
-      } else {
-        "${state.number} is not a prime number."
-      }
+      val text =
+        if (state.isPrime) {
+          "${state.number} is a prime number!"
+        } else {
+          "${state.number} is not a prime number."
+        }
       Text(
         modifier = Modifier.align(Alignment.CenterHorizontally),
         style = MaterialTheme.typography.titleLarge,
@@ -102,7 +103,6 @@ class CounterUiFactory : Ui.Factory {
     }
   }
 }
-
 
 @Preview(showBackground = true)
 @Composable

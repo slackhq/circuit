@@ -15,20 +15,20 @@ import com.slack.circuit.runtime.ui.Ui
 
 @Composable
 fun CounterApp(
-  screen: CounterScreen,
   circuit: Circuit = buildCircuit(),
   colorScheme: ColorScheme = MaterialTheme.colorScheme,
   onRootPop: () -> Unit = {},
 ) {
   MaterialTheme(colorScheme = colorScheme) {
     CircuitCompositionLocals(circuit) {
-      val navStack = rememberSaveableNavStack(screen)
+      val navStack = rememberSaveableNavStack(CounterScreen)
       val navigator =
-        rememberCircuitNavigator(navStack = navStack, enableBackHandler = true, onRootPop = { onRootPop() })
-      NavigableCircuitContent(
-        navigator = navigator,
-        navStack = navStack,
-      )
+        rememberCircuitNavigator(
+          navStack = navStack,
+          enableBackHandler = true,
+          onRootPop = { onRootPop() },
+        )
+      NavigableCircuitContent(navigator = navigator, navStack = navStack)
     }
   }
 }

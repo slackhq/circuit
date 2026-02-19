@@ -547,3 +547,29 @@ dependencies {
   dokka(projects.circuitx.gestureNavigation)
   dokka(projects.circuitx.overlays)
 }
+
+val circuitCi: TaskProvider<Task> =
+  tasks.register("circuitCi") {
+    group = "CI"
+    description = "Aggregates multiple verification tasks for CI."
+    dependsOn(
+      ":samples:star:apk:assembleDebug",
+      ":samples:star:jvmJar",
+      ":samples:bottom-navigation:assembleDebug",
+      ":samples:bottom-navigation:jvmJar",
+    )
+  }
+
+afterEvaluate {
+  circuitCi.configure {
+    allprojects {
+      fun Task.findAndDependOn(name: String) {
+        tasks.findByPath(name)?.let { dependsOn(it) }
+      }
+      findAndDependOn("check")
+      findAndDependOn("detektTest")
+      findAndDependOn("detektMain")
+      findAndDependOn("assembleAndroidTest")
+    }
+  }
+}

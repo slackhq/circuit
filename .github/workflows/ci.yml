@@ -75,13 +75,7 @@ jobs:
       - name: Build and run checks
         id: gradle-build
         run: |
-          ./gradlew --quiet --continue --no-configuration-cache \
-              check \
-              :samples:star:apk:assembleDebug \
-              :samples:star:jvmJar \
-              detektMain \
-              detektTest \
-              assembleAndroidTest
+          ./gradlew circuitCi --quiet --continue --no-configuration-cache 
 
       # Defer these until after the above run, no need to waste resources running them if there are other failures first
       - name: Run instrumentation tests via emulator.wtf (main repo only)

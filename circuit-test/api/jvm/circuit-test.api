@@ -117,6 +117,8 @@ public final class com/slack/circuit/test/PresenterTestExtensionsKt {
 	public static synthetic fun presenterTestOf-i8z2VEo$default (Lkotlin/jvm/functions/Function2;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static final fun test-i8z2VEo (Lcom/slack/circuit/runtime/presenter/Presenter;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun test-i8z2VEo$default (Lcom/slack/circuit/runtime/presenter/Presenter;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun test-mY9Nd3A (Lcom/slack/circuit/runtime/presenter/Presenter;[Landroidx/compose/runtime/ProvidedValue;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun test-mY9Nd3A$default (Lcom/slack/circuit/runtime/presenter/Presenter;[Landroidx/compose/runtime/ProvidedValue;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class com/slack/circuit/test/TestEventSink : com/slack/circuit/test/BaseTestEventSinkType {

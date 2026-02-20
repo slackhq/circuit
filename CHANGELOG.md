@@ -4,10 +4,16 @@ Changelog
 Unreleased
 ----------
 
+0.33.1
+------
+
+_2026-02-19_
+
 ### New
 
 - Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
 - Add `rememberSaveableNavStack(NavStackList)` overload to initialize a nav stack from an existing snapshot.
+- Added a `Presenter.test` variant that provides composition local values to the `Presenter` under test
 
 ### Fixes
 
@@ -16,6 +22,14 @@ Unreleased
 ### Docs
 
 - New ["Scaling Presenters"](https://slackhq.github.io/circuit/presenter-patterns/) guide covering best practices for structuring presenters as they grow, including extracting sub-presenters, modularizing event handling, and testing strategies.
+
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@matthewbahr-clear](https://github.com/matthewbahr-clear)
+
 
 0.33.0
 ------

@@ -401,6 +401,7 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStackKt {
+	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/navigation/NavStack;
 	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/navigation/NavStack;
 	public static final fun rememberSaveableNavStack (Ljava/util/List;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/navigation/NavStack;
 }

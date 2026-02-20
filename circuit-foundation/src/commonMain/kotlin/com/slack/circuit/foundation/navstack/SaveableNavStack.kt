@@ -53,6 +53,23 @@ public fun rememberSaveableNavStack(initialScreens: List<Screen>): NavStack<out 
 }
 
 /**
+ * Creates and remembers a [SaveableNavStack] filled with the given [navStackList].
+ *
+ * If [navStackList] changes, a new nav stack will be created.
+ */
+@Composable
+public fun rememberSaveableNavStack(
+  navStackList: NavStackList<Screen>
+): NavStack<out NavStack.Record> {
+  return rememberSaveable(navStackList, saver = SaveableNavStack.Saver) {
+    SaveableNavStack().apply {
+      navStackList.toList().asReversed().forEach { push(it) }
+      repeat(navStackList.forwardItems.count()) { backward() }
+    }
+  }
+}
+
+/**
  * A [NavStack] that supports saving its state via [rememberSaveable]. See
  * [rememberSaveableNavStack].
  *

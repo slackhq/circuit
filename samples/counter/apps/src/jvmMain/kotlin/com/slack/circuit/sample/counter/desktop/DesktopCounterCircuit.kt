@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.counter.desktop
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,14 +48,10 @@ import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
 import com.slack.circuit.sample.counter.buildCircuit
 
-data object DesktopCounterScreen : CounterScreen
-
-data class DesktopPrimeScreen(override val number: Int) : PrimeScreen
-
 @Composable
-fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
+fun DesktopCounter(state: CounterScreen.State, modifier: Modifier = Modifier) {
   val color = if (state.count >= 0) Color.Unspecified else MaterialTheme.colors.error
-  Box(modifier.fillMaxSize()) {
+  Box(modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
     Column(Modifier.align(Alignment.Center)) {
       Text(
         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -71,7 +68,7 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
           Icon(rememberVectorPainter(Remove), "Decrement")
         }
         Button(
-          onClick = { state.eventSink(CounterScreen.Event.GoTo(DesktopPrimeScreen(state.count))) },
+          onClick = { state.eventSink(CounterScreen.Event.GoTo(PrimeScreen(state.count))) },
           modifier = Modifier.padding(2.dp),
         ) {
           Text(modifier = Modifier.padding(4.dp), text = "Prime?")
@@ -88,8 +85,8 @@ fun Counter(state: CounterScreen.State, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
-  Box(modifier.fillMaxSize()) {
+fun DesktopPrime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
+  Box(modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
     Column(Modifier.align(Alignment.Center)) {
       Text(
         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -122,8 +119,9 @@ fun Prime(state: PrimeScreen.State, modifier: Modifier = Modifier) {
 class CounterUiFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
-      is CounterScreen -> ui<CounterScreen.State> { state, modifier -> Counter(state, modifier) }
-      is PrimeScreen -> ui<PrimeScreen.State> { state, modifier -> Prime(state, modifier) }
+      is CounterScreen ->
+        ui<CounterScreen.State> { state, modifier -> DesktopCounter(state, modifier) }
+      is PrimeScreen -> ui<PrimeScreen.State> { state, modifier -> DesktopPrime(state, modifier) }
       else -> null
     }
   }
@@ -133,13 +131,13 @@ class CounterUiFactory : Ui.Factory {
 @Preview
 @Composable
 private fun CounterPreview() {
-  Counter(CounterScreen.State(0))
+  DesktopCounter(CounterScreen.State(0))
 }
 
 @Preview
 @Composable
 private fun CounterPreviewNegative() {
-  Counter(CounterScreen.State(-1))
+  DesktopCounter(CounterScreen.State(-1))
 }
 
 fun main() = application {
@@ -148,7 +146,7 @@ fun main() = application {
     state = WindowState(width = 300.dp, height = 300.dp),
     onCloseRequest = ::exitApplication,
   ) {
-    val initialBackStack = listOf<Screen>(DesktopCounterScreen)
+    val initialBackStack = listOf<Screen>(CounterScreen)
     val backStack = rememberSaveableBackStack(initialBackStack)
     val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
     val circuit = remember { buildCircuit(uiFactory = CounterUiFactory()) }

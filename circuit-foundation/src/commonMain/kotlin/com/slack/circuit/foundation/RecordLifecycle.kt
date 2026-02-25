@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 
@@ -27,6 +31,28 @@ internal class MutableRecordLifecycle(initial: Boolean = false) : RecordLifecycl
   override var isActive: Boolean by mutableStateOf(initial)
 }
 
+@Composable
+internal fun rememberUpdatedRecordLifecycle(isActive: Boolean): RecordLifecycle {
+  return remember { MutableRecordLifecycle() }.apply { this.isActive = isActive }
+}
+
+/**
+ * Provides a [RecordLifecycle] for the current record via [LocalRecordLifecycle].
+ *
+ * @param isActive whether this record should be considered active.
+ * @param content the composable content to provide the lifecycle to.
+ */
+@Composable
+public fun ProvideRecordLifecycle(isActive: Boolean, content: @Composable () -> Unit) {
+  val lifecycle = rememberUpdatedRecordLifecycle(isActive)
+  CompositionLocalProvider(
+    LocalRecordLifecycle provides lifecycle,
+    LocalRecordLifecycleState provides RecordLifecycleState.Set,
+  ) {
+    content()
+  }
+}
+
 /**
  * Holds the current lifecycle for a record in a [NavigableCircuitContent].
  *
@@ -42,3 +68,17 @@ private fun staticRecordLifecycle(isActive: Boolean): RecordLifecycle =
   object : RecordLifecycle {
     override val isActive: Boolean = isActive
   }
+
+internal val LocalRecordLifecycleState: ProvidableCompositionLocal<RecordLifecycleState> =
+  compositionLocalOf {
+    RecordLifecycleState.Set
+  }
+
+/** Represents the current state of the available [LocalRecordLifecycle]. */
+internal enum class RecordLifecycleState {
+  /** Indicates that no [RecordLifecycle] has been set for the current record. */
+  Unset,
+
+  /** Indicates that a [RecordLifecycle] has been set for the current record. */
+  Set,
+}

@@ -3,8 +3,11 @@
 package com.slack.circuit.test
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.runtime.withCompositionLocals
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.ReceiveTurbine
@@ -54,5 +57,34 @@ public suspend fun <UiState : CircuitUiState> presenterTestOf(
 ) {
   moleculeFlow(RecompositionMode.Immediate, body = presentFunction).test(timeout, name) {
     asCircuitReceiveTurbine(policy).block()
+  }
+}
+
+/**
+ * Helper function to test a [Presenter] in a way that allows for providing dependencies via
+ * [CompositionLocalProvider]
+ *
+ * @param locals Vararg of [ProvidedValue] to be provided to the presenter during the test
+ * @param timeout an optional timeout for the test. Defaults to 1 second (in Turbine) if undefined.
+ * @param policy a policy to controls how state changes are compared in
+ *   [CircuitReceiveTurbine.awaitItem].
+ * @param block the block to invoke.
+ * @see moleculeFlow
+ * @see test
+ */
+public suspend fun <UiState : CircuitUiState> Presenter<UiState>.test(
+  vararg locals: ProvidedValue<*>,
+  timeout: Duration? = null,
+  name: String? = null,
+  policy: SnapshotMutationPolicy<UiState> = structuralEqualityPolicy(),
+  block: suspend CircuitReceiveTurbine<UiState>.() -> Unit,
+) {
+  presenterTestOf(
+    presentFunction = { withCompositionLocals(*locals) { present() } },
+    timeout = timeout,
+    name = name,
+    policy = policy,
+  ) {
+    block()
   }
 }

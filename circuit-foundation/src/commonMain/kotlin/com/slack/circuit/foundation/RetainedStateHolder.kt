@@ -45,14 +45,17 @@ private class RetainedStateHolderImpl(private var canRetainChecker: CanRetainChe
         val entryCanRetainChecker = remember { EntryCanRetainChecker() }
         val childRegistry =
           rememberRetainedStateRegistry(key = key, canRetainChecker = entryCanRetainChecker)
-        DisposableEffect(Unit) {
-          entryCheckers[key] = entryCanRetainChecker
-          onDispose {
-            registry.saveValue(key)
-            entryCheckers -= key
+        withCompositionLocal(LocalRetainedStateRegistry provides childRegistry) {
+          val result = content()
+          DisposableEffect(Unit) {
+            entryCheckers[key] = entryCanRetainChecker
+            onDispose {
+              registry.saveValue(key)
+              entryCheckers -= key
+            }
           }
+          result
         }
-        withCompositionLocal(LocalRetainedStateRegistry provides childRegistry, content = content)
       }
     }
   }

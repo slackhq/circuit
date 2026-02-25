@@ -43,6 +43,34 @@ class RememberSaveableNavStackTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
+  fun test_saveable_save_and_restore_with_navStackList() = runComposeUiTest {
+    val restorationTester = StateRestorationTester(this)
+    lateinit var navStack: NavStack<*>
+    val navStackList =
+      navStackListOf<Screen>(
+        forwardItems = listOf(TestScreen.ScreenB, TestScreen.ScreenC),
+        activeItem = TestScreen.ScreenA,
+        backwardItems = listOf(TestScreen.RootBeta, TestScreen.RootAlpha),
+      )
+    restorationTester.setContent { navStack = rememberSaveableNavStack(navStackList) }
+
+    // Verify the items are set correctly
+    assertEquals(TestScreen.ScreenA, navStack.currentRecord?.screen)
+    assertEquals(TestScreen.ScreenC, navStack.topRecord?.screen)
+    assertEquals(TestScreen.RootAlpha, navStack.rootRecord?.screen)
+    assertEquals(navStackList, navStack.snapshot()?.transform { it.screen })
+
+    restorationTester.emulateSaveAndRestore()
+
+    // Verify state is preserved after restoration
+    assertEquals(TestScreen.ScreenA, navStack.currentRecord?.screen)
+    assertEquals(TestScreen.ScreenC, navStack.topRecord?.screen)
+    assertEquals(TestScreen.RootAlpha, navStack.rootRecord?.screen)
+    assertEquals(navStackList, navStack.snapshot()?.transform { it.screen })
+  }
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
   fun test_saveable_save_and_restore_with_navstack_state() = runComposeUiTest {
     val restorationTester = StateRestorationTester(this)
     lateinit var navStack: NavStack<*>

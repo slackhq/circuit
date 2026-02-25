@@ -16,6 +16,8 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.BackStack
+import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.navigation.NavStack
@@ -90,11 +92,11 @@ public fun rememberCircuitNavigator(
  * @param navStack The backing [NavStack] to navigate.
  * @param onRootPop Invoked when the backstack is at root (size 1) and the user presses the back
  *   button.
- * @param enableBackHandler Indicates whether or not [Navigator.pop] should be called by the system
- *   back handler. Defaults to true.
+ * @param enableBackHandler Indicates whether [Navigator.pop] should be called by the system back
+ *   handler. Defaults to true.
  * @see NavigableCircuitContent
  */
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, InternalCircuitApi::class)
 @Composable
 public fun rememberCircuitNavigator(
   navStack: NavStack<out Record>,
@@ -102,39 +104,41 @@ public fun rememberCircuitNavigator(
   enableBackHandler: Boolean = true,
 ): Navigator {
   val navigator = rememberCircuitNavigator(navStack = navStack, onRootPop = onRootPop)
-  // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
-  // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
-  val hasScreenChanged = remember {
-    var lastScreen: Screen? = navigator.peek()
-    derivedStateOf {
-      val screen = navigator.peek()
-      if (screen != null && screen != lastScreen) {
-        lastScreen = screen
+  if (enableBackHandler && shouldEnableNavEventHandler()) {
+    // Check the screen and not the record as `popRoot()` reorders the screens creating new records.
+    // Also `popUntil` can run to a null screen, which we want to treat as the last screen.
+    val hasScreenChanged = remember {
+      var lastScreen: Screen? = navigator.peek()
+      derivedStateOf {
+        val screen = navigator.peek()
+        if (screen != null && screen != lastScreen) {
+          lastScreen = screen
+        }
+        lastScreen
       }
-      lastScreen
     }
-  }
-  var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
-  var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
-  NavigationBackHandler(
-    state = rememberNavigationEventState(NavigationEventInfo.None),
-    isBackEnabled = enableBackHandler && enableRootBackHandler && !navStack.isAtRoot,
-    onBackCompleted = {
-      // We need to unload this BackHandler from the composition before the root pop is triggered so
-      // any outer back handler will get called. So delay calling pop until after the next
-      // composition.
-      if (!navStack.isAtRoot) {
+    var hasPendingRootPop by remember(hasScreenChanged) { mutableStateOf(false) }
+    var enableRootBackHandler by remember(hasScreenChanged) { mutableStateOf(true) }
+    NavigationBackHandler(
+      state = rememberNavigationEventState(NavigationEventInfo.None),
+      isBackEnabled = enableRootBackHandler && !navStack.isAtRoot,
+      onBackCompleted = {
+        // We need to unload this BackHandler from the composition before the root pop is triggered
+        // so any outer back handler will get called. So delay calling pop until after the next
+        // composition.
+        if (!navStack.isAtRoot) {
+          navigator.pop()
+        } else {
+          hasPendingRootPop = true
+          enableRootBackHandler = false
+        }
+      },
+    )
+    if (hasPendingRootPop) {
+      SideEffect {
         navigator.pop()
-      } else {
-        hasPendingRootPop = true
-        enableRootBackHandler = false
+        hasPendingRootPop = false
       }
-    },
-  )
-  if (hasPendingRootPop) {
-    SideEffect {
-      navigator.pop()
-      hasPendingRootPop = false
     }
   }
   return navigator

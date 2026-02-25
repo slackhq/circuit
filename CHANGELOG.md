@@ -4,6 +4,38 @@ Changelog
 Unreleased
 ----------
 
+0.33.1
+------
+
+_2026-02-19_
+
+### New
+
+- Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
+- Add `rememberSaveableNavStack(NavStackList)` overload to initialize a nav stack from an existing snapshot.
+- Added a `Presenter.test` variant that provides composition local values to the `Presenter` under test
+
+### Fixes
+
+- Fixes an issue where retained values where not getting saved at the correct time.
+
+### Docs
+
+- New ["Scaling Presenters"](https://slackhq.github.io/circuit/presenter-patterns/) guide covering best practices for structuring presenters as they grow, including extracting sub-presenters, modularizing event handling, and testing strategies.
+
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@matthewbahr-clear](https://github.com/matthewbahr-clear)
+
+
+0.33.0
+------
+
+_2026-02-10_
+
 ### New Navigation Architecture:
 
 Circuit now supports **bidirectional navigation** with browser-style forward/backward capabilities!
@@ -51,6 +83,14 @@ navigator.forward()  // Move forward to a previously visited screen
 ### Changes
 
 - Compile against kotlin-inject-anvil `0.1.7`.
+- `NavigationEventHandler` usage is now disabled by default when no `NavigationEventDispatcherOwner` is available, preventing crashes in environments with dynamic navigation event support. This behaviour can be configured with the `Circuit.lenientNavigationEventDispatcherOwner` option.
+- `BottomSheetOverlay` now exposes `contentWindowInsets`, mirroring `ModalBottomSheet`
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@spectrl](https://github.com/spectrl)
 
 0.32.0
 ------

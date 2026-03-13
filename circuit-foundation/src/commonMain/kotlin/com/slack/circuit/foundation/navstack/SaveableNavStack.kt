@@ -165,16 +165,18 @@ internal constructor(
   }
 
   override fun snapshot(): NavStackList<Record>? {
-    return if (entryList.isNotEmpty() && currentIndex >= 0 && currentIndex <= entryList.lastIndex) {
-      SaveableNavStackList(entryList.toList(), currentIndex)
-    } else null
+    return saveableSnapshot()
   }
 
   override fun saveState() {
-    if (entryList.isNotEmpty()) {
-      val rootScreen = entryList.last().screen
-      stateStore[rootScreen] = SaveableNavStackList(entryList.toList(), currentIndex)
-    }
+    val snapshot = saveableSnapshot() ?: return
+    stateStore[snapshot.root.screen] = snapshot
+  }
+
+  private fun saveableSnapshot(): SaveableNavStackList? {
+    return if (entryList.isNotEmpty() && currentIndex >= 0 && currentIndex <= entryList.lastIndex) {
+      SaveableNavStackList(entryList.toList(), currentIndex)
+    } else null
   }
 
   override fun restoreState(screen: Screen): Boolean =

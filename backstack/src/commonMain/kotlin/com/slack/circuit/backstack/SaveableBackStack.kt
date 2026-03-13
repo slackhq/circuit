@@ -151,17 +151,29 @@ internal constructor(
   override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
     if (depth < 0) return false
     // Check in the current entry list
-    for (i in 0 until min(depth, entryList.size)) {
-      if (entryList[i].key == key) return true
+    if (isRecordReachable(key, depth, entryList)) {
+      return true
     }
     // If includeSaved, check saved backstack states too
     if (includeSaved && stateStore.isNotEmpty()) {
-      val storedValues = stateStore.values
-      for ((i, stored) in storedValues.withIndex()) {
-        if (i >= depth) break
-        // stored can mutate, so safely get the record.
-        if (stored.getOrNull(i)?.key == key) return true
+      for (snapshot in stateStore.values) {
+        if (isRecordReachable(key, depth, snapshot)) {
+          return true
+        }
       }
+    }
+    return false
+  }
+
+  private fun isRecordReachable(
+    key: String,
+    depth: Int,
+    records: List<Record>,
+  ): Boolean {
+    // Check in the current entry list
+    for (i in 0 until min(depth, records.size)) {
+      // stored can mutate, so safely get the record.
+      if (records.getOrNull(i)?.key == key) return true
     }
     return false
   }

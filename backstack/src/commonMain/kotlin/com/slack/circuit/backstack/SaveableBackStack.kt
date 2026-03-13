@@ -118,6 +118,7 @@ internal constructor(
   override fun restoreState(screen: Screen): Boolean {
     val stored = stateStore[screen]
     if (!stored.isNullOrEmpty()) {
+      entryList.clear()
       // Add the store state into the entry list
       entryList.addAll(stored)
       // Clear the stored state

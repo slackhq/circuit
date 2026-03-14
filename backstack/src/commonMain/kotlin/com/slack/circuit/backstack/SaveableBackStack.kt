@@ -229,9 +229,12 @@ internal constructor(
                 list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
               } else {
                 // Any list after that is from the state store
-                val records = list.mapNotNull { Record.Saver.restore(it as List<Any>) }
-                // The key is always the root screen (i.e. last item)
-                backStack.stateStore[records.last().screen] = records
+                list.filterIsInstance<List<Any>>().mapNotNull { Record.Saver.restore(it) }
+                  .takeIf { it.isNotEmpty() }
+                  ?.let { records ->
+                    // The key is always the root screen (i.e. last item)
+                    backStack.stateStore[records.last().screen] = records
+                  }
               }
             }
           }

@@ -345,10 +345,12 @@ internal constructor(
                 else -> {
                   // Any list after that is from the state store (as snapshots)
                   item
-                    .mapNotNull { SaveableNavStackList.Saver.restore(it as List<Any>) }
+                    .filterIsInstance<List<Any>>()
+                    .mapNotNull { SaveableNavStackList.Saver.restore(it) }
+                    .filter { it.entries.isNotEmpty() }
                     .forEach { snapshot ->
                       // The key is always the root screen (i.e. last item)
-                      navStack.stateStore[snapshot.entries.last().screen] = snapshot
+                      navStack.stateStore[snapshot.root.screen] = snapshot
                     }
                 }
               }

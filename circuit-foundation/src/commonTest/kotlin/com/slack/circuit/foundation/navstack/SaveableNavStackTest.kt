@@ -200,7 +200,6 @@ class SaveableNavStackTest {
     assertFalse(navStack.backward())
   }
 
-
   @Test
   fun isRecordReachable_depth_zero_matches_current() {
     val root = Record(TestScreen.RootAlpha, key = "root")
@@ -301,7 +300,6 @@ class SaveableNavStackTest {
     assertFalse(navStack.isRecordReachable("root", depth = 0, includeSaved = true))
     assertTrue(navStack.isRecordReachable("root", depth = 1, includeSaved = true))
   }
-
 }
 
 private fun save(navStack: SaveableNavStack) =

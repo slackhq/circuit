@@ -166,11 +166,7 @@ internal constructor(
     return false
   }
 
-  private fun isRecordReachable(
-    key: String,
-    depth: Int,
-    records: List<Record>,
-  ): Boolean {
+  private fun isRecordReachable(key: String, depth: Int, records: List<Record>): Boolean {
     // Check in the current entry list
     for (i in 0 until min(depth + 1, records.size)) {
       // stored can mutate, so safely get the record.
@@ -229,7 +225,9 @@ internal constructor(
                 list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
               } else {
                 // Any list after that is from the state store
-                list.filterIsInstance<List<Any>>().mapNotNull { Record.Saver.restore(it) }
+                list
+                  .filterIsInstance<List<Any>>()
+                  .mapNotNull { Record.Saver.restore(it) }
                   .takeIf { it.isNotEmpty() }
                   ?.let { records ->
                     // The key is always the root screen (i.e. last item)

@@ -14,7 +14,6 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm { testRuns["test"].executionTask.configure { enabled = false } }
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
   js(IR) {

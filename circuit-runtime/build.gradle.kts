@@ -14,17 +14,13 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
   watchosArm32()
   watchosArm64()
-  watchosX64()
   watchosSimulatorArm64()
   tvosArm64()
-  tvosX64()
   tvosSimulatorArm64()
-  macosX64()
   macosArm64()
   linuxArm64()
   linuxX64()

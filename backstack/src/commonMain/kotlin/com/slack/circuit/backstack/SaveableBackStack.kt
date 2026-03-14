@@ -172,7 +172,7 @@ internal constructor(
     records: List<Record>,
   ): Boolean {
     // Check in the current entry list
-    for (i in 0 until min(depth, records.size)) {
+    for (i in 0 until min(depth + 1, records.size)) {
       // stored can mutate, so safely get the record.
       if (records.getOrNull(i)?.key == key) return true
     }

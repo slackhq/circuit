@@ -242,7 +242,7 @@ internal constructor(
     for (i in min until index) {
       if (records[i].key == key) return true
     }
-    val max = minOf(index + depth, records.size)
+    val max = minOf(index + depth + 1, records.size)
     for (i in index until max) {
       if (records[i].key == key) return true
     }

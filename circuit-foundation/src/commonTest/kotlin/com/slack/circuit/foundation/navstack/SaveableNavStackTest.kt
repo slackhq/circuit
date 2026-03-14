@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation.navstack
 
 import androidx.compose.runtime.saveable.SaverScope
+import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.internal.test.TestScreen
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -198,6 +199,109 @@ class SaveableNavStackTest {
     assertFalse(navStack.forward())
     assertFalse(navStack.backward())
   }
+
+
+  @Test
+  fun isRecordReachable_depth_zero_matches_current() {
+    val root = Record(TestScreen.RootAlpha, key = "root")
+    val a = Record(TestScreen.ScreenA, key = "a")
+    val navStack = SaveableNavStack(root)
+    navStack.push(a)
+    // entryList = [a(0), root(1)], currentIndex = 0
+    assertTrue(navStack.isRecordReachable("a", depth = 0, includeSaved = false))
+    assertFalse(navStack.isRecordReachable("root", depth = 0, includeSaved = false))
+  }
+
+  @Test
+  fun isRecordReachable_negative_depth_returns_false() {
+    val navStack = SaveableNavStack(Record(TestScreen.RootAlpha, key = "root"))
+    assertFalse(navStack.isRecordReachable("root", depth = -1, includeSaved = false))
+  }
+
+  @Test
+  fun isRecordReachable_from_top() {
+    val root = Record(TestScreen.RootAlpha, key = "root")
+    val a = Record(TestScreen.ScreenA, key = "a")
+    val b = Record(TestScreen.ScreenB, key = "b")
+    val c = Record(TestScreen.ScreenC, key = "c")
+    val navStack = SaveableNavStack(root)
+    navStack.push(a)
+    navStack.push(b)
+    navStack.push(c)
+    // entryList = [c(0), b(1), a(2), root(3)], currentIndex = 0
+
+    // depth=1: current (c) + 1 backward (b)
+    assertTrue(navStack.isRecordReachable("c", depth = 1, includeSaved = false))
+    assertTrue(navStack.isRecordReachable("b", depth = 1, includeSaved = false))
+    assertFalse(navStack.isRecordReachable("a", depth = 1, includeSaved = false))
+
+    // depth=2: current (c) + 2 backward (b, a)
+    assertTrue(navStack.isRecordReachable("a", depth = 2, includeSaved = false))
+    assertFalse(navStack.isRecordReachable("root", depth = 2, includeSaved = false))
+  }
+
+  @Test
+  fun isRecordReachable_from_middle() {
+    val root = Record(TestScreen.RootAlpha, key = "root")
+    val a = Record(TestScreen.ScreenA, key = "a")
+    val b = Record(TestScreen.ScreenB, key = "b")
+    val c = Record(TestScreen.ScreenC, key = "c")
+    val navStack = SaveableNavStack(root)
+    navStack.push(a)
+    navStack.push(b)
+    navStack.push(c)
+    // Move to b (currentIndex = 1)
+    navStack.backward()
+    // entryList = [c(0), b(1), a(2), root(3)], currentIndex = 1
+
+    // depth=1: 1 forward (c), current (b), 1 backward (a)
+    assertTrue(navStack.isRecordReachable("c", depth = 1, includeSaved = false))
+    assertTrue(navStack.isRecordReachable("b", depth = 1, includeSaved = false))
+    assertTrue(navStack.isRecordReachable("a", depth = 1, includeSaved = false))
+    assertFalse(navStack.isRecordReachable("root", depth = 1, includeSaved = false))
+
+    // depth=2: 2 forward (c), current (b), 2 backward (a, root)
+    assertTrue(navStack.isRecordReachable("root", depth = 2, includeSaved = false))
+  }
+
+  @Test
+  fun isRecordReachable_from_root() {
+    val root = Record(TestScreen.RootAlpha, key = "root")
+    val a = Record(TestScreen.ScreenA, key = "a")
+    val navStack = SaveableNavStack(root)
+    navStack.push(a)
+    // Move to root (currentIndex = 1)
+    navStack.backward()
+    // entryList = [a(0), root(1)], currentIndex = 1
+
+    // depth=1: forward [0]=a, current [1]=root
+    assertTrue(navStack.isRecordReachable("a", depth = 1, includeSaved = false))
+    assertTrue(navStack.isRecordReachable("root", depth = 1, includeSaved = false))
+  }
+
+  @Test
+  fun isRecordReachable_saved_state() {
+    val root = Record(TestScreen.RootAlpha, key = "root")
+    val a = Record(TestScreen.ScreenA, key = "a")
+    val navStack = SaveableNavStack(root)
+    navStack.push(a)
+    // entryList = [a(0), root(1)], currentIndex = 0
+
+    navStack.saveState()
+    navStack.popUntil { false }
+    navStack.push(Record(TestScreen.RootBeta, key = "rootBeta"))
+    // entryList = [rootBeta(0)], currentIndex = 0
+    // stateStore has [a(0), root(1)] with currentIndex=0
+
+    // "a" not in current stack
+    assertFalse(navStack.isRecordReachable("a", depth = 0, includeSaved = false))
+    // "a" is the current record in the saved snapshot, reachable at depth=0
+    assertTrue(navStack.isRecordReachable("a", depth = 0, includeSaved = true))
+    // "root" is 1 backward from current in saved snapshot, needs depth=1
+    assertFalse(navStack.isRecordReachable("root", depth = 0, includeSaved = true))
+    assertTrue(navStack.isRecordReachable("root", depth = 1, includeSaved = true))
+  }
+
 }
 
 private fun save(navStack: SaveableNavStack) =

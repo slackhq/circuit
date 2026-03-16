@@ -1,17 +1,17 @@
 [versions]
 agp = "8.13.2"
-androidx-activity = "1.12.4"
+androidx-activity = "1.13.0"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
-androidx-compose = "1.10.4"  # Keep in sync with the androidx version used by jb-compose
+androidx-compose = "1.10.5"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.3"
 atomicfu = "0.31.0"
 benchmark = "1.4.1"
 coil = "3.4.0"
-compose-runtime = "1.10.4" # Keep in sync with the androidx version used by jb-compose
+compose-runtime = "1.10.5" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.59.2"
-datastore = "1.2.0"
+datastore = "1.2.1"
 detekt = "1.23.8"
 dokka = "2.1.0"
 eithernet = "2.0.0"
@@ -37,12 +37,12 @@ mavenPublish = "0.36.0"
 markdownRenderer = "0.39.2"
 molecule = "2.2.0"
 okhttp = "5.3.2"
-okio = "3.16.4"
+okio = "3.17.0"
 picnic = "0.7.0"
 robolectric = "4.16.1"
 roborazzi = "1.59.0"
 spotless = "8.0.0"
-sqldelight = "2.2.1"
+sqldelight = "2.3.1"
 telephoto = "0.18.0"
 testParameterInjector = "1.21"
 turbine = "1.2.1"
@@ -58,7 +58,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "1.5.0" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "1.5.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

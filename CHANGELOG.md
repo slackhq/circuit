@@ -6,8 +6,8 @@ Unreleased
 
 ### Fixes
 
-- SaveableNavStack - isRecordReachable() off-by-one where depth of 0 didn't check the current record
-- SaveableBackStack — Update isRecordReachable() to match SaveableNavStack behaviour
+- SaveableNavStack - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
+- SaveableBackStack — Update `isRecordReachable()` to match SaveableNavStack behaviour
 
 0.33.1
 ------

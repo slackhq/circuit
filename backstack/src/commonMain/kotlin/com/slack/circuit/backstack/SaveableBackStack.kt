@@ -118,6 +118,7 @@ internal constructor(
   override fun restoreState(screen: Screen): Boolean {
     val stored = stateStore[screen]
     if (!stored.isNullOrEmpty()) {
+      entryList.clear()
       // Add the store state into the entry list
       entryList.addAll(stored)
       // Clear the stored state
@@ -151,17 +152,25 @@ internal constructor(
   override fun isRecordReachable(key: String, depth: Int, includeSaved: Boolean): Boolean {
     if (depth < 0) return false
     // Check in the current entry list
-    for (i in 0 until min(depth, entryList.size)) {
-      if (entryList[i].key == key) return true
+    if (isRecordReachable(key, depth, entryList)) {
+      return true
     }
     // If includeSaved, check saved backstack states too
     if (includeSaved && stateStore.isNotEmpty()) {
-      val storedValues = stateStore.values
-      for ((i, stored) in storedValues.withIndex()) {
-        if (i >= depth) break
-        // stored can mutate, so safely get the record.
-        if (stored.getOrNull(i)?.key == key) return true
+      for (snapshot in stateStore.values) {
+        if (isRecordReachable(key, depth, snapshot)) {
+          return true
+        }
       }
+    }
+    return false
+  }
+
+  private fun isRecordReachable(key: String, depth: Int, records: List<Record>): Boolean {
+    // Check in the current entry list
+    for (i in 0 until min(depth + 1, records.size)) {
+      // stored can mutate, so safely get the record.
+      if (records.getOrNull(i)?.key == key) return true
     }
     return false
   }
@@ -216,9 +225,14 @@ internal constructor(
                 list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
               } else {
                 // Any list after that is from the state store
-                val records = list.mapNotNull { Record.Saver.restore(it as List<Any>) }
-                // The key is always the root screen (i.e. last item)
-                backStack.stateStore[records.last().screen] = records
+                list
+                  .filterIsInstance<List<Any>>()
+                  .mapNotNull { Record.Saver.restore(it) }
+                  .takeIf { it.isNotEmpty() }
+                  ?.let { records ->
+                    // The key is always the root screen (i.e. last item)
+                    backStack.stateStore[records.last().screen] = records
+                  }
               }
             }
           }

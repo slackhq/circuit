@@ -9,6 +9,11 @@ Unreleased
 - SaveableNavStack - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
 - SaveableBackStack — Update `isRecordReachable()` to match SaveableNavStack behaviour
 
+### Changes
+
+- Update to Kotlin `2.3.20`.
+- Remove deprecated X64 Apple targets.
+
 0.33.1
 ------
 

@@ -26,7 +26,6 @@ kotlin {
   // region KMP Targets
   androidTarget()
   jvm()
-  iosX64()
   iosArm64()
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {

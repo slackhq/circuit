@@ -91,21 +91,17 @@ private class OverlayHostImpl : OverlayHost {
   override var currentOverlayData: OverlayHostData<Any>? by mutableStateOf(null)
     private set
 
-  override suspend fun <T : Any> show(overlay: Overlay<T>): T =
-    mutex.withLock {
-      try {
-        return suspendCancellableCoroutine { continuation ->
-          @Suppress("UNCHECKED_CAST")
-          currentOverlayData =
-            OverlayHostDataImpl(
-              overlay as Overlay<Any>,
-              continuation as CancellableContinuation<Any>,
-            )
-        }
-      } finally {
-        currentOverlayData = null
+  override suspend fun <T : Any> show(overlay: Overlay<T>): T = mutex.withLock {
+    try {
+      return suspendCancellableCoroutine { continuation ->
+        @Suppress("UNCHECKED_CAST")
+        currentOverlayData =
+          OverlayHostDataImpl(overlay as Overlay<Any>, continuation as CancellableContinuation<Any>)
       }
+    } finally {
+      currentOverlayData = null
     }
+  }
 }
 
 /**

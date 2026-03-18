@@ -57,29 +57,28 @@ class RememberCircuitNavigatorTest {
     }
 
   @Test
-  fun `rememberCircuitNavigator always calls the correct onRootPop lambda`() =
-    composeTestRule.run {
-      val backStack = FakeBackStack()
-      backStack.push(TestScreen)
-      var onRootPopped = 0
-      val onRootPop1 = { _: PopResult? -> onRootPopped = 1 }
-      val onRootPop2 = { _: PopResult? -> onRootPopped = 2 }
-      setContent {
-        var onRootPop by remember { mutableStateOf(onRootPop1) }
-        val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
-        SideEffect {
-          // Call pop on the root screen to trigger the onRootPop lambda
-          if (onRootPopped == 0 && onRootPop == onRootPop2) {
-            navigator.pop()
-          }
-          // Simulate the onRootPop changing
-          if (onRootPop == onRootPop1) {
-            onRootPop = onRootPop2
-          }
+  fun `rememberCircuitNavigator always calls the correct onRootPop lambda`() = composeTestRule.run {
+    val backStack = FakeBackStack()
+    backStack.push(TestScreen)
+    var onRootPopped = 0
+    val onRootPop1 = { _: PopResult? -> onRootPopped = 1 }
+    val onRootPop2 = { _: PopResult? -> onRootPopped = 2 }
+    setContent {
+      var onRootPop by remember { mutableStateOf(onRootPop1) }
+      val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = onRootPop)
+      SideEffect {
+        // Call pop on the root screen to trigger the onRootPop lambda
+        if (onRootPopped == 0 && onRootPop == onRootPop2) {
+          navigator.pop()
+        }
+        // Simulate the onRootPop changing
+        if (onRootPop == onRootPop1) {
+          onRootPop = onRootPop2
         }
       }
-      assertEquals(2, onRootPopped)
     }
+    assertEquals(2, onRootPopped)
+  }
 }
 
 private class FakeBackStack : BackStack<BackStack.Record> {

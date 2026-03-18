@@ -38,11 +38,10 @@ class StarApiImpl(realApi: Lazy<RealStarApi>, fakeApi: Lazy<FakeStarApi>) :
 @Inject
 @SingleIn(AppScope::class)
 class RealStarApi(httpClient: HttpClient, json: Json) : StarApi {
-  private val httpClient =
-    httpClient.config {
-      // We're reading from raw github, which serves in plain text responses
-      install(ContentNegotiation) { json(json, ContentType.Text.Plain) }
-    }
+  private val httpClient = httpClient.config {
+    // We're reading from raw github, which serves in plain text responses
+    install(ContentNegotiation) { json(json, ContentType.Text.Plain) }
+  }
 
   override suspend fun getPets(): ApiResult<PetsListResponse, Unit> {
     return try {

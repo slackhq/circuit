@@ -37,12 +37,11 @@ internal fun viewModelRetainedStateRegistry(
   LifecycleStartEffect(vm) { onStopOrDispose { vm.saveAll() } }
   val composer = currentComposer
   DisposableEffect(vm) {
-    val cancellationHandle =
-      composer.scheduleFrameEndCallback {
-        // This resumes after the just-composed frame completes drawing. Any unclaimed values at
-        // this point can be assumed to be no longer used
-        vm.forgetUnclaimedValues()
-      }
+    val cancellationHandle = composer.scheduleFrameEndCallback {
+      // This resumes after the just-composed frame completes drawing. Any unclaimed values at
+      // this point can be assumed to be no longer used
+      vm.forgetUnclaimedValues()
+    }
     onDispose { cancellationHandle.cancel() }
   }
   return vm

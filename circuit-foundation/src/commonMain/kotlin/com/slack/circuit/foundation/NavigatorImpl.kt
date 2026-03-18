@@ -200,27 +200,26 @@ internal class NavigatorImpl(
 
   override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> {
     // Run this in a mutable snapshot (bit like a transaction)
-    val currentStack =
-      Snapshot.withMutableSnapshot {
-        if (options.save) navStack.saveState()
-        // Pop everything off the back stack
-        val popped = buildList {
-          while (navStack.size > 0) {
-            val screen = navStack.pop()?.screen ?: break
-            add(screen)
-          }
+    val currentStack = Snapshot.withMutableSnapshot {
+      if (options.save) navStack.saveState()
+      // Pop everything off the back stack
+      val popped = buildList {
+        while (navStack.size > 0) {
+          val screen = navStack.pop()?.screen ?: break
+          add(screen)
         }
-
-        // If we're not restoring state, or the restore didn't work, we need to push the new root
-        // onto the stack
-        if (!options.restore || !navStack.restoreState(newRoot)) {
-          navStack.push(newRoot)
-        }
-
-        // Clear the state if requested, do this last to allow restoring the state once.
-        if (options.clear) navStack.removeState(newRoot)
-        popped
       }
+
+      // If we're not restoring state, or the restore didn't work, we need to push the new root
+      // onto the stack
+      if (!options.restore || !navStack.restoreState(newRoot)) {
+        navStack.push(newRoot)
+      }
+
+      // Clear the state if requested, do this last to allow restoring the state once.
+      if (options.clear) navStack.removeState(newRoot)
+      popped
+    }
 
     return currentStack
   }

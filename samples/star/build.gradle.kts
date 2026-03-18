@@ -248,13 +248,12 @@ dependencies {
 
 // Wiring of source-generating tasks into KSP for Gradle reasons
 
-val generateAccessorsTasks =
-  tasks.named {
-    it.startsWith("generateResourceAccessors") ||
-      it.startsWith("generateActualResourceCollectors") ||
-      it.startsWith("generateExpectResourceCollectors") ||
-      it.startsWith("generateComposeResClass")
-  }
+val generateAccessorsTasks = tasks.named {
+  it.startsWith("generateResourceAccessors") ||
+    it.startsWith("generateActualResourceCollectors") ||
+    it.startsWith("generateExpectResourceCollectors") ||
+    it.startsWith("generateComposeResClass")
+}
 
 val sqldelightTasks = tasks.withType<SqlDelightTask>()
 

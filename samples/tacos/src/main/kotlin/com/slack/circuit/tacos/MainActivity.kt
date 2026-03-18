@@ -36,17 +36,15 @@ class MainActivity : AppCompatActivity() {
   }
 }
 
-private fun buildPresenterFactory(): Presenter.Factory =
-  Presenter.Factory { _, _, _ ->
-    OrderTacosPresenter(
-      fillingsProducer = FillingsProducerImpl(IngredientsRepositoryImpl),
-      toppingsProducer = ToppingsProducerImpl(IngredientsRepositoryImpl),
-      confirmationProducer = { details, _ -> confirmationProducer(details) },
-      summaryProducer = { _, sink -> summaryProducer(sink) },
-    )
-  }
+private fun buildPresenterFactory(): Presenter.Factory = Presenter.Factory { _, _, _ ->
+  OrderTacosPresenter(
+    fillingsProducer = FillingsProducerImpl(IngredientsRepositoryImpl),
+    toppingsProducer = ToppingsProducerImpl(IngredientsRepositoryImpl),
+    confirmationProducer = { details, _ -> confirmationProducer(details) },
+    summaryProducer = { _, sink -> summaryProducer(sink) },
+  )
+}
 
-private fun buildUiFactory(): Ui.Factory =
-  Ui.Factory { _, _ ->
-    ui<OrderTacosScreen.State> { state, modifier -> OrderTacosUi(state, modifier) }
-  }
+private fun buildUiFactory(): Ui.Factory = Ui.Factory { _, _ ->
+  ui<OrderTacosScreen.State> { state, modifier -> OrderTacosUi(state, modifier) }
+}

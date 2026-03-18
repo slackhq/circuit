@@ -307,13 +307,12 @@ private class InterceptingNavigationContext(private val navStackList: NavStackLi
 
   override fun peek() = navStackList?.active
 
-  override fun peekBackStack() =
-    navStackList?.run {
-      buildList {
-        add(active)
-        addAll(backwardItems)
-      }
+  override fun peekBackStack() = navStackList?.run {
+    buildList {
+      add(active)
+      addAll(backwardItems)
     }
+  }
 
   override fun peekNavStack() = navStackList
 }

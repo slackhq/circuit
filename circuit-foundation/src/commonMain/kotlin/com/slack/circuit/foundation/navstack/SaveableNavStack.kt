@@ -179,20 +179,19 @@ internal constructor(
     } else null
   }
 
-  override fun restoreState(screen: Screen): Boolean =
-    Snapshot.withMutableSnapshot {
-      val stored = stateStore[screen]
-      if (stored != null && stored.entries.isNotEmpty()) {
-        entryList.clear()
-        // Add the stored state into the entry list
-        entryList.addAll(stored.entries)
-        // Restore the current index
-        currentIndex = stored.currentIndex
-        // Clear the stored state
-        stateStore.remove(screen)
-        true
-      } else false
-    }
+  override fun restoreState(screen: Screen): Boolean = Snapshot.withMutableSnapshot {
+    val stored = stateStore[screen]
+    if (stored != null && stored.entries.isNotEmpty()) {
+      entryList.clear()
+      // Add the stored state into the entry list
+      entryList.addAll(stored.entries)
+      // Restore the current index
+      currentIndex = stored.currentIndex
+      // Clear the stored state
+      stateStore.remove(screen)
+      true
+    } else false
+  }
 
   override fun peekState(): List<Screen> {
     return stateStore.keys.toList()

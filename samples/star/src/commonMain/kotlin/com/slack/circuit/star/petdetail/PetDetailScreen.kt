@@ -38,6 +38,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.m3.markdownTypography
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.internal.runtime.Parcelable
@@ -406,7 +407,19 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
     }
     is Full -> {
       if (!state.descriptionMarkdown.isNullOrBlank()) {
-        item(state.descriptionMarkdown) { Markdown(content = state.descriptionMarkdown) }
+        item(state.descriptionMarkdown) {
+          val bodySmall = MaterialTheme.typography.bodySmall
+          Markdown(
+            content = state.descriptionMarkdown,
+            typography = markdownTypography(
+              text = bodySmall,
+              paragraph = bodySmall,
+              ordered = bodySmall,
+              bullet = bodySmall,
+              list = bodySmall,
+            ),
+          )
+        }
       }
       item(state.url) {
         Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {

@@ -117,7 +117,7 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
   @Suppress("MagicNumber")
-  val isLandscape =
+  val isWideLayout =
     when (calculateWindowSizeClass().widthSizeClass) {
       WindowWidthSizeClass.Medium,
       WindowWidthSizeClass.Expanded -> true
@@ -165,10 +165,10 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
     )
   }
 
-  // Always request focus for keyboard navigation in landscape
-  // In portrait, skip focus request to avoid issues with LazyColumn/PinnableContainer
+  // Always request focus for keyboard navigation in wide layouts
+  // In narrow layouts, skip focus request to avoid issues with LazyColumn/PinnableContainer
   // https://issuetracker.google.com/issues/381270279
-  if (isLandscape || LocalPinnableContainer.current == null) {
+  if (isWideLayout || LocalPinnableContainer.current == null) {
     LaunchedEffect(Unit) { requester.requestFocus() }
   }
 }

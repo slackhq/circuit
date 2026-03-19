@@ -53,6 +53,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
 import com.slack.circuit.star.common.BackPressNavIcon
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
+import com.slack.circuit.star.common.isLandscape
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.PetAttribute
@@ -309,7 +310,7 @@ private fun ShowAnimal(state: AnimalState, padding: PaddingValues) {
       )
     }
   }
-  when (Platform.isLandscape()) {
+  when (isLandscape()) {
     true -> ShowAnimalLandscape(state, sharedModifier, carouselContent)
     false -> ShowAnimalPortrait(state, sharedModifier, carouselContent)
   }

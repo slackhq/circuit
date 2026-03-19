@@ -3,13 +3,20 @@
 package com.slack.circuit.star.common
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalWindowInfo
 
 expect object Platform {
   @Composable fun ReportDrawnWhen(predicate: () -> Boolean)
 
-  @Composable fun isLandscape(): Boolean
-
   val type: PlatformType
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun isLandscape(): Boolean {
+  val (w, h) = LocalWindowInfo.current.containerSize
+  return w > h
 }
 
 enum class PlatformType {

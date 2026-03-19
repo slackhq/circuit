@@ -17,14 +17,17 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
-  macosX64()
   macosArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
-    browser()
+    browser {
+      testTask {
+        // https://youtrack.jetbrains.com/issue/CMP-4906
+        enabled = false
+      }
+    }
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
@@ -64,10 +67,11 @@ kotlin {
         api(projects.backstack)
         api(projects.circuitRetained)
         api(projects.circuitRuntime)
+        api(projects.circuitRuntimeNavigation)
         api(projects.circuitRuntimePresenter)
         api(projects.circuitRuntimeUi)
         api(projects.circuitSharedElements)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
       }
     }
     androidMain { dependencies { implementation(libs.androidx.activity.compose) } }
@@ -117,6 +121,14 @@ kotlin {
         implementation(libs.coroutines.android)
         implementation(libs.junit)
         implementation(projects.internalTestUtils)
+      }
+    }
+  }
+
+  targets.configureEach {
+    compilations.configureEach {
+      compileTaskProvider.configure {
+        compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
       }
     }
   }

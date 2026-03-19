@@ -166,8 +166,15 @@ private class CircuitSymbolProcessor(
         mode.annotateFactory(builder = this, scope = scope)
         if (topLevelClass != null && mode.originAnnotation != null) {
           addAnnotation(
-            AnnotationSpec.builder(mode.originAnnotation)
-              .addMember("%T::class", topLevelClass)
+            AnnotationSpec.builder(mode.originAnnotation.className)
+              .apply {
+                val parameterName = mode.originAnnotation.parameterName
+                if (parameterName != null) {
+                  addMember("%L = %T::class", parameterName, topLevelClass)
+                } else {
+                  addMember("%T::class", topLevelClass)
+                }
+              }
               .build()
           )
         }
@@ -304,11 +311,11 @@ private class CircuitSymbolProcessor(
           }
         val assistedParams =
           fd.assistedParameters(
-            symbols,
-            logger,
-            screenKSType,
-            factoryType == FactoryType.PRESENTER,
-            includeParameterNames = mode != KOTLIN_INJECT_ANVIL,
+            symbols = symbols,
+            logger = logger,
+            screenType = screenKSType,
+            allowNavigator = factoryType == FactoryType.PRESENTER,
+            includeParameterNames = true,
           )
 
         // Check we have a return type
@@ -447,7 +454,10 @@ private class CircuitSymbolProcessor(
         val useProvider =
           !isAssisted &&
             mode.filterValidInjectionSites(listOfNotNull(creatorOrConstructor, declaration)).any {
-              it.isAnnotationPresentWithLeniency(mode.runtime.inject(options))
+              injectionSite ->
+              mode.runtime.declarationInjects(options).any { annotation ->
+                injectionSite.isAnnotationPresentWithLeniency(annotation)
+              }
             }
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
@@ -482,12 +492,14 @@ private class CircuitSymbolProcessor(
             // Nothing to do here, we'll just use the provider directly.
             CodeBlock.of("")
           } else {
+            @Suppress("UnnecessarySafeCall") // detekt hasn't caught up to Kotlin 2.3
             creatorOrConstructor?.assistedParameters(
-              symbols,
-              logger,
-              screenKSType,
+              symbols = symbols,
+              logger = logger,
+              screenType = screenKSType,
               allowNavigator = factoryType == FactoryType.PRESENTER,
-              includeParameterNames = mode != KOTLIN_INJECT_ANVIL,
+              // Don't include parameter names if a factory lambda is going to be used.
+              includeParameterNames = !(isAssisted && mode == KOTLIN_INJECT_ANVIL),
             )
           }
         codeBlock =

@@ -12,5 +12,5 @@ count.
 | Desktop                                         | ✅      |
 | iOS                                             | ✅      |
 | Web (JS)                                        | ✅      |
-| WASM (JS)                                       | ❌      |
-| [Mosaic](https://github.com/JakeWharton/mosaic) | 🚧     |
+| WASM (JS)                                       | ✅      |
+| [Mosaic](https://github.com/JakeWharton/mosaic) | ✅     |

@@ -7,14 +7,15 @@ import com.google.devtools.ksp.processing.KSPLogger
 internal data class CircuitOptions(
   val mode: CodegenMode,
   val lenient: Boolean,
-  val useJavax: Boolean,
+  val useJavaxOnly: Boolean,
 ) {
   companion object {
     const val MODE = "circuit.codegen.mode"
     const val LENIENT = "circuit.codegen.lenient"
-    const val USE_JAVAX = "circuit.codegen.useJavax"
+    const val USE_JAVAX_ONLY = "circuit.codegen.useJavaxOnly"
 
-    internal val UNKNOWN = CircuitOptions(CodegenMode.UNKNOWN, lenient = false, useJavax = false)
+    internal val UNKNOWN =
+      CircuitOptions(CodegenMode.UNKNOWN, lenient = false, useJavaxOnly = false)
 
     fun load(options: Map<String, String>, logger: KSPLogger): CircuitOptions {
       val mode =
@@ -36,8 +37,8 @@ internal data class CircuitOptions(
       }
 
       val lenient = options[LENIENT]?.toBoolean() ?: false
-      val useJavax = options[USE_JAVAX]?.toBoolean() ?: false
-      return CircuitOptions(mode = mode, lenient = lenient, useJavax = useJavax)
+      val useJavaxOnly = options[USE_JAVAX_ONLY]?.toBoolean() ?: false
+      return CircuitOptions(mode = mode, lenient = lenient, useJavaxOnly = useJavaxOnly)
     }
   }
 }

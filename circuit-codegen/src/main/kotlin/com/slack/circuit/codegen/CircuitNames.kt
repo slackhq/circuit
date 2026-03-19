@@ -35,6 +35,7 @@ internal object CircuitNames {
   val DAGGER_BINDS = ClassName(DAGGER_PACKAGE, "Binds")
   val DAGGER_INSTALL_IN = ClassName(DAGGER_HILT_PACKAGE, "InstallIn")
   val DAGGER_ORIGINATING_ELEMENT = ClassName(DAGGER_HILT_CODEGEN_PACKAGE, "OriginatingElement")
+  val DAGGER_ORIGIN = OriginAnnotation(DAGGER_ORIGINATING_ELEMENT, "topLevelClass")
   val DAGGER_INTO_SET = ClassName(DAGGER_MULTIBINDINGS_PACKAGE, "IntoSet")
   const val MODULE = "Module"
   const val FACTORY = "Factory"
@@ -49,7 +50,7 @@ internal object CircuitNames {
       private const val RUNTIME_INTERNAL_PACKAGE =
         "software.amazon.lastmile.kotlin.inject.anvil.internal"
       internal val CONTRIBUTES_BINDING = ClassName(RUNTIME_PACKAGE, "ContributesBinding")
-      val ORIGIN = ClassName(RUNTIME_INTERNAL_PACKAGE, "Origin")
+      val ORIGIN = OriginAnnotation(ClassName(RUNTIME_INTERNAL_PACKAGE, "Origin"))
     }
   }
 
@@ -59,7 +60,7 @@ internal object CircuitNames {
     val ASSISTED = ClassName(RUNTIME_PACKAGE, "Assisted")
     val ASSISTED_FACTORY = ClassName(RUNTIME_PACKAGE, "AssistedFactory")
     val PROVIDER = ClassName(RUNTIME_PACKAGE, "Provider")
-    val ORIGIN = ClassName(RUNTIME_PACKAGE, "Origin")
+    val ORIGIN = OriginAnnotation(ClassName(RUNTIME_PACKAGE, "Origin"))
     internal val CONTRIBUTES_INTO_SET = ClassName(RUNTIME_PACKAGE, "ContributesIntoSet")
   }
 }

@@ -14,10 +14,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
-  macosX64()
   macosArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()

@@ -14,7 +14,6 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm { testRuns["test"].executionTask.configure { enabled = false } }
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
   js(IR) {
@@ -35,7 +34,7 @@ kotlin {
       dependencies {
         api(libs.compose.runtime)
         api(projects.circuitFoundation)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
       }
     }
 

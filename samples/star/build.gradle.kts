@@ -19,7 +19,6 @@ plugins {
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
-  alias(libs.plugins.compose.hotReload)
 }
 
 kotlin {
@@ -47,10 +46,10 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        implementation(libs.androidx.datastore.preferences)
         implementation(libs.coil)
         implementation(libs.coil.compose)
         implementation(libs.coil.network.ktor)
+        implementation(libs.compose.components.resources)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material)
@@ -59,17 +58,15 @@ kotlin {
         implementation(libs.compose.ui)
         implementation(libs.compose.ui.util)
         implementation(libs.coroutines)
-        implementation(libs.ksoup)
         implementation(libs.ktor.client)
         implementation(libs.ktor.client.contentNegotiation)
-        implementation(libs.ktor.client.auth)
         implementation(libs.ktor.serialization.json)
+        implementation(libs.markdownRenderer.m3)
         implementation(libs.okio)
         implementation(libs.sqldelight.async)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
-        implementation(compose.components.resources)
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitOverlay)
@@ -87,7 +84,6 @@ kotlin {
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
         implementation(libs.turbine)
-        implementation(libs.okio.fakefilesystem)
         implementation(libs.testing.assertk)
         implementation(projects.circuitTest)
         implementation(libs.eithernet.testFixtures)
@@ -95,7 +91,7 @@ kotlin {
     }
     maybeCreate("jvmCommonMain").apply {
       dependencies {
-        implementation(libs.jsoup)
+        implementation(libs.compose.material.icons)
         implementation(libs.coil.network.okhttp)
         implementation(libs.ktor.client.engine.okhttp)
         implementation(libs.okhttp)
@@ -117,7 +113,8 @@ kotlin {
         implementation(libs.compose.ui.tooling)
         implementation(libs.coroutines.android)
         implementation(libs.sqldelight.driver.android)
-        implementation(libs.telephoto.zoomableImageCoil)
+        implementation(libs.telephoto.flick)
+        implementation(libs.telephoto.zoomableImageCoil3)
         implementation(projects.circuitx.android)
       }
     }
@@ -272,13 +269,12 @@ dependencies {
 
 // Wiring of source-generating tasks into KSP for Gradle reasons
 
-val generateAccessorsTasks =
-  tasks.named {
-    it.startsWith("generateResourceAccessors") ||
-      it.startsWith("generateActualResourceCollectors") ||
-      it.startsWith("generateExpectResourceCollectors") ||
-      it.startsWith("generateComposeResClass")
-  }
+val generateAccessorsTasks = tasks.named {
+  it.startsWith("generateResourceAccessors") ||
+    it.startsWith("generateActualResourceCollectors") ||
+    it.startsWith("generateExpectResourceCollectors") ||
+    it.startsWith("generateComposeResClass")
+}
 
 val sqldelightTasks = tasks.withType<SqlDelightTask>()
 

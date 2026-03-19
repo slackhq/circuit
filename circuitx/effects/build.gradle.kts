@@ -15,10 +15,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
-  macosX64()
   macosArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
@@ -55,8 +53,8 @@ kotlin {
     }
     commonTest {
       dependencies {
-        implementation(compose.foundation)
-        implementation(compose.material3)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.material.material3)
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)

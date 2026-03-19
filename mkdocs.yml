@@ -67,8 +67,12 @@ nav:
   - 'States and Events': states-and-events.md
   - 'Screen': screen.md
   - 'CircuitContent': circuit-content.md
-  - 'Navigation': navigation.md
-  - 'Presenter': presenter.md
+  - 'Navigation':
+      'Usage': navigation.md
+      'NavStack migration': navigation-navstack-migration.md
+  - 'Presenter':
+      'Overview': presenter.md
+      'Scaling Presenters': presenter-patterns.md
   - 'Ui': ui.md
   - 'Overlays': overlays.md
   - 'Shared Elements':

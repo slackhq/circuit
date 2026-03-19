@@ -91,7 +91,7 @@ internal enum class CodegenMode {
    * ```
    */
   HILT {
-    override val originAnnotation: ClassName = CircuitNames.DAGGER_ORIGINATING_ELEMENT
+    override val originAnnotation: OriginAnnotation = CircuitNames.DAGGER_ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Hilt only supports JVM & Android
@@ -175,7 +175,7 @@ internal enum class CodegenMode {
    */
   KOTLIN_INJECT_ANVIL {
     override val runtime: InjectionRuntime = InjectionRuntime.KotlinInject
-    override val originAnnotation: ClassName = CircuitNames.KotlinInject.Anvil.ORIGIN
+    override val originAnnotation: OriginAnnotation = CircuitNames.KotlinInject.Anvil.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // KI-Anvil supports all
@@ -223,7 +223,7 @@ internal enum class CodegenMode {
    */
   METRO {
     override val runtime: InjectionRuntime = InjectionRuntime.Metro
-    override val originAnnotation: ClassName = CircuitNames.Metro.ORIGIN
+    override val originAnnotation: OriginAnnotation = CircuitNames.Metro.ORIGIN
 
     override fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean {
       // Metro supports all
@@ -254,7 +254,7 @@ internal enum class CodegenMode {
   };
 
   open val runtime: InjectionRuntime = InjectionRuntime.Jakarta
-  open val originAnnotation: ClassName? = null
+  open val originAnnotation: OriginAnnotation? = null
 
   open fun annotateFactory(builder: TypeSpec.Builder, scope: TypeName) {}
 
@@ -281,7 +281,10 @@ internal enum class CodegenMode {
   ): Collection<KSDeclaration> = candidates.filterIsInstance<KSFunctionDeclaration>()
 
   sealed interface InjectionRuntime {
+
     fun inject(options: CircuitOptions): ClassName
+
+    fun declarationInjects(options: CircuitOptions): Collection<ClassName> = listOf(inject(options))
 
     val assisted: ClassName
     val assistedInject: ClassName?
@@ -293,14 +296,24 @@ internal enum class CodegenMode {
 
     data object Jakarta : InjectionRuntime {
       override fun inject(options: CircuitOptions): ClassName =
-        if (options.useJavax) CircuitNames.INJECT_JAVAX else CircuitNames.INJECT
+        if (options.useJavaxOnly) CircuitNames.INJECT_JAVAX else CircuitNames.INJECT
+
+      override fun declarationInjects(options: CircuitOptions): Collection<ClassName> {
+        // If explicitly using javax only look for javax, otherwise look for both.
+        return if (options.useJavaxOnly) {
+          listOf(CircuitNames.INJECT_JAVAX)
+        } else {
+          listOf(CircuitNames.INJECT, CircuitNames.INJECT_JAVAX)
+        }
+      }
 
       override val assisted: ClassName = CircuitNames.ASSISTED
       override val assistedInject: ClassName = CircuitNames.ASSISTED_INJECT
       override val assistedFactory: ClassName = CircuitNames.ASSISTED_FACTORY
 
       override fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName {
-        val className = if (options.useJavax) CircuitNames.PROVIDER_JAVAX else CircuitNames.PROVIDER
+        val className =
+          if (options.useJavaxOnly) CircuitNames.PROVIDER_JAVAX else CircuitNames.PROVIDER
         return className.parameterizedBy(providedType)
       }
 
@@ -342,3 +355,8 @@ internal enum class CodegenMode {
     }
   }
 }
+
+public class OriginAnnotation(
+  public val className: ClassName,
+  public val parameterName: String? = null,
+)

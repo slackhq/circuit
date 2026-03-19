@@ -17,8 +17,15 @@ formatter, use the `spotlessApply` command.
 ./gradlew spotlessApply
 ```
 
+You can build and run the CI checks (aside from instrumentation tests) with:
+
+```bash
+./gradlew circuitCi
+```
+
 ### iOS
 
 To build any of the iOS checks, you must do the following:
+
 1. Run `bundle install` to set up fastlane.
 2. Have `swiftformat` installed. You can install it via `brew install swiftformat`.

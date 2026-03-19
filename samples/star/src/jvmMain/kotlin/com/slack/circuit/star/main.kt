@@ -16,6 +16,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -47,20 +48,17 @@ fun main() {
         // In lieu of a global shortcut handler, we best-effort with this
         // https://youtrack.jetbrains.com/issue/CMP-5337
         onKeyEvent = { event ->
-          when {
-            // Cmd+W
-            event.key == Key.W && event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+          when (event.key) {
+            Key.W if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
               exitApplication()
               true
             }
-            // Cmd+U
-            // Toggles dark mode
-            event.key == Key.U && event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+            Key.U if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
               darkMode = !darkMode
               true
             }
             // Backpress ish
-            event.key == Key.Escape -> {
+            Key.Escape -> {
               if (state.backStack.size > 1) {
                 state.navigator.pop()
                 true
@@ -72,13 +70,21 @@ fun main() {
           }
         },
       ) {
+        MenuBar {
+          Menu("Data") {
+            Item("Clear app data and quit") {
+              appGraph.appDirs.clearAll()
+              exitApplication()
+            }
+          }
+        }
         StarCircuitApp(circuit = appGraph.circuit, state = state)
       }
     }
   }
 }
 
-class DesktopUriHandler() : UriHandler {
+class DesktopUriHandler : UriHandler {
   override fun openUri(uri: String) {
     val desktop = Desktop.getDesktop()
     desktop.browse(URI.create(uri))

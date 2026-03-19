@@ -14,10 +14,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
-  macosX64()
   macosArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
@@ -39,7 +37,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.coroutines)
         api(libs.compose.material.material3)
-        implementation(libs.compose.ui.backhandler)
+        implementation(libs.compose.navigationevent)
         implementation(projects.circuitFoundation)
       }
     }

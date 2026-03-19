@@ -1,5 +1,7 @@
 import com.slack.circuit.star.db.Gender;
 import com.slack.circuit.star.db.Size;
+import com.slack.circuit.star.db.PetAttribute;
+import com.slack.circuit.star.db.Photo;
 import kotlin.collections.List;
 import kotlin.String;
 
@@ -8,7 +10,13 @@ import kotlin.String;
 CREATE TABLE IF NOT EXISTS opJournal (
     timestamp INTEGER NOT NULL,
     operation TEXT NOT NULL,
-    PRIMARY KEY(timestamp)
+    PRIMARY KEY(operation)
+);
+
+-- Metadata table for storing API state like the last updatedAt timestamp.
+CREATE TABLE IF NOT EXISTS metadata (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
 );
 
 -- Animal table.
@@ -17,14 +25,15 @@ CREATE TABLE IF NOT EXISTS animal (
   sort INTEGER NOT NULL,
   name TEXT NOT NULL,
   url TEXT NOT NULL,
-  photoUrls TEXT AS List<String> NOT NULL,
-  primaryPhotoUrl TEXT,
+  photos TEXT AS List<Photo> NOT NULL,
   tags TEXT AS List<String> NOT NULL,
-  description TEXT NOT NULL,
+  description TEXT,
+  descriptionMarkdown TEXT,
+  attributes TEXT AS List<PetAttribute> NOT NULL,
   primaryBreed TEXT,
-  gender TEXT AS Gender NOT NULL,
-  size TEXT AS Size NOT NULL,
-  age TEXT NOT NULL,
+  gender TEXT AS Gender,
+  size TEXT AS Size,
+  age TEXT,
   PRIMARY KEY(id)
 );
 
@@ -62,5 +71,11 @@ lastUpdate:
 SELECT * FROM opJournal WHERE operation = ? ORDER BY timestamp DESC LIMIT 1;
 
 putUpdate:
-INSERT INTO opJournal
+INSERT OR REPLACE INTO opJournal
 VALUES ?;
+
+getMetadata:
+SELECT value FROM metadata WHERE key = ?;
+
+putMetadata:
+INSERT OR REPLACE INTO metadata(key, value) VALUES (?, ?);

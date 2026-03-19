@@ -17,10 +17,8 @@ kotlin {
   // region KMP Targets
   androidTarget { publishLibraryVariants("release") }
   jvm()
-  iosX64()
   iosArm64()
   iosSimulatorArm64()
-  macosX64()
   macosArm64()
   js(IR) {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
@@ -61,7 +59,7 @@ kotlin {
         api(libs.compose.runtime)
         api(libs.compose.ui)
         api(libs.coroutines)
-        api(projects.circuitRuntimeScreen)
+        api(projects.circuitRuntimeNavigation)
         implementation(libs.compose.runtime.saveable)
       }
     }
@@ -69,20 +67,16 @@ kotlin {
       dependencies {
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
+        implementation(libs.kotlin.test)
         implementation(libs.molecule.runtime)
+        implementation(libs.testing.assertk)
         implementation(libs.turbine)
+        implementation(projects.internalTestUtils)
       }
     }
     get("browserCommonMain").dependsOn(commonMain.get())
     get("browserCommonTest").dependsOn(commonTest.get())
     androidMain {}
-    commonTest {
-      dependencies {
-        implementation(libs.kotlin.test)
-        implementation(libs.testing.assertk)
-        implementation(projects.internalTestUtils)
-      }
-    }
     val commonJvmTest =
       maybeCreate("commonJvmTest").apply {
         dependsOn(commonTest.get())

@@ -4,9 +4,132 @@ Changelog
 Unreleased
 ----------
 
-- [code gen] Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
-- [code gen] Switch to `jakarta.inject` types for Dagger/Anvil code gen. This should have no source-breaking changes to users since this only affected generated code, but note that the square/anvil implementation may not support this in factory generation ([the KSP fork does](https://github.com/zacsweers/anvil)). If you need to keep javax annotations, use the `circuit.codegen.useJavax=true` KSP option.
-- [code gen] Drop KSP1 support.
+### Fixes
+
+- SaveableNavStack - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
+- SaveableBackStack — Update `isRecordReachable()` to match SaveableNavStack behaviour
+
+### Changes
+
+- Update to Kotlin `2.3.20`.
+- Remove deprecated X64 Apple targets.
+
+0.33.1
+------
+
+_2026-02-19_
+
+### New
+
+- Added `ProvideRecordLifecycle` to safely override the `LocalRecordLifecycle` behaviour of `NavigableCircuitContent` where only the currently active record in the `NavStack` is not paused.
+- Add `rememberSaveableNavStack(NavStackList)` overload to initialize a nav stack from an existing snapshot.
+- Added a `Presenter.test` variant that provides composition local values to the `Presenter` under test
+
+### Fixes
+
+- Fixes an issue where retained values where not getting saved at the correct time.
+
+### Docs
+
+- New ["Scaling Presenters"](https://slackhq.github.io/circuit/presenter-patterns/) guide covering best practices for structuring presenters as they grow, including extracting sub-presenters, modularizing event handling, and testing strategies.
+
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@matthewbahr-clear](https://github.com/matthewbahr-clear)
+
+
+0.33.0
+------
+
+_2026-02-10_
+
+### New Navigation Architecture:
+
+Circuit now supports **bidirectional navigation** with browser-style forward/backward capabilities!
+
+```kotlin
+val navStack = rememberSaveableNavStack(root = HomeScreen)
+val navigator = rememberCircuitNavigator(navStack)
+navigator.backward() // Move back without removing history
+navigator.forward()  // Move forward to a previously visited screen
+```
+
+**Navigation changes**:
+
+- `Navigator.forward()`: Move forward in navigation history
+- `Navigator.backward()`: Move backward in navigation history
+- `Navigator.peekNavStack()`: Immutable snapshot of the current navigation stack state
+- `NavigableCircuitContent` is aware of the full navigation stack and provides `NavStackList` to
+  decorations, enabling them to render forward stack records.
+
+**SaveableNavStack**:
+
+- New implementation in `circuit-foundation` providing full bidirectional navigation state
+- The existing `SaveableBackStack` implementation has been updated to extend `NavStack`
+
+**New `circuit-runtime-navigation` artifact**:
+
+- `NavStack`: Core navigation stack supporting push/pop and forward/backward traversal
+- `NavStackList`: Immutable snapshot of navigation state
+
+**circuitx-navigation**:
+
+- `InterceptingNavigator` now supports `forward()` and `backward()` navigation methods
+- Updated to use `NavStack` and `NavStackList` instead of `BackStack` and `List<Screen>`
+- Rewrite interceptors can now rewrite to any `NavEvent` (not just specific navigation types like `InterceptedGoToResult.Rewrite` or `InterceptedResetRootResult.Rewrite`)
+- `FailureNotifier` interface updated with `forwardFailure()` and `backwardFailure()` methods with default implementations
+
+### New
+
+- Add `mingwX64()` target to `circuit-codegen-annotations`.
+
+### Fixes
+
+- Fix an issue where `AnsweringResultHandler` was not correctly parceling pending results.
+
+### Changes
+
+- Compile against kotlin-inject-anvil `0.1.7`.
+- `NavigationEventHandler` usage is now disabled by default when no `NavigationEventDispatcherOwner` is available, preventing crashes in environments with dynamic navigation event support. This behaviour can be configured with the `Circuit.lenientNavigationEventDispatcherOwner` option.
+- `BottomSheetOverlay` now exposes `contentWindowInsets`, mirroring `ModalBottomSheet`
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@spectrl](https://github.com/spectrl)
+
+0.32.0
+------
+
+_2026-01-13_
+
+### Enhancements
+- New `produceAndCollectAsRetainedState` that produces and collects values from a `Flow`.
+
+### Changes
+
+- Update to Kotlin `2.3.0`.
+- Update Compose Multiplatform to `1.10.0`.
+- Circuits `BackHandler` uses now depend on `org.jetbrains.androidx.navigationevent`.
+
+#### Code-gen
+
+- Generate `@Origin` annotations for kotlin-inject-anvil and Metro code gen.
+- Switch to `jakarta.inject` types for Dagger/Anvil code gen. This should have no source-breaking changes to users since this only affected generated code, but note that the square/anvil implementation may not support this in factory generation ([the KSP fork does](https://github.com/zacsweers/anvil)). If you need to only use javax annotations, use the `circuit.codegen.useJavaxOnly=true` KSP option.
+- Drop KSP1 support.
+- Fix not using named parameters with the `kotlin-inject` Anvil codegen mode.
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@amirroid](https://github.com/amirroid)
+- [@evanisnor](https://github.com/evanisnor)
+- [@hossain-khan](https://github.com/hossain-khan)
 
 0.31.0
 ------

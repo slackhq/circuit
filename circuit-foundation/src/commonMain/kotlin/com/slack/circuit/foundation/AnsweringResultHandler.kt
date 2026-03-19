@@ -104,6 +104,8 @@ public class AnsweringResultHandler {
 
     fun readResult() = resultChannel.tryReceive().getOrNull()
 
+    fun peekResult() = resultChannel.tryReceive().getOrNull()?.also { resultChannel.trySend(it) }
+
     fun sendResult(result: PopResult) {
       resultChannel.trySend(result)
     }
@@ -116,17 +118,18 @@ public class AnsweringResultHandler {
         save = { handler ->
           buildMap {
             for ((recordKey, state) in handler.recordStates) {
-              put(recordKey, state.resultKey to state.readResult())
+              // Peek the result so checking save isn't destructive.
+              put(recordKey, listOf(state.resultKey, state.peekResult()))
             }
           }
         },
         restore = { map ->
           AnsweringResultHandler().apply {
             for ((recordKey, value) in map) {
-              val (resultKey, pendingResult) = value as Pair<String?, PopResult?>
+              val (resultKey, pendingResult) = value as List<Any?>
               // NOTE order matters here, prepareForResult() clears the buffer
-              resultKey?.let { prepareForResult(recordKey, it) }
-              pendingResult?.let { sendResult(recordKey, it) }
+              resultKey?.let { prepareForResult(recordKey, it as String) }
+              pendingResult?.let { sendResult(recordKey, it as PopResult) }
             }
           }
         },

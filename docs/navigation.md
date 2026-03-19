@@ -1,23 +1,23 @@
 Navigation
 ==========
 
-For navigable contents, we have a custom compose-based backstack implementation that the androidx folks shared with us. Navigation becomes two parts:
+For navigable contents, navigation becomes two parts:
 
-1. A `BackStack`, where we use a `SaveableBackStack` implementation that saves a stack of `Screen`s and the `ProvidedValues` for each record on that stack (allowing us to save and restore on configuration changes automatically).
-2. A `Navigator`, which is a simple interface that we can point at a `BackStack` and offers simple `goTo(<screen>)`/`pop()` semantics. These are offered to presenters to perform navigation as needed to other screens.
+1. A `NavStack`, where we use a `SaveableNavStack` implementation that saves a stack of `Screen`s and the `ProvidedValues` for each record on that stack (allowing us to save and restore on configuration changes automatically).
+2. A `Navigator`, which is a simple interface that we can point at a `NavStack` and offers simple `goTo(<screen>)`/`pop()` semantics. These are offered to presenters to perform navigation as needed to other screens.
 
-A new navigable content surface is handled via the `NavigableCircuitContent` functions.
+A new navigable content surface is handled via the `NavigableCircuitContent` functions. If you want to have custom behavior for when back is pressed on the root screen (i.e. `navStack.isAtRoot`), perform this in the lambda passed to `rememberCircuitNavigator`'s `onRootPop`.
 
 ```kotlin
 setContent {
-  val backStack = rememberSaveableBackStack(root = HomeScreen)
-  val navigator = rememberCircuitNavigator(backStack)
-  NavigableCircuitContent(navigator, backStack)
+  val navStack = rememberSaveableNavStack(root = HomeScreen)
+  val navigator = rememberCircuitNavigator(navStack) { /* do something on root */ }
+  NavigableCircuitContent(navigator, navStack)
 }
 ```
 
 !!! warning
-    `SaveableBackStack` _must_ have a size of 1 or more after initialization. It's an error to have a backstack with zero items.
+    `SaveableNavStack` _must_ have a size of 1 or more after initialization. It's an error to have a navstack with zero items.
 
 Presenters are then given access to these navigator instances via `Presenter.Factory` (described in [Factories](https://slackhq.github.io/circuit/factories/)), which they can save if needed to perform navigation.
 
@@ -28,18 +28,6 @@ fun showAddFavorites() {
       externalId = uuidGenerator.generate()
     )
   )
-}
-```
-
-If you want to have custom behavior for when back is pressed on the root screen (i.e. `backstack.size == 1`), you should implement your own `BackHandler` and use it _before_ creating the backstack.
-
-```kotlin
-setContent {
-  val backStack = rememberSaveableBackStack(root = HomeScreen)
-  BackHandler(onBack = { /* do something on root */ })
-  // The Navigator's internal BackHandler will take precedence until it is at the root screen.
-  val navigator = rememberCircuitNavigator(backStack)
-  NavigableCircuitContent(navigator, backStack)
 }
 ```
 

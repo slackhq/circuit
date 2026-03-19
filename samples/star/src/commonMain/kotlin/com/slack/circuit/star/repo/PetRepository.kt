@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 private const val METADATA_KEY_UPDATED_AT = "animals_updated_at"
@@ -82,7 +83,8 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     // haven't fetched yet and we return null instead to indicate it's still loading.
     return flow {
       emitAll(
-        starDb().starQueries
+        starDb()
+          .starQueries
           .getAllAnimals()
           .asFlow()
           .mapToList(backgroundScope.coroutineContext)
@@ -113,12 +115,7 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     }
 
     // Drop concurrent fetch requests - if one is in-flight, skip this one
-    if (!fetchMutex.tryLock()) return
-    try {
-      doFetchAnimals(forceRefresh)
-    } finally {
-      fetchMutex.unlock()
-    }
+    fetchMutex.withLock { doFetchAnimals(forceRefresh) }
   }
 
   private suspend fun doFetchAnimals(forceRefresh: Boolean) {
@@ -137,7 +134,11 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     // Check if the data has changed since last fetch (unless force refreshing)
     if (!forceRefresh) {
       val lastUpdatedAtEpoch =
-        starDb().starQueries.getMetadata(METADATA_KEY_UPDATED_AT).executeAsOneOrNull()?.toLongOrNull()
+        starDb()
+          .starQueries
+          .getMetadata(METADATA_KEY_UPDATED_AT)
+          .executeAsOneOrNull()
+          ?.toLongOrNull()
       if (lastUpdatedAtEpoch != null) {
         val lastUpdatedAt = Instant.fromEpochSeconds(lastUpdatedAtEpoch)
         if (newUpdatedAt <= lastUpdatedAt) {
@@ -156,31 +157,36 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
 
       // Re-populate the DB
       for ((index, pet) in animals.withIndex()) {
-        starDb().starQueries.updateAnimal(
-          Animal(
-            id = pet.id.toLong(),
-            sort = index.toLong(),
-            // Names are sometimes all caps
-            name =
-              pet.name.lowercase().replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase() else it.toString()
-              },
-            url = pet.url,
-            photos = pet.photos.map { Photo(it.originalUrl, it.width, it.height, it.aspectRatio) },
-            tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
-            description = pet.description,
-            descriptionMarkdown = pet.descriptionMarkdown,
-            attributes = pet.attributes.map { PetAttribute(it.key, it.display) },
-            primaryBreed = pet.breed,
-            gender = Gender.fromApiString(pet.sex),
-            size = Size.fromApiString(pet.size),
-            age = pet.age,
+        starDb()
+          .starQueries
+          .updateAnimal(
+            Animal(
+              id = pet.id.toLong(),
+              sort = index.toLong(),
+              // Names are sometimes all caps
+              name =
+                pet.name.lowercase().replaceFirstChar {
+                  if (it.isLowerCase()) it.titlecase() else it.toString()
+                },
+              url = pet.url,
+              photos =
+                pet.photos.map { Photo(it.originalUrl, it.width, it.height, it.aspectRatio) },
+              tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
+              description = pet.description,
+              descriptionMarkdown = pet.descriptionMarkdown,
+              attributes = pet.attributes.map { PetAttribute(it.key, it.display) },
+              primaryBreed = pet.breed,
+              gender = Gender.fromApiString(pet.sex),
+              size = Size.fromApiString(pet.size),
+              age = pet.age,
+            )
           )
-        )
       }
 
       // Store the API's updatedAt timestamp as epoch seconds
-      starDb().starQueries.putMetadata(METADATA_KEY_UPDATED_AT, newUpdatedAt.epochSeconds.toString())
+      starDb()
+        .starQueries
+        .putMetadata(METADATA_KEY_UPDATED_AT, newUpdatedAt.epochSeconds.toString())
 
       logUpdate("animals")
     }

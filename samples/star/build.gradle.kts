@@ -54,6 +54,7 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
+        implementation(libs.compose.navigationevent)
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
         implementation(libs.compose.ui.util)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
@@ -89,16 +92,19 @@ fun StarCircuitApp(
     // TODO why isn't the windowBackground enough so we don't need to do this?
     Surface(modifier, color = MaterialTheme.colorScheme.background) {
       CircuitCompositionLocals(circuit) {
-        SharedElementTransitionLayout {
-          ContentWithOverlays {
-            NavigableCircuitContent(
-              navigator = state.navigator,
-              backStack = state.backStack,
-              decoratorFactory =
-                remember(state.navigator) {
-                  GestureNavigationDecorationFactory(onBackInvoked = state.navigator::pop)
-                },
-            )
+        val dispatcherOwner = rememberNavigationEventDispatcherOwner()
+        CompositionLocalProvider(LocalNavigationEventDispatcherOwner provides dispatcherOwner) {
+          SharedElementTransitionLayout {
+            ContentWithOverlays {
+              NavigableCircuitContent(
+                navigator = state.navigator,
+                backStack = state.backStack,
+                decoratorFactory =
+                  remember(state.navigator) {
+                    GestureNavigationDecorationFactory(onBackInvoked = state.navigator::pop)
+                  },
+              )
+            }
           }
         }
       }

@@ -6,7 +6,6 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -89,7 +88,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
     var contentComposed by rememberRetained { mutableStateOf(false) }
     Scaffold(
-      modifier = modifier.fillMaxWidth().displayCutoutPadding(),
+      modifier = modifier.fillMaxWidth(),
       contentWindowInsets = WindowInsets(0, 0, 0, 0),
       containerColor = Color.Transparent,
       bottomBar = {

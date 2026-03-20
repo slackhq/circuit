@@ -450,7 +450,11 @@ private fun PetListGridItem(
   val boundsState = rememberSharedContentState(key = PetCardBoundsKey(animal.id))
   val fraction by
     remember(boundsState, animatedScope) {
-      derivedStateOf { if (boundsState.isMatchFound) animatedScope.progress().value else 1f }
+      derivedStateOf {
+        if (boundsState.isMatchFound) {
+          animatedScope.progress().value.let { if (it.isNaN()) 1f else it }
+        } else 1f
+      }
     }
   val topCornerSize = lerp(12.dp, 16.dp, fraction)
   val bottomCornerSize = lerp(0.dp, 12.dp, 1 - fraction)

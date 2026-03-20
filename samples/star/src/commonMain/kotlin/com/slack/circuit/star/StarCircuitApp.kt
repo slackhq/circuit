@@ -33,6 +33,22 @@ import com.slack.circuit.star.navigation.OpenUrlScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 
+/**
+ * Provides a [NavigationEventDispatcherOwner] if one isn't already available in the composition.
+ * On Android, the Activity provides one. On other platforms, we create a root dispatcher.
+ */
+@Composable
+private fun ProvideNavigationEventDispatcherOwnerIfNeeded(content: @Composable () -> Unit) {
+  if (LocalNavigationEventDispatcherOwner.current != null) {
+    content()
+  } else {
+    val dispatcherOwner = rememberNavigationEventDispatcherOwner()
+    CompositionLocalProvider(LocalNavigationEventDispatcherOwner provides dispatcherOwner) {
+      content()
+    }
+  }
+}
+
 @Stable
 interface StarAppState {
   val useDarkTheme: Boolean
@@ -92,8 +108,7 @@ fun StarCircuitApp(
     // TODO why isn't the windowBackground enough so we don't need to do this?
     Surface(modifier, color = MaterialTheme.colorScheme.background) {
       CircuitCompositionLocals(circuit) {
-        val dispatcherOwner = rememberNavigationEventDispatcherOwner()
-        CompositionLocalProvider(LocalNavigationEventDispatcherOwner provides dispatcherOwner) {
+        ProvideNavigationEventDispatcherOwnerIfNeeded {
           SharedElementTransitionLayout {
             ContentWithOverlays {
               NavigableCircuitContent(

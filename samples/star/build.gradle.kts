@@ -29,9 +29,7 @@ kotlin {
     instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
-  listOf(iosArm64(), iosSimulatorArm64()).forEach {
-    it.binaries.framework { baseName = "StarKt" }
-  }
+  listOf(iosArm64(), iosSimulatorArm64()).forEach { it.binaries.framework { baseName = "StarKt" } }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {

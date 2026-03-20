@@ -34,8 +34,8 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 
 /**
- * Provides a [NavigationEventDispatcherOwner] if one isn't already available in the composition.
- * On Android, the Activity provides one. On other platforms, we create a root dispatcher.
+ * Provides a [NavigationEventDispatcherOwner] if one isn't already available in the composition. On
+ * Android, the Activity provides one. On other platforms, we create a root dispatcher.
  */
 @Composable
 private fun ProvideNavigationEventDispatcherOwnerIfNeeded(content: @Composable () -> Unit) {

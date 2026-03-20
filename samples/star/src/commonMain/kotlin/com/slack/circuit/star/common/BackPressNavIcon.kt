@@ -32,9 +32,7 @@ fun BackPressNavIcon(
 private fun rememberDispatchBackClick(): (() -> Unit)? {
   val dispatcher =
     LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher ?: return null
-  val input = remember(dispatcher) {
-    DirectNavigationEventInput().also { dispatcher.addInput(it) }
-  }
+  val input = remember(dispatcher) { DirectNavigationEventInput().also { dispatcher.addInput(it) } }
   DisposableEffect(input) { onDispose { dispatcher.removeInput(input) } }
   return remember(input) {
     {

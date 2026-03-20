@@ -44,10 +44,10 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.progress
 import com.slack.circuit.star.common.Platform
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.ui.StarTheme
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
 
@@ -155,9 +155,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         backStack = backStack,
         modifier = Modifier.padding(paddingValues),
         decoratorFactory =
-          remember(navigator) {
-            GestureNavigationDecorationFactory(onBackInvoked = navigator::pop)
-          },
+          remember(navigator) { GestureNavigationDecorationFactory(onBackInvoked = navigator::pop) },
       )
       contentComposed = true
     }

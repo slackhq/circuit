@@ -52,7 +52,6 @@ import com.slack.circuit.sharedelements.ExperimentalCircuitSharedElementsApi
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.star.common.BackPressNavIcon
-import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.common.isLandscape
 import com.slack.circuit.star.db.Animal
@@ -411,13 +410,14 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
           val bodySmall = MaterialTheme.typography.bodySmall
           Markdown(
             content = state.descriptionMarkdown,
-            typography = markdownTypography(
-              text = bodySmall,
-              paragraph = bodySmall,
-              ordered = bodySmall,
-              bullet = bodySmall,
-              list = bodySmall,
-            ),
+            typography =
+              markdownTypography(
+                text = bodySmall,
+                paragraph = bodySmall,
+                ordered = bodySmall,
+                bullet = bodySmall,
+                list = bodySmall,
+              ),
           )
         }
       }

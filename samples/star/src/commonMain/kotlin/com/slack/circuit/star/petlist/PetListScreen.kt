@@ -200,9 +200,10 @@ class PetListPresenter(
 
     val animalState by
       produceRetainedState<List<PetListAnimal>?>(null, petRepo) {
-        petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }.collect {
-          value = it
-        }
+        petRepo
+          .animalsFlow()
+          .map { animals -> animals?.map(Animal::toPetListAnimal) }
+          .collect { value = it }
       }
 
     var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }

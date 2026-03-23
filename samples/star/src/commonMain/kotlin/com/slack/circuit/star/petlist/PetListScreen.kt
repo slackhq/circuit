@@ -99,7 +99,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayEffect
-import com.slack.circuit.retained.collectAsRetainedState
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -198,12 +198,12 @@ class PetListPresenter(
       }
     }
 
-    val animalsFlow =
-      rememberRetained(petRepo) {
-        petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
+    val animalState by
+      produceRetainedState<List<PetListAnimal>?>(null, petRepo) {
+        petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }.collect {
+          value = it
+        }
       }
-
-    val animalState by animalsFlow.collectAsRetainedState(null)
 
     var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
@@ -452,7 +452,7 @@ private fun PetListGridItem(
     remember(boundsState, animatedScope) {
       derivedStateOf {
         if (boundsState.isMatchFound) {
-          animatedScope.progress().value.let { if (it.isNaN()) 1f else it }
+          animatedScope.progress().value
         } else 1f
       }
     }

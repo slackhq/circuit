@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,9 +17,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -293,8 +294,7 @@ private fun UnknownAnimal(paddingValues: PaddingValues) {
 }
 
 @Composable
-private fun ShowAnimal(state: AnimalState, padding: PaddingValues) {
-  val sharedModifier = Modifier.padding(padding).testTag(ANIMAL_CONTAINER_TAG)
+private fun ShowAnimal(state: AnimalState, scaffoldPadding: PaddingValues) {
   val carouselContent = remember {
     movableContentOf<AnimalState> {
       CircuitContent(
@@ -311,27 +311,30 @@ private fun ShowAnimal(state: AnimalState, padding: PaddingValues) {
     }
   }
   when (isLandscape()) {
-    true -> ShowAnimalLandscape(state, sharedModifier, carouselContent)
-    false -> ShowAnimalPortrait(state, sharedModifier, carouselContent)
+    true -> ShowAnimalLandscape(state, scaffoldPadding, carouselContent)
+    false -> ShowAnimalPortrait(state, scaffoldPadding, carouselContent)
   }
 }
 
 @Composable
 private fun ShowAnimalLandscape(
   state: AnimalState,
-  modifier: Modifier = Modifier,
+  scaffoldPadding: PaddingValues,
   carouselContent: @Composable (AnimalState) -> Unit,
 ) {
-  Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+  Row(
+    modifier = Modifier.padding(scaffoldPadding).testTag(ANIMAL_CONTAINER_TAG),
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
     Box(Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.TopCenter) {
       carouselContent(state)
     }
-    LazyColumn(
+    Column(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
     ) {
-      petDetailDescriptions(state)
+      PetDetailDescriptions(state)
     }
   }
 }
@@ -339,62 +342,67 @@ private fun ShowAnimalLandscape(
 @Composable
 private fun ShowAnimalPortrait(
   state: AnimalState,
-  modifier: Modifier = Modifier,
+  scaffoldPadding: PaddingValues,
   carouselContent: @Composable (AnimalState) -> Unit,
 ) {
-  LazyColumn(
-    modifier = modifier,
-    contentPadding = PaddingValues(16.dp),
+  Column(
+    modifier =
+      Modifier.testTag(ANIMAL_CONTAINER_TAG)
+        .verticalScroll(rememberScrollState())
+        .padding(
+          start = 16.dp,
+          end = 16.dp,
+          top = scaffoldPadding.calculateTopPadding() + 16.dp,
+          bottom = scaffoldPadding.calculateBottomPadding() + 16.dp,
+        ),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    item { carouselContent(state) }
-    petDetailDescriptions(state)
+    carouselContent(state)
+    PetDetailDescriptions(state)
   }
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
-private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
-  // Tags are List and therefore cannot be a key since it's not Parcelable
-  item(state.tags.hashCode()) {
-    SharedElementTransitionScope {
-      FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
-      ) {
-        state.tags.forEach { tag ->
-          Surface(
-            color = MaterialTheme.colorScheme.tertiary,
-            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
-            modifier =
-              Modifier.sharedBounds(
-                sharedContentState = rememberSharedContentState(key = "tag-${state.id}-${tag}"),
-                animatedVisibilityScope = requireAnimatedScope(Navigation),
-                zIndexInOverlay = 2f,
-              ),
-          ) {
-            Text(
-              modifier = Modifier.padding(12.dp),
-              text = tag.capitalize(LocaleList.current),
-              color = MaterialTheme.colorScheme.onTertiary,
-              style = MaterialTheme.typography.labelLarge,
-            )
-          }
+@Composable
+private fun PetDetailDescriptions(state: AnimalState) {
+  SharedElementTransitionScope {
+    FlowRow(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+      verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+    ) {
+      state.tags.forEach { tag ->
+        Surface(
+          color = MaterialTheme.colorScheme.tertiary,
+          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+          modifier =
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(key = "tag-${state.id}-${tag}"),
+              animatedVisibilityScope = requireAnimatedScope(Navigation),
+              zIndexInOverlay = 2f,
+            ),
+        ) {
+          Text(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            text = tag.capitalize(LocaleList.current),
+            color = MaterialTheme.colorScheme.onTertiary,
+            style = MaterialTheme.typography.labelMedium,
+          )
         }
-        // Render attributes as secondary-colored tags
-        state.attributes.forEach { attribute ->
-          Surface(
-            color = MaterialTheme.colorScheme.secondary,
-            shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
-          ) {
-            Text(
-              modifier = Modifier.padding(12.dp),
-              text = attribute.display,
-              color = MaterialTheme.colorScheme.onSecondary,
-              style = MaterialTheme.typography.labelLarge,
-            )
-          }
+      }
+      // Render attributes as secondary-colored tags
+      state.attributes.forEach { attribute ->
+        Surface(
+          color = MaterialTheme.colorScheme.secondary,
+          shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
+        ) {
+          Text(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            text = attribute.display,
+            color = MaterialTheme.colorScheme.onSecondary,
+            style = MaterialTheme.typography.labelMedium,
+          )
         }
       }
     }
@@ -402,33 +410,27 @@ private fun LazyListScope.petDetailDescriptions(state: AnimalState) {
 
   when (state) {
     is Partial -> {
-      item("partial-${state.id}") { Loading(PaddingValues(0.dp)) }
+      Loading(PaddingValues(0.dp))
     }
     is Full -> {
       if (!state.descriptionMarkdown.isNullOrBlank()) {
-        item(state.descriptionMarkdown) {
-          val bodySmall = MaterialTheme.typography.bodySmall
-          Markdown(
-            content = state.descriptionMarkdown,
-            typography =
-              markdownTypography(
-                text = bodySmall,
-                paragraph = bodySmall,
-                ordered = bodySmall,
-                bullet = bodySmall,
-                list = bodySmall,
-              ),
+        val bodySmall = MaterialTheme.typography.bodySmall
+        val typography =
+          markdownTypography(
+            text = bodySmall,
+            paragraph = bodySmall,
+            ordered = bodySmall,
+            bullet = bodySmall,
+            list = bodySmall,
           )
-        }
+        Markdown(content = state.descriptionMarkdown, typography = typography)
       }
-      item(state.url) {
-        Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
-          Text(
-            modifier = Modifier.testTag(FULL_BIO_TAG),
-            text = "Full bio on Adoptapet ➡",
-            style = MaterialTheme.typography.headlineSmall,
-          )
-        }
+      Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
+        Text(
+          modifier = Modifier.testTag(FULL_BIO_TAG),
+          text = "Full bio on Adoptapet ➡",
+          style = MaterialTheme.typography.headlineSmall,
+        )
       }
     }
   }

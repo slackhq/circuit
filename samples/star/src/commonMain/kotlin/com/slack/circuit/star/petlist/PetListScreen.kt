@@ -316,9 +316,10 @@ internal object PetListTestConstants {
 @CircuitInject(PetListScreen::class, AppScope::class)
 @Composable
 internal fun PetList(state: State, modifier: Modifier = Modifier) {
+  val sheetBackgroundColor = MaterialTheme.colorScheme.background
   if (state is Success && state.isUpdateFiltersModalShowing) {
     OverlayEffect(state) {
-      val result = updateFilters(state.filters)
+      val result = updateFilters(state.filters, sheetBackgroundColor)
       state.eventSink(UpdatedFilters(result))
     }
   }

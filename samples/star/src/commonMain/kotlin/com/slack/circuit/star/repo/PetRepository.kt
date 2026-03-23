@@ -32,8 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
@@ -46,7 +44,7 @@ interface PetRepository {
   /** Force refresh data from the API. */
   suspend fun refreshData()
 
-  fun animalsFlow(): Flow<List<Animal>?>
+  suspend fun animalsFlow(): Flow<List<Animal>?>
 
   suspend fun getAnimal(id: Long): Animal?
 }
@@ -78,29 +76,25 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     withContext(Dispatchers.IO) { fetchAnimals(forceRefresh = true) }
   }
 
-  override fun animalsFlow(): Flow<List<Animal>?> {
+  override suspend fun animalsFlow(): Flow<List<Animal>?> {
     // If empty, check if the DB has been updated at all. If it hasn't, then it's just that we
     // haven't fetched yet and we return null instead to indicate it's still loading.
-    return flow {
-      emitAll(
-        starDb()
-          .starQueries
-          .getAllAnimals()
-          .asFlow()
-          .mapToList(backgroundScope.coroutineContext)
-          .onStart { fetchAnimals(forceRefresh = false) }
-          .map { animals ->
-            animals.ifEmpty {
-              val dbHasOps = starDb().starQueries.lastUpdate("animals").executeAsOneOrNull()
-              if (dbHasOps == null) {
-                null
-              } else {
-                animals
-              }
-            }
+    val db = starDb()
+    return db.starQueries
+      .getAllAnimals()
+      .asFlow()
+      .mapToList(backgroundScope.coroutineContext)
+      .onStart { fetchAnimals(forceRefresh = false) }
+      .map { animals ->
+        animals.ifEmpty {
+          val dbHasOps = db.starQueries.lastUpdate("animals").executeAsOneOrNull()
+          if (dbHasOps == null) {
+            null
+          } else {
+            animals
           }
-      )
-    }
+        }
+      }
   }
 
   override suspend fun getAnimal(id: Long): Animal? {

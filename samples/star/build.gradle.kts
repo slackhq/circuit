@@ -247,8 +247,6 @@ sqldelight {
   }
 }
 
-// wat https://youtrack.jetbrains.com/issue/CMP-4885
-tasks.matching { it.name == "syncComposeResourcesForIos" }.configureEach { enabled = false }
 
 // This is the worst deprecation replacement in the history of deprecation replacements
 fun String.capitalizeUS() = replaceFirstChar {

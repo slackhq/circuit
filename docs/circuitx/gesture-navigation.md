@@ -32,7 +32,7 @@ On Android, this supports the [Predictive back gesture](https://developer.androi
   <video controls width="300" loop=true>
     <source src="../../videos/gesturenav_android.mp4" type="video/mp4" />
   </video>
-  <figcaption><a href="https://github.com/slackhq/circuit/tree/main/samples/star">Star sample</a> running on an Android 14 device</figcaption>
+  <figcaption><a href="https://github.com/slackhq/circuit/tree/main/samples/star">Star sample</a> (a multiplatform sample targeting Android, Desktop, and iOS) running on an Android 14 device</figcaption></invoke>
 </figure>
 
 ### iOS

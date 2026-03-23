@@ -108,7 +108,7 @@ class PetListPresenterTest : BasePresenterTest() {
 class TestRepository(private val animals: List<Animal>) : PetRepository {
   override suspend fun refreshData() {}
 
-  override fun animalsFlow(): Flow<List<Animal>> = flow { emit(animals) }
+  override suspend fun animalsFlow(): Flow<List<Animal>> = flow { emit(animals) }
 
   override suspend fun getAnimal(id: Long): Animal? = animals.firstOrNull { it.id == id }
 }

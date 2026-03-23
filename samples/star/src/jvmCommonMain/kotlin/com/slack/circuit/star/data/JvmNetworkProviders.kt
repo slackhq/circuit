@@ -13,14 +13,12 @@ import io.ktor.client.engine.okhttp.OkHttpEngine
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 
-private const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
-
 @ContributesTo(AppScope::class)
 interface JvmNetworkProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideHttpCache(appDirs: StarAppDirs): Cache =
-    Cache(appDirs.fs, appDirs.userCache / "http_cache", MAX_CACHE_SIZE)
+    Cache(appDirs.fs, CommonDataProviders.httpCacheDir(appDirs), CommonDataProviders.MAX_CACHE_SIZE)
 
   @Provides
   @SingleIn(AppScope::class)

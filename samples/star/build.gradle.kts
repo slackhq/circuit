@@ -29,6 +29,7 @@ kotlin {
     instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
+  listOf(iosArm64(), iosSimulatorArm64()).forEach { it.binaries.framework { baseName = "StarKt" } }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
@@ -48,11 +49,12 @@ kotlin {
         implementation(libs.coil.network.ktor)
         implementation(libs.compose.components.resources)
         implementation(libs.compose.foundation)
+        implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material)
         implementation(libs.compose.material.material3)
+        implementation(libs.compose.navigationevent)
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
-        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.ui.util)
         implementation(libs.coroutines)
         implementation(libs.ktor.client)
@@ -60,6 +62,7 @@ kotlin {
         implementation(libs.ktor.serialization.json)
         implementation(libs.markdownRenderer.m3)
         implementation(libs.okio)
+        implementation(libs.sqldelight.async)
         implementation(libs.sqldelight.coroutines)
         implementation(libs.sqldelight.primitiveAdapters)
         implementation(libs.windowSizeClass)
@@ -150,9 +153,16 @@ kotlin {
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation(libs.appDirs)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.swing)
         implementation(libs.slf4jNop)
         implementation(libs.sqldelight.driver.jdbc)
+      }
+    }
+    iosMain {
+      dependencies {
+        implementation(libs.sqldelight.driver.native)
+        implementation(libs.ktor.client.engine.darwin)
       }
     }
 
@@ -228,7 +238,14 @@ compose {
   }
 }
 
-sqldelight { databases { create("StarDatabase") { packageName.set("com.slack.circuit.star.db") } } }
+sqldelight {
+  databases {
+    create("StarDatabase") {
+      packageName.set("com.slack.circuit.star.db")
+      generateAsync.set(true)
+    }
+  }
+}
 
 // This is the worst deprecation replacement in the history of deprecation replacements
 fun String.capitalizeUS() = replaceFirstChar {

@@ -4,12 +4,16 @@ package com.slack.circuit.star.petlist
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuitx.overlays.BasicAlertDialogOverlay
 
 /** Indirection for showing filters in the pet list screen. */
-actual suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters {
+actual suspend fun OverlayHost.updateFilters(
+  currentFilters: Filters,
+  sheetBackgroundColor: Color,
+): Filters {
   return show(
     BasicAlertDialogOverlay(model = currentFilters, onDismissRequest = { currentFilters }) {
       initialFilters,

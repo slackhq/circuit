@@ -5,6 +5,7 @@ package com.slack.circuit.star.repo
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.slack.circuit.star.common.lazySuspend
 import com.slack.circuit.star.data.socialteesnyc.StarApi
 import com.slack.circuit.star.db.Animal
 import com.slack.circuit.star.db.Gender
@@ -27,12 +28,14 @@ import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 private const val METADATA_KEY_UPDATED_AT = "animals_updated_at"
@@ -41,7 +44,7 @@ interface PetRepository {
   /** Force refresh data from the API. */
   suspend fun refreshData()
 
-  fun animalsFlow(): Flow<List<Animal>?>
+  suspend fun animalsFlow(): Flow<List<Animal>?>
 
   suspend fun getAnimal(id: Long): Animal?
 }
@@ -52,10 +55,9 @@ interface PetRepository {
 class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starApi: StarApi) :
   PetRepository {
 
-  private val backgroundScope = CoroutineScope(SupervisorJob() + IO)
-  private val driver by lazy { sqliteDriverFactory.create(StarDatabase.Schema, "star.db") }
-
-  private val starDb by lazy {
+  private val backgroundScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  private val starDb = lazySuspend {
+    val driver = sqliteDriverFactory.create(StarDatabase.Schema, "star.db")
     StarDatabase(
       driver,
       Animal.Adapter(
@@ -71,20 +73,21 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
   private val fetchMutex = Mutex()
 
   override suspend fun refreshData() {
-    withContext(IO) { fetchAnimals(forceRefresh = true) }
+    withContext(Dispatchers.IO) { fetchAnimals(forceRefresh = true) }
   }
 
-  override fun animalsFlow(): Flow<List<Animal>?> {
+  override suspend fun animalsFlow(): Flow<List<Animal>?> {
     // If empty, check if the DB has been updated at all. If it hasn't, then it's just that we
     // haven't fetched yet and we return null instead to indicate it's still loading.
-    return starDb.starQueries
+    val db = starDb()
+    return db.starQueries
       .getAllAnimals()
       .asFlow()
       .mapToList(backgroundScope.coroutineContext)
       .onStart { fetchAnimals(forceRefresh = false) }
       .map { animals ->
         animals.ifEmpty {
-          val dbHasOps = starDb.starQueries.lastUpdate("animals").executeAsOneOrNull()
+          val dbHasOps = db.starQueries.lastUpdate("animals").executeAsOneOrNull()
           if (dbHasOps == null) {
             null
           } else {
@@ -95,7 +98,7 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
   }
 
   override suspend fun getAnimal(id: Long): Animal? {
-    return withContext(IO) { starDb.starQueries.getAnimal(id).executeAsOneOrNull() }
+    return withContext(Dispatchers.IO) { starDb().starQueries.getAnimal(id).executeAsOneOrNull() }
   }
 
   @Suppress("SwallowedException")
@@ -106,20 +109,15 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     }
 
     // Drop concurrent fetch requests - if one is in-flight, skip this one
-    if (!fetchMutex.tryLock()) return
-    try {
-      doFetchAnimals(forceRefresh)
-    } finally {
-      fetchMutex.unlock()
-    }
+    fetchMutex.withLock { doFetchAnimals(forceRefresh) }
   }
 
   private suspend fun doFetchAnimals(forceRefresh: Boolean) {
     val result = retryWithExponentialBackoff { starApi.getPets() }
     if (result !is ApiResult.Success) {
-      System.err.println("Failed to fetch animals: $result.")
+      println("Failed to fetch animals: $result.")
       (result as ApiResult.Failure).exceptionOrNull()?.stackTraceToString()?.let {
-        System.err.println("Trace is:\n$it")
+        println("Trace is:\n$it")
       }
       return
     }
@@ -130,7 +128,11 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
     // Check if the data has changed since last fetch (unless force refreshing)
     if (!forceRefresh) {
       val lastUpdatedAtEpoch =
-        starDb.starQueries.getMetadata(METADATA_KEY_UPDATED_AT).executeAsOneOrNull()?.toLongOrNull()
+        starDb()
+          .starQueries
+          .getMetadata(METADATA_KEY_UPDATED_AT)
+          .executeAsOneOrNull()
+          ?.toLongOrNull()
       if (lastUpdatedAtEpoch != null) {
         val lastUpdatedAt = Instant.fromEpochSeconds(lastUpdatedAtEpoch)
         if (newUpdatedAt <= lastUpdatedAt) {
@@ -143,54 +145,59 @@ class PetRepositoryImpl(sqliteDriverFactory: SqlDriverFactory, private val starA
 
     val animals = response.pets
     // Do everything in a single transaction for atomicity
-    starDb.transaction {
+    starDb().transaction {
       // Delete any not present
-      starDb.starQueries.deleteAllAnimals()
+      starDb().starQueries.deleteAllAnimals()
 
       // Re-populate the DB
       for ((index, pet) in animals.withIndex()) {
-        starDb.starQueries.updateAnimal(
-          Animal(
-            id = pet.id.toLong(),
-            sort = index.toLong(),
-            // Names are sometimes all caps
-            name =
-              pet.name.lowercase().replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase() else it.toString()
-              },
-            url = pet.url,
-            photos = pet.photos.map { Photo(it.originalUrl, it.width, it.height, it.aspectRatio) },
-            tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
-            description = pet.description,
-            descriptionMarkdown = pet.descriptionMarkdown,
-            attributes = pet.attributes.map { PetAttribute(it.key, it.display) },
-            primaryBreed = pet.breed,
-            gender = Gender.fromApiString(pet.sex),
-            size = Size.fromApiString(pet.size),
-            age = pet.age,
+        starDb()
+          .starQueries
+          .updateAnimal(
+            Animal(
+              id = pet.id.toLong(),
+              sort = index.toLong(),
+              // Names are sometimes all caps
+              name =
+                pet.name.lowercase().replaceFirstChar {
+                  if (it.isLowerCase()) it.titlecase() else it.toString()
+                },
+              url = pet.url,
+              photos =
+                pet.photos.map { Photo(it.originalUrl, it.width, it.height, it.aspectRatio) },
+              tags = listOfNotNull(pet.petType, pet.breed, pet.sex, pet.size),
+              description = pet.description,
+              descriptionMarkdown = pet.descriptionMarkdown,
+              attributes = pet.attributes.map { PetAttribute(it.key, it.display) },
+              primaryBreed = pet.breed,
+              gender = Gender.fromApiString(pet.sex),
+              size = Size.fromApiString(pet.size),
+              age = pet.age,
+            )
           )
-        )
       }
 
       // Store the API's updatedAt timestamp as epoch seconds
-      starDb.starQueries.putMetadata(METADATA_KEY_UPDATED_AT, newUpdatedAt.epochSeconds.toString())
+      starDb()
+        .starQueries
+        .putMetadata(METADATA_KEY_UPDATED_AT, newUpdatedAt.epochSeconds.toString())
 
       logUpdate("animals")
     }
   }
 
-  private fun logUpdate(operation: String) {
+  private suspend fun logUpdate(operation: String) {
     val timestamp = currentTimestamp()
-    starDb.starQueries.putUpdate(OpJournal(timestamp = timestamp, operation = operation))
+    starDb().starQueries.putUpdate(OpJournal(timestamp = timestamp, operation = operation))
   }
 
   /**
    * Returns whether or not it's been more than one day since the last update to the given
    * [operation].
    */
-  private fun isOperationStale(operation: String): Boolean {
+  private suspend fun isOperationStale(operation: String): Boolean {
     val lastUpdate =
-      starDb.starQueries.lastUpdate(operation).executeAsOneOrNull()?.timestamp ?: return true
+      starDb().starQueries.lastUpdate(operation).executeAsOneOrNull()?.timestamp ?: return true
     val timestamp = currentTimestamp()
 
     return (Instant.fromEpochSeconds(timestamp) - Instant.fromEpochSeconds(lastUpdate))

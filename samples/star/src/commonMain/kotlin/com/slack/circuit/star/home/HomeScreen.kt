@@ -6,7 +6,6 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -48,6 +47,7 @@ import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.ui.StarTheme
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
 
@@ -89,7 +89,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
     var contentComposed by rememberRetained { mutableStateOf(false) }
     Scaffold(
-      modifier = modifier.fillMaxWidth().displayCutoutPadding(),
+      modifier = modifier.fillMaxWidth(),
       contentWindowInsets = WindowInsets(0, 0, 0, 0),
       containerColor = Color.Transparent,
       bottomBar = {
@@ -137,7 +137,6 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         rememberCircuitNavigator(
           backStack = backStack,
           onRootPop = { state.eventSink(HomeScreen.Event.Back) },
-          enableBackHandler = true,
         )
 
       // When tab changes, use resetRoot to switch tabs while preserving state
@@ -155,6 +154,8 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         navigator = navigator,
         backStack = backStack,
         modifier = Modifier.padding(paddingValues),
+        decoratorFactory =
+          remember(navigator) { GestureNavigationDecorationFactory(onBackInvoked = navigator::pop) },
       )
       contentComposed = true
     }

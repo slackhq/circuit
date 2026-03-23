@@ -247,7 +247,6 @@ sqldelight {
   }
 }
 
-
 // This is the worst deprecation replacement in the history of deprecation replacements
 fun String.capitalizeUS() = replaceFirstChar {
   if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
